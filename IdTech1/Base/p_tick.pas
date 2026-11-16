@@ -309,11 +309,11 @@ begin
     exit;
 
   // pause if in menu and at least one tic has been run
-  if not netgame and menuactive and
-     not demoplayback and (players[consoleplayer].viewz <> 1) then
+  if not TGameSession.NetGame and menuactive and
+     not demoplayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
     exit;
 
-  if not demoplayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not netgame and (leveltime <> 0) then
+  if not demoplayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (leveltime <> 0) then
     exit;
 
   isgamesuspended := false;
@@ -336,7 +336,7 @@ begin
   begin
     dec(TimerGame);
     if TimerGame = 0 then
-      G_Completed(P_TranslateMap(P_GetMapNextMap(gamemap)), 0);
+      G_Completed(P_TranslateMap(P_GetMapNextMap(TGameSession.GameMap)), 0);
   end;
 
 {$ENDIF}

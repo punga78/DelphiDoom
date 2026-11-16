@@ -355,7 +355,7 @@ begin
       begin
         // A puzzle item was found for the line
         P_PlayerRemoveArtifact(player, i);
-        if player = @players[consoleplayer] then
+        if player = @players[TGameSession.ConsolePlayer] then
         begin
           if Ord(arti) < arti_firstpuzzitem then
             S_StartSound(nil, Ord(SFX_ARTIFACT_USE))
@@ -684,7 +684,7 @@ begin
           if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
           begin
             result := true;
-            if deathmatch <> 0 then
+            if TGameSession.DeathMatch <> 0 then
             begin // Winning in deathmatch just goes back to map 1
               G_Completed(1, 0);
             end

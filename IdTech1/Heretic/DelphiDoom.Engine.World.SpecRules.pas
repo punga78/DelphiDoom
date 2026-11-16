@@ -1168,20 +1168,20 @@ var
   ang: angle_t;
 begin
   if W_CheckNumForName('texture2') < 0 then
-    gameepisode := 1; // ???
+    TGameSession.GameEpisode := 1; // ???
 
   // See if -TIMER needs to be used.
   levelTimer := false;
 
   i := M_CheckParm('-avg');
-  if (i <> 0) and (deathmatch <> 0) then
+  if (i <> 0) and (TGameSession.DeathMatch <> 0) then
   begin
     levelTimer := true;
     levelTimeCount := 20 * 60 * TICRATE;
   end;
 
   i := M_CheckParm('-timer');
-  if (i <> 0) and (deathmatch <> 0) then
+  if (i <> 0) and (TGameSession.DeathMatch <> 0) then
   begin
     time := atoi(myargv[i + 1]) * 60 * TICRATE;
     levelTimer := true;

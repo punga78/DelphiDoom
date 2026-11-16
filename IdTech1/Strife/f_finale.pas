@@ -326,7 +326,7 @@ begin
 
   slideshow_panel := char8tostring(W_GetNameForNum(D_Panel0Lump));
 
-  case gamemap of
+  case TGameSession.GameMap of
     3:  // Macil's exposition on the Programmer
       begin
         slideshow_state := SLIDE_PROGRAMMER1;
@@ -341,7 +341,7 @@ begin
       end;
     29: // Endings
       begin
-        if not netgame then
+        if not TGameSession.NetGame then
         begin
           if players[0].health <= 0 then      // Bad ending
             slideshow_state := SLIDE_BADEND1  // - Humanity goes extinct
@@ -1077,7 +1077,7 @@ begin
       end;
     F_STAGE_ARTSCREEN:
       begin
-        if gamemap <= 29 then
+        if TGameSession.GameMap <= 29 then
         begin
           // draw credits
           patch := W_CacheLumpName(DEH_GetString('CREDIT'), PU_STATIC);
@@ -1086,7 +1086,7 @@ begin
           V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);
           V_FullScreenStretch;
         end
-        else if gamemap = 34 then
+        else if TGameSession.GameMap = 34 then
         begin
           // demo version - does nothing meaningful in the final version
           F_DrawMap34End;

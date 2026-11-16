@@ -1190,7 +1190,7 @@ begin
       I_SetNormalCPUPriority;
 {$ENDIF}
 
-    S_UpdateSounds(players[consoleplayer].mo);// move positional sounds
+    S_UpdateSounds(players[TGameSession.ConsolePlayer].mo);// move positional sounds
 
     D_RunNotifications;
 
@@ -1285,7 +1285,7 @@ end;
 //==============================================================================
 procedure D_DoAdvanceDemo;
 begin
-  players[consoleplayer].playerstate := PST_LIVE;  // not reborn
+  players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
   advancedemo := false;
   TGameSession.UserGame := false; // no save/end game here
   paused := false;
@@ -2367,9 +2367,9 @@ begin
   SUC_Progress(6);
 
   if M_CheckParm('-altdeath') > 0 then
-    deathmatch := 2
+    TGameSession.DeathMatch := 2
   else if M_CheckParm('-deathmatch') > 0 then
-    deathmatch := 1;
+    TGameSession.DeathMatch := 1;
 
   case gamemode of
     retail:
@@ -2542,14 +2542,14 @@ begin
   end;
 
   p := M_CheckParm('-timer');
-  if (p <> 0) and (p < myargc - 1) and (deathmatch <> 0) then
+  if (p <> 0) and (p < myargc - 1) and (TGameSession.DeathMatch <> 0) then
   begin
     _time := atoi(myargv[p + 1]);
     printf('Levels will end after %d minute' + decide(_time > 1, 's', '') + #13#10, [_time]);
   end;
 
   p := M_CheckParm('-avg');
-  if (p <> 0) and (p <= myargc - 1) and (deathmatch <> 0) then
+  if (p <> 0) and (p <= myargc - 1) and (TGameSession.DeathMatch <> 0) then
     printf('Austin Virtual Gaming: Levels will end after 20 minutes'#13#10);
 
   D_WadsAutoLoad(wads_autoload);
@@ -3061,7 +3061,7 @@ begin
 
   if gameaction <> ga_loadgame then
   begin
-    if autostart or netgame then
+    if autostart or TGameSession.NetGame then
     begin
       G_InitNew(startskill, startepisode, startmap);
     end

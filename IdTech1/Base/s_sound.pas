@@ -1109,9 +1109,9 @@ begin
   mus_paused := false;
 
 {$IF DEFINED(HEXEN) OR DEFINED(STRIFE)}
-  mnum := S_DefaultMusicForMap(gamemap);
+  mnum := S_DefaultMusicForMap(TGameSession.GameMap);
 {$ELSE}
-  mnum := S_DefaultMusicForMap(gameepisode, gamemap);
+  mnum := S_DefaultMusicForMap(TGameSession.GameEpisode, TGameSession.GameMap);
 {$ENDIF}
 
   S_ChangeMusic(mnum, true);
@@ -1169,15 +1169,15 @@ begin
 
   // Check to see if it is audible,
   //  and if not, modify the params
-  if (origin <> nil) and (origin <> players[consoleplayer].mo) then
+  if (origin <> nil) and (origin <> players[TGameSession.ConsolePlayer].mo) then
   begin
-    rc := S_AdjustSoundParams(players[consoleplayer].mo, origin,
+    rc := S_AdjustSoundParams(players[TGameSession.ConsolePlayer].mo, origin,
            @volume,
            @sep,
            @pitch);
 
-    if (origin.x = players[consoleplayer].mo.x) and
-       (origin.y = players[consoleplayer].mo.y) then
+    if (origin.x = players[TGameSession.ConsolePlayer].mo.x) and
+       (origin.y = players[TGameSession.ConsolePlayer].mo.y) then
       sep := NORM_SEP;
 
     if not rc then
@@ -1298,7 +1298,7 @@ begin
     exit;
 
 // Disable voices in net game
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     exit;
 
   origin := Pmobj_t(origin_p);
@@ -1333,15 +1333,15 @@ begin
 
   // Check to see if it is audible,
   //  and if not, modify the params
-  if (origin <> nil) and (origin <> players[consoleplayer].mo) then
+  if (origin <> nil) and (origin <> players[TGameSession.ConsolePlayer].mo) then
   begin
-    rc := S_AdjustSoundParams(players[consoleplayer].mo, origin,
+    rc := S_AdjustSoundParams(players[TGameSession.ConsolePlayer].mo, origin,
            @volume,
            @sep,
            @pitch);
 
-    if (origin.x = players[consoleplayer].mo.x) and
-       (origin.y = players[consoleplayer].mo.y) then
+    if (origin.x = players[TGameSession.ConsolePlayer].mo.x) and
+       (origin.y = players[TGameSession.ConsolePlayer].mo.y) then
       sep := NORM_SEP;
 
     if not rc then
@@ -1906,9 +1906,9 @@ begin
 
   // The level of the last boss: nothing is too far to be heard
 {$IF DEFINED(DOOM)}
-  fullvolumelevel := (gamemap = 8) and G_NeedsCompatibilityMode;
+  fullvolumelevel := (TGameSession.GameMap = 8) and G_NeedsCompatibilityMode;
 {$ELSEIF DEFINED(HERETIC)}
-  fullvolumelevel := gamemap = 8;
+  fullvolumelevel := TGameSession.GameMap = 8;
 {$ELSE}
   fullvolumelevel := false;
 {$ENDIF}
@@ -1945,7 +1945,7 @@ begin
   // The choice is TSfxChannelPicker of Framework\Audio: a free channel, the one
   // of the same origin, or one that matters less
   choice := TSfxChannelPicker.Pick(PSfxChannelSlot(channels), numChannels, origin,
-    players[consoleplayer].mo, sfxinfo.priority, @S_ChannelPriority);
+    players[TGameSession.ConsolePlayer].mo, sfxinfo.priority, @S_ChannelPriority);
 
   if choice.Channel < 0 then
   begin

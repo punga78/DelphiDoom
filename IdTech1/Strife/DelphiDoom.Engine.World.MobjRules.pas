@@ -735,13 +735,13 @@ begin
   stonecold := false;
 
   // villsa [STRIFE] what a nasty hack...
-  if gamemap = 10 then
+  if TGameSession.GameMap = 10 then
     p.weaponowned[Ord(wp_sigil)] := true;
 
   // give all cards in death match mode
   // villsa [STRIFE] instead of just giving cards in deathmatch mode, also
   // set accuracy to 50 and give all quest flags
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     p.accuracy := 50;
     p.questflags := QF_ALLQUESTS; // 0x7fffffff
@@ -753,7 +753,7 @@ begin
   if workparm then
     p.cheats := p.cheats or CF_GODMODE;
 
-  if plnum = consoleplayer then
+  if plnum = TGameSession.ConsolePlayer then
   begin
     // wake up the status bar
     ST_Start;
@@ -810,7 +810,7 @@ begin
       uplayerstarts[mthing._type - 1].x := mthing.x * FRACUNIT;
       uplayerstarts[mthing._type - 1].y := mthing.y * FRACUNIT;
     end;
-    if deathmatch = 0 then
+    if TGameSession.DeathMatch = 0 then
       spawned := P_SpawnPlayer(mthing, uthing)
     else
       spawned := nil;
@@ -1356,7 +1356,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or netgame;
+  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

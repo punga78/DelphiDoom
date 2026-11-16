@@ -114,7 +114,7 @@ begin
   LIsPlayer := IsPlayerStart(AThing._type);
   // the skill of RADIX.DAT takes the place of the skill flags of Doom; a craft is always there
   if not LIsPlayer and
-    not TRadixThingSpawnRules.IsSpawnedAtSkill(ARadix.RadixSkill, Ord(gameskill), netgame) then
+    not TRadixThingSpawnRules.IsSpawnedAtSkill(ARadix.RadixSkill, Ord(TGameSession.GameSkill), TGameSession.NetGame) then
     Exit;
   if not P_GameValidThing(AThing._type) then
     Exit;
@@ -160,7 +160,7 @@ begin
     printf('TRadixLevelRules: %d things of the map have a type without definition and are not spawned'#13#10,
       [FUndefinedThings]);
   // the mission briefing comes before the level (it draws the map of the level just loaded)
-  RB_LevelLoaded(gameepisode, gamemap);
+  RB_LevelLoaded(TGameSession.GameEpisode, TGameSession.GameMap);
 end;
 
 end.

@@ -553,7 +553,7 @@ begin
   if MaceSpotCount = 0 then // No maces placed
     exit;
 
-  if (deathmatch <> 0) and (P_Random < 64) then
+  if (TGameSession.DeathMatch <> 0) and (P_Random < 64) then
   begin // Sometimes doesn't show up if not in deathmatch
     exit;
   end;
@@ -606,7 +606,7 @@ var
 begin
   ammo := wpnlev1info[Ord(player.readyweapon)].ammo;
 
-  if (player.powers[Ord(pw_weaponlevel2)] <> 0) and (deathmatch = 0) then
+  if (player.powers[Ord(pw_weaponlevel2)] <> 0) and (TGameSession.DeathMatch = 0) then
     ammoUse := @WeaponAmmoUsePL2
   else
     ammoUse := @WeaponAmmoUsePL1;
@@ -929,7 +929,7 @@ procedure A_FireBlasterPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     player.ammo[Ord(am_blaster)] := player.ammo[Ord(am_blaster)] - USE_BLSR_AMMO_1
   else
     player.ammo[Ord(am_blaster)] := player.ammo[Ord(am_blaster)] - USE_BLSR_AMMO_2;
@@ -983,7 +983,7 @@ var
   momz: fixed_t;
 begin
   mo := player.mo;
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     player.ammo[Ord(am_goldwand)] := player.ammo[Ord(am_goldwand)] - USE_GWND_AMMO_1
   else
     player.ammo[Ord(am_goldwand)] := player.ammo[Ord(am_goldwand)] - USE_GWND_AMMO_2;
@@ -1187,7 +1187,7 @@ procedure A_FireMacePL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     player.ammo[Ord(am_mace)] := player.ammo[Ord(am_mace)] - USE_MACE_AMMO_1
   else
     player.ammo[Ord(am_mace)] := player.ammo[Ord(am_mace)] - USE_MACE_AMMO_2;
@@ -1330,7 +1330,7 @@ var
   pmo: Pmobj_t;
 begin
   pmo := player.mo;
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     player.ammo[Ord(am_crossbow)] := player.ammo[Ord(am_crossbow)] - USE_CBOW_AMMO_1
   else
     player.ammo[Ord(am_crossbow)] := player.ammo[Ord(am_crossbow)] - USE_CBOW_AMMO_2;
@@ -1395,7 +1395,7 @@ end;
 //==============================================================================
 procedure A_FireSkullRodPL2(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     player.ammo[Ord(am_skullrod)] := player.ammo[Ord(am_skullrod)] - USE_SKRD_AMMO_1
   else
     player.ammo[Ord(am_skullrod)] := player.ammo[Ord(am_skullrod)] - USE_SKRD_AMMO_2;
@@ -1406,7 +1406,7 @@ begin
   // P_SpawnPlayerMissile because we need to give info to the mobj
   // even if it exploded immediately.
 
-  if netgame then // Multi-player game
+  if TGameSession.NetGame then // Multi-player game
     MissileMobj.special2 := P_GetPlayerNum(player)
   else // Always use red missiles in single player games
     MissileMobj.special2 := 2;
@@ -1441,7 +1441,7 @@ var
   playerNum: integer;
   player: Pplayer_t;
 begin
-  if netgame then
+  if TGameSession.NetGame then
     playerNum := actor.special2
   else
     playerNum := 0;
@@ -1494,7 +1494,7 @@ begin
   if actor.health <= 0 then // JVAL: check!
   begin
     P_SetMobjState(actor, S_NULL);
-    if netgame then
+    if TGameSession.NetGame then
       playerNum := actor.special2
     else
       playerNum := 0;

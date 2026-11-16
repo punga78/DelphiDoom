@@ -140,7 +140,7 @@ begin
   else
     S_ChangeMusic(Ord(mus_cptd), true);
 
-  case gameepisode of
+  case TGameSession.GameEpisode of
     1:
       begin
         finaleflat := bgflatE1;
@@ -237,7 +237,7 @@ begin
     exit;
   end;
 
-  if (finalestage = 1) and (gameepisode = 2) then
+  if (finalestage = 1) and (TGameSession.GameEpisode = 2) then
   begin // we're showing the water pic, make any key kick to demo mode
     inc(finalestage);
     result := true;
@@ -492,7 +492,7 @@ begin
     exit;
   end;
 
-  case gameepisode of
+  case TGameSession.GameEpisode of
     1:
       begin
         if gamemode = shareware then

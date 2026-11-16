@@ -1078,7 +1078,7 @@ begin
         if (side <> 1) or (line.special = 202) then
           // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective (Tag = VOC/LOG #)
           // must be consoleplayer
-          if thing.player = @players[consoleplayer] then
+          if thing.player = @players[TGameSession.ConsolePlayer] then
             // must have comm unit
             if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
             begin
@@ -1409,7 +1409,7 @@ begin
 
           Pplayer_t(thing.player)._message := 'Entering' + Copy(mapnames[map - 1], 9, length(mapnames[map - 1]) - 8);
 
-          if netgame and (deathmatch <> 0) then
+          if TGameSession.NetGame and (TGameSession.DeathMatch <> 0) then
           begin
             if levelTimer and (levelTimeCount <> 0) then
             begin
@@ -2100,7 +2100,7 @@ begin
       begin
         // SECRET SECTOR
         player._message := MSGSECRETSECTOR;
-        if player = @players[consoleplayer] then
+        if player = @players[TGameSession.ConsolePlayer] then
           S_StartSound(nil, Ord(sfx_yeah));
         sector.special := 0;
       end;
@@ -2319,7 +2319,7 @@ begin
   levelTimer := false;
 
   // JVAL: Reformated
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     // Austin Virtual Gaming 20 min timer on DM play
     i := M_CheckParm('-avg');

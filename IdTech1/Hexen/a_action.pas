@@ -478,9 +478,9 @@ var
   rp: angle_t;
   st: integer;
 begin
-  if not netgame then
+  if not TGameSession.NetGame then
   begin
-    pmo := players[consoleplayer].mo;
+    pmo := players[TGameSession.ConsolePlayer].mo;
     rp := R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
     if rp > pmo.angle then
       check := rp - pmo.angle <= ANG45

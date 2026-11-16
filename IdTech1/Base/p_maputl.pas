@@ -1834,7 +1834,7 @@ begin
           continue;
         end;
 
-        if netgame and (deathmatch = 0) and (mobj.player <> nil) then
+        if TGameSession.NetGame and (TGameSession.DeathMatch = 0) and (mobj.player <> nil) then
         begin
           continue;
         end;
@@ -1870,7 +1870,7 @@ begin
           continue;
         end;
 
-        if netgame and (deathmatch = 0) and (mobj.player <> nil) then
+        if TGameSession.NetGame and (TGameSession.DeathMatch = 0) and (mobj.player <> nil) then
         begin
           continue;
         end;
@@ -1894,7 +1894,7 @@ begin
           continue;
         end;
 
-        if netgame and (deathmatch = 0) and (mobj.player <> nil) then
+        if TGameSession.NetGame and (TGameSession.DeathMatch = 0) and (mobj.player <> nil) then
         begin
           continue;
         end;
@@ -1924,7 +1924,7 @@ begin
           continue;
         end;
 
-        if netgame and (deathmatch = 0) and (mobj.player = nil) then
+        if TGameSession.NetGame and (TGameSession.DeathMatch = 0) and (mobj.player = nil) then
         begin
           continue;
         end;

@@ -350,7 +350,7 @@ end;
 //==============================================================================
 function SH_ToRacingSkill: TRacingSkill;
 begin
-  case gameskill of
+  case TGameSession.GameSkill of
     sk_baby: Result := TRacingSkill.Baby;
     sk_easy: Result := TRacingSkill.Easy;
     sk_medium: Result := TRacingSkill.Medium;
@@ -385,7 +385,7 @@ function SH_ControllerPlayerInput: TRacingPlayerInput;
 var
   cmd: Pticcmd_t;
 begin
-  cmd := @players[consoleplayer].cmd;
+  cmd := @players[TGameSession.ConsolePlayer].cmd;
   Result.AngleTurn := cmd.angleturn;
   Result.ForwardMove := cmd.forwardmove;
   // the transmission is automatic: the gear buttons are not read yet
@@ -536,7 +536,7 @@ begin
   nextai := 0;
   for i := 0 to race_controller.Count - 1 do
     if race_controller.Cars[i].IsPlayer then
-      race_cars[i] := players[consoleplayer].mo
+      race_cars[i] := players[TGameSession.ConsolePlayer].mo
     else if nextai < aicount then
     begin
       race_cars[i] := aicars[nextai];
@@ -616,8 +616,8 @@ begin
   else
     race_settings.SetGameType(TRacingGameType(speed_gametype));
   race_settings.SetSkill(SH_ToRacingSkill);
-  race_settings.SetEpisode(gameepisode);
-  race_settings.SetMap(gamemap);
+  race_settings.SetEpisode(TGameSession.GameEpisode);
+  race_settings.SetMap(TGameSession.GameMap);
   race_settings.SetStatus(TRacingStatus.Waiting);
 
   SetLength(points, Length(path));
@@ -637,7 +637,7 @@ begin
   race_events := race_events_object;
 
   ground := TRacingFactory.CreateGround(race_random);
-  lump := W_CheckNumForName(Format(GROUND_LUMP_FORMAT, [gamemap - 1]));
+  lump := W_CheckNumForName(Format(GROUND_LUMP_FORMAT, [TGameSession.GameMap - 1]));
   if lump >= 0 then
   begin
     race_ground_map := System.PByte(W_CacheLumpNum(lump, PU_LEVEL));
@@ -677,14 +677,14 @@ begin
     think := think.next;
   end;
 
-  player := @players[consoleplayer];
+  player := @players[TGameSession.ConsolePlayer];
   playercar := SH_ParmInt(CAR_OPTION, speed_car);
   if (playercar < 0) or (playercar >= RACING_CAR_COUNT) then
     playercar := DEFAULT_PLAYER_CAR;
   carids := TRacingFactory.CreateGridAssigner(race_random).Assign(aicount, TRacingCarType.Any, [playercar]);
 
   count := 0;
-  if playeringame[consoleplayer] and (player.mo <> nil) then
+  if playeringame[TGameSession.ConsolePlayer] and (player.mo <> nil) then
   begin
     SH_NewCar(player.mo, track, playercar, 0, true, state);
     race_controller.AddCar(state);

@@ -105,12 +105,12 @@ end;
 
 function TEngineHudEnvironment.IsNetGame: Boolean;
 begin
-  Result := netgame;
+  Result := TGameSession.NetGame;
 end;
 
 function TEngineHudEnvironment.ConsolePlayerIndex: Integer;
 begin
-  Result := consoleplayer;
+  Result := TGameSession.ConsolePlayer;
 end;
 
 function TEngineHudEnvironment.IsInGame(const AIndex: Integer): Boolean;
@@ -130,7 +130,7 @@ end;
 
 procedure TEngineHudEnvironment.AttachConsolePlayer;
 begin
-  FPlayer := @players[consoleplayer];
+  FPlayer := @players[TGameSession.ConsolePlayer];
 end;
 
 function TEngineHudEnvironment.ReadMessage: string;

@@ -2170,13 +2170,13 @@ var
   ang: angle_t;
 begin
   if W_CheckNumForName('texture2') < 0 then
-    gameepisode := 1; // ???
+    TGameSession.GameEpisode := 1; // ???
 
   // See if -TIMER needs to be used.
   levelTimer := false;
 
   // JVAL: Reformated
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     // Austin Virtual Gaming 20 min timer on DM play
     i := M_CheckParm('-avg');

@@ -1283,7 +1283,7 @@ begin
   P_MStaffSpawn(pmo, angle - ANG5);
   P_MStaffSpawn(pmo, angle + ANG5);
   S_StartSound(player.mo, Ord(SFX_MAGE_STAFF_FIRE));
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     player.damagecount := 0;
     player.bonuscount := 0;
@@ -1307,7 +1307,7 @@ var
   pl: integer;
   palette, pal: PByteArray;
 begin
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     pl := STARTSCOURGEPAL + (NativeInt(psp.state) - NativeInt(@states[Ord(S_MSTAFFATK_2)])) div SizeOf(state_t);
     R_SetPalette(pl);
@@ -1905,7 +1905,7 @@ begin
     mo.args[0] := 10; // initial turn value
     mo.args[1] := 0; // initial look angle
 
-    if deathmatch <> 0 then
+    if TGameSession.DeathMatch <> 0 then
     begin // Ghosts last slightly less longer in DeathMatch
       mo.health := 85;
     end;
@@ -1943,7 +1943,7 @@ begin
   player.mana[Ord(MANA_1)] := player.mana[Ord(MANA_1)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
   player.mana[Ord(MANA_2)] := player.mana[Ord(MANA_2)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
   P_SpawnPlayerMissile(player.mo, Ord(MT_HOLY_MISSILE));
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     player.damagecount := 0;
     player.bonuscount := 0;
@@ -1968,7 +1968,7 @@ var
   pl: integer;
   palette, pal: PByteArray;
 begin
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     pl := STARTHOLYPAL + (NativeInt(psp.state) - NativeInt(@states[Ord(S_CHOLYATK_6)])) div SizeOf(state_t);
     if pl = STARTHOLYPAL + 3 then

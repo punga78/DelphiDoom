@@ -651,7 +651,7 @@ var
 //==============================================================================
 function ST_CmdCheckPlayerStatus: boolean;
 begin
-  if (plyr = nil) or (plyr.mo = nil) or (gamestate <> GS_LEVEL) or demoplayback or netgame then
+  if (plyr = nil) or (plyr.mo = nil) or (gamestate <> GS_LEVEL) or demoplayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -887,7 +887,7 @@ begin
       if oldsharewareversion then
         V_DrawPatch(ST_X2, 0, SCN_ST, sbar2, false);
     end;
-    if netgame then
+    if TGameSession.NetGame then
       ST_DrawPatch(ST_FX, 0, faceback);
   end;
 end;
@@ -968,7 +968,7 @@ begin
       exit;
     end;
 
-    if not netgame then
+    if not TGameSession.NetGame then
     begin
       // b. - enabled for more debug fun.
       // if (gameskill != sk_nightmare) {
@@ -1076,7 +1076,7 @@ begin
       begin
         epsd := 0;
         if (buf[1] = '0') and (buf[2] = '0') then
-          map := gamemap
+          map := TGameSession.GameMap
         else
           map := (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0');
       end
@@ -1084,8 +1084,8 @@ begin
       begin
         if (buf[1] = '0') and (buf[2] = '0') then
         begin
-          epsd := gameepisode;
-          map := gamemap;
+          epsd := TGameSession.GameEpisode;
+          map := TGameSession.GameMap;
         end
         else
         begin
@@ -1108,7 +1108,7 @@ begin
         if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
         begin
           plyr._message := STSTR_CLEV;
-          G_DeferedInitNew(gameskill, epsd, map);
+          G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
           result := result or ateit;
           exit;
         end;
@@ -1142,7 +1142,7 @@ begin
       if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
       begin
         plyr._message := STSTR_CLEV;
-        G_DeferedInitNew(gameskill, epsd, map);
+        G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
       end;
     end;
   end;
@@ -1399,18 +1399,18 @@ begin
   ST_UpdateFaceWidget;
 
   // used by the w_armsbg widget
-  st_notdeathmatch := deathmatch = 0;
+  st_notdeathmatch := TGameSession.DeathMatch = 0;
 
   // used by w_arms[] widgets
   st_armson := st_statusbaron and st_notdeathmatch;
 
   // used by w_frags widget
-  st_fragson := (deathmatch <> 0) and st_statusbaron;
+  st_fragson := (TGameSession.DeathMatch <> 0) and st_statusbaron;
   st_fragscount := 0;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if i <> consoleplayer then
+    if i <> TGameSession.ConsolePlayer then
       st_fragscount := st_fragscount + plyr.frags[i]
     else
       st_fragscount := st_fragscount - plyr.frags[i];
@@ -1525,10 +1525,10 @@ var
   i: integer;
 begin
   // used by w_arms[] widgets
-  st_armson := st_statusbaron and (deathmatch = 0);
+  st_armson := st_statusbaron and (TGameSession.DeathMatch = 0);
 
   // used by w_frags widget
-  st_fragson := (deathmatch <> 0) and st_statusbaron;
+  st_fragson := (TGameSession.DeathMatch <> 0) and st_statusbaron;
 
   STlib_updateNum(@w_ready, refresh);
 
@@ -1753,7 +1753,7 @@ begin
   end;
 
   // face backgrounds for different color players
-  sprintf(namebuf, 'STFB%d', [consoleplayer]);
+  sprintf(namebuf, 'STFB%d', [TGameSession.ConsolePlayer]);
   faceback := W_CacheLumpName(namebuf, PU_STATIC);
 
   // status bar background bits
@@ -1842,7 +1842,7 @@ var
   i: integer;
 begin
   st_firsttime := true;
-  plyr := @players[consoleplayer];
+  plyr := @players[TGameSession.ConsolePlayer];
 
   st_clock := 0;
   st_chatstate := StartChatState;

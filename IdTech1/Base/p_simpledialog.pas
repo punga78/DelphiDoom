@@ -233,7 +233,7 @@ var
   pmi: Pmenuitem_t;
   sndid: integer;
 begin
-  if menuactive or netgame then
+  if menuactive or TGameSession.NetGame then
     exit;
 
   if demoplayback or TGameSession.DemoRecording then

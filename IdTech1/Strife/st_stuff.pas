@@ -417,7 +417,7 @@ var
 //==============================================================================
 function ST_CmdCheckPlayerStatus: boolean;
 begin
-  if (plyr = nil) or (plyr.mo = nil) or (gamestate <> GS_LEVEL) or demoplayback or netgame then
+  if (plyr = nil) or (plyr.mo = nil) or (gamestate <> GS_LEVEL) or demoplayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -801,7 +801,7 @@ begin
           end;
         end;
 
-        if netgame then
+        if TGameSession.NetGame then
           st_popupdisplaytics := 20
         else
           st_popupdisplaytics := 50;
@@ -810,7 +810,7 @@ begin
       end
       else
       begin
-        if (ev.data1 <> key_mission) or netgame then
+        if (ev.data1 <> key_mission) or TGameSession.NetGame then
         begin
           if ev.data1 = key_invpop then
           begin
@@ -823,8 +823,8 @@ begin
         end
         else
         begin
-          st_showkeys := netgame;
-          st_showinvpop := netgame;
+          st_showkeys := TGameSession.NetGame;
+          st_showinvpop := TGameSession.NetGame;
           st_keypage := -1;
 
           st_popupdisplaytics := ev.data2 xor key_mission;
@@ -874,7 +874,7 @@ begin
       exit;
     end;
 
-    if not netgame then
+    if not TGameSession.NetGame then
     begin
       // b. - enabled for more debug fun.
       // if (gameskill != sk_nightmare) {
@@ -1314,7 +1314,7 @@ begin
     // haleyjd 20131031: BUG - vanilla is accessing a NULL pointer here when
     // playing back netdemos! It doesn't appear to draw anything, and there
     // is no apparent ill effect on gameplay, so the best we can do is check.
-    if netgame and (stback <> nil) then
+    if TGameSession.NetGame and (stback <> nil) then
       V_DrawPatch(ST_X, 173, SCN_ST, stback, false);
 
     if plyr.inventorycursor >= 6 then
@@ -1512,7 +1512,7 @@ begin
     V_DrawPatchTransparent(0, 56, SCN_FG, invpbak2, true);
   V_DrawPatch(0, 56, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, invpop2, {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
 
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     // In deathmatch, the keys popup is replaced by a chart of frag counts
 
@@ -1780,9 +1780,9 @@ begin
   invarmor[0] := W_CacheLumpName('I_ARM2', PU_STATIC);
   invarmor[1] := W_CacheLumpName('I_ARM1', PU_STATIC);
 
-  if netgame then
+  if TGameSession.NetGame then
   begin
-    sprintf(namebuf, 'STBACK0%d', [consoleplayer + 1]);
+    sprintf(namebuf, 'STBACK0%d', [TGameSession.ConsolePlayer + 1]);
     stback := W_CacheLumpName(namebuf, PU_STATIC);
   end;
 
@@ -1813,7 +1813,7 @@ end;
 //==============================================================================
 procedure ST_InitData;
 begin
-  plyr := @players[consoleplayer];
+  plyr := @players[TGameSession.ConsolePlayer];
 
   st_gamestate := st_firstpersonstate;
   st_statusbarmode := stdo_full;

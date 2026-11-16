@@ -74,7 +74,7 @@ var
   LRandom: integer;
 begin
   LRandom := P_Random;
-  result := TRadixDamageRules.CraftDamage(damage, Ord(gameskill), LRandom);
+  result := TRadixDamageRules.CraftDamage(damage, Ord(TGameSession.GameSkill), LRandom);
 end;
 
 class procedure TPhysicsExtension.ThingContact(thing, toucher: Pmobj_t);

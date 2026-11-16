@@ -164,8 +164,8 @@ var
   lp: Pradixlevelplayer_t;
 begin
   result := Default(TRadixSaveState);
-  result.Episode := gameepisode;
-  result.Map := gamemap;
+  result.Episode := TGameSession.GameEpisode;
+  result.Map := TGameSession.GameMap;
   result.NamedLevel := radixnamedlevel;
   result.RandomIndexes[0] := RX_Random.MenuIndex;
   result.RandomIndexes[1] := RX_Random.PlayIndex;
@@ -253,9 +253,9 @@ var
   rp: Pradixplayer_t;
   lp: Pradixlevelplayer_t;
 begin
-  if (state.Episode <> gameepisode) or (state.Map <> gamemap) then
+  if (state.Episode <> TGameSession.GameEpisode) or (state.Map <> TGameSession.GameMap) then
     raise ERadixException.CreateFmt('the state is of the level %d of the episode %d, the saved game of %d of %d',
-      [state.Map, state.Episode, gamemap, gameepisode]);
+      [state.Map, state.Episode, TGameSession.GameMap, TGameSession.GameEpisode]);
   if (Length(state.Players) <> MAXPLAYERS) or (Length(state.Walls) <> Length(radixwallinfo)) then
     raise ERadixException.CreateFmt('the state has %d players and %d walls, the level %d and %d',
       [Length(state.Players), Length(state.Walls), MAXPLAYERS, Length(radixwallinfo)]);
@@ -444,7 +444,7 @@ begin
       inc(suspended);
   result := Format('lasttrigger=%d suspended=%d wallhp=%d shots=%d players=%.8x levelplayers=%.8x ' +
     'actions=%.8x triggers=%.8x walls=%.8x',
-    [state.LastTriggers[consoleplayer], suspended, hp, Length(state.Shots), prints.Players, prints.LevelPlayers,
+    [state.LastTriggers[TGameSession.ConsolePlayer], suspended, hp, Length(state.Shots), prints.Players, prints.LevelPlayers,
      prints.Actions, prints.Triggers, prints.Walls]);
 end;
 

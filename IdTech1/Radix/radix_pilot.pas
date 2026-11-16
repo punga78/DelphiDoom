@@ -115,7 +115,7 @@ begin
   last := @pilotlastmoves[pnum];
   // a saved game that is loaded has a new body too, later in the level
   if (last.mo <> p.mo) and (leveltime <= STARTUPMESSAGETICS) then
-    p._message := ShortString(TRadixMessages.StartUp(gameepisode, gamemap));
+    p._message := ShortString(TRadixMessages.StartUp(TGameSession.GameEpisode, TGameSession.GameMap));
   last.mo := p.mo;
 end;
 

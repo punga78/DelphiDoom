@@ -361,8 +361,8 @@ begin
 
   info := radixmobjinfo[special._type];
   RX_ReadInventory(p, rp, inv);
-  res := TRadixPilotRules.Pickup(info, mobjinfo[special._type].doomednum, gameepisode,
-    gameskill = sk_nightmare, RX_PilotLimits, inv);
+  res := TRadixPilotRules.Pickup(info, mobjinfo[special._type].doomednum, TGameSession.GameEpisode,
+    TGameSession.GameSkill = sk_nightmare, RX_PilotLimits, inv);
   if not res.Taken then
     exit;
   RX_WriteInventory(p, rp, inv);
@@ -385,7 +385,7 @@ begin
     p.itemcount := p.itemcount + 1;
   P_RemoveMobj(special);
   p.bonuscount := p.bonuscount + BONUSADD;
-  if (p = @players[consoleplayer]) and (info.PickupSound <> '') then
+  if (p = @players[TGameSession.ConsolePlayer]) and (info.PickupSound <> '') then
     S_StartSound(nil, info.PickupSound);
 end;
 

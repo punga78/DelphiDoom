@@ -79,7 +79,7 @@ var
 begin
   key := key_afterburner;
   if (key >= 0) and (key < NUMKEYS) then
-    if TRadixControlRules.AfterburnerOn(gamekeydown[key], radixplayers[consoleplayer].energy,
+    if TRadixControlRules.AfterburnerOn(gamekeydown[key], radixplayers[TGameSession.ConsolePlayer].energy,
          cmd.forwardmove, cmd.sidemove) then
       cmd.jump_crouch := cmd.jump_crouch or RXCMD_AFTERBURNER;
 

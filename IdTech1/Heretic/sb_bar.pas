@@ -173,7 +173,7 @@ var
 //==============================================================================
 function SB_CmdCheckPlayerStatus: boolean;
 begin
-  if (CPlayer = nil) or (gamestate <> GS_LEVEL) or demoplayback or netgame then
+  if (CPlayer = nil) or (gamestate <> GS_LEVEL) or demoplayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -832,14 +832,14 @@ begin
   PatchBARBACK := W_CacheLumpName('BARBACK', PU_STATIC);
   PatchINVBAR := W_CacheLumpName('INVBAR', PU_STATIC);
   PatchCHAIN := W_CacheLumpName('CHAIN', PU_STATIC);
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     PatchSTATBAR := W_CacheLumpName('STATBAR', PU_STATIC)
   else
     PatchSTATBAR := W_CacheLumpName('LIFEBAR', PU_STATIC);
-  if not netgame then // single player game uses red life gem
+  if not TGameSession.NetGame then // single player game uses red life gem
     PatchLIFEGEM := W_CacheLumpName('LIFEGEM2', PU_STATIC)
   else
-    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('LIFEGEM0') + consoleplayer, PU_STATIC);
+    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('LIFEGEM0') + TGameSession.ConsolePlayer, PU_STATIC);
 
   PatchLTFCTOP := W_CacheLumpName('LTFCTOP', PU_STATIC);
   PatchRTFCTOP := W_CacheLumpName('RTFCTOP', PU_STATIC);
@@ -898,7 +898,7 @@ begin
   if leveltime and 1 <> 0 then
     ChainWiggle := P_Random and 1;
 
-  curHealth := players[consoleplayer].mo.health;
+  curHealth := players[TGameSession.ConsolePlayer].mo.health;
   if curHealth < 0 then
     curHealth := 0;
 
@@ -1294,7 +1294,7 @@ begin
   else
     SB_DrBNumber(0, 5, 180);
 
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
@@ -1408,7 +1408,7 @@ begin
   end;
 
   // Frags
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
@@ -1503,7 +1503,7 @@ var
   palette: integer;
   pal: PByteArray;
 begin
-  CPlayer := @players[consoleplayer];
+  CPlayer := @players[TGameSession.ConsolePlayer];
 
   if CPlayer.damagecount <> 0 then
   begin
@@ -1558,7 +1558,7 @@ begin
     if DebugSound then
       SB_DrawSoundInfo;
 
-    CPlayer := @players[consoleplayer];
+    CPlayer := @players[TGameSession.ConsolePlayer];
     if not R_StOff or (amstate = am_only) then
     begin
       if (viewheight = SCREENHEIGHT) and (amstate <> am_only) then
@@ -1569,7 +1569,7 @@ begin
       else
       begin
         SB_DrawPatch(0, 158, PatchBARBACK);
-        if players[consoleplayer].cheats and CF_GODMODE <> 0 then
+        if players[TGameSession.ConsolePlayer].cheats and CF_GODMODE <> 0 then
         begin
           SB_DrawPatch(16, 167, 'GOD1');
           SB_DrawPatch(287, 167, 'GOD2');
@@ -1693,7 +1693,7 @@ begin
       exit;
     end;
 
-    if not netgame then
+    if not TGameSession.NetGame then
     begin
       // b. - enabled for more debug fun.
       // if (gameskill != sk_nightmare) {
@@ -1799,7 +1799,7 @@ begin
         if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
         begin
           CPlayer._message := STSTR_CLEV;
-          G_DeferedInitNew(gameskill, epsd, map);
+          G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
           result := result or ateit;
           exit;
         end;
@@ -1818,7 +1818,7 @@ begin
       if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
       begin
         CPlayer._message := STSTR_CLEV;
-        G_DeferedInitNew(gameskill, epsd, map);
+        G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
       end;
     end;
   end;

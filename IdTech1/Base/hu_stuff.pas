@@ -400,7 +400,7 @@ end;
 //==============================================================================
 procedure HU_CmdPlayerMessage(const parm1, parm2: string);
 begin
-  players[consoleplayer]._message := parm1 + ' ' + parm2;
+  players[TGameSession.ConsolePlayer]._message := parm1 + ' ' + parm2;
 end;
 
 //==============================================================================
@@ -411,13 +411,13 @@ end;
 function HU_TITLE: string;
 begin
 {$IF DEFINED(HERETIC)}
-  result := mapnames[(gameepisode - 1) * 9 + gamemap - 1];
+  result := mapnames[(TGameSession.GameEpisode - 1) * 9 + TGameSession.GameMap - 1];
 {$ELSEIF DEFINED(HEXEN)}
-  result := P_GetMapDescName(gamemap);
+  result := P_GetMapDescName(TGameSession.GameMap);
 {$ELSEIF DEFINED(STRIFE)}
-  result := mapnames[gamemap - 1];
+  result := mapnames[TGameSession.GameMap - 1];
 {$ELSE}
-  result := THudMapTitle.ForEpisode(mapnames, gameepisode, gamemap);
+  result := THudMapTitle.ForEpisode(mapnames, TGameSession.GameEpisode, TGameSession.GameMap);
 {$ENDIF}
 end;
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN) OR DEFINED(STRIFE))}
@@ -429,7 +429,7 @@ end;
 //==============================================================================
 function HU_TITLE2: string;
 begin
-  result := THudMapTitle.ForMap(mapnames2, gamemap);
+  result := THudMapTitle.ForMap(mapnames2, TGameSession.GameMap);
 end;
 
 //==============================================================================
@@ -439,7 +439,7 @@ end;
 //==============================================================================
 function HU_TITLEP: string;
 begin
-  result := THudMapTitle.ForMap(mapnamesp, gamemap);
+  result := THudMapTitle.ForMap(mapnamesp, TGameSession.GameMap);
 end;
 
 //==============================================================================
@@ -449,7 +449,7 @@ end;
 //==============================================================================
 function HU_TITLET: string;
 begin
-  result := THudMapTitle.ForMap(mapnamest, gamemap);
+  result := THudMapTitle.ForMap(mapnamest, TGameSession.GameMap);
 end;
 {$ENDIF}
 
@@ -732,11 +732,11 @@ begin
 {$IFDEF STRIFE}
 
   // haleyjd 09/18/10: [STRIFE] nickname weirdness.
-  if nickname <> player_names[consoleplayer] then
+  if nickname <> player_names[TGameSession.ConsolePlayer] then
     if nickname <> '' then
     begin
       printf('have one'#13#10);
-      nickname := player_names[consoleplayer];
+      nickname := player_names[TGameSession.ConsolePlayer];
     end;
 {$ENDIF}
 end;

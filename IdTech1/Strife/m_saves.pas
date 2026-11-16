@@ -344,7 +344,7 @@ var
  heresave: string;
 begin
   // haleyjd: use M_SafeFilePath, not sprintf
-  mapsave := M_SafeFilePath(savepath, itoa(gamemap));
+  mapsave := M_SafeFilePath(savepath, itoa(TGameSession.GameMap));
   heresave := M_SafeFilePath(savepath, 'here');
 
   frename(mapsave, heresave);
@@ -363,7 +363,7 @@ var
  heresave: string;
 begin
   // haleyjd: use M_SafeFilePath, not sprintf
-  mapsave := M_SafeFilePath(savepathtemp, itoa(gamemap));
+  mapsave := M_SafeFilePath(savepathtemp, itoa(TGameSession.GameMap));
   heresave := M_SafeFilePath(savepathtemp, 'here');
 
   frename(mapsave, heresave);

@@ -133,22 +133,22 @@ begin
 
   if uthing <> nil then
   begin
-    if not netgame then
+    if not TGameSession.NetGame then
       if uthing.extraflags and UDMF_TF_SINGLE = 0 then
         exit;
 
-    if netgame and (deathmatch <> 0) then
+    if TGameSession.NetGame and (TGameSession.DeathMatch <> 0) then
       if uthing.extraflags and UDMF_TF_DM = 0 then
         exit;
 
-    if netgame and (deathmatch = 0) then
+    if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
       if uthing.extraflags and UDMF_TF_COOP = 0 then
         exit;
   end
   else
   begin
     // check for apropriate skill level
-    if not netgame and (mthing.options and 16 <> 0) then
+    if not TGameSession.NetGame and (mthing.options and 16 <> 0) then
       exit;
 
     if TMobjGameRules.ExcludedByNetOptions(mthing) then
@@ -157,18 +157,18 @@ begin
 
   if uthing <> nil then
   begin
-    bit := _SHL(1, Ord(gameskill));
+    bit := _SHL(1, Ord(TGameSession.GameSkill));
     if bit and uthing.extraflags = 0 then
       exit;
   end
   else
   begin
-    if gameskill = sk_baby then
+    if TGameSession.GameSkill = sk_baby then
       bit := 1
-    else if gameskill = sk_nightmare then
+    else if TGameSession.GameSkill = sk_nightmare then
       bit := 4
     else
-      bit := _SHL(1, Ord(gameskill) - 1);
+      bit := _SHL(1, Ord(TGameSession.GameSkill) - 1);
 
     if mthing.options and bit = 0 then
       exit;
@@ -193,7 +193,7 @@ begin
   end;
 
   // don't spawn keycards and players in deathmatch
-  if (deathmatch <> 0) and (mobjinfo[i].flags and MF_NOTDMATCH <> 0) then
+  if (TGameSession.DeathMatch <> 0) and (mobjinfo[i].flags and MF_NOTDMATCH <> 0) then
     exit;
 
   // don't spawn any monsters if -nomonsters

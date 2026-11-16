@@ -189,7 +189,7 @@ begin
   AAPTR_FRIENDPLAYER:
     begin
       if origin.player <> nil then
-        if netgame and (deathmatch = 0) then
+        if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
           for i := 0 to MAXPLAYERS - 1 do
             if playeringame[i] then
               if origin.player <> @players[i] then

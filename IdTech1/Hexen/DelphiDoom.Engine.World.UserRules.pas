@@ -308,7 +308,7 @@ begin
 
   if player.cmd.buttons and BT_USE <> 0 then
   begin
-    if player = @players[consoleplayer] then
+    if player = @players[TGameSession.ConsolePlayer] then
     begin
       palette := V_ReadPalette(PU_STATIC);
       I_SetPalette(palette);
@@ -596,7 +596,7 @@ begin
           speedMo.special1 := 0;
         speedMo.sprite := pmo.sprite;
         speedMo.floorclip := pmo.floorclip;
-        if player = @players[consoleplayer] then
+        if player = @players[TGameSession.ConsolePlayer] then
         begin
           speedMo.flags2 := speedMo.flags2 or MF2_DONTDRAW;
         end;
@@ -771,7 +771,7 @@ begin
     dec(player.powers[Ord(pw_minotaur)]);
   end;
 
-  if (player.powers[Ord(pw_flight)] > 0) and netgame then
+  if (player.powers[Ord(pw_flight)] > 0) and TGameSession.NetGame then
   begin
     dec(player.powers[Ord(pw_flight)]);
     if player.powers[Ord(pw_flight)] = 0 then
@@ -838,7 +838,7 @@ begin
       else
         player.fixedcolormap := 1;
     end
-    else if (leveltime and 16 = 0) and (player = @players[consoleplayer]) then
+    else if (leveltime and 16 = 0) and (player = @players[TGameSession.ConsolePlayer]) then
     begin
       if newtorch <> 0 then
       begin
@@ -881,7 +881,7 @@ var
   destAngle: angle_t;
   mt: Pmapthing_t;
 begin
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     selections := deathmatch_p;
     i := P_Random mod selections;
@@ -990,7 +990,7 @@ procedure P_TeleportOther(victim: Pmobj_t);
 begin
   if victim.player <> nil then
   begin
-    if deathmatch <> 0 then
+    if TGameSession.DeathMatch <> 0 then
       P_TeleportToDeathmatchStarts(victim)
     else
       P_TeleportToPlayerStarts(victim);
@@ -1314,7 +1314,7 @@ begin
       if P_UseArtifact(player, arti) then
       begin // Artifact was used - remove it from inventory
         P_PlayerRemoveArtifact(player, i);
-        if player = @players[consoleplayer] then
+        if player = @players[TGameSession.ConsolePlayer] then
         begin
           if Ord(arti) < arti_firstpuzzitem then
             S_StartSound(nil, Ord(SFX_ARTIFACT_USE))
@@ -1654,7 +1654,7 @@ end;
 //==============================================================================
 class function TUserGameRules.MapNoJump: boolean;
 begin
-  result := P_GetMapNoJump(gamemap);
+  result := P_GetMapNoJump(TGameSession.GameMap);
 end;
 
 //==============================================================================
@@ -1664,7 +1664,7 @@ end;
 //==============================================================================
 class function TUserGameRules.MapNoCrouch: boolean;
 begin
-  result := P_GetMapNoCrouch(gamemap);
+  result := P_GetMapNoCrouch(TGameSession.GameMap);
 end;
 
 //==============================================================================

@@ -205,7 +205,7 @@ begin
     exit;
   end;
 
-  if (gameskill = sk_baby) or (gameskill = sk_nightmare) then
+  if (TGameSession.GameSkill = sk_baby) or (TGameSession.GameSkill = sk_nightmare) then
   begin
     // extra ammo in baby mode and nightmare mode
     num := num  + num div 2
@@ -250,7 +250,7 @@ var
   ammo: ammotype_t;
 begin
   ammo := wpnlev1info[Ord(weapon)].ammo;
-  if netgame and (deathmatch <> 2) then
+  if TGameSession.NetGame and (TGameSession.DeathMatch <> 2) then
   begin
   // leave placed weapons forever on net games
     if player.weaponowned[Ord(weapon)] <> 0 then
@@ -265,7 +265,7 @@ begin
     P_GiveAmmo(player, ammo, Ord(GetWeaponAmmo[Ord(weapon)]));
     player.pendingweapon := weapon;
 
-    if (player = @players[consoleplayer]) then
+    if (player = @players[TGameSession.ConsolePlayer]) then
       S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
@@ -305,7 +305,7 @@ begin
   if player.keys[Ord(key)] then
     exit;
 
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
     playerkeys := playerkeys or _SHL(1, Ord(key));
 
   player.bonuscount := BONUSADD;
@@ -451,7 +451,7 @@ procedure P_SetDormantArtifact(arti: Pmobj_t);
 begin
   arti.flags := arti.flags and not MF_SPECIAL;
 
-  if (deathmatch <> 0) and (arti._type <> Ord(MT_ARTIINVULNERABILITY)) and (arti._type <> Ord(MT_ARTIINVISIBILITY)) then
+  if (TGameSession.DeathMatch <> 0) and (arti._type <> Ord(MT_ARTIINVULNERABILITY)) and (arti._type <> Ord(MT_ARTIINVISIBILITY)) then
     P_SetMobjState(arti, S_DORMANTARTI1)
   else // Don't respawn
     P_SetMobjState(arti, S_DEADARTI1);
@@ -713,7 +713,7 @@ begin
         if not player.keys[Ord(key_blue)] then
           P_SetMessage(player, TXT_GOTBLUEKEY);
         P_GiveKey(player, key_blue);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -730,7 +730,7 @@ begin
         if not player.keys[Ord(key_yellow)] then
           P_SetMessage(player, TXT_GOTYELLOWKEY);
         P_GiveKey(player, key_yellow);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -747,7 +747,7 @@ begin
       if not player.keys[Ord(key_green)] then
         P_SetMessage(player, TXT_GOTGREENKEY);
         P_GiveKey(player, key_green);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -1074,14 +1074,14 @@ begin
     special.special := 0;
   end;
 
-  if (deathmatch <> 0) and respawn and (special.flags and MF_DROPPED = 0) then
+  if (TGameSession.DeathMatch <> 0) and respawn and (special.flags and MF_DROPPED = 0) then
     P_HideSpecialThing(special)
   else
     P_RemoveMobj(special);
 
   player.bonuscount := player.bonuscount + BONUSADD;
 
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, sound);
     //SB_PaletteFlash; // JVAL Check
@@ -1126,14 +1126,14 @@ begin
       begin
         Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
           Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
-        if source.player = @players[consoleplayer] then
+        if source.player = @players[TGameSession.ConsolePlayer] then
           S_StartSound(nil, Ord(sfx_gfrag));
         if Pplayer_t(source.player).chickenTics <> 0 then // Make a super chicken
           P_GivePower(source.player, Ord(pw_weaponlevel2));
       end;
     end;
   end
-  else if not netgame and (target.flags and MF_COUNTKILL <> 0) then
+  else if not TGameSession.NetGame and (target.flags and MF_COUNTKILL <> 0) then
   begin
     // count all monster deaths,
     // even those caused by other monsters
@@ -1165,7 +1165,7 @@ begin
       exit;
     end;
 
-    if (target.player = @players[consoleplayer]) and (amstate = am_only) then
+    if (target.player = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1273,7 +1273,7 @@ begin
     exit;
 
   player := target.player;
-  if (player <> nil) and (gameskill = sk_baby) then
+  if (player <> nil) and (TGameSession.GameSkill = sk_baby) then
     damage := _SHR1(damage); // take half damage in trainer mode
 
   // Special damage types
@@ -1437,7 +1437,7 @@ begin
     end;
 
     if (damage >= player.health) and
-       ((gameskill = sk_baby) or (deathmatch <> 0)) and
+       ((TGameSession.GameSkill = sk_baby) or (TGameSession.DeathMatch <> 0)) and
        (player.chickenTics = 0) then
      // Try to use some inventory health
       P_AutoUseHealth(player, damage - player.health + 1);
@@ -1452,7 +1452,7 @@ begin
     if player.damagecount > 100 then
       player.damagecount := 100;  // teleport stomp does 10k points...
 
-    if player = @players[consoleplayer] then
+    if player = @players[TGameSession.ConsolePlayer] then
     begin
       // SB_PaletteFlash; // JVAL: check
     end;

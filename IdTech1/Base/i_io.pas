@@ -169,7 +169,7 @@ begin
 {$ELSE}
     false,
 {$ENDIF}
-    M_CheckParm('-debugfile') <> 0, consoleplayer, cdfolder);
+    M_CheckParm('-debugfile') <> 0, TGameSession.ConsolePlayer, cdfolder);
 
   MkDir(M_SaveFileName('DATA'));
   MkDir(M_SaveFileName('DATA\LOGS'));

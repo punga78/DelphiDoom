@@ -195,7 +195,7 @@ begin
   gamestate := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
-  P_ClearMessage(@players[consoleplayer]);
+  P_ClearMessage(@players[TGameSession.ConsolePlayer]);
 
   FinaleStage := 0;
   FinaleCount := 0;
@@ -309,13 +309,13 @@ begin
 
   if FinaleStage = 5 then
   begin // Chess pic, draw the correct character graphic
-    if netgame then
+    if TGameSession.NetGame then
     begin
       V_DrawPatch(20, 0, SCN_TMP, 'chessall', false);
     end
-    else if Ord(PlayerClass[consoleplayer]) <> 0 then
+    else if Ord(PlayerClass[TGameSession.ConsolePlayer]) <> 0 then
     begin
-      V_DrawPatch(60, 0, SCN_TMP, W_CacheLumpNum(W_GetNumForName('chessc') + Ord(PlayerClass[consoleplayer]) - 1, PU_CACHE), false);
+      V_DrawPatch(60, 0, SCN_TMP, W_CacheLumpNum(W_GetNumForName('chessc') + Ord(PlayerClass[TGameSession.ConsolePlayer]) - 1, PU_CACHE), false);
     end;
   end;
   // Draw the actual text
@@ -388,13 +388,13 @@ begin
 
   if (FinaleStage = 4) or (FinaleStage = 5) then
   begin // Chess pic, draw the correct character graphic
-    if netgame then
+    if TGameSession.NetGame then
     begin
       V_DrawPatch(20, 0, SCN_TMP, W_CacheLumpName('chessall', PU_CACHE), false);
     end
-    else if Ord(PlayerClass[consoleplayer]) <> 0 then
+    else if Ord(PlayerClass[TGameSession.ConsolePlayer]) <> 0 then
     begin
-      V_DrawPatch(60, 0, SCN_TMP, W_CacheLumpNum(W_GetNumForName('chessc') + Ord(PlayerClass[consoleplayer]) - 1, PU_CACHE), false);
+      V_DrawPatch(60, 0, SCN_TMP, W_CacheLumpNum(W_GetNumForName('chessc') + Ord(PlayerClass[TGameSession.ConsolePlayer]) - 1, PU_CACHE), false);
     end;
   end;
 end;

@@ -809,11 +809,11 @@ var
   i: integer;
 begin
   // give all cards in death match mode
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     for i := 0 to Ord(NUMKEYCARDS) - 1 do
       p.keys[i] := true;
 
-  if plnum = consoleplayer then
+  if plnum = TGameSession.ConsolePlayer then
   begin
     // wake up the heads up text
     HU_Start;
@@ -852,7 +852,7 @@ begin
   begin
     // save spots for respawning in network games
     playerstarts[mthing._type - 1] := mthing^;
-    if deathmatch = 0 then
+    if TGameSession.DeathMatch = 0 then
       spawned := P_SpawnPlayer(mthing, uthing);
     result := True;
     exit;
@@ -1514,7 +1514,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or netgame;
+  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;
@@ -1804,7 +1804,7 @@ end;
 
 class function TMobjGameRules.HasReactionTime: boolean;
 begin
-  result := gameskill <> sk_nightmare;
+  result := TGameSession.GameSkill <> sk_nightmare;
 end;
 
 class procedure TMobjGameRules.InitStateMemory(mobj: Pmobj_t; st: Pstate_t);

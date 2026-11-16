@@ -1039,7 +1039,7 @@ end;
 procedure P_DialogLoad;
 begin
   // load the SCRIPTxy lump corresponding to MAPxy, if it exists.
-  P_ParseDialogLump('SCRIPT' + IntToStrZFill(2, gamemap), PU_LEVEL, leveldialogs, numleveldialogs);
+  P_ParseDialogLump('SCRIPT' + IntToStrZFill(2, TGameSession.GameMap), PU_LEVEL, leveldialogs, numleveldialogs);
 
   if not script0loaded then
   begin
@@ -1320,7 +1320,7 @@ begin
     end;
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
-    if player = @players[consoleplayer] then
+    if player = @players[TGameSession.ConsolePlayer] then
       S_StartSound(nil, sound);
     result := true;
     exit;
@@ -1609,7 +1609,7 @@ begin
 
           MT_TOKEN_HEALTH: // Health token - from the Front's doctor
             begin
-              if not P_GiveBody(player, healthamounts[Ord(gameskill)]) then
+              if not P_GiveBody(player, healthamounts[Ord(TGameSession.GameSkill)]) then
               begin
                 result := false;
                 exit;
@@ -1632,7 +1632,7 @@ begin
             begin
               junk.tag := 223;
               EV_DoDoor(@junk, vld_open);
-              if gamemap = 2 then // If on Tarnhill, give Prison pass object
+              if TGameSession.GameMap = 2 then // If on Tarnhill, give Prison pass object
                   P_GiveInventoryItem(player, sprnum, _type);
             end;
 
@@ -1674,7 +1674,7 @@ begin
           MT_SLIDESHOW: // Slideshow (start a finale)
             begin
               gameaction := ga_victory;
-              if gamemap = 10 then
+              if TGameSession.GameMap = 10 then
                 P_GiveItemToPlayer(player, Ord(SPR_TOKN), MT_TOKEN_QUEST17);
             end;
 
@@ -1694,7 +1694,7 @@ begin
   end;
 
   // Play sound.
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 
   result := true;
@@ -1974,7 +1974,7 @@ var
   jumptoconv: integer;
   stmp: string;
 begin
-  if menuactive or netgame then
+  if menuactive or TGameSession.NetGame then
     exit;
 
   // are we facing towards our NPC?
@@ -1998,7 +1998,7 @@ begin
   player.lastdialogtalker := dialogtalker;
 
   // play a sound
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, Ord(sfx_radio));
 
   TMapAim.LineTarget.target := player.mo;           // target the player

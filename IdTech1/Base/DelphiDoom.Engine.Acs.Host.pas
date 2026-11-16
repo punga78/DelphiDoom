@@ -126,7 +126,7 @@ end;
 
 function TEngineAcsHost.CurrentMap: Integer;
 begin
-  Result := gamemap;
+  Result := TGameSession.GameMap;
 end;
 
 function TEngineAcsHost.LevelTime: Integer;
@@ -136,9 +136,9 @@ end;
 
 function TEngineAcsHost.GameType: TAcsGameType;
 begin
-  if not netgame then
+  if not TGameSession.NetGame then
     Result := agtSinglePlayer
-  else if deathmatch <> 0 then
+  else if TGameSession.DeathMatch <> 0 then
     Result := agtNetDeathmatch
   else
     Result := agtNetCooperative;
@@ -146,7 +146,7 @@ end;
 
 function TEngineAcsHost.GameSkill: Integer;
 begin
-  Result := Ord(gameskill);
+  Result := Ord(TGameSession.GameSkill);
 end;
 
 function TEngineAcsHost.PlayerCount: Integer;
@@ -421,7 +421,7 @@ begin
   if (AActivator <> nil) and (Pmobj_t(AActivator).player <> nil) then
     LPlayer := Pmobj_t(AActivator).player
   else
-    LPlayer := @players[consoleplayer];
+    LPlayer := @players[TGameSession.ConsolePlayer];
   {$IFDEF HEXEN}
   P_SetMessage(LPlayer, AText, True);
   {$ELSE}
@@ -447,9 +447,9 @@ end;
 procedure TEngineAcsHost.ShowConsoleMessage(const AText: string);
 begin
   {$IFDEF HEXEN}
-  P_SetMessage(@players[consoleplayer], AText, True);
+  P_SetMessage(@players[TGameSession.ConsolePlayer], AText, True);
   {$ELSE}
-  players[consoleplayer]._message := AText;
+  players[TGameSession.ConsolePlayer]._message := AText;
   {$ENDIF}
 end;
 

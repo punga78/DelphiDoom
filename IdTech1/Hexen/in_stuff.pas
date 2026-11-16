@@ -136,11 +136,11 @@ var
   msgLumpName: string;
   msgSize: integer;
 begin
-  if deathmatch = 0 then
+  if TGameSession.DeathMatch = 0 then
   begin
     gametype := gt_single;
     HubCount := 0;
-    oldCluster := P_GetMapCluster(gamemap);
+    oldCluster := P_GetMapCluster(TGameSession.GameMap);
     if oldCluster <> P_GetMapCluster(LeaveMap) then
     begin
       if (oldCluster >= 1) and (oldCluster <= 5) then
@@ -349,7 +349,7 @@ begin
       end;
     end;
   end;
-  if (deathmatch <> 0) and (intertime < 140) then
+  if (TGameSession.DeathMatch <> 0) and (intertime < 140) then
   begin // wait for 4 seconds before allowing a skip
     if skipintermission then
     begin
@@ -554,7 +554,7 @@ begin
     for j := 0 to MAXPLAYERS - 1 do
     begin
       x := FixedInt(xPos);
-      bold := (i = consoleplayer) or (j = consoleplayer);
+      bold := (i = TGameSession.ConsolePlayer) or (j = TGameSession.ConsolePlayer);
       if playeringame[i] and playeringame[j] then
       begin
         if bold then

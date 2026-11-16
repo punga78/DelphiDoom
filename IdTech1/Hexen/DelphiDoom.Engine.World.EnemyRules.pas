@@ -1482,7 +1482,7 @@ var
   dist: fixed_t;
   initial: boolean;
 begin
-  if not netgame and (players[0].health <= 0) then
+  if not TGameSession.NetGame and (players[0].health <= 0) then
   begin
     result := P_LookForMonsters(actor);
     exit;
@@ -1628,7 +1628,7 @@ begin
   if actor.threshold <> 0 then
     actor.threshold := actor.threshold - 1;
 
-  if gameskill = sk_nightmare then
+  if TGameSession.GameSkill = sk_nightmare then
   begin // Monsters move faster in nightmare mode
     actor.tics := actor.tics - actor.tics div 2;
     if actor.tics < 3 then
@@ -1666,7 +1666,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (gameskill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -1683,7 +1683,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (gameskill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -1696,7 +1696,7 @@ begin
   end;
 
   // possibly choose another target
-  if netgame and
+  if TGameSession.NetGame and
     (actor.threshold = 0) and
     not P_CheckSight(actor, actor.target) then
   begin
@@ -1990,7 +1990,7 @@ begin
   master := Pmobj_t(actor.special1);
 
   actor.target := nil;
-  if deathmatch <> 0 then // Quick search for players
+  if TGameSession.DeathMatch <> 0 then // Quick search for players
   begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
@@ -2801,7 +2801,7 @@ begin
   if actor.threshold <> 0 then
     dec(actor.threshold);
 
-  if gameskill = sk_nightmare then
+  if TGameSession.GameSkill = sk_nightmare then
   begin // Monsters move faster in nightmare mode
     actor.tics := actor.tics - actor.tics div 2;
     if actor.tics < 3 then
@@ -2841,7 +2841,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if gameskill <> sk_nightmare then
+    if TGameSession.GameSkill <> sk_nightmare then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -2859,7 +2859,7 @@ begin
 //
 // possibly choose another target
 //
-  if netgame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
+  if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
     if P_LookForTargets(actor,true) then
       exit;         // got a new target
 
@@ -2991,7 +2991,7 @@ begin
     dec(actor.threshold);
   end;
 
-  if gameskill = sk_nightmare then
+  if TGameSession.GameSkill = sk_nightmare then
   begin // Monsters move faster in nightmare mode
     actor.tics := actor.tics - actor.tics div 2;
     if actor.tics < 3 then
@@ -3027,7 +3027,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if gameskill <> sk_nightmare then
+    if TGameSession.GameSkill <> sk_nightmare then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -3044,7 +3044,7 @@ begin
 //
 // possibly choose another target
 //
-  if netgame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
+  if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
     if P_LookForTargets(actor,true) then
       exit;         // got a new target
 
@@ -5310,7 +5310,7 @@ begin
   if actor.threshold > 0 then
     dec(actor.threshold);
 
-  if gameskill = sk_nightmare then
+  if TGameSession.GameSkill = sk_nightmare then
   begin // Monsters move faster in nightmare mode
     actor.tics := actor.tics - actor.tics div 2;
     if actor.tics < 3 then
@@ -5346,7 +5346,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if gameskill <> sk_nightmare then
+    if TGameSession.GameSkill <> sk_nightmare then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -5385,7 +5385,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (gameskill < sk_nightmare) and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and (actor.movecount <> 0) then
       nomissile := true;
     if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -5399,7 +5399,7 @@ begin
 //
 // possibly choose another target
 //
-  if netgame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
+  if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
     if P_LookForTargets(actor,true) then
       exit;         // got a new target
 
@@ -5454,7 +5454,7 @@ end;
 //==============================================================================
 procedure A_ClassBossHealth(actor: Pmobj_t);
 begin
-  if netgame and (deathmatch <> 0) then   // co-op only
+  if TGameSession.NetGame and (TGameSession.DeathMatch <> 0) then   // co-op only
     if actor.special1 = 0 then
     begin
       actor.health := actor.health * 5;
@@ -5483,7 +5483,7 @@ begin
     p.damagecount := 0;
     p.poisoncount := 0;
     p.bonuscount := 0;
-    if p = @players[consoleplayer] then
+    if p = @players[TGameSession.ConsolePlayer] then
       SB_PaletteFlash(false);
   end
   else if (actor.flags and MF_COUNTKILL <> 0) and (actor.special <> 0) then
@@ -6169,7 +6169,7 @@ var
   dummyLine: Pline_t;
   args: array[0..4] of byte;
 begin
-  if gamemap = 7 then
+  if TGameSession.GameMap = 7 then
   begin
     if actor.flags4_ex and MF4_EX_MAP07BOSS1 <> 0 then
     begin
