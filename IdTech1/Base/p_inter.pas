@@ -195,7 +195,7 @@ end;
 //==============================================================================
 procedure P_CmdSuicide;
 begin
-  if demoplayback then
+  if TGameSession.DemoPlayback then
   begin
     I_Warning('P_CmdSuicide(): You can''t suicide during demo playback.'#13#10);
     exit;

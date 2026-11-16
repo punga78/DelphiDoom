@@ -1455,7 +1455,7 @@ var
   psd: Pside_t;
   psec: Psector_t;
 begin
-  if demoplayback then
+  if TGameSession.DemoPlayback then
     exit;
 
   if numflats > numsprites then

@@ -2943,7 +2943,7 @@ end;
 //==============================================================================
 procedure M_NewGame(choice: integer);
 begin
-  if TGameSession.NetGame and not demoplayback then
+  if TGameSession.NetGame and not TGameSession.DemoPlayback then
   begin
     M_StartMessage(SNEWGAME + #13#10 + PRESSKEY, nil, false);
     exit;

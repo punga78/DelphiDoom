@@ -218,6 +218,20 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>A demo is being played back</summary>
+    class var DemoPlayback: boolean;
+    /// <summary>The demo being played was recorded in a net game</summary>
+    class var NetDemo: boolean;
+    /// <summary>If true, exit with a report when the demo ends</summary>
+    class var TimingDemo: boolean;
+    /// <summary>The level of a demo is being set up, before the demo plays</summary>
+    class var PreparingDemoPlayback: boolean;
+    /// <summary>Checkparm of -nomonsters (or the demo header)</summary>
+    class var NoMonsters: boolean;
+    /// <summary>Checkparm of -fast (or the demo header)</summary>
+    class var FastParm: boolean;
+    /// <summary>Checkparm of -respawn (or the demo header)</summary>
+    class var RespawnParm: boolean;
     /// <summary>Player taking events and displaying</summary>
     class var ConsolePlayer: integer;
     /// <summary>Only true if packets are broadcast</summary>
@@ -228,6 +242,11 @@ type
     class var GameMap: integer;
     /// <summary>Skill of the game in progress</summary>
     class var GameSkill: skill_t;
+    /// <summary>
+    ///   The state a new game or the end of a demo starts from: no demo of a net game, no net game, no
+    ///   deathmatch, one player, no -respawn, -fast or -nomonsters, the console player is the first
+    /// </summary>
+    class procedure ResetForNewGame; static;
   end;
 var
   sendpause: boolean;        // send a pause event next tic
@@ -308,9 +327,7 @@ var
   joyblleft: integer;
   joyblright: integer;
 
-  demoplayback: boolean;
   showdemoplaybackprogress: boolean;
-  preparingdemoplayback: boolean = false;
 
   gamemapinfo: Pmapentry_t;
 
@@ -801,7 +818,7 @@ procedure G_DoSaveGame(path: string); forward;
 //==============================================================================
 procedure G_FinishedDemoPlayback;
 begin
-  demoplayback := false;
+  TGameSession.DemoPlayback := false;
   // Restore old compatibility mode
   compatibilitymode := oldcompatibilitymode;
 end;
@@ -809,11 +826,9 @@ end;
 var
   sendcmdsave: boolean;      // send a save event next tic (console)
 
-  timingdemo: boolean;       // if true, exit with report on completion
   starttime: integer;        // for comparative timing purposes
 
   demoname: string;
-  netdemo: boolean;
   demobuffer: PByteArray;
   demo_p: PByteArray;
   demoend: PByte;
@@ -1406,7 +1421,7 @@ begin
 
   // any other key pops up menu if in demos
   if (gameaction = ga_nothing) and not singledemo and
-     (demoplayback or (gamestate = GS_DEMOSCREEN)) then
+     (TGameSession.DemoPlayback or (gamestate = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
@@ -1596,7 +1611,7 @@ begin
 
       G_NetGame.GetCommand(i, buf, cmd);
 
-      if demoplayback then
+      if TGameSession.DemoPlayback then
         G_ReadDemoTiccmd(cmd);
 
       if TGameSession.DemoRecording then
@@ -1611,7 +1626,7 @@ begin
         players[TGameSession.ConsolePlayer]._message := msg;
       end;
 
-      if TGameSession.NetGame and not netdemo and (gametic mod ticdup = 0) then
+      if TGameSession.NetGame and not TGameSession.NetDemo and (gametic mod ticdup = 0) then
       begin
         if pl.mo <> nil then
           G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
@@ -1698,7 +1713,7 @@ begin
   allegiance := p.allegiance;
 
   // JVAL: added option to keep cheats
-  if keepcheatsinplayerreborn and not preparingdemoplayback then
+  if keepcheatsinplayerreborn and not TGameSession.PreparingDemoPlayback then
   begin
     cheats := p.cheats;
     ZeroMemory(p, SizeOf(player_t));
@@ -2471,20 +2486,10 @@ end;
 //
 //==============================================================================
 procedure G_DoNewGame;
-var
-  i: integer;
 begin
   G_FinishedDemoPlayback; // JVAL: remove???
-  netdemo := false;
-  TGameSession.NetGame := false;
-  TGameSession.DeathMatch := 0;
-  for i := 1 to MAXPLAYERS - 1 do
-    playeringame[i] := false;
-  respawnparm := false;
-  fastparm := false;
+  TGameSession.ResetForNewGame;
   stonecold := false;      // villsa [STRIFE]
-  nomonsters := false;
-  TGameSession.ConsolePlayer := 0;
   G_InitNew(d_skill, d_map);
   gameaction := ga_nothing;
 end;
@@ -2530,10 +2535,10 @@ begin
   PS_NewWorld;
   P_ACSInitNewGame;
 
-  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
+  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, TGameSession.RespawnParm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
-  LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, TGameSession.GameSkill = sk_nightmare);
+  LSpeedChange := TSkillSpeed.Change(TGameSession.FastParm, skill = sk_nightmare, TGameSession.GameSkill = sk_nightmare);
   if LSpeedChange = sscFast then
   begin
     for i := 0 to nummobjtypes - 1 do
@@ -2603,7 +2608,7 @@ begin
      mobjinfo[Ord(MT_SEEKMISSILE)].speed := originalmobjinfo[Ord(MT_SEEKMISSILE)].speed;
   end;
 
-  if fastparm or (skill = sk_nightmare) then
+  if TGameSession.FastParm or (skill = sk_nightmare) then
   begin
     // BLOODBATH! Make some things super-aggressive.
 
@@ -2827,9 +2832,9 @@ begin
   LHeader.Skill := Ord(TGameSession.GameSkill);
   LHeader.Map := TGameSession.GameMap;
   LHeader.Deathmatch := TGameSession.DeathMatch;
-  LHeader.Respawn := respawnparm;
-  LHeader.Fast := fastparm;
-  LHeader.NoMonsters := nomonsters;
+  LHeader.Respawn := TGameSession.RespawnParm;
+  LHeader.Fast := TGameSession.FastParm;
+  LHeader.NoMonsters := TGameSession.NoMonsters;
   LHeader.Compatibility := compatibilitymode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
@@ -3009,9 +3014,9 @@ begin
   skill := skill_t(LHeader.Skill);
   map := LHeader.Map;
   TGameSession.DeathMatch := LHeader.Deathmatch;
-  respawnparm := LHeader.Respawn;
-  fastparm := LHeader.Fast;
-  nomonsters := LHeader.NoMonsters;
+  TGameSession.RespawnParm := LHeader.Respawn;
+  TGameSession.FastParm := LHeader.Fast;
+  TGameSession.NoMonsters := LHeader.NoMonsters;
 
   oldcompatibilitymode := compatibilitymode;
   compatibilitymode := LHeader.Compatibility;
@@ -3028,18 +3033,18 @@ begin
   if playeringame[1] then
   begin
     TGameSession.NetGame := true;
-    netdemo := true;
+    TGameSession.NetDemo := true;
   end;
 
-  preparingdemoplayback := true;
+  TGameSession.PreparingDemoPlayback := true;
   // don't spend a lot of time in loadlevel if not singledemo
   precache := singledemo; // JVAL original code: precache := false
   G_InitNew(skill, map);
-  preparingdemoplayback := false;
+  TGameSession.PreparingDemoPlayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
   precache := true;
   TGameSession.UserGame := false;
-  demoplayback := true;
+  TGameSession.DemoPlayback := true;
   demotickstart := demo_p;
   Info_Init(true); // JVAL: Start thinkers
 
@@ -3069,7 +3074,7 @@ end;
 //==============================================================================
 procedure G_TimeDemo(const name: string);
 begin
-  timingdemo := true;
+  TGameSession.TimingDemo := true;
   singletics := true;
 
   defdemoname := name;
@@ -3094,9 +3099,8 @@ end;
 function G_CheckDemoStatus: boolean;
 var
   realtics: integer;
-  i: integer;
 begin
-  if timingdemo then
+  if TGameSession.TimingDemo then
   begin
     realtics := I_GetTime - starttime;
     // The result goes to the log and the program ends like after a single demo: with I_Error it was a
@@ -3107,26 +3111,18 @@ begin
     else
       printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10,
         [gametic, realtics]);
-    timingdemo := false;
+    TGameSession.TimingDemo := false;
     singledemo := true;
   end;
 
-  if demoplayback then
+  if TGameSession.DemoPlayback then
   begin
     if singledemo then
       I_Quit;
 
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
-    netdemo := false;
-    TGameSession.NetGame := false;
-    TGameSession.DeathMatch := 0;
-    for i := 1 to MAXPLAYERS - 1 do
-      playeringame[i] := false;
-    respawnparm := false;
-    fastparm := false;
-    nomonsters := false;
-    TGameSession.ConsolePlayer := 0;
+    TGameSession.ResetForNewGame;
     D_AdvanceDemo;
     result := true;
     exit;
@@ -3163,7 +3159,7 @@ end;
 //==============================================================================
 function G_PlayingEngineVersion: byte;
 begin
-  if demoplayback then
+  if TGameSession.DemoPlayback then
     result := demoversion
   else
     result := VERSION;
@@ -3233,6 +3229,26 @@ begin
     if pmapnum <> nil then
       pmapnum^ := mapnum;
   end;
+end;
+
+//==============================================================================
+//
+// TGameSession.ResetForNewGame
+//
+//==============================================================================
+class procedure TGameSession.ResetForNewGame;
+var
+  i: integer;
+begin
+  NetDemo := false;
+  NetGame := false;
+  DeathMatch := 0;
+  for i := 1 to MAXPLAYERS - 1 do
+    playeringame[i] := false;
+  RespawnParm := false;
+  FastParm := false;
+  NoMonsters := false;
+  ConsolePlayer := 0;
 end;
 
 initialization

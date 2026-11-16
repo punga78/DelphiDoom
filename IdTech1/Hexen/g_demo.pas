@@ -108,10 +108,6 @@ procedure G_TimeDemo(const name: string);
 function G_CheckDemoStatus: boolean;
 
 var
-  netdemo: boolean;
-  demoplayback: boolean;
-
-var
   demoversion: byte;
 
 //==============================================================================
@@ -191,7 +187,7 @@ var
 //==============================================================================
 procedure G_FinishedDemoPlayback;
 begin
-  demoplayback := false;
+  TGameSession.DemoPlayback := false;
   // Restore old compatibility mode
   compatibilitymode := oldcompatibilitymode;
 end;
@@ -206,9 +202,6 @@ end;
 ===================
 *)
 
-var
-  timingdemo: boolean;       // if true, exit with report on completion
-
 //==============================================================================
 //
 // G_CheckDemoStatus
@@ -217,34 +210,25 @@ var
 function G_CheckDemoStatus: boolean;
 var
   endtime: integer;
-  i: integer;
 begin
-  if timingdemo then
+  if TGameSession.TimingDemo then
   begin
     endtime := I_GetTime;
     // The result goes to the log and the program ends like after a single demo: with I_Error it was a
     // message box that waited for a click while the worker threads kept running (#147)
     printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10, [gametic, endtime - starttime]);
-    timingdemo := false;
+    TGameSession.TimingDemo := false;
     singledemo := true;
   end;
 
-  if demoplayback then
+  if TGameSession.DemoPlayback then
   begin
     if singledemo then
       I_Quit;
 
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
-    netdemo := false;
-    TGameSession.NetGame := false;
-    TGameSession.DeathMatch := 0;
-    for i := 1 to MAXPLAYERS - 1 do
-      playeringame[i] := false;
-    respawnparm := false;
-    fastparm := false;
-    nomonsters := false;
-    TGameSession.ConsolePlayer := 0;
+    TGameSession.ResetForNewGame;
     D_AdvanceDemo;
     result := true;
     exit;
@@ -422,9 +406,9 @@ begin
   LHeader.Episode := TGameSession.GameEpisode;
   LHeader.Map := TGameSession.GameMap;
   LHeader.Deathmatch := TGameSession.DeathMatch;
-  LHeader.Respawn := respawnparm;
-  LHeader.Fast := fastparm;
-  LHeader.NoMonsters := nomonsters;
+  LHeader.Respawn := TGameSession.RespawnParm;
+  LHeader.Fast := TGameSession.FastParm;
+  LHeader.NoMonsters := TGameSession.NoMonsters;
   LHeader.Compatibility := compatibilitymode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
@@ -594,9 +578,9 @@ begin
   episode := LHeader.Episode;
   map := LHeader.Map;
   TGameSession.DeathMatch := LHeader.Deathmatch;
-  respawnparm := LHeader.Respawn;
-  fastparm := LHeader.Fast;
-  nomonsters := LHeader.NoMonsters;
+  TGameSession.RespawnParm := LHeader.Respawn;
+  TGameSession.FastParm := LHeader.Fast;
+  TGameSession.NoMonsters := LHeader.NoMonsters;
 
   oldcompatibilitymode := compatibilitymode;
   compatibilitymode := LHeader.Compatibility;
@@ -617,18 +601,18 @@ begin
   if playeringame[1] then
   begin
     TGameSession.NetGame := true;
-    netdemo := true;
+    TGameSession.NetDemo := true;
   end;
 
-  preparingdemoplayback := true;
+  TGameSession.PreparingDemoPlayback := true;
   // don't spend a lot of time in loadlevel if not singledemo
   precache := singledemo; // JVAL original code: precache := false
   G_InitNew(skill, episode, map);
-  preparingdemoplayback := false;
+  TGameSession.PreparingDemoPlayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
   precache := true;
   TGameSession.UserGame := false;
-  demoplayback := true;
+  TGameSession.DemoPlayback := true;
   Info_Init(true); // JVAL: Start thinkers
 
   compatibility_done := false;
@@ -642,7 +626,7 @@ end;
 //==============================================================================
 procedure G_TimeDemo(const name: string);
 begin
-  timingdemo := true;
+  TGameSession.TimingDemo := true;
   singletics := true;
 
   defdemoname := name;

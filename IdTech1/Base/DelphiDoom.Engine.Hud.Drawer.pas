@@ -486,7 +486,7 @@ begin
   if drawfps then
     DrawFramesPerSecond;
 {$IF DEFINED(DOOM) OR DEFINED(STRIFE)}
-  if demoplayback and showdemoplaybackprogress then
+  if TGameSession.DemoPlayback and showdemoplaybackprogress then
     DrawDemoProgress;
 
 {$ENDIF}

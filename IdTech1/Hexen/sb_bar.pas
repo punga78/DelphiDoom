@@ -210,7 +210,7 @@ var
 function SB_CmdCheckPlayerStatus: boolean;
 begin
   if (CPlayer = nil) or (CPlayer.mo = nil) or (CPlayer.mo = nil) or
-     (gamestate <> GS_LEVEL) or demoplayback or TGameSession.NetGame then
+     (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;

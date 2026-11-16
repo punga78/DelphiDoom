@@ -202,7 +202,7 @@ begin
 
   isgamefreezed := False;
 
-  if not preparingdemoplayback then
+  if not TGameSession.PreparingDemoPlayback then
     FRandom.SystemSeed := FRandom.NextUnpredictable;
 
   // Initial height of PointOfView will be set by player think.

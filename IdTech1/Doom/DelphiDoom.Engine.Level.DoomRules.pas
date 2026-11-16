@@ -216,7 +216,7 @@ end;
 
 procedure TDoomLevelRules.AfterNodes(AMapLump: Integer);
 begin
-  if preparingdemoplayback and (G_PlayingEngineVersion < VERSION110) and (numlines < 32768) and
+  if TGameSession.PreparingDemoPlayback and (G_PlayingEngineVersion < VERSION110) and (numlines < 32768) and
      (numsides < 32768) and not hasudmfdata then
     FVanillaNodes.Load(AMapLump);
 end;

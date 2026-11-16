@@ -20,10 +20,15 @@ $members = [ordered]@{
   gamemap       = @('GameMap', 'integer', 'Map of the level in progress')
   gameskill     = @('GameSkill', 'skill_t', 'Skill of the game in progress')
   gameepisode   = @('GameEpisode', 'integer', 'Episode of the level in progress')
+  preparingdemoplayback = @('PreparingDemoPlayback', 'boolean', 'The level of a demo is being set up, before the demo plays')
+  nomonsters    = @('NoMonsters', 'boolean', 'Checkparm of -nomonsters (or the demo header)')
+  fastparm      = @('FastParm', 'boolean', 'Checkparm of -fast (or the demo header)')
+  respawnparm   = @('RespawnParm', 'boolean', 'Checkparm of -respawn (or the demo header)')
 }
 foreach ($game in 'Doom', 'Heretic', 'Hexen', 'Strife') {
   $files = @("IdTech1\$game\g_game.pas")
   if ($game -eq 'Hexen') { $files += 'IdTech1\Hexen\g_demo.pas' }
+  $files += "IdTech1\$game\d_main.pas"
   $added = @()
   foreach ($rel in $files) {
     $path = Join-Path $root $rel

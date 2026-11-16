@@ -968,7 +968,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not TGameSession.FastParm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -985,7 +985,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -1093,7 +1093,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not TGameSession.FastParm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -1113,7 +1113,7 @@ begin
   begin
     if (G_PlayingEngineVersion <= VERSION110) or (G_PlayingEngineVersion > VERSION205) then
     begin
-      if not ((TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0)) then
+      if not ((TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0)) then
         if P_CheckMissileRange(actor) then
         begin
           P_SetMobjState(actor, statenum_t(actor.info.missilestate));
@@ -1124,7 +1124,7 @@ begin
     else
     begin
       nomissile := False;
-      if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+      if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
         nomissile := True
       else if not P_CheckMissileRange(actor) then
         nomissile := True;
@@ -2931,7 +2931,7 @@ begin
   // check for missile attack
   if actor.info.missilestate <> 0 then
   begin
-    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;

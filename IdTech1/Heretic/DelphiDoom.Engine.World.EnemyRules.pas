@@ -1120,7 +1120,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not TGameSession.FastParm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -1137,7 +1137,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;

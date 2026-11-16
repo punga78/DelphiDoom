@@ -1324,7 +1324,7 @@ begin
     exit;
 
   // don't spawn any monsters if -nomonsters
-  if nomonsters and (mobjinfo[i].flags and MF_COUNTKILL <> 0) then
+  if TGameSession.NoMonsters and (mobjinfo[i].flags and MF_COUNTKILL <> 0) then
     exit;
 
   // spawn it
@@ -2464,7 +2464,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
+  result := (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

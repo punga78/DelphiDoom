@@ -231,8 +231,8 @@ begin
   LInfo.EngineVersion := D_EngineVersion;
   LInfo.Skill := Ord(startskill);
   LInfo.Deathmatch := TGameSession.DeathMatch;
-  LInfo.NoMonsters := nomonsters;
-  LInfo.Respawn := respawnparm;
+  LInfo.NoMonsters := TGameSession.NoMonsters;
+  LInfo.Respawn := TGameSession.RespawnParm;
 {$IFDEF STRIFE}
   LInfo.MapByte := startmap;
 {$ELSE}
@@ -259,8 +259,8 @@ begin
   begin
     startskill := skill_t(LInfo.Skill);
     TGameSession.DeathMatch := LInfo.Deathmatch;
-    nomonsters := LInfo.NoMonsters;
-    respawnparm := LInfo.Respawn;
+    TGameSession.NoMonsters := LInfo.NoMonsters;
+    TGameSession.RespawnParm := LInfo.Respawn;
 {$IFDEF STRIFE}
     startmap := LInfo.MapByte;
 {$ELSE}
@@ -344,7 +344,7 @@ end;
 // Called before quitting to leave a net game without hanging the other players
 procedure TEngineNetGame.Quit;
 begin
-  if not TGameSession.NetGame or not TGameSession.UserGame or (TGameSession.ConsolePlayer = -1) or demoplayback then
+  if not TGameSession.NetGame or not TGameSession.UserGame or (TGameSession.ConsolePlayer = -1) or TGameSession.DemoPlayback then
     Exit;
 
   CheckStarted;

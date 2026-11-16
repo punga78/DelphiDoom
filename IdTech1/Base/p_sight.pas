@@ -1510,7 +1510,7 @@ begin
   if G_PlayingEngineVersion >= VERSION122 then
 {$ENDIF}
   begin
-    if (G_PlayingEngineVersion < VERSION204) or ((G_PlayingEngineVersion = VERSION204) and (demoplayback or TGameSession.DemoRecording)) then
+    if (G_PlayingEngineVersion < VERSION204) or ((G_PlayingEngineVersion = VERSION204) and (TGameSession.DemoPlayback or TGameSession.DemoRecording)) then
     begin
       if Psubsector_t(t1.subsector).sector = Psubsector_t(t2.subsector).sector then
       begin

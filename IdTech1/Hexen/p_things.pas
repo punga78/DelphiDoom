@@ -194,6 +194,7 @@ implementation
 
 uses
   d_main,
+  g_game,
   a_action,
   info,
   m_fixed,
@@ -229,7 +230,7 @@ begin
   searcher := -1;
   tid := args[0];
   moType := TranslateThingType[args[1]];
-  if nomonsters and (mobjinfo[Ord(moType)].flags and MF_COUNTKILL <> 0) then
+  if TGameSession.NoMonsters and (mobjinfo[Ord(moType)].flags and MF_COUNTKILL <> 0) then
   begin // Don't spawn monsters if -nomonsters
     exit;
   end;
@@ -279,7 +280,7 @@ begin
   searcher := -1;
   tid := args[0];
   moType := TranslateThingType[args[1]];
-  if nomonsters and (mobjinfo[Ord(moType)].flags and MF_COUNTKILL <> 0) then
+  if TGameSession.NoMonsters and (mobjinfo[Ord(moType)].flags and MF_COUNTKILL <> 0) then
   begin // Don't spawn monsters if -nomonsters
     exit;
   end;

@@ -146,15 +146,12 @@ var
   wipegamestate: integer = -1;   // JVAL was gamestate_t = GS_DEMOSCREEN;
   wipedisplay: boolean = false;
 
-  nomonsters: boolean;          // checkparm of -nomonsters
-  fastparm: boolean;            // checkparm of -fast
   devparm: boolean;             // started game with -devparm
   singletics: boolean;          // debug flag to cancel adaptiveness
   noartiskip: boolean;          // whether shift-enter skips an artifact
   autostart: boolean;
   startskill: skill_t;
   defaultskill: integer = 2;
-  respawnparm: boolean;         // checkparm of -respawn
 
   startepisode: integer;
   startmap: integer;
@@ -1683,7 +1680,7 @@ end;
 //==============================================================================
 procedure D_StopThinkers;
 begin
-  if demoplayback then
+  if TGameSession.DemoPlayback then
   begin
     I_Warning('Thinkers can not be disabled during demo playback.'#13#10);
     exit;
@@ -2124,9 +2121,9 @@ begin
 
   modifiedgame := false;
 
-  nomonsters := M_CheckParm('-nomonsters') > 0;
-  respawnparm := M_CheckParm('-respawn') > 0;
-  fastparm := M_CheckParm('-fast') > 0;
+  TGameSession.NoMonsters := M_CheckParm('-nomonsters') > 0;
+  TGameSession.RespawnParm := M_CheckParm('-respawn') > 0;
+  TGameSession.FastParm := M_CheckParm('-fast') > 0;
   devparm := M_CheckParm('-devparm') > 0;
   wandstart := M_CheckParm('-wandstart') > 0;
 

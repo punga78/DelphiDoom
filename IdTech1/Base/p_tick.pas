@@ -310,10 +310,10 @@ begin
 
   // pause if in menu and at least one tic has been run
   if not TGameSession.NetGame and menuactive and
-     not demoplayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
+     not TGameSession.DemoPlayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
     exit;
 
-  if not demoplayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (leveltime <> 0) then
+  if not TGameSession.DemoPlayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (leveltime <> 0) then
     exit;
 
   isgamesuspended := false;
@@ -340,7 +340,7 @@ begin
   end;
 
 {$ENDIF}
-  if demoplayback or TGameSession.DemoRecording then
+  if TGameSession.DemoPlayback or TGameSession.DemoRecording then
     isgamefreezed := false;
 
   P_World.RunThinkers;

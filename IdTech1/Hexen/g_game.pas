@@ -158,6 +158,20 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>A demo is being played back</summary>
+    class var DemoPlayback: boolean;
+    /// <summary>The demo being played was recorded in a net game</summary>
+    class var NetDemo: boolean;
+    /// <summary>If true, exit with a report when the demo ends</summary>
+    class var TimingDemo: boolean;
+    /// <summary>The level of a demo is being set up, before the demo plays</summary>
+    class var PreparingDemoPlayback: boolean;
+    /// <summary>Checkparm of -nomonsters (or the demo header)</summary>
+    class var NoMonsters: boolean;
+    /// <summary>Checkparm of -fast (or the demo header)</summary>
+    class var FastParm: boolean;
+    /// <summary>Checkparm of -respawn (or the demo header)</summary>
+    class var RespawnParm: boolean;
     /// <summary>Player taking events and displaying</summary>
     class var ConsolePlayer: integer;
     /// <summary>Only true if packets are broadcast</summary>
@@ -170,6 +184,11 @@ type
     class var GameSkill: skill_t;
     /// <summary>Episode of the level in progress</summary>
     class var GameEpisode: integer;
+    /// <summary>
+    ///   The state a new game or the end of a demo starts from: no demo of a net game, no net game, no
+    ///   deathmatch, one player, no -respawn, -fast or -nomonsters, the console player is the first
+    /// </summary>
+    class procedure ResetForNewGame; static;
   end;
 var
   sendpause: boolean;        // send a pause event next tic
@@ -238,7 +257,6 @@ var
   joyblleft: integer;
   joyblright: integer;
 
-  preparingdemoplayback: boolean = false;
 
 
   playeringame: array[0..MAXPLAYERS - 1] of boolean;
@@ -1259,7 +1277,7 @@ begin
 
   // any other key pops up menu if in demos
   if (gameaction = ga_nothing) and not singledemo and
-     (demoplayback or (gamestate = GS_DEMOSCREEN)) then
+     (TGameSession.DemoPlayback or (gamestate = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
@@ -1581,7 +1599,7 @@ begin
   worldTimer := p.worldTimer;
 
   // JVAL: added option to keep cheats
-  if keepcheatsinplayerreborn and not preparingdemoplayback then
+  if keepcheatsinplayerreborn and not TGameSession.PreparingDemoPlayback then
   begin
     cheats := p.cheats;
     ZeroMemory(p, SizeOf(player_t));
@@ -2067,10 +2085,10 @@ begin
   M_ClearRandom;
   PS_NewWorld;
 
-  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
+  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, TGameSession.RespawnParm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
-  LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, TGameSession.GameSkill = sk_nightmare);
+  LSpeedChange := TSkillSpeed.Change(TGameSession.FastParm, skill = sk_nightmare, TGameSession.GameSkill = sk_nightmare);
   if LSpeedChange = sscFast then
   begin
     for i := 0 to nummobjtypes - 1 do
@@ -2181,12 +2199,12 @@ begin
 
       G_NetGame.GetCommand(i, buf, cmd);
 
-      if demoplayback then
+      if TGameSession.DemoPlayback then
         G_ReadDemoTiccmd(cmd);
       if TGameSession.DemoRecording then
         G_WriteDemoTiccmd(cmd);
 
-      if TGameSession.NetGame and not netdemo and ((gametic mod ticdup) = 0) then
+      if TGameSession.NetGame and not TGameSession.NetDemo and ((gametic mod ticdup) = 0) then
       begin
         if pl.mo <> nil then
           G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
@@ -2285,10 +2303,30 @@ end;
 //==============================================================================
 function G_PlayingEngineVersion: byte;
 begin
-  if demoplayback then
+  if TGameSession.DemoPlayback then
     result := demoversion
   else
     result := VERSION;
+end;
+
+//==============================================================================
+//
+// TGameSession.ResetForNewGame
+//
+//==============================================================================
+class procedure TGameSession.ResetForNewGame;
+var
+  i: integer;
+begin
+  NetDemo := false;
+  NetGame := false;
+  DeathMatch := 0;
+  for i := 1 to MAXPLAYERS - 1 do
+    playeringame[i] := false;
+  RespawnParm := false;
+  FastParm := false;
+  NoMonsters := false;
+  ConsolePlayer := 0;
 end;
 
 initialization
