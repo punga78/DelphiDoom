@@ -288,7 +288,7 @@ begin
     exit;
   end;
 
-  if (gameskill = sk_baby) or (gameskill = sk_nightmare) then
+  if (TGameSession.GameSkill = sk_baby) or (TGameSession.GameSkill = sk_nightmare) then
   begin
     // extra ammo in baby mode and nightmare mode
     num := num  + num div 2
@@ -634,7 +634,7 @@ begin
   remove := true;
   if player._class <> weaponClass then
   begin // Wrong class, but try to pick up for mana
-    if netgame and (deathmatch = 0) then
+    if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
     begin // Can't pick up weapons for other classes in coop netplay
       exit;
     end;
@@ -653,7 +653,7 @@ begin
       end;
     end;
   end
-  else if netgame and (deathmatch = 0) then
+  else if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
   begin // Cooperative net-game
     if player.weaponowned[Ord(weaponType)] then
     begin
@@ -709,7 +709,7 @@ begin
 
   if remove then
   begin
-    if (deathmatch <> 0) and (weapon.flags2 and MF2_DROPPED = 0) then
+    if (TGameSession.DeathMatch <> 0) and (weapon.flags2 and MF2_DROPPED = 0) then
     begin
       P_HideSpecialThing(weapon);
     end
@@ -720,7 +720,7 @@ begin
   end;
 
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
     SB_PaletteFlash(false);
@@ -758,7 +758,7 @@ begin
   gaveWeapon := false;
   if player._class <> matchClass then
   begin // Wrong class, but try to pick up for mana
-    if netgame and (deathmatch = 0) then
+    if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
     begin // Can't pick up wrong-class weapons in coop netplay
       exit;
     end;
@@ -771,7 +771,7 @@ begin
       exit;
     end;
   end
-  else if netgame and (deathmatch = 0) then
+  else if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
   begin // Cooperative net-game
     if player.pieces and pieceValue <> 0 then
     begin // Already has the piece
@@ -805,7 +805,7 @@ begin
   end;
   if remove then
   begin
-    if (deathmatch <> 0) and (pieceMobj.flags2 and MF2_DROPPED = 0) then
+    if (TGameSession.DeathMatch <> 0) and (pieceMobj.flags2 and MF2_DROPPED = 0) then
     begin
       P_HideSpecialThing(pieceMobj);
     end
@@ -815,7 +815,7 @@ begin
     end;
   end;
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     SB_PaletteFlash(false);
   end;
@@ -841,7 +841,7 @@ begin
   else
   begin
     P_SetMessage(player, weaponPieceText[Ord(matchClass)], false);
-    if player = @players[consoleplayer] then
+    if player = @players[TGameSession.ConsolePlayer] then
     begin
       S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
     end;
@@ -937,7 +937,7 @@ begin
   end
   else
   begin
-    if (Ord(arti) >= arti_firstpuzzitem) and netgame and (deathmatch = 0) then
+    if (Ord(arti) >= arti_firstpuzzitem) and TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
     begin // Can't carry more than 1 puzzle item in coop netplay
       result := false;
       exit;
@@ -954,7 +954,7 @@ begin
   begin
     player.readyArtifact := arti;
   end
-  else if (player = @players[consoleplayer]) and slidePointer and (i <= inv_ptr) then
+  else if (player = @players[TGameSession.ConsolePlayer]) and slidePointer and (i <= inv_ptr) then
   begin
     inc(inv_ptr);
     inc(curpos);
@@ -977,7 +977,7 @@ end;
 procedure P_SetDormantArtifact(arti: Pmobj_t);
 begin
   arti.flags := arti.flags and not MF_SPECIAL;
-  if (deathmatch <> 0) and (arti.flags2 and MF2_DROPPED = 0) then
+  if (TGameSession.DeathMatch <> 0) and (arti.flags2 and MF2_DROPPED = 0) then
   begin
     if arti._type = Ord(MT_ARTIINVULNERABILITY) then
     begin
@@ -1024,7 +1024,7 @@ begin
     begin // Puzzle item
       S_StartSound(nil, Ord(SFX_PICKUP_ITEM));
       P_SetMessage(player, artifactMessages[Ord(artifactType)], true);
-      if not netgame or (deathmatch <> 0) then
+      if not TGameSession.NetGame or (TGameSession.DeathMatch <> 0) then
       begin // Remove puzzle items if not cooperative netplay
         P_RemoveMobj(artifact);
       end;
@@ -1133,10 +1133,10 @@ begin
           special.special := 0;
         end;
 
-        if netgame then // Only remove keys in single player game
+        if TGameSession.NetGame then // Only remove keys in single player game
         begin
           player.bonuscount := player.bonuscount + BONUSADD;
-          if player = @players[consoleplayer] then
+          if player = @players[TGameSession.ConsolePlayer] then
           begin
             S_StartSound(nil, sound);
             SB_PaletteFlash(false);
@@ -1477,7 +1477,7 @@ begin
     special.special := 0;
   end;
 
-  if (deathmatch <> 0) and respawn and (special.flags2 and MF2_DROPPED = 0) then
+  if (TGameSession.DeathMatch <> 0) and respawn and (special.flags2 and MF2_DROPPED = 0) then
   begin
     P_HideSpecialThing(special);
   end
@@ -1487,7 +1487,7 @@ begin
   end;
 
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, sound);
     SB_PaletteFlash(false);
@@ -1553,7 +1553,7 @@ begin
       if target = source then
       begin // Self-frag
         dec(Pplayer_t(target.player).frags[(NativeInt(target.player) - NativeInt(@players[0])) div SizeOf(player_t)]);
-        if cmdfrag and netgame and source.player = @players[consoleplayer] then
+        if cmdfrag and TGameSession.NetGame and source.player = @players[TGameSession.ConsolePlayer] then
         begin // Send out a frag count packet
           NET_SendFrags(source.player);
         end;
@@ -1561,7 +1561,7 @@ begin
       else
       begin
         inc(source.player.frags[(NativeInt(target.player) - NativeInt(players)) div SizeOf(player_t)]);
-        if cmdfrag and netgame and (source.player = @players[consoleplayer]) then
+        if cmdfrag and TGameSession.NetGame and (source.player = @players[TGameSession.ConsolePlayer]) then
         begin // Send out a frag count packet
           NET_SendFrags(source.player);
         end;
@@ -1576,7 +1576,7 @@ begin
     if source = nil then
     begin // Self-frag
       dec(target.player.frags[(NativeInt(target.player) - NativeInt(players)) div SizeOf(player_t)]);
-      if cmdfrag and netgame and (target.player = @players[consoleplayer]) then
+      if cmdfrag and TGameSession.NetGame and (target.player = @players[TGameSession.ConsolePlayer]) then
       begin // Send out a frag count packet
         NET_SendFrags(target.player);
       end;
@@ -1598,7 +1598,7 @@ begin
 
     P_DropWeapon(target.player);
 
-    if (pl = @players[consoleplayer]) and (amstate = am_only) then
+    if (pl = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1936,7 +1936,7 @@ begin
     exit;
   end;
 
-  if (player <> nil) and (gameskill = sk_baby) then
+  if (player <> nil) and (TGameSession.GameSkill = sk_baby) then
   begin
     // Take half damage in trainer mode
     damage := _SHR1(damage);
@@ -2102,7 +2102,7 @@ begin
         saved := savedPercent * 2;
       damage := damage - FixedInt(saved);
     end;
-    if (damage >= player.health) and ((gameskill = sk_baby) or (deathmatch <> 0)) and (player.morphTics = 0) then
+    if (damage >= player.health) and ((TGameSession.GameSkill = sk_baby) or (TGameSession.DeathMatch <> 0)) and (player.morphTics = 0) then
     begin // Try to use some inventory health
       P_AutoUseHealth(player, damage - player.health + 1);
     end;
@@ -2113,7 +2113,7 @@ begin
     player.damagecount := player.damagecount + damage; // add damage after armor / invuln
     if player.damagecount > 100 then
       player.damagecount := 100; // teleport stomp does 10k points...
-    if player = @players[consoleplayer] then
+    if player = @players[TGameSession.ConsolePlayer] then
     begin
 {    if damage < 100 then
       I_Tactile(40, 10, 40 + damage * 2) // JVAL Force Feedback
@@ -2316,7 +2316,7 @@ begin
      (damage < 10000) then // mobj is invulnerable
     exit;
 
-  if (player <> nil) and (gameskill = sk_baby) then
+  if (player <> nil) and (TGameSession.GameSkill = sk_baby) then
     damage := _SHR1(damage); // Take half damage in trainer mode
 
   if (damage < 1000) and
@@ -2324,7 +2324,7 @@ begin
     exit;
 
   if (damage >= player.health) and
-     ((gameskill = sk_baby) or (deathmatch <> 0)) and
+     ((TGameSession.GameSkill = sk_baby) or (TGameSession.DeathMatch <> 0)) and
      (player.morphTics = 0) then // Try to use some inventory health
     P_AutoUseHealth(player, damage - player.health + 1);
 

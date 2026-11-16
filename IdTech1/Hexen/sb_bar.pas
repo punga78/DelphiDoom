@@ -210,7 +210,7 @@ var
 function SB_CmdCheckPlayerStatus: boolean;
 begin
   if (CPlayer = nil) or (CPlayer.mo = nil) or (CPlayer.mo = nil) or
-     (gamestate <> GS_LEVEL) or demoplayback or netgame then
+     (gamestate <> GS_LEVEL) or demoplayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -470,7 +470,7 @@ begin
   for i := 0 to Ord(NUMARMOR) - 1 do
     CPlayer.armorpoints[i] := 0;
 
-  PlayerClass[consoleplayer] := pclass_t(_class);
+  PlayerClass[TGameSession.ConsolePlayer] := pclass_t(_class);
   P_PostMorphWeapon(CPlayer, WP_FIRST);
   SB_SetClassData;
 end;
@@ -796,20 +796,20 @@ procedure SB_SetClassData;
 var
   _class: integer;
 begin
-  _class := Ord(PlayerClass[consoleplayer]); // original player _class (not pig)
+  _class := Ord(PlayerClass[TGameSession.ConsolePlayer]); // original player _class (not pig)
   PatchWEAPONSLOT := W_CacheLumpNum(W_GetNumForName('wpslot0') + _class, PU_STATIC);
   PatchWEAPONFULL := W_CacheLumpNum(W_GetNumForName('wpfull0') + _class, PU_STATIC);
   PatchPIECE1 := W_CacheLumpNum(W_GetNumForName('wpiecef1') + _class, PU_STATIC);
   PatchPIECE2 := W_CacheLumpNum(W_GetNumForName('wpiecef2') + _class, PU_STATIC);
   PatchPIECE3 := W_CacheLumpNum(W_GetNumForName('wpiecef3') + _class, PU_STATIC);
   PatchCHAIN := W_CacheLumpNum(W_GetNumForName('chain') + _class, PU_STATIC);
-  if not netgame then
+  if not TGameSession.NetGame then
   begin // single player game uses red life gem (the second gem)
     PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('lifegem') + MAXPLAYERS * _class + 1, PU_STATIC);
   end
   else
   begin
-    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('lifegem') + MAXPLAYERS * _class + consoleplayer, PU_STATIC);
+    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('lifegem') + MAXPLAYERS * _class + TGameSession.ConsolePlayer, PU_STATIC);
   end;
 end;
 
@@ -922,7 +922,7 @@ begin
   lmp_keyslot1 := W_GetNumForName('keyslot1');
   lmp_armslot1 := W_GetNumForName('armslot1');
 
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     PatchKILLS := W_CacheLumpName('KILLS', PU_STATIC);
 
   SB_SetClassData;
@@ -956,7 +956,7 @@ var
   delta: integer;
   curHealth: integer;
 begin
-  curHealth := players[consoleplayer].mo.health;
+  curHealth := players[TGameSession.ConsolePlayer].mo.health;
   if curHealth < 0 then
     curHealth := 0;
 
@@ -1466,7 +1466,7 @@ begin
 
   if gamestate = GS_LEVEL then
   begin
-    CPlayer := @players[consoleplayer];
+    CPlayer := @players[TGameSession.ConsolePlayer];
     if CPlayer.poisoncount > 0 then
     begin
       palette := _SHR3(CPlayer.poisoncount + 7);
@@ -1574,15 +1574,15 @@ begin
 
   if CPlayer.pieces and WPIECE1 <> 0 then
   begin
-    SB_DrawPatch(PieceX[Ord(PlayerClass[consoleplayer]), 0], 162, PatchPIECE1);
+    SB_DrawPatch(PieceX[Ord(PlayerClass[TGameSession.ConsolePlayer]), 0], 162, PatchPIECE1);
   end;
   if CPlayer.pieces and WPIECE2 <> 0 then
   begin
-    SB_DrawPatch(PieceX[Ord(PlayerClass[consoleplayer]), 1], 162, PatchPIECE2);
+    SB_DrawPatch(PieceX[Ord(PlayerClass[TGameSession.ConsolePlayer]), 1], 162, PatchPIECE2);
   end;
   if CPlayer.pieces and WPIECE3 <> 0 then
   begin
-    SB_DrawPatch(PieceX[Ord(PlayerClass[consoleplayer]), 2], 162, PatchPIECE3);
+    SB_DrawPatch(PieceX[Ord(PlayerClass[TGameSession.ConsolePlayer]), 2], 162, PatchPIECE3);
   end;
 end;
 
@@ -1619,7 +1619,7 @@ begin
   end;
 
   // Frags
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
@@ -1839,7 +1839,7 @@ begin
     SB_DrBNumber(0, 5, 180);
   end;
 
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
@@ -1914,7 +1914,7 @@ begin
     if DebugSound then
       SB_DrawSoundInfo;
 
-    CPlayer := @players[consoleplayer];
+    CPlayer := @players[TGameSession.ConsolePlayer];
 
     if amstate = am_only then
     begin
@@ -1993,7 +1993,7 @@ begin
       exit;
     end;
 
-    if not netgame then
+    if not TGameSession.NetGame then
     begin
       // b. - enabled for more debug fun.
       // if (gameskill != sk_nightmare) {
@@ -2087,7 +2087,7 @@ begin
       if W_CheckNumForName(P_GetMapName(map)) > -1 then
       begin
         CPlayer._message := STSTR_CLEV;
-        G_DeferedInitNewUntranslated(gameskill, map);
+        G_DeferedInitNewUntranslated(TGameSession.GameSkill, map);
       end;
     end;
   end;

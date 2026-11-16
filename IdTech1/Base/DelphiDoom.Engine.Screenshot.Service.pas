@@ -145,9 +145,9 @@ begin
   if not ASilent then
   begin
     if LSaved then
-      players[consoleplayer]._message := SScreenshotDone
+      players[TGameSession.ConsolePlayer]._message := SScreenshotDone
     else
-      players[consoleplayer]._message := SScreenshotFailed;
+      players[TGameSession.ConsolePlayer]._message := SScreenshotFailed;
   end;
 end;
 

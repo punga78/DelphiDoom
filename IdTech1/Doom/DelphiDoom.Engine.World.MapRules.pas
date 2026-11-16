@@ -261,7 +261,7 @@ end;
 class function TMapGameRules.CanStomp(thing: Pmobj_t): boolean;
 begin
   // monsters don't stomp things except on boss level
-  result := not ((TMapCheck.Thing.player = nil) and (gamemap <> 30));
+  result := not ((TMapCheck.Thing.player = nil) and (TGameSession.GameMap <> 30));
 end;
 
 class procedure TMapGameRules.MarkJustAppeared(thing: Pmobj_t);

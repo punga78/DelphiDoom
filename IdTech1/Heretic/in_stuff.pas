@@ -200,7 +200,7 @@ procedure IN_LoadPics;
 var
   i: integer;
 begin
-  case gameepisode of
+  case TGameSession.GameEpisode of
     1: patchINTERPIC := W_CacheLumpName('MAPE1', PU_STATIC);
     2: patchINTERPIC := W_CacheLumpName('MAPE2', PU_STATIC);
     3: patchINTERPIC := W_CacheLumpName('MAPE3', PU_STATIC);
@@ -270,7 +270,7 @@ var
   slaughtercount: integer;
   playercount: integer;
 begin
-  if not netgame then
+  if not TGameSession.NetGame then
   begin
     gametype := gt_single;
     time := leveltime div TICRATE;
@@ -280,7 +280,7 @@ begin
     time := time - minutes * 60;
     seconds := time;
   end
-  else if netgame and (deathmatch = 0) then
+  else if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
   begin
     gametype := gt_cooperative;
     memset(@killPercent, 0, MAXPLAYERS * SizeOf(integer));
@@ -484,7 +484,7 @@ begin
   if oldintertime < intertime then
   begin
     inc(interstate);
-    if (gameepisode > 3) and (interstate >= 1) then
+    if (TGameSession.GameEpisode > 3) and (interstate >= 1) then
     begin // Extended Wad levels:  skip directly to the next level
       interstate := 3;
     end;
@@ -492,7 +492,7 @@ begin
       0:
         begin
           oldintertime := intertime + 300;
-          if gameepisode > 3 then
+          if TGameSession.GameEpisode > 3 then
             oldintertime := intertime + 1200;
         end;
       1:
@@ -518,7 +518,7 @@ begin
       skipintermission := false;
       exit;
     end
-    else if (interstate < 2) and (gameepisode < 4) then
+    else if (interstate < 2) and (TGameSession.GameEpisode < 4) then
     begin
       interstate := 2;
       skipintermission := false;
@@ -823,7 +823,7 @@ begin
     S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
-  IN_DrawNumber(players[consoleplayer].killcount, 200, 65, 3);
+  IN_DrawNumber(players[TGameSession.ConsolePlayer].killcount, 200, 65, 3);
   V_DrawPatch(237, 65, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
   IN_DrawNumber(P_World.Totals.Kills, 248, 65, 3);
 
@@ -836,7 +836,7 @@ begin
     inc(in_sounds);
   end;
 
-  IN_DrawNumber(players[consoleplayer].itemcount, 200, 90, 3);
+  IN_DrawNumber(players[TGameSession.ConsolePlayer].itemcount, 200, 90, 3);
   V_DrawPatch(237, 90, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
   IN_DrawNumber(P_World.Totals.Items, 248, 90, 3);
 
@@ -848,7 +848,7 @@ begin
     S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
-  IN_DrawNumber(players[consoleplayer].secretcount, 200, 115, 3);
+  IN_DrawNumber(players[TGameSession.ConsolePlayer].secretcount, 200, 115, 3);
   V_DrawPatch(237, 115, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
   IN_DrawNumber(P_World.Totals.Secrets, 248, 115, 3);
 
@@ -861,7 +861,7 @@ begin
     inc(in_sounds);
   end;
 
-  if (gamemode <> extendedwad) or (gameepisode < 4) then
+  if (gamemode <> extendedwad) or (TGameSession.GameEpisode < 4) then
   begin
     IN_DrTextB('TIME', 85, 160);
     IN_DrawTime(155, 160, hours, minutes, seconds);
@@ -989,7 +989,7 @@ begin
   begin
     if playeringame[i] then
     begin
-      if (intertime < 100) or (i = consoleplayer) then
+      if (intertime < 100) or (i = TGameSession.ConsolePlayer) then
       begin
         V_DrawPatch(40, ypos, SCN_TMP, W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
         V_DrawPatch(xpos, 18, SCN_TMP, W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false); // V_DrawShadowedPatch
@@ -1042,15 +1042,15 @@ begin
   begin
     if wbs.last + 1 = 9 then
     begin
-      for i := 0 to gamemap - 1 do
+      for i := 0 to TGameSession.GameMap - 1 do
       begin
-        V_DrawPatch(YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y,
+        V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][i].x, YAHspot[TGameSession.GameEpisode - 1][i].y,
           SCN_TMP,
             patchBEENTHERE, false);
       end;
       if intertime and 16 = 0 then
       begin
-        V_DrawPatch(YAHspot[gameepisode - 1][8].x, YAHspot[gameepisode - 1][8].y,
+        V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][8].x, YAHspot[TGameSession.GameEpisode - 1][8].y,
           SCN_TMP,
             patchBEENTHERE, false);
       end;
@@ -1059,19 +1059,19 @@ begin
     begin
       for i := 0 to wbs.last do
       begin
-        V_DrawPatch(YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y,
+        V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][i].x, YAHspot[TGameSession.GameEpisode - 1][i].y,
           SCN_TMP,
             patchBEENTHERE, false);
       end;
-      if players[consoleplayer].didsecret then
+      if players[TGameSession.ConsolePlayer].didsecret then
       begin
-        V_DrawPatch(YAHspot[gameepisode - 1][8].x, YAHspot[gameepisode - 1][8].y,
+        V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][8].x, YAHspot[TGameSession.GameEpisode - 1][8].y,
           SCN_TMP,
             patchBEENTHERE, false);
       end;
       if intertime and 16 = 0 then
       begin
-        V_DrawPatch(YAHspot[gameepisode - 1][wbs.last].x, YAHspot[gameepisode - 1][wbs.last].y,
+        V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][wbs.last].x, YAHspot[TGameSession.GameEpisode - 1][wbs.last].y,
           SCN_TMP,
             patchBEENTHERE, false);
       end;
@@ -1096,23 +1096,23 @@ begin
   if (enterpic = '') or (wbs.lastmapinfo <> nil) then
   begin
     if wbs.last = 8 then
-      prevmap := gamemap - 1
+      prevmap := TGameSession.GameMap - 1
     else
       prevmap := wbs.last;
 
     for i := 0 to prevmap - 1 do
-      V_DrawPatch(YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y,
+      V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][i].x, YAHspot[TGameSession.GameEpisode - 1][i].y,
         SCN_TMP,
           patchBEENTHERE, false);
 
-    if players[consoleplayer].didsecret then
-      V_DrawPatch(YAHspot[gameepisode - 1][8].x, YAHspot[gameepisode - 1][8].y,
+    if players[TGameSession.ConsolePlayer].didsecret then
+      V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][8].x, YAHspot[TGameSession.GameEpisode - 1][8].y,
         SCN_TMP,
           patchBEENTHERE, false);
 
     if (intertime and 16 = 0) or (interstate = 3) then
     begin // draw the destination 'X'
-      V_DrawPatch(YAHspot[gameepisode - 1][gamemap - 1].x, YAHspot[gameepisode - 1][gamemap - 1].y,
+      V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][TGameSession.GameMap - 1].x, YAHspot[TGameSession.GameEpisode - 1][TGameSession.GameMap - 1].y,
         SCN_TMP,
           patchGOINGTHERE, false);
     end;
@@ -1167,7 +1167,7 @@ begin
           V_TileScreen8(enterpic, SCN_TMP);
           IN_DrawFinished;
         end
-        else if gameepisode < 4 then
+        else if TGameSession.GameEpisode < 4 then
         begin
           V_DrawPatchFullScreenTMP320x200(patchINTERPIC);
           IN_DrawOldLevel;
@@ -1180,7 +1180,7 @@ begin
           V_TileScreen8(enterpic, SCN_TMP);
           IN_DrawEntering(10);
         end
-        else if gameepisode < 4 then
+        else if TGameSession.GameEpisode < 4 then
         begin
           V_DrawPatchFullScreenTMP320x200(patchINTERPIC);
           IN_DrawYAH;
@@ -1190,7 +1190,7 @@ begin
       begin
         if enterpic <> '' then
           V_TileScreen8(enterpic, SCN_TMP)
-        else if gameepisode < 4 then
+        else if TGameSession.GameEpisode < 4 then
           V_DrawPatchFullScreenTMP320x200(patchINTERPIC);
       end;
    else

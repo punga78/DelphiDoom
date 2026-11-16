@@ -181,7 +181,7 @@ begin
   else
     num := clipammo[Ord(ammo)] div 2;
 
-  if (gameskill = sk_baby) or (gameskill = sk_nightmare) then
+  if (TGameSession.GameSkill = sk_baby) or (TGameSession.GameSkill = sk_nightmare) then
   begin
     // give double ammo in trainer mode,
     // you'll need in nightmare
@@ -285,7 +285,7 @@ begin
   end;
 
   ammo := weaponinfo[Ord(weapon)].ammo;
-  if netgame and (deathmatch <> 2) and not dropped then
+  if TGameSession.NetGame and (TGameSession.DeathMatch <> 2) and not dropped then
   begin
   // leave placed weapons forever on net games
     if not gaveweapon then
@@ -297,13 +297,13 @@ begin
     player.bonuscount := player.bonuscount + BONUSADD;
     player.weaponowned[Ord(weapon)] := true;
 
-    if deathmatch <> 0 then
+    if TGameSession.DeathMatch <> 0 then
       P_GiveAmmo(player, ammo, 5)
     else
       P_GiveAmmo(player, ammo, 2);
     player.pendingweapon := weapon;
 
-    if (player = @players[consoleplayer]) then
+    if (player = @players[TGameSession.ConsolePlayer]) then
       S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
@@ -497,8 +497,8 @@ begin
   if power = Ord(pw_allmap) then
   begin
     // remember in mapstate
-    if gamemap < 40 then
-      player.mapstate[gamemap] := true;
+    if TGameSession.GameMap < 40 then
+      player.mapstate[TGameSession.GameMap] := true;
 
     player.powers[power] := 1;
     exit;
@@ -696,12 +696,12 @@ begin
           exit;
         end;
 
-        if netgame then
+        if TGameSession.NetGame then
           player.sigiltype := 4;
 
         player.pendingweapon := wp_sigil;
         player.st_update := true;
-        if deathmatch <> 0 then
+        if TGameSession.DeathMatch <> 0 then
         begin
           if special.special <> 0 then
           begin
@@ -859,7 +859,7 @@ begin
   P_RemoveMobj(special);
   player.bonuscount := player.bonuscount + BONUSADD;
   player._message := pickupmsg;
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 end;
 
@@ -903,15 +903,15 @@ begin
     begin
       p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
         p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
-      if netgame then
+      if TGameSession.NetGame then
       begin
         sprintf(plrkilledmsg, DEH_GetString('%s killed %s'),
           [player_names[p.allegiance], player_names[Pplayer_t(target.player).allegiance]]);
-        players[consoleplayer]._message := plrkilledmsg;
+        players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
       end;
     end;
   end
-  else if not netgame and (target.flags and MF_COUNTKILL <> 0) then
+  else if not TGameSession.NetGame and (target.flags and MF_COUNTKILL <> 0) then
   begin
     // count all monster deaths,
     // even those caused by other monsters
@@ -926,7 +926,7 @@ begin
       p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
         p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
 
-    if (gamemap = 29) and not netgame then
+    if (TGameSession.GameMap = 29) and not TGameSession.NetGame then
     begin
       // haleyjd 09/13/10: [STRIFE] Give player the bad ending.
       F_StartFinale();
@@ -934,7 +934,7 @@ begin
     end;
 
     // villsa [STRIFE] spit out inventory items when killed
-    if netgame then
+    if TGameSession.NetGame then
     begin
       while true do
       begin
@@ -978,7 +978,7 @@ begin
 
     P_DropWeapon(p);
 
-    if (p = @players[consoleplayer]) and (amstate = am_only) then
+    if (p = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1127,10 +1127,10 @@ begin
         EV_DoDoor(@junk, vld_close);
         P_NoiseAlert(players[0].mo, players[0].mo);
 
-        if deathmatch <> 0 then
+        if TGameSession.DeathMatch <> 0 then
         begin
           plrkilledmsg := DEH_GetString('You''re dead!  You set off the alarm.');
-          players[consoleplayer]._message := plrkilledmsg;
+          players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
         end;
 
         exit;
@@ -1177,10 +1177,10 @@ begin
       begin
         P_NoiseAlert(players[0].mo, players[0].mo);
 
-        if deathmatch <> 0 then
+        if TGameSession.DeathMatch <> 0 then
         begin
           plrkilledmsg := DEH_GetString('You Fool!  You''ve set off the alarm');
-          players[consoleplayer]._message := plrkilledmsg;
+          players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
           exit;
         end;
       end;
@@ -1188,7 +1188,7 @@ begin
   end;
 
   // villsa [STRIFE] toss out item
-  if (deathmatch = 0) or (mobjinfo[item].flags and MF_NOTDMATCH = 0) then
+  if (TGameSession.DeathMatch = 0) or (mobjinfo[item].flags and MF_NOTDMATCH = 0) then
   begin
     if target.flags4_ex and MF4_EX_ABSOLUTEDROPITEMPOS <> 0 then
       zpos := target.z
@@ -1251,7 +1251,7 @@ begin
     exit;
 
   player := target.player;
-  if (player <> nil) and (gameskill = sk_baby) then
+  if (player <> nil) and (TGameSession.GameSkill = sk_baby) then
     damage := damage div 2; // take half damage in trainer mode
 
   if (inflictor <> nil) and (target.flags_ex and MF_EX_FIRERESIST <> 0) then
@@ -1354,7 +1354,7 @@ begin
   // villsa [STRIFE] auto use medkits
   if player <> nil then
     if player.health < 50 then
-      if (deathmatch <> 0) or (player.cheats and CF_AUTOHEALTH <> 0) then
+      if (TGameSession.DeathMatch <> 0) or (player.cheats and CF_AUTOHEALTH <> 0) then
       begin
         while (player.health < 50) and (P_UseInventoryItem(player, Ord(SPR_MDKT))) do begin end;
         while (player.health < 50) and (P_UseInventoryItem(player, Ord(SPR_STMP))) do begin end;

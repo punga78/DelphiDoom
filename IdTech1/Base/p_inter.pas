@@ -206,13 +206,13 @@ begin
     exit;
   end;
 
-  if (gamestate = GS_LEVEL) and (players[consoleplayer].mo <> nil) then
+  if (gamestate = GS_LEVEL) and (players[TGameSession.ConsolePlayer].mo <> nil) then
   begin
-    if players[consoleplayer].health > 0 then
+    if players[TGameSession.ConsolePlayer].health > 0 then
     begin
       C_ExecuteCmd('closeconsole');
-      P_DamageMobj(players[consoleplayer].mo, nil, nil, 1000);
-      players[consoleplayer]._message := 'You give up too easy';
+      P_DamageMobj(players[TGameSession.ConsolePlayer].mo, nil, nil, 1000);
+      players[TGameSession.ConsolePlayer]._message := 'You give up too easy';
     end
     else
       printf('You''re already dead.'#13#10);

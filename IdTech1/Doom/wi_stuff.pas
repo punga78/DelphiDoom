@@ -1752,9 +1752,9 @@ begin
   case state of
     StatCount:
       begin
-        if deathmatch <> 0 then
+        if TGameSession.DeathMatch <> 0 then
           WI_UpdateDeathmatchStats
-        else if netgame then
+        else if TGameSession.NetGame then
           WI_UpdateNetgameStats
         else
           WI_UpdateStats;
@@ -1897,7 +1897,7 @@ begin
   if language = french then
   begin
     // "items"
-    if netgame and (deathmatch = 0) then
+    if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
       items := W_CacheLumpName('WIOBJ', PU_STATIC)
     else
       items := W_CacheLumpName('WIOSTI', PU_STATIC);
@@ -2044,9 +2044,9 @@ begin
   case state of
     StatCount:
       begin
-        if deathmatch <> 0 then
+        if TGameSession.DeathMatch <> 0 then
           WI_DrawDeathmatchStats
-        else if netgame then
+        else if TGameSession.NetGame then
           WI_DrawNetgameStats
         else
           WI_DrawStats;
@@ -2129,9 +2129,9 @@ begin
 
   WI_LoadData;
 
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     WI_InitDeathmatchStats
-  else if netgame then
+  else if TGameSession.NetGame then
     WI_InitNetgameStats
   else
     WI_InitStats;

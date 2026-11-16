@@ -107,24 +107,24 @@ begin
   // the level that the end of this one named (G_DoWorldDone goes to wminfo.next + 1)
   if radixnamedlevel > 0 then
     in_struct.next := radixnamedlevel - 1;
-  pl := @in_struct.plyr[consoleplayer];
+  pl := @in_struct.plyr[TGameSession.ConsolePlayer];
 
   in_input.HasSecondaryObjective := levelhassecondaryobjective;
-  in_input.SecondaryObjectiveDone := radixlevelplayers[consoleplayer].secondaryobjective;
+  in_input.SecondaryObjectiveDone := radixlevelplayers[TGameSession.ConsolePlayer].secondaryobjective;
   in_input.Kills := pl.skills;
   in_input.MaxKills := in_struct.maxkills;
   in_input.Secrets := pl.ssecret;
   in_input.MaxSecrets := in_struct.maxsecret;
   in_input.Tics := pl.stime;
   in_input.ParTics := in_struct.partime;
-  in_input.WallHitTics := radixwallhits[consoleplayer];
+  in_input.WallHitTics := radixwallhits[TGameSession.ConsolePlayer];
   in_score := TRadixDebriefing.Score(in_input);
   printf('RX_Intermission_Start(): %d tics of hits (%d from floors, ceilings and landings), par %d tics'#13#10,
-    [in_input.WallHitTics, radiximpacttics[consoleplayer], in_input.ParTics]);
+    [in_input.WallHitTics, radiximpacttics[TGameSession.ConsolePlayer], in_input.ParTics]);
 
   // RX_StorePlayerScore of Rad-X: the place is asked before the level enters the table
   in_skillplace := RX_ScoreTable.PositionOf(TRadixScoreTable.ProjectedRating(in_score));
-  RX_StoreLevelScore(in_score, gameepisode, in_struct.last + 1, Ord(gameskill), not netgame and not demoplayback);
+  RX_StoreLevelScore(in_score, TGameSession.GameEpisode, in_struct.last + 1, Ord(TGameSession.GameSkill), not TGameSession.NetGame and not demoplayback);
 end;
 
 //==============================================================================
@@ -190,7 +190,7 @@ begin
   if in_struct = nil then
     exit;
 
-  sprintf(backscreen, 'DebriefScreen%d', [gameepisode]);
+  sprintf(backscreen, 'DebriefScreen%d', [TGameSession.GameEpisode]);
   if W_CheckNumForName(backscreen) >= 0 then
     V_DrawPatchFullScreenTMP320x200(backscreen);
 

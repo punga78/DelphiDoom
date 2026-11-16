@@ -153,21 +153,21 @@ begin
 
   LView := Default(TParityPilotView);
   LView.Tic := ATic;
-  if (consoleplayer >= 0) and (consoleplayer < MAXPLAYERS) then
+  if (TGameSession.ConsolePlayer >= 0) and (TGameSession.ConsolePlayer < MAXPLAYERS) then
   begin
-    LView.Alive := (players[consoleplayer].playerstate = PST_LIVE) and (players[consoleplayer].mo <> nil);
-    LView.Health := players[consoleplayer].health;
-    if players[consoleplayer].mo <> nil then
+    LView.Alive := (players[TGameSession.ConsolePlayer].playerstate = PST_LIVE) and (players[TGameSession.ConsolePlayer].mo <> nil);
+    LView.Health := players[TGameSession.ConsolePlayer].health;
+    if players[TGameSession.ConsolePlayer].mo <> nil then
     begin
-      LView.X := players[consoleplayer].mo.x;
-      LView.Y := players[consoleplayer].mo.y;
-      LView.Z := players[consoleplayer].mo.z;
-      LView.Angle := players[consoleplayer].mo.angle;
-      LView.Speed := P_AproxDistance(players[consoleplayer].mo.momx, players[consoleplayer].mo.momy);
+      LView.X := players[TGameSession.ConsolePlayer].mo.x;
+      LView.Y := players[TGameSession.ConsolePlayer].mo.y;
+      LView.Z := players[TGameSession.ConsolePlayer].mo.z;
+      LView.Angle := players[TGameSession.ConsolePlayer].mo.angle;
+      LView.Speed := P_AproxDistance(players[TGameSession.ConsolePlayer].mo.momx, players[TGameSession.ConsolePlayer].mo.momy);
     end;
     // only a script that fights asks for the enemies: the automatic pilot never searches the level
     if LView.Alive and (gamestate = GS_LEVEL) and (APilot.EnemyRange > 0) then
-      FindEnemy(players[consoleplayer].mo, APilot.EnemyRange, LView);
+      FindEnemy(players[TGameSession.ConsolePlayer].mo, APilot.EnemyRange, LView);
   end;
   LCommand := APilot.NextCommand(LView);
 

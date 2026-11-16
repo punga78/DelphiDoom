@@ -337,7 +337,7 @@ end;
 class function TMapGameRules.SkipsAimAt(th: Pmobj_t): boolean;
 begin
   // don't aim at fellow co-op players
-  result := (th.player <> nil) and netgame and (deathmatch = 0);
+  result := (th.player <> nil) and TGameSession.NetGame and (TGameSession.DeathMatch = 0);
 end;
 
 class function TMapGameRules.AimOriginZ(t1: Pmobj_t): fixed_t;
@@ -757,7 +757,7 @@ begin
     begin
       if (thing.flags and MF_SHOOTABLE <> 0) and (thing <> TMapCheck.Thing.target) then
       begin
-        if netgame and (deathmatch = 0) and (thing.player <> nil) then
+        if TGameSession.NetGame and (TGameSession.DeathMatch = 0) and (thing.player <> nil) then
         begin // don't attack other co-op players
           result := true;
           exit;

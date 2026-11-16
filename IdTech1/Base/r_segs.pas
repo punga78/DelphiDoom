@@ -597,11 +597,11 @@ begin
   // don't overflow and crash
   if ds_p = MAXDRAWSEGS then
   begin
-    if (rndsmap <> gamemap) {$IFNDEF STRIFE}or (rndsepi <> gameepisode){$ENDIF} then
+    if (rndsmap <> TGameSession.GameMap) {$IFNDEF STRIFE}or (rndsepi <> TGameSession.GameEpisode){$ENDIF} then
       I_Warning('R_NewDrawSeg(): ds_p = MAXDRAWSEGS'#13#10);
-    rndsmap := gamemap;
+    rndsmap := TGameSession.GameMap;
     {$IFNDEF STRIFE}
-    rndsepi := gameepisode;
+    rndsepi := TGameSession.GameEpisode;
     {$ENDIF}
     result := nil;
     exit;

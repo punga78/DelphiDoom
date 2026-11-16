@@ -197,7 +197,7 @@ end;
 
 procedure THexenLevelRules.AfterSpecials;
 begin
-  R_ChangeColormap(W_GetNameForNum(P_GetMapFadeTable(gamemap)));
+  R_ChangeColormap(W_GetNameForNum(P_GetMapFadeTable(TGameSession.GameMap)));
 end;
 
 procedure THexenLevelRules.AfterLevel;
@@ -267,7 +267,7 @@ var
   LPlayer: Integer;
   LPlayerCount: Integer;
 begin
-  if deathmatch = 0 then
+  if TGameSession.DeathMatch = 0 then
     Exit;
 
   LPlayerCount := 0;

@@ -698,11 +698,11 @@ var
   i: integer;
 begin
   // give all cards in death match mode
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     for i := 0 to Ord(NUMCARDS) - 1 do
       p.cards[i] := true;
 
-  if plnum = consoleplayer then
+  if plnum = TGameSession.ConsolePlayer then
   begin
     // wake up the status bar
     ST_Start;
@@ -747,7 +747,7 @@ begin
   if mthing._type <= 4 then
   begin
     // save spots for respawning in network games
-    if not netgame and (mthing._type > 1) and (mthing._type <= dogs + 1) then
+    if not TGameSession.NetGame and (mthing._type > 1) and (mthing._type <= dogs + 1) then
     begin
       // use secretcount to avoid multiple dogs in case of multiple starts
       players[mthing._type - 1].secretcount := 1;
@@ -763,7 +763,7 @@ begin
     else
     begin
       playerstarts[mthing._type - 1] := mthing^;
-      if deathmatch = 0 then
+      if TGameSession.DeathMatch = 0 then
         spawned := P_SpawnPlayer(mthing, uthing)
       else
         spawned := nil;
@@ -778,14 +778,14 @@ begin
   result := False;
 
   //jff 3/30/98 implement "not deathmatch" thing flag
-  if netgame and (deathmatch <> 0) and (mthing.options and 32 <> 0) then
+  if TGameSession.NetGame and (TGameSession.DeathMatch <> 0) and (mthing.options and 32 <> 0) then
   begin
     result := True;
     exit;
   end;
 
   //jff 3/30/98 implement "not cooperative" thing flag
-  if netgame and (deathmatch = 0) and (mthing.options and 64 <> 0) then
+  if TGameSession.NetGame and (TGameSession.DeathMatch = 0) and (mthing.options and 64 <> 0) then
   begin
     result := True;
     exit;
@@ -1193,7 +1193,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or netgame;
+  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;
@@ -1458,7 +1458,7 @@ end;
 
 class function TMobjGameRules.HasReactionTime: boolean;
 begin
-  result := gameskill <> sk_nightmare;
+  result := TGameSession.GameSkill <> sk_nightmare;
 end;
 
 class procedure TMobjGameRules.InitStateMemory(mobj: Pmobj_t; st: Pstate_t);

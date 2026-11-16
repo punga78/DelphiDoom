@@ -58,7 +58,7 @@ uses
 
 procedure P_PlayerNextArtifact(player: Pplayer_t);
 begin
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
   begin
     dec(inv_ptr);
     if inv_ptr < 6 then
@@ -120,7 +120,7 @@ begin
 
     TUserGameRules.ClearFreedSlot(player);
     dec(player.inventorySlotNum);
-    if player = @players[consoleplayer] then
+    if player = @players[TGameSession.ConsolePlayer] then
     begin // Set position markers and get next readyArtifact
       dec(inv_ptr);
       if inv_ptr < 6 then
@@ -171,7 +171,7 @@ begin
     end;
   end;
 
-  if (gameskill = sk_baby) and (normalCount * 25 >= saveHealth) then
+  if (TGameSession.GameSkill = sk_baby) and (normalCount * 25 >= saveHealth) then
   begin // Use quartz flasks
     count := (saveHealth + 24) div 25;
     for i := 0 to count - 1 do
@@ -189,7 +189,7 @@ begin
       P_PlayerRemoveArtifact(player, superSlot);
     end;
   end
-  else if (gameskill = sk_baby) and (superCount * 100 + normalCount * 25 >= saveHealth) then
+  else if (TGameSession.GameSkill = sk_baby) and (superCount * 100 + normalCount * 25 >= saveHealth) then
   begin // Use mystic urns and quartz flasks
     count := (saveHealth + 24) div 25;
     saveHealth := saveHealth - count * 25;

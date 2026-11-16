@@ -219,6 +219,18 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>Player taking events and displaying</summary>
+    class var ConsolePlayer: integer;
+    /// <summary>Only true if packets are broadcast</summary>
+    class var NetGame: boolean;
+    /// <summary>Only if started as net death</summary>
+    class var DeathMatch: integer;
+    /// <summary>Map of the level in progress</summary>
+    class var GameMap: integer;
+    /// <summary>Skill of the game in progress</summary>
+    class var GameSkill: skill_t;
+    /// <summary>Episode of the level in progress</summary>
+    class var GameEpisode: integer;
   end;
 var
   sendpause: boolean;        // send a pause event next tic
@@ -294,22 +306,16 @@ var
   demoplayback: boolean;
   preparingdemoplayback: boolean = false;
 
-  gameepisode: integer;
-  gamemap: integer;
   gamemapinfo: Pmapentry_t;
 
-  deathmatch: integer; // only if started as net death
-  netgame: boolean; // only true if packets are broadcast
   playeringame: array[0..MAXPLAYERS - 1] of boolean;
 
-  consoleplayer: integer; // player taking events and displaying
   displayplayer: integer; // view being displayed
   gametic: integer;
 
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
 
-  gameskill: skill_t;
 
 
   precache: boolean; // if true, load all graphics at start
@@ -981,7 +987,7 @@ begin
     cmd.buttons := cmd.buttons or BT_ATTACK;
 
   if G_PlayingEngineVersion >= VERSION207 then
-    if players[consoleplayer].nextfire > leveltime then
+    if players[TGameSession.ConsolePlayer].nextfire > leveltime then
       cmd.buttons := cmd.buttons and not BT_ATTACK;
 
   if gamekeydown[key_use] or (usejoystick and joybuttons[joybuse]) then
@@ -1120,7 +1126,7 @@ begin
   cmd.forwardmove := cmd.forwardmove + _forward;
   cmd.sidemove := cmd.sidemove + side;
 
-  if players[consoleplayer].playerstate = PST_LIVE then
+  if players[TGameSession.ConsolePlayer].playerstate = PST_LIVE then
   begin
     if zaxisshift then
     begin
@@ -1140,21 +1146,21 @@ begin
     // allowplayerjumps variable controls if we accept input for jumping
     if allowplayerjumps and (gamekeydown[key_jump] or (usejoystick and joybuttons[joybjump])) then
     begin
-      if players[consoleplayer].oldjump <> 0 then
+      if players[TGameSession.ConsolePlayer].oldjump <> 0 then
         cmd_jump := 1
       else
         cmd_jump := 2
       end
     else
       cmd_jump := 0;
-    players[consoleplayer].oldjump := cmd_jump;
+    players[TGameSession.ConsolePlayer].oldjump := cmd_jump;
     // JVAL: 20211101 - Crouch
     // allowplayercrouch variable controls if we accept input for crouching
     if cmd_jump = 0 then
     begin
       if allowplayercrouch and (gamekeydown[key_crouch] or (usejoystick and joybuttons[joybcrouch])) then
       begin
-        if players[consoleplayer].oldcrouch <> 0 then
+        if players[TGameSession.ConsolePlayer].oldcrouch <> 0 then
           cmd_crouch := 2
         else
           cmd_crouch := 1
@@ -1164,7 +1170,7 @@ begin
     end
     else
       cmd_crouch := 0;
-    players[consoleplayer].oldcrouch := cmd_crouch;
+    players[TGameSession.ConsolePlayer].oldcrouch := cmd_crouch;
 
     cmd.jump_crouch :=
       ((cmd_jump shl CMD_JUMP_SHIFT) and CMD_JUMP_MASK) +
@@ -1198,7 +1204,7 @@ begin
   begin
     if gamekeydown[key_speed] and not noartiskip then
     begin
-      if players[consoleplayer].inventory[inv_ptr]._type <> Ord(arti_none) then
+      if players[TGameSession.ConsolePlayer].inventory[inv_ptr]._type <> Ord(arti_none) then
       begin
         gamekeydown[key_useartifact] := false;
         cmd.arti := $ff; // skip artifact code
@@ -1208,21 +1214,21 @@ begin
     begin
       if inventory then
       begin
-        players[consoleplayer].readyArtifact :=
-          artitype_t(players[consoleplayer].inventory[inv_ptr]._type);
+        players[TGameSession.ConsolePlayer].readyArtifact :=
+          artitype_t(players[TGameSession.ConsolePlayer].inventory[inv_ptr]._type);
         inventory := false;
         cmd.arti := 0;
         usearti := false;
       end
       else if usearti then
       begin
-        cmd.arti := players[consoleplayer].inventory[inv_ptr]._type;
+        cmd.arti := players[TGameSession.ConsolePlayer].inventory[inv_ptr]._type;
         usearti := false;
       end;
     end;
   end;
 
-  if gamekeydown[127] and (cmd.arti = 0) and (players[consoleplayer].powers[Ord(pw_weaponlevel2)] = 0) then
+  if gamekeydown[127] and (cmd.arti = 0) and (players[TGameSession.ConsolePlayer].powers[Ord(pw_weaponlevel2)] = 0) then
   begin
     gamekeydown[127] := false;
     cmd.arti := Ord(arti_tomeofpower);
@@ -1303,11 +1309,11 @@ begin
     // Heretic determines the sky texture to be used
     // depending on the current episode.
     // Set the sky map
-    if gameepisode > 5 then
+    if TGameSession.GameEpisode > 5 then
       skytexture := R_TextureNumForName(skyLumpNames[0]) // ???
     else
     begin
-      skytexture := R_CheckTextureNumForName(skyLumpNames[gameepisode - 1]);
+      skytexture := R_CheckTextureNumForName(skyLumpNames[TGameSession.GameEpisode - 1]);
       if skytexture < 0 then
         skytexture := R_TextureNumForName(skyLumpNames[0]);
     end;
@@ -1336,7 +1342,7 @@ begin
   // automatic wand start when advancing from one level to the next
   if wandstart then
   begin
-    if not TGameSession.DemoRecording and not demoplayback and not netgame then
+    if not TGameSession.DemoRecording and not demoplayback and not TGameSession.NetGame then
       G_PlayerReborn(0)
     else if (demoplayback or netdemo) and not singledemo then
     begin
@@ -1352,7 +1358,7 @@ begin
   end;
 
   PS_NewMap;
-  G_LevelLoader.SetupLevel(gameepisode, gamemap, 0, gameskill);
+  G_LevelLoader.SetupLevel(TGameSession.GameEpisode, TGameSession.GameMap, 0, TGameSession.GameSkill);
 
   // JVAL: Prevent erroneous demos
   for i := 0 to MAXPLAYERS - 1 do
@@ -1365,7 +1371,7 @@ begin
         exit;
       end;
 
-  displayplayer := consoleplayer;    // view the guy you are playing
+  displayplayer := TGameSession.ConsolePlayer;    // view the guy you are playing
   starttime := I_GetTime;
   gameaction := ga_nothing;
   Z_CheckHeap;
@@ -1404,7 +1410,7 @@ begin
     exit;
   end;
 
-  plr := @players[consoleplayer];
+  plr := @players[TGameSession.ConsolePlayer];
 //  if (ev._type = ev_keyup) and (ev.data1 = key_useartifact) then
   if (ev._type = ev_keydown) and (ev.data1 = key_useartifact) then
   begin // flag to denote that it's okay to use an artifact
@@ -1418,14 +1424,14 @@ begin
 
   // allow spy mode changes even during the demo
   if (gamestate = GS_LEVEL) and (ev._type = ev_keydown) and
-     (ev.data1 = KEY_F12) and (singledemo or (deathmatch = 0)) then
+     (ev.data1 = KEY_F12) and (singledemo or (TGameSession.DeathMatch = 0)) then
   begin
   // spy mode
     repeat
       inc(displayplayer);
       if displayplayer = MAXPLAYERS then
         displayplayer := 0;
-    until not ((not playeringame[displayplayer]) and (displayplayer <> consoleplayer));
+    until not ((not playeringame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
     result := true;
     exit;
   end;
@@ -1666,10 +1672,10 @@ begin
          (((_SHR(gametic, 5)) and 3) = i) then
       begin
         sprintf(msg, '%s is turbo!', [player_names[i]]);
-        players[consoleplayer]._message := msg;
+        players[TGameSession.ConsolePlayer]._message := msg;
       end;
 
-      if netgame and not netdemo and ((gametic mod ticdup) = 0) then
+      if TGameSession.NetGame and not netdemo and ((gametic mod ticdup) = 0) then
       begin
         if pl.mo <> nil then
           G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
@@ -1717,7 +1723,7 @@ begin
       begin
         if inventoryTics = 0 then
         begin
-          players[consoleplayer].readyArtifact :=  artitype_t(players[consoleplayer].inventory[inv_ptr]._type);
+          players[TGameSession.ConsolePlayer].readyArtifact :=  artitype_t(players[TGameSession.ConsolePlayer].inventory[inv_ptr]._type);
           inventory := false;
           pl.cmd.arti := 0;
         end;
@@ -1905,7 +1911,7 @@ begin
   for i := 0 to Ord(NUMAMMO) - 1 do
     p.maxammo[i] := maxammo[i];
 
-  if player = consoleplayer then
+  if player = TGameSession.ConsolePlayer then
   begin
     SB_state := -1; // refresh the status bar
     inv_ptr := 0; // reset the inventory pointer
@@ -1926,7 +1932,7 @@ function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
 var
   host: ISpawnSpotHost;
 begin
-  host := TPlayerRespawnHost.Create(@consoleplayer, @gameaction);
+  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @gameaction);
   result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
 end;
 
@@ -1941,7 +1947,7 @@ procedure G_DeathMatchSpawnPlayer(playernum: integer);
 var
   respawn: TPlayerRespawn;
 begin
-  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@consoleplayer, @gameaction));
+  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @gameaction));
   try
     respawn.SpawnDeathMatch(playernum);
   finally
@@ -1958,9 +1964,9 @@ procedure G_DoReborn(playernum: integer);
 var
   respawn: TPlayerRespawn;
 begin
-  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@consoleplayer, @gameaction));
+  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @gameaction));
   try
-    respawn.Respawn(playernum, netgame, deathmatch, MAXPLAYERS);
+    respawn.Respawn(playernum, TGameSession.NetGame, TGameSession.DeathMatch, MAXPLAYERS);
   finally
     respawn.Free;
   end;
@@ -2033,9 +2039,9 @@ begin
   request.IsBfgSecondEdition := false;
   request.Custom := exitcustom;
   request.SecretExit := secretexit;
-  request.Episode := gameepisode;
-  request.Map := gamemap;
-  request.ConsoleDidSecret := players[consoleplayer].didsecret;
+  request.Episode := TGameSession.GameEpisode;
+  request.Map := TGameSession.GameMap;
+  request.ConsoleDidSecret := players[TGameSession.ConsolePlayer].didsecret;
   request.PreviousNext := wminfo.next;
   request.HasMapInfo := gamemapinfo <> nil;
   request.HasEndPicture := false;
@@ -2084,7 +2090,7 @@ begin
   if plan.PartimeFromMapInfo then
     wminfo.partime := plan.Partime
   else
-    wminfo.partime := TICRATE * pars[gameepisode][gamemap];
+    wminfo.partime := TICRATE * pars[TGameSession.GameEpisode][TGameSession.GameMap];
   wminfo.nextmapinfo := G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
 
   wminfo.maxkills := P_World.Totals.Kills;
@@ -2092,7 +2098,7 @@ begin
   wminfo.maxsecret := P_World.Totals.Secrets;
   wminfo.maxfrags := 0;
 
-  wminfo.pnum := consoleplayer;
+  wminfo.pnum := TGameSession.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
@@ -2124,7 +2130,7 @@ begin
   gameaction := ga_worlddone;
 
   if secretexit then
-    players[consoleplayer].didsecret := true;
+    players[TGameSession.ConsolePlayer].didsecret := true;
 
   if gamemapinfo <> nil then
   begin
@@ -2159,9 +2165,9 @@ end;
 procedure G_DoWorldDone;
 begin
   gamestate := GS_LEVEL;
-  gameepisode := wminfo.nextep + 1;
-  gamemap := wminfo.next + 1;
-  gamemapinfo := G_LookupMapinfo(gameepisode, gamemap);
+  TGameSession.GameEpisode := wminfo.nextep + 1;
+  TGameSession.GameMap := wminfo.next + 1;
+  gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
   G_DoLoadLevel;
   gameaction := ga_nothing;
   viewactive := true;
@@ -2277,17 +2283,17 @@ begin
 
   P_UnArchiveScreenShot;
 
-  gameskill := skill_t(save_p[0]);
+  TGameSession.GameSkill := skill_t(save_p[0]);
   defaultskill := save_p[0];
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  gameepisode := save_p[0];
+  TGameSession.GameEpisode := save_p[0];
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  gamemap := save_p[0];
+  TGameSession.GameMap := save_p[0];
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  gamemapinfo := G_LookupMapinfo(gameepisode, gamemap);
+  gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
@@ -2296,7 +2302,7 @@ begin
   end;
 
   // load a base level
-  G_InitNew(gameskill, gameepisode, gamemap);
+  G_InitNew(TGameSession.GameSkill, TGameSession.GameEpisode, TGameSession.GameMap);
 
   // get the times
   P_World.Time.LevelTime^ := TSaveGameHeader.ReadLevelTime(System.PByte(save_p));
@@ -2378,13 +2384,13 @@ begin
   save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
   P_ArchiveScreenShot;
 
-  save_p[0] := Ord(gameskill);
+  save_p[0] := Ord(TGameSession.GameSkill);
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  save_p[0] := gameepisode;
+  save_p[0] := TGameSession.GameEpisode;
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  save_p[0] := gamemap;
+  save_p[0] := TGameSession.GameMap;
   save_p := PByteArray(NativeInt(save_p) + 1);
 
   for i := 0 to MAXPLAYERS - 1 do
@@ -2449,7 +2455,7 @@ begin
   gameaction := ga_nothing;
   savedescription := '';
 
-  players[consoleplayer]._message := GGSAVED;
+  players[TGameSession.ConsolePlayer]._message := GGSAVED;
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
@@ -2561,8 +2567,8 @@ begin
 
   if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
   begin
-    players[consoleplayer]._message := STSTR_CLEV;
-    G_DeferedInitNew(gameskill, epsd, map);
+    players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
     C_ExecuteCmd('closeconsole', '1');
   end
   else
@@ -2580,14 +2586,14 @@ var
 begin
   G_FinishedDemoPlayback; // JVAL: remove???
   netdemo := false;
-  netgame := false;
-  deathmatch := 0;
+  TGameSession.NetGame := false;
+  TGameSession.DeathMatch := 0;
   for i := 1 to MAXPLAYERS - 1 do
     playeringame[i] := false;
   respawnparm := false;
   fastparm := false;
   nomonsters := false;
-  consoleplayer := 0;
+  TGameSession.ConsolePlayer := 0;
   G_InitNew(d_skill, d_episode, d_map);
   gameaction := ga_nothing;
 end;
@@ -2647,7 +2653,7 @@ begin
   TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
-  LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, gameskill = sk_nightmare);
+  LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, TGameSession.GameSkill = sk_nightmare);
   if LSpeedChange = sscFast then
   begin
     for i := 0 to nummobjtypes - 1 do
@@ -2670,10 +2676,10 @@ begin
   G_FinishedDemoPlayback;
   amstate := am_inactive;
   viewactive := true;
-  gameepisode := episode;
-  gamemap := map;
-  gameskill := skill;
-  gamemapinfo := G_LookupMapinfo(gameepisode, gamemap);
+  TGameSession.GameEpisode := episode;
+  TGameSession.GameMap := map;
+  TGameSession.GameSkill := skill;
+  gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
 
   viewactive := true;
 
@@ -2845,17 +2851,17 @@ begin
 
   LHeader := Default(TDemoHeader);
   LHeader.Version := VERSION;
-  LHeader.Skill := Ord(gameskill);
-  LHeader.Episode := gameepisode;
-  LHeader.Map := gamemap;
-  LHeader.Deathmatch := deathmatch;
+  LHeader.Skill := Ord(TGameSession.GameSkill);
+  LHeader.Episode := TGameSession.GameEpisode;
+  LHeader.Map := TGameSession.GameMap;
+  LHeader.Deathmatch := TGameSession.DeathMatch;
   LHeader.Respawn := respawnparm;
   LHeader.Fast := fastparm;
   LHeader.NoMonsters := nomonsters;
   LHeader.Compatibility := compatibilitymode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
-  LHeader.ConsolePlayer := consoleplayer;
+  LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
   for i := 0 to MAXPLAYERS - 1 do
     LHeader.PlayersInGame[i] := playeringame[i];
 
@@ -3020,7 +3026,7 @@ begin
   skill := skill_t(LHeader.Skill);
   episode := LHeader.Episode;
   map := LHeader.Map;
-  deathmatch := LHeader.Deathmatch;
+  TGameSession.DeathMatch := LHeader.Deathmatch;
   respawnparm := LHeader.Respawn;
   fastparm := LHeader.Fast;
   nomonsters := LHeader.NoMonsters;
@@ -3033,14 +3039,14 @@ begin
   if LHeader.HasSeed then
     M_SetSystemRandomSeed(LHeader.Seed);
 
-  consoleplayer := LHeader.ConsolePlayer;
+  TGameSession.ConsolePlayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
     playeringame[i] := LHeader.PlayersInGame[i];
 
   if playeringame[1] then
   begin
-    netgame := true;
+    TGameSession.NetGame := true;
     netdemo := true;
   end;
 
@@ -3111,14 +3117,14 @@ begin
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
     netdemo := false;
-    netgame := false;
-    deathmatch := 0;
+    TGameSession.NetGame := false;
+    TGameSession.DeathMatch := 0;
     for i := 1 to MAXPLAYERS - 1 do
       playeringame[i] := false;
     respawnparm := false;
     fastparm := false;
     nomonsters := false;
-    consoleplayer := 0;
+    TGameSession.ConsolePlayer := 0;
     D_AdvanceDemo;
     result := true;
     exit;

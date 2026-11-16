@@ -709,7 +709,7 @@ var
   initial: boolean;
 begin
   if continueafterplayerdeath then
-    if not netgame and (players[0].health <= 0) then
+    if not TGameSession.NetGame and (players[0].health <= 0) then
     begin
       result := P_LookForMonsters(actor);
       exit;
@@ -968,7 +968,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (gameskill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -985,7 +985,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (gameskill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -998,7 +998,7 @@ begin
   end;
 
   // possibly choose another target
-  if netgame and
+  if TGameSession.NetGame and
     (actor.threshold = 0) and
     not P_CheckSight(actor, actor.target) then
   begin
@@ -1093,7 +1093,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (gameskill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -1113,7 +1113,7 @@ begin
   begin
     if (G_PlayingEngineVersion <= VERSION110) or (G_PlayingEngineVersion > VERSION205) then
     begin
-      if not ((gameskill < sk_nightmare) and not fastparm and (actor.movecount <> 0)) then
+      if not ((TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0)) then
         if P_CheckMissileRange(actor) then
         begin
           P_SetMobjState(actor, statenum_t(actor.info.missilestate));
@@ -1124,7 +1124,7 @@ begin
     else
     begin
       nomissile := False;
-      if (gameskill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+      if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
         nomissile := True
       else if not P_CheckMissileRange(actor) then
         nomissile := True;
@@ -1138,7 +1138,7 @@ begin
   end;
 
   // possibly choose another target
-  if netgame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
+  if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
   begin
     if P_LookForPlayers(actor, True) then
       exit;  // got a new target
@@ -2252,7 +2252,7 @@ begin
 
   if gamemode = commercial then
   begin
-    if gamemap <> 7 then
+    if TGameSession.GameMap <> 7 then
       exit;
 
     if mo.flags4_ex and MF4_EX_MAP07BOSS = 0 then
@@ -2260,31 +2260,31 @@ begin
   end
   else
   begin
-    case gameepisode of
+    case TGameSession.GameEpisode of
       1:
         begin
-          if gamemap <> 8 then
+          if TGameSession.GameMap <> 8 then
             exit;
           if mo.flags4_ex and MF4_EX_E1M8BOSS = 0 then
             exit;
         end;
       2:
         begin
-          if gamemap <> 8 then
+          if TGameSession.GameMap <> 8 then
             exit;
           if mo.flags4_ex and MF4_EX_E2M8BOSS = 0 then
             exit;
         end;
       3:
         begin
-          if gamemap <> 8 then
+          if TGameSession.GameMap <> 8 then
             exit;
           if mo.flags4_ex and MF4_EX_E3M8BOSS = 0 then
             exit;
         end;
       4:
         begin
-          case gamemap of
+          case TGameSession.GameMap of
             6: if mo.flags4_ex and MF4_EX_E4M6BOSS = 0 then
                  exit;
             8: if mo.flags4_ex and MF4_EX_E4M8BOSS = 0 then
@@ -2298,7 +2298,7 @@ begin
         end;
     else
       begin
-        if gamemap <> 8 then
+        if TGameSession.GameMap <> 8 then
           exit;
       end;
     end;
@@ -2336,7 +2336,7 @@ begin
   // victory!
   if gamemode = commercial then
   begin
-    if gamemap = 7 then
+    if TGameSession.GameMap = 7 then
     begin
       if mo.flags4_ex and MF4_EX_MAP07BOSS1 <> 0 then
       begin
@@ -2354,7 +2354,7 @@ begin
   end
   else
   begin
-    case gameepisode of
+    case TGameSession.GameEpisode of
       1:
         begin
           junk.tag := 666;
@@ -2363,13 +2363,13 @@ begin
         end;
       4:
         begin
-          if gamemap = 6 then
+          if TGameSession.GameMap = 6 then
           begin
             junk.tag := 666;
             EV_DoDoor(@junk, blazeOpen);
             exit;
           end
-          else if gamemap = 8 then
+          else if TGameSession.GameMap = 8 then
           begin
             junk.tag := 666;
             EV_DoFloor(@junk, lowerFloorToLowest);
@@ -2623,7 +2623,7 @@ var
   newmobj: Pmobj_t;
 begin
   easy := easy xor 1;
-  if (gameskill <= sk_easy) and (easy = 0) then
+  if (TGameSession.GameSkill <= sk_easy) and (easy = 0) then
     exit;
 
   if numbraintargets = 0 then // JVAL
@@ -2671,7 +2671,7 @@ begin
   fbraineasy := mapvars.IntVal[S_EASY];
   fbraineasy := fbraineasy xor 1;
   mapvars.IntVal[S_EASY] := fbraineasy;
-  if (gameskill <= sk_easy) and (fbraineasy = 0) then
+  if (TGameSession.GameSkill <= sk_easy) and (fbraineasy = 0) then
     exit;
 
   fnumbraintargets := mapvars.IntVal[S_NUMBRAINSTARGETS];
@@ -2931,7 +2931,7 @@ begin
   // check for missile attack
   if actor.info.missilestate <> 0 then
   begin
-    if (gameskill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -2945,7 +2945,7 @@ begin
   end;
 
   // possibly choose another target
-  if netgame and
+  if TGameSession.NetGame and
     (actor.threshold = 0) and
     not P_CheckSight(actor, actor.target) then
   begin

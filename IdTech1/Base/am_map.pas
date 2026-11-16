@@ -472,7 +472,7 @@ begin
   if gamestate = GS_LEVEL then
   begin
     // find player to center on initially
-    pnum := consoleplayer;
+    pnum := TGameSession.ConsolePlayer;
     if not playeringame[pnum] then
     begin
       pnum := -1;
@@ -677,16 +677,16 @@ begin
   stopped := false;
 
 {$IFDEF STRIFE}
-  if (lastlevel <> gamemap) or
+  if (lastlevel <> TGameSession.GameMap) or
 {$ELSE}
-  if (lastlevel <> gamemap) or (lastepisode <> gameepisode) or
+  if (lastlevel <> TGameSession.GameMap) or (lastepisode <> TGameSession.GameEpisode) or
 {$ENDIF}
      (lastscreenwidth <> SCREENWIDTH) or (lastscreenheight <> SCREENHEIGHT) then
   begin
     AM_LevelInit;
-    lastlevel := gamemap;
+    lastlevel := TGameSession.GameMap;
 {$IFNDEF STRIFE}
-    lastepisode := gameepisode;
+    lastepisode := TGameSession.GameEpisode;
 {$ENDIF}
     lastscreenwidth := SCREENWIDTH;
     lastscreenheight := SCREENHEIGHT;
@@ -1213,7 +1213,7 @@ begin
       if TAutomapGameRules.MappedWallColor(pl, am_cheating, lightlev, color) then
         AM_drawMline(@l, color);
     end
-    else if TAutomapGameRules.ShowsAllMapLines(plr.powers[Ord(pw_allmap)] <> 0, gamemap) then
+    else if TAutomapGameRules.ShowsAllMapLines(plr.powers[Ord(pw_allmap)] <> 0, TGameSession.GameMap) then
     begin
       if pl.flags and LINE_NEVERSEE = 0 then
         AM_drawMline(@l, TAutomapGameRules.AllMapWallColor);
@@ -1350,7 +1350,7 @@ var
   their_color, color, trcolor: integer;
   x, y: fixed_t;
 begin
-  if not netgame then
+  if not TGameSession.NetGame then
   begin
     if am_cheating <> 0 then
       AM_drawLineCharacter
@@ -1370,7 +1370,7 @@ begin
     inc(their_color);
     p := @players[i];
 
-    if (deathmatch <> 0) and not singledemo and (p <> plr) then
+    if (TGameSession.DeathMatch <> 0) and not singledemo and (p <> plr) then
       continue;
 
     if not playeringame[i] then

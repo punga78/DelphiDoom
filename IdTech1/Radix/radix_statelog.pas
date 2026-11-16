@@ -145,13 +145,13 @@ begin
   if not statelog_open then
     exit;
 
-  p := @players[consoleplayer];
+  p := @players[TGameSession.ConsolePlayer];
   if p.mo = nil then
     exit;
   rp := RX_PlayerState(p);
   s := Format('map=%d health=%d armor=%d energy=%d reserve=%d bombs=%d burner=%d cannons=%d spreader=%d ' +
     'powers=%d,%d,%d,%d,%d kills=%d',
-    [gamemap, p.health, p.armorpoints, rp.energy, rp.energy_reserve, rp.plasmabombs, Ord(rp.afterburner),
+    [TGameSession.GameMap, p.health, p.armorpoints, rp.energy, rp.energy_reserve, rp.plasmabombs, Ord(rp.afterburner),
      rp.neutroncannonlevel, rp.neutronspreaderlevel,
      // the powers count their tics down: only whether they are on
      Ord(rp.radixpowers[0] > 0), Ord(rp.radixpowers[1] > 0), Ord(rp.radixpowers[2] > 0),

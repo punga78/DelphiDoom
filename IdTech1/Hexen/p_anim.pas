@@ -202,7 +202,7 @@ begin
         end;
         inc(tempSec);
       end;
-      SkyTexture := P_GetMapSky1Texture(gamemap);
+      SkyTexture := P_GetMapSky1Texture(TGameSession.GameMap);
     end;
     exit;
   end;
@@ -243,7 +243,7 @@ begin
   end;
   if foundSec then
   begin
-    SkyTexture := P_GetMapSky2Texture(gamemap); // set alternate sky
+    SkyTexture := P_GetMapSky2Texture(TGameSession.GameMap); // set alternate sky
     S_StartSound(nil, Ord(SFX_THUNDER_CRASH));
   end;
   // Calculate the next lighting flash
@@ -357,7 +357,7 @@ var
   i: integer;
   secCount: integer;
 begin
-  if not P_GetMapLightning(gamemap) then
+  if not P_GetMapLightning(TGameSession.GameMap) then
   begin
     LevelHasLightning := false;
     LightningFlash := 0;

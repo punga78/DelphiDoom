@@ -178,7 +178,7 @@ begin
   else
     num := clipammo[Ord(ammo)] div 2;
 
-  if (gameskill = sk_baby) or (gameskill = sk_nightmare) then
+  if (TGameSession.GameSkill = sk_baby) or (TGameSession.GameSkill = sk_nightmare) then
   begin
     // give double ammo in trainer mode,
     // you'll need in nightmare
@@ -264,7 +264,7 @@ var
   ammo: ammotype_t;
 begin
   ammo := weaponinfo[Ord(weapon)].ammo;
-  if netgame and (deathmatch <> 2) and not dropped then
+  if TGameSession.NetGame and (TGameSession.DeathMatch <> 2) and not dropped then
   begin
   // leave placed weapons forever on net games
     if player.weaponowned[Ord(weapon)] <> 0 then
@@ -276,13 +276,13 @@ begin
     player.bonuscount := player.bonuscount + BONUSADD;
     player.weaponowned[Ord(weapon)] := 1;
 
-    if deathmatch <> 0 then
+    if TGameSession.DeathMatch <> 0 then
       P_GiveAmmo(player, ammo, 5)
     else
       P_GiveAmmo(player, ammo, 2);
     player.pendingweapon := weapon;
 
-    if (player = @players[consoleplayer]) then
+    if (player = @players[TGameSession.ConsolePlayer]) then
       S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
@@ -477,7 +477,7 @@ begin
         if not player.cards[Ord(it_bluecard)] then
           player._message := GOTBLUECARD;
         P_GiveCard(player, it_bluecard);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -493,7 +493,7 @@ begin
         if not player.cards[Ord(it_yellowcard)] then
           player._message := GOTYELWCARD;
         P_GiveCard(player, it_yellowcard);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -509,7 +509,7 @@ begin
         if not player.cards[Ord(it_redcard)] then
           player._message := GOTREDCARD;
         P_GiveCard(player, it_redcard);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -525,7 +525,7 @@ begin
         if not player.cards[Ord(it_blueskull)] then
           player._message := GOTBLUESKUL;
         P_GiveCard(player, it_blueskull);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -541,7 +541,7 @@ begin
         if not player.cards[Ord(it_yellowskull)] then
           player._message := GOTYELWSKUL;
         P_GiveCard(player, it_yellowskull);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -557,7 +557,7 @@ begin
         if not player.cards[Ord(it_redskull)] then
           player._message := GOTREDSKULL;
         P_GiveCard(player, it_redskull);
-        if netgame then
+        if TGameSession.NetGame then
         begin
           if special.special <> 0 then
           begin
@@ -822,7 +822,7 @@ begin
 
   P_RemoveMobj(special);
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[consoleplayer] then
+  if player = @players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 end;
 
@@ -859,7 +859,7 @@ begin
       Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
         Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
   end
-  else if not netgame and (target.flags and MF_COUNTKILL <> 0) then
+  else if not TGameSession.NetGame and (target.flags and MF_COUNTKILL <> 0) then
   begin
     // count all monster deaths,
     // even those caused by other monsters
@@ -886,7 +886,7 @@ begin
 
     P_DropWeapon(target.player);
 
-    if (target.player = @players[consoleplayer]) and (amstate = am_only) then
+    if (target.player = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1016,7 +1016,7 @@ begin
     // a game with its own scale of the damage to a player replaces the trainer mode (Radix)
     if TPhysicsExtension.Enabled then
       damage := TPhysicsExtension.PlayerDamage(target, inflictor, damage)
-    else if gameskill = sk_baby then
+    else if TGameSession.GameSkill = sk_baby then
       damage := _SHR1(damage); // take half damage in trainer mode
   end;
 

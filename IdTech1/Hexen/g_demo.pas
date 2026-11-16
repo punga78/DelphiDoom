@@ -237,14 +237,14 @@ begin
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
     netdemo := false;
-    netgame := false;
-    deathmatch := 0;
+    TGameSession.NetGame := false;
+    TGameSession.DeathMatch := 0;
     for i := 1 to MAXPLAYERS - 1 do
       playeringame[i] := false;
     respawnparm := false;
     fastparm := false;
     nomonsters := false;
-    consoleplayer := 0;
+    TGameSession.ConsolePlayer := 0;
     D_AdvanceDemo;
     result := true;
     exit;
@@ -418,17 +418,17 @@ begin
 
   LHeader := Default(TDemoHeader);
   LHeader.Version := VERSION;
-  LHeader.Skill := Ord(gameskill);
-  LHeader.Episode := gameepisode;
-  LHeader.Map := gamemap;
-  LHeader.Deathmatch := deathmatch;
+  LHeader.Skill := Ord(TGameSession.GameSkill);
+  LHeader.Episode := TGameSession.GameEpisode;
+  LHeader.Map := TGameSession.GameMap;
+  LHeader.Deathmatch := TGameSession.DeathMatch;
   LHeader.Respawn := respawnparm;
   LHeader.Fast := fastparm;
   LHeader.NoMonsters := nomonsters;
   LHeader.Compatibility := compatibilitymode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
-  LHeader.ConsolePlayer := consoleplayer;
+  LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
   for i := 0 to MAXPLAYERS - 1 do
     LHeader.PlayersInGame[i] := playeringame[i];
 
@@ -593,7 +593,7 @@ begin
   skill := skill_t(LHeader.Skill);
   episode := LHeader.Episode;
   map := LHeader.Map;
-  deathmatch := LHeader.Deathmatch;
+  TGameSession.DeathMatch := LHeader.Deathmatch;
   respawnparm := LHeader.Respawn;
   fastparm := LHeader.Fast;
   nomonsters := LHeader.NoMonsters;
@@ -609,14 +609,14 @@ begin
   else
     M_SetSystemRandomSeed(0);
 
-  consoleplayer := LHeader.ConsolePlayer;
+  TGameSession.ConsolePlayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
     playeringame[i] := LHeader.PlayersInGame[i];
 
   if playeringame[1] then
   begin
-    netgame := true;
+    TGameSession.NetGame := true;
     netdemo := true;
   end;
 

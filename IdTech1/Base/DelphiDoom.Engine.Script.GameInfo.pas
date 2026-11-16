@@ -51,18 +51,18 @@ end;
 
 function TEngineScriptGameInfo.Skill: Integer;
 begin
-  Result := Ord(g_game.gameskill);
+  Result := Ord(TGameSession.GameSkill);
 end;
 
 function TEngineScriptGameInfo.MapNumber: Integer;
 begin
-  Result := g_game.gamemap;
+  Result := TGameSession.GameMap;
 end;
 
 function TEngineScriptGameInfo.Episode: Integer;
 begin
 {$IFDEF DOOM_OR_HERETIC}
-  Result := g_game.gameepisode;
+  Result := TGameSession.GameEpisode;
 {$ELSE}
   // Hexen and Strife have no episodes: scripts do not have the function
   Result := 0;

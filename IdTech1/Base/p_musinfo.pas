@@ -122,7 +122,7 @@ begin
   while mo <> nil do
   begin
     if mo.player <> nil then
-      if mo.player = @players[consoleplayer] then
+      if mo.player = @players[TGameSession.ConsolePlayer] then
       begin
         playeronsector := 1;
         break;
@@ -158,9 +158,9 @@ begin
     musid := P_GetMobjCustomParamValue(actor, S_MUSINFO_PARAM, -1);
     if musid >= 0 then
     begin
-      levelname := P_GetMapName({$IFDEF DOOM_OR_HERETIC}gameepisode, {$ENDIF}gamemap);
+      levelname := P_GetMapName({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap);
       if musid = 0 then
-        musnumber := S_DefaultMusicForMap({$IFDEF DOOM_OR_HERETIC}gameepisode, {$ENDIF}gamemap)
+        musnumber := S_DefaultMusicForMap({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap)
       else
         musnumber := P_FindMusinfoMusic(musid, levelname);
       if musnumber > 0 then

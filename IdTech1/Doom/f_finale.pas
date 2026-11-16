@@ -241,7 +241,7 @@ begin
       begin
         if not mus_changed then
           S_ChangeMusic(Ord(mus_victor), true);
-        case gameepisode of
+        case TGameSession.GameEpisode of
           1:
             begin
               finaleflat := bgflatE1;
@@ -271,7 +271,7 @@ begin
       begin
         if not mus_changed then
           S_ChangeMusic(Ord(mus_read_m), true);
-        case gamemap of
+        case TGameSession.GameMap of
           6:
             begin
               finaleflat := bgflat06;
@@ -443,7 +443,7 @@ begin
     begin
       if using_FMI then
         FMI_Ticker
-      else if gamemap = 30 then
+      else if TGameSession.GameMap = 30 then
         F_StartCast
       else
         gameaction := ga_worlddone;
@@ -468,7 +468,7 @@ begin
       finalecount := 0;
       finalestage := 1;
       wipegamestate := -1;    // force a wipe
-      if gameepisode = 3 then
+      if TGameSession.GameEpisode = 3 then
         S_StartMusic(Ord(mus_bunny));
     end;
   end;
@@ -968,7 +968,7 @@ begin
     exit;
   end;
 
-  case gameepisode of
+  case TGameSession.GameEpisode of
     1:
       begin
         if gamemode = retail then

@@ -1006,7 +1006,7 @@ begin
     if mthing.options and MTF_ONMIDSECTOR <> 0 then
       z := sectors[ss.sector.midsec].ceilingheight;
 
-  if randomclass and (deathmatch <> 0) then
+  if randomclass and (TGameSession.DeathMatch <> 0) then
   begin
     p._class := Pclass_t(P_Random mod 3);
     if p._class = PlayerClass[mthing._type - 1] then
@@ -1114,7 +1114,7 @@ begin
   P_SetupPsprites(p);
 
   // give all cards in death match mode
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     p.keys := 2047;
   end;
@@ -1212,7 +1212,7 @@ begin
       uplayerstarts[mthing.arg1, mthing._type - 1].x := mthing.x * FRACUNIT;
       uplayerstarts[mthing.arg1, mthing._type - 1].y := mthing.y * FRACUNIT;
     end;
-    if (deathmatch = 0) and (mthing.arg1 = 0) then
+    if (TGameSession.DeathMatch = 0) and (mthing.arg1 = 0) then
       result := P_SpawnPlayer(mthing, uthing);
     exit;
   end;
@@ -1230,7 +1230,7 @@ begin
       uplayerstarts[mthing.arg1, mthing._type - 1].x := mthing.x * FRACUNIT;
       uplayerstarts[mthing.arg1, mthing._type - 1].y := mthing.y * FRACUNIT;
     end;
-    if (deathmatch = 0) and (mthing.arg1 = 0) then
+    if (TGameSession.DeathMatch = 0) and (mthing.arg1 = 0) then
       result := P_SpawnPlayer(mthing, uthing);
     exit;
   end;
@@ -1242,11 +1242,11 @@ begin
   end;
 
   // Check current game type with spawn flags
-  if not netgame then
+  if not TGameSession.NetGame then
   begin
     spawnMask := MTF_GSINGLE;
   end
-  else if deathmatch <> 0 then
+  else if TGameSession.DeathMatch <> 0 then
   begin
     spawnMask := MTF_GDEATHMATCH;
   end
@@ -1260,7 +1260,7 @@ begin
 
   if uthing <> nil then
   begin
-    bit := _SHL(1, Ord(gameskill));
+    bit := _SHL(1, Ord(TGameSession.GameSkill));
     if bit and uthing.extraflags = 0 then
     begin
       result := nil;
@@ -1270,9 +1270,9 @@ begin
   else
   begin
     // Check current skill with spawn flags
-    if (gameskill = sk_baby) or (gameskill = sk_easy) then
+    if (TGameSession.GameSkill = sk_baby) or (TGameSession.GameSkill = sk_easy) then
       spawnMask := MTF_EASY
-    else if (gameskill = sk_hard) or (gameskill = sk_nightmare) then
+    else if (TGameSession.GameSkill = sk_hard) or (TGameSession.GameSkill = sk_nightmare) then
       spawnMask := MTF_HARD
     else
       spawnMask := MTF_NORMAL;
@@ -1281,14 +1281,14 @@ begin
   end;
 
   // Check current character classes with spawn flags
-  if not netgame then
+  if not TGameSession.NetGame then
   begin // Single player
     if mthing.options and classFlags[Ord(PlayerClass[0])] = 0 then
     begin // Not for current class
       exit;
     end;
   end
-  else if deathmatch = 0 then
+  else if TGameSession.DeathMatch = 0 then
   begin // Cooperative
     spawnMask := 0;
     for i := 0 to MAXPLAYERS - 1 do
@@ -1320,7 +1320,7 @@ begin
       exit;
   end;
   // don't spawn keycards and players in deathmatch
-  if (deathmatch <> 0) and (mobjinfo[i].flags and MF_NOTDMATCH <> 0) then
+  if (TGameSession.DeathMatch <> 0) and (mobjinfo[i].flags and MF_NOTDMATCH <> 0) then
     exit;
 
   // don't spawn any monsters if -nomonsters
@@ -2459,12 +2459,12 @@ end;
 
 class function TMobjGameRules.SummonerRadius: fixed_t;
 begin
-  result := players[consoleplayer].mo.info.radius;
+  result := players[TGameSession.ConsolePlayer].mo.info.radius;
 end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or netgame;
+  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;
@@ -2883,7 +2883,7 @@ end;
 
 class function TMobjGameRules.HasReactionTime: boolean;
 begin
-  result := gameskill <> sk_nightmare;
+  result := TGameSession.GameSkill <> sk_nightmare;
 end;
 
 class procedure TMobjGameRules.InitStateMemory(mobj: Pmobj_t; st: Pstate_t);

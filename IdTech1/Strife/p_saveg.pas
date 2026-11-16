@@ -579,7 +579,7 @@ var
   end;
 
 begin
-  levelinf := P_GetLevelInfo(P_GetMapName(gamemap));
+  levelinf := P_GetLevelInfo(P_GetMapName(TGameSession.GameMap));
   _put_char8(levelinf.musname);
   _put_char8(levelinf.skyflat);
 
@@ -663,7 +663,7 @@ begin
 
   if savegameversion >= VERSION205 then
   begin
-    levelinf := P_GetLevelInfo(P_GetMapName(gamemap));
+    levelinf := P_GetLevelInfo(P_GetMapName(TGameSession.GameMap));
     levelinf.musname := Pchar8_t(get)^;
     get := @get[SizeOf(char8_t) div SizeOf(SmallInt)];
     levelinf.skyflat := Pchar8_t(get)^;
@@ -951,7 +951,7 @@ begin
     exit;
   end;
 
-  levelinf := P_GetLevelInfo(P_GetMapName(gamemap));
+  levelinf := P_GetLevelInfo(P_GetMapName(TGameSession.GameMap));
   levelinf.musname := _get_char8;
   levelinf.skyflat := _get_char8;
 

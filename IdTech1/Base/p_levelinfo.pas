@@ -111,7 +111,7 @@ var
   musname: string;
   i: integer;
 begin
-  levelname := P_GetMapName({$IFDEF DOOM_OR_HERETIC}gameepisode, {$ENDIF}gamemap);
+  levelname := P_GetMapName({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap);
   linfo := P_GetLevelInfo(levelname);
   musname := strtrim(strupper(char8tostring(linfo.musname)));
   if musname = '' then

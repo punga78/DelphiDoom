@@ -12184,7 +12184,7 @@ begin
   amount := psp.state.params.IntVal[0];
   if amount <= 0 then
   begin
-    if (player.powers[Ord(pw_weaponlevel2)] <> 0) and (deathmatch = 0) then
+    if (player.powers[Ord(pw_weaponlevel2)] <> 0) and (TGameSession.DeathMatch = 0) then
       amount := WeaponAmmoUsePL2[Ord(player.readyweapon)]
     else
       amount := WeaponAmmoUsePL1[Ord(player.readyweapon)];
@@ -12271,7 +12271,7 @@ begin
   amount := psp.state.params.IntVal[0];
   if amount <= 0 then
   begin
-    if (player.powers[Ord(pw_weaponlevel2)] <> 0) and (deathmatch = 0) then
+    if (player.powers[Ord(pw_weaponlevel2)] <> 0) and (TGameSession.DeathMatch = 0) then
       amount := WeaponAmmoUsePL2[Ord(player.readyweapon)]
     else
       amount := WeaponAmmoUsePL1[Ord(player.readyweapon)];

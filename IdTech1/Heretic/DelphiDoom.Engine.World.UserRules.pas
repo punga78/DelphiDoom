@@ -205,7 +205,7 @@ var
   destY: fixed_t;
   destAngle: angle_t;
 begin
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
   begin
     selections := deathmatch_p;
     i := P_Random mod selections;
@@ -253,7 +253,7 @@ begin
       if P_UseArtifact(player, arti) then
       begin // Artifact was used - remove it from inventory
         P_PlayerRemoveArtifact(player, i);
-        if player = @players[consoleplayer] then
+        if player = @players[TGameSession.ConsolePlayer] then
         begin
           S_StartSound(nil, Ord(sfx_artiuse));
           ArtifactFlash := 4;

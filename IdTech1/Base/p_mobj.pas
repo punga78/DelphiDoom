@@ -419,14 +419,14 @@ begin
     exit;
   end;
 
-  if players[consoleplayer].mo = nil then
+  if players[TGameSession.ConsolePlayer].mo = nil then
     exit;
 
-  angle := players[consoleplayer].mo.angle;
+  angle := players[TGameSession.ConsolePlayer].mo.angle;
   an := angle shr ANGLETOFINESHIFT;
   dist := TMobjGameRules.SummonerRadius + mobjinfo[mobjno].radius + 32 * FRACUNIT;
-  x := players[consoleplayer].mo.x + FixedMul(dist, finecosine[an]);
-  y := players[consoleplayer].mo.y + FixedMul(dist, finesine[an]);
+  x := players[TGameSession.ConsolePlayer].mo.x + FixedMul(dist, finecosine[an]);
+  y := players[TGameSession.ConsolePlayer].mo.y + FixedMul(dist, finesine[an]);
   z := TMobjGameRules.SpawnHeightOfType(mobjno);
 
   mo := P_SpawnMobj(x, y, z, mobjno);
@@ -1107,7 +1107,7 @@ var
   queue: TRespawnQueue<mapthing_t>;
 begin
   // only respawn items in deathmatch
-  if deathmatch <> 2 then
+  if TGameSession.DeathMatch <> 2 then
     exit; //
 
   queue := P_World.ItemRespawn;

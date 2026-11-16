@@ -166,7 +166,7 @@ end;
 function TEngineNetGame.ExpectedConsistency: SmallInt;
 begin
   CheckStarted;
-  Result := FConsistency.Expected(consoleplayer, FSync.MakeTic);
+  Result := FConsistency.Expected(TGameSession.ConsolePlayer, FSync.MakeTic);
 end;
 
 procedure TEngineNetGame.VerifyConsistency(const APlayer: Integer; const AReceived: SmallInt;
@@ -222,7 +222,7 @@ procedure TEngineNetGame.ArbitrateStart;
 var
   LInfo: TNetSetupInfo;
 begin
-  if consoleplayer <> 0 then
+  if TGameSession.ConsolePlayer <> 0 then
     SUC_StartingNetwork('listening for network start info...')
   else
     SUC_StartingNetwork('sending network start info...');
@@ -230,7 +230,7 @@ begin
   LInfo := Default(TNetSetupInfo);
   LInfo.EngineVersion := D_EngineVersion;
   LInfo.Skill := Ord(startskill);
-  LInfo.Deathmatch := deathmatch;
+  LInfo.Deathmatch := TGameSession.DeathMatch;
   LInfo.NoMonsters := nomonsters;
   LInfo.Respawn := respawnparm;
 {$IFDEF STRIFE}
@@ -253,12 +253,12 @@ begin
 {$ENDIF}
 
   LInfo := TNetFactory.CreateStartArbiter(FSync as INetPacketPort, FServices,
-    net_numnodes, consoleplayer).Arbitrate(LInfo);
+    net_numnodes, TGameSession.ConsolePlayer).Arbitrate(LInfo);
 
-  if consoleplayer <> 0 then
+  if TGameSession.ConsolePlayer <> 0 then
   begin
     startskill := skill_t(LInfo.Skill);
-    deathmatch := LInfo.Deathmatch;
+    TGameSession.DeathMatch := LInfo.Deathmatch;
     nomonsters := LInfo.NoMonsters;
     respawnparm := LInfo.Respawn;
 {$IFDEF STRIFE}
@@ -289,7 +289,7 @@ begin
   // I_InitNetwork sets netgame and what the command line says
   I_InitNetwork;
 
-  consoleplayer := net_consoleplayer;
+  TGameSession.ConsolePlayer := net_consoleplayer;
   displayplayer := net_consoleplayer;
   ticdup := net_ticdup;
 
@@ -298,10 +298,10 @@ begin
 
   try
     LTransport := nil;
-    if netgame then
+    if TGameSession.NetGame then
       LTransport := TNetFactory.CreateWinsockTransport(net_port, net_peers);
 
-    LSettings := TNetSyncSettings.Make(net_numnodes, MAXPLAYERS, consoleplayer);
+    LSettings := TNetSyncSettings.Make(net_numnodes, MAXPLAYERS, TGameSession.ConsolePlayer);
     LSettings.TicDup := ticdup;
     LSettings.ExtraTics := net_extratics;
     LSettings.TicRate := TICRATE;
@@ -310,7 +310,7 @@ begin
     FPlanner := FSync as INetTicPlanner;
     FConsistency := TNetFactory.CreateConsistencyTracker(MAXPLAYERS, ticdup);
 
-    if netgame then
+    if TGameSession.NetGame then
     begin
       autostart := true;
       ArbitrateStart;
@@ -323,13 +323,13 @@ begin
   end;
 
   printf(' startskill %d  deathmatch: %d  startmap: %d' {$IFNDEF STRIFE} + '  startepisode: %d'{$ENDIF} +#13#10,
-    [Ord(startskill), deathmatch, startmap{$IFNDEF STRIFE}, startepisode{$ENDIF}]);
+    [Ord(startskill), TGameSession.DeathMatch, startmap{$IFNDEF STRIFE}, startepisode{$ENDIF}]);
 
   for LIndex := 0 to net_numnodes - 1 do
     playeringame[LIndex] := true;
 
   printf(' player %d of %d (%d nodes)'#13#10,
-    [consoleplayer + 1, net_numnodes, net_numnodes]);
+    [TGameSession.ConsolePlayer + 1, net_numnodes, net_numnodes]);
 end;
 
 procedure TEngineNetGame.Shutdown;
@@ -344,7 +344,7 @@ end;
 // Called before quitting to leave a net game without hanging the other players
 procedure TEngineNetGame.Quit;
 begin
-  if not netgame or not TGameSession.UserGame or (consoleplayer = -1) or demoplayback then
+  if not TGameSession.NetGame or not TGameSession.UserGame or (TGameSession.ConsolePlayer = -1) or demoplayback then
     Exit;
 
   CheckStarted;

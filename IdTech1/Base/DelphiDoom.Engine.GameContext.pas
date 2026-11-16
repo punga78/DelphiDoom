@@ -51,7 +51,7 @@ end;
 
 function TEngineGameContext.IsNetGame: Boolean;
 begin
-  Result := netgame;
+  Result := TGameSession.NetGame;
 end;
 
 function TEngineGameContext.IsDemoRecording: Boolean;
@@ -77,7 +77,7 @@ end;
 
 function TEngineGameContext.Skill: Integer;
 begin
-  Result := Ord(gameskill);
+  Result := Ord(TGameSession.GameSkill);
 end;
 
 function TEngineGameContext.Episode: Integer;
@@ -86,25 +86,25 @@ begin
   // Strife has no episodes (and no gameepisode)
   Result := 1;
 {$ELSE}
-  Result := gameepisode;
+  Result := TGameSession.GameEpisode;
 {$ENDIF}
 end;
 
 function TEngineGameContext.Map: Integer;
 begin
-  Result := gamemap;
+  Result := TGameSession.GameMap;
 end;
 
 function TEngineGameContext.Deathmatch: Integer;
 begin
   // qualified: inside the class "deathmatch" would be this very method
-  Result := g_game.deathmatch;
+  Result := TGameSession.DeathMatch;
 end;
 
 function TEngineGameContext.ConsolePlayer: Integer;
 begin
   // qualified, as above
-  Result := g_game.consoleplayer;
+  Result := TGameSession.ConsolePlayer;
 end;
 
 function TEngineGameContext.MaxPlayers: Integer;

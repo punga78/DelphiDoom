@@ -1148,7 +1148,7 @@ begin
 
   StreamOutLong(ASEG_WORLD);
 
-  levelinf := P_GetLevelInfo(P_GetMapName(gamemap));
+  levelinf := P_GetLevelInfo(P_GetMapName(TGameSession.GameMap));
   StreamOutChar8t(levelinf.musname);
   StreamOutChar8t(levelinf.skyflat);
 
@@ -1207,7 +1207,7 @@ begin
 
   if LOADVERSION >= VERSION205 then
   begin
-    levelinf := P_GetLevelInfo(P_GetMapName(gamemap));
+    levelinf := P_GetLevelInfo(P_GetMapName(TGameSession.GameMap));
     levelinf.musname := GET_CHAR8T;
     levelinf.skyflat := GET_CHAR8T;
   end;
@@ -1364,7 +1364,7 @@ begin
 
   AssertSegment(ASEG_WORLD);
 
-  levelinf := P_GetLevelInfo(P_GetMapName(gamemap));
+  levelinf := P_GetLevelInfo(P_GetMapName(TGameSession.GameMap));
   levelinf.musname := GET_CHAR8T;
   levelinf.skyflat := GET_CHAR8T;
 
@@ -2374,7 +2374,7 @@ begin
   SavingPlayers := savePlayers;
 
   // Open the output file
-  sprintf(fileName, _SAVEGAMEMAP, [SAVEPATH, BASE_SLOT, IntToStrZFill(2, gamemap)]);
+  sprintf(fileName, _SAVEGAMEMAP, [SAVEPATH, BASE_SLOT, IntToStrZFill(2, TGameSession.GameMap)]);
   fileName := M_SaveFileName(fileName);
   OpenStreamOut(fileName);
 
@@ -2432,8 +2432,8 @@ begin
   StreamOutLong(ASEG_GAME_HEADER);
 
   // Write current map and difficulty
-  StreamOutByte(gamemap);
-  StreamOutByte(Ord(gameskill));
+  StreamOutByte(TGameSession.GameMap);
+  StreamOutByte(Ord(TGameSession.GameSkill));
 
   // Write global script info
   worldvars_buffer := P_ACSMachine.WorldVariables;
@@ -2474,7 +2474,7 @@ var
   ver: integer;
 begin
   // Load a base level
-  G_InitNew(gameskill, gameepisode, gamemap);
+  G_InitNew(TGameSession.GameSkill, TGameSession.GameEpisode, TGameSession.GameMap);
 
   sprintf(fileName, _SAVEGLOBALSNAME, [SAVEPATH, BASE_SLOT]);
   fileName := M_SaveFileName(fileName);
@@ -2485,7 +2485,7 @@ begin
   RemoveAllThinkers;
 
   // Create the name
-  sprintf(fileName, _SAVEGAMEMAP, [SAVEPATH, BASE_SLOT, IntToStrZFill(2, gamemap)]);
+  sprintf(fileName, _SAVEGAMEMAP, [SAVEPATH, BASE_SLOT, IntToStrZFill(2, TGameSession.GameMap)]);
   fileName := M_SaveFileName(fileName);
 
   // Load the file
@@ -2577,10 +2577,10 @@ begin
 
   AssertSegment(ASEG_GAME_HEADER);
 
-  gameepisode := 1;
-  gamemap := GET_BYTE;
-  gameskill := skill_t(GET_BYTE);
-  defaultskill := Ord(gameskill);
+  TGameSession.GameEpisode := 1;
+  TGameSession.GameMap := GET_BYTE;
+  TGameSession.GameSkill := skill_t(GET_BYTE);
+  defaultskill := Ord(TGameSession.GameSkill);
 
   // Read global script info
   memcpy(@worldvars_buffer, saveptr, SizeOf(worldvars_buffer));
@@ -2615,7 +2615,7 @@ begin
     mobj := players[i].mo;
     players[i] := playerBackup[i];
     players[i].mo := mobj;
-    if i = consoleplayer then
+    if i = TGameSession.ConsolePlayer then
       players[i].readyArtifact := artitype_t(players[i].inventory[inv_ptr]._type);
   end;
 end;
@@ -2668,9 +2668,9 @@ begin
   oldKeys := 0;
   oldPieces := 0;
 
-  if deathmatch = 0 then
+  if TGameSession.DeathMatch = 0 then
   begin
-    if P_GetMapCluster(gamemap) = P_GetMapCluster(map) then
+    if P_GetMapCluster(TGameSession.GameMap) = P_GetMapCluster(map) then
     begin // Same cluster - save map without saving player mobjs
       SV_SaveMap(false);
     end
@@ -2694,16 +2694,16 @@ begin
   // for the following check (player mobj redirection)
   TargetPlayerAddrs := nil;
 
-  gamemap := map;
-  sprintf(fileName, _SAVEGAMEMAP, [SAVEPATH, BASE_SLOT, IntToStrZFill(2, gamemap)]);
+  TGameSession.GameMap := map;
+  sprintf(fileName, _SAVEGAMEMAP, [SAVEPATH, BASE_SLOT, IntToStrZFill(2, TGameSession.GameMap)]);
   fileName := M_SaveFileName(fileName);
-  if (deathmatch = 0) and fexists(fileName) then
+  if (TGameSession.DeathMatch = 0) and fexists(fileName) then
   begin // Unarchive map
     SV_LoadMap;
   end
   else
   begin // New map
-    G_InitNew(gameskill, gameepisode, gamemap);
+    G_InitNew(TGameSession.GameSkill, TGameSession.GameEpisode, TGameSession.GameMap);
 
     sprintf(fileName, _SAVEGLOBALSNAME, [SAVEPATH, BASE_SLOT]);
     fileName := M_SaveFileName(fileName);
@@ -2729,13 +2729,13 @@ begin
     players[i].attacker := nil;
     players[i].poisoner := nil;
 
-    if netgame then
+    if TGameSession.NetGame then
     begin
       if players[i].playerstate = PST_DEAD then
       begin // In a network game, force all players to be alive
         players[i].playerstate := PST_REBORN;
       end;
-      if deathmatch = 0 then
+      if TGameSession.DeathMatch = 0 then
       begin // Cooperative net-play, retain keys and weapons
         oldKeys := players[i].keys;
         oldPieces := players[i].pieces;
@@ -2744,7 +2744,7 @@ begin
       end;
     end;
     playerWasReborn := (players[i].playerstate = PST_REBORN);
-    if deathmatch <> 0 then
+    if TGameSession.DeathMatch <> 0 then
     begin
       memset(@players[i].frags, 0, SizeOf(players[i].frags));
       mobj := P_SpawnMobj(playerstarts[0, i].x * FRACUNIT,
@@ -2760,7 +2760,7 @@ begin
       P_SpawnPlayer(@playerstarts[position, i], @uplayerstarts[position, i]);
     end;
 
-    if playerWasReborn and netgame and (deathmatch = 0) then
+    if playerWasReborn and TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
     begin // Restore keys and weapons when reborn in co-op
       players[i].keys := oldKeys;
       players[i].pieces := oldPieces;
@@ -2810,13 +2810,13 @@ begin
   curpos := currentInvPos;
 
   // Launch waiting scripts
-  if deathmatch = 0 then
+  if TGameSession.DeathMatch = 0 then
   begin
     P_CheckACSStore;
   end;
 
   // For single play, save immediately into the reborn slot
-  if not netgame then
+  if not TGameSession.NetGame then
     SV_SaveGame(REBORN_SLOT, REBORN_DESCRIPTION);
 end;
 

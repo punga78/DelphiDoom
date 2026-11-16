@@ -211,7 +211,7 @@ begin
     exit;
   end;
 
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     if mo1.player <> nil then
       if mo2.player <> nil then
       begin

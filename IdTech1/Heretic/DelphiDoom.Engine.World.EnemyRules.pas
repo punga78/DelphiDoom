@@ -944,7 +944,7 @@ var
   dist: fixed_t;
   initial: boolean;
 begin
-  if not netgame and (players[0].health <= 0) then
+  if not TGameSession.NetGame and (players[0].health <= 0) then
   begin
     result := P_LookForMonsters(actor);
     exit;
@@ -1120,7 +1120,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (gameskill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -1137,7 +1137,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (gameskill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -1150,7 +1150,7 @@ begin
   end;
 
   // possibly choose another target
-  if netgame and
+  if TGameSession.NetGame and
     (actor.threshold = 0) and
     not P_CheckSight(actor, actor.target) then
   begin
@@ -2754,7 +2754,7 @@ begin
     exit;
   end;
 
-  if gamemap = 7 then
+  if TGameSession.GameMap = 7 then
   begin
     if actor.flags4_ex and MF4_EX_MAP07BOSS = 0 then
       exit;
@@ -2771,10 +2771,10 @@ begin
     exit;
   end;
 
-  if gamemap <> 8 then  // Not a boss level
+  if TGameSession.GameMap <> 8 then  // Not a boss level
     exit;
 
-  if actor._type <> bossType[gameepisode - 1] then // Not considered a boss in this episode
+  if actor._type <> bossType[TGameSession.GameEpisode - 1] then // Not considered a boss in this episode
     exit;
 
   // Make sure all bosses are dead
@@ -2790,7 +2790,7 @@ begin
     think := think.next;
   end;
 
-  if gameepisode > 1 then // Kill any remaining monsters
+  if TGameSession.GameEpisode > 1 then // Kill any remaining monsters
     P_Massacre;
 
   dummyLine.tag := 666;

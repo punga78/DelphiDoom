@@ -296,7 +296,7 @@ end;
 
 function TEngineScriptPlayers.ConsolePlayer: Integer;
 begin
-  Result := g_game.consoleplayer;
+  Result := TGameSession.ConsolePlayer;
 end;
 
 function TEngineScriptPlayers.QuestFlags(const APlayer: Integer): Cardinal;

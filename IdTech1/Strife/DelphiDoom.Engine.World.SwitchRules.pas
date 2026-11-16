@@ -435,7 +435,7 @@ begin
           players[0].questflags := players[0].questflags or QF_QUEST29;
 
           // give stamina/accuracy items
-          if not netgame then
+          if not TGameSession.NetGame then
           begin
             P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
             P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
@@ -1325,7 +1325,7 @@ begin
     211:
       begin
         // villsa [STRIFE] S1 Play VOC## sound
-        if @players[consoleplayer] = thing.player then
+        if @players[TGameSession.ConsolePlayer] = thing.player then
           if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
           begin
             S_StartVoice('VOC' + itoa(line.tag));

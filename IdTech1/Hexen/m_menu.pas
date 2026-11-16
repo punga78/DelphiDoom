@@ -1737,7 +1737,7 @@ begin
   KeyBindingsInfo[Ord(kb_weapon2)].text := 'WEAPON 3';
   KeyBindingsInfo[Ord(kb_weapon3)].text := 'WEAPON 4';
   if gamestate = GS_LEVEL then
-    case players[consoleplayer]._class of
+    case players[TGameSession.ConsolePlayer]._class of
       PCLASS_FIGHTER:
         begin
           KeyBindingsInfo[Ord(kb_weapon0)].text := 'Spiked Gauntlets';
@@ -1989,7 +1989,7 @@ end;
 //==============================================================================
 procedure M_LoadGame(choice: integer);
 begin
-  if netgame then
+  if TGameSession.NetGame then
   begin
     M_StartMessage(LOADNET + #13#10 + PRESSKEY, nil, false);
     exit;
@@ -2169,7 +2169,7 @@ procedure M_QuickLoad;
 var
   tempstring: string;
 begin
-  if netgame then
+  if TGameSession.NetGame then
   begin
     M_StartMessage(QLOADNET + #13#10 + PRESSKEY, nil, false);
     exit;
@@ -2943,7 +2943,7 @@ end;
 //==============================================================================
 procedure M_NewGame(choice: integer);
 begin
-  if netgame and not demoplayback then
+  if TGameSession.NetGame and not demoplayback then
   begin
     M_StartMessage(SNEWGAME + #13#10 + PRESSKEY, nil, false);
     exit;
@@ -3042,7 +3042,7 @@ begin
 
   defaultskill := choice;
   
-  PlayerClass[consoleplayer] := MenuPClass;
+  PlayerClass[TGameSession.ConsolePlayer] := MenuPClass;
   SB_SetClassData;
   G_DeferedInitNew(skill_t(choice), 1);
   M_ClearMenus;
@@ -3688,9 +3688,9 @@ begin
   showMessages := 1 - showMessages;
 
   if showMessages = 0 then
-    players[consoleplayer]._message := MSGOFF
+    players[TGameSession.ConsolePlayer]._message := MSGOFF
   else
-    players[consoleplayer]._message := MSGON;
+    players[TGameSession.ConsolePlayer]._message := MSGON;
 
   message_dontfuckwithme := true;
 
@@ -3726,7 +3726,7 @@ begin
     exit;
   end;
 
-  if netgame then
+  if TGameSession.NetGame then
   begin
     M_StartMessage(NETEND + #13#10 + PRESSKEY, nil, false);
     exit;
@@ -3805,7 +3805,7 @@ end;
 //==============================================================================
 procedure M_CmdQuit;
 begin
-  if not netgame then
+  if not TGameSession.NetGame then
   begin
     S_StartSound(nil, Ord(SFX_CHAT));
     I_WaitVBL(1000);
@@ -3930,17 +3930,17 @@ begin
 
   case detailLevel of
     DL_LOWEST:
-      players[consoleplayer]._message := DETAILLOWEST;
+      players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
     DL_LOW:
-      players[consoleplayer]._message := DETAILLOW;
+      players[TGameSession.ConsolePlayer]._message := DETAILLOW;
     DL_MEDIUM:
-      players[consoleplayer]._message := DETAILMED;
+      players[TGameSession.ConsolePlayer]._message := DETAILMED;
     DL_NORMAL:
-      players[consoleplayer]._message := DETAILNORM;
+      players[TGameSession.ConsolePlayer]._message := DETAILNORM;
     DL_HIRES:
-      players[consoleplayer]._message := DETAILHI;
+      players[TGameSession.ConsolePlayer]._message := DETAILHI;
     DL_ULTRARES:
-      players[consoleplayer]._message := DETAILULTRA;
+      players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
   end;
 
 end;
@@ -4367,7 +4367,7 @@ begin
           inc(usegamma);
           if usegamma >= GAMMASIZE then
             usegamma := 0;
-          players[consoleplayer]._message := gammamsg[usegamma];
+          players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
           palette := V_ReadPalette(PU_STATIC);
           I_SetPalette(palette);
           V_SetPalette(palette);

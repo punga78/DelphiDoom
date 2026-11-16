@@ -348,10 +348,10 @@ procedure RX_ExitLevel(const nextlevel: integer);
 var
   ex: TRadixExit;
 begin
-  ex := TRadixActionRules.ExitOf(nextlevel, gamemap);
+  ex := TRadixActionRules.ExitOf(nextlevel, TGameSession.GameMap);
   case ex.Kind of
     rekVictory:
-      if gamemap = TRadixActionRules.LAST_MAP then
+      if TGameSession.GameMap = TRadixActionRules.LAST_MAP then
         G_ExitLevel // G_DoCompleted ends the episode
       else
         gameaction := ga_victory;
@@ -553,7 +553,7 @@ begin
 
   levelhassecondaryobjective := radixlogic.HasActionOfKind(RADIX_ACTION_SECONDARY_OBJECTIVE);
   ZeroMemory(@radixlevelplayers, SizeOf(radixlevelplayers));
-  radixplayer := consoleplayer;
+  radixplayer := TGameSession.ConsolePlayer;
   radixnamedlevel := 0;
 
   RX_MarkMissileWalls;

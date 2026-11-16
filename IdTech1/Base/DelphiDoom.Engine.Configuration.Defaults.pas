@@ -192,7 +192,7 @@ begin
     Exit;
   end;
 
-  if netgame then
+  if TGameSession.NetGame then
     LSetFlags := DFS_NETWORK
   else
     LSetFlags := DFS_SINGLEPLAYER;
@@ -288,7 +288,7 @@ begin
 {$ENDIF}
   defaultskill := GetIntegerInRange(defaultskill, Ord(sk_baby), Ord(sk_nightmare));
   startskill := skill_t(defaultskill);
-  gameskill := startskill;
+  TGameSession.GameSkill := startskill;
 end;
 
 function TEngineDefaults.ForceBoolean(const AName: string; const AValue: Boolean): Boolean;

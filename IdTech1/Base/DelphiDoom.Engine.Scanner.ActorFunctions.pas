@@ -379,7 +379,7 @@ end;
 //==============================================================================
 class function TEngineActorExpressionFunctions.PF_gameepisode(AContext: Pointer; const p: TArray<string>): string;
 begin
-  result := itoa(gameepisode);
+  result := itoa(TGameSession.GameEpisode);
 end;
 {$ENDIF}
 
@@ -390,7 +390,7 @@ end;
 //==============================================================================
 class function TEngineActorExpressionFunctions.PF_gamemap(AContext: Pointer; const p: TArray<string>): string;
 begin
-  result := itoa(gamemap);
+  result := itoa(TGameSession.GameMap);
 end;
 
 //==============================================================================
@@ -400,7 +400,7 @@ end;
 //==============================================================================
 class function TEngineActorExpressionFunctions.PF_levelname(AContext: Pointer; const p: TArray<string>): string;
 begin
-  result := P_GetMapName({$IFDEF DOOM_OR_HERETIC}gameepisode, {$ENDIF}gamemap);
+  result := P_GetMapName({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap);
 end;
 
 //==============================================================================
@@ -410,7 +410,7 @@ end;
 //==============================================================================
 class function TEngineActorExpressionFunctions.PF_gameskill(AContext: Pointer; const p: TArray<string>): string;
 begin
-  result := itoa(Ord(gameskill));
+  result := itoa(Ord(TGameSession.GameSkill));
 end;
 
 //==============================================================================

@@ -1241,7 +1241,7 @@ begin
   if actor.flags and MF_ALLY <> 0 then
   begin
     // Deathmatch: support team behavior for Rebels.
-    if netgame then
+    if TGameSession.NetGame then
     begin
       // Rebels adopt the allied player's target if it is not of the same
       // allegiance. Other allies do it unconditionally.
@@ -1492,7 +1492,7 @@ begin
   begin
     // Handle allies, except on maps 3 and 34 (Front Base/Movement Base)
     if ((actor.flags and MF_ALLY) = (soundtarget.flags and MF_ALLY)) and
-       ((gamemap <> 3) and (gamemap <> 34)) then
+       ((TGameSession.GameMap <> 3) and (TGameSession.GameMap <> 34)) then
     begin
       // STRIFE-TODO: Needs serious verification.
       if P_LookForTargets(actor, (actor.flags_ex and MF_EX_LOOKALLAROUND <> 0) or
@@ -1645,7 +1645,7 @@ begin
   end;
 
   // possibly choose another target
-  if netgame and
+  if TGameSession.NetGame and
     (actor.threshold = 0) and
     not P_CheckSight(actor, actor.target) then
   begin
@@ -3546,7 +3546,7 @@ var
   junk: line_t;
   i: integer;
 begin
-  if gamemap = 7 then
+  if TGameSession.GameMap = 7 then
   begin
     if actor.flags4_ex and MF4_EX_MAP07BOSS1 <> 0 then
     begin
@@ -3678,7 +3678,7 @@ begin
     Ord(MT_SPECTRE_E):
       begin
         P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_LOREMASTER);
-        if not netgame then
+        if not TGameSession.NetGame then
         begin
           P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
           P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
@@ -3840,7 +3840,7 @@ begin
   mobj.target := nil;
 
   // double Rebel's health in deathmatch mode
-  if deathmatch <> 0 then
+  if TGameSession.DeathMatch <> 0 then
     mobj.health := mobj.health * 2;
 
   if actor.target <> nil then

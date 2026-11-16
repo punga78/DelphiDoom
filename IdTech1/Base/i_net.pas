@@ -116,7 +116,7 @@ begin
     ndvBack: R_SetViewAngleOffset(ANG180);
   end;
 
-  netgame := options.IsNetGame;
+  TGameSession.NetGame := options.IsNetGame;
   net_consoleplayer := options.ConsolePlayer;
   net_numnodes := options.NumNodes;
   net_peers := options.Peers;

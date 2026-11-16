@@ -783,7 +783,7 @@ procedure RX_HudDrawer;
 var
   mode: TRadixHudMode;
 begin
-  hud_player := @players[consoleplayer];
+  hud_player := @players[TGameSession.ConsolePlayer];
   hud_radix := RX_PlayerState(hud_player);
 
   mode := TRadixHudGauges.Mode(screenblocks, amstate = am_only, hud_player.playerstate = PST_DEAD);
