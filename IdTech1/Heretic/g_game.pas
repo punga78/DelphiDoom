@@ -204,6 +204,22 @@ function G_Responder(ev: Pevent_t): boolean;
 //==============================================================================
 procedure G_ScreenShot;
 
+type
+  /// <summary>
+  ///   The state of the game in progress that outlives a level (issue #245). Plain class vars with
+  ///   a fixed address, like the globals they replace: no property (the address is taken), no
+  ///   method (it would be a call at every read); the class lives here, in the unit that writes
+  ///   the most, because a variable of another unit costs a load more (see PIANO_TUTTO_A_CLASSI 11.16)
+  /// </summary>
+  TGameSession = class sealed
+  public
+    /// <summary>The game was started by the player (ok to save / end game); false while a demo plays</summary>
+    class var UserGame: boolean;
+    /// <summary>Monsters respawn (nightmare skill or -respawn)</summary>
+    class var RespawnMonsters: boolean;
+    /// <summary>A demo is being recorded</summary>
+    class var DemoRecording: boolean;
+  end;
 var
   sendpause: boolean;        // send a pause event next tic
 
@@ -298,17 +314,14 @@ var
 
   precache: boolean; // if true, load all graphics at start
 
-  respawnmonsters: boolean;
 
   viewactive: boolean;
 
   singledemo: boolean; // quit after playing a demo from cmdline
 
-  demorecording: boolean = false;
 
   gameaction: gameaction_t;
 
-  usergame: boolean; // ok to save / end game
 
 //==============================================================================
 //
@@ -1323,7 +1336,7 @@ begin
   // automatic wand start when advancing from one level to the next
   if wandstart then
   begin
-    if not demorecording and not demoplayback and not netgame then
+    if not TGameSession.DemoRecording and not demoplayback and not netgame then
       G_PlayerReborn(0)
     else if (demoplayback or netdemo) and not singledemo then
     begin
@@ -1333,7 +1346,7 @@ begin
     else
     begin
       if demo_p = nil then
-        demorecording := false;
+        TGameSession.DemoRecording := false;
       I_Error('The -wandstart option is not supported for demos and'#13#10' network play.');
     end;
   end;
@@ -1644,7 +1657,7 @@ begin
       if demoplayback then
         G_ReadDemoTiccmd(cmd);
 
-      if demorecording then
+      if TGameSession.DemoRecording then
         G_WriteDemoTiccmd(cmd);
 
       // check for turbo cheats
@@ -2487,7 +2500,7 @@ end;
 //==============================================================================
 procedure G_CmdSaveGame(const sname: string; const description: string);
 begin
-  if not usergame or (gamestate <> GS_LEVEL) then
+  if not TGameSession.UserGame or (gamestate <> GS_LEVEL) then
   begin
     printf('You can''t save if you aren''t playing!'#13#10);
     exit;
@@ -2631,7 +2644,7 @@ begin
   PS_NewWorld;
   P_ACSInitNewGame;
 
-  respawnmonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
+  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
   LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, gameskill = sk_nightmare);
@@ -2652,7 +2665,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     players[i].playerstate := PST_REBORN;
 
-  usergame := true;  // will be set false if a demo
+  TGameSession.UserGame := true;  // will be set false if a demo
   paused := false;
   G_FinishedDemoPlayback;
   amstate := am_inactive;
@@ -2793,7 +2806,7 @@ var
   i: integer;
   maxsize: integer;
 begin
-  usergame := false;
+  TGameSession.UserGame := false;
   demoname := name;
   if CharPos('.', demoname) = 0 then
     demoname := demoname + '.lmp';
@@ -2812,7 +2825,7 @@ begin
 
   demoend := @demobuffer[maxsize];
 
-  demorecording := true;
+  TGameSession.DemoRecording := true;
   Info_Init(true); // JVAL: Start thinkers
 end;
 
@@ -3038,7 +3051,7 @@ begin
   preparingdemoplayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
   precache := true;
-  usergame := false;
+  TGameSession.UserGame := false;
   demoplayback := true;
   Info_Init(true); // JVAL: Start thinkers
 
@@ -3111,14 +3124,14 @@ begin
     exit;
   end;
 
-  if demorecording then
+  if TGameSession.DemoRecording then
   begin
     demo_p[0] := DEMOMARKER;
     demo_p := @demo_p[1];
 
     G_Files.WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
     Z_Free(demobuffer);
-    demorecording := false;
+    TGameSession.DemoRecording := false;
     I_Error('G_CheckDemoStatus(): Demo %s recorded', [demoname]);
   end;
 

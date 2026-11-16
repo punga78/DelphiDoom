@@ -56,7 +56,7 @@ end;
 
 function TEngineGameContext.IsDemoRecording: Boolean;
 begin
-  Result := demorecording;
+  Result := TGameSession.DemoRecording;
 end;
 
 function TEngineGameContext.IsDemoPlayback: Boolean;

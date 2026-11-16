@@ -1013,7 +1013,7 @@ begin
     end
     else
     begin
-      if demoplayback or demorecording then
+      if demoplayback or TGameSession.DemoRecording then
         confcoloredblood := true
       else
         confcoloredblood := p_confcoloredblood;

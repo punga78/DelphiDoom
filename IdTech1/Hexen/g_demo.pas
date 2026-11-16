@@ -250,14 +250,14 @@ begin
     exit;
   end;
 
-  if demorecording then
+  if TGameSession.DemoRecording then
   begin
     demo_p[0] := DEMOMARKER;
     demo_p := @demo_p[1];
 
     G_Files.WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
     Z_Free(demobuffer);
-    demorecording := false;
+    TGameSession.DemoRecording := false;
     I_Error('G_CheckDemoStatus(): Demo %s recorded', [demoname]);
   end;
 
@@ -378,7 +378,7 @@ var
   i: integer;
   maxsize: integer;
 begin
-  usergame := false;
+  TGameSession.UserGame := false;
   demoname := name;
   if CharPos('.', demoname) = 0 then
     demoname := demoname + '.lmp';
@@ -397,7 +397,7 @@ begin
 
   demoend := @demobuffer[maxsize];
 
-  demorecording := true;
+  TGameSession.DemoRecording := true;
   Info_Init(true); // JVAL: Start thinkers
 
 end;
@@ -627,7 +627,7 @@ begin
   preparingdemoplayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
   precache := true;
-  usergame := false;
+  TGameSession.UserGame := false;
   demoplayback := true;
   Info_Init(true); // JVAL: Start thinkers
 

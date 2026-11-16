@@ -855,7 +855,7 @@ begin
     if mobj.flags and MF_COUNTKILL = 0 then
       exit;
 
-    if not respawnmonsters then
+    if not TGameSession.RespawnMonsters then
       exit;
 
     mobj.movecount := mobj.movecount + 1;

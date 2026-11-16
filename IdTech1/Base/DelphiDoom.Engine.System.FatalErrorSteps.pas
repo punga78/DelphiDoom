@@ -74,7 +74,7 @@ end;
 
 procedure TEngineFatalErrorSteps.FinishDemo;
 begin
-  if demorecording then
+  if TGameSession.DemoRecording then
     G_CheckDemoStatus;
 end;
 

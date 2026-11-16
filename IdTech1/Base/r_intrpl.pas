@@ -817,7 +817,7 @@ begin
   // Poly objects
   if interpolatepolyobjs then
     // JVAL: Polyobj interpolation may cause desync, needs verification
-    if not demoplayback and not demorecording then
+    if not demoplayback and not TGameSession.DemoRecording then
       for i := 0 to po_NumPolyobjs - 1 do
         if polyobjs[i].specialdata <> nil then
         begin

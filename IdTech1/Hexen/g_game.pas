@@ -143,6 +143,22 @@ function G_Responder(ev: Pevent_t): boolean;
 //==============================================================================
 procedure G_ScreenShot;
 
+type
+  /// <summary>
+  ///   The state of the game in progress that outlives a level (issue #245). Plain class vars with
+  ///   a fixed address, like the globals they replace: no property (the address is taken), no
+  ///   method (it would be a call at every read); the class lives here, in the unit that writes
+  ///   the most, because a variable of another unit costs a load more (see PIANO_TUTTO_A_CLASSI 11.16)
+  /// </summary>
+  TGameSession = class sealed
+  public
+    /// <summary>The game was started by the player (ok to save / end game); false while a demo plays</summary>
+    class var UserGame: boolean;
+    /// <summary>Monsters respawn (nightmare skill or -respawn)</summary>
+    class var RespawnMonsters: boolean;
+    /// <summary>A demo is being recorded</summary>
+    class var DemoRecording: boolean;
+  end;
 var
   sendpause: boolean;        // send a pause event next tic
 
@@ -232,17 +248,14 @@ var
 
   precache: boolean = true; // if true, load all graphics at start
 
-  respawnmonsters: boolean;
 
   viewactive: boolean;
 
   singledemo: boolean; // quit after playing a demo from cmdline
 
-  demorecording: boolean = false;
 
   gameaction: gameaction_t;
 
-  usergame: boolean; // ok to save / end game
 
 //==============================================================================
 //
@@ -1931,7 +1944,7 @@ procedure G_CmdSaveGame(const sname: string; const description: string);
 var
   slot: integer;
 begin
-  if not usergame or (gamestate <> GS_LEVEL) then
+  if not TGameSession.UserGame or (gamestate <> GS_LEVEL) then
   begin
     printf('You can''t save if you aren''t playing!'#13#10);
     exit;
@@ -2048,7 +2061,7 @@ begin
   M_ClearRandom;
   PS_NewWorld;
 
-  respawnmonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
+  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
   LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, gameskill = sk_nightmare);
@@ -2072,7 +2085,7 @@ begin
     players[i].worldTimer := 0;
   end;
 
-  usergame := true;  // will be set false if a demo
+  TGameSession.UserGame := true;  // will be set false if a demo
   paused := false;
   G_FinishedDemoPlayback;
   amstate := am_inactive;
@@ -2164,7 +2177,7 @@ begin
 
       if demoplayback then
         G_ReadDemoTiccmd(cmd);
-      if demorecording then
+      if TGameSession.DemoRecording then
         G_WriteDemoTiccmd(cmd);
 
       if netgame and not netdemo and ((gametic mod ticdup) = 0) then

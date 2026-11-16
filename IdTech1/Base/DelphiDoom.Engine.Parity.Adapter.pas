@@ -329,7 +329,7 @@ begin
   // the tics asked for are done: a recorded demo is closed (it is written and the game ends), else the game ends
   FPilotDone := True;
   Flush;
-  if demorecording then
+  if TGameSession.DemoRecording then
     G_CheckDemoStatus
   else
     I_Quit;
