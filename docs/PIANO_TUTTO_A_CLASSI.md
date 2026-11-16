@@ -1148,6 +1148,17 @@ I cicli sono il testo di prima, ma **si e' misurata la dimensione delle routine,
 
 **Verifica.** Vedi il par. 12.9.
 
+### 12.9 Verifica del par. 12.8 (#246)
+
+Codice finale (tag `ondata-notte-246-6`), eseguibili di `Tools\build.bat giochi Release`.
+
+- **Build.** `giochi Release` e `strumenti Release` verdi; avvisi Doom32 380, Heretic32 304, Hexen32 199, Strife32 412, Radix32 380, SpeedHaste32 384, GLDoom32 330, GLHeretic32 254, GLHexen32 149, GLStrife32 339 (uno in meno di prima per ognuno, mai di piu'); `strati` 0 violazioni nuove; Doom32 e Strife32 compilano a Win64.
+- **Test.** `DelphiDoom.Tests.Video` 118 su 118 e `DelphiDoom.Tests.Automap` 76 su 76, a Win32 e a Win64.
+- **Golden dello stato e dei fotogrammi.** Verifica ridotta UGUALE dopo ogni passo (8 bit per i quattro giochi, 32 bit per Doom e Strife); sul codice finale **corpus intero UGUALE: 44 voci a 8 bit e 44 a 32 bit** (`Confronta-Golden.ps1`, `-WorkRoot C:\ddparity_246`); **Win64**: verifica ridotta UGUALE per Doom e Strife a 8 e a 32 bit (`-ExeRoot bin\Win64\Release`).
+- **Flusso OpenGL** (`Tools\Verifica\opengl\Confronta.ps1`, vecchio = `1e0490492`, cartelle di dati private perche' il programma scrive i `glrecord_*.txt` nella cartella dei dati: due agenti sulla stessa cartella si cancellano i file): UGUALE per GLDoom (FREEDOOM2 mappa 1: 162421 righe; DOOM1 E1M1: 121235 righe, con il rumore vecchio contro vecchio UGUALE), GLHeretic (204217 righe), GLHexen (829779), GLStrife (16801); con `-glautomap` UGUALE per GLDoom (195721 e 105631 righe) e GLHeretic (266351): e' l'unica prova a runtime di `TAutomapShapes`, per gli stili `assDoom` e `assRaven` nel ramo OpenGL; il disegno software dell'automap non e' nel corpus.
+- **Avvio.** `Radix32 -warp 1 1` e `SpeedHaste32 -warp 1 1` restano vivi 40 secondi senza `crash.txt` e senza `I_Error` (solo gli `I_Warning` di prima).
+- **Non verificato.** La misura a coppie delle prestazioni (la fa la sessione di misura, vecchio = `c6c8903c`); gli stiramenti per schermo largo (`V_StatusBarStretch`, `V_FullScreenStretch`) e `V_ScaleBuffer8` con una patch non 320x200 (nessuna demo del corpus: solo i test); `V_CopyRectTransparentEx*` e `V_ShadeScreen` (menu: solo i test); i fattori di `ExpandRows` diversi da quelli che le demo esercitano alla risoluzione dei golden; l'automap software; Win64 per i giochi OpenGL, Radix32 e SpeedHaste32.
+
 ## 13. Fette successive della #185: elenco ordinato (2026-11-14, dopo la 2c-4)
 
 Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime sono giorni di agente (una fetta di `Libs\` costa 35-50 minuti di sviluppo e 1-2 ore di verifica quando il lock dei giochi e' conteso: i giorni qui contano la lettura delle copie, la forma delle regole e le prove, non la sola scrittura). Le righe sono quelle dei file attuali (Doom/Heretic/Hexen/Strife). **Regola di ogni fetta**: tabella di confronto con `Confronta-Copie.ps1`, regole per gioco con il testo vecchio alla lettera, prova meccanica (`Prova-Common.ps1`), `Verifica-Ridotta.ps1` a ogni passo, corpus intero una volta, build dei dieci giochi, Doom32 e Strife32 a Win64, misura a coppie a macchina scarica.
