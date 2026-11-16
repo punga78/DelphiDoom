@@ -39,35 +39,44 @@ interface
 // R_DrawColumnAverageLowest
 //
 //==============================================================================
-procedure R_DrawColumnAverageLowest;
 
 //==============================================================================
 //
 // R_DrawColumnAverageLow
 //
 //==============================================================================
-procedure R_DrawColumnAverageLow;
 
 //==============================================================================
 //
 // R_DrawColumnAverageMedium
 //
 //==============================================================================
-procedure R_DrawColumnAverageMedium;
 
 //==============================================================================
 //
 // R_DrawColumnAverageHi
 //
 //==============================================================================
-procedure R_DrawColumnAverageHi;
 
 //==============================================================================
 //
 // R_DrawColumnAverageUltra
 //
 //==============================================================================
-procedure R_DrawColumnAverageUltra;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererAverageDrawers = class sealed
+  public
+    class procedure R_DrawColumnAverageLowest; static;
+    class procedure R_DrawColumnAverageLow; static;
+    class procedure R_DrawColumnAverageMedium; static;
+    class procedure R_DrawColumnAverageHi; static;
+    class procedure R_DrawColumnAverageUltra; static;
+  end;
 
 implementation
 
@@ -85,7 +94,7 @@ uses
 // R_DrawColumnAverageLowest
 //
 //==============================================================================
-procedure R_DrawColumnAverageLowest;
+class procedure TRendererAverageDrawers.R_DrawColumnAverageLowest;
 var
   count: integer;
   i: integer;
@@ -143,7 +152,7 @@ end;
 // R_DrawColumnAverageLow
 //
 //==============================================================================
-procedure R_DrawColumnAverageLow;
+class procedure TRendererAverageDrawers.R_DrawColumnAverageLow;
 var
   count: integer;
   i: integer;
@@ -195,7 +204,7 @@ end;
 // R_DrawColumnAverageMedium
 //
 //==============================================================================
-procedure R_DrawColumnAverageMedium;
+class procedure TRendererAverageDrawers.R_DrawColumnAverageMedium;
 var
   count: integer;
   dest: PByte;
@@ -241,7 +250,7 @@ end;
 // R_DrawColumnAverageHi
 //
 //==============================================================================
-procedure R_DrawColumnAverageHi;
+class procedure TRendererAverageDrawers.R_DrawColumnAverageHi;
 var
   count: integer;
   i: integer;
@@ -289,7 +298,7 @@ end;
 // R_DrawColumnAverageUltra
 //
 //==============================================================================
-procedure R_DrawColumnAverageUltra;
+class procedure TRendererAverageDrawers.R_DrawColumnAverageUltra;
 var
   count: integer;
   destl: PLongWord;

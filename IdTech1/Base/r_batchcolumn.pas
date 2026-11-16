@@ -44,21 +44,18 @@ uses
 // Batch column drawers
 //
 //==============================================================================
-procedure R_DrawColumnLow_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnMedium_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnHi_Batch;
 {$IFNDEF STRIFE}
 
 //==============================================================================
@@ -66,21 +63,18 @@ procedure R_DrawColumnHi_Batch;
 // R_DrawFuzzColumn_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn32_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn32_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHi_Batch;
 {$ENDIF}
 
 //==============================================================================
@@ -88,28 +82,24 @@ procedure R_DrawFuzzColumnHi_Batch;
 // R_DrawTranslatedColumn_Batch
 //
 //==============================================================================
-procedure R_DrawTranslatedColumn_Batch;
 
 //==============================================================================
 //
 // R_DrawTranslatedColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawTranslatedColumnHi_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnAverageMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAverageMedium_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnAverageHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAverageHi_Batch;
 {$IFDEF STRIFE}
 
 //==============================================================================
@@ -117,42 +107,36 @@ procedure R_DrawColumnAverageHi_Batch;
 // R_DrawFuzzColumn1_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn2_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumnTL_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumnTL_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn1Hi_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1Hi_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn2Hi_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2Hi_Batch;
 
 //==============================================================================
 //
 // R_DrawFuzzColumnHiTL_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHiTL_Batch;
 {$ENDIF}
 
 //==============================================================================
@@ -160,82 +144,111 @@ procedure R_DrawFuzzColumnHiTL_Batch;
 // R_DrawColumnAlphaMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMedium_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnAlphaHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAlphaHi_Batch;
 
 //==============================================================================
 //
 // R_DrawWhiteLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawWhiteLightColumnHi_Batch;
 
 //==============================================================================
 //
 // R_DrawRedLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawRedLightColumnHi_Batch;
 
 //==============================================================================
 //
 // R_DrawGreenLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawGreenLightColumnHi_Batch;
 
 //==============================================================================
 //
 // R_DrawBlueLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawBlueLightColumnHi_Batch;
 
 //==============================================================================
 //
 // R_DrawYellowLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawYellowLightColumnHi_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnAddMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAddMedium_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnAddHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnSubtractMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMedium_Batch;
 
 //==============================================================================
 //
 // R_DrawColumnSubtractHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHi_Batch;
 
 var
 // JVAL: batch column drawing
   num_batch_columns: integer;
   optimizedthingsrendering: Boolean = true;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererBatchColumnDrawers = class sealed
+  public
+    class procedure R_DrawColumnLow_Batch; static;
+    class procedure R_DrawColumnMedium_Batch; static;
+    class procedure R_DrawColumnHi_Batch; static;
+{$IFNDEF STRIFE}
+    class procedure R_DrawFuzzColumn_Batch; static;
+    class procedure R_DrawFuzzColumn32_Batch; static;
+    class procedure R_DrawFuzzColumnHi_Batch; static;
+{$ENDIF}
+    class procedure R_DrawTranslatedColumn_Batch; static;
+    class procedure R_DrawTranslatedColumnHi_Batch; static;
+    class procedure R_DrawColumnAverageMedium_Batch; static;
+    class procedure R_DrawColumnAverageHi_Batch; static;
+{$IFDEF STRIFE}
+    class procedure R_DrawFuzzColumn1_Batch; static;
+    class procedure R_DrawFuzzColumn2_Batch; static;
+    class procedure R_DrawFuzzColumnTL_Batch; static;
+    class procedure R_DrawFuzzColumn1Hi_Batch; static;
+    class procedure R_DrawFuzzColumn2Hi_Batch; static;
+    class procedure R_DrawFuzzColumnHiTL_Batch; static;
+{$ENDIF}
+    class procedure R_DrawColumnAlphaMedium_Batch; static;
+    class procedure R_DrawColumnAlphaHi_Batch; static;
+    class procedure R_DrawWhiteLightColumnHi_Batch; static;
+    class procedure R_DrawRedLightColumnHi_Batch; static;
+    class procedure R_DrawGreenLightColumnHi_Batch; static;
+    class procedure R_DrawBlueLightColumnHi_Batch; static;
+    class procedure R_DrawYellowLightColumnHi_Batch; static;
+    class procedure R_DrawColumnAddMedium_Batch; static;
+    class procedure R_DrawColumnAddHi_Batch; static;
+    class procedure R_DrawColumnSubtractMedium_Batch; static;
+    class procedure R_DrawColumnSubtractHi_Batch; static;
+  end;
 
 implementation
 
@@ -258,7 +271,7 @@ uses
 // R_DrawColumnLow_Batch
 //
 //==============================================================================
-procedure R_DrawColumnLow_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnLow_Batch;
 var
   count: integer;
   i: integer;
@@ -337,7 +350,7 @@ end;
 // R_DrawColumnMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnMedium_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch;
 var
   count: integer;
   dest: PByte;
@@ -1137,7 +1150,7 @@ end;
 // R_DrawColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnHi_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -1315,7 +1328,7 @@ end;
 // R_DrawFuzzColumn_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumn_Batch;
 var
   count: integer;
   i: integer;
@@ -1370,7 +1383,7 @@ end;
 // R_DrawFuzzColumn32_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn32_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumn32_Batch;
 var
   count: integer;
   i: integer;
@@ -1425,7 +1438,7 @@ end;
 // R_DrawFuzzColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumnHi_Batch;
 var
   count: integer;
   i: integer;
@@ -1483,7 +1496,7 @@ end;
 // R_DrawTranslatedColumn_Batch
 //
 //==============================================================================
-procedure R_DrawTranslatedColumn_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawTranslatedColumn_Batch;
 var
   count: integer;
   dest: PByte;
@@ -1536,7 +1549,7 @@ end;
 // R_DrawTranslatedColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawTranslatedColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawTranslatedColumnHi_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -1590,7 +1603,7 @@ end;
 // R_DrawColumnAverageMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAverageMedium_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnAverageMedium_Batch;
 var
   count: integer;
   dest: PByte;
@@ -1648,7 +1661,7 @@ end;
 // R_DrawColumnAverageHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAverageHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnAverageHi_Batch;
 var
   count: integer;
   destb: PByte;
@@ -1709,7 +1722,7 @@ end;
 // R_DrawColumnAlphaMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMedium_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnAlphaMedium_Batch;
 var
   count: integer;
   dest: PByte;
@@ -1767,7 +1780,7 @@ end;
 // R_DrawColumnAlphaHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAlphaHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnAlphaHi_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -1844,7 +1857,7 @@ end;
 // R_DrawFuzzColumn1_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumn1_Batch;
 var
   count: integer;
   dest: PByte;
@@ -1900,7 +1913,7 @@ end;
 // R_DrawFuzzColumn2_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumn2_Batch;
 var
   count: integer;
   dest: PByte;
@@ -1958,7 +1971,7 @@ end;
 // R_DrawFuzzColumnTL_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumnTL_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumnTL_Batch;
 var
   count: integer;
   dest: PByte;
@@ -2014,7 +2027,7 @@ end;
 // R_DrawFuzzColumn1Hi_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1Hi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumn1Hi_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -2085,7 +2098,7 @@ end;
 // R_DrawFuzzColumn2Hi_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2Hi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumn2Hi_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -2156,7 +2169,7 @@ end;
 // R_DrawFuzzColumnHiTL_Batch
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHiTL_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawFuzzColumnHiTL_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -2228,7 +2241,7 @@ end;
 // R_DrawWhiteLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawWhiteLightColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawWhiteLightColumnHi_Batch;
 {$DEFINE WHITE}
 {$I R_DrawLightColumnHi_Batch.inc}
 {$UNDEF WHITE}
@@ -2238,7 +2251,7 @@ procedure R_DrawWhiteLightColumnHi_Batch;
 // R_DrawRedLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawRedLightColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawRedLightColumnHi_Batch;
 {$DEFINE RED}
 {$I R_DrawLightColumnHi_Batch.inc}
 {$UNDEF RED}
@@ -2248,7 +2261,7 @@ procedure R_DrawRedLightColumnHi_Batch;
 // R_DrawGreenLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawGreenLightColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawGreenLightColumnHi_Batch;
 {$DEFINE GREEN}
 {$I R_DrawLightColumnHi_Batch.inc}
 {$UNDEF GREEN}
@@ -2258,7 +2271,7 @@ procedure R_DrawGreenLightColumnHi_Batch;
 // R_DrawBlueLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawBlueLightColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawBlueLightColumnHi_Batch;
 {$DEFINE BLUE}
 {$I R_DrawLightColumnHi_Batch.inc}
 {$UNDEF BLUE}
@@ -2268,7 +2281,7 @@ procedure R_DrawBlueLightColumnHi_Batch;
 // R_DrawYellowLightColumnHi_Batch
 //
 //==============================================================================
-procedure R_DrawYellowLightColumnHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawYellowLightColumnHi_Batch;
 {$DEFINE YELLOW}
 {$I R_DrawLightColumnHi_Batch.inc}
 {$UNDEF YELLOW}
@@ -2278,7 +2291,7 @@ procedure R_DrawYellowLightColumnHi_Batch;
 // R_DrawColumnAddMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAddMedium_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnAddMedium_Batch;
 var
   count: integer;
   dest: PByte;
@@ -2336,7 +2349,7 @@ end;
 // R_DrawColumnAddHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnAddHi_Batch;
 var
   count: integer;
   destl: PLongWord;
@@ -2419,7 +2432,7 @@ end;
 // R_DrawColumnSubtractMedium_Batch
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMedium_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnSubtractMedium_Batch;
 var
   count: integer;
   dest: PByte;
@@ -2477,7 +2490,7 @@ end;
 // R_DrawColumnSubtractHi_Batch
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHi_Batch;
+class procedure TRendererBatchColumnDrawers.R_DrawColumnSubtractHi_Batch;
 var
   count: integer;
   destl: PLongWord;

@@ -1,0 +1,27 @@
+Issue #244: risultati delle sonde (2026-11-16, dcc32 35.0 Release, ottimizzazione accesa, macchina carica: i tempi sono indicativi).
+
+Sonda244.dpr (un solo programma: lo stato e la routine sono nella stessa unit), 100 milioni di chiamate di una routine a forma di
+PIT_CheckLine, miglior giro di 7, tre misure di fila:
+
+  A globali separate (oggi)                       0,302 0,311 0,307 0,336   routine di 176 byte
+  D record in un globale tipizzato                0,493 0,495 0,494 0,528   routine di 136 byte (un registro per la base, Result sullo stack)
+  E class var di una classe, routine libera       0,332 0,336 0,332 0,373   routine di 176 byte, STESSE istruzioni di A (solo gli operandi)
+  S class var, routine come metodo class static   0,312 0,317 0,315 0,359   routine di 176 byte
+
+I byte di PIT_A e PIT_E sono uguali salvo i 4 byte di ogni indirizzo e il rel32 della chiamata: stesso codice. D invece e' piu' lenta
+del 60% (la forma D del par. 11.13, "costo zero" scritto allora, non lo e').
+
+Sonda2 (P2.dpr: lo stato e le routine che lo leggono sono in UNIT DIVERSE; UUse.UseGlobal e UseClass, UUseG con {$IMPORTEDDATA OFF}):
+una variabile di un'altra unit, globale o class var che sia, e' raggiunta con DUE load:
+
+  mov edx,[tabella]  ; l'indirizzo della variabile
+  mov edx,[edx]      ; il valore
+
+ne' {$IMPORTEDDATA OFF} nell'unit che accede, ne' nell'unit che dichiara, ne' -$G- sulla riga di comando cambiano il codice. La sonda
+con tutto in una unit non poteva vederlo; l'ha mostrato la .map vera di Doom32.
+
+Doom32 Release Win32, TMapCheck in una unit nuova (DelphiDoom.Engine.World.MapCheck) invece che in p_map.pas:
+  PIT_StompThing 256 -> 264, P_TeleportMove 664 -> 716, PIT_CheckLine 356 -> 384, PIT_CheckLineTM 364 -> 392, P_PushByContact 116 -> 124,
+  P_ContactPickup 52 -> 56, PIT_CheckThing 416 -> 420, P_CheckPosition 992 -> 1060, PIT_CheckOnmobjZ 136 -> 148, P_CheckOnmobj 604 -> 656,
+  P_TryMove 892 -> 916, P_ThingHeightClip 88 -> 92 (in PIT_CheckLine ogni uso di tmbbox diventa "mov eax,[slot]; mov eax,[eax+N]").
+Con TMapCheck dentro p_map.pas: tutte le routine di p_map identiche (38 su 38 per il passo dei tm*).

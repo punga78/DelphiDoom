@@ -1,0 +1,5 @@
+p_secnodes.P_AddSecnode                          112
+p_secnodes.P_DelSecnode                           68
+p_secnodes.PIT_GetSectors                        152
+p_secnodes.P_CreateSecNodeList                   512
+p_secnodes.P_ChangeSectorNodes                    76

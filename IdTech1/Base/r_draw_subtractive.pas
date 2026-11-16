@@ -36,28 +36,37 @@ interface
 // Alpha column drawers (transparency effects)
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLowest;
 
 //==============================================================================
 //
 // R_DrawColumnSubtractLow
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLow;
 
 //==============================================================================
 //
 // R_DrawColumnSubtractMedium
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMedium;
 
 //==============================================================================
 //
 // R_DrawColumnSubtractHi
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHi;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSubtractiveDrawers = class sealed
+  public
+    class procedure R_DrawColumnSubtractLowest; static;
+    class procedure R_DrawColumnSubtractLow; static;
+    class procedure R_DrawColumnSubtractMedium; static;
+    class procedure R_DrawColumnSubtractHi; static;
+  end;
 
 implementation
 
@@ -75,7 +84,7 @@ uses
 // R_DrawColumnSubtractLowest
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLowest;
+class procedure TRendererSubtractiveDrawers.R_DrawColumnSubtractLowest;
 var
   count: integer;
   i: integer;
@@ -133,7 +142,7 @@ end;
 // R_DrawColumnSubtractLow
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLow;
+class procedure TRendererSubtractiveDrawers.R_DrawColumnSubtractLow;
 var
   count: integer;
   i: integer;
@@ -185,7 +194,7 @@ end;
 // R_DrawColumnSubtractMedium
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMedium;
+class procedure TRendererSubtractiveDrawers.R_DrawColumnSubtractMedium;
 var
   count: integer;
   dest: PByte;
@@ -242,7 +251,7 @@ end;
 // R_DrawColumnSubtractHi
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHi;
+class procedure TRendererSubtractiveDrawers.R_DrawColumnSubtractHi;
 var
   count: integer;
   destl: PLongWord;
