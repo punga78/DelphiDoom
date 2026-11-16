@@ -665,6 +665,11 @@ const
 
 implementation
 
+{$IFNDEF CPUX86}
+uses
+  DelphiDoom.Renderer.ClipperX87;
+{$ENDIF}
+
 //NOTE: The Clipper library has been developed with software that uses an
 //inverted Y axis display. Therefore 'above' and 'below' in the code's comments
 //will reflect this. For example: given coord A (0,20) and coord B (0,10),
@@ -1706,7 +1711,12 @@ begin
   if dy = 0 then
     E.Dx := Horizontal
   else
+{$IFDEF CPUX86}
     E.Dx := (E.Top.X - E.Bot.X) / dy;
+{$ELSE}
+    // issue #40: the quotient has the 64 bits of mantissa of the 32 bit FPU before it is stored in a Double
+    E.Dx := TRendererClipperX87.InverseSlope(E.Top.X - E.Bot.X, dy);
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -1807,7 +1817,11 @@ begin
   else if Edge.Top.X = Edge.Bot.X then
     Result := Edge.Bot.X
   else
+{$IFDEF CPUX86}
     Result := Edge.Bot.X + Round(Edge.Dx * (currentY - Edge.Bot.Y));
+{$ELSE}
+    Result := Edge.Bot.X + TRendererClipperX87.RoundOffset(Edge.Dx, currentY - Edge.Bot.Y);
+{$ENDIF}
 end;
 //------------------------------------------------------------------------------
 
@@ -1856,9 +1870,14 @@ begin
       ip.Y := Edge2.Bot.Y
     else
     begin
+{$IFDEF CPUX86}
       with Edge2^ do
         B2 := Bot.Y - (Bot.X / Dx);
       ip.Y := round(ip.X / Edge2.Dx + B2);
+{$ELSE}
+      B2 := TRendererClipperX87.VerticalIntercept(Edge2.Bot.X, Edge2.Bot.Y, Edge2.Dx);
+      ip.Y := TRendererClipperX87.RoundAtX(ip.X, Edge2.Dx, B2);
+{$ENDIF}
     end;
   end
   else if Edge2.Dx = 0 then
@@ -1868,13 +1887,19 @@ begin
       ip.Y := Edge1.Bot.Y
     else
     begin
+{$IFDEF CPUX86}
       with Edge1^ do
         B1 := Bot.Y - (Bot.X / Dx);
       ip.Y := round(ip.X/Edge1.Dx + B1);
+{$ELSE}
+      B1 := TRendererClipperX87.VerticalIntercept(Edge1.Bot.X, Edge1.Bot.Y, Edge1.Dx);
+      ip.Y := TRendererClipperX87.RoundAtX(ip.X, Edge1.Dx, B1);
+{$ENDIF}
     end;
   end
   else
   begin
+{$IFDEF CPUX86}
     with Edge1^ do B1 := Bot.X - Bot.Y * Dx;
     with Edge2^ do B2 := Bot.X - Bot.Y * Dx;
     M := (B2-B1) / (Edge1.Dx - Edge2.Dx);
@@ -1883,6 +1908,16 @@ begin
       ip.X := round(Edge1.Dx * M + B1)
     else
       ip.X := round(Edge2.Dx * M + B2);
+{$ELSE}
+    B1 := TRendererClipperX87.Intercept(Edge1.Bot.X, Edge1.Bot.Y, Edge1.Dx);
+    B2 := TRendererClipperX87.Intercept(Edge2.Bot.X, Edge2.Bot.Y, Edge2.Dx);
+    M := TRendererClipperX87.CrossingY(B1, B2, Edge1.Dx, Edge2.Dx);
+    ip.Y := round(M);
+    if Abs(Edge1.Dx) < Abs(Edge2.Dx) then
+      ip.X := TRendererClipperX87.RoundAtY(Edge1.Dx, M, B1)
+    else
+      ip.X := TRendererClipperX87.RoundAtY(Edge2.Dx, M, B2);
+{$ENDIF}
   end;
 
   //The precondition - E.Curr.X > eNext.Curr.X - indicates that the two edges do

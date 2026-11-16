@@ -131,6 +131,9 @@ uses
   po_man,
   r_defs,
   r_main,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.InterpolationX87,
+{$ENDIF}
   tables;
 
 type
@@ -349,7 +352,12 @@ begin
   if next = prev then
     result := prev
   else
+{$IFDEF CPUX86}
     result := prev + (next - prev) * ticfrac_f;
+{$ELSE}
+    // issue #40: the same Single as the 32 bit FPU, which keeps 64 bits of mantissa in the expression
+    result := TRendererInterpolationX87.InterpolateSingle(prev, next, ticfrac_f);
+{$ENDIF}
 end;
 
 
@@ -436,6 +444,7 @@ begin
     if ((prev < ANG90) and (next > ANG270)) or
        ((next < ANG90) and (prev > ANG270)) then
     begin
+{$IFDEF CPUX86}
       prev_e := prev / ANGLE_MAX;
       next_e := next / ANGLE_MAX;
       if prev > next then
@@ -447,6 +456,10 @@ begin
       if mid_e > 1.0 then
         mid_e := mid_e - 1.0;
       result := round(mid_e * ANGLE_MAX);
+{$ELSE}
+      // issue #40: every Single is stored after an expression in 64 bits of mantissa, as the 32 bit FPU does
+      result := TRendererInterpolationX87.AngleAcrossZero(prev, next, ticfrac_f);
+{$ENDIF}
     end
     else if prev > next then
     begin
@@ -469,7 +482,11 @@ begin
   if pi.fnext = pi.fprev then
     exit;
 
+{$IFDEF CPUX86}
   Pfloat(pi.address)^ := pi.fprev + (pi.fnext - pi.fprev) * ticfrac_f;
+{$ELSE}
+  Pfloat(pi.address)^ := TRendererInterpolationX87.InterpolateSingle(pi.fprev, pi.fnext, ticfrac_f);
+{$ENDIF}
 end;
 
 //==============================================================================

@@ -84,6 +84,9 @@ uses
   p_setup,
   r_defs,
   r_main,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   w_wad,
   z_zone;
 
@@ -219,12 +222,18 @@ end;
 //
 //==============================================================================
 function GetOffset(v1, v2: Pvertex_t): fixed_t;
+{$IFDEF CPUX86}
 var
   a, b: single;
 begin
   a := (v1.x - v2.x) / FRACUNIT;
   b := (v1.y - v2.y) / FRACUNIT;
   result := round(sqrt(a * a + b * b) * FRACUNIT);
+{$ELSE}
+begin
+  // issue #40: a and b are Singles and the root has the 64 bits of mantissa of the 32 bit FPU
+  result := TRendererX87.WallOffset(v1.x - v2.x, v1.y - v2.y);
+{$ENDIF}
 end;
 
 //==============================================================================

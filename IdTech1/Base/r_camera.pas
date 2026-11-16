@@ -75,6 +75,9 @@ uses
   r_defs,
   r_main,
   r_data,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   r_draw;
 
 const
@@ -173,8 +176,13 @@ begin
 
   an := mo.angle div FRACUNIT;
 
+{$IFDEF CPUX86}
   distf := Sqr(player.teleporttics / FRACUNIT) / (TELEPORTZOOM / FRACUNIT);
   dist := Round(distf * FRACUNIT);
+{$ELSE}
+  // issue #40: distf is a Single stored after a quotient computed in 64 bits of mantissa
+  dist := TRendererX87.TeleportDistance(player.teleporttics, TELEPORTZOOM);
+{$ENDIF}
   viewx := viewx - FixedMul(dist, fixedcosine[an]);
   viewy := viewy - FixedMul(dist, fixedsine[an]);
 end;

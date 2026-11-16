@@ -72,6 +72,9 @@ implementation
 
 uses
   d_delphi,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   r_main,
   r_draw;
 
@@ -155,7 +158,25 @@ var
   xscale: float;
   yscale: float;
   dcos, dsin: float;
+{$IFNDEF CPUX86}
+  inside: boolean;
+{$ENDIF}
 begin
+{$IFNDEF CPUX86}
+  // issue #40: every intermediate value is a Single stored after an expression of the 32 bit FPU (64 bits of
+  // mantissa); the old code below runs only where the class gives up (a point on the plane of the view)
+  if TRendererX87.ScreenPoint(wx - viewx, wy - viewy, wz - viewz, viewcos, viewsin, projection, projectiony,
+    centerx, centery, viewwidth, viewheight, x, y, inside) then
+  begin
+    result := inside;
+    while (abs(x) > FRACUNIT) or (abs(y) > FRACUNIT) do
+    begin
+      x := x div 2;
+      y := y div 2;
+    end;
+    exit;
+  end;
+{$ENDIF}
   result := true;
   tr_x := (wx - viewx) / FRACUNIT;
   tr_y := (wy - viewy) / FRACUNIT;
