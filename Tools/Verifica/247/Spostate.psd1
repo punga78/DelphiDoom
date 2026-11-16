@@ -96,4 +96,9 @@
   R_DrawMaskedColumnHi_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnHi_Fog'; Unit = 'r_col_ms_fog' }
   R_DrawSpanNormal_Fog = @{ Expression = 'TRendererSpan32FogDrawers.R_DrawSpanNormal_Fog'; Unit = 'r_span32_fog' }
   R_DrawSpanNormal_Fog_Ripple = @{ Expression = 'TRendererSpan32FogRippleDrawers.R_DrawSpanNormal_Fog_Ripple'; Unit = 'r_span32_fog_ripple' }
+  R_DrawSpanMedium = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanMedium'; Unit = 'r_span' }
+  R_DrawSpanMedium_Ripple = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanMedium_Ripple'; Unit = 'r_span' }
+  R_DrawSpanLow = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanLow'; Unit = 'r_span' }
+  R_DrawSpanNormal = @{ Expression = 'TRendererSpan32Drawers.R_DrawSpanNormal'; Unit = 'r_span32' }
+  R_DrawSpanNormal_Ripple = @{ Expression = 'TRendererSpan32RippleDrawers.R_DrawSpanNormal_Ripple'; Unit = 'r_span32_ripple' }
 }
