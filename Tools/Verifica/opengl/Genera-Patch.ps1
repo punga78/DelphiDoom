@@ -24,6 +24,8 @@ function Edit-File([string]$relative, [scriptblock]$edit) {
   $bytes = [System.IO.File]::ReadAllBytes($path)
   $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
   $text = [System.IO.File]::ReadAllText($path)
+  # the trees have files with CRLF and files with LF: the anchors follow the file
+  $script:crlf = if ($text.Contains("`r`n")) { "`r`n" } else { "`n" }
   $text = & $edit $text
   $enc = New-Object System.Text.UTF8Encoding($hasBom)
   [System.IO.File]::WriteAllText($path, $text, $enc)
@@ -64,17 +66,18 @@ foreach ($dpr in @('Doom\GLDoom32.dpr', 'Heretic\GLHeretic32.dpr', 'Hexen\GLHexe
   }
 }
 
-Edit-File 'Libs\OpenGl\Legacy\gl_main.pas' {
+# the context of the window (it was in gl_main.pas before the fetta 7 of the issue 177): extensions read and frame shown
+Edit-File 'Libs\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
-  Replace-Once $t "  ReadImplementationProperties;$crlf" "  ReadImplementationProperties;$crlf  HarnessGl_AfterExtensions;$crlf"
+  $t = Replace-Once $t "  ReadImplementationProperties;$crlf" "  ReadImplementationProperties;$crlf  HarnessGl_AfterExtensions;$crlf"
+  Replace-Once $t "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf" "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf  HarnessGl_FrameEnd;$crlf"
 }
 
 Edit-File 'Libs\OpenGl\Legacy\gl_render.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
-  $t = Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
-  Replace-Once $t "  SwapBuffers(h_DC);$crlf" "  SwapBuffers(h_DC);$crlf  HarnessGl_FrameEnd;$crlf"
+  Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
 }
 
 Edit-File 'Base\DelphiDoom.Engine.Composition.pas' {

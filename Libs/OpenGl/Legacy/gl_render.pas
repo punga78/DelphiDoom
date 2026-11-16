@@ -1382,7 +1382,7 @@ begin
   if not gl_no_glfinish_hack then
     glFinish;
   glFlush;
-  SwapBuffers(h_DC);
+  GL_SwapBuffers;
 end;
 
 {*****************
@@ -2315,7 +2315,7 @@ end;
 //==============================================================================
 procedure R_ShutDownOpenGL;
 begin
-  if gl_initialized then
+  if GL_Initialized then
   begin
     gld_SkyDone;
     if gl_dynlights <> nil then

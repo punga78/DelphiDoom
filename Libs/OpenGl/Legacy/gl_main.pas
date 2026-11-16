@@ -155,12 +155,21 @@ procedure I_RestoreWindowPos;
 var
   fixstallhack: boolean = true;
 
-var
-  h_DC: HDC;    // Global device context
-  h_RC: HGLRC;  // OpenGL rendering context
+//==============================================================================
+//
+// GL_Initialized
+// True once OpenGL was loaded by GL_InitGraphics (the renderer has resources to release)
+//
+//==============================================================================
+function GL_Initialized: boolean;
 
-var
-  gl_initialized: boolean = false;
+//==============================================================================
+//
+// GL_SwapBuffers
+// Shows the frame that was drawn
+//
+//==============================================================================
+procedure GL_SwapBuffers;
 
 //==============================================================================
 //
@@ -214,6 +223,8 @@ uses
   gl_render, // JVAL OPENGL
   gl_tex,
   gl_defs,
+  DelphiDoom.Engine.GlContext,
+  DelphiDoom.GlContext.DisplayModeClamp,
   v_data,
   v_video;
 
@@ -367,42 +378,29 @@ end;
 var
   allocscreensize: integer;
 
-{---------------------------------------------------------------------}
-{  Properly destroys the window created at startup (no memory leaks)  }
-{---------------------------------------------------------------------}
+var
+  // the window and the rendering context: created by GL_InitGraphics, released by I_ShutDownGraphics, freed
+  // when the program ends (R_ShutDownOpenGL still asks GL_Initialized after the context was released)
+  gl_context: TEngineGlContext = nil;
 
 //==============================================================================
 //
-// glKillWnd
+// GL_Initialized
 //
 //==============================================================================
-procedure glKillWnd;
+function GL_Initialized: boolean;
 begin
-  if fullscreen then             // Change back to non fullscreen
-    ChangeDisplaySettings(devmode(nil^), 0);
+  result := (gl_context <> nil) and gl_context.Initialized;
+end;
 
-  if gl_initialized then
-  begin
-    // Makes current rendering context not current, and releases the device
-    // context that is used by the rendering context.
-    if (not wglMakeCurrent(h_DC, 0)) then
-      I_Warning('glKillWnd(): Release of DC and RC failed!'#13#10);
-
-    // Attempts to delete the rendering context
-    if (not wglDeleteContext(h_RC)) then
-    begin
-      I_Warning('glKillWnd(): Release of rendering context failed!'#13#10);
-      h_RC := 0;
-    end;
-  end;
-
-  // Attemps to release the device context
-  if ((h_DC > 0) and (ReleaseDC(hMainWnd, h_DC) = 0)) then
-  begin
-    I_Warning('glKillWnd(): Release of device context failed!'#13#10);
-    h_DC := 0;
-  end;
-
+//==============================================================================
+//
+// GL_SwapBuffers
+//
+//==============================================================================
+procedure GL_SwapBuffers;
+begin
+  gl_context.SwapBuffers;
 end;
 
 var
@@ -437,7 +435,8 @@ begin
     glDeleteTextures(1, @wipe_tex);
     wipe_tex := 0;
   end;
-  glKillWnd;
+  if gl_context <> nil then
+    gl_context.Close;
   I_EnableAltTab;
   if gl_displaymodes <> nil then
     gl_displaymodes.Clear;
@@ -860,46 +859,6 @@ end;
 const
   ERROR_OFFSET = 20;
 
-{------------------------------------------------------------------}
-{  Handle window resize                                            }
-{------------------------------------------------------------------}
-
-//==============================================================================
-//
-// glResizeWnd
-//
-//==============================================================================
-procedure glResizeWnd;
-begin
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);    // Set the viewport for the OpenGL window
-  glMatrixMode(GL_PROJECTION);        // Change Matrix Mode to Projection
-  glLoadIdentity;                     // Reset View
-  gluPerspective(45.0, SCREENWIDTH / SCREENHEIGHT, 1.0, 100.0);  // Do the perspective calculations. Last value = max clipping depth
-
-  glMatrixMode(GL_MODELVIEW);         // Return to the modelview matrix
-  glLoadIdentity;                     // Reset View
-end;
-
-{------------------------------------------------------------------}
-{  Initialise OpenGL                                               }
-{------------------------------------------------------------------}
-
-//==============================================================================
-//
-// glInit
-//
-//==============================================================================
-procedure glInit;
-begin
-  glClearColor(0.0, 0.0, 0.0, 0.0);        // Black Background
-  glShadeModel(GL_SMOOTH);                 // Enables Smooth Color Shading
-  glClearDepth(1.0);                       // Depth Buffer Setup
-  glEnable(GL_DEPTH_TEST);                 // Enable Depth Buffer
-  glDepthFunc(GL_LESS);                    // The Type Of Depth Test To Do
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);   //Realy Nice perspective calculations
-  glEnable(GL_TEXTURE_2D);                     // Enable Texture Mapping
-end;
-
 //==============================================================================
 //
 // WindowProc
@@ -990,15 +949,6 @@ end;
 //
 //==============================================================================
 procedure GL_InitGraphics;
-var
-  WindowClass: TWndClass;
-  dwStyle: DWORD;              // Window styles
-  dwExStyle: DWORD;            // Extended window styles
-  dmScreenSettings: DEVMODE;   // Screen settings (fullscreen, etc...)
-  PixelFormat: GLuint;         // Settings for the OpenGL rendering
-  h_Instance: HINST;           // Current instance
-  pfd: TPIXELFORMATDESCRIPTOR;  // Settings for the OpenGL window
-  caption: string;
 begin
   printf('GL_InitGraphics: Initializing OpenGL.'#13#10);
 
@@ -1006,167 +956,13 @@ begin
     I_Error('GL_ConfigureDisplayModes() was not called: the display modes are missing');
   gl_displaymodes.Refresh(MAXWIDTH, MAXHEIGHT);
 
-  InitOpenGL;                               // New call to initialize and bind the OpenGL dll
-  gl_initialized := true;
-
-  h_Instance := GetModuleHandle(nil);       //Grab An Instance For Our Window
-  ZeroMemory(@WindowClass, SizeOf(TWndClass));  // Clear the window class structure
-
-  with WindowClass do                    // Set up the window class
-  begin
-    style         := CS_HREDRAW or    // Redraws entire window if length changes
-                     CS_VREDRAW or    // Redraws entire window if height changes
-                     CS_OWNDC;        // Unique device context for the window
-    lpfnWndProc   := @WindowProc;     // Set the window procedure to our func WndProc
-    hbrBackground := GetStockObject(BLACK_BRUSH); // Black background
-    hInstance     := h_Instance;
-    hCursor       := LoadCursor(0, IDC_ARROW);
-    lpszClassName := 'Doom32';
-  end;
-
-  if RegisterClass(WindowClass) = 0 then  // Attemp to register the window class
-  begin
-    I_Error('GL_InitGraphics(): Failed to register the window class!');
-    exit;
-  end;
-
-  // Change to fullscreen if so desired
-  if fullscreen then
-  begin
-    ZeroMemory(@dmScreenSettings, SizeOf(dmScreenSettings));
-    with dmScreenSettings do        // Set parameters for the screen setting
-    begin
-      dmSize       := SizeOf(dmScreenSettings);
-      dmPelsWidth  := SCREENWIDTH;  // Window width
-      dmPelsHeight := SCREENHEIGHT; // Window height
-      dmBitsPerPel := 32;           // Window color depth
-      dmFields     := DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL;
-    end;
-
-    // Try to change screen mode to fullscreen
-    if ChangeDisplaySettings(dmScreenSettings, CDS_FULLSCREEN) = DISP_CHANGE_FAILED then
-    begin
-      I_Error('GL_InitGraphics(): Unable to switch to fullscreen!');
-      fullscreen := False;
-    end;
-  end;
-
-  dwStyle := 0;
-  dwExStyle := WINDOW_STYLE_FS;
-
-  ShowCursor(False);  // Turn of the cursor (gets in the way)
-
-  caption := D_Version + ' - ' + D_VersionBuilt;
-
-  // Attempt to create the actual window
-  hMainWnd := CreateWindowEx(
-    dwExStyle,      // Extended window styles
-    WindowClass.lpszClassName,
-    PChar(caption),
-    dwStyle,        // Window styles
-    0, 0,           // Window position
-    SCREENWIDTH,
-    SCREENHEIGHT,
-    0,              // No parent window
-    0,              // No menu
-    h_Instance,     // Instance
-    nil             // Pass nothing to WM_CREATE
-  );
-
-  if hMainWnd = 0 then
-  begin
-    glKillWnd;                // Undo all the settings we've changed
-    I_Error('GL_InitGraphics(): Unable to create window!');
-    Exit;
-  end;
-
-  // Try to get a device context
-  h_DC := GetDC(hMainWnd);
-  if (h_DC = 0) then
-  begin
-    glKillWnd;
-    I_Error('GL_InitGraphics(): Unable to get a device context!');
-    exit;
-  end;
-
-  // Settings for the OpenGL window
-  with pfd do
-  begin
-    nSize           := SizeOf(TPIXELFORMATDESCRIPTOR); // Size Of This Pixel Format Descriptor
-    nVersion        := 1;                    // The version of this data structure
-    dwFlags         := PFD_DRAW_TO_WINDOW    // Buffer supports drawing to window
-                       or PFD_SUPPORT_OPENGL // Buffer supports OpenGL drawing
-                       or PFD_DOUBLEBUFFER;  // Supports double buffering
-    iPixelType      := PFD_TYPE_RGBA;        // RGBA color format
-    cColorBits      := 32;                   // OpenGL color depth
-    cRedBits        := 0;                    // Number of red bitplanes
-    cRedShift       := 0;                    // Shift count for red bitplanes
-    cGreenBits      := 0;                    // Number of green bitplanes
-    cGreenShift     := 0;                    // Shift count for green bitplanes
-    cBlueBits       := 0;                    // Number of blue bitplanes
-    cBlueShift      := 0;                    // Shift count for blue bitplanes
-    cAlphaBits      := 0;                    // Not supported
-    cAlphaShift     := 0;                    // Not supported
-    cAccumBits      := 0;                    // No accumulation buffer
-    cAccumRedBits   := 0;                    // Number of red bits in a-buffer
-    cAccumGreenBits := 0;                    // Number of green bits in a-buffer
-    cAccumBlueBits  := 0;                    // Number of blue bits in a-buffer
-    cAccumAlphaBits := 0;                    // Number of alpha bits in a-buffer
-    cDepthBits      := 16;                   // Specifies the depth of the depth buffer
-    cStencilBits    := 16;                   // Turn off stencil buffer
-    cAuxBuffers     := 0;                    // Not supported
-    iLayerType      := PFD_MAIN_PLANE;       // Ignored
-    bReserved       := 0;                    // Number of overlay and underlay planes
-    dwLayerMask     := 0;                    // Ignored
-    dwVisibleMask   := 0;                    // Transparent color of underlay plane
-    dwDamageMask    := 0;                    // Ignored
-  end;
-
-  // Attempts to find the pixel format supported by a device context that is the best match to a given pixel format specification.
-  PixelFormat := ChoosePixelFormat(h_DC, @pfd);
-  if PixelFormat = 0 then
-  begin
-    glKillWnd;
-    I_Error('GL_InitGraphics(): Unable to find a suitable pixel format');
-    exit;
-  end;
-
-  // Sets the specified device context's pixel format to the format specified by the PixelFormat.
-  if not SetPixelFormat(h_DC, PixelFormat, @pfd) then
-  begin
-    glKillWnd;
-    I_Error('GL_InitGraphics(): Unable to set the pixel format');
-    exit;
-  end;
-
-  // Create a OpenGL rendering context
-  h_RC := wglCreateContext(h_DC);
-  if h_RC = 0 then
-  begin
-    glKillWnd;
-    I_Error('GL_InitGraphics(): Unable to create an OpenGL rendering context');
-    exit;
-  end;
-
-  // Makes the specified OpenGL rendering context the calling thread's current rendering context
-  if not wglMakeCurrent(h_DC, h_RC) then
-  begin
-    glKillWnd;
-    I_Error('GL_InitGraphics(): Unable to activate OpenGL rendering context');
-    exit;
-  end;
-  // Read And Assign Extentions
-  ReadExtensions;
-  ReadImplementationProperties;
-
-  // Settings to ensure that the window is the topmost window
-  ShowWindow(hMainWnd, SW_SHOW);
-  SetForegroundWindow(hMainWnd);
-  SetFocus(hMainWnd);
+  if gl_context = nil then
+    gl_context := TEngineGlContext.Create;
+  gl_context.Open(TFNWndProc(@WindowProc));
 
   // Ensure the OpenGL window is resized properly
-  glResizeWnd;
-  glInit;
+  TEngineGlContext.ResizeViewport;
+  TEngineGlContext.InitState;
 
   gld_Init(SCREENWIDTH, SCREENHEIGHT);
 
@@ -1191,30 +987,9 @@ end;
 //
 //==============================================================================
 procedure GL_ChangeFullScreen(const full: boolean);
-var
-  dmScreenSettings: DEVMODE;   // Screen settings (fullscreen, etc...)
 begin
   I_RestoreWindowPos;
-  fullscreen := full;
-  // Change to fullscreen if so desired
-  if fullscreen then
-  begin
-    ZeroMemory(@dmScreenSettings, SizeOf(dmScreenSettings));
-    with dmScreenSettings do
-    begin              // Set parameters for the screen setting
-      dmSize       := SizeOf(dmScreenSettings);
-      dmPelsWidth  := SCREENWIDTH;                    // Window width
-      dmPelsHeight := SCREENHEIGHT;                   // Window height
-      dmBitsPerPel := 32;                             // Window color depth
-      dmFields     := DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL;
-    end;
-
-    // Try to change screen mode to fullscreen
-    if ChangeDisplaySettings(dmScreenSettings, CDS_FULLSCREEN) = DISP_CHANGE_FAILED then
-      I_Warning('GL_ChangeFullScreen(): Can not change to fullscreen mode'#13#10);
-  end
-  else
-    ChangeDisplaySettings(devmode(nil^), 0);
+  gl_context.ApplyFullScreen(full);
   I_RestoreWindowPos;
 end;
 
@@ -1226,6 +1001,7 @@ end;
 function GL_SetDisplayMode(const newwidth, newheight: integer; const force: boolean = false): boolean;
 var
   nwidth, nheight: integer;
+  limits: TGlDisplayModeLimits;
 begin
   result := false;
 
@@ -1233,20 +1009,11 @@ begin
     if (SCREENWIDTH = newwidth) and (SCREENHEIGHT = newheight) then
       exit;
 
-  nwidth := newwidth and not 1;
-  if nwidth > MAXWIDTH then
-    nwidth := MAXWIDTH
-  else if nwidth < MINWIDTH then
-    nwidth := MINWIDTH;
-
-  nheight := newheight and not 1;
-  if nheight > MAXHEIGHT then
-    nwidth := MAXHEIGHT
-  else if nheight < MINHEIGHT then
-    nheight := MINHEIGHT;
-
-  if nheight > nwidth then
-    nheight := nwidth;
+  limits.MinWidth := MINWIDTH;
+  limits.MaxWidth := MAXWIDTH;
+  limits.MinHeight := MINHEIGHT;
+  limits.MaxHeight := MAXHEIGHT;
+  TGlDisplayModeClamp.Clamp(newwidth, newheight, limits, nwidth, nheight);
 
   if force or (SCREENWIDTH <> nwidth) or (SCREENHEIGHT <> nheight) then
   begin
@@ -1262,8 +1029,8 @@ begin
 
     GL_ChangeFullScreen(fullscreen);
 
-    glResizeWnd;
-    glInit;
+    TEngineGlContext.ResizeViewport;
+    TEngineGlContext.InitState;
     glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 
     AM_Start;               // Start the automap
@@ -1283,8 +1050,8 @@ procedure GL_NotifyDisplayMode;
 begin
   GL_ChangeFullScreen(fullscreen);
 
-  glResizeWnd;
-  glInit;
+  TEngineGlContext.ResizeViewport;
+  TEngineGlContext.InitState;
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
 end;
 
@@ -1336,5 +1103,10 @@ begin
 
   D_DoomMain;
 end;
+
+initialization
+
+finalization
+  FreeAndNil(gl_context);
 
 end.
