@@ -143,7 +143,11 @@ uses
   v_data,
   v_video,
   DelphiDoom.Video.BlitSlices,
-  DelphiDoom.Video.Types;
+  DelphiDoom.Video.Factory,
+  DelphiDoom.Video.ModeChanger.Intf,
+  DelphiDoom.Video.ScreenLayout,
+  DelphiDoom.Video.Types,
+  DelphiDoom.Engine.Video.ModeHost;
 
 var
   // given by the composition root (I_ConfigureDisplayModes)
@@ -186,123 +190,39 @@ begin
   result := video_displaymodes;
 end;
 
-//==============================================================================
-//
-// I_FindWindowSize
-//
-// The window of a mode: the exact or nearest mode of the catalog, else the screen
-//
-//==============================================================================
-procedure I_FindWindowSize(const mode: integer);
-var
-  w, h: integer;
-begin
-  if mode = FULLSCREEN_SHARED then
-  begin
-    WINDOWWIDTH := NATIVEWIDTH;
-    WINDOWHEIGHT := NATIVEHEIGHT;
-    exit;
-  end;
-
-  if I_DisplayModes.FindWindowSize(SCREENWIDTH, SCREENHEIGHT, w, h) then
-  begin
-    WINDOWWIDTH := w;
-    WINDOWHEIGHT := h;
-    exit;
-  end;
-
-  WINDOWWIDTH := GetSystemMetrics(SM_CXSCREEN);
-  WINDOWHEIGHT := GetSystemMetrics(SM_CYSCREEN);
-end;
-
 var
   graphics_started: boolean = false;
-  // the screen was set to another resolution (the exclusive full screen mode)
-  video_resolution_changed: boolean = false;
-  dpi: integer;
-
-var
-  s_alttab_disabled: boolean = false;
+  // the sequences of the full screen modes (DelphiDoom.Video.ModeChanger): made at the first use, they need the
+  // display modes and the resolution given by the composition root
+  video_modechanger: IVideoModeChanger = nil;
 
 var
   screen: PLongWordArray;
   oscreen: pointer;
 
-//==============================================================================
-//
-// I_RestoreWindowPos
-//
-//==============================================================================
-procedure I_RestoreWindowPos(const mode: integer);
-var
-  dw, dh: integer;
-begin
-  if mode = FULLSCREEN_OFF then
-  begin
-    SetWindowLong(hMainWnd, GWL_STYLE, WINDOW_STYLE_W);
-    SetWindowPos(hMainWnd, HWND_TOP, windowxpos, windowypos, WINDOWWIDTH, WINDOWHEIGHT, SWP_SHOWWINDOW);
-    I_GetWindowClientOffset(dw, dh);
-    SetWindowPos(hMainWnd, HWND_TOP, windowxpos, windowypos, WINDOWWIDTH + dw, WINDOWHEIGHT + dh, SWP_SHOWWINDOW);
-  end
-  else
-  begin
-    SetWindowLong(hMainWnd, GWL_STYLE, WINDOW_STYLE_FS);
-    SetWindowPos(hMainWnd, HWND_TOP, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, SWP_SHOWWINDOW);
-  end;
-end;
-
-//==============================================================================
-//
-// I_DisableAltTab
-//
-//==============================================================================
-procedure I_DisableAltTab;
-var
-  old: Boolean;
-begin
-  if s_alttab_disabled then
-    Exit;
-
-  if Win32Platform = VER_PLATFORM_WIN32_NT then
-  begin
-    if isLibrary then
-      RegisterHotKey(0, $C000, MOD_ALT, VK_TAB)
-    else
-      RegisterHotKey(0, 0, MOD_ALT, VK_TAB)
-  end
-  else
-    SystemParametersInfo(SPI_SCREENSAVERRUNNING, 1, @old, 0);
-
-  s_alttab_disabled := true;
-end;
-
-//==============================================================================
-//
-// I_EnableAltTab
-//
-//==============================================================================
-procedure I_EnableAltTab;
-var
-  old: Boolean;
-begin
-  if s_alttab_disabled then
-  begin
-    if Win32Platform = VER_PLATFORM_WIN32_NT then
-    begin
-      if isLibrary then
-        UnregisterHotKey(0, $C000)
-      else
-        UnregisterHotKey(0, 0)
-    end
-    else
-      SystemParametersInfo(SPI_SCREENSAVERRUNNING, 0, @old, 0);
-
-    s_alttab_disabled := false;
-  end;
-end;
-
 var
   allocscreensize: integer;
+
+//==============================================================================
+//
+// I_ModeChanger
+//
+//==============================================================================
+function I_ModeChanger: IVideoModeChanger;
+begin
+  if video_modechanger = nil then
+  begin
+    if video_resolution = nil then
+      I_Error('I_ConfigureVideoOutput() was not called: the video output is missing');
+    video_modechanger := TVideoFactory.CreateModeChanger(
+      TEngineVideoModeHost.Create(I_DisplayModes, video_resolution,
+        function: Boolean
+        begin
+          Result := fixstallhack;
+        end));
+  end;
+  Result := video_modechanger;
+end;
 
 //==============================================================================
 //
@@ -312,18 +232,13 @@ var
 procedure I_ShutDownGraphics;
 begin
   // the screen goes back to the resolution of the desktop
-  if video_resolution_changed and (video_resolution <> nil) then
-    video_resolution.Restore;
-  video_resolution_changed := false;
+  if video_modechanger <> nil then
+    video_modechanger.Release;
   graphics_started := false;
-  I_EnableAltTab;
   if video_displaymodes <> nil then
     video_displaymodes.Clear;
   memfree(oscreen, allocscreensize);
 end;
-
-var
-  stallhack: boolean;
 
 var
   curpal64: array[0..$FFFF] of Int64;
@@ -528,39 +443,6 @@ begin
 end;
 
 //==============================================================================
-//
-// I_AdjustWindowMode
-//
-//==============================================================================
-function I_AdjustWindowMode: boolean;
-begin
-  result := I_VideoServices.SizeLimiter.Limit(WINDOWWIDTH, WINDOWHEIGHT);
-end;
-
-//==============================================================================
-//
-// I_MemoryStallHack
-//
-//==============================================================================
-function I_MemoryStallHack: boolean;
-// JVAL: Memory stall can dramatically reduce performance in inc operation of
-// esi register of value 4096 etc
-// e.g.
-//  mov [esp], 4096 (=SCREENWIDTH(=1024) * SizeOf(LongWord)(=4)
-//  add esi, [esp]
-// The above code is dramatically slower than:
-//  mov [esp], 4088 (=SCREENWIDTH(=1022) * SizeOf(LongWord)(=4)
-//  add esi, [esp]
-// It's crazy!
-begin
-  result := I_VideoServices.StallHack.Apply(SCREENWIDTH, fixstallhack);
-  stallhack := result;
-end;
-
-const
-  ERROR_OFFSET = 20;
-
-//==============================================================================
 // I_InitGraphics
 //
 // Called by D_DoomMain,
@@ -583,57 +465,16 @@ begin
 
   I_DisplayModes.Refresh(MAXWIDTH, MAXHEIGHT);
 
-  fullscreen := fullscreen mod NUMFULLSCREEN_MODES;
-
-  if fullscreen = FULLSCREEN_EXCLUSIVE then
-  begin
-    I_FindWindowSize(fullscreen);
-
-    // Set the video mode to WINDOWWIDTH x WINDOWHEIGHT x 32
-    if video_resolution.Change(WINDOWWIDTH, WINDOWHEIGHT) then
-    begin
-      video_resolution_changed := true;
-      I_RestoreWindowPos(fullscreen);
-      I_DisableAltTab;
-    end
-    else
-    begin
-    // Fullscreen mode failed, trying window mode
-      fullscreen := FULLSCREEN_SHARED;
-
-      I_AdjustWindowMode;
-      I_RestoreWindowPos(fullscreen);
-
-      I_Warning('SetDisplayMode(): Failed to fullscreen %dx%dx%d, trying window mode...'#13#10,
-        [WINDOWWIDTH, WINDOWHEIGHT, 32]);
-      printf('Window Mode %dx%d'#13#10, [SCREENWIDTH, SCREENHEIGHT]);
-    end;
-  end
-  else
-  begin
-    I_FindWindowSize(fullscreen);
-    I_AdjustWindowMode;
-    I_RestoreWindowPos(fullscreen);
-  end;
-
-  if I_MemoryStallHack then
-    V_ReInit;
+  // the window, the full screen mode and the resolution: DelphiDoom.Video.ModeChanger
+  I_ModeChanger.Initialize(fullscreen);
 
   // The frame is always 32 bits: GDI converts it to the depth of the desktop
-  allocscreensize := SCREENWIDTH * (SCREENHEIGHT + ERROR_OFFSET) * SizeOf(LongWord) and not (4095);
+  allocscreensize := TVideoScreenLayout.FrameBufferSize(SCREENWIDTH, SCREENHEIGHT);
   screen := mallocA(allocscreensize, $10000, oscreen); // JVAL: Memory padding may increase performance until 4%
   screen32 := screen;
 
   graphics_started := true;
-
-  dpi := I_GetWindowDPI(hMainWnd);
 end;
-
-const
-  NUMSTDRESOLUTIONS = 11;
-  STANDARDSCREENRESOLUTIONS: array[0..NUMSTDRESOLUTIONS - 1, 0..1] of integer = (
-    (1920, 1080), (1366, 768), (1280, 1024), (1280, 800), (1024, 768), (800, 600), (640, 480), (600, 400), (512, 384), (400, 300), (320, 200)
-  );
 
 //==============================================================================
 //
@@ -641,77 +482,8 @@ const
 //
 //==============================================================================
 procedure I_ChangeFullScreen(const newmode: integer);
-
-  procedure I_ChangeFullScreenError(full: boolean);
-  begin
-    if full then
-      I_Warning('I_ChangeFullScreen(): Can not change to fullscreen mode'#13#10)
-    else
-      I_Warning('I_ChangeFullScreen(): Can not change to window mode'#13#10);
-  end;
-
-var
-  i: integer;
-  changed: boolean;
-
 begin
-  if video_resolution = nil then
-    I_Error('I_ConfigureVideoOutput() was not called: the video output is missing');
-
-  WINDOWWIDTH := SCREENWIDTH;
-  WINDOWHEIGHT := SCREENHEIGHT;
-
-  I_FindWindowSize(newmode);
-  I_AdjustWindowMode;
-  I_RestoreWindowPos(newmode);
-
-  if newmode = FULLSCREEN_EXCLUSIVE then
-    changed := video_resolution.Change(WINDOWWIDTH, WINDOWHEIGHT)
-  else
-  begin
-    // the desktop resolution is the native one
-    video_resolution.Restore;
-    video_resolution_changed := false;
-    changed := true;
-  end;
-
-  if not changed then
-  begin
-    i := 0;
-
-    // Determine a standard screen resolution
-    WINDOWWIDTH := STANDARDSCREENRESOLUTIONS[NUMSTDRESOLUTIONS - 1, 0];
-    WINDOWHEIGHT := STANDARDSCREENRESOLUTIONS[NUMSTDRESOLUTIONS - 1, 1];
-    while i < NUMSTDRESOLUTIONS - 1 do
-    begin
-      if (WINDOWWIDTH <= STANDARDSCREENRESOLUTIONS[i, 0]) and
-         (WINDOWHEIGHT <= STANDARDSCREENRESOLUTIONS[i, 1]) and
-         (WINDOWWIDTH >= STANDARDSCREENRESOLUTIONS[i + 1, 0]) then
-      begin
-        WINDOWWIDTH := STANDARDSCREENRESOLUTIONS[i, 0];
-        WINDOWHEIGHT := STANDARDSCREENRESOLUTIONS[i, 1];
-        break;
-      end;
-      inc(i);
-    end;
-
-    if not video_resolution.Change(WINDOWWIDTH, WINDOWHEIGHT) then
-    begin
-      I_ChangeFullScreenError(fullscreen <> FULLSCREEN_OFF);
-      exit;
-    end;
-  end;
-
-  if newmode = FULLSCREEN_EXCLUSIVE then
-  begin
-    video_resolution_changed := true;
-    // the system may have moved the window when the resolution changed
-    I_RestoreWindowPos(newmode);
-  end;
-
-  fullscreen := newmode;
-
-  dpi := I_GetWindowDPI(hMainWnd);
+  I_ModeChanger.ChangeFullScreen(newmode, fullscreen);
 end;
 
 //==============================================================================

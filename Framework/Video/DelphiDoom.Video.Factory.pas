@@ -15,7 +15,8 @@ uses
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Video.Types,
-  DelphiDoom.Video.Intf;
+  DelphiDoom.Video.Intf,
+  DelphiDoom.Video.ModeChanger.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the video contracts</summary>
@@ -37,6 +38,8 @@ type
       const AParseNumber: TFunc<string, Integer>): IScreenSizeResolver; static;
     /// <summary>The notifications that the game loop runs between two frames</summary>
     class function CreateDeferredNotifications(const AApplier: IDisplayModeApplier): IDeferredNotifications; static;
+    /// <summary>The sequences of the full screen modes of the software video, on AHost</summary>
+    class function CreateModeChanger(const AHost: IVideoModeHost): IVideoModeChanger; static;
     /// <summary>The services on the screen of Windows</summary>
     class function CreateServices: IVideoServices; static;
   end;
@@ -48,7 +51,7 @@ uses
   DelphiDoom.Video.MemoryStallHack, DelphiDoom.Video.WindowsDisplayMetrics,
   DelphiDoom.Video.Services, DelphiDoom.Video.DisplayModeCatalog,
   DelphiDoom.Video.WindowsDisplayModeSource, DelphiDoom.Video.ScreenSizeResolver,
-  DelphiDoom.Video.DeferredNotifications;
+  DelphiDoom.Video.DeferredNotifications, DelphiDoom.Video.ModeChanger;
 
 { TVideoFactory }
 
@@ -94,6 +97,11 @@ class function TVideoFactory.CreateDeferredNotifications(
   const AApplier: IDisplayModeApplier): IDeferredNotifications;
 begin
   Result := TDeferredNotifications.Create(AApplier);
+end;
+
+class function TVideoFactory.CreateModeChanger(const AHost: IVideoModeHost): IVideoModeChanger;
+begin
+  Result := TVideoModeChanger.Create(AHost);
 end;
 
 class function TVideoFactory.CreateServices: IVideoServices;

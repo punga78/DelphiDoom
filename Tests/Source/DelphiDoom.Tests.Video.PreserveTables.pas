@@ -54,6 +54,8 @@ type
     procedure DovrebbeDareLAreaGLDi1024DaI1024;
     [Test]
     procedure DovrebbeDareQuadrataLAreaGLSeLoSchermoESvolto;
+    [Test]
+    procedure DovrebbeCalcolareLaDimensioneDelFotogramma;
   end;
 
 implementation
@@ -176,6 +178,20 @@ begin
   Assert.AreEqual(512, LSize.Height);
   LSize := TVideoScreenLayout.GlDrawSize(1200, 1200);
   Assert.AreEqual(1024, LSize.Height);
+end;
+
+procedure TTestVideoScreenLayout.DovrebbeCalcolareLaDimensioneDelFotogramma;
+var
+  LWidth: Integer;
+  LHeight: Integer;
+begin
+  // the formula that I_InitGraphics had: 20 rows more, a multiple of 4096 bytes
+  for LWidth := 1 to 40 do
+    for LHeight := 1 to 40 do
+      Assert.AreEqual(LWidth * 32 * (LHeight * 16 + 20) * SizeOf(LongWord) and not (4095),
+        TVideoScreenLayout.FrameBufferSize(LWidth * 32, LHeight * 16));
+  Assert.AreEqual(320 * 220 * 4 and not 4095, TVideoScreenLayout.FrameBufferSize(320, 200));
+  Assert.AreEqual(1024 * 788 * 4 and not 4095, TVideoScreenLayout.FrameBufferSize(1024, 768));
 end;
 
 initialization
