@@ -548,6 +548,7 @@ uses
   DelphiDoom.Input.EventScaling,
   DelphiDoom.Serializer.SaveGameName,
   DelphiDoom.MapInfo.LevelProgression,
+  DelphiDoom.MapInfo.IntermissionPlanner,
   DelphiDoom.MapInfo.LevelExit,
   DelphiDoom.Thinkers.PlayerRespawn.Intf,
   DelphiDoom.Thinkers.PlayerRespawn,
@@ -1941,11 +1942,9 @@ end;
 procedure G_DoCompleted;
 var
   i: integer;
-  next: string;
   exitcustom: TLevelExitCustom;
-  exitverdict: TLevelExitVerdict;
-label
-  frommapinfo;
+  request: TIntermissionRequest;
+  plan: TIntermissionPlan;
 begin
   gameaction := ga_nothing;
 
@@ -1965,56 +1964,65 @@ begin
     exitcustom := lecHacx
   else
     exitcustom := lecNone;
-  exitverdict := TLevelExit.Check(legDoom, gamemode = commercial, exitcustom, gamemap);
-  if exitverdict.SecretForAll then
+  request.Game := legDoom;
+  request.IsCommercial := gamemode = commercial;
+  request.IsBfgSecondEdition := customgame = cg_bfg2;
+  request.Custom := exitcustom;
+  request.SecretExit := secretexit;
+  request.Episode := gameepisode;
+  request.Map := gamemap;
+  request.ConsoleDidSecret := players[consoleplayer].didsecret;
+  request.PreviousNext := wminfo.next;
+  request.HasMapInfo := gamemapinfo <> nil;
+  request.HasEndPicture := false;
+  request.NoIntermission := false;
+  request.NextSecret := '';
+  request.NextMap := '';
+  request.MapInfoPartime := 0;
+  if gamemapinfo <> nil then
+  begin
+    request.HasEndPicture := (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-');
+    request.NoIntermission := gamemapinfo.nointermission;
+    request.NextSecret := gamemapinfo.nextsecret;
+    request.NextMap := gamemapinfo.nextmap;
+    request.MapInfoPartime := gamemapinfo.partime;
+  end;
+  request.Rules := TMapName.DoomRules;
+  plan := TIntermissionPlanner.Plan(request);
+
+  if plan.SecretForAll then
     for i := 0 to MAXPLAYERS - 1 do
       players[i].didsecret := true;
-  if exitverdict.Victory then
+  if plan.EndsGame then
   begin
     gameaction := ga_victory;
     exit;
   end;
 
-  wminfo.didsecret := players[consoleplayer].didsecret;
-  wminfo.epsd := gameepisode - 1;
-  wminfo.nextep := gameepisode - 1;
-  wminfo.last := gamemap - 1;
+  wminfo.didsecret := plan.DidSecret;
+  wminfo.epsd := plan.Epsd;
+  wminfo.nextep := plan.NextEp;
+  wminfo.last := plan.Last;
+  wminfo.next := plan.Next; // 0 biased, unlike gamemap
 
   wminfo.lastmapinfo := gamemapinfo;
   wminfo.nextmapinfo := nil;
-  if gamemapinfo <> nil then
+  if plan.EndsWithoutIntermission then
   begin
-    if (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-') and gamemapinfo.nointermission then
-    begin
-      gameaction := ga_victory;
-      exit;
-    end;
-    next := TLevelExit.PickNextMapName(secretexit, gamemapinfo.nextsecret, gamemapinfo.nextmap);
-    if next <> '' then
-      if G_ValidateMapName(next, @wminfo.nextep, @wminfo.next) then
-      begin
-        Dec(wminfo.nextep);
-        Dec(wminfo.next);
-        // episode change
-        if wminfo.nextep <> wminfo.epsd then
-          for i := 0 to MAXPLAYERS - 1 do
-            players[i].didsecret := false;
-        wminfo.didsecret := players[consoleplayer].didsecret;
-        wminfo.partime := gamemapinfo.partime;
-        goto frommapinfo; // skip past the default setup.
-      end;
+    gameaction := ga_victory;
+    exit;
   end;
+  // episode change
+  if plan.ResetPlayersDidSecret then
+    for i := 0 to MAXPLAYERS - 1 do
+      players[i].didsecret := false;
 
-  // wminfo.next is 0 biased, unlike gamemap
-  TLevelProgression.DoomNextMap(gamemode = commercial, secretexit, customgame = cg_bfg2,
-    gameepisode, gamemap, wminfo.next);
-
-  if gamemode = commercial then
+  if plan.PartimeFromMapInfo then
+    wminfo.partime := plan.Partime
+  else if gamemode = commercial then
     wminfo.partime := TICRATE * cpars[gamemap - 1]
   else
     wminfo.partime := TICRATE * pars[gameepisode][gamemap];
-
-frommapinfo:
   wminfo.nextmapinfo := G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
 
   wminfo.maxkills := P_World.Totals.Kills;
