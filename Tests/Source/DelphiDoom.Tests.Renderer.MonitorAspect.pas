@@ -303,7 +303,13 @@ begin
 
   LCosines := FAngles.Cosines(MIN_SIZE, MAX_SIZE);
   for L := MIN_SIZE to MAX_SIZE do
+    {$IF SizeOf(Extended) > SizeOf(Double)}
     Assert.AreEqual(LExpected[L], LCosines[L - MIN_SIZE], 0.0);
+    {$ELSE}
+    // issue #40: here the old procedure computes in Double, and the circle through three points loses 3e-10 to
+    // the cancellations; the class gives the table of the 32 bit code (exact: TTestRendererFake3DTables)
+    Assert.AreEqual(LExpected[L], LCosines[L - MIN_SIZE], 1E-8);
+    {$IFEND}
 end;
 
 end.

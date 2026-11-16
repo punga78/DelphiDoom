@@ -102,6 +102,9 @@ implementation
 
 uses
   Math,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   doomdef,
   g_game,
   mt_utils,
@@ -780,7 +783,12 @@ begin
           dist := Sqr(col.x / FRACUNIT) + Sqr(col.y / FRACUNIT);
           if dist > maxdist then
             maxdist := dist;
+{$IFDEF CPUX86}
           col.angle := Round(arctan2(col.y, col.x) * (ANG180 / D_PI));
+{$ELSE}
+          // issue #40: ArcTan2 and the product have the 64 bits of mantissa of the 32 bit FPU
+          col.angle := TRendererX87.VoxelColumnAngle(col.y, col.x);
+{$ENDIF}
           col.scale := scale;
           buf.Add(col)
         end;
@@ -900,7 +908,12 @@ begin
             col.iy := zz - mid;
             col.x := (xx - mid) * scale;
             col.y := (zz - mid) * scale;
+{$IFDEF CPUX86}
             col.angle := Round(arctan2(col.y, col.x) * (ANG180 / D_PI));
+{$ELSE}
+            // issue #40: ArcTan2 and the product have the 64 bits of mantissa of the 32 bit FPU
+            col.angle := TRendererX87.VoxelColumnAngle(col.y, col.x);
+{$ENDIF}
             col.scale := scale;
             buf.Add(col);
           end;
@@ -997,7 +1010,12 @@ begin
             col.iy := zz - mid;
             col.x := (xx - mid) * scale;
             col.y := (zz - mid) * scale;
+{$IFDEF CPUX86}
             col.angle := Round(arctan2(col.y, col.x) * (ANG180 / D_PI));
+{$ELSE}
+            // issue #40: ArcTan2 and the product have the 64 bits of mantissa of the 32 bit FPU
+            col.angle := TRendererX87.VoxelColumnAngle(col.y, col.x);
+{$ENDIF}
             col.scale := scale;
             buf.Add(col);
           end;
@@ -1253,9 +1271,17 @@ begin
     if spinang <> 0 then
     begin
       if not isgamesuspended then
+{$IFDEF CPUX86}
         spinang := Round(((TTickState.LevelTime + ticfrac / FRACUNIT) / TICRATE * spinang) * (ANGLE_MAX / 360))
+{$ELSE}
+        spinang := TRendererX87.VoxelSpinAngle(TTickState.LevelTime, ticfrac, TICRATE, spinang, True)
+{$ENDIF}
       else
+{$IFDEF CPUX86}
         spinang := Round((TTickState.LevelTime / TICRATE * spinang) * (ANGLE_MAX / 360));
+{$ELSE}
+        spinang := TRendererX87.VoxelSpinAngle(TTickState.LevelTime, ticfrac, TICRATE, spinang, False);
+{$ENDIF}
     end;
     angleadd := spinang - angleadd;
 

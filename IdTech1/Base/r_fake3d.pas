@@ -116,6 +116,9 @@ uses
   r_draw,
   r_hires,
   r_plane,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.Fake3DTables,
+{$ENDIF}
 {$IFDEF DEBUG}
   r_debug,
 {$ENDIF}
@@ -158,15 +161,20 @@ var
 procedure R_ComputeFake3DTables(const l: integer);
 var
   f3d: Pf3dinfo_t;
-  i, j: integer;
+  i: integer;
+{$IFDEF CPUX86}
+  j: integer;
   buffer: array[0..MAXHEIGHT - 1] of double;
   buffer2: array[0..MAXHEIGHT - 1] of double;
-  c, c1, c2: Double;
+  c1: Double;
   c1frac: Double;
   invc2: Double;
   r: double;
   leftstep: double;
   rightstep: double;
+  correction: Double;
+{$ENDIF}
+  c, c2: Double;
   ymin, ymax: integer;
   df: integer;
   viewheightdiff: integer;
@@ -174,7 +182,6 @@ var
   frac: fixed_t;
   left, right: integer;
   err: integer;
-  correction: Double;
 begin
   if l = 0 then
     exit;
@@ -194,6 +201,7 @@ begin
 
   c := FAKE3D_ANGLE_COSINES[l];
 
+{$IFDEF CPUX86}
   c1 := 2 * (c - 1);
   c2 := 2 - c;
   invc2 := 1 / c2;
@@ -213,6 +221,11 @@ begin
   if l < 0 then
     for i := 0 to viewheight - 1 do
       f3d.ylookup[i] := Round(invc2 * (i - r * (buffer2[i] - i) ));
+{$ELSE}
+  // issue #40: the tables of the 32 bit FPU (64 bits of mantissa, a Double stored where the old code stores one)
+  c2 := TRendererFake3DTables.Aspect(c);
+  TRendererFake3DTables.RowLookup(l, c, viewheight, PFake3DInteger(f3d.ylookup));
+{$ENDIF}
 
   if l < 0 then
   begin
@@ -255,6 +268,7 @@ begin
   err := viewwidth div 32 + 1;
   if l >= 0 then
   begin
+{$IFDEF CPUX86}
     f3d.lefttop := 0;
     f3d.righttop := viewwidth - 1;
     r := viewwidth / f3d.aspect;
@@ -274,7 +288,12 @@ begin
         f3d.right[i] := viewwidth - 1;
       f3d.fracstep[i] := Round((f3d.right[i] - f3d.left[i]) * r);
     end;
-    left := f3d.left[viewheightdiff - 1];
+{$ELSE}
+    TRendererFake3DTables.RowEdges(l, MAX_3DINFOBUFFERSIZE, f3d.aspect, viewwidth, viewheight, viewheightdiff,
+      viewheightrest, f3d.lefttop, f3d.righttop, f3d.leftbottom, f3d.rightbottom, PFake3DInteger(f3d.left),
+      PFake3DInteger(f3d.right), PFake3DInteger(f3d.fracstep));
+{$ENDIF}
+    left :=f3d.left[viewheightdiff - 1];
     right := f3d.right[viewheightdiff - 1];
     frac := f3d.fracstep[viewheightdiff - 1];
     for i := viewheightdiff to viewheight - 1 do
@@ -304,6 +323,7 @@ begin
   end
   else
   begin
+{$IFDEF CPUX86}
     r := viewwidth / f3d.aspect;
     f3d.lefttop := Round(viewwidth - r);
     f3d.righttop := viewwidth - f3d.lefttop - 1;
@@ -323,7 +343,12 @@ begin
         f3d.right[j] := viewwidth - 1;
       f3d.fracstep[j] := Round((f3d.right[j] - f3d.left[j]) * r);
     end;
-    left := f3d.left[viewheightrest];
+{$ELSE}
+    TRendererFake3DTables.RowEdges(l, MAX_3DINFOBUFFERSIZE, f3d.aspect, viewwidth, viewheight, viewheightdiff,
+      viewheightrest, f3d.lefttop, f3d.righttop, f3d.leftbottom, f3d.rightbottom, PFake3DInteger(f3d.left),
+      PFake3DInteger(f3d.right), PFake3DInteger(f3d.fracstep));
+{$ENDIF}
+    left :=f3d.left[viewheightrest];
     right := f3d.right[viewheightrest];
     frac := f3d.fracstep[viewheightrest];
     for i := 0 to viewheightrest - 1 do

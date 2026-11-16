@@ -21,11 +21,13 @@ type
   ///   (usefake3d): done once, when the renderer starts
   /// </summary>
   TRendererFake3DAngles = class(TInterfacedObject, IRendererFake3DAngles)
+{$IFDEF CPUX86}
   strict private
     class function CircleFromPoints(const A1, A2, B1, B2, C1, C2: Extended;
       out X, Y, R: Extended): Boolean; static;
     class procedure PointsInCircle(L: Integer; const X, Y, R: Extended;
       out V1, V2: Extended); static;
+{$ENDIF}
   public
     function Cosines(AMinIndex, AMaxIndex: Integer): TArray<Double>;
   end;
@@ -33,6 +35,9 @@ type
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.Fake3DAnglesExact,
+{$ENDIF}
   System.Math;
 
 // Extended on purpose: the old code used it, and the angles of the frames depend on every bit
@@ -44,6 +49,7 @@ const
 
 { TRendererFake3DAngles }
 
+{$IFDEF CPUX86}
 class function TRendererFake3DAngles.CircleFromPoints(const A1, A2, B1, B2, C1, C2: Extended;
   out X, Y, R: Extended): Boolean;
 var
@@ -74,7 +80,15 @@ begin
   V1 := Y - LRoot;
   V2 := Y + LRoot;
 end;
+{$ENDIF}
 
+{$IFNDEF CPUX86}
+// issue #40: the 32 bit FPU keeps 64 bits of mantissa, here Extended is a Double
+function TRendererFake3DAngles.Cosines(AMinIndex, AMaxIndex: Integer): TArray<Double>;
+begin
+  Result := TRendererFake3DAnglesExact.Cosines(AMinIndex, AMaxIndex);
+end;
+{$ELSE}
 function TRendererFake3DAngles.Cosines(AMinIndex, AMaxIndex: Integer): TArray<Double>;
 var
   A1, A2, B1, B2, C1, C2: Extended;
@@ -111,5 +125,6 @@ begin
     for LIndex := 0 to High(Result) do
       Result[LIndex] := 1.0;
 end;
+{$ENDIF}
 
 end.

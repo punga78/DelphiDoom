@@ -1508,7 +1508,12 @@ begin
   if monitor_relative_aspect = 1.0 then
     fov := ANG90 shr ANGLETOFINESHIFT
   else
+{$IFDEF CPUX86}
     fov := round(arctan(monitor_relative_aspect) * FINEANGLES / D_PI);
+{$ELSE}
+    // issue #40: the arc tangent, the product and the quotient have the 64 bits of mantissa of the 32 bit FPU
+    fov := TRendererX87.FieldOfView(monitor_relative_aspect, FINEANGLES);
+{$ENDIF}
   focallength := FixedDiv(centerxfrac, finetangent[FINEANGLES div 4 + fov div 2]);
 
   if focallength = oldfocallength then
