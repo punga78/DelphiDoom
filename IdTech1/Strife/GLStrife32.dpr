@@ -1407,6 +1407,7 @@ uses
   DelphiDoom.Engine.GlScene.Frame in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.Frame.pas',
   DelphiDoom.GlContext.ExtensionList in '..\GlContext\DelphiDoom.GlContext.ExtensionList.pas',
   DelphiDoom.GlScene.PaletteTint in '..\GlScene\DelphiDoom.GlScene.PaletteTint.pas',
+  DelphiDoom.GlScene.SharedPalette in '..\GlScene\DelphiDoom.GlScene.SharedPalette.pas',
   DelphiDoom.Engine.GlVSync in '..\OpenGl\Legacy\DelphiDoom.Engine.GlVSync.pas',
   DelphiDoom.Engine.GlInitializer in '..\OpenGl\Legacy\DelphiDoom.Engine.GlInitializer.pas',
   DelphiDoom.Engine.Gl2dMode in '..\OpenGl\Legacy\DelphiDoom.Engine.Gl2dMode.pas',

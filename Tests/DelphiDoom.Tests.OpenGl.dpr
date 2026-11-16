@@ -58,6 +58,8 @@ uses
   DelphiDoom.GlScene.Factory in '..\IdTech1\GlScene\DelphiDoom.GlScene.Factory.pas',
   DelphiDoom.GlScene.Light in '..\IdTech1\GlScene\DelphiDoom.GlScene.Light.pas',
   DelphiDoom.Tests.OpenGl.SceneLight in 'Source\DelphiDoom.Tests.OpenGl.SceneLight.pas',
+  DelphiDoom.GlScene.SharedPalette in '..\IdTech1\GlScene\DelphiDoom.GlScene.SharedPalette.pas',
+  DelphiDoom.Tests.OpenGl.SharedPalette in 'Source\DelphiDoom.Tests.OpenGl.SharedPalette.pas',
   d_delphi in 'Shim\OpenGl\d_delphi.pas',
   r_lights in 'Shim\OpenGl\r_lights.pas',
   DelphiDoom.DynLights.Types in '..\IdTech1\DynLights\DelphiDoom.DynLights.Types.pas',

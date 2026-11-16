@@ -486,6 +486,7 @@ uses
   DelphiDoom.Engine.Scanner.Log,
   DelphiDoom.GlScene.Light,
   DelphiDoom.GlScene.PaletteTint,
+  DelphiDoom.GlScene.SharedPalette,
   DelphiDoom.Engine.Gl2dMode,
   DelphiDoom.Engine.GlHudPainter,
   DelphiDoom.Engine.GlScene.Fog,
@@ -790,9 +791,7 @@ procedure gld_SetPalette(palette: integer);
 var
   playpal: PByteArray;
   plpal: PByteArray;
-  pal: array[0..1023] of byte;
-  i: integer;
-  col, pcol: integer;
+  pal: array[0..GL_SHARED_PALETTE_BYTES - 1] of byte;
   tint: TGlScenePaletteTint;
 begin
   extra_red := 0.0;
@@ -807,37 +806,10 @@ begin
 
     playpal := V_ReadPalette(PU_STATIC);
     plpal := @playpal[768];
-    if fixedcolormap <> nil then
-    begin
-      for i := 0 to 255 do
-      begin
-        col := 3 * fixedcolormap[i];
-        pcol := i * 4;
-        pal[pcol] := plpal[col];
-        pal[pcol + 1] := plpal[col + 1];
-        pal[pcol + 2] := plpal[col + 2];
-        pal[pcol + 3] := 255;
-      end;
-    end
-    else
-    begin
-      for i := 0 to 255 do
-      begin
-        col := 3 * i;
-        pcol := col + i;
-        pal[pcol] := plpal[col];
-        pal[pcol + 1] := plpal[col + 1];
-        pal[pcol + 2] := plpal[col + 2];
-        pal[pcol + 3] := 255;
-      end;
-    end;
+    TGlSceneSharedPalette.Build(System.PByte(plpal), System.PByte(fixedcolormap), transparent_pal_index,
+      System.PByte(@pal));
 
     Z_ChangeTag(playpal, PU_CACHE);
-    pcol := transparent_pal_index * 4;
-    pal[pcol] := 0;
-    pal[pcol + 1] := 0;
-    pal[pcol + 2] := 0;
-    pal[pcol + 3] := 0;
     gld_ColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, @pal);
   end
   else
