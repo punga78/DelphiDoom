@@ -26,7 +26,8 @@ type
     ActorDef,
     TableExport,
     Iwad,
-    Script
+    Script,
+    Renderer
   );
 
   /// <summary>

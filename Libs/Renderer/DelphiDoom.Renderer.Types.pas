@@ -16,6 +16,12 @@ uses
 const
   /// <summary>One in the fixed point of the engine (16.16)</summary>
   RENDERER_FRACUNIT = 65536;
+  /// <summary>The folder of the PK3 whose images are textures (and flats)</summary>
+  RENDERER_PK3_TEXTURE_PATH = 'TEXTURES\';
+  /// <summary>The folder of the PK3 whose images are flats only</summary>
+  RENDERER_PK3_FLAT_PATH = 'FLATS\';
+  /// <summary>The longest name of a texture or a flat of a WAD</summary>
+  RENDERER_PK3_MAX_NAME_LENGTH = 8;
   /// <summary>The number of fine angles of a full circle (the index of the tables of the tangents)</summary>
   RENDERER_FINEANGLES = 8192;
   /// <summary>How many binary angles a fine angle has (the angles are 32 bit: a full circle is 2^32)</summary>
@@ -128,6 +134,83 @@ type
     HighestCeiling: Integer;
     /// <summary>The distance between them is more than RENDERER_TALL_WALL_OFFSET</summary>
     NeedsTallWalls: Boolean;
+  end;
+  /// <summary>The games that the software renderer has rules for</summary>
+  TRendererGame = (Doom, Heretic, Hexen, Strife);
+  /// <summary>
+  ///   What each game has in the cold part of the renderer (the data of the textures, the sky,
+  ///   the size of the view): the values that the old code had in its {$IFDEF}
+  /// </summary>
+  TRendererProfile = record
+    Game: TRendererGame;
+    /// <summary>The height of the middle of the sky texture, in fixed point (skytexturemid)</summary>
+    SkyTextureMid: Integer;
+    /// <summary>The texture of a wall that has none or whose name is not found (-1 or 0)</summary>
+    MissingTexture: Integer;
+    /// <summary>
+    ///   A negative number in a side is no texture (Heretic and Hexen); otherwise only zero is,
+    ///   and a negative number is a custom colormap
+    /// </summary>
+    NegativeSideTextureIsNone: Boolean;
+    /// <summary>The sides can have a custom colormap instead of a texture, and a missing name can be one</summary>
+    CustomColormapsOnSides: Boolean;
+    /// <summary>The columns of the light levels of the high detail count in the way of Doom (the others use a different division)</summary>
+    DoomLightLevelColumns: Boolean;
+  end;
+  /// <summary>A sprite to sort: the number that orders it (its scale) and the sprite itself</summary>
+  TRendererSortItem = record
+    Key: Integer;
+    Item: Pointer;
+  end;
+  PRendererSortItem = ^TRendererSortItem;
+  TRendererSortItemArray = array[0..MaxInt div SizeOf(TRendererSortItem) - 1] of TRendererSortItem;
+  PRendererSortItemArray = ^TRendererSortItemArray;
+  /// <summary>The size of the part of the screen that the 3D view uses</summary>
+  TRendererViewDimensions = record
+    /// <summary>The width of the view (the whole screen from ten blocks up)</summary>
+    ScaledViewWidth: Integer;
+    ViewHeight: Integer;
+  end;
+  /// <summary>The distances of the rows of the screen, for the flats and the lights of the slopes</summary>
+  TRendererSlopeTables = record
+    /// <summary>For each row: the distance scale of the flats (yslope)</summary>
+    YSlope: TArray<Integer>;
+    /// <summary>For each row: the same, but the rows near the horizon do not go below a minimum (slyslope)</summary>
+    LightYSlope: TArray<Integer>;
+  end;
+  /// <summary>The size of the biggest screen mode of the monitor that the renderer takes for its aspect</summary>
+  TRendererMonitorSize = record
+    Width: Integer;
+    Height: Integer;
+  end;
+  /// <summary>The images of a PK3 that become textures and flats, sorted by name</summary>
+  TRendererPk3Names = record
+    /// <summary>The names that are textures (they are flats too)</summary>
+    Textures: TArray<string>;
+    /// <summary>The names that are flats (the textures are in the list too)</summary>
+    Flats: TArray<string>;
+  end;
+  /// <summary>What a level uses, as numbers: the renderer loads only that</summary>
+  TRendererPrecacheInput = record
+    /// <summary>How many flats, textures and sprites the game has (the size of the tables of what is present)</summary>
+    FlatCount: Integer;
+    TextureCount: Integer;
+    SpriteCount: Integer;
+    /// <summary>The floor and the ceiling flat of each sector (they have the same length or are two lists to read together)</summary>
+    SectorFlats: TArray<Integer>;
+    /// <summary>The upper, middle and lower texture of every side</summary>
+    SideTextures: TArray<Integer>;
+    /// <summary>Flats and textures that are used without being in a sector or a side (animated ones, the sky)</summary>
+    ExtraFlats: TArray<Integer>;
+    ExtraTextures: TArray<Integer>;
+    /// <summary>The sprite of every object of the level</summary>
+    ObjectSprites: TArray<Integer>;
+  end;
+  /// <summary>What is used by the level, one flag for each flat, texture and sprite of the game</summary>
+  TRendererPrecachePlan = record
+    FlatPresent: TArray<Boolean>;
+    TexturePresent: TArray<Boolean>;
+    SpritePresent: TArray<Boolean>;
   end;
 
 implementation

@@ -171,6 +171,8 @@ uses
   r_patch,
   r_segs2,
 {$ENDIF}
+  DelphiDoom.Renderer.Types,
+  DelphiDoom.Renderer.Profiles,
   DelphiDoom.Renderer.Intf,
   DelphiDoom.Renderer.Factory,
   DelphiDoom.Engine.Renderer.PatchSource,
@@ -178,6 +180,7 @@ uses
   DelphiDoom.Engine.Renderer.SubsectorLocator,
   DelphiDoom.Engine.Renderer.LumpDirectory,
   DelphiDoom.Engine.Renderer.SpriteHeaders,
+  DelphiDoom.Engine.Renderer.Pk3Catalog,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
@@ -269,6 +272,12 @@ uses
   DelphiDoom.Engine.TextureDefs.LumpSource,
   DelphiDoom.Engine.TextureDefs.FlatCatalog,
   r_data,
+  r_aspect,
+{$IFNDEF OPENGL}
+  r_fake3d,
+  r_things_sortvissprites,
+{$ENDIF}
+  r_sky,
   r_things,
   r_subsectors,
   DelphiDoom.Palette.Types,
@@ -1174,7 +1183,20 @@ end;
 procedure ComposeRenderer(const ALog: ILog);
 var
   LDirectory: IRendererLumpDirectory;
+  LGame: TRendererGame;
+  LProfile: TRendererProfile;
 begin
+  if not TRendererProfiles.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Renderer), LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of the renderer', [_GAME]);
+  LProfile := TRendererProfiles.ForGame(LGame);
+  R_ConfigurePrecache(TRendererFactory.CreatePrecachePlanner, LProfile);
+  R_ConfigureSky(LProfile.SkyTextureMid);
+  R_ConfigureAspect(TRendererFactory.CreateMonitorAspect(
+    TVideoFactory.CreateWindowsDisplayModeSource));
+{$IFNDEF OPENGL}
+  R_ConfigureFake3D(TRendererFactory.CreateFake3DAngles);
+  R_ConfigureSpriteSort(TRendererFactory.CreateSpriteSortPolicy);
+{$ENDIF}
   R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
     TEngineRendererPatchSource.Create, ALog));
   R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
@@ -1182,6 +1204,7 @@ begin
   R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);
   R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
+  R_ConfigureViewTables(TRendererFactory.CreateViewTables);
   LDirectory := TEngineRendererLumpDirectory.Create;
   R_ConfigureLumpRanges(TRendererFactory.CreateLumpRanges(LDirectory, ALog),
     TRendererFactory.CreateSpriteTableBuilder(LDirectory,
@@ -1223,7 +1246,8 @@ begin
   LResolver.Attach(LFiles);
   V_ConfigureDrawTextures(TEngineDrawTextures.Create(LFiles));
   W_ConfigureSpriteTextures(LFiles);
-  R_ConfigurePK3Textures(LFiles, APakFiles);
+  R_ConfigurePK3Textures(LFiles, APakFiles, TRendererFactory.CreatePk3NameSelector,
+    TEngineRendererPk3Catalog.Create(LFiles), TRendererFactory.CreatePk3TextHash);
 {$IFDEF OPENGL}
   gld_ConfigureTextureFiles(LFiles);
 {$ELSE}

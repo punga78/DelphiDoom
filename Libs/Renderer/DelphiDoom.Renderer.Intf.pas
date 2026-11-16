@@ -167,6 +167,122 @@ type
     function Build(AFocalLength, ACenterXFrac, AViewWidth: Integer;
       const AFineTangent: TArray<Integer>): TRendererTextureMapping;
   end;
+  /// <summary>One way of ordering the sprites of a frame from the farthest to the nearest</summary>
+  IRendererSpriteSorter = interface
+    ['{3F8A2D61-C7E5-4B09-8A14-D6B90E27F5C3}']
+    /// <summary>
+    ///   The sort uses the scale of the sprite as the engine counts it for sorting (a dropped
+    ///   object counts one more); false: the plain scale (the old merge sort did this)
+    /// </summary>
+    function UsesDroppedAdjustment: Boolean;
+    /// <summary>Makes room for ACount sprites, so that sorting does not allocate (and can run in a thread)</summary>
+    procedure Reserve(ACount: Integer);
+    /// <summary>
+    ///   Orders by Key, smallest first. Sprites with the same key end in the order of the
+    ///   algorithm: the frames depend on it, so every sorter keeps the order of the old code
+    /// </summary>
+    procedure Sort(AItems: PRendererSortItemArray; ACount: Integer);
+    /// <summary>Gives back the memory</summary>
+    procedure Release;
+  end;
+
+  /// <summary>Chooses the sorter that is fastest for the number of sprites of the frame</summary>
+  IRendererSpriteSortPolicy = interface
+    ['{91B4E7C2-5A3D-4F68-B0E9-2C7A18D3F456}']
+    function Select(ACount: Integer): IRendererSpriteSorter;
+    procedure Reserve(ACount: Integer);
+    procedure Release;
+  end;
+
+  /// <summary>The tables that depend on the size of the view: done when the size changes, never for a frame</summary>
+  IRendererViewTables = interface
+    ['{B07E5C19-84DA-4F32-A6C1-D93F2E80B7A5}']
+    /// <summary>
+    ///   The size of the view for a number of blocks (the size slider of the screen): from eleven
+    ///   blocks up the whole screen, at ten the whole width and AFullViewHeight (the height above
+    ///   the status bar); less than ten, a part of the width and ABlockBase times the blocks over
+    ///   ABlockDivisor, a multiple of eight
+    /// </summary>
+    function Dimensions(ASetBlocks, AScreenWidth, AScreenHeight, AFullViewHeight, ABlockBase,
+      ABlockDivisor: Integer): TRendererViewDimensions;
+    /// <summary>
+    ///   The tables of the rows: FixedDiv of the projection over the distance of the centre of
+    ///   each row from the horizon (a row on it counts one half)
+    /// </summary>
+    function Slopes(AProjectionY, ACenterYFrac, AViewHeight: Integer): TRendererSlopeTables;
+    /// <summary>For each column, one over the cosine in fixed point (the cosines are positive)</summary>
+    function DistanceScales(const AColumnCosines: TArray<Integer>): TArray<Integer>;
+    /// <summary>
+    ///   For each of ALevels light levels and AColumns columns, how much of the colour is kept
+    ///   (the old scalelightlevels, in the order level * AColumns + column); the games count the
+    ///   screen width in a different order of operations, the flag says which
+    /// </summary>
+    function LightLevels(ALevels, AColumns, AViewWidth, AScreenWidth: Integer;
+      ADoomStyle: Boolean): TArray<Integer>;
+  end;
+
+  /// <summary>Which screen mode of the monitor the aspect of the widescreen view comes from</summary>
+  IRendererMonitorAspect = interface
+    ['{5A93D2C8-F1B4-4E60-9D27-8C0B6E3A7154}']
+    /// <summary>
+    ///   The size of the biggest mode of 32 bits that is bigger than 640x480 in both sides, as the
+    ///   system lists the modes (a later mode that is not smaller in both sides wins);
+    ///   640x480 when there is none
+    /// </summary>
+    function Measure: TRendererMonitorSize;
+  end;
+
+  /// <summary>The table of the angles of the "fake 3D" view (looking up and down)</summary>
+  IRendererFake3DAngles = interface
+    ['{E8B7140D-3C59-4A82-B6F1-27D90A5C3E68}']
+    /// <summary>
+    ///   The cosine of the angle for each look direction from AMinIndex to AMaxIndex (entry zero
+    ///   is AMinIndex): the angle follows the circle through the two extremes and the middle of the
+    ///   range, so that the view bends smoothly. Without a circle (collinear points) all are one
+    /// </summary>
+    function Cosines(AMinIndex, AMaxIndex: Integer): TArray<Double>;
+  end;
+
+  /// <summary>What the selector of the images of a PK3 asks of the engine</summary>
+  IRendererPk3Catalog = interface
+    ['{7E31B5A8-2D94-4C07-B1F6-90A8C4D5E321}']
+    /// <summary>The extension (upper case, with its dot) is one of an image that the engine decodes</summary>
+    function IsTextureExtension(const AExtension: string): Boolean;
+    /// <summary>The WAD already has a lump with the name</summary>
+    function HasLump(const AName: string): Boolean;
+    /// <summary>The number of the texture with the name (zero for the "no texture" marker, -1 when it is not there)</summary>
+    function TextureNumber(const AName: string): Integer;
+  end;
+
+  /// <summary>Chooses which images of a PK3 are converted to textures and flats</summary>
+  IRendererPk3NameSelector = interface
+    ['{C4F82A67-1B3E-4D95-A07C-5D29E8B16F40}']
+    /// <summary>
+    ///   Of the names of the files of the PK3: the images in textures\ and flats\ that have a
+    ///   name of at most eight characters, one dot, and no lump in the WAD; the ones of textures\
+    ///   that are not already textures are textures and flats, the others flats. Without
+    ///   duplicates (letters of any case count the same), sorted
+    /// </summary>
+    function Select(const AEntryNames: TArray<string>;
+      const ACatalog: IRendererPk3Catalog): TRendererPk3Names;
+  end;
+
+  /// <summary>The number that names the cache of the textures of a PK3</summary>
+  IRendererPk3TextHash = interface
+    ['{18D6A3F4-E7B2-4590-8C1D-F3A7062B94E8}']
+    /// <summary>The hash of the text of a list of names (each one followed by a line break)</summary>
+    function Compute(const AText: string): Integer;
+  end;
+
+  /// <summary>Which flats, textures and sprites a level uses</summary>
+  IRendererPrecachePlanner = interface
+    ['{A2C47E15-93B8-4D60-8F1A-5E0D7B34C9F2}']
+    /// <summary>
+    ///   One flag for each flat, texture and sprite of the game: set when a sector, a side, an
+    ///   extra entry or an object uses it. Numbers outside the game are ignored
+    /// </summary>
+    function Plan(const AInput: TRendererPrecacheInput): TRendererPrecachePlan;
+  end;
   /// <summary>The calculations on the whole level that the software renderer does when the level is loaded</summary>
   IRendererLevelPrecalc = interface
     ['{17D9A8E3-B462-4C50-93F7-0E5A2C86D1B9}']

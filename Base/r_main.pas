@@ -216,6 +216,13 @@ procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuild
 
 //==============================================================================
 //
+// R_ConfigureViewTables
+//
+//==============================================================================
+procedure R_ConfigureViewTables(const ATables: IRendererViewTables);
+
+//==============================================================================
+//
 // R_ConfigureMenuThumbnail
 //
 //==============================================================================
@@ -1451,6 +1458,18 @@ end;
 var
   oldfocallength: fixed_t = -1;
   texture_mapping: IRendererTextureMappingBuilder = nil;
+  view_tables: IRendererViewTables = nil;
+
+//==============================================================================
+//
+// R_ConfigureViewTables
+// The tables of the size of the view of Libs\Renderer, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureViewTables(const ATables: IRendererViewTables);
+begin
+  view_tables := ATables;
+end;
 
 //==============================================================================
 //
@@ -2754,61 +2773,56 @@ end;
 //==============================================================================
 procedure R_ExecuteSetViewSize;
 var
-{$IFNDEF OPENGL}
-  cosadj: fixed_t;
-  dy, dy1: fixed_t;
-{$ENDIF}
   i: integer;
   j: integer;
   level: integer;
-  levelhi: integer;
-  startmaphi: integer;
   scalelightindex: TArray<Integer>;
+  dimensions: TRendererViewDimensions;
+  fullviewheight: integer;
+  blockbase: integer;
+  blockdivisor: integer;
+{$IFNDEF OPENGL}
+  slopes: TRendererSlopeTables;
+  columncosines: TArray<Integer>;
+  distscales: TArray<Integer>;
+{$ENDIF}
+  highlightscale: TArray<Integer>;
 begin
   setsizeneeded := false;
 
-  if setblocks > 10 then
-  begin
-    scaledviewwidth := SCREENWIDTH;
-    viewheight := SCREENHEIGHT;
-  end
-  else
-  begin
-    if setblocks = 10 then
-      scaledviewwidth := SCREENWIDTH
-    else
-      scaledviewwidth := (setblocks * SCREENWIDTH div 10) and not 7;
-    if setblocks = 10 then
-    {$IFDEF OPENGL}
+  if view_tables = nil then
+    I_Error('R_ExecuteSetViewSize(): R_ConfigureViewTables() was not called');
+
+  // The status bar of each game says how high the view is: the numbers are given to
+  // TRendererViewTables, that does the arithmetic
+{$IFDEF OPENGL}
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-      viewheight := trunc(SB_Y * SCREENHEIGHT / 200)
+  fullviewheight := trunc(SB_Y * SCREENHEIGHT / 200);
+  blockbase := trunc(SB_Y * SCREENHEIGHT / 2000);
 {$ELSE}
-      viewheight := trunc(ST_Y * SCREENHEIGHT / 200)
+  fullviewheight := trunc(ST_Y * SCREENHEIGHT / 200);
+  blockbase := trunc(ST_Y * SCREENHEIGHT / 2000);
 {$ENDIF}
-    {$ELSE}
+  blockdivisor := 1;
+{$ELSE}
 {$IF DEFINED(DOOM)}
-      viewheight := V_PreserveY(ST_Y)
+  fullviewheight := V_PreserveY(ST_Y);
 {$ELSEIF DEFINED(STRIFE)}
-      viewheight := SCREENHEIGHT - V_PreserveY(ST_HEIGHT)
+  fullviewheight := SCREENHEIGHT - V_PreserveY(ST_HEIGHT);
 {$ELSE}
-      viewheight := V_PreserveY(SB_Y)
+  fullviewheight := V_PreserveY(SB_Y);
 {$ENDIF}
-    {$ENDIF}
-    else
-    {$IFDEF OPENGL}
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-      viewheight := (setblocks * trunc(SB_Y * SCREENHEIGHT / 2000)) and not 7;
+  blockbase := V_PreserveY(SB_Y);
 {$ELSE}
-      viewheight := (setblocks * trunc(ST_Y * SCREENHEIGHT / 2000)) and not 7;
+  blockbase := V_PreserveY(ST_Y);
 {$ENDIF}
-    {$ELSE}
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-      viewheight := (setblocks * V_PreserveY(SB_Y) div 10) and not 7;
-{$ELSE}
-      viewheight := (setblocks * V_PreserveY(ST_Y) div 10) and not 7;
+  blockdivisor := 10;
 {$ENDIF}
-    {$ENDIF}
-  end;
+  dimensions := view_tables.Dimensions(setblocks, SCREENWIDTH, SCREENHEIGHT, fullviewheight,
+    blockbase, blockdivisor);
+  scaledviewwidth := dimensions.ScaledViewWidth;
+  viewheight := dimensions.ViewHeight;
 
   viewwidth := scaledviewwidth;
   centery := viewheight div 2;
@@ -2871,26 +2885,20 @@ begin
     screenheightarray[i] := viewheight;
 
 {$IFNDEF OPENGL}
-  // planes
-  dy := centeryfrac + FRACUNIT div 2;
+  // planes: the tables are made by TRendererViewTables
+  slopes := view_tables.Slopes(projectiony, centeryfrac, viewheight);
   for i := 0 to viewheight - 1 do
   begin
-    dy := dy - FRACUNIT;
-    dy1 := abs(dy);
-    yslope[i] := FixedDiv(projectiony, dy1); // JVAL for correct aspect
-
-    // JVAL: 20200430 - For slope lightmap
-    if dy1 < 4 * FRACUNIT then
-      slyslope[i] := FixedDiv(projectiony, 4 * FRACUNIT)
-    else
-      slyslope[i] := yslope[i];
+    yslope[i] := slopes.YSlope[i]; // JVAL for correct aspect
+    slyslope[i] := slopes.LightYSlope[i]; // JVAL: 20200430 - For slope lightmap
   end;
 
+  SetLength(columncosines, viewwidth);
   for i := 0 to viewwidth - 1 do
-  begin
-    cosadj := abs(fixedcosine[xtoviewangle[i] div FRACUNIT]);
-    distscale[i] := FixedDiv(FRACUNIT, cosadj);
-  end;
+    columncosines[i] := fixedcosine[xtoviewangle[i] div FRACUNIT];
+  distscales := view_tables.DistanceScales(columncosines);
+  for i := 0 to viewwidth - 1 do
+    distscale[i] := distscales[i];
 {$ENDIF}
 
   // Calculate the light levels to use
@@ -2912,25 +2920,16 @@ begin
 
 
   if setdetail >= DL_NORMAL then
-    for i := 0 to LIGHTLEVELS - 1 do
-    begin
-      startmaphi := ((LIGHTLEVELS - 1 - i) * 2 * FRACUNIT) div LIGHTLEVELS;
-      for j := 0 to HLL_MAXLIGHTSCALE - 1 do
-      begin
+  begin
 {$IFDEF DOOM}
-        levelhi := startmaphi - (j * SCREENWIDTH) div viewwidth * 16;
+    highlightscale := view_tables.LightLevels(LIGHTLEVELS, HLL_MAXLIGHTSCALE, viewwidth, SCREENWIDTH, True);
 {$ELSE}
-        levelhi := startmaphi - j * 16 * SCREENWIDTH div viewwidth;
+    highlightscale := view_tables.LightLevels(LIGHTLEVELS, HLL_MAXLIGHTSCALE, viewwidth, SCREENWIDTH, False);
 {$ENDIF}
-
-        if levelhi < 0 then
-          scalelightlevels[i][j] := FRACUNIT
-        else if levelhi >= FRACUNIT then
-          scalelightlevels[i][j] := 1
-        else
-          scalelightlevels[i][j] := FRACUNIT - levelhi;
-      end;
-    end;
+    for i := 0 to LIGHTLEVELS - 1 do
+      for j := 0 to HLL_MAXLIGHTSCALE - 1 do
+        scalelightlevels[i][j] := highlightscale[i * HLL_MAXLIGHTSCALE + j];
+  end;
 
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   R_RecalcColormaps;
@@ -3437,6 +3436,8 @@ begin
       centery := cy;
       centeryfrac := centery * FRACUNIT;
       {$IFNDEF OPENGL}
+      // Per frame while the player looks up or down: not through TRendererViewTables (it makes
+      //  arrays), the same rows as there
       dy := -centeryfrac - FRACUNIT div 2;
       for i := 0 to viewheight - 1 do
       begin

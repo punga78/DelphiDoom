@@ -30,6 +30,17 @@ unit r_aspect;
 
 interface
 
+uses
+  DelphiDoom.Renderer.Intf;
+
+//==============================================================================
+//
+// R_ConfigureAspect
+// The chooser of the screen mode of the monitor, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureAspect(const AMonitor: IRendererMonitorAspect);
+
 //==============================================================================
 //
 // R_InitAspect
@@ -64,14 +75,26 @@ uses
   DelphiDoom.Renderer.X87,
 {$ENDIF}
   DelphiDoom.Console.Numbers,
-  Windows,
+  DelphiDoom.Renderer.Types,
   d_delphi,
+  i_system,
   m_misc,
   c_cmds,
   r_main;
 
 var
   relative_aspect: Double = 1.0;
+  monitor_aspect: IRendererMonitorAspect = nil;
+
+//==============================================================================
+//
+// R_ConfigureAspect
+//
+//==============================================================================
+procedure R_ConfigureAspect(const AMonitor: IRendererMonitorAspect);
+begin
+  monitor_aspect := AMonitor;
+end;
 
 //==============================================================================
 //
@@ -181,33 +204,16 @@ end;
 //==============================================================================
 procedure R_InitAspect;
 var
-  dm: TDevMode;
-  i: integer;
-  widths, heights: TDNumberList;
+  monitor: TRendererMonitorSize;
   maxwidth, maxheight: integer;
 begin
-  widths := TDNumberList.Create;
-  maxwidth := 640;
-  widths.Add(maxwidth);
-  heights := TDNumberList.Create;
-  maxheight := 480;
-  heights.Add(maxheight);
-  i := 0;
-  while EnumDisplaySettings(nil, i, dm) do
-  begin
-    if (dm.dmPelsWidth > 640) and (dm.dmPelsHeight > 480) and (dm.dmBitsPerPel = 32) then
-    begin
-      widths.Add(dm.dmPelsWidth);
-      heights.Add(dm.dmPelsHeight);
-    end;
-    inc(i);
-  end;
-  for i := 1 to widths.Count - 1 do
-    if (widths.Numbers[i] >= maxwidth) and (heights.Numbers[i] >= maxheight) then
-    begin
-      maxwidth := widths.Numbers[i];
-      maxheight := heights.Numbers[i];
-    end;
+  if monitor_aspect = nil then
+    I_Error('R_InitAspect(): R_ConfigureAspect() was not called');
+
+  // The biggest mode of the monitor is chosen by TRendererMonitorAspect
+  monitor := monitor_aspect.Measure;
+  maxwidth := monitor.Width;
+  maxheight := monitor.Height;
 
   if maxheight > 0 then
   begin
@@ -222,8 +228,6 @@ begin
     else if relative_aspect > 2.0 then
       relative_aspect := 2.0;
   end;
-  widths.Free;
-  heights.Free;
   C_AddCmd('widescreen,widescreensupport', @R_CmdWideScreen);
   C_AddCmd('excludewidescreenplayersprites', @R_CmdExcludeWideScreenPlayerSprites);
   C_AddCmd('forcedaspect', @R_CmdForcedAspect);
