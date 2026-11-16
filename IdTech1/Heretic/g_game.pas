@@ -485,6 +485,11 @@ uses
   DelphiDoom.Input.EventScaling,
   DelphiDoom.Serializer.SaveGameName,
   DelphiDoom.MapInfo.LevelProgression,
+  DelphiDoom.MapInfo.LevelExit,
+  DelphiDoom.Thinkers.PlayerRespawn.Intf,
+  DelphiDoom.Thinkers.PlayerRespawn,
+  DelphiDoom.Thinkers.SpawnSpot,
+  DelphiDoom.Engine.World.PlayerRespawnHost,
   DelphiDoom.MapInfo.MapName,
   DelphiDoom.MapInfo.NewGameLimits,
   DelphiDoom.MapInfo.SkillSpeed,
@@ -1905,65 +1910,10 @@ end;
 //==============================================================================
 function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
 var
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t; // JVAL: 3d floor
-  ss: Psubsector_t;
-  an: angle_t; // JVAL was u long
-  mo: Pmobj_t;
-  i: integer;
+  host: ISpawnSpotHost;
 begin
-  x := mthing.x * FRACUNIT;
-  y := mthing.y * FRACUNIT;
-
-  if players[playernum].mo = nil then
-  begin
-    // first spawn of level, before corpses
-    for i := 0 to playernum - 1 do
-      if (players[i].mo.x = x) and
-         (players[i].mo.y = y) then
-      begin
-        result := false;
-        exit;
-      end;
-    result := true;
-    exit;
-  end;
-
-  players[playernum].mo.flags2 := players[playernum].mo.flags2 and not MF2_PASSMOBJ;
-
-  // JVAL: 3d floors
-  ss := R_PointInSubsector(x, y);
-  z := ss.sector.floorheight;
-  if ss.sector.midsec >= 0 then
-    if players[playernum].mo.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then
-      z := sectors[ss.sector.midsec].ceilingheight;
-
-  if not P_CheckPosition(players[playernum].mo, x, y) then
-  begin
-    players[playernum].mo.flags2 := players[playernum].mo.flags2 or MF2_PASSMOBJ;
-    result := false;
-    exit;
-  end;
-  players[playernum].mo.flags2 := players[playernum].mo.flags2 or MF2_PASSMOBJ;
-
-  // flush an old corpse if needed
-  P_World.AddPlayerCorpse(players[playernum].mo);
-
-  // spawn a teleport fog
-  {$IFDEF FPC}
-  an := _SHRW(ANG45 * (mthing.angle div 45), ANGLETOFINESHIFT);
-  {$ELSE}
-  an := (ANG45 * (mthing.angle div 45)) shr ANGLETOFINESHIFT;
-  {$ENDIF}
-
-  mo := P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
-          z + TELEFOGHEIGHT, Ord(MT_TFOG));
-
-  if players[consoleplayer].viewz <> 1 then
-    S_StartSound(mo, Ord(sfx_telept));  // don't start sound on first frame
-
-  result := true;
+  host := TPlayerRespawnHost.Create(@consoleplayer, @gameaction);
+  result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
 end;
 
 //==============================================================================
@@ -1975,26 +1925,14 @@ end;
 //==============================================================================
 procedure G_DeathMatchSpawnPlayer(playernum: integer);
 var
-  i, j: integer;
-  selections: integer;
+  respawn: TPlayerRespawn;
 begin
-  selections := deathmatch_p; // JVAL - deathmatchstarts;
-  if selections < 4 then
-    I_Error('G_DeathMatchSpawnPlayer(): Only %d deathmatch spots, 4 required', [selections]);
-
-  for j := 0 to 19 do
-  begin
-    i := P_Random mod selections;
-    if G_CheckSpot(playernum, @deathmatchstarts[i]) then
-    begin
-      deathmatchstarts[i]._type := playernum + 1;
-      P_SpawnPlayer(@deathmatchstarts[i], @udeathmatchstarts[i]);
-      exit;
-    end;
+  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@consoleplayer, @gameaction));
+  try
+    respawn.SpawnDeathMatch(playernum);
+  finally
+    respawn.Free;
   end;
-
-  // no good spot, so the player will probably get stuck
-  P_SpawnPlayer(@playerstarts[playernum], @udeathmatchstarts[playernum]);
 end;
 
 //==============================================================================
@@ -2004,44 +1942,13 @@ end;
 //==============================================================================
 procedure G_DoReborn(playernum: integer);
 var
-  i: integer;
+  respawn: TPlayerRespawn;
 begin
-  if not netgame then
-    // reload the level from scratch
-    gameaction := ga_loadlevel
-  else
-  begin
-    // respawn at the start
-
-    // first dissasociate the corpse
-    players[playernum].mo.player := nil;
-
-    // spawn at random spot if in death match
-    if deathmatch <> 0 then
-    begin
-      G_DeathMatchSpawnPlayer(playernum);
-      exit;
-    end;
-
-    if G_CheckSpot(playernum, @playerstarts[playernum]) then
-    begin
-      P_SpawnPlayer(@playerstarts[playernum], @udeathmatchstarts[playernum]);
-      exit;
-    end;
-
-    // try to spawn at one of the other players spots
-    for i := 0 to MAXPLAYERS - 1 do
-    begin
-      if G_CheckSpot (playernum, @playerstarts[i]) then
-      begin
-        playerstarts[i]._type := playernum + 1; // fake as other player
-        P_SpawnPlayer(@playerstarts[i], @udeathmatchstarts[i]);
-        playerstarts[i]._type := i + 1; // restore
-        exit;
-      end;
-      // he's going to be inside something.  Too bad.
-    end;
-    P_SpawnPlayer(@playerstarts[playernum], @udeathmatchstarts[playernum]);
+  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@consoleplayer, @gameaction));
+  try
+    respawn.Respawn(playernum, netgame, deathmatch, MAXPLAYERS);
+  finally
+    respawn.Free;
   end;
 end;
 
@@ -2088,6 +1995,8 @@ procedure G_DoCompleted;
 var
   i: integer;
   next: string;
+  exitcustom: TLevelExitCustom;
+  exitverdict: TLevelExitVerdict;
 label
   frommapinfo;
 begin
@@ -2103,25 +2012,18 @@ begin
     AM_Stop;
   end;
 
-  case gamemap of
-    3:
-      begin
-        if customgame = cg_beta then
-        begin
-          gameaction := ga_victory;
-          exit;
-        end;
-      end;
-    8:
-      begin
-        gameaction := ga_victory;
-        exit;
-      end;
-    9:
-      begin
-        for i := 0 to MAXPLAYERS - 1 do
-          players[i].didsecret := true;
-      end;
+  if customgame = cg_beta then
+    exitcustom := lecBeta
+  else
+    exitcustom := lecNone;
+  exitverdict := TLevelExit.Check(legHeretic, false, exitcustom, gamemap);
+  if exitverdict.SecretForAll then
+    for i := 0 to MAXPLAYERS - 1 do
+      players[i].didsecret := true;
+  if exitverdict.Victory then
+  begin
+    gameaction := ga_victory;
+    exit;
   end;
 
   wminfo.didsecret := players[consoleplayer].didsecret;
@@ -2138,11 +2040,7 @@ begin
       gameaction := ga_victory;
       exit;
     end;
-    next := '';
-    if secretexit then
-      next := gamemapinfo.nextsecret;
-    if next = '' then
-      next := gamemapinfo.nextmap;
+    next := TLevelExit.PickNextMapName(secretexit, gamemapinfo.nextsecret, gamemapinfo.nextmap);
     if next <> '' then
       if G_ValidateMapName(next, @wminfo.nextep, @wminfo.next) then
       begin
