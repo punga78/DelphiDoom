@@ -169,3 +169,9 @@ Prodotti da un harness C++ **fuori dal repository** (contiene codice di OpenXcom
 
 - `Decl\q3calc\scenario-quads.txt` e `q3calc-quads.golden.txt`: risposte del vero `tr_shade_calc.c` (sprite, testo, ombra, nebbia, luce dei vertici); come: `Tests\Data\Decl\README.md`.
 - `Net\q3demo-golden.txt`: rifatto con `Tools\Verifica\121\build-demo.sh` (`parsegen.exe` del vero `cl_parse.c`) dopo l'aggiunta del clamp di `reliableAcknowledge` e del ping dello snapshot (righe `demo.client`, `demo.out`, campi `ct=` e `ping=`); i messaggi di prima sono gli stessi byte.
+
+## Q3Host (issue #254)
+
+- `Q3Host\opcodes.golden.txt` (427 righe `<enum> <NOME> <valore>`): i numeri delle trap di `qagame`, `cgame` e `ui` come li stampa gcc sugli header veri (`g_public.h`, `cg_public.h`, `ui_public.h`, e `sharedTraps_t` di `qcommon.h`); `Tools\Verifica\254\opcodes.sh <cartella>`. Da questo file `opcodes-pascal.sh` scrive le unit generate di `IdTech4\Q3Host`.
+- `Q3Host\init.golden.txt`: l'inizializzazione dei 12 `.qvm` di OpenArena 0.8.8 sul `vm.c` vero (valori, testi, impronta della memoria, conteggio e impronta delle chiamate di sistema), con `memset` e `memcpy` che rispondono 0 come `sv_game.c`; `Tools\Verifica\254\init-golden.sh <cartella>` (ricompila il pilota di `Tools\Verifica\120` con quelle due righe cambiate). Nessun dato di OpenArena nel repository.
+- `Q3Host\math.golden.txt` (4289 righe): `(float)sin((double)a)` e le altre funzioni matematiche delle trap per coppie di float (bit esadecimali); `Tools\Verifica\254\math.sh <cartella>`.
