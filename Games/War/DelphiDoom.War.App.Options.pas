@@ -13,6 +13,13 @@ uses
   DelphiDoom.War.Level.Types;
 
 type
+  /// <summary>Who plays the songs: the MIDI of the machine or nobody</summary>
+  TWarMusicMode = (
+    /// <summary>The songs go to the MIDI device of Windows (the General MIDI synth of the system)</summary>
+    wmmMidi,
+    wmmNone
+  );
+
   /// <summary>
   ///   What the command line of Warcraft32 asks for. The record has no behavior: TWarAppOptionsParser fills it, the
   ///   composition root of the program reads it
@@ -26,6 +33,11 @@ type
     Headless: Boolean;
     /// <summary>-nosound: the window has no sound device (a headless run has none anyway)</summary>
     NoSound: Boolean;
+    /// <summary>
+    ///   -music midi|none: where the songs go (midi when not given). The songs are sent while the sound device plays, so
+    ///   -nosound silences them too; a headless run and a script never open a MIDI device
+    /// </summary>
+    Music: TWarMusicMode;
     /// <summary>
     ///   -nointro: the logo goes on to the menu. Without it a game in a window that starts from the title (no -play, no
     ///   -load, no -script, not headless) plays the introduction after the logo (the animations are the port's own)
@@ -71,6 +83,7 @@ implementation
 class function TWarAppOptions.Standard: TWarAppOptions;
 begin
   Result := Default(TWarAppOptions);
+  Result.Music := wmmMidi;
   Result.PlayRace := wraNeutral;
   Result.Seed := WAR_APP_DEFAULT_SEED;
   Result.Scale := WAR_APP_DEFAULT_SCALE;

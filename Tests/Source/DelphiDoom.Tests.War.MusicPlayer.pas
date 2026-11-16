@@ -57,6 +57,14 @@ type
     [Test]
     procedure DovrebbeLimitareIlVolumeTraZeroEUno;
     [Test]
+    procedure DovrebbeFermareLeNoteCheSuonanoQuandoLaMusicaSiDisabilita;
+    [Test]
+    procedure DovrebbeFermareLeNoteCheSuonanoUnaSolaVoltaConIlVolumeAZero;
+    [Test]
+    procedure DovrebbeDareAlDispositivoIlGuadagnoDellaDissolvenza;
+    [Test]
+    procedure DovrebbeRimettereICanaliAPostoAOgniCanzone;
+    [Test]
     procedure DovrebbeFermareLaCanzoneConIlVolumeAZero;
     [Test]
     procedure DovrebbeFermareLaCanzoneSeLaMusicaEDisabilitata;
@@ -276,6 +284,69 @@ begin
   FPlayer.Play([1], False, 0);
   MixSamples(64);
   Assert.AreEqual('0 ON 0 60 3f800000', FSynthObject.Calls[0]);
+end;
+
+procedure TTestWarMusicPlayer.DovrebbeFermareLeNoteCheSuonanoQuandoLaMusicaSiDisabilita;
+begin
+  // a second event far away: the song is not over (at its end the player puts the notes off by itself)
+  Start([Note(0, wmkNoteOn, 0, 60, 127), Note(100000, wmkNoteOff, 0, 60)]);
+  FPlayer.Play([1], False, 0);
+  MixSamples(64);
+  Assert.AreEqual(1, CountCalls('ON'));
+  Assert.AreEqual(0, CountCalls('AO'));
+  // the menu turns the music off: a device keeps the note until it is told to stop it
+  FPlayer.SetVolume(1, False);
+  MixSamples(64);
+  Assert.AreEqual(1, CountCalls('AO'));
+end;
+
+procedure TTestWarMusicPlayer.DovrebbeFermareLeNoteCheSuonanoUnaSolaVoltaConIlVolumeAZero;
+begin
+  Start([Note(0, wmkNoteOn, 0, 60, 127), Note(100000, wmkNoteOff, 0, 60)]);
+  FPlayer.Play([1], False, 0);
+  MixSamples(64);
+  FPlayer.SetVolume(0, True);
+  MixSamples(64);
+  MixSamples(64);
+  Assert.AreEqual(1, CountCalls('AO'));
+end;
+
+procedure TTestWarMusicPlayer.DovrebbeDareAlDispositivoIlGuadagnoDellaDissolvenza;
+var
+  LDevice: TFakeDeviceSynth;
+begin
+  LDevice := TFakeDeviceSynth.Create;
+  FSynthObject := LDevice;
+  FSynth := LDevice;
+  FTimelineObject := TFakeMusicTimeline.Create([Note(100000, wmkNoteOff, 0, 60)]);
+  FPlayer := TWarMusicPlayer.Create(FSynth, FTimelineObject, 44100);
+  // a fade in of 100 ms is 4410 samples: the first block starts from silence, the sixth (at 5120) is at full volume
+  FPlayer.Play([1], False, 100);
+  MixSamples(1024);
+  MixSamples(1024);
+  MixSamples(1024);
+  MixSamples(1024);
+  MixSamples(1024);
+  MixSamples(1024);
+  Assert.AreEqual<Integer>(6, Length(LDevice.Gains));
+  Assert.AreEqual<Integer>(0, LDevice.Gains[0]);
+  Assert.IsTrue(LDevice.Gains[1] > LDevice.Gains[0]);
+  Assert.IsTrue(LDevice.Gains[4] > LDevice.Gains[3]);
+  Assert.AreEqual<Integer>(WAR_MUSIC_GAIN_FULL, LDevice.Gains[5]);
+end;
+
+procedure TTestWarMusicPlayer.DovrebbeRimettereICanaliAPostoAOgniCanzone;
+var
+  LDevice: TFakeDeviceSynth;
+begin
+  LDevice := TFakeDeviceSynth.Create;
+  FSynthObject := LDevice;
+  FSynth := LDevice;
+  FTimelineObject := TFakeMusicTimeline.Create([Note(0, wmkNoteOn, 0, 60, 127)]);
+  FPlayer := TWarMusicPlayer.Create(FSynth, FTimelineObject, 44100);
+  FPlayer.Play([1], False, 0);
+  FPlayer.Play([1], False, 0);
+  Assert.AreEqual(2, LDevice.Resets);
 end;
 
 procedure TTestWarMusicPlayer.DovrebbeFermareLaCanzoneConIlVolumeAZero;

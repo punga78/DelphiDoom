@@ -17,7 +17,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.War.Intf, DelphiDoom.War.Graphics.Intf, DelphiDoom.War.Graphics.Types,
   DelphiDoom.War.Font.Intf, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Cinematic.Intf, DelphiDoom.War.Audio.Intf,
-  DelphiDoom.War.Music.Intf,
+  DelphiDoom.War.Music.Intf, DelphiDoom.Midi.Output.Intf,
   DelphiDoom.War.Ui.Intf, DelphiDoom.War.Ui.Game, DelphiDoom.War.App.Options, DelphiDoom.War.App.Settings,
   DelphiDoom.War.App.SceneAudio, DelphiDoom.War.App.SessionTypes;
 
@@ -41,6 +41,8 @@ type
     FLibrary: IWarAudioLibrary;
     FMixer: IWarSoundMixer;
     FMusic: IWarMusicPlayer;
+    /// <summary>The MIDI device of the songs; nil when the songs have none (-music none, headless, script, no sound)</summary>
+    FMidiOutput: IMidiShortOutput;
     FSceneAudio: IWarSceneAudio;
     FSceneAudioObject: TWarSceneAudio;
     FSettings: TWarAppSettings;
@@ -54,6 +56,8 @@ type
     function QuickSlotPath: string;
     procedure LoadData;
     procedure CreateAudio;
+    /// <summary>The synth of the songs: the MIDI of Windows when the program plays sound in a window, the silent one else</summary>
+    function CreateMusicSynth: IWarMusicSynth;
     procedure LoadSettings;
     procedure SaveSettings(const AGame: IWarGameSettings);
     function MakeUiGame(const AStart: TWarSessionStart; const ARequests: IWarSessionRequests): TWarUiGame;
@@ -196,6 +200,24 @@ begin
   FCampaigns := TWarCampaigns.Create;
 end;
 
+function TWarComposition.CreateMusicSynth: IWarMusicSynth;
+var
+  LOutput: IMidiShortOutput;
+begin
+  // no device is opened by a run that has no window (the tests and the scripts of the golden files): there the songs are
+  // followed and heard by nobody
+  if (FOptions.Music <> wmmMidi) or FOptions.Headless or FOptions.NoSound or (FOptions.ScriptPath <> '') then
+    Exit(TWarMusicFactory.CreateSilentSynth);
+  LOutput := TWarMusicFactory.CreateWindowsMidiOutput;
+  if not LOutput.Open then
+  begin
+    Say('No MIDI device: the game is played without music');
+    Exit(TWarMusicFactory.CreateSilentSynth);
+  end;
+  FMidiOutput := LOutput;
+  Result := TWarMusicFactory.CreateMidiSynth(LOutput);
+end;
+
 procedure TWarComposition.CreateAudio;
 var
   LLog: ILog;
@@ -203,9 +225,9 @@ begin
   LLog := TLogFactory.CreateLog(nil, nil);
   FLibrary := TWarAudioFactory.CreateLibrary(FArchive, FCatalog);
   FMixer := TWarAudioFactory.CreateMixer(FLibrary);
-  // the songs are read and followed (the timeline of Framework\Midi); the synthesizer is the silent one: the SoundFont of the
-  // remake has no declared license (see Games\War\CLAUDE.md)
-  FMusic := TWarMusicFactory.CreatePlayer(TWarMusicFactory.CreateSilentSynth, TWarMusicFactory.CreateTimeline(LLog));
+  // the songs are read and followed (the timeline of Framework\Midi) and sent to the MIDI of Windows: the SoundFont synth of
+  // the remake has no declared license and is not ported (see Games\War\CLAUDE.md)
+  FMusic := TWarMusicFactory.CreatePlayer(CreateMusicSynth, TWarMusicFactory.CreateTimeline(LLog));
   FSceneAudioObject := TWarSceneAudio.Create(FLibrary, FMixer, FMusic);
   FSceneAudio := FSceneAudioObject;
   // the animations are files of the DOS game next to DATA.WAR (CAVE1.WAR...); a missing one is skipped. Their voices play on
@@ -424,6 +446,9 @@ begin
           WriteAudioStatistics(LAudio);
       finally
         LAudio.Free;
+        // the song is not sent any more: its notes stop before the MIDI device is closed
+        if Assigned(FMusic) then
+          FMusic.Stop(0);
         LPresenter := nil;
         LDevice := nil;
         LWindow.Free;

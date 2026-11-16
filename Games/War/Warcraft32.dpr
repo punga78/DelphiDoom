@@ -12,6 +12,7 @@
 {                     [-play human|orc <1..12>] [-load <file>] [-save <file>]   }
 {                     [-headless] [-script <file>] [-shot <file>] [-seed <n>]   }
 {                     [-quitafter <frames>] [-audiostats] [-nosound] [-nointro] }
+{                     [-music midi|none]                                        }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -37,7 +38,8 @@ begin
   Writeln('           Reference\war1\assets of a folder above it');
   Writeln('  -scale   the window is that many times 320 x 200 (1..8, default 3)');
   Writeln('  -play    goes at once to the mission of a campaign (human or orc, 1..12) instead of the title');
-  Writeln('  -nosound no sound device');
+  Writeln('  -nosound no sound device (the songs are paced by it: no music either)');
+  Writeln('  -music   midi (default: the songs go to the MIDI synth of Windows) | none');
   Writeln('  -nointro no introduction (the animations CAVE1..TITLE after the logo)');
   Writeln('  keys     F10 menu of the map (Save and Load there), F5 saves and F9 loads the quick slot,');
   Writeln('           Ctrl+P pauses; the quick slot is the file SAVES\quick.war1sav next to the program;');

@@ -78,7 +78,17 @@ stato (pool delle entita', stati, mappa, nebbia, muri, IA, generatore): non fatt
   ritorna NULL; per i casuali il numero e' estratto lo stesso, prima), quindi `WAR_SAVE_MODEL_VERSION` e' 2. **Non e' parita' da golden**: e' letto nel C e provato da test con finti (`MapUiUnits`); nessuno script del 197 manda un suono nella nebbia (i 44 golden sono uguali prima e dopo). L'uscita del C e'
   mono: c'e' il volume, **non c'e' il pan** (non inventato).
 
+## Musica sul MIDI di Windows (ondata 7, #203)
+
+`-music midi|none` (predefinito `midi`): `TWarMusicFactory.CreateWindowsMidiOutput` (`TMidiWinShortOutput`, `Framework\Midi`, MIDI
+mapper) + `TWarMidiMusicSynth` (`IWarMusicSynth` e `IWarMusicDevice`) al posto del sintetizzatore muto; il player tiene il tempo
+(la dissolvenza va sul controller 7 dei canali) e i brani sono gli XMID di `DATA.WAR` convertiti da `Framework\Xmi`. Il dispositivo
+si apre solo nella strada con la finestra, senza `-nosound` e senza `-script` (`CreateMusicSynth` nel composition root): headless
+e script restano muti. Gli eventi partono a blocchi da 23 ms dell'uscita PCM (quindi `-nosound` toglie la musica). `TWarSceneAudio`
+ricorda l'ultima richiesta sul brano fatta durante il rigioco (`Muted`) e la fa alla fine: un salvataggio caricato ha la sua
+musica. Diagnosi dell'audio, limiti e ascolto: `docs\WAR1_AUDIO.md`. Non ascoltato.
+
 ## Non fatto
 
-Musica (sintetizzatore muto: il SoundFont del remake non ha licenza dichiarata), schermo intero, selezione della risoluzione,
+Sintetizzatore SoundFont (la musica suona sul MIDI di Windows, vedi sotto: timbri GM, non quelli del remake), schermo intero, selezione della risoluzione,
 salvataggi multipli (uno slot rapido; `-save`/`-load` per i file), umani 4 (livello 123: il C si ferma su un `assert`).

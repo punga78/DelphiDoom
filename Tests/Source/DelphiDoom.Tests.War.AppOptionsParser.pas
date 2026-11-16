@@ -28,6 +28,12 @@ type
     [Test]
     procedure DovrebbeLeggereLeOpzioniSenzaValore;
     [Test]
+    procedure DovrebbeSuonareLaMusicaConIlMidiSenzaOpzioni;
+    [Test]
+    procedure DovrebbeLeggereLaSceltaDellaMusica;
+    [Test]
+    procedure DovrebbeRifiutareUnaMusicaSconosciutaOSenzaValore;
+    [Test]
     procedure DovrebbeLeggereLaMissioneDaGiocare;
     [Test]
     procedure DovrebbeLeggereIlSemeEIFotogrammi;
@@ -105,6 +111,37 @@ begin
   Assert.IsTrue(LOptions.ShowHelp);
   Assert.IsTrue(Parse(['-?'], LOptions, LError));
   Assert.IsTrue(LOptions.ShowHelp);
+end;
+
+procedure TTestWarAppOptionsParser.DovrebbeSuonareLaMusicaConIlMidiSenzaOpzioni;
+var
+  LOptions: TWarAppOptions;
+  LError: string;
+begin
+  Assert.IsTrue(Parse([], LOptions, LError));
+  Assert.IsTrue(LOptions.Music = wmmMidi);
+end;
+
+procedure TTestWarAppOptionsParser.DovrebbeLeggereLaSceltaDellaMusica;
+var
+  LOptions: TWarAppOptions;
+  LError: string;
+begin
+  Assert.IsTrue(Parse(['-music', 'none'], LOptions, LError));
+  Assert.IsTrue(LOptions.Music = wmmNone);
+  Assert.IsTrue(Parse(['-MUSIC', 'MIDI'], LOptions, LError));
+  Assert.IsTrue(LOptions.Music = wmmMidi);
+end;
+
+procedure TTestWarAppOptionsParser.DovrebbeRifiutareUnaMusicaSconosciutaOSenzaValore;
+var
+  LOptions: TWarAppOptions;
+  LError: string;
+begin
+  Assert.IsFalse(Parse(['-music', 'soundfont'], LOptions, LError));
+  Assert.IsTrue(LError.Contains('soundfont'));
+  Assert.IsFalse(Parse(['-music'], LOptions, LError));
+  Assert.IsTrue(LError.Contains('-music'));
 end;
 
 procedure TTestWarAppOptionsParser.DovrebbeLeggereLaMissioneDaGiocare;
