@@ -1,7 +1,7 @@
 <#
   Issue #193: compila il codice ORIGINALE del remake (acoto87/war1, zlib) che legge i livelli di DATA.WAR, le
   campagne e le condizioni di vittoria, le tabelle dei raccordi (strade, muri, rovine, alberi) e le funzioni che
-  li calcolano, e lo fa girare per produrre i golden di Libs\War. Niente e' modificato in Reference\: si
+  li calcolano, e lo fa girare per produrre i golden di Games\War. Niente e' modificato in Reference\: si
   leggono i sorgenti e si scrivono estratti e programma in -Out (una cartella NUOVA fuori da Reference e dal repository).
 
   Uso:

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the fade of the music of Libs\War                      }
+{  DelphiDoom: tests of the fade of the music of Games\War                     }
 {                                                                              }
 {  A sample rate of 1000 makes a millisecond one sample.                       }
 {                                                                              }

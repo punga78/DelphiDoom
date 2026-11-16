@@ -1,4 +1,4 @@
-Issue #185, fase 1, fetta 1e (avanzi meccanici di Base\): comandi esatti della verifica che NON sta in Verifica-Ramo.ps1.
+Issue #185, fase 1, fetta 1e (avanzi meccanici di IdTech1\Base\): comandi esatti della verifica che NON sta in Verifica-Ramo.ps1.
 Eseguibile di riferimento ("vecchio"): master cb5a45e3. Compilarlo in un worktree a parte (o riusare i Doom32.exe, Heretic32.exe,
 Hexen32.exe, Strife32.exe gia' fatti da quel commit) e indicarlo con -RefExe. "Nuovo" = i .exe di bin\ del ramo di questa fetta.
 Nei comandi: <NUOVO> = <worktree>\bin\Doom\Doom32.exe ecc., <VECCHIO> = il corrispondente di cb5a45e3.

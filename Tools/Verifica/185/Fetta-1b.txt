@@ -27,7 +27,7 @@ Variabili usate sotto (PowerShell, dalla radice del repository del ramo nuovo):
    b) le patch DEHACKED del repository (una per invocazione, per ogni gioco; senza frame_basic in Heretic: il vecchio crashava):
       powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -WorkRoot $wk -Exe $exe -RefExe $refexe -Name 'd1_demo1' -ExtraArgs "-deh $PWD\Tests\Data\Dehacked\frame_new.deh"
       per bex_sections.deh, thing_flags.deh, thing_misc.deh, thing_fixed.deh, text_pointer_codeptr.deh, header_comments.deh (Doom)
-      e per Tests\Data\Dehacked\Heretic|Hexen|Strife\*.deh con il -Game del cartello.
+      e per Tests\Data\Dehacked\Heretic|Hexen|IdTech1\Strife\*.deh con il -Game del cartello.
    c) con la configurazione che cambia la lettura di DECORATE (ini):
       ... -ExtraIni 'decorate_as_actordef=0' -ExtraArgs "-file $wk\info1b.wad" ...
    d) senza autoload e con piu' file: -ExtraArgs "-file $wk\info1b.wad -deh $PWD\Tests\Data\Info1b\info1b_patch.deh"

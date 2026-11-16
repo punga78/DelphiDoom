@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+diff --git a/IdTech1\Base/udmf_lights.pas b/IdTech1\Base/udmf_lights.pas
 index bbcd9b72..978272b5 100644
---- a/Base/udmf_lights.pas
-+++ b/Base/udmf_lights.pas
+--- a/IdTech1\Base/udmf_lights.pas
++++ b/IdTech1\Base/udmf_lights.pas
 @@ -144,20 +144,26 @@ uses
    DelphiDoom.Thinkers.Light.Phase,
    DelphiDoom.Thinkers.Light.Sequence,
@@ -49,10 +49,10 @@ index bbcd9b72..978272b5 100644
  //==============================================================================
  //
  // P_SpawnPhasedLight
-diff --git a/Doom/p_lights.pas b/Doom/p_lights.pas
+diff --git a/IdTech1\Doom/p_lights.pas b/IdTech1\Doom/p_lights.pas
 index 87477225..3382759e 100644
---- a/Doom/p_lights.pas
-+++ b/Doom/p_lights.pas
+--- a/IdTech1\Doom/p_lights.pas
++++ b/IdTech1\Doom/p_lights.pas
 @@ -123,6 +123,7 @@ implementation
  uses
    p_tick,
@@ -141,10 +141,10 @@ index ca3fb710..7324218c 100644
 --- a/Doom32.dpr
 +++ b/Doom32.dpr
 @@ -467,6 +467,7 @@ uses
-   DelphiDoom.Thinkers.Light.Sequence in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
-   DelphiDoom.Thinkers.Light.Games in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
-   DelphiDoom.Thinkers.Light.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
+   DelphiDoom.Thinkers.Light.Sequence in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
+   DelphiDoom.Thinkers.Light.Games in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
+   DelphiDoom.Thinkers.Light.Factory in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
 +  light_parity in 'Tools\Verifica\149\light_parity.pas',
-   DelphiDoom.Engine.Light.Sector in 'Base\DelphiDoom.Engine.Light.Sector.pas',
-   DelphiDoom.Engine.Light.Services in 'Base\DelphiDoom.Engine.Light.Services.pas',
-   DelphiDoom.Engine.Light.PhaseSpawner in 'Base\DelphiDoom.Engine.Light.PhaseSpawner.pas',
+   DelphiDoom.Engine.Light.Sector in 'IdTech1\Base\DelphiDoom.Engine.Light.Sector.pas',
+   DelphiDoom.Engine.Light.Services in 'IdTech1\Base\DelphiDoom.Engine.Light.Services.pas',
+   DelphiDoom.Engine.Light.PhaseSpawner in 'IdTech1\Base\DelphiDoom.Engine.Light.PhaseSpawner.pas',

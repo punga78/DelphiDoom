@@ -1,5 +1,5 @@
 /*
-  Issue #198 / #194: harness di riferimento per la SCELTA dei suoni di Libs\War.
+  Issue #198 / #194: harness di riferimento per la SCELTA dei suoni di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez): wa_playAttackSound,
   wa_playDudeSelectionSound, wa_playBuildingSelectionSound e wa_playAcknowledgementSound di war_audio.c sono estratti
   alla lettera da Compila-SoundRef.ps1 (war_play_sounds.inc), con le enumerazioni (war_enums.h) e CreateAudioArgs

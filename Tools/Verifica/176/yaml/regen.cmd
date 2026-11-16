@@ -1,6 +1,6 @@
 @echo off
 rem Rebuilds harness.exe (yaml-cpp 0.7.0 itself, see build.cmd) and rewrites the corpora and the golden files
-rem of Libs\Yaml in Tests\Data\Yaml. The stdout of the harness is binary (LF line ends, no BOM).
+rem of Framework\Yaml in Tests\Data\Yaml. The stdout of the harness is binary (LF line ends, no BOM).
 rem   parse:   gen: handwritten.txt + 600 random documents (seed 176) + escapes and encodings -> corpus.txt,
 rem            run: corpus.txt -> parse.golden.txt
 rem   emitter: emit-gen (fixed seed) -> emit_*.corpus.txt, emit-run -> emit_*.golden.txt

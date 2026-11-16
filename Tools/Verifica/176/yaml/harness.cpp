@@ -1,4 +1,4 @@
-// Parity harness for Libs\Yaml: runs the real yaml-cpp 0.7.0 over a corpus and prints a canonical dump.
+// Parity harness for Framework\Yaml: runs the real yaml-cpp 0.7.0 over a corpus and prints a canonical dump.
 // Own code (no OpenXcom code). Build: see build.sh
 #include <yaml-cpp/yaml.h>
 #include <cstdio>

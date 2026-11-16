@@ -1,7 +1,7 @@
 program RenderParity;
 {$APPTYPE CONSOLE}
 // Harness fuori dal repository: confronta il renderer ORIGINALE di xGreed (r_render, r_walls, r_plane, r_spans,
-// r_conten, r_interpolate, r_public) con il renderer a classi di Libs\Greed sugli stessi scenari
+// r_conten, r_interpolate, r_public) con il renderer a classi di Games\Greed sugli stessi scenari
 // (Tests\Source\DelphiDoom.Tests.Greed.RenderScenarios). Gli stub sono in stubs\ (d_misc, d_ints, d_video, raven...).
 // Uso: RenderParity <cartella con GREED.BLO> <uscita golden.txt> [mappe separate da virgola] [seed] [viste]
 uses

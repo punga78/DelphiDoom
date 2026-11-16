@@ -1,5 +1,5 @@
 /*
-  Issue #197: harness di riferimento per il disegno e l'interfaccia di Libs\War (scene, UI immediata, pannello, mappa).
+  Issue #197: harness di riferimento per il disegno e l'interfaccia di Games\War (scene, UI immediata, pannello, mappa).
 
   Il remake in C (acoto87/war1, zlib License, (C) 2019 Alejandro Coto Gutierrez) e' una "unity build": src\war1.c include
   tutti i .c. Qui si include war1.c INTERO e ORIGINALE (con main rinominato), e lo si collega alla SDL3 VERA

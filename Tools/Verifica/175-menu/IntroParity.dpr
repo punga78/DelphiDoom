@@ -3,7 +3,7 @@ program IntroParity;
 // Harness fuori dal repository: confronta tic per tic la schermata di avvio, il briefing di missione e i finali
 // ORIGINALI di xGreed (dointro con MainIntro, DemoIntro, ShowPortrait, IntroCommand e DoIntroMenu di intro.pas;
 // MissionBriefing, EndGame1, EndGame2 ed EndGame3 di utils.pas; con menu.pas, playfli.pas, d_font.pas e d_video.pas)
-// con TGreedIntro, TGreedBriefing e TGreedEndGame di Libs\Greed sugli stessi scenari
+// con TGreedIntro, TGreedBriefing e TGreedEndGame di Games\Greed sugli stessi scenari
 // (Tests\Source\DelphiDoom.Tests.Greed.IntroScenarios). L'originale blocca nei suoi cicli: la sua Wait e' uno stub che
 // per ogni tic cattura lo schermo e la palette, applica i tasti dello scenario ed esegue il corpo di INT_TimerISR
 // (stubs\d_ints.pas). I filmati sono file veri nella cartella dei filmati (basedefault): li legge il playfli.pas

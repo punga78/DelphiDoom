@@ -15,7 +15,7 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Launcher.Engines in '..\Libs\Launcher\DelphiDoom.Launcher.Engines.pas',
+  DelphiDoom.Launcher.Engines in '..\Strumenti\Launcher\DelphiDoom.Launcher.Engines.pas',
   DelphiDoom.Tests.Launcher.Engines in 'Source\DelphiDoom.Tests.Launcher.Engines.pas';
 
 var

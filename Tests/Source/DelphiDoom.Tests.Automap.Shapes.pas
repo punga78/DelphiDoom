@@ -39,7 +39,7 @@ const
   PLAYERRADIUS = AUTOMAP_PLAYERRADIUS;
   MAPUNIT = AUTOMAP_MAPUNIT;
 
-// The text below is the raw one of AM_Init of Base\am_map.pas before the shapes became
+// The text below is the raw one of AM_Init of IdTech1\Base\am_map.pas before the shapes became
 // TAutomapShapes (commit 1e049049), compiled once for each family of games with its own {$IF}s
 {$UNDEF HERETIC}
 {$UNDEF HEXEN}

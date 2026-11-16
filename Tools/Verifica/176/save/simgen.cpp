@@ -1,4 +1,4 @@
-// Harness for Libs\XcomStrategy (the strategic logic): runs the REAL OpenXcom objects (linked from a real build, see
+// Harness for Games\XcomStrategy (the strategic logic): runs the REAL OpenXcom objects (linked from a real build, see
 // build6.cmd) on the saved games of Tests\Data\XcomSave\realsave: SavedGame::load, then a scenario that changes the
 // state with the real Craft/Production/AlienMission/Ufo code driven by the real RNG with a fixed seed, and writes
 //   simNN.<scenario>.sav   what SavedGame::save writes after the scenario

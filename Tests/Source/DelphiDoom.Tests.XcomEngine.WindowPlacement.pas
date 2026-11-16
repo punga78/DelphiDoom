@@ -34,7 +34,7 @@ type
     procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
   end;
 
-  /// <summary>A display of Libs\GameHost that records where it is told to put its window</summary>
+  /// <summary>A display of Framework\GameHost that records where it is told to put its window</summary>
   TFakeHostPlacedDisplay = class(TInterfacedObject, IGameHostVideoDevice, IGameHostWindowPlacement)
   public
     Placements: Integer;
@@ -216,7 +216,7 @@ var
   LFactory: TGameHostVideoDeviceFactory;
   LWidth, LHeight: Integer;
 begin
-  // the chain of Xcom32: the adapter of the game, the selector of Libs\GameHost, the display it makes
+  // the chain of Xcom32: the adapter of the game, the selector of Framework\GameHost, the display it makes
   LHost := TFakeHostPlacedDisplay.Create;
   LHostRef := LHost;
   LFactory :=

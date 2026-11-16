@@ -15,9 +15,9 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Specials.Intf in '..\Libs\Specials\DelphiDoom.Specials.Intf.pas',
-  DelphiDoom.Specials.Registry in '..\Libs\Specials\DelphiDoom.Specials.Registry.pas',
-  DelphiDoom.Specials.Factory in '..\Libs\Specials\DelphiDoom.Specials.Factory.pas',
+  DelphiDoom.Specials.Intf in '..\IdTech1\Specials\DelphiDoom.Specials.Intf.pas',
+  DelphiDoom.Specials.Registry in '..\IdTech1\Specials\DelphiDoom.Specials.Registry.pas',
+  DelphiDoom.Specials.Factory in '..\IdTech1\Specials\DelphiDoom.Specials.Factory.pas',
   DelphiDoom.Tests.Specials.Registry in 'Source\DelphiDoom.Tests.Specials.Registry.pas';
 
 var

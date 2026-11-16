@@ -1,4 +1,4 @@
-// Harness for Libs\XcomSave (SavedGame): runs the REAL OpenXcom objects (linked from a real build, see build4.cmd) to
+// Harness for Games\XcomSave (SavedGame): runs the REAL OpenXcom objects (linked from a real build, see build4.cmd) to
 // make saved games: Mod::loadAll on the real TFTD mods, Mod::newSave(), then states that a game would reach (UFOs,
 // missions, alien bases, transfers, research, production, wounded soldiers, diaries, months passed), and writes
 //   <name>.sav     what SavedGame::save writes

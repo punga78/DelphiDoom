@@ -4,7 +4,7 @@
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {  (the library itself is derived from OpenXcom, GPL v3 or later: see           }
-{  Libs\XcomFormats\README.md)                                                  }
+{  Games\XcomFormats\README.md)                                                  }
 {                                                                              }
 {******************************************************************************}
 program DelphiDoom.Tests.XcomTour;
@@ -17,8 +17,8 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Xcom.GameComposition in '..\OpenXcom\DelphiDoom.Xcom.GameComposition.pas',
-  DelphiDoom.Xcom.GeoscapeNavigator in '..\OpenXcom\DelphiDoom.Xcom.GeoscapeNavigator.pas',
+  DelphiDoom.Xcom.GameComposition in '..\Games\OpenXcom\DelphiDoom.Xcom.GameComposition.pas',
+  DelphiDoom.Xcom.GeoscapeNavigator in '..\Games\OpenXcom\DelphiDoom.Xcom.GeoscapeNavigator.pas',
   DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
   DelphiDoom.Tests.XcomGeoscape.Popups in 'Source\DelphiDoom.Tests.XcomGeoscape.Popups.pas',
   DelphiDoom.Tests.XcomGeoscape.MonthlyReportState in 'Source\DelphiDoom.Tests.XcomGeoscape.MonthlyReportState.pas',
@@ -27,7 +27,7 @@ uses
   DelphiDoom.Tests.XcomTour.Strategy in 'Source\DelphiDoom.Tests.XcomTour.Strategy.pas',
   DelphiDoom.Tests.XcomTour.Flows in 'Source\DelphiDoom.Tests.XcomTour.Flows.pas',
   DelphiDoom.Tests.XcomTour.Missions in 'Source\DelphiDoom.Tests.XcomTour.Missions.pas',
-  DelphiDoom.Xcom.NewBattleNavigator in '..\OpenXcom\DelphiDoom.Xcom.NewBattleNavigator.pas',
+  DelphiDoom.Xcom.NewBattleNavigator in '..\Games\OpenXcom\DelphiDoom.Xcom.NewBattleNavigator.pas',
   DelphiDoom.Tests.XcomTour.NewBattle in 'Source\DelphiDoom.Tests.XcomTour.NewBattle.pas',
   DelphiDoom.Tests.XcomTour.CustomBase in 'Source\DelphiDoom.Tests.XcomTour.CustomBase.pas',
   DelphiDoom.Tests.XcomTour.Demolition in 'Source\DelphiDoom.Tests.XcomTour.Demolition.pas',
@@ -38,7 +38,7 @@ uses
   DelphiDoom.Tests.XcomTour.Ironman in 'Source\DelphiDoom.Tests.XcomTour.Ironman.pas',
   DelphiDoom.Tests.XcomTour.Trade in 'Source\DelphiDoom.Tests.XcomTour.Trade.pas',
   DelphiDoom.Tests.XcomTour.Workshop in 'Source\DelphiDoom.Tests.XcomTour.Workshop.pas',
-  DelphiDoom.Xcom.MemoryCount in '..\OpenXcom\DelphiDoom.Xcom.MemoryCount.pas',
+  DelphiDoom.Xcom.MemoryCount in '..\Games\OpenXcom\DelphiDoom.Xcom.MemoryCount.pas',
   DelphiDoom.Tests.XcomTour.Memory in 'Source\DelphiDoom.Tests.XcomTour.Memory.pas';
 
 var

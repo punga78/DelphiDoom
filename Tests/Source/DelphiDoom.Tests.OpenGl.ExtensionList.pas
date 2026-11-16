@@ -76,7 +76,7 @@ begin
   LSource := '';
   for LIndex := 0 to 199 do
     LSource := LSource + 'GL_vendor_ext' + IntToStr(LIndex) + ' ';
-  // the loop of gld_Init before Libs\GlContext
+  // the loop of gld_Init before IdTech1\GlContext
   LOld := '';
   for LIndex := 1 to Length(LSource) do
   begin

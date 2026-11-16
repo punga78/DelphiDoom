@@ -10,7 +10,7 @@ copie in cartelle nuove di `Reference\_dati\xcom_tftd`). **Nessun dato di gioco 
 foreach ($i in 1..4) { Extract-Fat12.ps1 -Image ...\disk$i.img -Out ...\xcom_tftd\floppy\disk$i }
 # 2. TFTD.001..004 sono 33 archivi ZIP uno dopo l'altro (non uno ZIP suddiviso): si concatenano e si aprono uno a uno
 Extract-TftdZips.ps1 -Volumes disk1\TFTD.001,disk2\TFTD.002,disk3\TFTD.003,disk4\TFTD.004 -Out ...\xcom_tftd\gioco
-# 3. i file messi nelle cartelle del gioco (quello che vede OpenXcom e Libs\XcomFormats)
+# 3. i file messi nelle cartelle del gioco (quello che vede OpenXcom e Games\XcomFormats)
 Make-TftdLayout.ps1 -Flat ...\xcom_tftd\gioco -Out ...\xcom_tftd\TFTD
 ```
 
@@ -63,7 +63,7 @@ OpenXcom con `battle\bgame`) in `Xcom32 -script` e, con `-Real`, nel vero OpenXc
 con `Compare-Png.ps1`. Coordinate della finestra 640x400. `-Option chiave=valore` cambia `options.cfg` per entrambi
 (per esempio `battleNewPreviewPath=3`). La cartella utente e' `<Out>\user`: mai quella di `bin\OpenXcom`. Le
 animazioni della mappa vanno allineate con piu' scatti a 100 ms. Dettagli e numeri in
-`Libs\XcomBattleStates\CLAUDE.md`.
+`Games\XcomBattleStates\CLAUDE.md`.
 
 ## Strumenti della sessione "Battlescape dentro la battaglia"
 

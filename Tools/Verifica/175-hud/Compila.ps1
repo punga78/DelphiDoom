@@ -1,5 +1,5 @@
 # Compila ed esegue il confronto sui pixel tra l'HUD ORIGINALE di xGreed (display.pas, d_font.pas, d_video.pas e i
-# pezzi di raven.pas, utils.pas e i_video.pas che servono) e le classi di Libs\Greed (TGreedCanvas,
+# pezzi di raven.pas, utils.pas e i_video.pas che servono) e le classi di Games\Greed (TGreedCanvas,
 # TGreedPaletteFader, TGreedFont, TGreedTextPrinter, TGreedMessageLine, TGreedInventory, TGreedHud,
 # TGreedWeaponPainter, TGreedWeaponLight) sugli scenari di Tests\Source\DelphiDoom.Tests.Greed.HudScenarios
 # (issue #175). Il codice originale resta in Reference\xGreed (sola lettura):
@@ -138,7 +138,7 @@ end.
 "@
 
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$libs = 'Greed', 'Platform', 'MathCore', 'GameMath', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
+$libs = 'Games\Greed', 'Framework\Platform', 'Framework\MathCore', 'Framework\GameMath', 'Framework\Logging', 'Framework\Clock', 'Framework\Video', 'Framework\Png', 'Framework\Zlib' | ForEach-Object { "$radice\$_" }
 $u = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
 & $dcc -B -Q -CC -H- -W- "-U$u" "-I$Riferimento;$uscita\src" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\HudParity.dpr" | Select-String 'Error|Fatal'

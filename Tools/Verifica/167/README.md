@@ -2,7 +2,7 @@
 
 `HarnessVoxel.dpr` esegue il **vecchio** codice di DD_VOXEL (le unit di `Reference\DD_VOXEL`, sola lettura) sugli scenari di
 `Tests\Source\DelphiDoom.Tests.VoxelEditor.Scenarios.pas` e scrive `Tests\Data\VoxelEditor\voxel.golden.txt`; i test
-`DelphiDoom.Tests.VoxelEditor.Parity` confrontano le risposte della libreria `Libs\VoxelEditor` con quel file.
+`DelphiDoom.Tests.VoxelEditor.Parity` confrontano le risposte della libreria `Strumenti\VoxelEditor` con quel file.
 
 ## Rifare i golden
 

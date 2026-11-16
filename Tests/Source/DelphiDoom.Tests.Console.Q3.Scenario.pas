@@ -49,7 +49,7 @@ type
     procedure DumpField;
   public
     /// <summary>The lines of the scenario file, as the driver writes them (the caller frees the list)</summary>
-    /// <summary>With ARealInfoWriter the info strings use TQ3InfoString of Libs\Net (limits and all), not the simple fake</summary>
+    /// <summary>With ARealInfoWriter the info strings use TQ3InfoString of IdTech1\Net (limits and all), not the simple fake</summary>
     function Run(const AFileName: string; ARealInfoWriter: Boolean = False): TStringList;
   end;
 

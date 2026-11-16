@@ -6,7 +6,7 @@
 #>
 param(
   [string]$Golden = (Join-Path $PSScriptRoot '..\..\..\Tests\Data\War\model.tables.golden.txt'),
-  [string]$OutDir = (Join-Path $PSScriptRoot '..\..\..\Libs\War')
+  [string]$OutDir = (Join-Path $PSScriptRoot '..\..\..\Games\War')
 )
 $ErrorActionPreference = 'Stop'
 $inv = [Globalization.CultureInfo]::InvariantCulture
@@ -26,7 +26,7 @@ function Header([string]$What) {
     "{  DelphiDoom: war library - $What (GENERATED)",
     '{                                                                              }',
     '{  Port of war1 (acoto87/war1), war_units.c and war_actions.c, (c) 2019        }',
-    '{  Alejandro Coto Gutierrez, zlib License (see Libs\War\LICENSE-war1.txt).     }',
+    '{  Alejandro Coto Gutierrez, zlib License (see Games\War\LICENSE-war1.txt).     }',
     '{  This is an altered version, not the original.                               }',
     '{                                                                              }',
     '{  Written by Tools\Verifica\194\Make-WarModelTables.ps1 from the output of    }',

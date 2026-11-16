@@ -1,4 +1,4 @@
-# Verifica #191: parita' di Libs\War con il C del remake
+# Verifica #191: parita' di Games\War con il C del remake
 
 `war1` (acoto87/war1, zlib) e' in `Reference\war1` (sola lettura). Il C originale che legge `DATA.WAR` si compila e si esegue
 con gcc di `Reference\_dati\_strumenti\w64devkit` (a 32 bit; non c'e' un compilatore C nel PATH).
@@ -9,7 +9,7 @@ war_ref.exe <DATA.WAR> list            > datawar.retail.golden.txt          (com
 war_ref.exe <DATA.WAR> list noskip     > datawar.retail.noskip.golden.txt
 war_ref.exe - catalog                  > catalog.golden.txt
 war_ref.exe <DATA.WAR> dump N file     (i byte espansi del record N)
-powershell -NoProfile -File Make-WarCatalog.ps1 -Catalog catalog.golden.txt -Out Libs\War\DelphiDoom.War.Catalog.Data.pas
+powershell -NoProfile -File Make-WarCatalog.ps1 -Catalog catalog.golden.txt -Out Games\War\DelphiDoom.War.Catalog.Data.pas
 ```
 
 `Compila-WarRef.ps1` **non modifica** il remake: legge `war_file.c` (le due letture little endian, `wfile_loadWarFile`,
@@ -20,4 +20,4 @@ stub di SDL (`SDL_IOFromFile` ecc. su `stdio`), Tracy, `wm_alloc` (-> `calloc`) 
 
 Risultato (2026-11-13, `DATA.WAR` DOS 12852768 byte): `H 24 583 2`; 542 voci compresse; 68 saltate col catalogo; `Tests\DelphiDoom.Tests.War`
 da' le stesse 583 righe (offset, compresso, lunghezze, CRC-32 dei byte espansi).
-Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
+Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Games\War\CLAUDE.md`).

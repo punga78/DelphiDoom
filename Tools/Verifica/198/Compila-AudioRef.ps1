@@ -1,6 +1,6 @@
 <#
   Issue #198: compila il codice ORIGINALE del remake (acoto87/war1, zlib; shl/voc.h, wav.h e xmi2mid.h sono MIT) che
-  carica i suoni e la musica di DATA.WAR e mixa i suoni, e lo fa girare per produrre i golden di Libs\War
+  carica i suoni e la musica di DATA.WAR e mixa i suoni, e lo fa girare per produrre i golden di Games\War
   (parte audio). Niente e' modificato in Reference\: si leggono i sorgenti e si scrivono estratti e programma in -Out
   (una cartella NUOVA fuori da Reference e dal repository).
 

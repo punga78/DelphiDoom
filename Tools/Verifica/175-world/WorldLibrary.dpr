@@ -1,5 +1,5 @@
 program WorldLibrary;
-// Issue #175: the same game of WorldGolden.dpr played by TGreedGame of Libs\Greed, with the same lines. It is what
+// Issue #175: the same game of WorldGolden.dpr played by TGreedGame of Games\Greed, with the same lines. It is what
 // the test DelphiDoom.Tests.Greed.WorldParity does (the same runner), as a program: Compila.ps1 -Libreria compares
 // its lines with the ones of the original and says the first that differs.
 // Usage: WorldLibrary <folder of GREED.BLO> <map> <seed> <turns> <output> [every] [dump turn] [dump file] [tutti]

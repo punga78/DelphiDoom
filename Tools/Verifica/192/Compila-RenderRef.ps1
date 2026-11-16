@@ -1,7 +1,7 @@
 <#
   Issue #192 (seconda fetta): compila il codice ORIGINALE del remake (acoto87/war1, zlib) che misura e disegna il testo
   (war_font.c), la pila delle trasformazioni e wr_subImage (war_render.c) e crea i WarSprite (war_sprites.c), e lo fa
-  girare per produrre i golden di Libs\War. Niente e' modificato in Reference\: gli estratti e il programma stanno in -Out
+  girare per produrre i golden di Games\War. Niente e' modificato in Reference\: gli estratti e il programma stanno in -Out
   (una cartella NUOVA fuori da Reference e dal repository).
 
   Uso:

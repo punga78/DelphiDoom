@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests - the sound rules of s_sound.pas as they were before the  }
-{  classes of Libs\Audio                                                       }
+{  classes of Framework\Audio                                                  }
 {  Copyright (C) 1993-1996 by id Software, Inc.                                }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
@@ -54,7 +54,7 @@ type
 
   /// <summary>
   ///   Copy of S_AdjustSoundParams, S_GetChannel and of the pitch hacks of
-  ///   S_StartSoundAtVolume of Base\s_sound.pas at c4ce14f1 (issue #185). The globals of the
+  ///   S_StartSoundAtVolume of IdTech1\Base\s_sound.pas at c4ce14f1 (issue #185). The globals of the
   ///   engine are fields; the three compilations of the game are the Game field; FixedMul is
   ///   written with a floor division; S_StopChannel only frees the channel and counts
   /// </summary>

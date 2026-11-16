@@ -5,7 +5,7 @@ param(
   [string]$Extra = ''
 )
 # Compila un harness del vecchio ENDEDIT (dcc32, Delphi 11, Win32). Uso, dalla radice del repository:
-#   powershell -NoProfile -File Tools\Verifica\164\b.ps1 -Dpr H2.dpr -Work <cartella> -Extra "<repo>\Libs\Endoom;<repo>\Tests\Source"
+#   powershell -NoProfile -File Tools\Verifica\164\b.ps1 -Dpr H2.dpr -Work <cartella> -Extra "<repo>\IdTech1\Endoom;<repo>\Tests\Source"
 #   (H3.dpr vuole anche -Defs VER340 per il Graphics32 del vecchio ENDEDIT)
 # <cartella>\src deve contenere: una copia di Reference\ENDEDIT (ee_*.pas, zlibpas.pas, obj\, Graphics32\; in
 # pngimage.pas "pChar" diventa "PAnsiChar" se serve) e i .dpr/.pas di Tools\Verifica\164. Uscita: <cartella>\out,

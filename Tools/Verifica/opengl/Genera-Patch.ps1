@@ -5,10 +5,10 @@
 #   .\Tools\Verifica\opengl\Genera-Patch.ps1
 #
 # The patch touches only:
-#   Doom\GLDoom32.dpr, Heretic\GLHeretic32.dpr, Hexen\GLHexen32.dpr, Strife\GLStrife32.dpr  (the harness units)
-#   Libs\OpenGl\Legacy\gl_main.pas     one call after ReadImplementationProperties (installs the thunks)
-#   Libs\OpenGl\Legacy\gl_render.pas   one call at the end of gld_Finish (end of a frame)
-#   Base\DelphiDoom.Engine.Level.Loader.pas   one call at the end of SetupLevel (the level is loaded)
+#   IdTech1\Doom\GLDoom32.dpr, IdTech1\Heretic\GLHeretic32.dpr, IdTech1\Hexen\GLHexen32.dpr, IdTech1\Strife\GLStrife32.dpr  (the harness units)
+#   IdTech1\OpenGl\Legacy\gl_main.pas     one call after ReadImplementationProperties (installs the thunks)
+#   IdTech1\OpenGl\Legacy\gl_render.pas   one call at the end of gld_Finish (end of a frame)
+#   IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas   one call at the end of SetupLevel (the level is loaded)
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 Set-Location $root
@@ -16,7 +16,7 @@ $crlf = "`r`n"
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
 # the harness itself (ToolsVerifica) may be being edited: only the files the patch touches have to be clean
-$dirty = git -c core.safecrlf=false status --porcelain --untracked-files=no -- Doom Heretic Hexen Strife Libs Base
+$dirty = git -c core.safecrlf=false status --porcelain --untracked-files=no -- IdTech1 Framework\OpenGlBinding
 if ($dirty) { throw "L'albero non e' pulito: $dirty" }
 
 function Edit-File([string]$relative, [scriptblock]$edit) {
@@ -39,60 +39,60 @@ function Replace-Once([string]$text, [string]$old, [string]$new) {
 }
 
 $units = @(
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook'
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook'
 )
 $unitLines = ''
 foreach ($u in $units) {
   $name = Split-Path $u -Leaf
-  $unitLines += "  $name in '..\$u.pas',$crlf"
+  $unitLines += "  $name in '..\..\$u.pas',$crlf"
 }
-$unitLines += "  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',$crlf"
+$unitLines += "  HarnessGl in '..\..\Tools\Verifica\opengl\HarnessGl.pas',$crlf"
 
-foreach ($dpr in @('Doom\GLDoom32.dpr', 'Heretic\GLHeretic32.dpr', 'Hexen\GLHexen32.dpr', 'Strife\GLStrife32.dpr')) {
+foreach ($dpr in @('IdTech1\Doom\GLDoom32.dpr', 'IdTech1\Heretic\GLHeretic32.dpr', 'IdTech1\Hexen\GLHexen32.dpr', 'IdTech1\Strife\GLStrife32.dpr')) {
   Edit-File $dpr {
     param($t)
-    Replace-Once $t "  gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',")
+    Replace-Once $t "  gl_main in '..\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\OpenGl\Legacy\gl_main.pas',")
   }
 }
 
 # the context of the window (it was in gl_main.pas before the fetta 7 of the issue 177): extensions read and frame shown
-Edit-File 'Libs\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas' {
+Edit-File 'IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   $t = Replace-Once $t "  ReadImplementationProperties;$crlf" "  ReadImplementationProperties;$crlf  HarnessGl_AfterExtensions;$crlf"
   Replace-Once $t "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf" "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf  HarnessGl_FrameEnd;$crlf"
 }
 
-Edit-File 'Libs\OpenGl\Legacy\gl_render.pas' {
+Edit-File 'IdTech1\OpenGl\Legacy\gl_render.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
 }
 
-Edit-File 'Base\DelphiDoom.Engine.Composition.pas' {
+Edit-File 'IdTech1\Base\DelphiDoom.Engine.Composition.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   $t = Replace-Once $t "  I_ConfigureClock(LClock);$crlf" "  LClock := HarnessGl_Clock(LClock);$crlf  I_ConfigureClock(LClock);$crlf"
   Replace-Once $t "    TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineParityInputGate.Create(TEngineInputGate.Create, AParity)), TEngineScreenSize.Create,"
 }
 
-Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
+Edit-File 'IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   Replace-Once $t "  FinishLevel;$crlf" "  FinishLevel;$crlf  HarnessGl_AfterLevel(LMapName, Self, AEpisode, AMap, APlayerMask, Ord(ASkill));$crlf"
 }
 
 $patch = Join-Path $PSScriptRoot 'hook-gl.patch'
-git -c core.safecrlf=false diff --output=$patch -- Doom Heretic Hexen Strife Libs Base
-git -c core.safecrlf=false checkout -- Doom Heretic Hexen Strife Libs\OpenGl\Legacy Base
+git -c core.safecrlf=false diff --output=$patch -- IdTech1 Framework\OpenGlBinding
+git -c core.safecrlf=false checkout -- IdTech1
 Write-Host "Scritto $patch"

@@ -7,7 +7,7 @@
 #                              with the state of the scripts in them (-vsh save)
 #
 # The patches work on the layout of the repository after the reorganisation of the root (issue #170: the .dpr are
-# in Doom\, Heretic\, ...). Files are read and written as ISO-8859-1 so that every byte (and every CRLF) stays.
+# in IdTech1\Doom\, IdTech1\Heretic\, ...). Files are read and written as ISO-8859-1 so that every byte (and every CRLF) stays.
 #
 #   .\Tools\Verifica\scripthost\Genera-Patch.ps1
 param([switch]$New)  # -New: for the tree after fetta 2h (PS_Manager instead of psmanager): writes hook-*.new.patch
@@ -21,7 +21,7 @@ function Write-Source([string]$Path, [string]$Text) { [System.IO.File]::WriteAll
 
 function Add-ProjectUnit([string]$Path, [string[]]$Lines) {
   $text = Read-Source $Path
-  $m = [regex]::Match($text, "(?m)^  i_system in '\.\.\\Base\\i_system\.pas',\r?\n")
+  $m = [regex]::Match($text, "(?m)^  i_system in '\.\.\\IdTech1\Base\\i_system\.pas',\r?\n")
   if (-not $m.Success) { throw "i_system non trovata in $Path" }
   $nl = if ($m.Value.EndsWith("`r`n")) { "`r`n" } else { "`n" }
   $insert = ($Lines | ForEach-Object { "  $_,$nl" }) -join ''
@@ -68,24 +68,24 @@ function Save-Patch([string[]]$Files, [string]$Name) {
 }
 
 function Hook-PsMain {
-  Add-ImplementationUses 'Libs\ScriptEngine\ps_main.pas' 'HarnessScriptHost'
+  Add-ImplementationUses 'IdTech1\ScriptEngine\ps_main.pas' 'HarnessScriptHost'
   if ($New) {
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  ps_manager_ref := TScriptManager\.Create\([\s\S]*?end\);(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(PS_Manager.DoomCompiler, PS_Manager.DoomImporter);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := PS_Manager.RunScript(AActor, PS_Manager.IndexOf(AName)); end);$2'
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  PS_Manager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  ps_manager_ref := TScriptManager\.Create\([\s\S]*?end\);(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(PS_Manager.DoomCompiler, PS_Manager.DoomImporter);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := PS_Manager.RunScript(AActor, PS_Manager.IndexOf(AName)); end);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  PS_Manager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
   } else {
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
   }
 }
 
 # ---- L2 ----
-$dprs = 'Doom\Doom32.dpr', 'Heretic\Heretic32.dpr', 'Hexen\Hexen32.dpr', 'Strife\Strife32.dpr', 'Doom\GLDoom32.dpr'
+$dprs = 'IdTech1\Doom\Doom32.dpr', 'IdTech1\Heretic\Heretic32.dpr', 'IdTech1\Hexen\Hexen32.dpr', 'IdTech1\Strife\Strife32.dpr', 'IdTech1\Doom\GLDoom32.dpr'
 foreach ($dpr in $dprs) { Add-ProjectUnit $dpr @("HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas'") }
 Hook-PsMain
-$loader = 'Base\DelphiDoom.Engine.Level.Loader.pas'
+$loader = 'IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas'
 Add-ImplementationUses $loader 'HarnessScriptHost'
 Edit-Once $loader '(\r?\n  FinishLevel;(\r?\n))(end;)' '$1  VSH_AfterLevel(LMapName);$2$3'
-Save-Patch ($dprs + @('Libs\ScriptEngine\ps_main.pas', $loader)) 'hook-scripthost.patch'
+Save-Patch ($dprs + @('IdTech1\ScriptEngine\ps_main.pas', $loader)) 'hook-scripthost.patch'
 
 # ---- savegames ----
 foreach ($game in 'Doom', 'Heretic', 'Strife', 'Hexen') {
@@ -98,5 +98,5 @@ foreach ($game in 'Doom', 'Heretic', 'Strife', 'Hexen') {
   Edit-Implementation $gameFile '(procedure G_Ticker;[\s\S]*?\r?\nbegin(\r?\n))' '$1  HarnessSaveCheck;$2'
   if ($game -eq 'Doom' -or $game -eq 'Heretic') { $inc = 'harness_save_Doom.inc' } else { $inc = "harness_save_$game.inc" }
   Edit-Implementation $gameFile '(?m)^initialization' "{`$I ..\Tools\Verifica\harness\$inc}`r`n`r`ninitialization"
-  Save-Patch @($dpr, 'Libs\ScriptEngine\ps_main.pas', $gameFile) "hook-save-$($game.ToLower()).patch"
+  Save-Patch @($dpr, 'IdTech1\ScriptEngine\ps_main.pas', $gameFile) "hook-save-$($game.ToLower()).patch"
 }

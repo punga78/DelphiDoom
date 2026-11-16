@@ -1,5 +1,5 @@
 /*
-  Issue #194 (completamento): gli scenari dei comandi, degli incantesimi e del tic intero del modello di gioco di Libs\War.
+  Issue #194 (completamento): gli scenari dei comandi, degli incantesimi e del tic intero del modello di gioco di Games\War.
   Si include in war_model_ref.c dopo war_construction_ref.inc (ne usa pickWhere, selectOnly, cOpTrain, cOpUpgrade, cOpCancel,
   cOpDamageBuilding, cOpWallDamage, e di war_model_ref.c worldInit, spawnDude/spawnBuilding, gatherForest, opEconomy, opRemove,
   dumpWorld).

@@ -28,7 +28,7 @@ type
     FFiles: IQ3SoundFileSource;
     FSystem: TQ3SoundSystem;
   public
-    /// <summary>AWithReader gives the system the real WAV reader of Libs\Sound</summary>
+    /// <summary>AWithReader gives the system the real WAV reader of Framework\Sound</summary>
     constructor Create(AChannels: Integer = 2; ASamples: Integer = 8192; ABits: Integer = 16;
       ASpeed: Integer = 22050; AChunk: Integer = 1024; AWithReader: Boolean = False);
     destructor Destroy; override;

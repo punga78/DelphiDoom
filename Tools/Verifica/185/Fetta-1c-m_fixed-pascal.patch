@@ -1,7 +1,7 @@
-diff --git a/Base/m_fixed.pas b/Base/m_fixed.pas
+diff --git a/IdTech1\Base/m_fixed.pas b/IdTech1\Base/m_fixed.pas
 index b3738ad9..64aa84a5 100644
---- a/Base/m_fixed.pas
-+++ b/Base/m_fixed.pas
+--- a/IdTech1\Base/m_fixed.pas
++++ b/IdTech1\Base/m_fixed.pas
 @@ -298,197 +298,108 @@ function FixedMod(const a, b: fixed_t): fixed_t;
  implementation
  

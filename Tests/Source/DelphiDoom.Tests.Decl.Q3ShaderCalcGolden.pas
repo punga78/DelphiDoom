@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: tests of the Quake III shader time functions - parity with C    }
 {                                                                              }
-{  Runs Tests\Data\Decl\q3calc\scenario.txt with the classes of Libs\Decl and  }
+{  Runs Tests\Data\Decl\q3calc\scenario.txt with the classes of IdTech4\Decl and }
 {  compares the lines with q3calc.golden.txt, which is what the real          }
 {  renderer\tr_shade_calc.c, tr_shade.c (ComputeTexCoords) and tr_noise.c of   }
 {  Quake III printed; and Tests\Data\Decl\q3shader\remap.input.txt with        }

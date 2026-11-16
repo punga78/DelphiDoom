@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: unit tests of the adapters of Xcom32 on Libs\GameHost: the       }
+{  DelphiDoom: unit tests of the adapters of Xcom32 on Framework\GameHost: the  }
 {  events of the window as the events of the game, the log and the display      }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

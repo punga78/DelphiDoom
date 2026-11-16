@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the declaration manager over the file system of        }
 {  id Tech 4 (folders, PK4 and PK3, writing, reload) and the factory           }
 {                                                                              }
-{  The file system is the real one of Libs\Wad on a disk in memory (and, for   }
+{  The file system is the real one of Framework\Wad on a disk in memory (and, for }
 {  the factories on the disk of the machine, in a folder that each test makes  }
 {  and removes); there is no file of any game.                                 }
 {                                                                              }

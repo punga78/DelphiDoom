@@ -14,10 +14,10 @@ sh Tools/Verifica/125/golden.sh <cartella di lavoro>
 ```
 
 - I menu sono **scritti per i test** (`Tests\Data\Gui\files\ui`), mai file di Team Arena o di OpenArena. `Make-Fonts.ps1` fa i `.dat` (due validi da 20548 byte con valori da un generatore lineare con seme fisso, uno da 100 byte).
-- Gli scenari (`Tests\Data\Gui\scenarios\*.txt`) sono le righe `menu`, `menus`, `font`, `run`, `dump`, `state`, `reset` descritte in `uiparse.c`; i test Delphi riesegono gli stessi scenari con le classi di `Libs\Gui` e confrontano riga per riga col golden.
+- Gli scenari (`Tests\Data\Gui\scenarios\*.txt`) sono le righe `menu`, `menus`, `font`, `run`, `dump`, `state`, `reset` descritte in `uiparse.c`; i test Delphi riesegono gli stessi scenari con le classi di `IdTech4\Gui` e confrontano riga per riga col golden.
 - Formato del dump: ogni `float` come bit esadecimali, le stringhe tra virgolette con escape; una stringa `NULL` e una vuota si scrivono uguali; l'angolo di un `asset_model` (`rand() % 360`) non si scrive.
 - Il programma non si deve chiamare `patch*.exe`/`setup*.exe`: Windows lo prende per un installatore.
-- `open`, `conditionalopen` e `close` di `Item_RunScript` (pila dei menu aperti) **non** sono negli scenari: in `Libs\Gui` sono del chiamante (`IGuiScriptHost`).
+- `open`, `conditionalopen` e `close` di `Item_RunScript` (pila dei menu aperti) **non** sono negli scenari: in `IdTech4\Gui` sono del chiamante (`IGuiScriptHost`).
 
 ## Scenari di input (seconda fetta, issue #125)
 

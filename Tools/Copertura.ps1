@@ -3,8 +3,8 @@
 
   Uso:
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone
-    powershell -NoProfile -File Tools\Copertura.ps1 -Test IdLib.Hashing -Cartella Libs\IdLib\Hashing
-    powershell -NoProfile -File Tools\Copertura.ps1 -Test XcomTour -Cartella "Libs\XcomGeoscape,Libs\XcomBasescape"
+    powershell -NoProfile -File Tools\Copertura.ps1 -Test IdLib.Hashing -Cartella Framework\IdLib\Hashing
+    powershell -NoProfile -File Tools\Copertura.ps1 -Test XcomTour -Cartella "Games\XcomGeoscape,Games\XcomBasescape"
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SenzaCompilare
     powershell -NoProfile -File Tools\Copertura.ps1 -Tutti
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SoloComando
@@ -12,8 +12,8 @@
   -Test           nome del progetto di test senza il prefisso: "Zone" = Tests\DelphiDoom.Tests.Zone,
                   "" o "Zlib" = Tests\DelphiDoom.Tests (il progetto di zlib).
   -Cartella       cartella dei sorgenti da misurare: tutte le *.pas della cartella. Senza, si misurano le unit
-                  che il .dpr di test compila dalla cartella della sua libreria (Libs\<Nome>, Libs\<A>\<B> per
-                  "A.B"; Sndfile anche Libs\Sound): le librerie da cui dipende contano nel loro progetto.
+                  che il .dpr di test compila dalla cartella della sua libreria (<Modulo>\<Nome>, <Modulo>\<A>\<B> per
+                  "A.B"; Sndfile anche Framework\Sound): le librerie da cui dipende contano nel loro progetto.
   -Tutti          esegue tutti i progetti di test elencati in Tools\build.bat (variabile TESTS) uno dopo l'altro
                   e scrive un riepilogo in logs\copertura\riepilogo.txt.
   -SenzaCompilare usa l'eseguibile gia' in bin\Win32\Debug\Tests, che deve essere compilato in Debug (senza questa
@@ -59,14 +59,23 @@ function Find-CodeCoverage([string]$Explicit) {
 # The folders a test project is the owner of: its library and nothing else. A project also compiles the
 # libraries it depends on (Screenshot compiles Jpeg, Png and Zlib), but their lines belong to their own
 # project and would only dilute the number. Projects whose library has another name are listed here.
+# <Module>\<Name> of a library, from the areas of docs\Strati.psd1 (Framework, IdTech1, IdTech4, Games, Strumenti);
+# "A.B" is the subfolder B of the library A
+function Get-LibraryFolder([string]$Key) {
+  $parts = $Key -split '\.'
+  $manifest = Import-PowerShellDataFile -Path (Join-Path $root 'docs\Strati.psd1')
+  $area = @($manifest.Aree.Keys | Where-Object { $_.Contains('\') -and ($_ -split '\\')[-1] -eq $parts[0] } | Select-Object -First 1)
+  if ($area.Count -eq 0) { throw "Libreria non trovata in docs\Strati.psd1: $Key" }
+  return (@($area[0]) + @($parts | Select-Object -Skip 1)) -join '\'
+}
 $ownedFolders = @{
-  'Zlib'    = @('Libs\Zlib')
-  'Sndfile' = @('Libs\Sndfile', 'Libs\Sound')   # the engine that the game uses is Libs\Sound
-  'Common'  = @('Common')
+  'Zlib'    = @('Framework\Zlib')
+  'Sndfile' = @('Framework\Sndfile', 'Framework\Sound')   # the engine that the game uses is Framework\Sound
+  'Common'  = @('IdTech1\Common')
 }
 
 # The source files to measure: with -Cartella every .pas of that folder; otherwise the units that the test
-# project compiles from the folders it owns (Libs\<Name>, Libs\<A>\<B> for "A.B", or the table above).
+# project compiles from the folders it owns (<Module>\<Name>, <Module>\<A>\<B> for "A.B", or the table above).
 function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit) {
   if ($Explicit -ne '') {
     # more than one folder, separated by commas: a single run of the tests measures them all
@@ -79,7 +88,7 @@ function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit)
   $paths = [regex]::Matches((Get-Content -LiteralPath $dpr -Raw), "in\s+'([^']+\.pas)'") |
     ForEach-Object { [IO.Path]::GetFullPath((Join-Path (Join-Path $root 'Tests') $_.Groups[1].Value)) }
   $key = if ($TestName -eq '') { 'Zlib' } else { $TestName }
-  $owned = if ($ownedFolders.ContainsKey($key)) { $ownedFolders[$key] } else { @('Libs\' + ($key -replace '\.', '\')) }
+  $owned = if ($ownedFolders.ContainsKey($key)) { $ownedFolders[$key] } else { @(Get-LibraryFolder $key) }
   $prefixes = @($owned | ForEach-Object { (Join-Path $root $_) + '\' })
   $listed = @($paths | Where-Object {
     $path = $_

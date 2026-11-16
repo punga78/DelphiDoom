@@ -4,7 +4,7 @@
   Il confronto e' in Prova-Common.ps1 (comune a Prova-PMap.ps1).
 
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_mobj.pas (presa dal commit di partenza con git show)
-  prende il testo della routine unificata (Base\p_mobj.pas o la unit delle regole del gioco), sostituisce ogni
+  prende il testo della routine unificata (IdTech1\Base\p_mobj.pas o la unit delle regole del gioco), sostituisce ogni
   chiamata a TMobjGameRules (e alle tre regole riusate di TMapGameRules) con il corpo della regola di quel gioco
   (le sostituzioni sono la tabella $Expansions qui sotto, scritta a mano; i corpi lunghi si leggono dalla unit
   del gioco con <<B:Metodo>>) e confronta il risultato con la routine vecchia, tolti commenti, spazi e maiuscole.
@@ -190,7 +190,7 @@ $Expansions = @(
   @{ R = 'P_MobjThinker'; F = 'if mobj.movecount < TMobjGameRules.RespawnTime then exit;'; Heretic = 'if mobj.movecount < 12 * TICRATE then begin exit; end;' }
   @{ F = 'TMobjGameRules.RespawnTime'; D = '12 * TICRATE'; Strife = '16 * TICRATE' }
   @{ F = 'if TMobjGameRules.NeverRespawns(mobj) then exit;'; D = ''; Strife = 'if mobj.flags and MF_NOTDMATCH <> 0 then exit;' }
-  # --- P_SpawnPlayer (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.PlayerSpawner.pas; Hexen e' un metodo) ---
+  # --- P_SpawnPlayer (Doom, Heretic, Strife: IdTech1\Base\DelphiDoom.Engine.World.PlayerSpawner.pas; Hexen e' un metodo) ---
   $psHead = 'function P_SpawnPlayer(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; var p: Pplayer_t; x: fixed_t; y: fixed_t; z: fixed_t; i: integer; plnum: integer;'
   @{ R = 'P_SpawnPlayer'; F = 'class function TMobjPlayerSpawner.Spawn(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; var p: Pplayer_t; x: fixed_t; y: fixed_t; z: fixed_t; plnum: integer; ss: Psector_t; begin'
      Doom = "$psHead ss: Psector_t; begin"; Heretic = "$psHead ss: Psubsector_t; begin"; Strife = "$psHead ss: Psubsector_t; begin"
@@ -205,7 +205,7 @@ $Expansions = @(
      Doom = 'result.flags := result.flags or _SHL(plnum, MF_TRANSSHIFT);'; Heretic = 'result.flags := result.flags or _SHL(plnum, MF_TRANSSHIFT);'; Strife = 'result.flags := result.flags or _SHLW(plnum, MF_TRANSSHIFT);' }
   @{ R = 'P_SpawnPlayer'; F = 'TMobjGameRules.ResetBreath(p);'; Doom = 'p.lastbreath := 0; p.hardbreathtics := 0; p.angletargetticks := 0;'; Heretic = ''; Strife = 'p.lastbreath := 0; p.hardbreathtics := 0; p.angletargetticks := 0;' }
   @{ R = 'P_SpawnPlayer'; F = 'TMobjGameRules.FinishPlayerSpawn(p, plnum);'; D = '<<B:FinishPlayerSpawn>>' }
-  # --- P_SpawnMissile, P_SpawnMissileXYZ (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.MissileSpawner.pas; Hexen e' un metodo) ---
+  # --- P_SpawnMissile, P_SpawnMissileXYZ (Doom, Heretic, Strife: IdTech1\Base\DelphiDoom.Engine.World.MissileSpawner.pas; Hexen e' un metodo) ---
   $mOrigin = 'if source.info.missileheight = 0 then th := P_SpawnMobj(source.x, source.y, source.z + 4 * 8 * FRACUNIT, _type) else if source.info.missileheight < FRACUNIT div 2 then th := P_SpawnMobj(source.x, source.y, source.z + source.info.missileheight * FRACUNIT, _type) else th := P_SpawnMobj(source.x, source.y, source.z + source.info.missileheight, _type);'
   $mOriginHeretic = 'if source.info.missileheight = 0 then begin case _type of Ord(MT_MNTRFX1): z := source.z + 40 * FRACUNIT; Ord(MT_MNTRFX2): z := ONFLOORZ; Ord(MT_SRCRFX1): z := source.z + 48 * FRACUNIT; Ord(MT_KNIGHTAXE), Ord(MT_REDAXE): z := source.z + 36 * FRACUNIT; else z := source.z + 32 * FRACUNIT; end; end else if source.info.missileheight < FRACUNIT div 2 then z := source.z + source.info.missileheight * FRACUNIT else z := source.z + source.info.missileheight; if source.flags2 and MF2_FEETARECLIPPED <> 0 then z := z - FOOTCLIPSIZE; th := P_SpawnMobj(source.x, source.y, z, _type);'
   $mFuzzy = 'if dest.flags and MF_SHADOW <> 0 then if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then an := an + _SHLW(P_Random - P_Random, 20);'
@@ -223,7 +223,7 @@ $Expansions = @(
      Heretic = "$mOriginHeretic if th.info.seesound <> 0 then begin if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then P_RandomSound(th, th.info.seesound) else S_StartSound(th, th.info.seesound); end;" }
   @{ R = 'P_SpawnMissile'; F = 'an := TMobjGameRules.FuzzyAim(source, dest, an);'; D = $mFuzzy; Strife = $mFuzzyStrife }
   @{ R = 'P_SpawnMissileXYZ'; F = 'class function TMobjMissileSpawner.SpawnMissileXYZ('; D = 'function P_SpawnMissileXYZ(' }
-  # --- P_ZMovement (Base\p_mobj.pas: lo scheletro; le fasi sono regole del gioco) ---
+  # --- P_ZMovement (IdTech1\Base\p_mobj.pas: lo scheletro; le fasi sono regole del gioco) ---
   $zNote = 'le variabili locali sono passate dalla vecchia routine alle regole che le usano; ogni regola rilegge il giocatore (puro) dove la vecchia routine lo teneva in una variabile'
   @{ R = 'P_ZMovement'; F = 'procedure P_ZMovement(mo: Pmobj_t); var ladderticks: integer; ceilz: fixed_t; begin'
      Doom = 'procedure P_ZMovement(mo: Pmobj_t); var dist: fixed_t; delta: fixed_t; ceilz: fixed_t; grav: integer; momomz: fixed_t; correct_lost_soul_bounce: Boolean; ladderticks: integer; player: Pplayer_t; begin'
@@ -246,7 +246,7 @@ $Expansions = @(
   @{ R = 'P_ZMovement'; F = 'if mo.z + mo.height > ceilz then'; Hexen = 'if mo.z + mo.height > mo.ceilingz then'; Note = 'Hexen non aggiungeva nulla al soffitto: la regola CeilingLimit e'' mo.ceilingz' }
   @{ R = 'P_ZMovement'; F = 'TMobjGameRules.ZHitCeiling(mo, ceilz);'; D = 'begin <<B:ZHitCeiling>> end;' }
 
-  # --- P_NightmareRespawn (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.Respawner.pas; Hexen e' un metodo) ---
+  # --- P_NightmareRespawn (Doom, Heretic, Strife: IdTech1\Base\DelphiDoom.Engine.World.Respawner.pas; Hexen e' un metodo) ---
   @{ R = 'P_NightmareRespawn'; F = 'class procedure TMobjRespawner.Respawn(mobj: Pmobj_t);'; D = 'procedure P_NightmareRespawn(mobj: Pmobj_t);' }
   @{ R = 'P_NightmareRespawn'; F = 'ss: Psector_t;'; Heretic = 'ss: Psubsector_t;'; Strife = 'ss: Psubsector_t;'; Note = $oneread }
   @{ R = 'P_NightmareRespawn'; F = 'mo := TMobjGameRules.RespawnOldFog(mobj);'
@@ -266,7 +266,7 @@ $Expansions = @(
      Heretic = 'if mobj.flags2_ex and MF2_EX_FRIEND = 0 then mo.flags2_ex := mo.flags2_ex and not MF2_EX_FRIEND else mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND;'
      Strife = 'if mthing.options and MTF_STAND <> 0 then mo.flags := mo.flags or MF_STAND; if mthing.options and MTF_ALLY <> 0 then mo.flags := mo.flags or MF_ALLY; if mthing.options and MTF_FRIEND <> 0 then mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND; if mthing.options and MTF_TRANSLUCENT <> 0 then mo.flags := mo.flags or MF_SHADOW; if mthing.options and MTF_MVIS <> 0 then mo.flags := mo.flags or MF_MVIS;' }
   @{ F = 'TMobjGameRules.NightmareRespawn(mobj);'; D = 'P_NightmareRespawn(mobj);' }
-  # --- P_SpawnPlayerMissile (Doom, Strife: Base\DelphiDoom.Engine.World.PlayerMissileSpawner.pas; Heretic e Hexen sono un metodo) ---
+  # --- P_SpawnPlayerMissile (Doom, Strife: IdTech1\Base\DelphiDoom.Engine.World.PlayerMissileSpawner.pas; Heretic e Hexen sono un metodo) ---
   $pmHead = 'function P_SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t; var th: Pmobj_t; an: angle_t; x: fixed_t; y: fixed_t; z: fixed_t; slope: fixed_t;'
   @{ R = 'P_SpawnPlayerMissile'; F = 'class function TMobjPlayerMissileSpawner.Spawn(source: Pmobj_t; _type: integer): Pmobj_t; var th: Pmobj_t; an: angle_t; x: fixed_t; y: fixed_t; z: fixed_t; slope: fixed_t; speed: fixed_t; begin'
      Doom = "$pmHead ver: integer; speed: fixed_t; begin"; Strife = "$pmHead begin"
@@ -278,17 +278,17 @@ $Expansions = @(
   @{ R = 'P_SpawnPlayerMissile'; F = 'an := an shr ANGLETOFINESHIFT; speed := th.info.speed; th.momx := FixedMul(speed, finecosine[an]); th.momy := FixedMul(speed, finesine[an]); th.momz := FixedMul(speed, slope);'
      Doom = $null; Strife = 'th.momx := FixedMul(th.info.speed, finecosine[{$IFDEF FPC}_SHRW(an, ANGLETOFINESHIFT){$ELSE}an shr ANGLETOFINESHIFT{$ENDIF}]); th.momy := FixedMul(th.info.speed, finesine[{$IFDEF FPC}_SHRW(an, ANGLETOFINESHIFT){$ELSE}an shr ANGLETOFINESHIFT{$ENDIF}]); th.momz := FixedMul(th.info.speed, slope);'
      Note = 'Strife calcolava l''indice una volta per coordinata con th.info.speed: la copia unica sposta l''angolo e legge la velocita'' una volta (th.info.speed non cambia nel frattempo e an non e'' piu'' usato)' }
-  # --- P_SetMobjStateNF (Heretic, Hexen: el metodo chiama P_SetMobjStateOnce di Base\p_mobj.pas) ---
+  # --- P_SetMobjStateNF (Heretic, Hexen: el metodo chiama P_SetMobjStateOnce di IdTech1\Base\p_mobj.pas) ---
   @{ R = 'P_SetMobjStateNF'; F = 'function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean; begin result := P_SetMobjStateOnce(mobj, state); end;'
      Doom = $null; Strife = ''; Heretic = 'function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean; var st: Pstate_t; begin <<S:P_SetMobjStateOnce>> end;'
      Hexen = 'function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean; var st: Pstate_t; begin <<S:P_SetMobjStateOnce>> end;' }
-  # --- P_HitFloor (Doom, Strife: Base\DelphiDoom.Engine.World.HitFloor.pas; Heretic e Hexen sono un metodo) ---
+  # --- P_HitFloor (Doom, Strife: IdTech1\Base\DelphiDoom.Engine.World.HitFloor.pas; Heretic e Hexen sono un metodo) ---
   $hfVars = 'var mo: Pmobj_t; sec: Psector_t; z: fixed_t; ss: Psubsector_t; begin'
   @{ R = 'P_HitFloor'; F = "class function TMobjHitFloor.Hit(thing: Pmobj_t): integer; $hfVars"; D = "function P_HitFloor(thing: Pmobj_t): integer; $hfVars" }
   @{ R = 'P_HitFloor'; F = 'if TMobjGameRules.HitFloorIgnoredByVersion then exit;'; Doom = 'if G_PlayingEngineVersion <= VERSION114 then exit;'; Strife = '' }
   @{ R = 'P_HitFloor'; F = 'TMobjGameRules.NukageSplashZ(z)'; Doom = 'z'; Strife = 'ONFLOORZ'; All = $true }
   @{ R = 'P_HitFloor'; F = 'TMobjGameRules.NukageSplashSound'; Doom = 'Ord(sfx_sgloo2)'; Strife = 'Ord(sfx_sgloop)' }
-  # --- P_SpawnMapThing (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.MapThingSpawner.pas; Hexen e' un metodo) ---
+  # --- P_SpawnMapThing (Doom, Heretic, Strife: IdTech1\Base\DelphiDoom.Engine.World.MapThingSpawner.pas; Hexen e' un metodo) ---
   $mtHead = 'function P_SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; var i: integer; bit: integer; x: fixed_t; y: fixed_t; z: fixed_t;'
   $mtTail = 'msec: Psector_t; musinfoparam: integer; begin'
   @{ R = 'P_SpawnMapThing'; F = 'class function TMobjMapThingSpawner.Spawn(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; var i: integer; bit: integer; x: fixed_t; y: fixed_t; z: fixed_t; ss: Psector_t; msec: Psector_t; musinfoparam: integer; begin result := nil;'
@@ -346,7 +346,7 @@ $Methods = @{
 # la routine unificata ha un altro nome
 $Alias = @{ 'Doom|P_SpawnPlayerMissile' = 'TMobjPlayerMissileSpawner.Spawn'; 'Strife|P_SpawnPlayerMissile' = 'TMobjPlayerMissileSpawner.Spawn'; 'Doom|P_HitFloor' = 'TMobjHitFloor.Hit'; 'Strife|P_HitFloor' = 'TMobjHitFloor.Hit'; 'Doom|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Heretic|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Strife|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Doom|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Strife|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Doom|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Heretic|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Strife|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Doom|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Heretic|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Strife|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Doom|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Strife|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas', 'Base\DelphiDoom.Engine.World.Respawner.pas', 'Base\DelphiDoom.Engine.World.MissileSpawner.pas', 'Base\DelphiDoom.Engine.World.PlayerSpawner.pas', 'Base\DelphiDoom.Engine.World.MapThingSpawner.pas', 'Base\DelphiDoom.Engine.World.HitFloor.pas', 'Base\DelphiDoom.Engine.World.PlayerMissileSpawner.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'IdTech1\Base\p_mobj.pas', 'IdTech1\Base\DelphiDoom.Engine.World.Respawner.pas', 'IdTech1\Base\DelphiDoom.Engine.World.MissileSpawner.pas', 'IdTech1\Base\DelphiDoom.Engine.World.PlayerSpawner.pas', 'IdTech1\Base\DelphiDoom.Engine.World.MapThingSpawner.pas', 'IdTech1\Base\DelphiDoom.Engine.World.HitFloor.pas', 'IdTech1\Base\DelphiDoom.Engine.World.PlayerMissileSpawner.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.MobjRules.pas' -Class 'TMobjGameRules' -Expansions $Expansions `
-  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Maps $Maps -Extra @{ S = 'Base\p_mobj.pas' }
+  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Maps $Maps -Extra @{ S = 'IdTech1\Base\p_mobj.pas' }
 exit $bad

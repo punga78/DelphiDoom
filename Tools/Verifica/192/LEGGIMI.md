@@ -1,4 +1,4 @@
-# Verifica #192: parita' della parte grafica di Libs\War con il C del remake
+# Verifica #192: parita' della parte grafica di Games\War con il C del remake
 
 `war1` (acoto87/war1, zlib) e' in `Reference\war1` (sola lettura). I decodificatori ORIGINALI di `war_resources.c` si compilano e si
 eseguono con gcc di `Reference\_dati\_strumenti\w64devkit` (non c'e' un compilatore C nel PATH) sul `DATA.WAR` vero.
@@ -8,7 +8,7 @@ powershell -NoProfile -File Compila-GfxRef.ps1 -Out <cartella nuova fuori dal re
 war_gfx_ref.exe <DATA.WAR> gfx          > Tests\Data\War\graphics.golden.txt   (una riga per record grafico, ordine di assets[])
 war_gfx_ref.exe -         fonts         > Tests\Data\War\fonts.golden.txt      (la tabella fontsData[] dei due font)
 war_gfx_ref.exe <DATA.WAR> dump N file  (i byte RGBA dell'immagine, cursore o tileset N)
-powershell -NoProfile -File Make-WarFonts.ps1 -Fonts Tests\Data\War\fonts.golden.txt -Out Libs\War\DelphiDoom.War.Font.Data.pas
+powershell -NoProfile -File Make-WarFonts.ps1 -Fonts Tests\Data\War\fonts.golden.txt -Out Games\War\DelphiDoom.War.Font.Data.pas
 ```
 
 `Compila-GfxRef.ps1` **non modifica** il remake: legge `war_file.c` (come #191), `war_resources.h` (le struct), `war_enums.h`,
@@ -33,7 +33,7 @@ riga `E`; `Tests\DelphiDoom.Tests.War` da' le stesse 184 righe. Nessuna palette 
 
 PNG per l'ispezione visiva (fuori dal repository): con `DELPHIDOOM_WAR_PNG_OUT=<cartella>` il test
 `DovrebbeScrivereAlcuniPNGPerLIspezioneVisiva` scrive `image.png`, `sprite_frame0.png`, `cursor.png`, `tileset.png` (senza la variabile e' ignorato).
-Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
+Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Games\War\CLAUDE.md`).
 
 ## Seconda fetta: testo, disegno e sprite
 

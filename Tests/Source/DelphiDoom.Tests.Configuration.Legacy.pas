@@ -10,9 +10,9 @@ unit DelphiDoom.Tests.Configuration.Legacy;
 
 // A faithful copy of what the engine did on the table "defaults" of m_defs at 63a151cc:
 // TEngineDefaults.Load (the loops after the file is read), Save, Reset, ForceBoolean,
-// ForceInteger, ForceString (Base\DelphiDoom.Engine.Configuration.Defaults.pas),
-// TEngineScriptConsole.GetString/GetInteger/GetBoolean (Base\DelphiDoom.Engine.Script.Console.pas)
-// and TEngineConsoleVariable (Base\DelphiDoom.Engine.Console.Variable.pas). The world around it is
+// ForceInteger, ForceString (IdTech1\Base\DelphiDoom.Engine.Configuration.Defaults.pas),
+// TEngineScriptConsole.GetString/GetInteger/GetBoolean (IdTech1\Base\DelphiDoom.Engine.Script.Console.pas)
+// and TEngineConsoleVariable (IdTech1\Base\DelphiDoom.Engine.Console.Variable.pas). The world around it is
 // fake: the globals, printf and the console are lists of this class; the record is the default_t
 // of m_defs, with the pointers. Only the names of the identifiers that were globals changed.
 

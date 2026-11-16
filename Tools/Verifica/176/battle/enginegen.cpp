@@ -1,4 +1,4 @@
-// Harness for Libs\XcomBattle (Pathfinding): the REAL OpenXcom objects (linked from a real build, see build.cmd) build
+// Harness for Games\XcomBattle (Pathfinding): the REAL OpenXcom objects (linked from a real build, see build.cmd) build
 // maps of tiles with the real MCD parts picked by type (floors, walls, objects), put units of the real rules on them and
 // answer path questions with the real Pathfinding. Writes
 //   <name>.yml     the SavedBattleGame of the map (what SavedBattleGame::save writes)

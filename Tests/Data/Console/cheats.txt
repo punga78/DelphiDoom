@@ -1,4 +1,4 @@
-# Corpus of the cheat sequences (Libs\Console, issue #76).
+# Corpus of the cheat sequences (Framework\Console, issue #76).
 # "seq <name> <hex bytes>": a sequence as it is written in st_stuff (scrambled bytes, ending with ff).
 # "feed <name> <keys>": a new cheat (nothing typed yet) receives the keys, one after the other.
 # "more <name> <keys>": the same cheat goes on with more keys. A key can be written \xNN.

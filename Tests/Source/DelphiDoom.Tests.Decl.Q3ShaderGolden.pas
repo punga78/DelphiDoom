@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the Quake III shaders - parity with the real C         }
 {                                                                              }
 {  Runs Tests\Data\Decl\q3shader\scenario.txt on the .shader files of the      }
-{  same folder with the classes of Libs\Decl and compares the dump with        }
+{  same folder with the classes of IdTech4\Decl and compares the dump with     }
 {  q3shader.golden.txt, which is what the real renderer\tr_shader.c of Quake   }
 {  III (R_FindShader: ScanAndLoadShaderFiles, ParseShader, FinishShader)       }
 {  printed (Tools\Verifica\119; see Tests\Data\Decl\README.md).                }

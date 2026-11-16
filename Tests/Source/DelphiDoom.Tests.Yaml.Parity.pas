@@ -7,7 +7,7 @@
 {  parse.golden.txt is its answer: for each case the dump of the documents,    }
 {  the conversions of each scalar, or the error with its position, and the     }
 {  text that Emitter << node gives. The library must write the same bytes      }
-{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Libs\Yaml\README.md          }
+{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Framework\Yaml\README.md     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Yaml.Parity;

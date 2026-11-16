@@ -1,4 +1,4 @@
-# Builds the harness of ode.golden.txt and curve.golden.txt (see Libs\MathCore\CLAUDE.md, issue #95).
+# Builds the harness of ode.golden.txt and curve.golden.txt (see Framework\MathCore\CLAUDE.md, issue #95).
 # $d has idlib\ (a copy of neo\idlib) with these files: driver.cpp (driver.cpp.txt) and precompiled.h (precompiled.h.txt).
 # Only change to the idlib sources: in math\Ode.cpp the four constructors take "const deriveFunction_t dr" (as Ode.h declares):
 # bcc32c mangles the top-level const and does not link the original definitions.

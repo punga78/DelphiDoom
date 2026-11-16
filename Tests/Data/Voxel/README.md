@@ -1,8 +1,8 @@
-# Dati di prova di Libs\Voxel (issue #78)
+# Dati di prova di IdTech1\Voxel (issue #78)
 
-`voxel.golden.txt` e' l'uscita del **vecchio codice del motore** (i quattro caricatori di `Base\r_voxels.pas` per il renderer software,
-la classe `TVoxelImageLoader` di `Base\vx_voxelsprite.pas` per gli sprite, i quattro caricatori di `Libs\OpenGl\Legacy\gl_voxels.pas` fino ai buffer da
-cui nasce la mesh, `SC_DoParseVoxelDefinition` di `Base\vx_base.pas`), compilato con Delphi 11 Win32 in un programma di prova **fuori dal
+`voxel.golden.txt` e' l'uscita del **vecchio codice del motore** (i quattro caricatori di `IdTech1\Base\r_voxels.pas` per il renderer software,
+la classe `TVoxelImageLoader` di `IdTech1\Base\vx_voxelsprite.pas` per gli sprite, i quattro caricatori di `IdTech1\OpenGl\Legacy\gl_voxels.pas` fino ai buffer da
+cui nasce la mesh, `SC_DoParseVoxelDefinition` di `IdTech1\Base\vx_base.pas`), compilato con Delphi 11 Win32 in un programma di prova **fuori dal
 repository** (l'harness non si committa). Nell'harness i file arrivano da memoria (`TPakStream` e' un flusso di memoria), i buffer sono
 di lato 64 invece di 256, il parser di VOXELDEF scrive su un registratore (variante OpenGL: offset e scala sono float) e il colore piu' vicino
 della palette e' una funzione fissa (`TVoxelSamples.PaletteIndexOf`); il resto e' la copia del vecchio testo. Ogni riga e'
@@ -25,4 +25,4 @@ I file di prova sono costruiti in memoria (`DelphiDoom.Tests.Voxel.Samples`, xor
 | `definitions` | 16 testi di VOXELDEF: ogni chiamata al registro dei voxel (voxel con offset, scala, spin, flag; stato; sprite sostituito) e ogni avviso, in ordine |
 
 Il sorgente non ha casi con pivot fuori dal cubo per gli sprite, dimensioni di 256 o salti oltre la colonna di un DDVOX: il vecchio codice li
-scriveva fuori dai limiti della memoria (vedi `CLAUDE.md`, `Libs\Voxel`).
+scriveva fuori dai limiti della memoria (vedi `CLAUDE.md`, `IdTech1\Voxel`).

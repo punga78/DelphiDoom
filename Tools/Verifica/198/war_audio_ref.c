@@ -1,5 +1,5 @@
 /*
-  Issue #198: harness di riferimento per l'audio di Libs\War.
+  Issue #198: harness di riferimento per l'audio di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez; i tre convertitori
   shl/voc.h, shl/wav.h e shl/xmi2mid.h sono MIT, (c) 2026 Alejandro Coto Gutierrez): wres_loadXmi, wres_loadWave,
   wres_loadVoc di war_resources.c, wa_playWave di war_audio.c e le tre funzioni di war_math.c del volume

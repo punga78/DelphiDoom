@@ -1,6 +1,6 @@
 # Tests\Data\MapFile
 
-Dati del confronto di `Libs\MapFile` (issue #106) con il **vero** idlib di Doom 3. **Nessuna mappa di Doom 3 e' nel repository**: i file `.map` sono scritti per il test (testi di prova inventati).
+Dati del confronto di `IdTech4\MapFile` (issue #106) con il **vero** idlib di Doom 3. **Nessuna mappa di Doom 3 e' nel repository**: i file `.map` sono scritti per il test (testi di prova inventati).
 
 - `cases.txt`: i casi, uno per riga: il nome del file senza estensione; ` !` in coda = il lettore ignora il file `.reg` (`ignoreRegion`); `#` = commento.
 - `*.map`, `region.reg`: v2_basic (versione 2: sei facce, brush con coppie, patchDef3, entita' con `origin` e una patchDef2, valori che mettono alla prova la scrittura dei float: `0.00048828125`, `123456789`, `0.1`), v1_old (senza `Version`: brushDef a tre punti, patchDef2, un brush spostato dall'origine, un brush di Quake III), directives (le quattro chiavi del worldspawn), region (+ `.reg`), empty, keys (spazi finali, chiavi che differiscono per maiuscole, una chiave senza valore, origine con un numero non valido, coppie di brush e di patch), nonascii (materiale con byte sopra 127), e gli errori `err_*` (entita' non chiusa, parentesi mancante, piano incompleto, patch con larghezza 0, riga della patch corta, chiave del brush non stringa, brush non chiuso, matrice della texture incompleta); `missing` non ha file.

@@ -15,8 +15,8 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Flic.Types in '..\Libs\Flic\DelphiDoom.Flic.Types.pas',
-  DelphiDoom.Flic.FrameDecoder in '..\Libs\Flic\DelphiDoom.Flic.FrameDecoder.pas',
+  DelphiDoom.Flic.Types in '..\Framework\Flic\DelphiDoom.Flic.Types.pas',
+  DelphiDoom.Flic.FrameDecoder in '..\Framework\Flic\DelphiDoom.Flic.FrameDecoder.pas',
   DelphiDoom.Tests.XcomEngine.FlcBuilder in 'Source\DelphiDoom.Tests.XcomEngine.FlcBuilder.pas',
   DelphiDoom.Tests.Flic.XcomReference in 'Source\DelphiDoom.Tests.Flic.XcomReference.pas',
   DelphiDoom.Tests.Flic.FrameDecoder in 'Source\DelphiDoom.Tests.Flic.FrameDecoder.pas';

@@ -15,14 +15,14 @@ Dati di `Tests\DelphiDoom.Tests.TextureDefs` (issue #73).
 ## Come sono stati generati
 
 Con un harness **temporaneo, fuori dal repository** (non si committa): un programma console che ha le unit
-`Libs\Logging`, `Libs\Scanner` e `Corpus` e che contiene, **copiati alla lettera** con le chiamate al motore sostituite
-da finti, i cicli di `R_InitTextures` di `Base\r_data.pas` (PNAMES, TEXTURE1/2/3 e la parte `TEXTURE0`, con i `maptexture_t`/`mappatch_t`
-di `r_defs.pas` compilati con e senza `STRIFE`) e `R_ParseFlatInfoText`/`R_FlatSizeFromSize` di `Base\r_flatinfo.pas`.
+`Framework\Logging`, `Framework\Scanner` e `Corpus` e che contiene, **copiati alla lettera** con le chiamate al motore sostituite
+da finti, i cicli di `R_InitTextures` di `IdTech1\Base\r_data.pas` (PNAMES, TEXTURE1/2/3 e la parte `TEXTURE0`, con i `maptexture_t`/`mappatch_t`
+di `r_defs.pas` compilati con e senza `STRIFE`) e `R_ParseFlatInfoText`/`R_FlatSizeFromSize` di `IdTech1\Base\r_flatinfo.pas`.
 Finti: `W_CheckNumForName` (l'indice del nome), `I_Error` (eccezione), `I_Warning` (registratore). Compilato due volte
 (`-DSTRIFE` e senza) e lanciato con la cartella dei dati e quella dei WAD. Per rigenerare i golden bisogna rifarlo.
 
 ## Differenze e difetti
 
-Vedi il punto 6 di `Libs\TextureDefs\WIRING.md`. I casi dei golden sono solo quelli che il vecchio codice gestiva
+Vedi il punto 6 di `IdTech1\TextureDefs\WIRING.md`. I casi dei golden sono solo quelli che il vecchio codice gestiva
 senza comportamento indefinito (il solo errore è `bad texture directory` con `offset > maxoff`); gli errori nuovi
 (texture che non entra nel lump, indice di patch fuori da PNAMES, conteggi negativi) sono provati nei test di classe.

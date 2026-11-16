@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the tessellation of the patches of a .map (DUnitX)     }
 {                                                                              }
 {  ParsePatch of dmap: the subdivision is TGeoSurfacePatch, whose parity with  }
-{  idSurface_Patch is in the tests of Libs\Geometry; here the control grid of  }
+{  idSurface_Patch is in the tests of Framework\Geometry; here the control grid of }
 {  a map patch becomes the surface and the right call is made.                 }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

@@ -188,7 +188,7 @@ begin
       // specified in C++, and the build of the harness (GCC) reads the size before load() adds the name to it;
       // AdlibMusic::load then adds the length of the name. So the size of the real AdlibMusic of a song with a
       // name (TFTD) is one byte less than the bytes that were read; the songs of UFO have no name and are whole.
-      // What the player makes of the size is in Libs\Opl (TXcomAdlibPlayer.Load)
+      // What the player makes of the size is in Framework\Opl (TXcomAdlibPlayer.Load)
       // And CatFile::load(i, true) adds the name to the size of the entry every time it is called: the second
       // rule that plays the same song (GMISPOSH after GMINTER0 in TFTD) gets a song that goes on into the next
       // entry of the file, by the length of the name plus one. Those bytes are not compared

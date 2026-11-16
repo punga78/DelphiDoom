@@ -3,7 +3,7 @@
   copione (-autoscript, Tests\Data\Parity\Automap\<Gioco>.script) fa camminare il giocatore, apre l'automap e passa per
   i suoi tasti (cheat di linee e cose, griglia, segni, segui, ruota, grande, i tre stati di TAB, cancella i segni).
   Ogni fotogramma e' hashato da -framehash e lo stato da -statehash; il copione fotografa anche tredici fotogrammi
-  (<copione>.<n>.bmp, per guardarli). Nessuna opzione nuova nel motore: solo quelle di Libs\Parity.
+  (<copione>.<n>.bmp, per guardarli). Nessuna opzione nuova nel motore: solo quelle di IdTech1\Parity.
 
   Tre usi:
     -Record      registra i golden da -Exe (un eseguibile del codice di partenza): Tests\Data\Parity\Automap\<Gioco>.s<modo>.gz

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the choice of the sounds of Libs\War                   }
+{  DelphiDoom: tests of the choice of the sounds of Games\War                  }
 {                                                                              }
 {  The parity tests read the golden files of Tests\Data\War made by            }
 {  Tools\Verifica\198\Compila-SoundRef.ps1 from the code of the remake         }

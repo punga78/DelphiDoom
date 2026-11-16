@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: tests of S_LoadSound of the Quake III sound                     }
 {                                                                              }
-{  Reads WAV files built in memory with the reader of Libs\Sound and, where    }
+{  Reads WAV files built in memory with the reader of Framework\Sound and, where }
 {  they are, the sounds of OpenArena.                                          }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

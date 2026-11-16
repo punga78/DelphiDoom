@@ -3,7 +3,7 @@ program SpritesParity;
 {$Q-}
 {$R-}
 // Harness fuori dalla suite: fa girare sugli stessi scenari (Tests\Source\DelphiDoom.Tests.Greed.SpriteScenarios)
-// lo sprites.pas ORIGINALE di xGreed, non modificato, e TGreedSpriteLogic di Libs\Greed, li confronta tic per tic
+// lo sprites.pas ORIGINALE di xGreed, non modificato, e TGreedSpriteLogic di Games\Greed, li confronta tic per tic
 // e scrive il golden (le impronte dell'originale). Il resto del gioco e' negli stub di stubs\ (spawn, utils, raven,
 // modplay, net) e in quelli di ..\175-render\stubs (d_disk, d_misc, d_ints ...).
 // Uso: SpritesParity <golden.txt | nessuno> [primo scenario] [ultimo scenario]

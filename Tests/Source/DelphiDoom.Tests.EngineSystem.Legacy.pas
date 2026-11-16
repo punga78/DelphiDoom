@@ -8,7 +8,7 @@
 unit DelphiDoom.Tests.EngineSystem.Legacy;
 
 // The code of i_net, i_io, i_mikplay, i_midi, i_midi_legacy, i_crashlog and i_system as it was at
-// cb5a45e3 (git show cb5a45e3:Base\<unit>.pas), kept here to prove that the classes of the library do
+// cb5a45e3 (git show cb5a45e3:IdTech1\Base\<unit>.pas), kept here to prove that the classes of the library do
 // what the old procedures did. The bodies are the old ones. What changed is only what touched the
 // engine or Windows: myargv is an array of the object, printf and the log are lines in a list, the
 // calls of mciSendCommand go to a fake sequencer, the window is a number, the globals are fields.

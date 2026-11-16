@@ -63,10 +63,10 @@ if ($Variant -eq 'H') {
   & git apply "Tools\Verifica\154\hook-$($Game.ToLower())32.patch"
   if ($LASTEXITCODE -ne 0) { throw "git apply of the platform hook failed" }
 
-  # --- lights and doors of the scripted flavour (Base\udmf_*.pas, every game): the hunks of Doom ---
-  & git apply --include=Base/udmf_lights.pas "Tools\Verifica\149\hook-doom32.patch"
+  # --- lights and doors of the scripted flavour (IdTech1\Base\udmf_*.pas, every game): the hunks of Doom ---
+  & git apply --include=IdTech1\Base/udmf_lights.pas "Tools\Verifica\149\hook-doom32.patch"
   if ($LASTEXITCODE -ne 0) { throw "git apply of udmf_lights failed" }
-  & git apply --include=Base/udmf_doors.pas "Tools\Verifica\152\hook-doom32.patch"
+  & git apply --include=IdTech1\Base/udmf_doors.pas "Tools\Verifica\152\hook-doom32.patch"
   if ($LASTEXITCODE -ne 0) { throw "git apply of udmf_doors failed" }
 
   if ($Game -ne 'Hexen') {
@@ -117,7 +117,7 @@ elseif ($Variant -eq 'S') {
   # --- savegames: the hook of harness_sweep in G_Ticker (needs none of the new units: it also builds on 31ee71e3) ---
   Edit-File $dpr {
     param($t)
-    $m = [regex]::Match($t, "(?m)^  i_system in 'Base\\i_system.pas',\r?\n")
+    $m = [regex]::Match($t, "(?m)^  i_system in 'IdTech1\Base\\i_system.pas',\r?\n")
     if (-not $m.Success) { throw "i_system not found in $dpr" }
     $nl = if ($m.Value.EndsWith("`r`n")) { "`r`n" } else { "`n" }
     return $t.Substring(0, $m.Index + $m.Length) +

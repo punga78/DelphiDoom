@@ -1,5 +1,5 @@
 /*
-  Issue #198: harness di riferimento per il tempo e gli eventi della musica di Libs\War.
+  Issue #198: harness di riferimento per il tempo e gli eventi della musica di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez): wa_playMidi di
   war_audio.c e' estratto alla lettera da Compila-MusicRef.ps1 (war_play_midi.inc), con la struct WarAudioComponent
   (war_audio.h) e WarAudioType (war_enums.h); il lettore di file MIDI e' tml.h di TinySoundFont (zlib License,
@@ -161,13 +161,13 @@ static void putvlq(Buf* b, u32 v)
 
 #define MAX_TRACKS 4
 
-/* Gli scenari evitano i difetti di tml e di wa_playMidi che Libs\War non conserva (vedi il README di Libs\War):
+/* Gli scenari evitano i difetti di tml e di wa_playMidi che Games\War non conserva (vedi il README di Games\War):
    - eventi a tick globali distinti fra tracce diverse (con un pareggio l'ordine di fusione puo' essere diverso);
    - il primo evento e' della traccia 0 (altrimenti tml_load perde messaggi);
    - EOT con delta 0 nei brani che non si ripetono (con un delta tml lo tiene nella lista e l'EOT di una traccia
      fermerebbe le altre); nei brani che si ripetono una sola traccia e EOT con delta: senza un messaggio EOT nella
      lista wa_playMidi non ricomincia mai (finisce in silenzio) e con piu' tracce il primo EOT ferma il giro;
-   - nessun evento meta o sysex (il sequencer di Libs\Midi non li da': il tempo fino all'ultimo messaggio sarebbe
+   - nessun evento meta o sysex (il sequencer di Framework\Midi non li da': il tempo fino all'ultimo messaggio sarebbe
      diverso) */
 static Buf makeSmf(u32 seed, int tracks, int division, int events, int lastKind, int eotDelta)
 {
@@ -187,7 +187,7 @@ static Buf makeSmf(u32 seed, int tracks, int division, int events, int lastKind,
             track = (int)(rnd() % (u32)tracks);
         else if (i == 0)
             delta = 1;
-        /* il primo evento della canzone e' sempre della traccia 0: se fosse di un'altra, tml_load scambia il suo primo messaggio con quello (ancora da leggere) della traccia 0 e ne perde eventi (difetto di tml, vedi il README di Libs/War) */
+        /* il primo evento della canzone e' sempre della traccia 0: se fosse di un'altra, tml_load scambia il suo primo messaggio con quello (ancora da leggere) della traccia 0 e ne perde eventi (difetto di tml, vedi il README di Games/War) */
         if (i == 0)
             track = 0;
         tick += delta;

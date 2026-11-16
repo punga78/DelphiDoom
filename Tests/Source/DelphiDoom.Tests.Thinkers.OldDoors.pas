@@ -9,8 +9,8 @@
 {******************************************************************************}
 unit DelphiDoom.Tests.Thinkers.OldDoors;
 
-// The statements of the procedures are the ones of Doom\p_doors.pas, Heretic\p_doors.pas,
-// Strife\p_doors.pas and udmf_doors.pas before the library, with the thinker replaced by a
+// The statements of the procedures are the ones of IdTech1\Doom\p_doors.pas, IdTech1\Heretic\p_doors.pas,
+// IdTech1\Strife\p_doors.pas and udmf_doors.pas before the library, with the thinker replaced by a
 // TDoorState (the same fields: _type is Kind), the calls to the game (T_MovePlane, S_StartSound,
 // the surrounding sectors) replaced by calls to a fake host that writes them down, and the
 // removal of the thinker and the switching of the lights of the line written in the outcome.
@@ -77,7 +77,7 @@ const
   VDOORWAIT = 150;
 
 //==============================================================================
-// Doom\p_doors.pas: T_VerticalDoor
+// IdTech1\Doom\p_doors.pas: T_VerticalDoor
 //==============================================================================
 procedure OldDoomTick(var door: TDoorState; AFloorHeight: Integer; const host: TFakeDoorHost;
   var outcome: TOldDoorOutcome);
@@ -227,7 +227,7 @@ begin
 end;
 
 //==============================================================================
-// Heretic\p_doors.pas: T_VerticalDoor
+// IdTech1\Heretic\p_doors.pas: T_VerticalDoor
 //==============================================================================
 procedure OldHereticTick(var door: TDoorState; AFloorHeight: Integer; const host: TFakeDoorHost;
   var outcome: TOldDoorOutcome);
@@ -331,7 +331,7 @@ begin
 end;
 
 //==============================================================================
-// Strife\p_doors.pas: T_VerticalDoor
+// IdTech1\Strife\p_doors.pas: T_VerticalDoor
 //==============================================================================
 procedure OldStrifeTick(var door: TDoorState; AFloorHeight: Integer; const host: TFakeDoorHost;
   var outcome: TOldDoorOutcome);
@@ -619,7 +619,7 @@ begin
 end;
 
 //==============================================================================
-// Doom\p_doors.pas: EV_DoDoor (the part for one sector)
+// IdTech1\Doom\p_doors.pas: EV_DoDoor (the part for one sector)
 //==============================================================================
 procedure OldDoomDoDoor(var door: TDoorState; AKind: TDoorKind; ACeilingHeight: Integer;
   const host: TFakeDoorHost);
@@ -677,7 +677,7 @@ begin
 end;
 
 //==============================================================================
-// Heretic\p_doors.pas: EV_DoDoor
+// IdTech1\Heretic\p_doors.pas: EV_DoDoor
 //==============================================================================
 procedure OldHereticDoDoor(var door: TDoorState; AKind: TDoorKind; ASpeed, ACeilingHeight: Integer;
   const host: TFakeDoorHost);
@@ -715,7 +715,7 @@ begin
 end;
 
 //==============================================================================
-// Strife\p_doors.pas: EV_DoDoor (the part for one sector)
+// IdTech1\Strife\p_doors.pas: EV_DoDoor (the part for one sector)
 //==============================================================================
 procedure OldStrifeDoDoor(var door: TDoorState; AKind: TDoorKind; ACeilingHeight: Integer;
   const host: TFakeDoorHost);
@@ -840,7 +840,7 @@ begin
 end;
 
 //==============================================================================
-// Doom\p_doors.pas: EV_VerticalDoor, from "for proper sound" to the end
+// IdTech1\Doom\p_doors.pas: EV_VerticalDoor, from "for proper sound" to the end
 //==============================================================================
 function OldDoomManual(var door: TDoorState; ASpecial: Integer; const host: TFakeDoorHost): Boolean;
 begin
@@ -896,7 +896,7 @@ begin
 end;
 
 //==============================================================================
-// Heretic\p_doors.pas: EV_VerticalDoor, from the sound to the end
+// IdTech1\Heretic\p_doors.pas: EV_VerticalDoor, from the sound to the end
 //==============================================================================
 function OldHereticManual(var door: TDoorState; ASpecial: Integer; const host: TFakeDoorHost): Boolean;
 begin
@@ -930,7 +930,7 @@ begin
 end;
 
 //==============================================================================
-// Strife\p_doors.pas: EV_VerticalDoor, from the new door thinker to the end
+// IdTech1\Strife\p_doors.pas: EV_VerticalDoor, from the new door thinker to the end
 //==============================================================================
 function OldStrifeManual(var door: TDoorState; ASpecial: Integer; const host: TFakeDoorHost): Boolean;
 begin

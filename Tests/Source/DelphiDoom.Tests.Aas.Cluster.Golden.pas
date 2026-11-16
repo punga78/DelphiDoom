@@ -43,7 +43,7 @@ type
     procedure DovrebbeDareLeStesseRisposteDelCPerBlitzkrieg3;
     /// <summary>
     ///   Every map of OpenArena: the goldens of the maps are not in the repository; the loop of the C tool over the 71
-    ///   files (see Libs\Aas\README.md) writes them in a folder that DELPHIDOOM_CLUSTER_GOLDENS names
+    ///   files (see IdTech4\Aas\README.md) writes them in a folder that DELPHIDOOM_CLUSTER_GOLDENS names
     /// </summary>
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelCPerTutteLeMappeDiOpenArena;

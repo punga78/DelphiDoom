@@ -1,7 +1,7 @@
 program FliParity;
 {$APPTYPE CONSOLE}
 // Harness fuori dal repository: confronta tic per tic i filmati FLI dell'ORIGINALE di xGreed (playfli.pas com'e': DoPlayFLI
-// legge il filmato da un file) con TGreedFliPlayer di Libs\Greed sugli stessi filmati e tasti
+// legge il filmato da un file) con TGreedFliPlayer di Games\Greed sugli stessi filmati e tasti
 // (Tests\Source\DelphiDoom.Tests.Greed.FliScenarios). La Wait dell'originale e' lo stub che per ogni tic cattura lo
 // schermo e la palette, applica i tasti ed esegue il corpo di INT_TimerISR (stubs\d_ints.pas). Le righe del golden
 // sono i valori dell'ORIGINALE.

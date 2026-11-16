@@ -1,5 +1,5 @@
 program H1;
-// Harness of the golden files of Libs\ToolsCore: it runs the OLD ENDEDIT code (ee_filemenuhistory,
+// Harness of the golden files of Strumenti\ToolsCore: it runs the OLD ENDEDIT code (ee_filemenuhistory,
 // ee_utils, ee_defs, ee_undo) on fixed scenarios and writes what it does.
 {$APPTYPE CONSOLE}
 uses

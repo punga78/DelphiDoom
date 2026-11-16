@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   Copy of wipe_initMelt and wipe_doMelt of Base\f_wipe.pas at c4ce14f1 (issue #185), for
+  ///   Copy of wipe_initMelt and wipe_doMelt of IdTech1\Base\f_wipe.pas at c4ce14f1 (issue #185), for
   ///   the parity of TImagingMeltWipe.StartOnBuffers. The globals of the engine (SCREENWIDTH,
   ///   SCREENHEIGHT, screen32, w_screen32, wipe_scr_start, wipe_scr_end, yy, vy) are fields,
   ///   the {$IFDEF OPENGL} is the OpenGl field, I_Random is the source given to Create, and

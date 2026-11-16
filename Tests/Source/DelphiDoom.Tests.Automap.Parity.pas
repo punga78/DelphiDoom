@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   The scenarios give the same fingerprints as the old code of Base\am_map.pas (Tests\Data\Automap):
+  ///   The scenarios give the same fingerprints as the old code of IdTech1\Base\am_map.pas (Tests\Data\Automap):
   ///   conversions, limits of the level, navigation, marks, clipping and rotation
   /// </summary>
   [TestFixture]

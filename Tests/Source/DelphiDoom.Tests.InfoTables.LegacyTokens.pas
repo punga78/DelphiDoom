@@ -8,7 +8,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-// The code of Base\sc_tokens.pas and of the table of constants of Base\sc_consts.pas as it was
+// The code of IdTech1\Base\sc_tokens.pas and of the table of constants of IdTech1\Base\sc_consts.pas as it was
 // before issue #185 (commit 63a151cc), copied line by line. The warnings that went to
 // I_Warning are collected in LegacyConstWarnings.
 unit DelphiDoom.Tests.InfoTables.LegacyTokens;

@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_doors.pas b/Base/udmf_doors.pas
+diff --git a/IdTech1\Base/udmf_doors.pas b/IdTech1\Base/udmf_doors.pas
 index f1b79d91..6369043b 100644
---- a/Base/udmf_doors.pas
-+++ b/Base/udmf_doors.pas
+--- a/IdTech1\Base/udmf_doors.pas
++++ b/IdTech1\Base/udmf_doors.pas
 @@ -72,7 +72,8 @@ uses
    udmf_spec,
    {$ENDIF}
@@ -33,10 +33,10 @@ index f1b79d91..6369043b 100644
  //==============================================================================
  //
  // EVH_DoDoor
-diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+diff --git a/IdTech1\Base/udmf_lights.pas b/IdTech1\Base/udmf_lights.pas
 index bbcd9b72..978272b5 100644
---- a/Base/udmf_lights.pas
-+++ b/Base/udmf_lights.pas
+--- a/IdTech1\Base/udmf_lights.pas
++++ b/IdTech1\Base/udmf_lights.pas
 @@ -144,20 +144,26 @@ uses
    DelphiDoom.Thinkers.Light.Phase,
    DelphiDoom.Thinkers.Light.Sequence,
@@ -84,10 +84,10 @@ index bbcd9b72..978272b5 100644
  //==============================================================================
  //
  // P_SpawnPhasedLight
-diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+diff --git a/IdTech1\Base/udmf_plats.pas b/IdTech1\Base/udmf_plats.pas
 index 4b759843..53cd20ac 100644
---- a/Base/udmf_plats.pas
-+++ b/Base/udmf_plats.pas
+--- a/IdTech1\Base/udmf_plats.pas
++++ b/IdTech1\Base/udmf_plats.pas
 @@ -84,6 +84,7 @@ uses
    udmf_spec,
  {$ENDIF}
@@ -129,10 +129,10 @@ index 4b759843..53cd20ac 100644
  
      PH_AddActivePlat(plat);
      UdmfPlatMachine.AnnounceStart(sec);
-diff --git a/Hexen/g_game.pas b/Hexen/g_game.pas
+diff --git a/IdTech1\Hexen/g_game.pas b/IdTech1\Hexen/g_game.pas
 index 2c49c4a7..d8897a4f 100644
---- a/Hexen/g_game.pas
-+++ b/Hexen/g_game.pas
+--- a/IdTech1\Hexen/g_game.pas
++++ b/IdTech1\Hexen/g_game.pas
 @@ -384,6 +384,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -154,15 +154,15 @@ index 0a8f0210..540ad5a2 100644
 --- a/Hexen32.dpr
 +++ b/Hexen32.dpr
 @@ -504,6 +504,12 @@ uses
-   DelphiDoom.Thinkers.Platform.Machine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
-   DelphiDoom.Thinkers.Platform.UdmfMachine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
-   DelphiDoom.Thinkers.Platform.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
+   DelphiDoom.Thinkers.Platform.Machine in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+   DelphiDoom.Thinkers.Platform.UdmfMachine in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+   DelphiDoom.Thinkers.Platform.Factory in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
 +  plat_parity in 'Tools\Verifica\154\plat_parity.pas',
 +  light_parity in 'Tools\Verifica\149\light_parity.pas',
 +  DelphiDoom.Tests.Thinkers.DoorFakes in 'Tests\Source\DelphiDoom.Tests.Thinkers.DoorFakes.pas',
 +  DelphiDoom.Tests.Thinkers.OldDoors in 'Tests\Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
 +  door_parity in 'Tools\Verifica\152\door_parity.pas',
 +  harness_exit in 'Tools\Verifica\harness\harness_exit.pas',
-   DelphiDoom.Thinkers.Teleport.Intf in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
-   DelphiDoom.Thinkers.Teleport.Geometry in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
-   DelphiDoom.Thinkers.Teleport.LineExit in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
+   DelphiDoom.Thinkers.Teleport.Intf in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+   DelphiDoom.Thinkers.Teleport.Geometry in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+   DelphiDoom.Thinkers.Teleport.LineExit in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',

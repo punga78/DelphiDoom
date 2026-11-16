@@ -1,4 +1,4 @@
-# Tests\Data\Palette - golden della libreria Libs\Palette (issue #74)
+# Tests\Data\Palette - golden della libreria Framework\Palette (issue #74)
 
 I file `*.golden.txt` sono scritti dal **vecchio codice**, copiato tale e quale in un programma console
 temporaneo (fuori dal repository, non committato), compilato con Delphi 11 Win32. Ogni riga e` `chiave=valore`:
@@ -20,11 +20,11 @@ dai test, quindi gli ingressi e le impronte sono identici.
 ## Cosa e` stato copiato dal vecchio codice
 
 `V_ColorShiftPalette`, `V_CopyPalette`, `V_BestColor`, `V_CreateDoomPalette`, `V_CreateTranslation`,
-`V_FixBufferPalette` (`Base\v_palettes.pas`); `V_FindAproxColorIndex` e `gammatable` (`Base\v_video.pas`);
-`R_InitLightTables` e il calcolo di `scalelight` (`Base\r_main.pas`, con `FixedDiv` e gli `_SHL/_SHR` in `asm`
-originali); il codice di `R_InitCustomColormaps` e di `R_InitData` su colormap e fogmap (`Base\r_colormaps.pas`,
-`Base\r_data.pas`); `R_InitPrecalc` (`Base\r_precalc.pas`); `R_InitTranslationTables` nei tre rami Doom, Heretic e
-Strife (`Base\r_draw.pas`); la ricerca per nome, `_try_load` e le funzioni del sangue (`Base\r_translations.pas`).
+`V_FixBufferPalette` (`IdTech1\Base\v_palettes.pas`); `V_FindAproxColorIndex` e `gammatable` (`IdTech1\Base\v_video.pas`);
+`R_InitLightTables` e il calcolo di `scalelight` (`IdTech1\Base\r_main.pas`, con `FixedDiv` e gli `_SHL/_SHR` in `asm`
+originali); il codice di `R_InitCustomColormaps` e di `R_InitData` su colormap e fogmap (`IdTech1\Base\r_colormaps.pas`,
+`IdTech1\Base\r_data.pas`); `R_InitPrecalc` (`IdTech1\Base\r_precalc.pas`); `R_InitTranslationTables` nei tre rami Doom, Heretic e
+Strife (`IdTech1\Base\r_draw.pas`); la ricerca per nome, `_try_load` e le funzioni del sangue (`IdTech1\Base\r_translations.pas`).
 Dove il vecchio codice scriveva puntatori nella zone memory, il programma scrive l'indice della riga di colormap.
 
 ## Per rigenerare

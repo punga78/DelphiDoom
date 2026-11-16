@@ -1,5 +1,5 @@
 /*
-  Issue #194 (seconda fetta): gli scenari di costruzione e addestramento del modello di gioco di Libs\War.
+  Issue #194 (seconda fetta): gli scenari di costruzione e addestramento del modello di gioco di Games\War.
   Si include in war_model_ref.c (dopo gli scenari della prima fetta, prima di main): usa le sue funzioni (worldInit, textAdd,
   spawnDude/spawnBuilding, opEconomy, opRemove, dumpWorld ...) e il codice ORIGINALE del remake, incluso intero.
 

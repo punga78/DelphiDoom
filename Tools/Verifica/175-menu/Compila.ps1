@@ -1,5 +1,5 @@
 # Compila ed esegue il confronto tic per tic tra il menu ORIGINALE di xGreed (menu.pas, d_font.pas, d_video.pas e
-# loadscreen di intro.pas) e TGreedMenu di Libs\Greed sugli scenari di
+# loadscreen di intro.pas) e TGreedMenu di Games\Greed sugli scenari di
 # Tests\Source\DelphiDoom.Tests.Greed.MenuScenarios (issue #175). Il codice originale resta in Reference\xGreed (sola
 # lettura):
 #   menu.pas (con un cast, vedi sotto), d_font.pas, d_video.pas  copiati come sono in %TEMP%\MenuParity\src (devono precedere gli stub
@@ -265,7 +265,7 @@ end.
 
 $programma = @{ menu = 'MenuParity'; fli = 'FliParity'; intro = 'IntroParity' }[$Parte]
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$libs = 'Greed', 'Input', 'Platform', 'MathCore', 'GameMath', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
+$libs = 'Games\Greed', 'Framework\Input', 'Framework\Platform', 'Framework\MathCore', 'Framework\GameMath', 'Framework\Logging', 'Framework\Clock', 'Framework\Video', 'Framework\Png', 'Framework\Zlib' | ForEach-Object { "$radice\$_" }
 $primo = ''
 if ($Parte -eq 'intro') { $primo = "$uscita\intro;" }
 $u = "$primo$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-hud\stubs;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"

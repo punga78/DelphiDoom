@@ -35,6 +35,6 @@ Tests/Data/Models/q3player/** -text
 Tests/Data/Models/deform/** -text
 Tests/Data/Models/ma/** -text
 Tests/Data/DoomScript/** -text
-Radix/Data/*.bin binary
+IdTech1/Radix/Data/*.bin binary
 Tests/Data/Pmove/** -text
 Tools/Verifica/127/*.sh eol=lf

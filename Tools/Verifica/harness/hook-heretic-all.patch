@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_doors.pas b/Base/udmf_doors.pas
+diff --git a/IdTech1\Base/udmf_doors.pas b/IdTech1\Base/udmf_doors.pas
 index f1b79d91..6369043b 100644
---- a/Base/udmf_doors.pas
-+++ b/Base/udmf_doors.pas
+--- a/IdTech1\Base/udmf_doors.pas
++++ b/IdTech1\Base/udmf_doors.pas
 @@ -72,7 +72,8 @@ uses
    udmf_spec,
    {$ENDIF}
@@ -33,10 +33,10 @@ index f1b79d91..6369043b 100644
  //==============================================================================
  //
  // EVH_DoDoor
-diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+diff --git a/IdTech1\Base/udmf_lights.pas b/IdTech1\Base/udmf_lights.pas
 index bbcd9b72..978272b5 100644
---- a/Base/udmf_lights.pas
-+++ b/Base/udmf_lights.pas
+--- a/IdTech1\Base/udmf_lights.pas
++++ b/IdTech1\Base/udmf_lights.pas
 @@ -144,20 +144,26 @@ uses
    DelphiDoom.Thinkers.Light.Phase,
    DelphiDoom.Thinkers.Light.Sequence,
@@ -84,10 +84,10 @@ index bbcd9b72..978272b5 100644
  //==============================================================================
  //
  // P_SpawnPhasedLight
-diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+diff --git a/IdTech1\Base/udmf_plats.pas b/IdTech1\Base/udmf_plats.pas
 index 4b759843..53cd20ac 100644
---- a/Base/udmf_plats.pas
-+++ b/Base/udmf_plats.pas
+--- a/IdTech1\Base/udmf_plats.pas
++++ b/IdTech1\Base/udmf_plats.pas
 @@ -84,6 +84,7 @@ uses
    udmf_spec,
  {$ENDIF}
@@ -129,10 +129,10 @@ index 4b759843..53cd20ac 100644
  
      PH_AddActivePlat(plat);
      UdmfPlatMachine.AnnounceStart(sec);
-diff --git a/Heretic/g_game.pas b/Heretic/g_game.pas
+diff --git a/IdTech1\Heretic/g_game.pas b/IdTech1\Heretic/g_game.pas
 index 50691c8a..125850d8 100644
---- a/Heretic/g_game.pas
-+++ b/Heretic/g_game.pas
+--- a/IdTech1\Heretic/g_game.pas
++++ b/IdTech1\Heretic/g_game.pas
 @@ -473,6 +473,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -149,10 +149,10 @@ index 50691c8a..125850d8 100644
    // do player reborns if needed
    for i := 0 to MAXPLAYERS - 1 do
      if playeringame[i] and (players[i].playerstate = PST_REBORN) then
-diff --git a/Heretic/p_doors.pas b/Heretic/p_doors.pas
+diff --git a/IdTech1\Heretic/p_doors.pas b/IdTech1\Heretic/p_doors.pas
 index 2184e44f..5946f242 100644
---- a/Heretic/p_doors.pas
-+++ b/Heretic/p_doors.pas
+--- a/IdTech1\Heretic/p_doors.pas
++++ b/IdTech1\Heretic/p_doors.pas
 @@ -84,6 +84,7 @@ procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
  implementation
  
@@ -168,7 +168,7 @@ index 2184e44f..5946f242 100644
 -procedure T_VerticalDoor(door: Pvldoor_t);
 +procedure T_VerticalDoorNew(door: Pvldoor_t);
  begin
-   // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+   // the state machine of the door is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*)
    if DoorTickClassic(door) then
 @@ -109,6 +110,11 @@ begin
    end;
@@ -182,10 +182,10 @@ index 2184e44f..5946f242 100644
  //==============================================================================
  //
  // EV_DoDoor
-diff --git a/Heretic/p_lights.pas b/Heretic/p_lights.pas
+diff --git a/IdTech1\Heretic/p_lights.pas b/IdTech1\Heretic/p_lights.pas
 index cd113a40..e5d456dd 100644
---- a/Heretic/p_lights.pas
-+++ b/Heretic/p_lights.pas
+--- a/IdTech1\Heretic/p_lights.pas
++++ b/IdTech1\Heretic/p_lights.pas
 @@ -122,6 +122,7 @@ procedure T_FireFlicker(flick: Pfireflicker_t);
  implementation
  
@@ -269,10 +269,10 @@ index cd113a40..e5d456dd 100644
  //==============================================================================
  //
  // P_SpawnGlowingLight
-diff --git a/Heretic/p_plats.pas b/Heretic/p_plats.pas
+diff --git a/IdTech1\Heretic/p_plats.pas b/IdTech1\Heretic/p_plats.pas
 index b41250ab..0cf8d56a 100644
---- a/Heretic/p_plats.pas
-+++ b/Heretic/p_plats.pas
+--- a/IdTech1\Heretic/p_plats.pas
++++ b/IdTech1\Heretic/p_plats.pas
 @@ -90,6 +90,7 @@ uses
    p_tick,
    p_setup,
@@ -319,15 +319,15 @@ index 5dac3b80..8889b4c7 100644
 --- a/Heretic32.dpr
 +++ b/Heretic32.dpr
 @@ -498,6 +498,12 @@ uses
-   DelphiDoom.Thinkers.Platform.Machine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
-   DelphiDoom.Thinkers.Platform.UdmfMachine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
-   DelphiDoom.Thinkers.Platform.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
+   DelphiDoom.Thinkers.Platform.Machine in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+   DelphiDoom.Thinkers.Platform.UdmfMachine in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+   DelphiDoom.Thinkers.Platform.Factory in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
 +  plat_parity in 'Tools\Verifica\154\plat_parity.pas',
 +  light_parity in 'Tools\Verifica\149\light_parity.pas',
 +  DelphiDoom.Tests.Thinkers.DoorFakes in 'Tests\Source\DelphiDoom.Tests.Thinkers.DoorFakes.pas',
 +  DelphiDoom.Tests.Thinkers.OldDoors in 'Tests\Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
 +  door_parity in 'Tools\Verifica\152\door_parity.pas',
 +  harness_exit in 'Tools\Verifica\harness\harness_exit.pas',
-   DelphiDoom.Thinkers.Teleport.Intf in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
-   DelphiDoom.Thinkers.Teleport.Geometry in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
-   DelphiDoom.Thinkers.Teleport.LineExit in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
+   DelphiDoom.Thinkers.Teleport.Intf in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+   DelphiDoom.Thinkers.Teleport.Geometry in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+   DelphiDoom.Thinkers.Teleport.LineExit in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',

@@ -1,10 +1,10 @@
 <#
-  Issue #191: genera Libs\War\DelphiDoom.War.Catalog.Data.pas dalle righe "C" di war_ref.exe (la tabella assets[]
+  Issue #191: genera Games\War\DelphiDoom.War.Catalog.Data.pas dalle righe "C" di war_ref.exe (la tabella assets[]
   di war_database.h compilata dal C originale, vedi Compila-WarRef.ps1). La tabella del remake e' (C) 2019
   Alejandro Coto Gutierrez, zlib License: il testo generato porta l'attribuzione.
 
   Uso:  war_ref.exe - catalog > catalog.txt
-        powershell -NoProfile -File Make-WarCatalog.ps1 -Catalog catalog.txt -Out Libs\War\DelphiDoom.War.Catalog.Data.pas
+        powershell -NoProfile -File Make-WarCatalog.ps1 -Catalog catalog.txt -Out Games\War\DelphiDoom.War.Catalog.Data.pas
         (il file di uscita e' UTF-8 con BOM; il golden Tests\Data\War\catalog.golden.txt e' catalog.txt)
 #>
 param([Parameter(Mandatory)][string]$Catalog, [Parameter(Mandatory)][string]$Out)
@@ -26,7 +26,7 @@ $sb = New-Object Text.StringBuilder
 {  the original C code: do not edit by hand                                    }
 {                                                                              }
 {  Port of war1 (c) 2019 Alejandro Coto Gutierrez, zlib License (see           }
-{  Libs\War\LICENSE-war1.txt). This is an altered version, not the original.   }
+{  Games\War\LICENSE-war1.txt). This is an altered version, not the original.   }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

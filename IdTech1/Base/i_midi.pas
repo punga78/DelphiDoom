@@ -1,0 +1,334 @@
+//------------------------------------------------------------------------------
+//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
+//  Copyright (C) 2004-2022 by Jim Valavanis
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
+//  02111-1307, USA.
+//
+// DESCRIPTION:
+//  Midi file playback
+//
+//------------------------------------------------------------------------------
+//  Site  : https://sourceforge.net/projects/delphidoom/
+//------------------------------------------------------------------------------
+
+{$I Doom32.inc}
+
+unit i_midi;
+
+interface
+
+uses
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.Engine.Midi.Intf;
+
+const
+  MThd = $6468544D; // Start of file
+  MTrk = $6B72544D; // Start of track
+
+const
+  midivolumecontrol: array[0..15] of integer = (
+    0, 7, 13, 20, 27, 33, 40, 47, 53, 60, 67, 73, 80, 87, 93, 100
+  );
+
+const
+  MIDI_CTRLCHANGE: Byte = $B0; // + ctrlr + value
+  MIDICTRL_VOLUME: Byte = $07;
+
+//==============================================================================
+//
+// I_PlayMidi
+//
+//==============================================================================
+procedure I_PlayMidi(const aMidiFile: string);
+
+//==============================================================================
+//
+// I_StopMidi
+//
+//==============================================================================
+procedure I_StopMidi;
+
+//==============================================================================
+//
+// I_ResumeMidi
+//
+//==============================================================================
+procedure I_ResumeMidi;
+
+//==============================================================================
+//
+// I_PauseMidi
+//
+//==============================================================================
+procedure I_PauseMidi;
+
+//==============================================================================
+//
+// I_InitMidi
+//
+//==============================================================================
+procedure I_InitMidi;
+
+//==============================================================================
+//
+// I_ShutDownMidi
+//
+//==============================================================================
+procedure I_ShutDownMidi;
+
+//==============================================================================
+//
+// I_SetMusicVolumeMidi
+//
+//==============================================================================
+procedure I_SetMusicVolumeMidi(volume: integer);
+
+//==============================================================================
+//
+// I_ProcessMidi
+//
+//==============================================================================
+procedure I_ProcessMidi;
+
+//==============================================================================
+//
+// I_SelectDefaultMidiDevice
+// The midi device of -mididevice, or the midi mapper
+//
+//==============================================================================
+function I_SelectDefaultMidiDevice: LongWord;
+
+//==============================================================================
+//
+// I_ConfigureMidi
+// Gives the player of the midi stream (ComposeEngine). Without it the internal player
+// (snd_uselegacymidiplayer <> 1) stops the game when it is first used
+//
+//==============================================================================
+procedure I_ConfigureMidi(const APlayer: IEngineMidiSongPlayer);
+
+//==============================================================================
+//
+// I_ConfigureMidiOptions
+// Gives the unit the command line that chooses the MIDI player and the MIDI device
+// (TMidiPlayerSelection of IdTech1\EngineSystem). The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureMidiOptions(const ACommandLine: ICommandLine);
+
+var
+  snd_uselegacymidiplayer: integer = 2;
+
+implementation
+
+uses
+  Windows,
+  Messages,
+  MMSystem,
+  d_delphi,
+  i_system,
+  i_midi_legacy,
+  DelphiDoom.EngineSystem.MidiPlayerSelection;
+
+var
+  uselegacymidiplayer: boolean = false;
+  midiplayer: IEngineMidiSongPlayer = nil;
+  // given by the composition root (I_ConfigureMidiOptions)
+  midi_commandline: ICommandLine = nil;
+
+//==============================================================================
+//
+// I_ConfigureMidiOptions
+//
+//==============================================================================
+procedure I_ConfigureMidiOptions(const ACommandLine: ICommandLine);
+begin
+  midi_commandline := ACommandLine;
+end;
+
+//==============================================================================
+//
+// I_ConfigureMidi
+//
+//==============================================================================
+procedure I_ConfigureMidi(const APlayer: IEngineMidiSongPlayer);
+begin
+  midiplayer := APlayer;
+end;
+
+//==============================================================================
+//
+// ConfiguredMidiPlayer
+//
+//==============================================================================
+function ConfiguredMidiPlayer: IEngineMidiSongPlayer;
+begin
+  if not Assigned(midiplayer) then
+    I_Error('I_PlayMidi(): the MIDI player is not configured (ComposeEngine)');
+  result := midiplayer;
+end;
+
+//==============================================================================
+//
+// I_PlayMidi
+//
+//==============================================================================
+procedure I_PlayMidi(const aMidiFile: string);
+begin
+  if uselegacymidiplayer then
+  begin
+    ClearMidiFilePlayList_Legacy;
+    AddMidiFileToPlayList_Legacy(aMidiFile);
+    I_PlayMidi_Legacy(0);
+  end
+  else
+    ConfiguredMidiPlayer.Play(aMidiFile);
+end;
+
+//==============================================================================
+//
+// I_StopMidi
+//
+//==============================================================================
+procedure I_StopMidi;
+begin
+  if uselegacymidiplayer then
+    I_StopMidi_Legacy
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Stop;
+  end;
+end;
+
+//==============================================================================
+//
+// I_ResumeMidi
+//
+//==============================================================================
+procedure I_ResumeMidi;
+begin
+  if uselegacymidiplayer then
+    I_ResumeMidi_Legacy
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Resume;
+  end;
+end;
+
+//==============================================================================
+//
+// I_PauseMidi
+//
+//==============================================================================
+procedure I_PauseMidi;
+begin
+  if uselegacymidiplayer then
+    I_PauseMidi_Legacy
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Pause;
+  end;
+end;
+
+//==============================================================================
+//
+// I_InitMidi
+//
+//==============================================================================
+procedure I_InitMidi;
+begin
+  if midi_commandline <> nil then
+    snd_uselegacymidiplayer := TMidiPlayerSelection.ResolvePlayer(midi_commandline, snd_uselegacymidiplayer);
+  uselegacymidiplayer := TMidiPlayerSelection.IsLegacy(snd_uselegacymidiplayer);
+  if uselegacymidiplayer then
+  begin
+    printf('Using legacy midi playback'#13#10);
+    I_InitMidi_Legacy;
+  end
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Initialize;
+  end
+end;
+
+//==============================================================================
+//
+// I_ShutDownMidi
+//
+//==============================================================================
+procedure I_ShutDownMidi;
+begin
+  if uselegacymidiplayer then
+    I_ShutDownMidi_Legacy
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.ShutDown;
+  end
+end;
+
+//==============================================================================
+//
+// I_SetMusicVolumeMidi
+//
+//==============================================================================
+procedure I_SetMusicVolumeMidi(volume: integer);
+begin
+  if uselegacymidiplayer then
+    I_SetMusicVolumeMidi_Legacy(volume)
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.SetVolume(volume);
+  end;
+end;
+
+//==============================================================================
+//
+// I_ProcessMidi
+//
+//==============================================================================
+procedure I_ProcessMidi;
+begin
+  if uselegacymidiplayer then
+    I_ProcessMidi_Legacy
+  else
+  begin
+    if Assigned(midiplayer) then
+      midiplayer.Process;
+  end;
+end;
+
+//==============================================================================
+//
+// I_SelectDefaultMidiDevice
+//
+//==============================================================================
+function I_SelectDefaultMidiDevice: LongWord;
+begin
+  result := MIDI_MAPPER;
+  if midi_commandline <> nil then
+    result := TMidiPlayerSelection.ResolveDevice(midi_commandline, MIDI_MAPPER);
+end;
+
+end.

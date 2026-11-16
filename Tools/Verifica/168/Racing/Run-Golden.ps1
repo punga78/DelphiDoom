@@ -1,4 +1,4 @@
-# Issue #168 (S4, Libs\Racing): compiles the OLD code of Speed Haste in a harness and writes the golden file.
+# Issue #168 (S4, Games\Racing): compiles the OLD code of Speed Haste in a harness and writes the golden file.
 #
 #   Run-Golden.ps1 [-Reference C:\Progetti\DelphiDoom\Reference\Speed\Speed] [-Work <folder>] [-Output <file>]
 #
@@ -19,9 +19,9 @@ $inc = Join-Path $Work 'inc'
 & (Join-Path $here 'Extract-Old.ps1') -Reference $Reference -Out $inc
 
 $units = @(
-  (Join-Path $root 'Libs\Racing'),
-  (Join-Path $root 'Libs\MathCore'),
-  (Join-Path $root 'Libs\GameMath'),
+  (Join-Path $root 'Games\Racing'),
+  (Join-Path $root 'Framework\MathCore'),
+  (Join-Path $root 'Framework\GameMath'),
   (Join-Path $root 'Tests\Source'),
   $here,
   $inc

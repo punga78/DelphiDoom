@@ -1,4 +1,4 @@
-# Issue #222: Libs\Sndfile e Libs\Sound non devono avere un ciclo di dipendenze.
+# Issue #222: Framework\Sndfile e Framework\Sound non devono avere un ciclo di dipendenze.
 # Elenca i riferimenti (uses di interface e di implementation, e qualsiasi altra
 # comparsa del nome di unit) tra le due librerie, per direzione, ed esce con
 # codice 1 se Sndfile cita una unit di Sound.
@@ -6,8 +6,8 @@
 param()
 
 $radice = Resolve-Path (Join-Path $PSScriptRoot '..\..\..')
-$sndfile = Get-ChildItem (Join-Path $radice 'Libs\Sndfile') -Filter '*.pas'
-$sound = Get-ChildItem (Join-Path $radice 'Libs\Sound') -Filter '*.pas'
+$sndfile = Get-ChildItem (Join-Path $radice 'Framework\Sndfile') -Filter '*.pas'
+$sound = Get-ChildItem (Join-Path $radice 'Framework\Sound') -Filter '*.pas'
 
 function Cerca($files, $prefisso) {
   $trovati = @()

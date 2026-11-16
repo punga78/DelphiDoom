@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+diff --git a/IdTech1\Base/udmf_plats.pas b/IdTech1\Base/udmf_plats.pas
 index 4b759843..53cd20ac 100644
---- a/Base/udmf_plats.pas
-+++ b/Base/udmf_plats.pas
+--- a/IdTech1\Base/udmf_plats.pas
++++ b/IdTech1\Base/udmf_plats.pas
 @@ -84,6 +84,7 @@ uses
    udmf_spec,
  {$ENDIF}
@@ -43,10 +43,10 @@ index 4b759843..53cd20ac 100644
  
      PH_AddActivePlat(plat);
      UdmfPlatMachine.AnnounceStart(sec);
-diff --git a/Doom/p_plats.pas b/Doom/p_plats.pas
+diff --git a/IdTech1\Doom/p_plats.pas b/IdTech1\Doom/p_plats.pas
 index ab6d8e6d..b63ff38d 100644
---- a/Doom/p_plats.pas
-+++ b/Doom/p_plats.pas
+--- a/IdTech1\Doom/p_plats.pas
++++ b/IdTech1\Doom/p_plats.pas
 @@ -89,6 +89,7 @@ uses
    p_tick,
    p_setup,
@@ -93,10 +93,10 @@ index f379d2cf..8aaf191a 100644
 --- a/Doom32.dpr
 +++ b/Doom32.dpr
 @@ -500,6 +500,7 @@ uses
-   DelphiDoom.Thinkers.Platform.Machine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
-   DelphiDoom.Thinkers.Platform.UdmfMachine in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
-   DelphiDoom.Thinkers.Platform.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
+   DelphiDoom.Thinkers.Platform.Machine in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.Machine.pas',
+   DelphiDoom.Thinkers.Platform.UdmfMachine in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.UdmfMachine.pas',
+   DelphiDoom.Thinkers.Platform.Factory in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Platform.Factory.pas',
 +  plat_parity in 'Tools\Verifica\154\plat_parity.pas',
-   DelphiDoom.Thinkers.Teleport.Intf in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
-   DelphiDoom.Thinkers.Teleport.Geometry in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
-   DelphiDoom.Thinkers.Teleport.LineExit in 'Libs\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',
+   DelphiDoom.Thinkers.Teleport.Intf in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.Intf.pas',
+   DelphiDoom.Thinkers.Teleport.Geometry in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.Geometry.pas',
+   DelphiDoom.Thinkers.Teleport.LineExit in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Teleport.LineExit.pas',

@@ -1,7 +1,7 @@
 /*
  * Parity driver of the issue #120: runs QVM images on the virtual machine of Quake III
  * Arena (vm.c and vm_interpreted.c, included as they are in vm_original.inc) with a fake
- * host, and prints what the tests of Libs\Qvm compare: the value every call returns, the
+ * host, and prints what the tests of IdTech4\Qvm compare: the value every call returns, the
  * system calls with their arguments, the fingerprint (FNV-1a 64) of the data image.
  *
  *   qvmrun run <scenarios.txt>

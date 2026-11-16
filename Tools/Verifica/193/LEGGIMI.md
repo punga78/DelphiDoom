@@ -1,4 +1,4 @@
-# Verifica #193: parita' dei livelli, delle campagne e dei raccordi di Libs\War con il C del remake
+# Verifica #193: parita' dei livelli, delle campagne e dei raccordi di Games\War con il C del remake
 
 `war1` (acoto87/war1, zlib) e' in `Reference\war1` (sola lettura). Il C originale si compila e si esegue con gcc di
 `Reference\_dati\_strumenti\w64devkit` (non c'e' un compilatore C nel PATH) sul `DATA.WAR` vero.
@@ -20,8 +20,8 @@ valutazione degli argomenti non e' definito; la prima versione dava un ordine di
 Risultato (2026-11-13, `DATA.WAR` DOS 12852768 byte): 66 livelli (24 della campagna e 42 mappe personalizzate), 36 mappe visive e 36
 dei passaggi; `Tests\DelphiDoom.Tests.War` da' le stesse righe di tutti i golden. Trovato nel C: `wcamp_getCampaignData` per un tipo
 che non e' in tabella legge fuori dall'array; nelle mappe personalizzate le unita' del primo giocatore si perdono (un array nuovo
-per giocatore) e restano le strade dell'ultima posizione (vedi `Libs\War\CLAUDE.md`).
-Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
+per giocatore) e restano le strade dell'ultima posizione (vedi `Games\War\CLAUDE.md`).
+Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Games\War\CLAUDE.md`).
 
 ## Seconda fetta: la mappa di gioco
 

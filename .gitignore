@@ -74,7 +74,7 @@ __recovery/
 
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
-DoomBuilder/DelphiDoom_udmf_WIP_20220129.zip
+Strumenti\DoomBuilder/DelphiDoom_udmf_WIP_20220129.zip
 
 build.log
 

@@ -1,4 +1,4 @@
-// Harness for Libs\XcomFormats (TXcomFlcDecoder): the REAL FlcPlayer of OpenXcom (linked from a real build, see
+// Harness for Games\XcomFormats (TXcomFlcDecoder): the REAL FlcPlayer of OpenXcom (linked from a real build, see
 // build.cmd) with a REAL Game (SDL dummy drivers) decodes a FLI/FLC file a frame at a time and writes, for every frame,
 // the FNV-1a 64 bit fingerprint of the pixels of the screen surface and of the palette of the screen. The loop is the
 // one of FlcPlayer::play (decodeVideo), with the speed of the header set to 0 so that the player does not wait.

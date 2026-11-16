@@ -11,7 +11,7 @@ modificato) compilato con Delphi 11 in un programma di prova. I programmi sono q
 | `H3.dpr` | `BitmapToScreen` di `ee_textart` con il Graphics32 originale (`-DVER340`) e il suo `BitmapLanczosDraw`, sulle immagini di `Tests\Source\DelphiDoom.Tests.Imaging.ResampleCases` | le righe `RESAMPLE` (-> `lanczos.golden.txt`, `nome=impronta`) e `TEXTART` (-> `textart.golden.txt`) |
 
 Come rifarli: copiare `Reference\ENDEDIT` in `<lavoro>\src` (con `Graphics32\` e `obj\`; in `pngimage.pas` `pChar` va in `PAnsiChar`),
-aggiungervi i file di questa cartella, poi `b.ps1 -Dpr H2.dpr -Work <lavoro> -Extra "<repo>\Libs\Endoom;<repo>\Tests\Source"`
+aggiungervi i file di questa cartella, poi `b.ps1 -Dpr H2.dpr -Work <lavoro> -Extra "<repo>\IdTech1\Endoom;<repo>\Tests\Source"`
 (`-Defs VER340` per H3) e lanciare l'eseguibile di `<lavoro>\out` con il file di uscita come argomento. Le impronte sono FNV-1a a 64 bit
 (`DelphiDoom.Tests.Endoom.Digest`); i pixel si confrontano senza il byte alpha.
 

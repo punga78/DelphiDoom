@@ -1,6 +1,6 @@
 # Impronte (SHA-1) delle uscite del VECCHIO codice di export (issue #86): <scenario>/<file> <byte> <righe> <sha1> <nuovo: uguale|corretto>
 # plain = IWAD di base; patched = con le patch di Tests\Data\Dehacked (Doom con FREEDOOM2.WAD), senza frame_basic.
-# Le righe 'corretto' sono le differenze volute elencate in CLAUDE.md (Libs\TableExport).
+# Le righe 'corretto' sono le differenze volute elencate in CLAUDE.md (IdTech1\TableExport).
 plain/actordef 187362 12903 D88579F7D68E14B73C1EF97E68285398FF490730 corretto
 plain/csvmobj 169814 377 57C7BEDB648B8DAA16FF3F35C08754C3545818CE uguale
 plain/csvsprites 3171 273 CB4EDDA762DD1208A119E415518142DBF9F50FF4 uguale

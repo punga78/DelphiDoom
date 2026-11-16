@@ -1,7 +1,7 @@
-# Dati di prova di Libs\Console
+# Dati di prova di Framework\Console
 
-Issue #76. I file `*.golden.txt` sono l'effetto del **vecchio** codice (`Base\c_cmds.pas`, `Base\m_cheat.pas`,
-`Cmd_Set`/`Cmd_Get`/`Cmd_TypeOf` di `Base\m_misc.pas`, `C_ExecCommandFile`/`C_ExecCommands` di `Base\c_con.pas`)
+Issue #76. I file `*.golden.txt` sono l'effetto del **vecchio** codice (`IdTech1\Base\c_cmds.pas`, `IdTech1\Base\m_cheat.pas`,
+`Cmd_Set`/`Cmd_Get`/`Cmd_TypeOf` di `IdTech1\Base\m_misc.pas`, `C_ExecCommandFile`/`C_ExecCommands` di `IdTech1\Base\c_con.pas`)
 su un corpus di righe. `Tests\Source\DelphiDoom.Tests.Console.Golden.pas` fa girare la libreria sullo stesso
 corpus e confronta riga per riga.
 
@@ -21,8 +21,8 @@ piu' `get`, `set`, `typeof`, `cmdlist, list, listcmds`, `exec, execcommandfile`,
 
 ## Come sono stati fatti (l'harness non e' nel repository, e' temporaneo)
 
-1. `ConsoleHarness.dpr` (fuori dal repository) compila con `dcc32` le unit **originali** `Common\d_delphi.pas`,
-   `Base\c_cmds.pas` e `Base\m_cheat.pas`; `i_system` e' un finto con `I_Error` (eccezione) e `I_Warning`
+1. `ConsoleHarness.dpr` (fuori dal repository) compila con `dcc32` le unit **originali** `IdTech1\Common\d_delphi.pas`,
+   `IdTech1\Base\c_cmds.pas` e `IdTech1\Base\m_cheat.pas`; `i_system` e' un finto con `I_Error` (eccezione) e `I_Warning`
    (scrive con `printf`, cosi' l'ordine con il resto del testo e' quello vero); `outproc` raccoglie il testo;
 2. `Cmd_Set`, `Cmd_Get`, `Cmd_TypeOf` (`m_misc`), `C_ExecCommandFile` e `C_ExecCommands` (`c_con`) sono copiate
    **identiche** nell'harness (le due unit originali tirano dentro tutto il motore), con una tabella `defaults`

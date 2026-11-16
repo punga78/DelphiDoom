@@ -1,6 +1,6 @@
 Gancio TEMPORANEO per l'issue #156 (NON committare). Serve a confrontare R_PrecalcSegs vecchio e nuovo.
 
-Dove: in Base\DelphiDoom.Engine.Level.Loader.pas, subito dopo la chiamata a R_PrecalcSegs (dentro
+Dove: in IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas, subito dopo la chiamata a R_PrecalcSegs (dentro
 {$IFNDEF OPENGL}), aggiungere  Dump156;  e, prima del metodo che la chiama, nella sezione implementation:
 
   // --- inizio gancio 156 ---

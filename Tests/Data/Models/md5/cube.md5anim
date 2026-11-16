@@ -1,5 +1,5 @@
 MD5Version 10
-commandline "synthetic animation written for the tests of Libs\Models"
+commandline "synthetic animation written for the tests of Framework\Models"
 
 numFrames 3
 numJoints 2

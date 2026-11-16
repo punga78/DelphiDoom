@@ -77,7 +77,7 @@ foreach ($file in $files) {
     elseif ($attr -match "Config\)'=='Debug'") { $debug = $m }
     elseif ($attr -match "Config\)'=='Release'") { $release = $m }
     elseif ($attr -match "Platform\)'=='Win64'") { $win64 = $m }
-    elseif ($attr -match "'\`$\(Base\)'!=''") { $base = $m }
+    elseif ($attr -match "'\`$\(IdTech1\Base\)'!=''") { $base = $m }
   }
   if ($null -eq $header -or $null -eq $base -or $null -eq $debug -or $null -eq $release) {
     $problems += ($rel + ': gruppi di proprieta'' non riconosciuti'); continue

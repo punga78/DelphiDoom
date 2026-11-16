@@ -1,10 +1,10 @@
-# Issue #168 (S4, Libs\Racing): extracts from the ORIGINAL code of Speed Haste (Reference\Speed, read only)
+# Issue #168 (S4, Games\Racing): extracts from the ORIGINAL code of Speed Haste (Reference\Speed, read only)
 # the lines that OldRacing.pas includes, so that the old code is compiled as it is.
 #
 #   Extract-Old.ps1 -Reference C:\Progetti\DelphiDoom\Reference\Speed\Speed -Out <folder>
 #
 # The only change to the original text is the table of the gears: the original reads one element past
-# its end (gear 6 at the top speed), so the copy has one more row of zeros (see Libs\Racing\README.md).
+# its end (gear 6 at the top speed), so the copy has one more row of zeros (see Games\Racing\README.md).
 param(
   [Parameter(Mandatory = $true)][string]$Reference,
   [Parameter(Mandatory = $true)][string]$Out

@@ -1,5 +1,5 @@
 /*
-  Issue #192: harness di riferimento per la parte grafica di Libs\War.
+  Issue #192: harness di riferimento per la parte grafica di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez): le funzioni di
   war_resources.c che decodificano palette, immagini, sprite, cursori, tiles e tileset (wres_getPalette,
   wres_loadPaletteResource, wres_loadImageResource, wres_loadSpriteResource, wres_loadTileset, wres_loadTiles,

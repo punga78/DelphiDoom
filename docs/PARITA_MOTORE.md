@@ -1,6 +1,6 @@
 # Parita' del motore: come si usano gli strumenti
 
-Issue #185, fase 0 del piano `docs\PIANO_TUTTO_A_CLASSI.md`. Prima di riscrivere logica o renderer di un gioco si registra come si comporta oggi (**golden**); dopo ogni passo si rilancia il confronto: dice se qualcosa e' cambiato, **dove** (gioco, demo, tic, oggetto, campo, pixel) e **quanto costa** in tempo. Le librerie sono in `Libs\Parity` (`Libs\Parity\CLAUDE.md`), gli script in `Tools\Verifica\185` e `Tools\Misura-Coppie.ps1`.
+Issue #185, fase 0 del piano `docs\PIANO_TUTTO_A_CLASSI.md`. Prima di riscrivere logica o renderer di un gioco si registra come si comporta oggi (**golden**); dopo ogni passo si rilancia il confronto: dice se qualcosa e' cambiato, **dove** (gioco, demo, tic, oggetto, campo, pixel) e **quanto costa** in tempo. Le librerie sono in `IdTech1\Parity` (`IdTech1\Parity\CLAUDE.md`), gli script in `Tools\Verifica\185` e `Tools\Misura-Coppie.ps1`.
 
 ## 1. Che cosa c'e'
 
@@ -53,7 +53,7 @@ Un passo per riga, parole separate da spazi, maiuscole indifferenti, `#` apre un
 
 **Radix**: con uno strumento acceso il briefing della missione non parte (un copione vola il livello come una demo); `-briefing` lo fa partire (i passi `hold ... fire`/`use` lo fanno avanzare). `-radixendlevel tic next` fa finire il livello a quel tic come dalla sua uscita (`next`: 0 il livello dopo, -1 la fine dell'episodio, un numero quel livello).
 
-**Menu**: `key 27`, `hold 4`, `shot 1` apre il menu principale e lo fotografa; mettere un `hold` di qualche tic dopo ogni `key` (l'evento e' letto al giro dopo). Esempio: i menu di Radix in `Libs\Radix\CLAUDE.md`.
+**Menu**: `key 27`, `hold 4`, `shot 1` apre il menu principale e lo fotografa; mettere un `hold` di qualche tic dopo ogni `key` (l'evento e' letto al giro dopo). Esempio: i menu di Radix in `IdTech1\Radix\CLAUDE.md`.
 
 **Salva in una esecuzione, carica in un'altra**: per avere le stesse righe nelle due esecuzioni dopo il caricamento, nel copione che salva mettere `save 0` e poi `hold 3`, in quello che carica `hold 10`, `load 0`, `hold 2` e poi gli stessi passi (il gioco salvato ha gia' fatto due dei tre tic fermi; il caricato fa il terzo). Esempio: `Tests\Data\Parity\Radix\e1m1_save.script` e `e1m1_load.script`.
 
@@ -92,7 +92,7 @@ powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -Ex
 
 Le chiavi `chiave=valore` (separate da `;`) sostituiscono quelle di partenza o si aggiungono; `-RefExe` e' obbligatorio. Con `-ExtraArgs '-file x.wad'` (o `-deh x.deh`) si danno argomenti in piu' a entrambi gli eseguibili, per caricare ACTORDEF e DEHACKED di prova (fetta 1b, `Tools\Verifica\185\Fetta-1b.txt`; anche li' `-RefExe` e' obbligatorio). Un solo modo per invocazione quando si usa `powershell -File` (la virgola di `-Modes 8,32` non separa). Esempi reali (le quattro modifiche finte di sotto):
 
-**1. Un tic di ritardo su una porta** (`Libs\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas`: `TopCountdown := TopWait + 1`), demo `d1_demo1`, modo 8:
+**1. Un tic di ritardo su una porta** (`IdTech1\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas`: `TopCountdown := TopWait + 1`), demo `d1_demo1`, modo 8:
 
 ```
 Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 274 (tic 272): total,rnd | expected: T 272 b210ee27f6e2ce00 mobj=c7265520 ... rnd=44 prnd=24 | actual: T 272 1f75708b18388782 ... rnd=45 ...
@@ -103,7 +103,7 @@ Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 1738 (tic 1695): full,vie
 
 La prima differenza e' al tic 272 (il numero casuale "di presentazione" cambia perche' il suono della porta parte un tic dopo) e poi nel fotogramma del tic 1695 (la porta si vede). L'impronta dei settori cambia quando la porta si muove.
 
-**2. Un'unita' di differenza nella gravita' dei mostri** (`Doom\p_mobj.pas`: `grav := grav + 1` se `MF_COUNTKILL`):
+**2. Un'unita' di differenza nella gravita' dei mostri** (`IdTech1\Doom\p_mobj.pas`: `grav := grav + 1` se `MF_COUNTKILL`):
 
 ```
 Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 3562 (tic 3560): total,mobj | ...
@@ -114,7 +114,7 @@ Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 3605 (tic 3562): full,vie
 
 Al tic giusto, sul mobj giusto (il decimo della lista dei thinker), nel campo giusto (`momz`).
 
-**3. Un `P_Random()` in piu' in `A_Chase`** (`Doom\p_enemy.pas`):
+**3. Un `P_Random()` in piu' in `A_Chase`** (`IdTech1\Doom\p_enemy.pas`):
 
 ```
 Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 49 (tic 47): total,prnd | ... prnd=137 | ...
@@ -125,7 +125,7 @@ Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 115 (tic 72): full,view .
 
 L'indice del generatore del gioco (`prnd`) cambia al primo mostro che insegue: tic 47.
 
-**4. Un pixel diverso nella colonna di un muro** (`Base\r_batchcolumn.pas`: un pixel in (150,100) con `xor 1` dopo `R_DrawColumnMedium_Batch`):
+**4. Un pixel diverso nella colonna di un muro** (`IdTech1\Base\r_batchcolumn.pas`: un pixel in (150,100) con `xor 1` dopo `R_DrawColumnMedium_Batch`):
 
 ```
 Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 1021 (tic 978): full,view | ...
@@ -146,9 +146,9 @@ Alterna vecchio e nuovo (ordine invertito a ogni coppia), un'esecuzione per volt
 
 ## 5. Limiti noti
 
-- **Solo software.** Impronte dei fotogrammi e `-framedump` sono per i renderer software (8 e 32 bit); negli eseguibili OpenGL dicono "non supportato" e restano il registratore delle chiamate GL (`Libs\OpenGlBinding\Recorder`) e i suoi script. Lo stato, l'orologio, l'input e il pilota funzionano anche li' (non provato a runtime negli eseguibili GL: compilano).
+- **Solo software.** Impronte dei fotogrammi e `-framedump` sono per i renderer software (8 e 32 bit); negli eseguibili OpenGL dicono "non supportato" e restano il registratore delle chiamate GL (`Framework\OpenGlBinding\Recorder`) e i suoi script. Lo stato, l'orologio, l'input e il pilota funzionano anche li' (non provato a runtime negli eseguibili GL: compilano).
 - **I fili.** Le impronte dei fotogrammi valgono solo con `usemultithread=0` (la configurazione fissa lo imposta). Con i fili accesi due esecuzioni danno pixel diversi (provato: con la configurazione di partenza, a 1920x1080 e con i fili accesi, 86 fotogrammi su 5070 di `d1_demo1` erano diversi tra due esecuzioni, per qualche pixel con il canale verde di una unita' in piu' o in meno).
-- **Memoria.** Il motore legge a volte memoria che non ha scritto o che e' oltre la fine di un buffer, e un `tracer`/`target` puo' restare puntato a un mobj liberato. Con un'opzione accesa le allocazioni partono da zero con 512 byte di zeri in coda e i riferimenti si controllano con la `key` del mobj (vedi `Libs\Parity\CLAUDE.md`); senza queste misure due esecuzioni dello stesso eseguibile davano impronte diverse in 5 voci su 88. Residuo: un indirizzo in `special1`/`special2` di Heretic o Hexen che non e' un mobj vivo si hasha com'e'. **Una causa trovata e corretta (issue #40, 2026-11-16)**: nel modo a 32 bit `R_MapPlane`, `R_MapPlaneAngle` e le tre `R_MapSlope*` leggevano `zlightlevels[luce, ncolornum]` con `ncolornum` negativo quando la distanza di uno span vicino all'orizzonte va in overflow di `fixed_t` (lettura fino a 114167 elementi prima della riga, in memoria che dipende dal linker); ora `TRendererLightIndex.Clamp` da' l'ultima colonna, come l'indice a 8 bit (`Libs\Renderer\CLAUDE.md`). Era la causa del pixel diverso (639, 200) dello scenario `base` di `Tools\Verifica\40`.
+- **Memoria.** Il motore legge a volte memoria che non ha scritto o che e' oltre la fine di un buffer, e un `tracer`/`target` puo' restare puntato a un mobj liberato. Con un'opzione accesa le allocazioni partono da zero con 512 byte di zeri in coda e i riferimenti si controllano con la `key` del mobj (vedi `IdTech1\Parity\CLAUDE.md`); senza queste misure due esecuzioni dello stesso eseguibile davano impronte diverse in 5 voci su 88. Residuo: un indirizzo in `special1`/`special2` di Heretic o Hexen che non e' un mobj vivo si hasha com'e'. **Una causa trovata e corretta (issue #40, 2026-11-16)**: nel modo a 32 bit `R_MapPlane`, `R_MapPlaneAngle` e le tre `R_MapSlope*` leggevano `zlightlevels[luce, ncolornum]` con `ncolornum` negativo quando la distanza di uno span vicino all'orizzonte va in overflow di `fixed_t` (lettura fino a 114167 elementi prima della riga, in memoria che dipende dal linker); ora `TRendererLightIndex.Clamp` da' l'ultima colonna, come l'indice a 8 bit (`IdTech1\Renderer\CLAUDE.md`). Era la causa del pixel diverso (639, 200) dello scenario `base` di `Tools\Verifica\40`.
 - **Percorsi.** Gli script usano `C:\ddparity` come cartella di lavoro (stesso percorso su ogni macchina) e nomi fissi per i log (`ps.txt`, `pf.txt`): la riga di comando fa parte dell'ambiente in cui gira il motore.
 - **Demo interne.** Quelle di Heretic (versione 0.03), Hexen (0.02) e Strife non sono riproducibili dal motore ("Demo is from an unsupported game version"): nel corpus ci sono solo quelle di Doom e Freedoom 2, piu' le demo del pilota. Le demo del pilota di Hexen e Strife finiscono presto quando il giocatore muore (la registrazione si chiude o il motore la prosegue da un altro livello): i tic sono in `Tests\Data\Parity\<Gioco>\golden.csv`.
 - **Rami non coperti dal corpus**: 3D floor (nessun livello dei cinque WAD li usa: sono di UDMF), poliobj (nessuna mappa di Hexen MAP01-04 ha un `PO_ANCHOR`/`PO_SPAWN`: `po_man` non e' esercitato), dialoghi di Strife (il pilota non parla con i personaggi: `p_dialog` non e' esercitato), script ACS di Hexen avviati da linee (solo gli script `OPEN` dei `BEHAVIOR` di MAP01-04 girano al caricamento; gli altri se il pilota passa sulla linea giusta: non misurato), salvataggi, rete e multigiocatore (le demo sono a un giocatore), UDMF, DECORATE/ACTORDEF con mappe proprie, difficolta' 4 e 5 (il pilota muore subito: le demo usano le difficolta' 1-3), modi video diversi da 640x480 (8 bit con `detaillevel=2`, 32 bit con `3`; `-detaillevel` 4 e 5 e le altre risoluzioni non provati), automap e menu aperti.

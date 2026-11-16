@@ -9,7 +9,7 @@
 {******************************************************************************}
 unit DelphiDoom.Tests.Thinkers.OldList;
 
-// The list of the thinkers as it was in Base\p_tick.pas before TThinkerList (commit c57fbf77),
+// The list of the thinkers as it was in IdTech1\Base\p_tick.pas before TThinkerList (commit c57fbf77),
 // copied as it was. Only what the engine gave is replaced: mobj_t has the two fields that the
 // frozen turn reads, mobjlist is an object that tells the test what it was asked, Z_Free and
 // P_MobjThinker call a procedure of the test.

@@ -1,0 +1,39 @@
+# Games\XcomBattleStates
+
+Gli stati del Battlescape di **OpenXcom** a classi, senza SDL: lo schermo della battaglia (`BattlescapeState`), le
+schermate che apre (menu delle azioni, timer della granata, inventario coi modelli di equipaggiamento, statistiche
+dell'unita', minimappa, medikit, sensore di movimento, abbandono, cambio di turno, messaggi), i salvataggi in battaglia
+(rapido, autosalvataggio, ironman), il briefing e l'ingresso nella battaglia dal geoscape o da un salvataggio.
+
+Sta sopra `Games\XcomBattle` (modello e regole della battaglia), `Games\XcomBattlescape` (disegno della mappa),
+`Games\XcomEngine`, `Games\XcomUi`, `Games\XcomDebriefing` (fine della missione), `Games\XcomGeoscape` (contratto
+`IXcomMissionLauncher`) e `Games\XcomAudio` (canali del mixer).
+
+## Licenza
+
+Codice derivato da OpenXcom (the OpenXcom Developers), **GPL v3 o successiva**: ogni unit lo dichiara
+nell'intestazione. Il repository e' GPL v2 o successiva: la licenza dell'opera che contiene questa libreria la decide
+l'utente (vedi `Games\XcomFormats\README.md`).
+
+## Uso
+
+Il programma (`Games\OpenXcom\Xcom32`, composition root `Games\OpenXcom\DelphiDoom.Xcom.GameComposition.pas`) crea:
+
+- `TXcomBattleFactory.CreateScreens(host, pausa)`: le schermate della battaglia;
+- `TXcomBattleMixerAudio.Create(host, mixer)`: i suoni sui canali del mixer;
+- `TXcomMissionLauncher.Create(host, schermi, audio)`: `IXcomMissionLauncher` per il geoscape ("Begin Mission? Yes");
+- `TXcomBattleLauncher.Resume(host, schermi, audio)`: la battaglia di un salvataggio appena caricato.
+
+## Test e verifica
+
+- `Tools\build.bat Tests\DelphiDoom.Tests.XcomBattleStates` (eseguibile in `bin\Win32\Release\Tests`): i test usano la battaglia
+  `Tests\Data\XcomBattle\bg\g01_2` con le regole e la grafica vere di TFTD (`Reference\_dati\xcom_tftd`); senza i dati
+  passano senza controllare.
+- `Tools\Verifica\176\Compare-XcomBattle.ps1`: lo stesso salvataggio in `Xcom32` e nel vero OpenXcom, confronto dei
+  pixel; `Edit-XcomBattleSave.ps1` prepara gli scenari che mancano; `Run-XcomBattleSounds.ps1` scrive il registro dei
+  suoni col mixer vero.
+- Copertura: `Tools\Copertura.ps1 -Test XcomBattleStates -Cartella Games\XcomBattleStates` (90%, 203 test).
+
+Dettagli, numeri e differenze dichiarate: `CLAUDE.md` di questa cartella.
+
+Aggiornamento (sessione "collegamenti", #176): TXcomStageLauncher porta alla fase successiva delle missioni in piu' parti (base aliena, navi, siti di artefatti, T'leth) e il debriefing arriva solo alla fine; TXcomMissionLauncher avvia anche la difesa della base e l'ultima missione; la catena dopo il debriefing (medaglie, promozioni, contenimento, autosave) e' collegata in Xcom32. Salvataggi di prova: Tools\Verifica\176\Make-XcomMissionSave.ps1.

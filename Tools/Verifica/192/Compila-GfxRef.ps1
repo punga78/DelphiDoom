@@ -1,6 +1,6 @@
 <#
   Issue #192: compila il codice ORIGINALE del remake (acoto87/war1, zlib) che decodifica palette, immagini, sprite,
-  cursori, tiles e tileset di DATA.WAR e lo fa girare su un DATA.WAR vero per produrre i golden di Libs\War.
+  cursori, tiles e tileset di DATA.WAR e lo fa girare su un DATA.WAR vero per produrre i golden di Games\War.
   Niente e' modificato in Reference\: si leggono i sorgenti e si scrivono estratti e programma in -Out (una
   cartella NUOVA fuori da Reference e dal repository).
 

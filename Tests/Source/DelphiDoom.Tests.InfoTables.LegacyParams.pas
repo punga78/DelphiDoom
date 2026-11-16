@@ -7,7 +7,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-// The code of Base\sc_params.pas as it was before issue #185 (commit 63a151cc), copied line by
+// The code of IdTech1\Base\sc_params.pas as it was before issue #185 (commit 63a151cc), copied line by
 // line (renamed TLegacyParamList and Legacy_EvalString). Only the world around it is replaced:
 // N_Random is Legacy_NRandomSource, and the functions that read the map, the world and the custom
 // parameters, which the old code never reached, are stubs.

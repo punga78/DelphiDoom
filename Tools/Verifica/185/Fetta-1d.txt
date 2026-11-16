@@ -1,10 +1,10 @@
-Issue #185, fase 1, fetta 1d: la parte fredda di i_* di Base\ (i_system, i_io, i_tmp, i_threads, i_crashlog, i_mikplay,
-i_midi, i_midi_legacy, i_net) a classi in Libs\EngineSystem. Riferimento: master cb5a45e3 (eseguibili di riferimento
+Issue #185, fase 1, fetta 1d: la parte fredda di i_* di IdTech1\Base\ (i_system, i_io, i_tmp, i_threads, i_crashlog, i_mikplay,
+i_midi, i_midi_legacy, i_net) a classi in IdTech1\EngineSystem. Riferimento: master cb5a45e3 (eseguibili di riferimento
 compilati da li').
 
 == Cosa e' cambiato nel motore (per decidere cosa guardare) ==
   - I_Destroy esegue TShutdownSequence (stessi testi, stesso ordine, i passi sono in
-    Base\DelphiDoom.Engine.System.ShutdownPlan.pas); I_Error passa da TFatalErrorHandler (stesso ordine).
+    IdTech1\Base\DelphiDoom.Engine.System.ShutdownPlan.pas); I_Error passa da TFatalErrorHandler (stesso ordine).
   - I_InitializeIO calcola i nomi dei log con TLogFileNames; I_IOprintf mette il testo in TStdoutBuffer.
   - I_DetectCPU usa TMachineProfileBuilder.
   - i_net, i_mikplay, i_midi, i_midi_legacy, i_crashlog sono facciate; ComposeFatalError e ComposeSystem sono in

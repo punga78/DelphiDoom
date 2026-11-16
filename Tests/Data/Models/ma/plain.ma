@@ -1,5 +1,5 @@
 //Maya ASCII 4.0 scene
-//A single triangle without transform, material or texture coordinates (written for the tests of Libs\Models)
+//A single triangle without transform, material or texture coordinates (written for the tests of Framework\Models)
 requires maya "4.0";
 createNode mesh -n "plainShape";
 	setAttr -s 3 ".vt[0:2]"  0 0 0  2 0 0  0 0 -2;

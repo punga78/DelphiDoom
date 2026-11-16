@@ -1,4 +1,4 @@
-// Issue #168 (S4, Libs\Racing): writes Tests\Data\Racing\racing.golden.txt with the OLD code of Speed Haste.
+// Issue #168 (S4, Games\Racing): writes Tests\Data\Racing\racing.golden.txt with the OLD code of Speed Haste.
 //
 //   RacingGolden.exe <output file>
 //

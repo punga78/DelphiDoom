@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the OpenGL texture buffers (Libs\GlTexture)            }
+{  DelphiDoom: tests of the OpenGL texture buffers (IdTech1\GlTexture)         }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

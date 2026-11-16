@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: tests of the yaml library - the emitter                         }
 {  (examples written by hand; the corpora of the parity tests do the rest)     }
-{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Libs\Yaml\README.md          }
+{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Framework\Yaml\README.md     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Yaml.Emitter;

@@ -5,7 +5,7 @@
   Prova-PPspr.ps1 e Prova-PEnemy.ps1).
 
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_spec.pas (presa dal commit di partenza con git show)
-  prende il testo della routine unificata (Base\p_spec.pas) o della unit delle regole del gioco
+  prende il testo della routine unificata (IdTech1\Base\p_spec.pas) o della unit delle regole del gioco
   (DelphiDoom.Engine.World.SpecRules.pas), sostituisce ogni chiamata a TSpecGameRules con il corpo della regola di quel
   gioco e confronta il risultato con la routine vecchia, tolti commenti, spazi e maiuscole.
 
@@ -64,24 +64,24 @@ $NotTextual = @{
   'Hexen|P_FindSectorFromLineTag2'   = 'il tag e'' letto una volta con la regola LineSectorTag (line.arg1 in Hexen)'
 }
 
-# Doom e Strife usano anche le due unit di famiglia (friction e pusher, ricerche nei settori); Heretic e Hexen solo Base\p_spec.pas
+# Doom e Strife usano anche le due unit di famiglia (friction e pusher, ricerche nei settori); Heretic e Hexen solo IdTech1\Base\p_spec.pas
 $bad = 0
 $family = @($Games | Where-Object { $_ -in 'Doom', 'Strife' })
 $others = @($Games | Where-Object { $_ -notin 'Doom', 'Strife' })
 if ($family.Count -gt 0) {
   $bad += Invoke-Prova -Root $root -Base $Base -Games $family -Unit 'p_spec' `
-    -BaseFiles 'Base\p_spec.pas', 'Base\DelphiDoom.Engine.World.FrictionPushers.pas', 'Base\DelphiDoom.Engine.World.SectorSearch.pas' `
+    -BaseFiles 'IdTech1\Base\p_spec.pas', 'IdTech1\Base\DelphiDoom.Engine.World.FrictionPushers.pas', 'IdTech1\Base\DelphiDoom.Engine.World.SectorSearch.pas' `
     -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions `
     -NotTextual $NotTextual -Maps $Maps
 }
 if ($others.Count -gt 0) {
   $bad += Invoke-Prova -Root $root -Base $Base -Games $others -Unit 'p_spec' `
-    -BaseFiles 'Base\p_spec.pas' `
+    -BaseFiles 'IdTech1\Base\p_spec.pas' `
     -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions `
     -NotTextual $NotTextual -Maps $Maps
 }
 # p_switch: P_StartButton e' l'unica routine in Base, il resto e' del gioco (nessuna regola da espandere)
 $bad += Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_switch' `
-  -BaseFiles 'Base\p_switch.pas' `
+  -BaseFiles 'IdTech1\Base\p_switch.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.SwitchRules.pas' -Class 'TSwitchGameRules' -Expansions @()
 exit $bad

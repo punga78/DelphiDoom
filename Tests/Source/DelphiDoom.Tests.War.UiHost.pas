@@ -17,7 +17,7 @@ uses
 
 type
   /// <summary>
-  ///   The input of the game, the adapter of the events of Libs\GameHost, the sprites made from the records of an archive
+  ///   The input of the game, the adapter of the events of Framework\GameHost, the sprites made from the records of an archive
   ///   (a fake of it) and the PNG of a font. No window, no DATA.WAR
   /// </summary>
   [TestFixture]

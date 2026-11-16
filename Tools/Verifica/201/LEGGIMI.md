@@ -1,4 +1,4 @@
-# Verifica #201: il criterio di parita' di Libs\War come strumento
+# Verifica #201: il criterio di parita' di Games\War come strumento
 
 Il documento e' `docs\PARITA_WAR.md`. Qui i due script e la tabella.
 

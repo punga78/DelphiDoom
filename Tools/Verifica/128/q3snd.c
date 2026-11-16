@@ -1,7 +1,7 @@
 /*
  * Parity driver of the issue #128: runs a script of operations on the sound code of
  * Quake III (the functions of snd_original.inc, which are the original ones) and prints
- * what it did, so that Libs\Audio can be compared with it.
+ * what it did, so that Framework\Audio can be compared with it.
  *
  *   q3snd gen <scenario 0..3> <seed>   writes a script (random but fixed by the seed)
  *   q3snd run <script>                 runs a script and prints the golden lines

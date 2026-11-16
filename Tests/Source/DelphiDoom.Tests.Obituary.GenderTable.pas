@@ -16,7 +16,7 @@ uses
 type
   /// <summary>
   ///   The lines P and G of Tests\Data\Obituary\obituary.golden.txt were written by the old
-  ///   GENDERINFO and R_GetGenderForName (Base\p_gender.pas)
+  ///   GENDERINFO and R_GetGenderForName (IdTech1\Base\p_gender.pas)
   /// </summary>
   [TestFixture]
   [Category('obituary')]

@@ -1,0 +1,8 @@
+# IdTech1\ScriptEngine — note per Claude
+
+Nata dalla issue #221 (2026-11-14): le unit che `Framework\ScriptHost` e `Framework\Ddc` avevano e che leggevano il motore (28 unit di `Base`, 11 dei giochi id) sono state spostate qui con `git mv` (`ps_main`, `ps_import`, `psi_*`, il manager, `dd_compiler`), **senza cambiare il comportamento**. Dettaglio di cosa e' generico e cosa no, e della rottura del ciclo con `PascalScript`: [Framework/ScriptHost/CLAUDE.md](../../Framework/ScriptHost/CLAUDE.md) (sezione "Fetta 221") e `docs\FRAMEWORK_CENSIMENTO.md`.
+
+- Regola: qui si puo' usare `Base` e i giochi; `Framework\ScriptHost`, `Framework\PascalScript` e `Framework\Ddc` **non** possono usare questa cartella (lo controlla `Tools\build.bat strati`).
+- `TDoomCompiler`, `TDoomExec` e `TPSDoomRuntimeClassImporter` non sono piu' in `ps_import`: stanno in `DelphiDoom.ScriptHost.Compiler/Exec/ClassImporter` e il compilatore si crea con `CreateDoomCompiler(PS_HostServices)` (il costruttore senza parametri e' stato tolto: la libreria non puo' chiedere i servizi a un globale del motore).
+- I `.dpr` dei giochi e dei `ddc_<gioco>` elencano le unit con `in '..\IdTech1\ScriptEngine\...'` e sono il composition root dei compilatori per gioco.
+- Gli `hook-*.patch` di `Tools\Verifica\scripthost` puntano ancora ai vecchi percorsi: si rigenerano con `Genera-Patch.ps1 -New` prima di usare l'harness L1/L2. La prova degli script a runtime di questa fetta e' `Tools\Verifica\221\Prova-Script.ps1` (PWAD con uno script di mappa, stessa uscita prima e dopo).

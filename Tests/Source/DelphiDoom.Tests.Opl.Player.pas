@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the X-COM Adlib player                                  }
 {                                                                              }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\Opl\README.md                                                           }
+{  Framework\Opl\README.md                                                      }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Opl.Player;

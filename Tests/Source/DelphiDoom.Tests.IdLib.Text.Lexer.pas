@@ -184,7 +184,7 @@ procedure TTestIdLibLexer.IlTokenDovrebbeDareInfinitoIndefinitoENanDaiFlag;
 
 begin
   // idToken::NumberValue: the floats 0x7f800000, 0xffc00000 and 0x7fc00000 widened to double (the
-  // lexer never sets these flags, see Libs\IdLib\README.md; a caller of the token can)
+  // lexer never sets these flags, see Framework\IdLib\README.md; a caller of the token can)
   Assert.IsTrue(BitsOf(TT_INFINITE) = UInt64($7FF0000000000000));
   Assert.IsTrue(BitsOf(TT_INDEFINITE) = UInt64($FFF8000000000000));
   Assert.IsTrue(BitsOf(TT_NAN) = UInt64($7FF8000000000000));

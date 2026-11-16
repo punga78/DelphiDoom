@@ -7,7 +7,7 @@
  * The streams are valid (every packet stays inside its row, every BRUN row adds up to the
  * width), so that the decoder of OpenXcom and the Delphi one read the same bytes. The file
  * "wide" also has a COLOR_256 chunk with several packets and a first skip other than 0,
- * where the decoder of OpenXcom does not follow the format (see Libs\Cinematic\CLAUDE.md).
+ * where the decoder of OpenXcom does not follow the format (see Framework\Cinematic\CLAUDE.md).
  */
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,4 +1,4 @@
-# Verifica di Libs\ScriptHost (issue #173)
+# Verifica di Framework\ScriptHost (issue #173)
 
 Rete di sicurezza per la fetta 2 della #172 (piano: `docs\SCRIPTHOST_PIANO.md`, sezione 4). Nessun file di codice di
 produzione è toccato da questa cartella: gli aggiornamenti dei giochi e di `ps_main` si fanno con patch temporanee.
@@ -80,7 +80,7 @@ esempio una funzione che legge il tempo di sistema), non una differenza tra vecc
 
 ## Spike di `RegisterDelphiMethod`
 
-`spike\Spike173.dpr`, `spike\build.cmd` (dcc32 e dcc64, `Libs\Script\Shim` al posto di `d_delphi`). Cinque casi
+`spike\Spike173.dpr`, `spike\build.cmd` (dcc32 e dcc64, `Framework\Script\Shim` al posto di `d_delphi`). Cinque casi
 (risultato `string`, `array of const`, array dinamico, `Extended`/`Double`/`Single`, `Self` letto da un campo): vedi il
 rapporto in `docs\SCRIPTHOST_PIANO.md` (sezione 5, fetta 2a-0).
 

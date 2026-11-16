@@ -1,7 +1,7 @@
 <#
   Issue #201: parte comune di Confronta-Golden.ps1 e Registra-Golden.ps1 (si include con ". .\Golden-Common.ps1").
 
-  Il criterio di parita' di Libs\War: ogni golden di Tests\Data\War e' l'uscita di un programma in C che contiene il
+  Il criterio di parita' di Games\War: ogni golden di Tests\Data\War e' l'uscita di un programma in C che contiene il
   codice ORIGINALE del remake (acoto87/war1) estratto alla lettera e compilato con gcc (w64devkit); questa tabella
   dice quale programma fa quale golden. Niente e' modificato in Reference\.
 #>

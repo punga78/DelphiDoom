@@ -1,4 +1,4 @@
-// Harness for Libs\XcomMod (Mod::loadAll): runs the REAL OpenXcom Mod loader (linked from the objects of a real
+// Harness for Games\XcomMod (Mod::loadAll): runs the REAL OpenXcom Mod loader (linked from the objects of a real
 // OpenXcom build, see build3.cmd) on a real mod set and dumps what the ruleset holds as text lines
 // "section|name|field=value". Contains no OpenXcom code; the output goes in Tests\Data\XcomMod\*.golden.txt.
 // usage: modload <data folder> <user folder> <output file> [section ...]   (the mods come from options.cfg)

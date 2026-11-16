@@ -1,5 +1,0 @@
-# Libs\Mp3 — note per Claude
-
-Il paragrafo che riguarda questa libreria sta nel CLAUDE.md di `Libs\Zlib`: [Libs/Zlib/CLAUDE.md](../Zlib/CLAUDE.md).
-
-**Senza Base e Common (issue #224, 2026-11-15).** La cartella `Shim` (`d_delphi`, `i_system`, `Doom32.inc` ridotto) e' stata cancellata e le unit del decoder non usano piu' nulla di `Base` ne' di `Common`: `TMp3Source` (`Decoder\mp3_Source.pas`) e' la sorgente di byte che legge `TBitStream` (al posto di `TDStream`; `TMp3FeedStream` la estende), `FreeAndNil`, `TByteArray` e `Sleep` sono quelli della RTL, `I_Error` dei due punti che lo chiamavano (`mp3_Layer3`: il `TBitReserve` non si crea; `mp3_OBuffer`: guasto del dispositivo) e' `raise Exception.Create(...)` con lo stesso testo (nei giochi chiudeva il programma, nella DLL era gia' un'eccezione), `Decoder\Mp3Codegen.inc` sostituisce `Doom32.inc`. Ogni `.dpr` che elenca le unit `mp3_*` (giochi, `ddc_*`, `DDMp3`, test) elenca anche `mp3_Source`. Test: 96 (non c'e' piu' quello sul `FreeAndNil` dello shim).

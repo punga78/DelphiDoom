@@ -1,4 +1,4 @@
-# Corpus of the console lines (Libs\Console, issue #76).
+# Corpus of the console lines (Framework\Console, issue #76).
 # One line = one input of C_ExecuteCmd. "@net 0|1" switches the game to single player / network.
 # "@text ..." runs C_ExecCommands on a text (\r \n \t are escapes). A line that starts with "#" is a comment.
 # The commands and the variables are the ones registered by the harness and by the test (see README.md).

@@ -4,7 +4,7 @@
 {                                                                              }
 {  The interpreters of the scenarios of Tools\Verifica\119 (q3calc.c and the   }
 {  remap commands of q3shader.c): the same commands and the same lines as the  }
-{  C drivers, with the classes of Libs\Decl, and a shader catalog in memory    }
+{  C drivers, with the classes of IdTech4\Decl, and a shader catalog in memory }
 {  that behaves as the table of shaders of tr_shader.c.                        }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

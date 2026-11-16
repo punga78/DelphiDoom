@@ -2,7 +2,7 @@
   Issue #185, passo 2f-6 (thinker rimasti in copia unica): prova meccanica delle routine unificate.
 
   Il confronto e' in Prova-Common.ps1 (come Prova-PSpec.ps1). Per ogni gioco e per ogni routine della vecchia
-  <Gioco>\<unit>.pas (presa dal commit di partenza con git show) prende il testo della routine unificata in Base\
+  <Gioco>\<unit>.pas (presa dal commit di partenza con git show) prende il testo della routine unificata in IdTech1\Base\
   (o delle regole del gioco), sostituisce ogni chiamata a TSpecGameRules con il corpo della regola di quel gioco e
   confronta il risultato con la routine vecchia, tolti commenti, spazi e maiuscole.
 
@@ -44,21 +44,21 @@ if ($Units -contains 'p_lights') {
     'Heretic|EV_LightTurnOn'        = 'era una procedura: ora e'' la funzione di Doom (result := 1 quando trova un settore, nessun chiamante lo legge in Heretic)'
   }
   $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Heretic', 'Strife') -Unit 'p_lights' `
-    -BaseFiles 'Base\p_lights.pas' `
+    -BaseFiles 'IdTech1\Base\p_lights.pas' `
     -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions -NotTextual $NotTextual
 }
 
 if ($Units -contains 'p_plats') {
   # Doom e Strife: nessuna regola, le due copie erano uguali (Heretic resta nella sua unit)
   $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Strife') -Unit 'p_plats' `
-    -BaseFiles 'Base\p_plats.pas' `
+    -BaseFiles 'IdTech1\Base\p_plats.pas' `
     -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions @()
 }
 
 if ($Units -contains 'p_telept') {
   # le routine silenziose di Doom e Strife sono in Base; EV_Teleport (propria di ogni gioco) resta nella unit del gioco
   $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Strife') -Unit 'p_telept' `
-    -BaseFiles 'Base\DelphiDoom.Engine.World.SilentTeleport.pas' `
+    -BaseFiles 'IdTech1\Base\DelphiDoom.Engine.World.SilentTeleport.pas' `
     -RulesUnit 'p_telept.pas' -Class 'TSpecGameRules' -Expansions @()
 }
 

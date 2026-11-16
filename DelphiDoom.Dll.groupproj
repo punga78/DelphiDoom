@@ -4,34 +4,34 @@
     </PropertyGroup>
     <ItemGroup/>
     <ItemGroup>
-        <Projects Include="Libs\Glbsp\DDGlbsp.dproj">
+        <Projects Include="IdTech1\Glbsp\DDGlbsp.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Jpeg\DDJpeg.dproj">
+        <Projects Include="Framework\Jpeg\DDJpeg.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Mikmod\DDMikmod.dproj">
+        <Projects Include="Framework\Mikmod\DDMikmod.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Mp3\DDMp3.dproj">
+        <Projects Include="Framework\Mp3\DDMp3.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Png\DDPng.dproj">
+        <Projects Include="Framework\Png\DDPng.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Script\DDScript.dproj">
+        <Projects Include="Framework\Script\DDScript.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Sndfile\DDSndfile.dproj">
+        <Projects Include="Framework\Sndfile\DDSndfile.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Wad\DDWad.dproj">
+        <Projects Include="Framework\Wad\DDWad.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Xmi\DDXmi.dproj">
+        <Projects Include="Framework\Xmi\DDXmi.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Zlib\DDZlib.dproj">
+        <Projects Include="Framework\Zlib\DDZlib.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -43,94 +43,94 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="DDGlbsp">
-        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj"/>
+        <MSBuild Projects="IdTech1\Glbsp\DDGlbsp.dproj"/>
     </Target>
     <Target Name="DDGlbsp:Clean">
-        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj" Targets="Clean"/>
+        <MSBuild Projects="IdTech1\Glbsp\DDGlbsp.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDGlbsp:Make">
-        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj" Targets="Make"/>
+        <MSBuild Projects="IdTech1\Glbsp\DDGlbsp.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDJpeg">
-        <MSBuild Projects="Libs\Jpeg\DDJpeg.dproj"/>
+        <MSBuild Projects="Framework\Jpeg\DDJpeg.dproj"/>
     </Target>
     <Target Name="DDJpeg:Clean">
-        <MSBuild Projects="Libs\Jpeg\DDJpeg.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Jpeg\DDJpeg.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDJpeg:Make">
-        <MSBuild Projects="Libs\Jpeg\DDJpeg.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Jpeg\DDJpeg.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDMikmod">
-        <MSBuild Projects="Libs\Mikmod\DDMikmod.dproj"/>
+        <MSBuild Projects="Framework\Mikmod\DDMikmod.dproj"/>
     </Target>
     <Target Name="DDMikmod:Clean">
-        <MSBuild Projects="Libs\Mikmod\DDMikmod.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Mikmod\DDMikmod.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDMikmod:Make">
-        <MSBuild Projects="Libs\Mikmod\DDMikmod.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Mikmod\DDMikmod.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDMp3">
-        <MSBuild Projects="Libs\Mp3\DDMp3.dproj"/>
+        <MSBuild Projects="Framework\Mp3\DDMp3.dproj"/>
     </Target>
     <Target Name="DDMp3:Clean">
-        <MSBuild Projects="Libs\Mp3\DDMp3.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Mp3\DDMp3.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDMp3:Make">
-        <MSBuild Projects="Libs\Mp3\DDMp3.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Mp3\DDMp3.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDPng">
-        <MSBuild Projects="Libs\Png\DDPng.dproj"/>
+        <MSBuild Projects="Framework\Png\DDPng.dproj"/>
     </Target>
     <Target Name="DDPng:Clean">
-        <MSBuild Projects="Libs\Png\DDPng.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Png\DDPng.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDPng:Make">
-        <MSBuild Projects="Libs\Png\DDPng.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Png\DDPng.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDScript">
-        <MSBuild Projects="Libs\Script\DDScript.dproj"/>
+        <MSBuild Projects="Framework\Script\DDScript.dproj"/>
     </Target>
     <Target Name="DDScript:Clean">
-        <MSBuild Projects="Libs\Script\DDScript.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Script\DDScript.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDScript:Make">
-        <MSBuild Projects="Libs\Script\DDScript.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Script\DDScript.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDSndfile">
-        <MSBuild Projects="Libs\Sndfile\DDSndfile.dproj"/>
+        <MSBuild Projects="Framework\Sndfile\DDSndfile.dproj"/>
     </Target>
     <Target Name="DDSndfile:Clean">
-        <MSBuild Projects="Libs\Sndfile\DDSndfile.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Sndfile\DDSndfile.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDSndfile:Make">
-        <MSBuild Projects="Libs\Sndfile\DDSndfile.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Sndfile\DDSndfile.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDWad">
-        <MSBuild Projects="Libs\Wad\DDWad.dproj"/>
+        <MSBuild Projects="Framework\Wad\DDWad.dproj"/>
     </Target>
     <Target Name="DDWad:Clean">
-        <MSBuild Projects="Libs\Wad\DDWad.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Wad\DDWad.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDWad:Make">
-        <MSBuild Projects="Libs\Wad\DDWad.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Wad\DDWad.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDXmi">
-        <MSBuild Projects="Libs\Xmi\DDXmi.dproj"/>
+        <MSBuild Projects="Framework\Xmi\DDXmi.dproj"/>
     </Target>
     <Target Name="DDXmi:Clean">
-        <MSBuild Projects="Libs\Xmi\DDXmi.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Xmi\DDXmi.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDXmi:Make">
-        <MSBuild Projects="Libs\Xmi\DDXmi.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Xmi\DDXmi.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDZlib">
-        <MSBuild Projects="Libs\Zlib\DDZlib.dproj"/>
+        <MSBuild Projects="Framework\Zlib\DDZlib.dproj"/>
     </Target>
     <Target Name="DDZlib:Clean">
-        <MSBuild Projects="Libs\Zlib\DDZlib.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Zlib\DDZlib.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDZlib:Make">
-        <MSBuild Projects="Libs\Zlib\DDZlib.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Zlib\DDZlib.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
         <CallTarget Targets="DDGlbsp;DDJpeg;DDMikmod;DDMp3;DDPng;DDScript;DDSndfile;DDWad;DDXmi;DDZlib"/>

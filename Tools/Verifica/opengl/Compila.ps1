@@ -23,9 +23,15 @@ New-Item -ItemType Directory -Force $out | Out-Null
 if ($Which -eq 'Old') {
   if ($OldTree -eq '') { throw 'Serve -OldTree per il vecchio' }
   $tree = (Resolve-Path $OldTree).Path
-  New-Item -ItemType Directory -Force (Join-Path $tree 'Libs\OpenGlBinding\Recorder') | Out-Null
+  # un albero di prima della #226 ha le cartelle di Libs\ (e la patch con quei percorsi); uno di dopo, di Framework\
+  $recorderFolder = 'Framework\OpenGlBinding\Recorder'
+  if (Test-Path (Join-Path $tree 'Libs\OpenGlBinding')) {
+    $recorderFolder = 'Libs\OpenGlBinding\Recorder'
+    $patch = Join-Path $PSScriptRoot 'hook-gl.pre226.patch'
+  }
+  New-Item -ItemType Directory -Force (Join-Path $tree $recorderFolder) | Out-Null
   New-Item -ItemType Directory -Force (Join-Path $tree 'Tools\Verifica\opengl') | Out-Null
-  Copy-Item (Join-Path $here 'Libs\OpenGlBinding\Recorder\*.pas') (Join-Path $tree 'Libs\OpenGlBinding\Recorder') -Force
+  Copy-Item (Join-Path $here 'Framework\OpenGlBinding\Recorder\*.pas') (Join-Path $tree $recorderFolder) -Force
   Copy-Item (Join-Path $PSScriptRoot 'HarnessGl.pas') (Join-Path $tree 'Tools\Verifica\opengl') -Force
 } else {
   $tree = $here

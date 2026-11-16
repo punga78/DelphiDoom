@@ -1,5 +1,5 @@
 <#
-  Issue #197: scrive Libs\War\DelphiDoom.War.MapUi.UnitNames.Data.pas dal codice ORIGINALE (Reference\war1\src\war_units.c, la
+  Issue #197: scrive Games\War\DelphiDoom.War.MapUi.UnitNames.Data.pas dal codice ORIGINALE (Reference\war1\src\war_units.c, la
   tabella unitsData, e war_enums.h, l'enum dei ritratti): il nome che il pannello mostra e il fotogramma del ritratto (record
   361) di ogni tipo di unita'. Nessuna modifica a mano: se il C cambia si rifa.
 
@@ -34,7 +34,7 @@ $out = @'
 {  DelphiDoom: war library - names and portraits of the units (GENERATED)       }
 {                                                                              }
 {  Port of war1 (acoto87/war1), war_units.c (unitsData) and war_enums.h, (c)    }
-{  2019 Alejandro Coto Gutierrez, zlib License (see Libs\War\LICENSE-war1.txt). }
+{  2019 Alejandro Coto Gutierrez, zlib License (see Games\War\LICENSE-war1.txt). }
 {  This is an altered version, not the original.                               }
 {                                                                              }
 {  Written by Tools\Verifica\197\Make-WarUnitNames.ps1 from the original C     }
@@ -67,5 +67,5 @@ $out += "`n" + ($rows -join ",`n") + "`n  );`n"
 $constants = ($portrait.GetEnumerator() | Sort-Object Value | ForEach-Object { "  $($_.Key) = $($_.Value);" }) -join "`n"
 $out += "`n  // _WarUnitPortraits of war_enums.h: the frame of the record 361`n$constants`n`nimplementation`n`nend.`n"
 $root = Split-Path (Split-Path (Split-Path $PSScriptRoot))
-[IO.File]::WriteAllText((Join-Path $root 'Libs\War\DelphiDoom.War.MapUi.UnitNames.Data.pas'), ($out -replace "`r`n", "`n"), (New-Object System.Text.UTF8Encoding($false)))
+[IO.File]::WriteAllText((Join-Path $root 'Games\War\DelphiDoom.War.MapUi.UnitNames.Data.pas'), ($out -replace "`r`n", "`n"), (New-Object System.Text.UTF8Encoding($false)))
 "scritte $($rows.Count) righe"

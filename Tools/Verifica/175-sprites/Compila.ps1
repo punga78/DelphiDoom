@@ -1,4 +1,4 @@
-# Compila ed esegue il confronto tra lo sprites.pas ORIGINALE di xGreed e TGreedSpriteLogic di Libs\Greed (issue #175).
+# Compila ed esegue il confronto tra lo sprites.pas ORIGINALE di xGreed e TGreedSpriteLogic di Games\Greed (issue #175).
 # Il codice originale resta in Reference\xGreed (sola lettura) e si compila non modificato: qui si genera solo la copia
 # di g_delphi.pas con i cambi che Delphi 11 richiede (FormatSettings), fuori dal repository. Gli stub del resto del
 # gioco sono in stubs\ (spawn, utils, raven, modplay, net) e in ..\175-render\stubs (d_disk, d_misc, d_ints ...).
@@ -13,7 +13,7 @@ param(
   [int]$Misura = 0,
   [double]$MaxDispersione = 3,
   [double]$Soglia = 5,
-  # una cartella di unit messa davanti alle altre: una versione precedente di Libs\Greed, per misurare il prima
+  # una cartella di unit messa davanti alle altre: una versione precedente di Games\Greed, per misurare il prima
   [string]$Davanti = '',
   # profilo a campioni di un lato ('o' originale, 'l' libreria) per -Giri giri di tutti gli scenari: le routine dove va il tempo
   [string]$Profilo = '',
@@ -28,7 +28,7 @@ $g = $g -replace '(?<![\.\w])ThousandSeparator', 'FormatSettings.ThousandSeparat
 Set-Content "$uscita\src\g_delphi.pas" $g
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
 if ($Davanti -ne '') { $Davanti = "$Davanti;" }
-$u = "$Davanti$PSScriptRoot\stubs;$PSScriptRoot\..\175-render\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\GameMath;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Tests\Source"
+$u = "$Davanti$PSScriptRoot\stubs;$PSScriptRoot\..\175-render\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Games\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
 & $dcc -B -Q -CC -GD -H- -W- '-$O+' "-U$u" "-I$Riferimento" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\SpritesParity.dpr" | Select-String 'Error|Fatal'
 if ($LASTEXITCODE -ne 0) { exit 1 }

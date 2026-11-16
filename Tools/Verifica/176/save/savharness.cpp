@@ -1,4 +1,4 @@
-// Harness for Libs\XcomSave: loads random nodes into the REAL OpenXcom saved game classes (GameTime, Country, Region,
+// Harness for Games\XcomSave: loads random nodes into the REAL OpenXcom saved game classes (GameTime, Country, Region,
 // ResearchProject, SerializationHelper) with the real yaml-cpp, saves them and prints the emitted YAML.
 // Contains no OpenXcom code; output stays outside the repository (only the golden is committed).
 #include <yaml-cpp/yaml.h>

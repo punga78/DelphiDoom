@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   idLib CRC32_BlockChecksum is the standard CRC-32: Libs\MathCore (TCrc32) already has it,
+  ///   idLib CRC32_BlockChecksum is the standard CRC-32: Framework\MathCore (TCrc32) already has it,
   ///   so idLib gets no class of its own. This fixture shows that the two agree.
   /// </summary>
   [TestFixture]

@@ -1,8 +1,8 @@
 <#
-  Issue #193: genera le unit di dati di Libs\War a partire dall'uscita del C del remake (i golden che
+  Issue #193: genera le unit di dati di Games\War a partire dall'uscita del C del remake (i golden che
   Registra-Golden.ps1 ha scritto):
-    Libs\War\DelphiDoom.War.Campaign.Data.pas   dalla tabella delle campagne (campaigns.golden.txt)
-    Libs\War\DelphiDoom.War.Autotile.Data.pas   dalle tabelle dei raccordi (autotile.tables.golden.txt)
+    Games\War\DelphiDoom.War.Campaign.Data.pas   dalla tabella delle campagne (campaigns.golden.txt)
+    Games\War\DelphiDoom.War.Autotile.Data.pas   dalle tabelle dei raccordi (autotile.tables.golden.txt)
   Le unit generate non si modificano a mano.
 
   Uso: powershell -NoProfile -File Make-WarTables.ps1
@@ -10,7 +10,7 @@
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\..'))
 $data = Join-Path $root 'Tests\Data\War'
-$lib = Join-Path $root 'Libs\War'
+$lib = Join-Path $root 'Games\War'
 $nl = "`r`n"
 
 function PascalString([string]$Escaped) {
@@ -57,7 +57,7 @@ $sb = New-Object System.Text.StringBuilder
 {  C of the remake (Tests\Data\War\campaigns.golden.txt): do not edit.         }
 {                                                                              }
 {  Port of war1 (acoto87/war1), campaignsData[] of war_campaigns.c, (c) 2019   }
-{  Alejandro Coto Gutierrez, zlib License (see Libs\War\LICENSE-war1.txt).     }
+{  Alejandro Coto Gutierrez, zlib License (see Games\War\LICENSE-war1.txt).     }
 {  This is an altered version, not the original.                               }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -125,7 +125,7 @@ $sb = New-Object System.Text.StringBuilder
 {                                                                              }
 {  Port of war1 (acoto87/war1), roadsData[], wallsData[], ruinsData[],         }
 {  treesData[] and the *TileTypeMap[] tables of war_units.c, (c) 2019          }
-{  Alejandro Coto Gutierrez, zlib License (see Libs\War\LICENSE-war1.txt).     }
+{  Alejandro Coto Gutierrez, zlib License (see Games\War\LICENSE-war1.txt).     }
 {  This is an altered version, not the original.                               }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -183,4 +183,4 @@ implementation
 end.
 "@.Replace("`r`n", "`n").Replace("`n", $nl))
 [IO.File]::WriteAllText((Join-Path $lib 'DelphiDoom.War.Autotile.Data.pas'), $sb.ToString(), (New-Object Text.UTF8Encoding($true)))
-"Generate le unit di dati di Libs\War"
+"Generate le unit di dati di Games\War"

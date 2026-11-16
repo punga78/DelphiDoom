@@ -75,7 +75,7 @@ uses
 
 const
   RATE = 22050;
-  // produced with TXcomMidiSynth (Libs\XcomAudio) before the move, rate 22050
+  // produced with TXcomMidiSynth (Games\XcomAudio) before the move, rate 22050
   GOLDEN_FINGERPRINT_WIN32 = UInt64($B524566670237905);
   GOLDEN_FINGERPRINT_WIN64 = UInt64($5A5874F856C00DFA);
 

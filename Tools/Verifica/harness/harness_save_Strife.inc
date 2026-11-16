@@ -1,4 +1,4 @@
-// TEMPORARY HARNESS: included at the end of the implementation of Strife\g_game.pas
+// TEMPORARY HARNESS: included at the end of the implementation of IdTech1\Strife\g_game.pas
 // A Strife savegame is a directory: G_DoSaveGame(path) writes <path>\<gamemap> and <path>\current.
 // -hload takes the path of the map file (e.g. hsave_lt_1000\2).
 

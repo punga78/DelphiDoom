@@ -4,7 +4,7 @@
 {  the Quake III console (DUnitX)                                              }
 {                                                                              }
 {  Log on ILog, files on IGameFileSystem, the lines nobody handles, the info   }
-{  strings of Libs\Net, Cmd_ArgvBuffer and Cmd_ArgsBuffer, and the input line  }
+{  strings of IdTech1\Net, Cmd_ArgvBuffer and Cmd_ArgsBuffer, and the input line }
 {  without its optional parts.                                                 }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

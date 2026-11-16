@@ -1,7 +1,7 @@
 program H2;
 // Harness of the golden file of the editor model (Tests\Data\Endoom\editor.golden.txt): it runs the OLD
 // ENDEDIT code (ee_screen with the tools and the paste of main.pas, copied in H2Old) on the cases of
-// DelphiDoom.Tests.Endoom.EditorScenarios. Search path: Libs\Endoom and Tests\Source of the repository.
+// DelphiDoom.Tests.Endoom.EditorScenarios. Search path: IdTech1\Endoom and Tests\Source of the repository.
 {$APPTYPE CONSOLE}
 uses
   Windows, SysUtils, Classes, Graphics,

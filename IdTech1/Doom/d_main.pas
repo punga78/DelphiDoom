@@ -1,0 +1,3146 @@
+//------------------------------------------------------------------------------
+//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
+//  Copyright (C) 1993-1996 by id Software, Inc.
+//  Copyright (C) 2004-2022 by Jim Valavanis
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
+//  02111-1307, USA.
+//
+// DESCRIPTION (d_main.h):
+//  System specific interface stuff.
+//
+// DESCRIPTION (d_main.c):
+//  DOOM main program (D_DoomMain) and game loop (D_DoomLoop),
+//  plus functions to determine game mode (shareware, registered),
+//  parse command line parameters, configure game parameters (turbo),
+//  and call the startup functions.
+//
+//------------------------------------------------------------------------------
+//  Site  : https://sourceforge.net/projects/delphidoom/
+//------------------------------------------------------------------------------
+
+{$I Doom32.inc}
+
+unit d_main;
+
+interface
+
+uses
+  DelphiDoom.Engine.Level.Intf,
+  d_event,
+  doomdef,
+  DelphiDoom.IdTech.Intf,
+  DelphiDoom.Iwad.Intf,
+  DelphiDoom.Engine.Nodes.Intf,
+  DelphiDoom.Engine.Console.Intf,
+  DelphiDoom.Engine.Net.Intf,
+  DelphiDoom.Engine.Configuration.Intf,
+  DelphiDoom.Engine.Screenshot.Intf,
+  DelphiDoom.Scanner.Preprocessor.Intf,
+  DelphiDoom.Engine.ActorDef.Intf,
+  DelphiDoom.Scanner.AutoLoad.Intf,
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.Video.Intf,
+  DelphiDoom.Engine.MapInfo.Intf,
+  DelphiDoom.Engine.Endoom.Intf;
+
+const
+{$IFNDEF FPC}
+  AppTitle = 'Delphi Doom';
+{$ELSE}
+  AppTitle = 'Free Pascal Doom';
+{$ENDIF}
+
+//==============================================================================
+//
+// D_ProcessEvents
+//
+//==============================================================================
+procedure D_ProcessEvents;
+
+//==============================================================================
+//
+// D_DoAdvanceDemo
+//
+//==============================================================================
+procedure D_DoAdvanceDemo;
+
+//==============================================================================
+//
+// D_AddFile
+//
+//==============================================================================
+procedure D_AddFile(const fname1: string);
+
+//==============================================================================
+//
+// D_DoomMain()
+// Not a globally visible function, just included for source reference,
+// calls all startup code, parses command line options.
+// If not overrided by user input, calls N_AdvanceDemo.
+//
+//==============================================================================
+procedure D_DoomMain;
+
+//==============================================================================
+// D_PostEvent
+//
+// Called by IO functions when input is detected.
+//
+//==============================================================================
+procedure D_PostEvent(ev: Pevent_t);
+
+//==============================================================================
+// D_PageTicker
+//
+// BASE LEVEL
+//
+//==============================================================================
+procedure D_PageTicker;
+
+//==============================================================================
+//
+// D_PageDrawer
+//
+//==============================================================================
+procedure D_PageDrawer;
+
+//==============================================================================
+//
+// D_AdvanceDemo
+//
+//==============================================================================
+procedure D_AdvanceDemo;
+
+//==============================================================================
+//
+// D_StartTitle
+//
+//==============================================================================
+procedure D_StartTitle;
+
+//==============================================================================
+//
+// D_Display
+//
+//==============================================================================
+procedure D_Display;
+
+// wipegamestate can be set to -1 to force a wipe on the next draw
+var
+  wipegamestate: integer = -1;   // JVAL was gamestate_t = GS_DEMOSCREEN;
+  wipedisplay: boolean = false;
+
+  nomonsters: boolean;          // checkparm of -nomonsters
+  fastparm: boolean;            // checkparm of -fast
+  devparm: boolean;             // started game with -devparm
+  hackshareware: boolean;       // started game with -hackshareware (undocumented)
+  debugmode: boolean = false;   // JVAL: Debug mode, extended checks, setable only with -debugmode
+  singletics: boolean;          // debug flag to cancel adaptiveness
+  autostart: boolean;
+  startskill: skill_t;
+  defaultskill: integer = 2;
+  respawnparm: boolean;         // checkparm of -respawn
+
+  startepisode: integer;
+  startmap: integer;
+  advancedemo: boolean;
+
+  basedefault: string;          // default file
+
+//==============================================================================
+//
+// D_Configure
+// Gives the unit the engine this port runs on. The composition root calls it
+//
+//==============================================================================
+procedure D_Configure(const AEngine: IIdTechEngine);
+
+//==============================================================================
+//
+// D_EngineVersion
+// The version number of the engine (207 for 2.07)
+//
+//==============================================================================
+function D_EngineVersion: integer;
+
+//==============================================================================
+//
+// D_Version
+//
+//==============================================================================
+function D_Version: string;
+
+//==============================================================================
+//
+// D_VersionBuilt
+//
+//==============================================================================
+function D_VersionBuilt: string;
+
+//==============================================================================
+//
+// D_ShutDown
+//
+//==============================================================================
+procedure D_ShutDown;
+
+var
+  autoloadgwafiles: boolean = true;
+  searchdoomwaddir: boolean = true;
+  searchdoomwadpath: boolean = true;
+  searchsteampaths: boolean = true;
+  additionalwadpaths: string = '';
+
+var
+  wads_autoload: string = '';
+  paks_autoload: string = '';
+
+//==============================================================================
+//
+// D_FileInDoomPath
+//
+//==============================================================================
+function D_FileInDoomPath(const fn: string): string;
+
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+
+{$IFDEF OPENGL}
+//==============================================================================
+//
+// D_ConfigureGlbsp
+// Gives the glBSP runner that builds the GL nodes of the files added at startup
+// (ComposeEngine, OpenGL only)
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+
+{$ENDIF}
+//==============================================================================
+//
+// D_ConfigureGameDefines
+//
+// The defines of the game (D_FillGameDefines adds them), that the script
+// preprocessor reads: given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+
+//==============================================================================
+//
+// D_ConfigureActorDef
+//
+// The reader of the ACTORDEF, DECORATE and SNDINFO lumps, given by the
+// composition root; without it the start of the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+//==============================================================================
+//
+// D_ConfigureAutoLoad
+//
+// The reader of the AUTOLOAD lumps, given by the composition root; without it the
+// start of the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+
+//==============================================================================
+//
+// D_ConfigureStartup
+//
+// The expander of the response files (@name) and the resolver of the screen size from the
+// command line, given by the composition root; without them the start of the game stops
+// with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
+  const AScreenSize: IScreenSizeResolver);
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+// The UMAPINFO records, given by the composition root; without it the start of the
+// game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
+
+//==============================================================================
+//
+// D_ConfigureConsole
+//
+// The console, given by the composition root: D_DoomMain starts it, the loop gives it
+// the keys and draws it, D_ShutDown frees it.
+//
+//==============================================================================
+procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+
+//==============================================================================
+//
+// D_ConfigureNetGame
+//
+// The loop of the game around the network, given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+
+//==============================================================================
+//
+// D_ConfigureDefaults
+//
+// The defaults of the configuration file, given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+
+//==============================================================================
+//
+// D_ConfigureScreenshot
+//
+// The screenshots (-shot), given by the composition root.
+//
+//==============================================================================
+procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+
+//==============================================================================
+//
+// D_ConfigureEndoom
+//
+// The end screen, given by the composition root: D_Display draws it, D_ShutDown frees it.
+//
+//==============================================================================
+procedure D_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+
+var
+  showmessageboxonmodified: boolean = false;
+{$IFNDEF OPENGL}
+  showfullhdlogo: boolean = false;
+{$ENDIF}
+
+//==============================================================================
+//
+// D_ConfigureLevel
+//
+// The loading of the levels, given by the composition root: D_DoomMain starts it and frees it.
+// Without it the game stops with I_Error.
+//
+//==============================================================================
+procedure D_ConfigureLevel(const ALoader: ILevelLoader);
+
+implementation
+
+uses
+  DelphiDoom.Engine.Parity.Hooks,
+  d_delphi,
+  DelphiDoom.CommandLine.FileList,
+  DelphiDoom.Wad.Pak.GameDirectories,
+  deh_base,
+  deh_main,
+  doomstat,
+  dstrings,
+  d_englsh,
+  d_player,
+  d_net,
+  d_notifications,
+  c_con,
+  c_cmds,
+  d_check,
+{$IFNDEF OPENGL}
+  f_wipe,
+{$ENDIF}
+  f_finale,
+  m_argv,
+  m_base,
+  m_misc,
+  m_menu,
+  mt_utils,
+  info,
+  info_common,
+  info_rnd,
+  i_system,
+  i_io,
+  i_startup,
+  DelphiDoom.Iwad.Types,
+{$IFDEF OPENGL}
+  gl_main,
+{$ELSE}
+  r_defs,
+  r_fake3d,
+  i_video,
+  DelphiDoom.Video.Types,
+{$ENDIF}
+  g_game,
+  hu_stuff,
+  wi_stuff,
+  st_stuff,
+  am_map,
+  p_setup,
+  p_mobj_h,
+  p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
+  p_acs,
+  p_umapinfo,
+  ps_main,
+  psi_overlay,
+  r_draw,
+  r_main,
+  r_hires,
+  r_intrpl,
+  r_data,
+  r_camera,
+  r_lights,
+{$IFDEF RADIX}
+  radix_version,
+  radix_codepointers,
+{$ENDIF}
+  sounddata,
+  s_sound,
+  s_pk3sounds,
+  sc_states,
+  sv_doom,
+  v_data,
+  v_video,
+  w_wad,
+  w_pak,
+  z_zone;
+
+var
+  // given by the composition root (D_ConfigureGameDefines)
+  main_gamedefines: IScriptGameDefines = nil;
+
+//==============================================================================
+//
+// D_ConfigureGameDefines
+//
+//==============================================================================
+procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+begin
+  main_gamedefines := ADefines;
+end;
+
+//==============================================================================
+//
+// D_GameDefines
+//
+//==============================================================================
+function D_GameDefines: IScriptGameDefines;
+begin
+  if main_gamedefines = nil then
+    I_Error('D_ConfigureGameDefines() was not called: the defines of the game are missing');
+  result := main_gamedefines;
+end;
+
+var
+  // given by the composition root (D_ConfigureActorDef)
+  main_actordef: IEngineActorDefLumps = nil;
+
+//==============================================================================
+//
+// D_ConfigureActorDef
+//
+//==============================================================================
+procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+begin
+  main_actordef := ALumps;
+end;
+
+//==============================================================================
+//
+// D_ActorDef
+//
+//==============================================================================
+function D_ActorDef: IEngineActorDefLumps;
+begin
+  if main_actordef = nil then
+    I_Error('D_ConfigureActorDef() was not called: the ACTORDEF lumps cannot be read');
+  result := main_actordef;
+end;
+var
+  // given by the composition root (D_ConfigureAutoLoad)
+  main_autoload: IAutoLoadReader = nil;
+
+//==============================================================================
+//
+// D_ConfigureAutoLoad
+//
+//==============================================================================
+procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+begin
+  main_autoload := AReader;
+end;
+
+//==============================================================================
+//
+// D_AutoLoad
+//
+//==============================================================================
+function D_AutoLoad: IAutoLoadReader;
+begin
+  if main_autoload = nil then
+    I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
+  result := main_autoload;
+end;
+
+var
+  // given by the composition root (D_ConfigureStartup)
+  main_responsefiles: IResponseFileExpander = nil;
+  main_screensize: IScreenSizeResolver = nil;
+
+//==============================================================================
+//
+// D_ConfigureStartup
+//
+//==============================================================================
+procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
+  const AScreenSize: IScreenSizeResolver);
+begin
+  main_responsefiles := AResponseFiles;
+  main_screensize := AScreenSize;
+end;
+
+var
+  // given by the composition root (D_ConfigureMapInfo)
+  main_mapinfo: IEngineMapInfoRecords = nil;
+
+//==============================================================================
+//
+// D_ConfigureMapInfo
+//
+//==============================================================================
+procedure D_ConfigureMapInfo(const ARecords: IEngineMapInfoRecords);
+begin
+  main_mapinfo := ARecords;
+end;
+
+//==============================================================================
+//
+// D_ResponseFiles
+//
+//==============================================================================
+function D_ResponseFiles: IResponseFileExpander;
+begin
+  if main_responsefiles = nil then
+    I_Error('D_ConfigureStartup() was not called: the response files cannot be read');
+  result := main_responsefiles;
+end;
+
+//==============================================================================
+//
+// D_ScreenSize
+//
+//==============================================================================
+function D_ScreenSize: IScreenSizeResolver;
+begin
+  if main_screensize = nil then
+    I_Error('D_ConfigureStartup() was not called: the screen size cannot be read');
+  result := main_screensize;
+end;
+
+//==============================================================================
+//
+// D_MapInfo
+//
+//==============================================================================
+function D_MapInfo: IEngineMapInfoRecords;
+begin
+  if main_mapinfo = nil then
+    I_Error('D_ConfigureMapInfo() was not called: UMAPINFO cannot be read');
+  result := main_mapinfo;
+end;
+
+var
+  // given by the composition root (D_ConfigureConsole, D_ConfigureNetGame,
+  // D_ConfigureDefaults, D_ConfigureScreenshot)
+  main_console: IEngineConsole = nil;
+  main_netgame: IEngineNetGame = nil;
+  main_defaults: IEngineDefaults = nil;
+  main_screenshot: IEngineScreenshot = nil;
+
+//==============================================================================
+//
+// D_ConfigureConsole
+//
+//==============================================================================
+procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+begin
+  main_console := AConsole;
+end;
+
+//==============================================================================
+//
+// D_Console
+//
+//==============================================================================
+function D_Console: IEngineConsole;
+begin
+  if main_console = nil then
+    I_Error('D_ConfigureConsole() was not called: the console is missing');
+  result := main_console;
+end;
+
+//==============================================================================
+//
+// D_ConfigureNetGame
+//
+//==============================================================================
+procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+begin
+  main_netgame := ANetGame;
+end;
+
+//==============================================================================
+//
+// D_NetGame
+//
+//==============================================================================
+function D_NetGame: IEngineNetGame;
+begin
+  if main_netgame = nil then
+    I_Error('D_ConfigureNetGame() was not called: the network is missing');
+  result := main_netgame;
+end;
+
+//==============================================================================
+//
+// D_ConfigureDefaults
+//
+//==============================================================================
+procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+begin
+  main_defaults := ADefaults;
+end;
+
+//==============================================================================
+//
+// D_Defaults
+//
+//==============================================================================
+function D_Defaults: IEngineDefaults;
+begin
+  if main_defaults = nil then
+    I_Error('D_ConfigureDefaults() was not called: the defaults are missing');
+  result := main_defaults;
+end;
+
+//==============================================================================
+//
+// D_ConfigureScreenshot
+//
+//==============================================================================
+procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+begin
+  main_screenshot := AScreenshot;
+end;
+
+//==============================================================================
+//
+// D_Screenshot
+//
+//==============================================================================
+function D_Screenshot: IEngineScreenshot;
+begin
+  if main_screenshot = nil then
+    I_Error('D_ConfigureScreenshot() was not called: the screenshots are missing');
+  result := main_screenshot;
+end;
+
+var
+  // given by the composition root (D_ConfigureEndoom)
+  main_endoom: IEngineEndoomScreen = nil;
+
+//==============================================================================
+//
+// D_ConfigureEndoom
+//
+//==============================================================================
+procedure D_ConfigureEndoom(const AScreen: IEngineEndoomScreen);
+begin
+  main_endoom := AScreen;
+end;
+
+//==============================================================================
+//
+// D_EndoomScreen
+//
+//==============================================================================
+function D_EndoomScreen: IEngineEndoomScreen;
+begin
+  if main_endoom = nil then
+    I_Error('D_ConfigureEndoom() was not called: the end screen is missing');
+  result := main_endoom;
+end;
+
+
+const
+  BGCOLOR = 7;
+  FGCOLOR = 8;
+
+//==============================================================================
+//
+// D_DoomLoop()
+// Not a globally visible function,
+//  just included for source reference,
+//  called by D_DoomMain, never exits.
+// Manages timing and IO,
+//  calls all ?_Responder, ?_Ticker, and ?_Drawer,
+//  calls I_GetTime, I_StartFrame, and I_StartTic
+//
+// D_PostEvent
+// Called by the I/O functions when input is detected
+//
+//==============================================================================
+procedure D_PostEvent(ev: Pevent_t);
+begin
+  events[eventhead] := ev^;
+  inc(eventhead);
+  eventhead := eventhead and (MAXEVENTS - 1);
+end;
+
+var
+  map01_lump: integer = -2;
+
+//==============================================================================
+//
+// D_ProcessEvents
+// Send all the events of the given timestamp down the responder chain
+//
+//==============================================================================
+procedure D_ProcessEvents;
+var
+  ev: Pevent_t;
+begin
+// IF STORE DEMO, DO NOT ACCEPT INPUT
+  if gamemode = commercial then
+  begin
+  // JVAL: Optimize checking for MAP01 lump
+    if map01_lump = -2 then
+      map01_lump := W_CheckNumForName('MAP01');
+    if map01_lump = -1 then
+      exit;
+  end;
+
+  if I_GameFinished then
+    exit;
+
+  while eventtail <> eventhead do
+  begin
+    ev := @events[eventtail];
+    if D_Console.Respond(ev) then
+      // console ate the event
+    else if M_Responder(ev) then
+      // menu ate the event
+    else
+      G_Responder(ev);
+    if I_GameFinished then
+    begin
+      eventtail := eventhead;
+      exit;
+    end;
+    inc(eventtail);
+    eventtail := eventtail and (MAXEVENTS - 1);
+  end;
+end;
+
+//
+// D_Display
+//  draw current display, possibly wiping it from the previous
+//
+
+var
+  viewactivestate: boolean = false;
+  menuactivestate: boolean = false;
+  viewfullscreen: boolean = false;
+  inhelpscreensstate: boolean = false;
+  borderdrawcount: integer;
+  nodrawers: boolean = false; // for comparative timing purposes
+  noblit: boolean = false;    // for comparative timing purposes
+  norender: boolean = false;  // for comparative timing purposes
+{$IFNDEF OPENGL}
+  hom: boolean = false; // HOM detection
+  blancbeforerender: boolean = false;
+{$ENDIF}
+  autoscreenshot: boolean = false;
+  shotnumber: integer = 0;
+  lastshotnumber: integer = -1;
+
+//==============================================================================
+//
+// D_FinishUpdate
+//
+//==============================================================================
+procedure D_FinishUpdate;
+begin
+  Parity_AfterFrame; // the parity tools (nothing when they are off)
+  if not noblit then
+    I_FinishUpdate; // page flip or blit buffer
+  if autoscreenshot then
+  begin
+    shotnumber := I_GetTime;
+    if shotnumber <> lastshotnumber then
+    begin
+      D_Screenshot.Take(IntToStrZFill(8, shotnumber), true);
+      inc(shotnumber);
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// D_RenderPlayerView
+//
+//==============================================================================
+procedure D_RenderPlayerView(player: Pplayer_t);
+{$IFNDEF OPENGL}
+var
+  stime: extended;
+{$ENDIF}
+begin
+  if norender then
+  begin
+    R_PlayerViewBlanc(aprox_black);
+    exit;
+  end;
+
+{$IFNDEF OPENGL}
+  if hom then
+  begin
+    stime := I_GetSysTime;
+    if round(stime) = Trunc(stime) then
+      R_PlayerViewBlanc(aprox_black)
+    else
+      R_PlayerViewBlanc(aprox_red);
+  end
+  else if blancbeforerender then
+    R_PlayerViewBlanc(aprox_black);
+{$ENDIF}
+
+  if player <> nil then
+    R_RenderPlayerView(player);
+end;
+
+var
+  diskbusyend: integer = -1;
+  {$IFNDEF OPENGL}
+  oldusemultithread: boolean = false;
+  {$ENDIF}
+
+//==============================================================================
+//
+// D_Display
+//
+//==============================================================================
+procedure D_Display;
+
+{$IFDEF OPENGL}
+
+//==============================================================================
+//
+// D_DisplayHU
+//
+//==============================================================================
+procedure D_DisplayHU;
+{$ENDIF}
+var
+  y: integer;
+  redrawsbar: boolean;
+  redrawbkscn: boolean;
+  palette: PByteArray;
+  drawhu: boolean;
+  nowtime: integer;
+{$IFNDEF OPENGL}
+  tics: integer;
+  wipe: boolean;
+  wipestart: integer;
+  done: boolean;
+  oldvideomode: videomode_t;
+{$ENDIF}
+begin
+  if gamestate = GS_ENDOOM then
+  begin
+    D_EndoomScreen.Draw;
+    {$IFNDEF OPENGL}
+    D_FinishUpdate; // page flip or blit buffer
+    {$ENDIF}
+    exit;
+  end;
+
+{$IFNDEF OPENGL}
+  HU_DoFPSStuff;
+{$ENDIF}
+
+  if nodrawers then
+    exit; // for comparative timing / profiling
+
+  redrawsbar := false;
+  redrawbkscn := false;
+  drawhu := false;
+
+  // change the view size if needed
+  if setsizeneeded then
+  begin
+    R_ExecuteSetViewSize;
+    oldgamestate := -1; // force background redraw
+    borderdrawcount := 3;
+  end;
+{$IFNDEF OPENGL}
+  if oldusemultithread <> usemultithread then
+  begin
+    R_SetRenderingFunctions;
+    oldusemultithread := usemultithread;
+  end;
+{$ENDIF}
+
+{$IFNDEF OPENGL}
+  // save the current screen if about to wipe
+  if Ord(gamestate) <> wipegamestate then
+  begin
+    wipe := true;
+    wipe_StartScreen;
+  end
+  else
+    wipe := false;
+{$ENDIF}
+
+  if (gamestate = GS_LEVEL) and (gametic <> 0) then
+    HU_Erase;
+
+  // do buffered drawing
+  case gamestate of
+    GS_LEVEL:
+      begin
+        if gametic <> 0 then
+        begin
+          if amstate = am_only then
+            AM_Drawer;
+          if {$IFNDEF OPENGL}wipe or {$ENDIF}((viewheight <> SCREENHEIGHT) and viewfullscreen) then
+            redrawsbar := true;
+          if inhelpscreensstate and not inhelpscreens then
+            redrawsbar := true; // just put away the help screen
+          viewfullscreen := viewheight = SCREENHEIGHT;
+          if viewfullscreen then
+            ST_Drawer(stdo_no, redrawsbar)
+          else
+            ST_Drawer(stdo_full, redrawsbar);
+        end;
+      end;
+    GS_INTERMISSION:
+      WI_Drawer;
+    GS_FINALE:
+      F_Drawer;
+    GS_DEMOSCREEN:
+      D_PageDrawer;
+  end;
+
+  // draw the view directly
+  if gamestate = GS_LEVEL then
+  begin
+  {$IFNDEF OPENGL}
+    if (amstate <> am_only) and (gametic <> 0) then
+    begin
+      D_RenderPlayerView(@players[displayplayer]);
+      if amstate = am_overlay then
+        AM_Drawer;
+    end;
+  {$ENDIF}
+    if gametic <> 0 then
+      drawhu := true;
+  end
+  else if Ord(gamestate) <> oldgamestate then
+  begin
+  // clean up border stuff
+    palette := V_ReadPalette(PU_STATIC);
+    {$IFDEF OPENGL}
+    I_SetPalette(palette);
+    V_SetPalette(palette);
+    {$ELSE}
+    IV_SetPalette(palette);
+    {$ENDIF}
+    Z_ChangeTag(palette, PU_CACHE);
+  end;
+
+  // see if the border needs to be initially drawn
+  if gamestate = GS_LEVEL then
+  begin
+{$IFNDEF OPENGL}
+    if needsbackscreen or (oldgamestate <> Ord(GS_LEVEL)) then
+    begin
+      viewactivestate := false; // view was not active
+      R_FillBackScreen;         // draw the pattern into the back screen
+    end;
+{$ENDIF}
+  // see if the border needs to be updated to the screen
+    if amstate <> am_only then
+    begin
+      if scaledviewwidth <> SCREENWIDTH then
+      begin
+        if menuactive or menuactivestate or not viewactivestate or D_Console.IsActive then
+          borderdrawcount := 3;
+        if borderdrawcount > 0 then
+        begin
+          R_DrawViewBorder; // erase old menu stuff
+          redrawbkscn := true;
+          dec(borderdrawcount);
+        end;
+      end
+      else if R_FullStOn and (gametic <> 0) then
+        ST_Drawer(stdo_small, redrawsbar);
+    end;
+    // the display of a game without the status bar of Doom goes over view, automap and border
+    if gametic <> 0 then
+      ST_OverlayDrawer;
+  end;
+
+  menuactivestate := menuactive;
+  viewactivestate := viewactive;
+  inhelpscreensstate := inhelpscreens;
+  oldgamestate := Ord(gamestate);
+{$IFNDEF OPENGL}
+  wipegamestate := Ord(gamestate);
+{$ENDIF}
+
+  // draw pause pic
+  if paused then
+  begin
+    if amstate = am_only then
+      y := 4
+    else
+      y := (viewwindowy * 200) div SCREENHEIGHT + 4;
+    V_DrawPatch((320 - 68) div 2, y, SCN_FG,
+      'M_PAUSE', true);
+  end;
+
+  if drawhu then
+    HU_Drawer;
+
+  nowtime := I_GetTime;
+
+  if isdiskbusy then
+  begin
+    diskbusyend := nowtime + 4; // Display busy disk for a little...
+    isdiskbusy := false;
+  end;
+
+  if diskbusyend > nowtime then
+  begin
+    // JVAL: Overlay Drawer before menus
+    OVR_Drawer;
+
+    // Menus go directly to the screen
+    M_Drawer; // Menu is drawn even on top of everything
+
+    // Console goes directly to the screen
+    D_Console.Draw;   // Console is drawn even on top of menus
+
+    // Draw disk busy patch
+    R_DrawDiskBusy; // Draw disk busy on top of console
+  end
+  else if (diskbusyend <= nowtime) and (diskbusyend <> -1) then
+  begin
+    if not redrawbkscn then
+    begin
+      R_DrawViewBorder;
+      if drawhu then
+        HU_Drawer;
+    end;
+
+    // JVAL: Overlay Drawer before menus
+    OVR_Drawer;
+
+    M_Drawer;
+    D_Console.Draw;
+    diskbusyend := -1;
+  end
+  else
+  begin
+    {$IFDEF OPENGL}
+    diskbusy_height := 0;
+    {$ENDIF}
+    // JVAL: Overlay Drawer before menus
+    OVR_Drawer;
+
+    M_Drawer;
+    D_Console.Draw;
+  end;
+
+  D_NetGame.Update; // send out any new accumulation
+
+  {$IFNDEF OPENGL}
+  // normal update
+  if not wipe then
+  begin
+    D_FinishUpdate; // page flip or blit buffer
+    exit;
+  end;
+
+  // wipe update
+  wipe_EndScreen;
+
+  wipedisplay := true;
+  wipestart := I_GetTime - 1;
+
+  oldvideomode := videomode;
+  videomode := vm32bit;
+  repeat
+    repeat
+      nowtime := I_GetTime;
+      tics := nowtime - wipestart;
+    until tics <> 0;
+    wipestart := nowtime;
+    done := wipe_Ticker(tics);
+    M_Drawer;         // Menu is drawn even on top of wipes
+    D_Console.Draw;         // Console draw on top of wipes and menus
+    D_FinishUpdate;   // page flip or blit buffer
+    HU_DoFPSStuff;
+  until done;
+  videomode := oldvideomode;
+  wipedisplay := false;
+  {$ENDIF}
+end;
+{$IFDEF OPENGL}
+begin
+  I_StartUpdate;
+  HU_DoFPSStuff;
+  if firstinterpolation then
+    MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
+  if gamestate = GS_LEVEL then
+  begin
+    if (amstate <> am_only) and (gametic <> 0) then
+    begin
+      R_FillBackScreen; // draw the pattern into the back screen
+      D_RenderPlayerView(@players[displayplayer]);
+    end;
+  end;
+  if gamestate = GS_LEVEL then
+    if amstate = am_overlay then
+      AM_Drawer;
+  D_DisplayHU;
+  D_FinishUpdate; // page flip or blit buffer
+end;
+{$ENDIF}
+
+//
+//  D_DoomLoop
+//
+
+{$IFDEF DEBUG}
+var
+  internalerrors: integer = 0;
+{$ENDIF}
+
+//==============================================================================
+//
+// D_DoomLoop
+//
+//==============================================================================
+procedure D_DoomLoop;
+var
+{$IFNDEF DEBUG}
+  iscritical: boolean;
+{$ELSE}
+  erroraddress: string;
+{$ENDIF}
+begin
+  if demorecording then
+    G_BeginRecording;
+
+  while true do
+  begin
+{$IFDEF DEBUG}
+    try
+{$ENDIF}
+    // frame syncronous IO operations
+    I_StartFrame;
+
+{$IFNDEF DEBUG}
+    iscritical := not usemultithread and not devparm and criticalcpupriority;
+    if iscritical then
+      I_SetCriticalCPUPriority;
+{$ENDIF}
+
+    // process one or more tics
+    if singletics then
+      D_NetGame.RunSingleTic // will run only one tick
+    else
+      D_NetGame.RunMultipleTics; // will run at least one tick
+
+{$IFNDEF DEBUG}
+    if iscritical then
+      I_SetNormalCPUPriority;
+{$ENDIF}
+
+    S_UpdateSounds(players[consoleplayer].mo);// move positional sounds
+
+    D_RunNotifications;
+
+{$IFDEF DEBUG}
+    except
+      inc(internalerrors);
+      // the class and the address (decimal, to look up in the .map) tell where it happened
+      Str(NativeUInt(ExceptAddr), erroraddress);
+      fprintf(debugfile, 'Internal Error No %d (%s at %s)'#13#10,
+        [internalerrors, string(ExceptObject.ClassName), erroraddress]);
+    end;
+{$ENDIF}
+  end;
+end;
+
+//
+//  DEMO LOOP
+//
+var
+  demosequence: integer;
+  pagetic: integer;
+  pagename: string;
+
+//==============================================================================
+//
+// D_PageTicker
+// Handles timing for warped projection
+//
+//==============================================================================
+procedure D_PageTicker;
+begin
+  dec(pagetic);
+  if pagetic < 0 then
+    D_AdvanceDemo;
+end;
+
+//
+// D_PageDrawer
+//
+{$IFNDEF OPENGL}
+var
+  fullhdpatch: integer = -2;
+{$ENDIF}
+
+//==============================================================================
+//
+// D_PageDrawer
+//
+//==============================================================================
+procedure D_PageDrawer;
+{$IFNDEF OPENGL}
+var
+  pt: Ppatch_t;
+{$ENDIF}
+begin
+  V_PageDrawer(pagename);
+  {$IFNDEF OPENGL}
+  if showfullhdlogo then
+    if demosequence = 0 then
+      if (SCREENWIDTH = 1920) and (SCREENHEIGHT = 1080) then
+      begin
+        if fullhdpatch = -2 then
+          fullhdpatch := W_CheckNumForName('FULLHD');
+        if fullhdpatch > 0 then
+        begin
+          pt := W_CacheLumpNum(fullhdpatch, PU_STATIC);
+          V_DrawPatch(120, 1020, SCN_FG, pt, false);
+          Z_ChangeTag(pt, PU_CACHE);
+        end;
+      end;
+  {$ENDIF}
+end;
+
+//==============================================================================
+//
+// D_AdvanceDemo
+// Called after each demo or intro demosequence finishes
+//
+//==============================================================================
+procedure D_AdvanceDemo;
+begin
+  if gamestate <> GS_ENDOOM then
+    advancedemo := true;
+end;
+
+//==============================================================================
+// D_DoAdvanceDemo
+//
+// This cycles through the demo sequences.
+// FIXME - version dependend demo numbers?
+//
+//==============================================================================
+procedure D_DoAdvanceDemo;
+begin
+  players[consoleplayer].playerstate := PST_LIVE;  // not reborn
+  advancedemo := false;
+  usergame := false; // no save/end game here
+  paused := false;
+  gameaction := ga_nothing;
+
+  if gamemode = retail then
+    demosequence := (demosequence + 1) mod 7
+  else
+    demosequence := (demosequence + 1) mod 6;
+
+  case demosequence of
+    0:
+      begin
+        if gamemode = commercial then
+          pagetic := TICRATE * 11
+        else
+          pagetic := (TICRATE * 170) div 35;
+        gamestate := GS_DEMOSCREEN;
+        pagename := decide(customgame = cg_bfg2, pg_DMENUPIC, pg_TITLE);
+        if gamemode = commercial then
+          S_StartMusic(Ord(mus_dm2ttl))
+        else
+          S_StartMusic(Ord(mus_intro));
+      end;
+    1:
+      begin
+        G_DeferedPlayDemo('1');
+      end;
+    2:
+      begin
+        pagetic := (TICRATE * 200) div 35;
+        gamestate := GS_DEMOSCREEN;
+        pagename := pg_CREDIT;
+      end;
+    3:
+      begin
+        G_DeferedPlayDemo('2');
+      end;
+    4:
+      begin
+        gamestate := GS_DEMOSCREEN;
+        if gamemode = commercial then
+        begin
+          pagetic := TICRATE * 11;
+          pagename := decide(customgame = cg_bfg2, pg_DMENUPIC, pg_TITLE);
+          S_StartMusic(Ord(mus_dm2ttl));
+        end
+        else
+        begin
+          pagetic := (TICRATE * 200) div 35;
+          if gamemode = retail then
+            pagename := pg_CREDIT
+          else
+            pagename := pg_HELP2;
+        end;
+      end;
+    5:
+      begin
+        G_DeferedPlayDemo('3');
+      end;
+    // THE DEFINITIVE DOOM Special Edition demo
+    6:
+      begin
+        G_DeferedPlayDemo('4');
+      end;
+  end;
+{$IFDEF RADIX}
+  // Radix has one page, the title: it stands for the credits and the help page of Doom
+  if demosequence in [2, 4] then
+    pagename := pg_TITLE;
+{$ENDIF}
+end;
+
+//==============================================================================
+//
+// D_StartTitle
+//
+//==============================================================================
+procedure D_StartTitle;
+begin
+  gameaction := ga_nothing;
+  demosequence := -1;
+  D_AdvanceDemo;
+end;
+
+var
+  wadfiles: TDStringList;
+
+{$IFDEF OPENGL}
+var
+  // given by the composition root (D_ConfigureGlbsp)
+  glbsp_runner: IEngineGlbspRunner = nil;
+
+//==============================================================================
+//
+// D_ConfigureGlbsp
+//
+//==============================================================================
+procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+begin
+  glbsp_runner := ARunner;
+end;
+
+//==============================================================================
+//
+// D_GlbspRunner
+//
+//==============================================================================
+function D_GlbspRunner: IEngineGlbspRunner;
+begin
+  if glbsp_runner = nil then
+    I_Error('D_AddFile(): the glBSP runner was not given (D_ConfigureGlbsp)');
+  result := glbsp_runner;
+end;
+{$ENDIF}
+
+//==============================================================================
+//
+// D_AddFile
+//
+//==============================================================================
+procedure D_AddFile(const fname1: string);
+var
+  fname2: string;
+{$IFDEF OPENGL}
+  path: string;
+  ext: string;
+  len: integer;
+  gwafname: string;
+{$ENDIF}
+begin
+  if fname1 <> '' then
+  begin
+    fname2 := D_FileInDoomPath(fname1);
+    if wadfiles.IndexOf(fname2) >= 0 then
+      exit;
+    try
+      wadfiles.Add(fname2);
+      PAK_AddFile(fname2);
+      D_CheckCustomWad(fname2);
+    {$IFDEF OPENGL}
+    // JVAL: If exists automatically loads GWA file
+    // GL_xxxx lumps has lower priority from GWA files, that's for we
+    // first add the *.GWA file.
+      if autoloadgwafiles then
+      begin
+        ext := strupper(fext(fname2));
+        if ext = '.WAD' then
+        begin
+          gwafname := fname2;
+          len := Length(gwafname);
+          gwafname[len - 2] := 'G';
+          gwafname[len - 1] := 'W';
+          gwafname[len] := 'A';
+          if fexists(gwafname) then
+            wadfiles.Add(gwafname)
+          else
+          begin
+            path := M_SaveFileName('DATA\');
+            MkDir(path);
+            path := path + 'BSP\';
+            MkDir(path);
+            gwafname := path + fname(gwafname);
+            if fexists(gwafname) then
+              wadfiles.Add(gwafname)
+            else if D_GlbspRunner.BuildGlFriendly(fname2, gwafname) then
+              wadfiles.Add(gwafname);
+          end;
+        end;
+      end;
+    {$ENDIF}
+    except
+      printf('D_AddFile(): Can not add %s'#13#10, [fname1]);
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// D_WadsAutoLoad
+//
+//==============================================================================
+procedure D_WadsAutoLoad(fnames: string);
+var
+  names: TArray<string>;
+  i: integer;
+begin
+  names := TCommandLineFileList.Split(fnames);
+  for i := 0 to Length(names) - 1 do
+    D_AddFile(names[i]);
+end;
+
+//==============================================================================
+//
+// D_PaksAutoload
+//
+//==============================================================================
+procedure D_PaksAutoload(fnames: string);
+var
+  names: TArray<string>;
+  i: integer;
+begin
+  names := TCommandLineFileList.Split(fnames);
+  for i := 0 to Length(names) - 1 do
+    PAK_AddFile(names[i]);
+end;
+
+var
+  // given by the composition root (D_ConfigureIwad)
+  iwad_locator: IIwadLocator = nil;
+  iwad_identifier: IIwadIdentifier = nil;
+
+//==============================================================================
+//
+// D_ConfigureIwad
+//
+//==============================================================================
+procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+begin
+  iwad_locator := ALocator;
+  iwad_identifier := AIdentifier;
+end;
+
+//==============================================================================
+//
+// D_FileInDoomPath
+//
+//==============================================================================
+function D_FileInDoomPath(const fn: string): string;
+begin
+  if iwad_locator = nil then
+    I_Error('D_FileInDoomPath(): the IWAD locator was not given (D_ConfigureIwad)');
+  result := iwad_locator.Locate(fn);
+end;
+
+const
+  SYSWAD = _GAME + '32.swd';
+
+//==============================================================================
+//
+// D_AddSystemWAD
+//
+//==============================================================================
+procedure D_AddSystemWAD;
+var
+  ddsyswad: string;
+begin
+  ddsyswad := D_FileInDoomPath(SYSWAD);
+  if fexists(ddsyswad) then
+    D_AddFile(ddsyswad)
+  else
+    I_Warning('D_AddSystemWAD(): System WAD %s not found.'#13#10, [SYSWAD]);
+end;
+
+var
+  doomcwad: string = ''; // Custom main WAD
+
+//==============================================================================
+//
+// IdentifyVersion
+// Checks availability of IWAD files by name,
+// to determine whether registered/commercial features
+// should be executed (notably loading PWAD's).
+//
+//==============================================================================
+procedure IdentifyVersion;
+var
+  customname: string;
+  ident: TIwadIdentification;
+  p: integer;
+begin
+  if iwad_identifier = nil then
+    I_Error('IdentifyVersion(): the IWAD identifier was not given (D_ConfigureIwad)');
+
+  // the file that the player chose
+  customname := '';
+  p := M_CheckParm('-mainwad');
+  if p = 0 then
+    p := M_CheckParm('-iwad');
+  if (p > 0) and (p < myargc - 1) then
+    customname := myargv[p + 1];
+  doomcwad := '';
+  if iwad_identifier.TryIdentifyCustom(customname, ident) then
+  begin
+    doomcwad := ident.CustomPath;
+    printf(' External main wad in use: %s'#13#10, [doomcwad]);
+    gamemode := indetermined;
+    D_AddFile(doomcwad);
+    exit;
+  end;
+  if M_CheckParm('-shdev') > 0 then
+  begin
+    gamemode := shareware;
+    devparm := true;
+    D_AddFile(DEVDATA + 'doom1.wad');
+    D_AddFile(DEVMAPS + 'data_se/texture1.lmp');
+    D_AddFile(DEVMAPS + 'data_se/pnames.lmp');
+    exit;
+  end;
+
+  if M_CheckParm('-regdev') > 0 then
+  begin
+    gamemode := registered;
+    devparm := true;
+    D_AddFile(DEVDATA + 'doom.wad');
+    D_AddFile(DEVMAPS + 'data_se/texture1.lmp');
+    D_AddFile(DEVMAPS + 'data_se/texture2.lmp');
+    D_AddFile(DEVMAPS + 'data_se/pnames.lmp');
+    exit;
+  end;
+
+  if M_CheckParm('-comdev') > 0 then
+  begin
+    gamemode := commercial;
+    devparm := true;
+    D_AddFile(DEVDATA + 'doom2.wad');
+
+    D_AddFile(DEVMAPS + 'cdata/texture1.lmp');
+    D_AddFile(DEVMAPS + 'cdata/pnames.lmp');
+    exit;
+  end;
+
+  ident := iwad_identifier.IdentifyKnown;
+  if not ident.Found then
+  begin
+    printf('Game mode indeterminate.'#13#10);
+    gamemode := indetermined;
+    exit;
+  end;
+
+  case ident.Mode of
+    igmShareware: gamemode := shareware;
+    igmRegistered: gamemode := registered;
+    igmRetail: gamemode := retail;
+    igmCommercial: gamemode := commercial;
+    igmIndetermined: gamemode := indetermined; // Will check if retail or register mode later
+  end;
+  case ident.Mission of
+    imsDoom: gamemission := doom;
+    imsDoom2: gamemission := doom2;
+    imsPlutonia: gamemission := pack_plutonia;
+    imsTnt: gamemission := pack_tnt;
+  end;
+  if ident.IsBfg2 then
+    customgame := cg_bfg2;
+  if ident.IsFrench then
+  begin
+    // C'est ridicule!
+    // Let's handle languages in config files, okay?
+    language := french;
+    printf('French version'#13#10);
+  end;
+  D_AddFile(ident.Files[0]);
+end;
+
+//==============================================================================
+// FindResponseFile
+//
+// Find a Response File
+//
+// JVAL: Changed to handle more than 1 response files
+//
+//==============================================================================
+procedure FindResponseFile;
+var
+  arguments: TArray<string>;
+  i: integer;
+begin
+  SetLength(arguments, myargc);
+  for i := 0 to myargc - 1 do
+    arguments[i] := myargv[i];
+  arguments := D_ResponseFiles.Expand(arguments, MAXARGS);
+  for i := 0 to Length(arguments) - 1 do
+    myargv[i] := arguments[i];
+  myargc := Length(arguments);
+end;
+
+{$IFNDEF OPENGL}
+
+//==============================================================================
+//
+// D_CmdHOM
+//
+//==============================================================================
+procedure D_CmdHOM;
+begin
+  hom := not hom;
+  if hom then
+    printf('HOM detection enabled'#13#10)
+  else
+    printf('HOM detection disabled'#13#10);
+end;
+{$ENDIF}
+
+var
+  // The engine this port runs on, given by the composition root (D_Configure)
+  idtech_engine: IIdTechEngine = nil;
+
+//==============================================================================
+//
+// D_Configure
+//
+//==============================================================================
+procedure D_Configure(const AEngine: IIdTechEngine);
+begin
+  idtech_engine := AEngine;
+end;
+
+//==============================================================================
+//
+// D_EngineVersion
+//
+//==============================================================================
+function D_EngineVersion: integer;
+begin
+  if idtech_engine <> nil then
+    result := idtech_engine.Version.Number
+  else
+    result := VERSION;
+end;
+
+//==============================================================================
+//
+// D_Version
+//
+//==============================================================================
+function D_Version: string;
+begin
+  sprintf(result, Apptitle + ' version %d.%.*d', [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
+end;
+
+//==============================================================================
+//
+// D_VersionBuilt
+//
+//==============================================================================
+function D_VersionBuilt: string;
+begin
+  sprintf(result, ' built %s', [I_VersionBuilt]);
+end;
+
+//==============================================================================
+//
+// D_CmdVersion
+//
+//==============================================================================
+procedure D_CmdVersion;
+begin
+  printf('%s,%s'#13#10, [D_Version, D_VersionBuilt]);
+end;
+
+//==============================================================================
+//
+// D_CmdAddPakFile
+//
+//==============================================================================
+procedure D_CmdAddPakFile(const parm: string);
+var
+  files: TDStringList;
+  i: integer;
+begin
+  if parm = '' then
+  begin
+    printf('Please specify the pak file or directory to load'#13#10);
+    exit;
+  end;
+
+  // JVAL
+  // If a shareware game do not allow external files
+  if gamemode = shareware then
+  begin
+    I_Warning('You cannot use external files with the shareware version. Register!'#13#10);
+    exit;
+  end;
+
+  if (Pos('*', parm) > 0) or (Pos('?', parm) > 0) then // It's a mask
+    files := findfiles(parm)
+  else
+  begin
+    files := TDStringList.Create;
+    files.Add(parm)
+  end;
+
+  try
+
+    for i := 0 to files.Count - 1 do
+      if not PAK_AddFile(files[i]) then
+        I_Warning('PAK_AddFile(): %s could not be added to PAK file system.'#13#10, [files[i]]);
+
+  finally
+    files.Free;
+  end;
+
+end;
+
+//==============================================================================
+//
+// D_StartThinkers
+//
+//==============================================================================
+procedure D_StartThinkers;
+begin
+  Info_Init(true);
+  printf('Thinkers initialized'#13#10);
+end;
+
+//==============================================================================
+//
+// D_StopThinkers
+//
+//==============================================================================
+procedure D_StopThinkers;
+begin
+  if demoplayback then
+  begin
+    I_Warning('Thinkers can not be disabled during demo playback.'#13#10);
+    exit;
+  end;
+
+  if demorecording then
+  begin
+    I_Warning('Thinkers can not be disabled during demo recording.'#13#10);
+    exit;
+  end;
+
+  Info_Init(false);
+  printf('Thinkers disabled'#13#10);
+end;
+
+//==============================================================================
+//
+// D_AddWADFiles
+//
+//==============================================================================
+procedure D_AddWADFiles(const parm: string);
+var
+  p: integer;
+begin
+  p := M_CheckParm(parm);
+  if p <> 0 then
+  begin
+  // the parms after p are wadfile/lump names,
+  // until end of parms or another - preceded parm
+    modifiedgame := true; // homebrew levels
+    inc(p);
+    while (p < myargc) and (myargv[p][1] <> '-') do
+    begin
+      D_AddFile(D_FileInDoomPath(myargv[p]));
+      inc(p);
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// D_AddPAKFiles
+//
+//==============================================================================
+procedure D_AddPAKFiles(const parm: string);
+var
+  p: integer;
+begin
+  p := M_CheckParm(parm);
+  if p <> 0 then
+  begin
+  // the parms after p are wadfile/lump names,
+  // until end of parms or another - preceded parm
+    modifiedgame := true; // homebrew levels
+    externalpakspresent := true;
+    inc(p);
+    while (p < myargc) and (myargv[p][1] <> '-') do
+    begin
+      PAK_AddFile(myargv[p]);
+      inc(p);
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// D_AddDEHFiles
+//
+//==============================================================================
+procedure D_AddDEHFiles(const parm: string);
+var
+  p: integer;
+begin
+  p := M_CheckParm(parm);
+  if p <> 0 then
+  begin
+  // the parms after p are wadfile/lump names,
+  // until end of parms or another - preceded parm
+    modifiedgame := true; // homebrew levels
+    externaldehspresent := true;
+    inc(p);
+    while (p < myargc) and (myargv[p][1] <> '-') do
+    begin
+      DEH_ParseFile(myargv[p]);
+      inc(p);
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// D_IdentifyGameDirectories
+//
+//==============================================================================
+procedure D_IdentifyGameDirectories;
+var
+  gamedirectorystring: string;
+  wadnames: TArray<string>;
+  i: integer;
+  wad: string;
+begin
+  case gamemission of
+    doom2: gamedirectorystring := 'DOOM2,DOOM.DOOM2,DOOM1,DOOM';
+    pack_tnt: gamedirectorystring := 'DOOM2-TNT,DOOM.DOOM2.TNT,TNT,DOOM2,DOOM1,DOOM';
+    pack_plutonia: gamedirectorystring := 'DOOM2-PLUT,DOOM.DOOM2.PLUTONIA,PLUTONIA,DOOM2,DOOM1,DOOM';
+  else
+    gamedirectorystring := 'TEXTURES,DOOM1,DOOM';
+  end;
+  SetLength(wadnames, wadfiles.Count);
+  for i := 0 to wadfiles.Count - 1 do
+    wadnames[i] := strupper(fname(wadfiles[i]));
+  gamedirectorystring := TPakGameDirectories.Compose(gamedirectorystring, wadnames);
+
+  gamedirectories := PAK_GetDirectoryListFromString(gamedirectorystring);
+  for i := 0 to gamedirectories.Count - 1 do
+  begin
+    wad := gamedirectories[i];
+    if wad <> '' then
+      if wad[length(wad)] = '\' then
+        printf(' %s'#13#10, [wad]);
+  end;
+end;
+
+//==============================================================================
+//
+// D_CheckCommonParams
+//
+//==============================================================================
+procedure D_CheckCommonParams;
+var
+  p: integer;
+begin
+  p := M_CheckParm('-fullscreen');
+  if (p <> 0) and (p <= myargc - 1) then
+    fullscreen := {$IFDEF OPENGL}true{$ELSE}FULLSCREEN_SHARED{$ENDIF};
+
+  p := M_CheckParm('-nofullscreen');
+  if p = 0 then
+    p := M_CheckParm('-windowed');
+  if (p <> 0) and (p <= myargc - 1) then
+    fullscreen := {$IFDEF OPENGL}false{$ELSE}FULLSCREEN_OFF{$ENDIF};
+
+  p := M_CheckParm('-zaxisshift');
+  if (p <> 0) and (p <= myargc - 1) then
+    zaxisshift := true;
+
+  p := M_CheckParm('-nozaxisshift');
+  if (p <> 0) and (p <= myargc - 1) then
+    zaxisshift := false;
+
+{$IFNDEF OPENGL}
+  p := M_CheckParm('-fake3d');
+  if (p <> 0) and (p <= myargc - 1) then
+    usefake3d := true;
+
+  p := M_CheckParm('-nofake3d');
+  if (p <> 0) and (p <= myargc - 1) then
+    usefake3d := false;
+{$ENDIF}
+
+  if M_Checkparm('-ultrares') <> 0 then
+    detailLevel := DL_ULTRARES;
+
+  if M_Checkparm('-hires') <> 0 then
+    detailLevel := DL_HIRES;
+
+  if M_Checkparm('-normalres') <> 0 then
+    detailLevel := DL_NORMAL;
+
+  if M_Checkparm('-mediumres') <> 0 then
+    detailLevel := DL_MEDIUM;
+
+  if M_Checkparm('-lowres') <> 0 then
+    detailLevel := DL_LOW;
+
+  if M_Checkparm('-lowestres') <> 0 then
+    detailLevel := DL_LOWEST;
+
+  if M_Checkparm('-interpolate') <> 0 then
+    interpolate := true;
+
+  if M_Checkparm('-nointerpolate') <> 0 then
+    interpolate := false;
+
+  p := M_CheckParm('-forcecompatibilitymode');
+  if (p <> 0) and (p <= myargc - 1) then
+    forcecompatibilitymode := true;
+
+  p := M_CheckParm('-compatibilitymode');
+  if (p <> 0) and (p <= myargc - 1) then
+    compatibilitymode := true;
+
+  p := M_CheckParm('-nocompatibilitymode');
+  if (p <> 0) and (p <= myargc - 1) then
+    compatibilitymode := false;
+
+  p := M_CheckParm('-spawnmask');
+  if (p <> 0) and (p < myargc - 1) then
+    spawnmask := atoi(myargv[p + 1]);
+
+  oldcompatibilitymode := compatibilitymode;
+
+  p := M_CheckParm('-spawnrandommonsters');
+  if (p <> 0) and (p <= myargc - 1) then
+    spawnrandommonsters := true;
+
+  p := M_CheckParm('-nospawnrandommonsters');
+  if (p <> 0) and (p <= myargc - 1) then
+    spawnrandommonsters := false;
+
+  p := M_CheckParm('-mouse');
+  if (p <> 0) and (p <= myargc - 1) then
+    usemouse := true;
+
+  p := M_CheckParm('-nomouse');
+  if (p <> 0) and (p <= myargc - 1) then
+    usemouse := false;
+
+  p := M_CheckParm('-invertmouselook');
+  if (p <> 0) and (p <= myargc - 1) then
+    invertmouselook := true;
+
+  p := M_CheckParm('-noinvertmouselook');
+  if (p <> 0) and (p <= myargc - 1) then
+    invertmouselook := false;
+
+  p := M_CheckParm('-invertmouseturn');
+  if (p <> 0) and (p <= myargc - 1) then
+    invertmouseturn := true;
+
+  p := M_CheckParm('-noinvertmouseturn');
+  if (p <> 0) and (p <= myargc - 1) then
+    invertmouseturn := false;
+
+  p := M_CheckParm('-nojoystick');
+  if (p <> 0) and (p <= myargc - 1) then
+    usejoystick := false;
+
+  p := M_CheckParm('-joystick');
+  if (p <> 0) and (p <= myargc - 1) then
+    usejoystick := true;
+
+  D_ScreenSize.Resolve(SCREENWIDTH, SCREENHEIGHT);
+
+  {$IFNDEF OPENGL}
+  WINDOWWIDTH := SCREENWIDTH;
+  WINDOWHEIGHT := SCREENHEIGHT;
+  {$ENDIF}
+
+  singletics := M_CheckParm('-singletics') > 0;
+
+  p := M_CheckParm('-autoscreenshot');
+  autoscreenshot := p > 0;
+
+  nodrawers := M_CheckParm('-nodraw') <> 0;
+  noblit := M_CheckParm('-noblit') <> 0;
+  norender := M_CheckParm('-norender') <> 0;
+{$IFNDEF OPENGL}
+  blancbeforerender := M_CheckParm('-blancbeforerender') <> 0;
+{$ENDIF}
+
+  if M_CheckParm('-usetransparentsprites') <> 0 then
+    usetransparentsprites := true;
+  if M_CheckParm('-dontusetransparentsprites') <> 0 then
+    usetransparentsprites := false;
+  if M_CheckParm('-uselightboost') <> 0 then
+    uselightboost := true;
+  if M_CheckParm('-dontuselightboost') <> 0 then
+    uselightboost := false;
+  p := M_CheckParm('-lightboostfactor');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    p := atoi(myargv[p + 1], -1);
+    if (p >= LFACTORMIN) and (p <= LFACTORMAX) then
+      lightboostfactor := p
+    else
+      I_Warning('Invalid lightboostfactor specified from command line %d. Specify a value in range (%d..%d)'#13#10, [p, LFACTORMIN, LFACTORMAX]);
+  end;
+  if M_CheckParm('-chasecamera') <> 0 then
+    chasecamera := true;
+  if M_CheckParm('-nochasecamera') <> 0 then
+    chasecamera := false;
+end;
+
+//==============================================================================
+//
+// D_CheckInteterminedMode
+//
+//==============================================================================
+procedure D_CheckInteterminedMode;
+begin
+  if customgame = cg_chex then
+    SUC_SetGameMode('Chex Quest')
+  else if customgame = cg_chex2 then
+    SUC_SetGameMode('Chex Quest 2')
+  else if customgame = cg_freedoom then
+    SUC_SetGameMode('FREEDOOM')
+  else if customgame = cg_bfg2 then
+    SUC_SetGameMode('DOOM2: BFG Edition')
+  else if customgame = cg_hacx then
+    SUC_SetGameMode('HACX');
+{$IFDEF RADIX}
+  // the lumps of Radix come from RADIX.DAT (IdTech1\Radix): RADIXINF says so. The edition (shareware
+  // or registered) is told by the CRC of the file (radix_version); a file that the table does
+  // not have is registered when it has the third episode, as Rad-X did
+  if (gamemode = indetermined) and (W_CheckNumForName('RADIXINF') <> -1) then
+  begin
+    gamemission := doom;
+    gamemode := RX_GameMode;
+    if gamemode <> indetermined then
+      SUC_SetGameMode(RX_VersionString)
+    else if W_CheckNumForName('e3m1') <> -1 then
+    begin
+      gamemode := registered;
+      SUC_SetGameMode('Radix Registered');
+    end
+    else
+    begin
+      gamemode := shareware;
+      SUC_SetGameMode('Radix Shareware');
+    end;
+    printf('%s'#13#10, [RX_VersionString]);
+  end;
+{$ENDIF}
+{$IFDEF SPEED}
+  // the lumps of Speed Haste come from SPEEDH.JCL (IdTech1\Speed): SPEEDINF says so. The edition
+  // (shareware or registered) is told by the circuits: not done yet, the shareware rules are used
+  if (gamemode = indetermined) and (W_CheckNumForName('SPEEDINF') <> -1) then
+  begin
+    gamemission := doom;
+    gamemode := shareware;
+    SUC_SetGameMode('Speed Haste');
+  end;
+{$ENDIF}
+  if gamemode = indetermined then
+  begin
+    if W_CheckNumForName('e4m1') <> -1 then
+    begin
+      gamemission := doom;
+      gamemode := retail;
+      SUC_SetGameMode('Ultimate Doom');
+    end
+    else if W_CheckNumForName('e3m1') <> -1 then
+    begin
+      gamemission := doom;
+      gamemode := registered;
+      SUC_SetGameMode('Registered Doom');
+    end
+    else if W_CheckNumForName('e1m1') <> -1 then
+    begin
+      gamemission := doom;
+      gamemode := shareware;
+      SUC_SetGameMode('Shareware Doom');
+    end
+    else if W_CheckNumForName('map01') <> -1 then
+    begin
+      gamemode := commercial;
+      if Pos('TNT.WAD', strupper(doomcwad)) > 0 then
+      begin
+        gamemission := pack_tnt;
+        SUC_SetGameMode('TNT Evilution');
+      end
+      else if Pos('PLUTONIA.WAD', strupper(doomcwad)) > 0 then
+      begin
+        gamemission := pack_plutonia;
+        SUC_SetGameMode('The Plutonia Experiment');
+      end
+      else
+      begin
+        gamemission := doom2;
+        if customgame = cg_freedoom then
+          SUC_SetGameMode('FREEDOOM')
+        else
+          SUC_SetGameMode('DOOM2: Hell On Earth');
+      end;
+    end
+    else
+      I_Error('Game mode indetermined'#13#10);
+  end
+  else
+  begin
+    if customgame = cg_chex then
+      SUC_SetGameMode('Chex Quest')
+    else if customgame = cg_chex2 then
+       SUC_SetGameMode('Chex Quest 2')
+    else if customgame = cg_freedoom then
+       SUC_SetGameMode('FREEDOOM')
+    else if customgame = cg_bfg2 then
+       SUC_SetGameMode('DOOM2: BFG Edition')
+    else if customgame = cg_hacx then
+       SUC_SetGameMode('HACX')
+    else if (gamemission = doom) and (gamemode = retail) then
+      SUC_SetGameMode('Ultimate Doom')
+    else if (gamemission = doom) and (gamemode = registered) then
+      SUC_SetGameMode('Registered Doom')
+    else if (gamemission = doom) and (gamemode = shareware) then
+      SUC_SetGameMode('Shareware Doom')
+    else if gamemode = commercial then
+    begin
+      if gamemission = pack_tnt then
+        SUC_SetGameMode('TNT Evilution')
+      else if gamemission = pack_plutonia then
+        SUC_SetGameMode('The Plutonia Experiment')
+      else if gamemission = doom2 then
+        SUC_SetGameMode('DOOM2: Hell On Earth');
+    end;
+  end;
+
+  if customgame = cg_hacx then
+    D_Defaults.ForceBoolean('decorate_as_actordef', false);
+end;
+
+//==============================================================================
+//
+// D_FillGameDefines
+//
+//==============================================================================
+procedure D_FillGameDefines;
+begin
+  D_GameDefines.Add('doom');
+
+  case gamemode of
+    shareware: begin D_GameDefines.Add('shareware'); D_GameDefines.Add('doom1'); end;
+    registered: begin D_GameDefines.Add('registered'); D_GameDefines.Add('doom1'); end;
+    commercial: begin D_GameDefines.Add('commercial'); D_GameDefines.Add('doom2'); end;
+    retail: begin D_GameDefines.Add('retail'); D_GameDefines.Add('doom1'); end;
+  end;
+
+  case gamemission of
+    doom2: D_GameDefines.Add('doom2');
+    pack_tnt: begin D_GameDefines.Add('doom2'); D_GameDefines.Add('tnt'); end;
+    pack_plutonia: begin D_GameDefines.Add('doom2'); D_GameDefines.Add('plutonia'); end;
+  end;
+
+  case customgame of
+    cg_chex: D_GameDefines.Add('chex');
+    cg_chex2: begin D_GameDefines.Add('chex'); D_GameDefines.Add('chex2'); end;
+    cg_hacx: D_GameDefines.Add('hacx');
+    cg_freedoom: D_GameDefines.Add('freedoom');
+    cg_bfg2: begin D_GameDefines.Add('bfg'); D_GameDefines.Add('bfg2'); end;
+  end;
+
+  {$IFDEF OPENGL}
+  D_GameDefines.Add('OPENGL');
+  {$ENDIF}
+end;
+
+//==============================================================================
+//
+// M_FindDefaultFile
+//
+//==============================================================================
+procedure M_FindDefaultFile;
+begin
+  basedefault := {$IFDEF FPC}'Doom32f.ini'{$ELSE}'Doom32.ini'{$ENDIF};
+  if (M_CheckParm('-shdev') > 0) or (M_CheckParm('-regdev') > 0) or (M_CheckParm('-comdev') > 0)then
+    basedefault := DEVDATA + {$IFDEF FPC}'Doom32f.ini'{$ELSE}'Doom32.ini'{$ENDIF};
+  if M_CheckParmCDROM then
+  begin
+    printf(D_CDROM);
+    basedefault := CD_WORKDIR + {$IFDEF FPC}'Doom32f.ini'{$ELSE}'Doom32.ini'{$ENDIF};
+  end;
+end;
+
+var
+  // given by the composition root (D_ConfigureLevel)
+  main_levelloader: ILevelLoader = nil;
+
+//==============================================================================
+//
+// D_ConfigureLevel
+//
+//==============================================================================
+procedure D_ConfigureLevel(const ALoader: ILevelLoader);
+begin
+  main_levelloader := ALoader;
+end;
+
+//==============================================================================
+//
+// D_LevelLoader
+//
+//==============================================================================
+function D_LevelLoader: ILevelLoader;
+begin
+  if main_levelloader = nil then
+    I_Error('D_ConfigureLevel() was not called: the loading of the levels is missing');
+  result := main_levelloader;
+end;
+
+//==============================================================================
+//
+// D_DoomMain
+//
+//==============================================================================
+procedure D_DoomMain;
+var
+  p: integer;
+  filename: string;
+  scale: integer;
+  _time: integer;
+  startloadingtime: LongWord;
+  s_error: string;
+  i: integer;
+  j: integer;
+  oldoutproc: TOutProc;
+  mb_min: integer; // minimum zone size
+  episodes: integer;
+  uext: string;
+  err_shown: boolean;
+  kparm: string;
+  lump: integer;
+begin
+  startloadingtime := I_GetTickCount;
+
+  SUC_Open;
+  outproc := @SUC_Outproc;
+  wadfiles := TDSTringList.Create;
+
+  printf('Starting %s, %s'#13#10, [D_Version, D_VersionBuilt]);
+{$IFNDEF OPENGL}
+  C_AddCmd('tnthom, hom', @D_CmdHOM);
+{$ENDIF}
+  C_AddCmd('ver, version', @D_CmdVersion);
+  C_AddCmd('addpakfile, loadpakfile, addpak, loadpak', @D_CmdAddPakFile);
+  C_AddCmd('startthinkers', @D_StartThinkers);
+  C_AddCmd('stopthinkers', @D_StopThinkers);
+
+  SUC_Progress(1);
+
+  printf('M_InitArgv: Initializing command line parameters.'#13#10);
+  M_InitArgv;
+
+  SUC_Progress(2);
+
+  FindResponseFile;
+
+  printf('I_InitializeIO: Initializing input/output streams.'#13#10);
+  I_InitializeIO;
+
+  SUC_Progress(3);
+
+  printf('M_LoadDefaults: Load system defaults.'#13#10);
+  M_FindDefaultFile;
+  D_Defaults.Load;              // load before initing other systems
+
+  D_AddSystemWAD; // Add system wad first
+
+  SUC_Progress(4);
+
+  IdentifyVersion;
+
+  SUC_Progress(5);
+
+  modifiedgame := false;
+
+  nomonsters := M_CheckParm('-nomonsters') > 0;
+  respawnparm := M_CheckParm('-respawn') > 0;
+  fastparm := M_CheckParm('-fast') > 0;
+  devparm := M_CheckParm('-devparm') > 0;
+  hackshareware := M_CheckParm('-hackshareware') > 0;
+  debugmode := M_CheckParm('-debugmode') > 0;
+  pistolstart := M_CheckParm('-pistolstart') > 0;
+
+  SUC_Progress(6);
+
+  if M_CheckParm('-altdeath') > 0 then
+    deathmatch := 2
+  else if M_CheckParm('-deathmatch') > 0 then
+    deathmatch := 1;
+
+  case gamemode of
+    retail:
+      begin
+        printf(
+           '                         ' +
+           'The Ultimate DOOM Startup v%d.%.*d' +
+           '                           '#13#10,
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
+      end;
+    shareware:
+      begin
+        printf(
+           '                            ' +
+           'DOOM Shareware Startup v%d.%.*d' +
+           '                           '#13#10,
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
+      end;
+    registered:
+      begin
+        printf(
+           '                            ' +
+           'DOOM Registered Startup v%d.%.*d' +
+           '                           '#13#10,
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
+      end;
+    commercial:
+      begin
+        printf(
+           '                         ' +
+           'DOOM 2: Hell on Earth v%d.%.*d' +
+           '                           '#13#10,
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
+      end;
+  else
+    printf(
+           '                         ' +
+           'Public DOOM - v%d.%.*d' +
+           '                           '#13#10,
+            [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
+  end;
+
+  if devparm then
+    printf(D_DEVSTR);
+
+  // turbo option
+  p := M_CheckParm('-turbo');
+  if p <> 0 then
+  begin
+    if p < myargc - 1 then
+    begin
+      scale := atoi(myargv[p + 1], 200);
+      if scale < 10 then
+        scale := 10
+      else if scale > 200 then // 22/3/2012 (was 400)
+        scale := 200;          // 22/3/2012 (was 400)
+    end
+    else
+      scale := 200;
+    printf(' turbo scale: %d'#13#10, [scale]);
+    // 22/3/2012
+    forwardmove[0] := forwardmove[0] * scale div 100;
+    forwardmove[1] := forwardmove[1] * scale div 100;
+    sidemove[0] := sidemove[0] * scale div 100;
+    sidemove[1] := sidemove[1] * scale div 100;
+  end;
+
+  SUC_Progress(7);
+
+  // add any files specified on the command line with -file wadfile
+  // to the wad list
+  //
+  // convenience hack to allow -wart e m to add a wad file
+  // prepend a tilde to the filename so wadfile will be reloadable
+  p := M_CheckParm('-wart');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    myargv[p][5] := 'p';     // big hack, change to -warp
+
+  // Map name handling.
+    case gamemode of
+      shareware,
+      retail,
+      registered:
+        begin
+          if p < myargc - 2 then
+          begin
+            sprintf(filename, '~' + DEVMAPS + 'E%sM%s.wad',
+              [myargv[p + 1][1], myargv[p + 2][1]]);
+            printf('Warping to Episode %s, Map %s.'#13#10,
+              [myargv[p + 1], myargv[p + 2]]);
+          end;
+        end;
+    else
+      begin
+        p := atoi(myargv[p + 1]);
+        if p < 10 then
+          sprintf(filename, '~' + DEVMAPS + 'cdata/map0%d.wad', [p])
+        else
+          sprintf (filename,'~' + DEVMAPS + 'cdata/map%d.wad', [p]);
+      end;
+    end;
+
+    D_AddFile(filename);
+  end;
+
+  SUC_Progress(8);
+
+  D_AddWADFiles('-file');
+  for p := 1 to 9 do
+    D_AddWADFiles('-file' + itoa(p));
+  D_AddWADFiles('-lfile');  // JVAL launcher specific
+
+  SUC_Progress(9);
+
+  printf('PAK_InitFileSystem: Init PAK/ZIP/PK3/PK4 files.'#13#10);
+  PAK_InitFileSystem;
+
+  SUC_Progress(10);
+
+  PAK_LoadPendingPaks;
+
+  SUC_Progress(11);
+
+  D_AddPAKFiles('-pakfile');
+  for p := 1 to 9 do
+    D_AddPAKFiles('-pakfile' + itoa(p));
+
+  SUC_Progress(15);
+
+  D_AddPAKFiles('-lpakfile'); // JVAL launcher specific
+
+  SUC_Progress(16);
+
+  p := M_CheckParm('-playdemo');
+
+  if p = 0 then
+    p := M_CheckParm('-timedemo');
+
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    inc(p);
+    if CharPos('.', myargv[p]) > 0 then
+      filename := myargv[p]
+    else
+      sprintf(filename,'%s.lmp', [myargv[p]]);
+    D_AddFile(filename);
+    printf('Playing demo %s.'#13#10, [filename]);
+  end;
+
+  // get skill / episode / map from parms
+  startskill := skill_t(GetIntegerInRange(defaultskill, Ord(sk_baby), Ord(sk_nightmare)));
+  startepisode := 1;
+  startmap := 1;
+  autostart := false;
+
+  p := M_CheckParm('-skill');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    startskill := skill_t(Ord(myargv[p + 1][1]) - Ord('1'));
+    autostart := true;
+  end;
+
+  p := M_CheckParm('-episode');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    startepisode := atoi(myargv[p + 1]);
+    startmap := 1;
+    autostart := true;
+  end;
+
+  p := M_CheckParm('-timer');
+  if (p <> 0) and (p < myargc - 1) and (deathmatch <> 0) then
+  begin
+    _time := atoi(myargv[p + 1]);
+    printf('Levels will end after %d minute' + decide(_time > 1, 's', '') + #13#10, [_time]);
+  end;
+
+  p := M_CheckParm('-avg');
+  if (p <> 0) and (p <= myargc - 1) and (deathmatch <> 0) then
+    printf('Austin Virtual Gaming: Levels will end after 20 minutes'#13#10);
+
+  D_WadsAutoLoad(wads_autoload);
+  D_PaksAutoload(paks_autoload);
+
+  SUC_Progress(20);
+
+  D_CheckCommonParams;
+
+// Try to guess minimum zone memory to allocate
+  mb_min := 6 + V_ScreensSize(SCN_FG) div (1024 * 1024);
+  if zonesize < mb_min then
+    zonesize := mb_min;
+
+  mb_used := zonesize;
+
+  p := M_CheckParm('-zone');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    mb_used := atoi(myargv[p + 1]);
+    if mb_used < mb_min then
+    begin
+      printf('Zone memory allocation needs at least %d MB (%d).'#13#10, [mb_min, mb_used]);
+      mb_used := mb_min;
+    end;
+    zonesize := mb_used;
+  end;
+
+  // init subsystems
+  printf('Z_Init: Init zone memory allocation daemon, allocation %d MB.'#13#10, [mb_used]);
+  Z_Init;
+
+  SUC_Progress(30);
+
+  p := M_CheckParm('-nothinkers');
+  if p = 0 then
+  begin
+    printf('I_InitInfo: Initialize information tables.'#13#10);
+    Info_Init(true);
+  end
+  else
+  begin
+    I_Warning('Thinkers not initialized.'#13#10);
+    Info_Init(false);
+  end;
+
+  SUC_Progress(31);
+
+  printf('Info_InitStateOwners(): Initialize State Owners.'#13#10);
+  Info_InitStateOwners;
+
+  SUC_Progress(32);
+
+  for p := 1 to myargc do
+  begin
+    uext := strupper(fext(myargv[p]));
+    if (uext = '.WAD') or (uext = '.IWAD') or (uext = '.OUT') then
+      D_AddFile(myargv[p]);
+    if (uext = '.PK3') or
+       (uext = '.PK4') or
+       (uext = '.ZIP') or
+       (uext = '.PAK') then
+    begin
+      modifiedgame := true;
+      externalpakspresent := true;
+      PAK_AddFile(myargv[p]);
+    end;
+  end;
+
+  printf('W_Init: Init WADfiles.'#13#10);
+  if (W_InitMultipleFiles(wadfiles) = 0) or (W_CheckNumForName('playpal') = -1) then
+  begin
+    if fexists(D_FileInDoomPath('CHEX.WAD')) then
+      D_AddFile(D_FileInDoomPath('CHEX.WAD'))
+    else if fexists(D_FileInDoomPath('HACX.WAD')) then
+      D_AddFile(D_FileInDoomPath('HACX.WAD'))
+    else if fexists(D_FileInDoomPath('FREEDOOM1.WAD')) then
+      D_AddFile(D_FileInDoomPath('FREEDOOM1.WAD'))
+    else if fexists(D_FileInDoomPath('FREEDOOM2.WAD')) then
+      D_AddFile(D_FileInDoomPath('FREEDOOM2.WAD'))
+    else if fexists(D_FileInDoomPath('FREEDM.WAD')) then
+      D_AddFile(D_FileInDoomPath('FREEDM.WAD'))
+    else if fexists(D_FileInDoomPath('FREEDOOM.WAD')) then
+      D_AddFile(D_FileInDoomPath('FREEDOOM.WAD'));
+
+    if (W_InitMultipleFiles(wadfiles) = 0) or (W_CheckNumForName('playpal') = -1) then
+    begin
+      // JVAL
+      //  If none wadfile has found as far,
+      //  we search the current directory
+      //  and we use the first WAD we find
+      filename := findfile('*.wad');
+      if filename <> '' then
+      begin
+        I_Warning('Loading unspecified wad file: %s'#13#10, [filename]);
+        D_AddFile(filename);
+      end
+      else
+      begin
+        filename := findfile('*.iwad');
+        if filename <> '' then
+        begin
+          I_Warning('Loading unspecified wad file: %s'#13#10, [filename]);
+          D_AddFile(filename);
+        end
+      end;
+      if W_InitMultipleFiles(wadfiles) = 0 then
+        I_Error('W_InitMultipleFiles(): no files found');
+    end;
+  end;
+
+  D_CheckInteterminedMode;
+
+  SUC_Progress(38);
+
+  printf('SC_InitGameDefines: Determine global defines.'#13#10);
+  D_GameDefines.Clear;
+  D_FillGameDefines;
+
+  SUC_Progress(39);
+
+  printf('W_AutoLoadPakFiles: Autoload required pak files.'#13#10);
+  D_AutoLoad.Load;
+
+  SUC_Progress(40);
+
+  printf('SC_Init: Initializing script engine.'#13#10);
+  D_ActorDef.Initialize;
+
+  SUC_Progress(41);
+
+  printf('S_InitDEHExtraSounds: Initializing dehacked sounds.'#13#10);
+  S_InitDEHExtraSounds;
+
+  printf('DEH_Init: Initializing dehacked subsystem.'#13#10);
+  SC_DefaultStatedefLump;
+  DEH_Init;
+{$IFDEF RADIX}
+  // the codepointers of Radix, before GAMEDEF and the ACTORDEF lumps name them
+  RX_RegisterActions;
+{$ENDIF}
+
+  if M_CheckParm('-internalgamedef') = 0 then
+  begin
+    lump := W_CheckNumForName('GAMEDEF');
+    if lump >= 0 then
+    begin
+      if strupper(W_LumpCRC32(lump)) <> 'AA33FCB2' then
+        DEH_ParseLumpNum(lump);
+    end
+    else
+      I_Warning('DEH_ParseLumpName(): GAMEDEF lump not found, using defaults.'#13#10);
+  end;
+
+  if customgame in [cg_chex, cg_chex2] then
+    if not DEH_ParseLumpName('CHEX.DEH') then
+      I_Warning('DEH_ParseLumpName(): GAMEDEF lump for CHEX QUEST not found, using defaults.'#13#10);
+
+  if customgame = cg_hacx then
+    if not DEH_ParseLumpName('HACX.DEH') then
+      I_Warning('DEH_ParseLumpName(): GAMEDEF lump for HACX not found, using defaults.'#13#10);
+
+  SUC_Progress(42);
+
+  // JVAL: PascalScript
+  printf('PS_Init: Initializing pascal script compiler.'#13#10);
+  PS_Init;
+
+  SUC_Progress(43);
+
+  printf('SC_ParseSndInfoLumps: Parsing SNDINFO lumps.'#13#10);
+  D_ActorDef.ParseSoundInfoLumps;
+
+  SUC_Progress(44);
+
+  p := M_CheckParm('-noactordef');
+  if p <= 0 then
+  begin
+    printf('SC_ParseActordefLumps: Parsing ACTORDEF lumps.'#13#10);
+    D_ActorDef.ParseActorDefLumps;
+  end;
+
+  SUC_Progress(45);
+
+  if M_CheckParm('-nowaddehacked') = 0 then
+    if not DEH_ParseLumpNames('DEHACKED') then
+      printf('DEH_ParseLumpName: DEHACKED lump(s) not found.'#13#10);
+
+  // JVAL Adding dehached files
+  D_AddDEHFiles('-deh');
+  D_AddDEHFiles('-bex');
+
+  // JVAL: 20210108 - Must be called after parsing ACTORDEF lumps
+  Info_ResolveActordefActors;
+
+  printf('Info_CheckStates: Check states tables'#13#10);
+  Info_CheckStates;
+
+  printf('Info_CheckStatesArgs: Checking states arguments'#13#10);
+  Info_CheckStatesArgs;
+
+  printf('Info_SaveActions: Saving state actions'#13#10);
+  Info_SaveActions;
+
+  SUC_Progress(50);
+
+  for i := 0 to NUM_STARTUPMESSAGES - 1 do
+    if startmsg[i] <> '' then
+      printf('%s'#13#10, [startmsg[i]]);
+
+  SUC_Progress(51);
+
+  printf('P_ACSInit: Initializing ACS script.'#13#10);
+  P_ACSInit;
+
+  SUC_Progress(52);
+
+  printf('T_Init: Initializing texture manager.'#13#10);
+  V_InitDrawTextures;
+
+  SUC_Progress(55);
+
+  printf('V_Init: allocate screens.'#13#10);
+  V_Init;
+
+  SUC_Progress(56);
+
+  printf('AM_Init: initializing automap.'#13#10);
+  AM_Init;
+
+  printf('MObj_Init: initializing mobj commands.'#13#10);
+  MObj_Init;
+
+  SUC_Progress(57);
+
+  p := M_CheckParm('-autoexec');
+  if (p <> 0) and (p < myargc - 1) then
+    autoexecfile := myargv[p + 1]
+  else
+    autoexecfile := DEFAUTOEXEC;
+
+  printf('M_InitMenus: Initializing menus.'#13#10);
+  M_InitMenus;
+
+  SUC_Progress(58);
+
+  // UMAPINFO must be parsed after intializing the menus
+  printf('U_ParseMapInfo: Parsing UMAPINFO lumps.'#13#10);
+  D_MapInfo.Load(False, 'UMAPINFO');
+
+  SUC_Progress(59);
+
+  printf('D_IdentifyGameDirectories: Identify game directories.'#13#10);
+  D_IdentifyGameDirectories;
+
+  SUC_Progress(60);
+
+  p := M_CheckParm('-warp');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    if gamemode = commercial then
+    begin
+      startmap := atoi(myargv[p + 1]);
+      autostart := true;
+    end
+    else
+    begin
+      if p < myargc - 2 then
+      begin
+        startepisode := atoi(myargv[p + 1]);
+        startmap := atoi(myargv[p + 2]);
+        autostart := true;
+      end;
+    end;
+  end;
+
+  SUC_Progress(61);
+
+  // Check for -file in shareware
+  // JVAL
+  // Allow modified games if -devparm is specified, for debuging reasons
+  if modifiedgame and not devparm then
+  begin
+    err_shown := false;
+    if gamemode = shareware then
+    begin
+      if not hackshareware then
+        I_DevError(#13#10 + 'D_DoomMain(): You cannot use external files with the shareware version. Register!');
+      err_shown := true;
+    end;
+    // Check for fake IWAD with right name,
+    // but w/o all the lumps of the registered version.
+    if not err_shown and (gamemode in [registered, retail]) then
+    begin
+      // These are the lumps that will be checked in IWAD,
+      // if any one is not present, execution will be aborted.
+      s_error := #13#10 + 'D_DoomMain(): This is not the registered version.';
+      episodes := 3;
+      if gamemode = retail then
+        inc(episodes);
+      for i := 2 to episodes do
+        for j := 1 to 9 do
+          if W_CheckNumForName('e' + itoa(i) + 'm' + itoa(j)) < 0 then
+          begin
+            if not err_shown then
+              I_DevError(s_error);
+            err_shown := true;
+          end;
+      if not err_shown then
+      begin
+        if W_CheckNumForName('dphoof') < 0 then
+          I_DevError(s_error)
+        else if W_CheckNumForName('bfgga0') < 0 then
+          I_DevError(s_error)
+        else if W_CheckNumForName('heada1') < 0 then
+          I_DevError(s_error)
+        else if W_CheckNumForName('cybra1') < 0 then
+          I_DevError(s_error)
+        else if W_CheckNumForName('spida1d1') < 0 then
+          I_DevError(s_error);
+      end;
+    end;
+
+  // If additonal PWAD files are used, print modified banner
+    printf(MSG_MODIFIEDGAME);
+    if showmessageboxonmodified then
+    begin
+      oldoutproc := outproc;
+      I_IOSetWindowHandle({$IFDEF FPC}0{$ELSE}SUC_GetHandle{$ENDIF});
+      outproc := @I_IOMessageBox; // Print the message again to messagebox
+      printf(MSG_MODIFIEDGAME);
+      outproc := oldoutproc;
+    end;
+  end;
+
+  SUC_Progress(65);
+
+  case gamemode of
+    shareware,
+    indetermined:
+      printf(MSG_SHAREWARE);
+    registered,
+    retail,
+    commercial:
+      printf(MSG_COMMERCIAL);
+  else
+    begin
+      printf(MSG_UNDETERMINED);
+    end;
+  end;
+
+  SUC_Progress(66);
+
+  printf('Info_InitRandom: Initializing randomizers.'#13#10);
+  Info_InitRandom;
+
+  SUC_Progress(67);
+
+  printf('M_Init: Init miscellaneous info.'#13#10);
+  M_Init;
+
+  SUC_Progress(68);
+
+  p := M_CheckParm('-mmx');
+  if p > 0 then
+    usemmx := true;
+
+  p := M_CheckParm('-nommx');
+  if p > 0 then
+    usemmx := false;
+
+  if usemmx then
+  begin
+    printf('I_DetectCPU: Detecting CPU extensions.'#13#10);
+    I_DetectCPU;
+  end;
+  printf('MT_Init: Initializing multithreading utilities.'#13#10);
+  MT_Init;
+
+  SUC_Progress(69);
+
+  printf('W_InitPK3Sounds: Initializing sound files in pk3 filesystem'#13#10);
+  W_InitPK3Sounds;
+
+  SUC_Progress(70);
+
+  printf('R_Init: Init %s refresh daemon.'#13#10, [strupper(_GAME)]);
+  R_Init;
+
+  SUC_Progress(80);
+
+  printf('P_Init: Init Playloop state.'#13#10);
+  D_LevelLoader.Initialize;
+
+  SUC_Progress(81);
+
+  printf('D_CheckNetGame: Checking network game status.'#13#10);
+  D_NetGame.Start;
+
+  SUC_Progress(85);
+
+  printf('S_Init: Setting up sound.'#13#10);
+  S_Init(snd_SfxVolume, snd_MusicVolume);
+
+  SUC_Progress(89);
+
+  printf('SV_InitializeSerializers: Setting up serializers.'#13#10);
+  SV_InitializeSerializers;
+
+  SUC_Progress(90);
+
+  printf('HU_Init: Setting up heads up display.'#13#10);
+  HU_Init;
+
+  SUC_Progress(91);
+
+  printf('ST_Init: Init status bar.'#13#10);
+  ST_Init;
+
+  SUC_Progress(92);
+
+  // check for a driver that wants intermission stats
+  p := M_CheckParm('-statcopy');
+  if (p > 0) and (p < myargc - 1) then
+  begin
+  // for statistics driver
+    statcopy := pointer(atoi(myargv[p + 1]));
+    printf('External statistics registered.'#13#10);
+  end;
+
+  // start the apropriate game based on parms
+  p := M_CheckParm('-record');
+
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    G_RecordDemo(myargv[p + 1]);
+    autostart := true;
+  end;
+
+  SUC_Progress(93);
+
+{$IFDEF OPENGL}
+  GL_InitGraphics;
+{$ELSE}
+  I_InitGraphics;
+{$ENDIF}
+
+  SUC_Progress(96);
+
+  printf('I_Init: Setting up machine state.'#13#10);
+  I_Init;
+
+  SUC_Progress(97);
+
+  printf('C_Init: Initializing console.'#13#10);
+  D_Console.Initialize;
+
+  p := M_CheckParm('-keyboardmode');
+  if (p > 0) and (p < myargc - 1) then
+  begin
+    inc(p);
+    kparm := strupper(myargv[p]);
+    if (kparm = '0') or (kparm = 'ARROWS') then
+      M_SetKeyboardMode(0)
+    else if (kparm = '1') or (kparm = 'WASD') then
+      M_SetKeyboardMode(1)
+    else if (kparm = '2') or (kparm = 'ESDF') then
+      M_SetKeyboardMode(2);
+  end;
+
+  SUC_Progress(98);
+
+  // JVAL: PascalScript
+  printf('PS_CompileAllScripts: Compiling all scripts.'#13#10);
+  PS_CompileAllScripts;
+
+  SUC_Progress(100);
+
+  SUC_Close;
+
+  printf(StringOfChar('-', 21) + #13#10);
+  printf('Load time: %2.3f secs'#13#10, [(I_GetTickCount - startloadingtime) / 1000]);
+  printf(StringOfChar('-', 21) + #13#10);
+
+  p := M_CheckParm('-playdemo');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+  // JVAL
+  /// if -nosingledemo param exists does not
+  // quit after one demo
+    singledemo := M_CheckParm('-nosingledemo') = 0;
+    G_DeferedPlayDemo(myargv[p + 1]);
+    D_DoomLoop;  // never returns
+  end;
+
+  p := M_CheckParm('-timedemo');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    G_TimeDemo(myargv[p + 1]);
+    D_DoomLoop;  // never returns
+  end;
+
+  p := M_CheckParm('-loadgame');
+  if (p <> 0) and (p < myargc - 1) then
+  begin
+    sprintf(filename, M_SaveFileName(D_GetSavePath + SAVEGAMENAME) + '%s.dsg', [myargv[p + 1][1]]);
+    G_LoadGame(filename);
+  end;
+
+  if gameaction <> ga_loadgame then
+  begin
+    if autostart or netgame then
+    begin
+      G_InitNew(startskill, startepisode, startmap);
+    end
+    else
+      D_StartTitle; // start up intro loop
+  end;
+
+  D_DoomLoop;  // never returns
+end;
+
+//==============================================================================
+//
+// D_ShutDown
+//
+//==============================================================================
+procedure D_ShutDown;
+var
+  i: integer;
+begin
+  printf('M_ShutDownMenus: Shut down menus.'#13#10);
+  M_ShutDownMenus;
+  printf('C_ShutDown: Shut down console.'#13#10);
+  if main_console <> nil then
+    main_console.Shutdown;
+  printf('P_ShutDown: Shut down Playloop state.'#13#10);
+  D_LevelLoader.ShutDown;
+  printf('R_ShutDown: Shut down %s refresh daemon.', [strupper(_GAME)]);
+  R_ShutDown;
+  printf('Info_ShutDownRandom: Shut down randomizers.'#13#10);
+  Info_ShutDownRandom;
+  printf('P_ACSShutDown: Shut down ACS script.'#13#10);
+  P_ACSShutDown;
+  printf('T_ShutDown: Shut down texture manager.'#13#10);
+  V_ShutDownDrawTextures;
+  printf('SC_ShutDown: Shut down script engine.'#13#10);
+  D_ActorDef.ShutDown;
+  printf('SC_ShutDownGameDefines: Shut down global defines.'#13#10);
+  D_GameDefines.Clear;
+  // JVAL: PascalScript
+  printf('PS_ShutDown: Shut down pascal script compiler.'#13#10);
+  PS_ShutDown;
+  printf('DEH_ShutDown: Shut down dehacked subsystem.'#13#10);
+  DEH_ShutDown;
+  printf('Info_ShutDown: Shut down game definition.'#13#10);
+  Info_ShutDown;
+  printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);
+  PAK_ShutDown;
+  printf('E_ShutDown: Shut down ENDOOM screen.'#13#10);
+  if main_endoom <> nil then
+    main_endoom.Shutdown;
+  printf('U_FreeMapInfo: Free UMAPINFO data.'#13#10);
+  D_MapInfo.Release;
+  printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
+  Z_ShutDown;
+  printf('W_ShutDown: Shut down WAD file system.'#13#10);
+  W_ShutDown;
+  printf('V_ShutDown: Shut down screens.'#13#10);
+  V_ShutDown;
+  printf('MT_ShutDown: Shut down multithreading utilities.'#13#10);
+  MT_ShutDown;
+  printf('AM_ShutDown: Shut down automap.'#13#10);
+  AM_ShutDown;
+  printf('MObj_ShutDown: Shut down mobjs.'#13#10);
+  MObj_ShutDown;
+  printf('SV_ShutDownSerializers: Shut down serializers.'#13#10);
+  SV_ShutDownSerializers;
+
+  gamedirectories.Free;
+
+  if wadfiles <> nil then
+  begin
+    for i := 0 to wadfiles.Count - 1 do
+      if wadfiles.Objects[i] <> nil then
+        wadfiles.Objects[i].Free;
+
+    wadfiles.Free;
+  end;
+
+end;
+
+end.
+

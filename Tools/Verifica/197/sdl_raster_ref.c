@@ -1,6 +1,6 @@
 /*
   Issue #197: il rasterizzatore software di SDL3 (la DLL vera di Reference\war1\deps\lib\win32) su scenari con seme fisso.
-  Serve a provare TWarImageBlitter (Libs\War\DelphiDoom.War.Render.Blitter.pas) contro i pixel veri: SDL_RenderTexture e
+  Serve a provare TWarImageBlitter (Games\War\DelphiDoom.War.Render.Blitter.pas) contro i pixel veri: SDL_RenderTexture e
   SDL_RenderTextureRotated con la modalita' NEAREST, specchi, colore e alfa della texture e SDL_BLENDMODE_BLEND, SDL_RenderFillRect
   e SDL_RenderRect, su una SDL_Surface RGBA32 di 320 x 200 con il renderer software.
 

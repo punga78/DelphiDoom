@@ -1,5 +1,5 @@
 /*
-  Issue #192 (seconda fetta): harness di riferimento per il testo e gli sprite di Libs\War.
+  Issue #192 (seconda fetta): harness di riferimento per il testo e gli sprite di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez) estratto alla lettera da
   Compila-RenderRef.ps1 (file *.inc): war_font.c (le funzioni di misura, di divisione in righe e di disegno del testo),
   war_render.c (la pila delle trasformazioni e wr_subImage), war_sprites.c intero e le funzioni wres_* che leggono i

@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the way of a frame of colors to the display        }
-{  (issue 183): the adapter of the game, the selector of Libs\GameHost and a    }
+{  (issue 183): the adapter of the game, the selector of Framework\GameHost and a }
 {  display that shows pictures of colors, or one that does not                  }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -17,7 +17,7 @@ uses
   DelphiDoom.GameHost.TrueColor.Intf, DelphiDoom.GameHost.VideoDeviceSelector, DelphiDoom.Xcom.HostVideoDevice;
 
 type
-  /// <summary>A display of Libs\GameHost that only shows 8 bit pictures</summary>
+  /// <summary>A display of Framework\GameHost that only shows 8 bit pictures</summary>
   TFakeHostIndexedDisplay = class(TInterfacedObject, IGameHostVideoDevice)
   public
     Presented: Integer;
@@ -26,7 +26,7 @@ type
     procedure SetTitle(const ATitle: string);
   end;
 
-  /// <summary>A display of Libs\GameHost that records the pictures of colors it is given</summary>
+  /// <summary>A display of Framework\GameHost that records the pictures of colors it is given</summary>
   TFakeHostTrueColorDisplay = class(TFakeHostIndexedDisplay, IGameHostTrueColorDisplay)
   public
     TrueColorPresented: Integer;
@@ -92,7 +92,7 @@ var
   LWidth: Integer;
   LHeight: Integer;
 begin
-  // the chain of Xcom32: the adapter of the game, the selector of Libs\GameHost, the display it makes
+  // the chain of Xcom32: the adapter of the game, the selector of Framework\GameHost, the display it makes
   LFactory :=
     function: IGameHostVideoDevice
     begin

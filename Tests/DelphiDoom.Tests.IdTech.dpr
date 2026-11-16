@@ -15,10 +15,10 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.IdTech.Types in '..\Libs\IdTech\DelphiDoom.IdTech.Types.pas',
-  DelphiDoom.IdTech.Intf in '..\Libs\IdTech\DelphiDoom.IdTech.Intf.pas',
-  DelphiDoom.IdTech.Engine in '..\Libs\IdTech\DelphiDoom.IdTech.Engine.pas',
-  DelphiDoom.IdTech.Factory in '..\Libs\IdTech\DelphiDoom.IdTech.Factory.pas',
+  DelphiDoom.IdTech.Types in '..\IdTech1\IdTech\DelphiDoom.IdTech.Types.pas',
+  DelphiDoom.IdTech.Intf in '..\IdTech1\IdTech\DelphiDoom.IdTech.Intf.pas',
+  DelphiDoom.IdTech.Engine in '..\IdTech1\IdTech\DelphiDoom.IdTech.Engine.pas',
+  DelphiDoom.IdTech.Factory in '..\IdTech1\IdTech\DelphiDoom.IdTech.Factory.pas',
   DelphiDoom.Tests.IdTech.Types in 'Source\DelphiDoom.Tests.IdTech.Types.pas',
   DelphiDoom.Tests.IdTech.Engine in 'Source\DelphiDoom.Tests.IdTech.Engine.pas';
 

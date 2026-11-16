@@ -26,7 +26,7 @@ type
     procedure BuildWorlds(var AState: Cardinal);
     procedure MoveControlSectors(var AState: Cardinal);
     procedure CheckWorlds(const AText: string);
-    /// <summary>T_Scroll as Base\p_scroll.pas writes it now, on the world of the test</summary>
+    /// <summary>T_Scroll as IdTech1\Base\p_scroll.pas writes it now, on the world of the test</summary>
     procedure NewScroll(AWorld: POldScrollWorld; AScroller: Pscroll_t);
   public
     [Test]

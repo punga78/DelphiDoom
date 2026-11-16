@@ -20,7 +20,7 @@ uses
 
 type
   /// <summary>
-  ///   Copy of the software AM_drawFline of Base\am_map.pas at 54262e7a (issue #185), with its
+  ///   Copy of the software AM_drawFline of IdTech1\Base\am_map.pas at 54262e7a (issue #185), with its
   ///   nested PUTDOT. The globals of the engine (amstate, viewwindowx/y, viewwidth/height,
   ///   videomode, fb, fb32, f_w, videopal) are fields
   /// </summary>

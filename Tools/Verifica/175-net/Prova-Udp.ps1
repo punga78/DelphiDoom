@@ -1,5 +1,5 @@
 # Prova della rete di Greed32 su UDP (issue #175): due processi senza finestra sulla stessa macchina giocano la
-# stessa mappa come giocatore 0 e giocatore 1, sul trasporto UDP di Libs\Net (porte locali), per un numero di tic;
+# stessa mappa come giocatore 0 e giocatore 1, sul trasporto UDP di IdTech1\Net (porte locali), per un numero di tic;
 # alla fine ognuno scrive il suo stato (-dump) e lo script controlla che ciascuno sappia dov'e' l'altro:
 # la posizione che A ha ricevuto di B (net.1.x, net.1.y) e' quella che B dice di se' (player.x, player.y) entro
 # la distanza che un giocatore fa nei tic tra due pacchetti, e viceversa; i nomi sono arrivati.

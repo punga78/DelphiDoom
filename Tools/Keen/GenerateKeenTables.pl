@@ -1,4 +1,4 @@
-# GenerateKeenTables.pl - writes the Pascal tables of Libs\Keen from the C sources of Keen Dreams
+# GenerateKeenTables.pl - writes the Pascal tables of Games\Keen from the C sources of Keen Dreams
 # (Reference\keen, id Software, GPL v2 or later): the constants of graphkdr.h and audiokdr.h, the ids of the
 # think, contact and react functions, and the 213 statetype of kd_keen.c, kd_act1.c and kd_act2.c.
 #

@@ -1,4 +1,4 @@
-// Harness for Libs\XcomBattle (Projectile and the parts of TileEngine that use a BattlescapeGame): the REAL objects of the
+// Harness for Games\XcomBattle (Projectile and the parts of TileEngine that use a BattlescapeGame): the REAL objects of the
 // OpenXcom build (see build.cmd) answer, on the maps of enginegen (BuildMap), questions about
 //   getOriginVoxel, getDirectionTo, validateThrow (with ProjectileFlyBState::validThrowRange),
 //   Projectile (calculateTrajectory, calculateThrow, applyAccuracy, move, the getters) and TileEngine::hit.
