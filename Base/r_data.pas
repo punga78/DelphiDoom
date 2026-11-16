@@ -2119,7 +2119,6 @@ begin
     planinput.SideTextures[i * 3 + 1] := sides[i].midtexture;
     planinput.SideTextures[i * 3 + 2] := sides[i].bottomtexture;
   end;
-  nextra := 0;
 {$IFDEF HEXEN}
   // JVAL: Precaching animated textures
   nextra := animatedtextureslist.Count;
