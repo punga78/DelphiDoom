@@ -2095,8 +2095,8 @@ begin
 
   hitlist := mallocz(numsfx * SizeOf(boolean));
 
-  th := thinkercap.next;
-  while (th <> nil) and (th <> @thinkercap) do
+  th := TTickState.ThinkerCap.next;
+  while (th <> nil) and (th <> @TTickState.ThinkerCap) do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin

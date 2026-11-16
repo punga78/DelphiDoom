@@ -590,7 +590,7 @@ end;
 function RX_MenuNewGame(choice: integer): pointer;
 begin
   result := nil;
-  if TGameSession.NetGame and not demoplayback then
+  if TGameSession.NetGame and not TGameSession.DemoPlayback then
   begin
     // the engine tells why a new game cannot start
     if Assigned(rxnewgameroutine) then

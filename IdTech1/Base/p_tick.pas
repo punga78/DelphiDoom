@@ -47,9 +47,20 @@ uses
 // but the first element must be thinker_t.
 //
 
-var
-// Both the head and tail of the thinker list.
-  thinkercap: thinker_t;
+type
+  /// <summary>
+  ///   The state of the tick (issue #245): the head of the thinker list and the tics of the level.
+  ///   Class vars with a fixed address, like the globals they replace: no property and no method
+  ///   (a call at every read); the class lives here, in the unit that writes them, so that the
+  ///   routines of this unit keep reading them as before (see PIANO_TUTTO_A_CLASSI 11.22)
+  /// </summary>
+  TTickState = class sealed
+  public
+    /// <summary>Both the head and tail of the thinker list</summary>
+    class var ThinkerCap: thinker_t;
+    /// <summary>The tics since the level started</summary>
+    class var LevelTime: integer;
+  end;
 
 //==============================================================================
 //
@@ -87,7 +98,6 @@ procedure P_Ticker;
 function P_ThinkerIsRemoved(thinker: Pthinker_t): boolean;
 
 var
-  leveltime: integer;
 {$IFDEF HEXEN}
   TimerGame: integer;
 {$ENDIF}
@@ -202,7 +212,7 @@ end;
 //==============================================================================
 function P_WorldTime: TEngineWorldTime;
 begin
-  result.LevelTime := @leveltime;
+  result.LevelTime := @TTickState.LevelTime;
   result.IsFrozen := @isgamefreezed;
   result.IsSuspended := @isgamesuspended;
 {$IFDEF HEXEN}
@@ -310,16 +320,16 @@ begin
 
   // pause if in menu and at least one tic has been run
   if not TGameSession.NetGame and menuactive and
-     not demoplayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
+     not TGameSession.DemoPlayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
     exit;
 
-  if not demoplayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (leveltime <> 0) then
+  if not TGameSession.DemoPlayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (TTickState.LevelTime <> 0) then
     exit;
 
   isgamesuspended := false;
 
   // JVAL: Script Events
-  if leveltime = 0 then
+  if TTickState.LevelTime = 0 then
   begin
     PS_EventMapStart;
     for i := 0 to MAXPLAYERS - 1 do
@@ -340,7 +350,7 @@ begin
   end;
 
 {$ENDIF}
-  if demoplayback or TGameSession.DemoRecording then
+  if TGameSession.DemoPlayback or TGameSession.DemoRecording then
     isgamefreezed := false;
 
   P_World.RunThinkers;
@@ -357,18 +367,18 @@ begin
 {$ENDIF}
 
     // JVAL: Script Events
-    PS_EventTick(leveltime);
+    PS_EventTick(TTickState.LevelTime);
 
-    if leveltime mod TICRATE = 0 then
+    if TTickState.LevelTime mod TICRATE = 0 then
     begin
-      PS_EventTimerEverySecond(leveltime div TICRATE);
-      if leveltime mod (60 * TICRATE) = 0 then
-        PS_EventTimerEveryMinute(leveltime div (60 * TICRATE));
+      PS_EventTimerEverySecond(TTickState.LevelTime div TICRATE);
+      if TTickState.LevelTime mod (60 * TICRATE) = 0 then
+        PS_EventTimerEveryMinute(TTickState.LevelTime div (60 * TICRATE));
     end;
   end;
 
   // for par times
-  inc(leveltime);
+  inc(TTickState.LevelTime);
 
   // the parity tools (nothing when they are off)
   Parity_AfterTick;

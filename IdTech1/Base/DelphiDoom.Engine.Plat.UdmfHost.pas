@@ -91,7 +91,7 @@ end;
 
 function TEngineUdmfPlatHost.GetLevelTime: Integer;
 begin
-  Result := leveltime;
+  Result := TTickState.LevelTime;
 end;
 
 function TEngineUdmfPlatHost.IsModernEngine: Boolean;

@@ -525,7 +525,7 @@ begin
     player.attackdown := false;
 
   // bob the weapon based on movement speed
-  angle := (128 * leveltime) and FINEMASK;
+  angle := (128 * TTickState.LevelTime) and FINEMASK;
   psp.sx := FRACUNIT + FixedMul(player.bob, finecosine[angle]);
   angle := angle and (FINEANGLES div 2 - 1);
   psp.sy := WEAPONTOP + FixedMul(player.bob, finesine[angle]);

@@ -121,8 +121,8 @@ begin
   i := -1;
   while P_FindSectorFromLineTag2(line, i) >= 0 do
   begin
-    th := thinkercap.next;
-    while th <> @thinkercap do
+    th := TTickState.ThinkerCap.next;
+    while th <> @TTickState.ThinkerCap do
     begin
       m := Pmobj_t(th);
       if (@th._function.acp1 = @P_MobjThinker) and

@@ -109,11 +109,11 @@ begin
     SH_StateLogOpen;
   if not statelog_open then
     exit;
-  if (leveltime mod LOG_PERIOD <> 0) or (leveltime = statelog_lasttic) then
+  if (TTickState.LevelTime mod LOG_PERIOD <> 0) or (TTickState.LevelTime = statelog_lasttic) then
     exit;
-  statelog_lasttic := leveltime;
+  statelog_lasttic := TTickState.LevelTime;
 
-  line := Format('tic %d', [leveltime]);
+  line := Format('tic %d', [TTickState.LevelTime]);
   for i := 0 to controller.Count - 1 do
   begin
     car := controller.Cars[i];

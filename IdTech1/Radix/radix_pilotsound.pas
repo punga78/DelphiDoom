@@ -220,8 +220,8 @@ var
   mo: Pmobj_t;
 begin
   result := true;
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -257,7 +257,7 @@ begin
   duration := RX_SoundDuration(snd_siren_id);
   if duration < 0 then
     duration := UNKNOWNDURATIONTICS;
-  if leveltime mod (duration + 1) <> 0 then
+  if TTickState.LevelTime mod (duration + 1) <> 0 then
     exit;
 
   if RX_AttackingEnemyNear(p.mo) then

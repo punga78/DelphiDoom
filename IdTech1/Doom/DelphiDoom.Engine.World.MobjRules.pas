@@ -481,10 +481,10 @@ begin
         if G_PlayingEngineVersion >= VERSION207 then
           player.deltaviewheight := FixedMul(player.deltaviewheight, FixedDiv(mo.height, mo.info.height));
 
-        if leveltime > player.nextoof then
+        if TTickState.LevelTime > player.nextoof then
         begin
           S_StartSound(mo, Ord(sfx_oof));
-          player.nextoof := leveltime + 4 * TICRATE;
+          player.nextoof := TTickState.LevelTime + 4 * TICRATE;
         end;
       end;
       mo.momz := 0;
@@ -1095,7 +1095,7 @@ begin
      (mobj._type <> Ord(MT_INV)) and
      (mobj._type <> Ord(MT_INS)) then
   begin
-    P_World.ItemRespawn.Add(mobj.spawnpoint, leveltime);
+    P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
   end;
 end;
 
@@ -1108,7 +1108,7 @@ end;
 
 class function TMobjGameRules.ItemRespawnWaits(const AQueuedTime: integer): boolean;
 begin
-  result := leveltime - AQueuedTime < 30 * TICRATE;
+  result := TTickState.LevelTime - AQueuedTime < 30 * TICRATE;
 end;
 
 class procedure TMobjGameRules.SpawnItemFog(x, y, z: fixed_t; mthing: Pmapthing_t);
@@ -1193,7 +1193,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
+  result := (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

@@ -397,7 +397,7 @@ end;
 function TEngineOverlayCanvas.LevelTime: Integer;
 begin
   // qualified: a method with the name of a global hides the global
-  Result := p_tick.leveltime;
+  Result := TTickState.LevelTime;
 end;
 
 function TEngineOverlayCanvas.FindColorIndex(const ARed, AGreen, ABlue: Byte): Byte;

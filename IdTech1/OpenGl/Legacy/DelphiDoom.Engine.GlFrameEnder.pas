@@ -352,7 +352,7 @@ begin
             y2 := FSubY2
           else
             y2 := GLDRAWHEIGHT;
-          if demoplayback then
+          if TGameSession.DemoPlayback then
             y2 := y2 - V_PreserveY(10);
           glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y2, GLDRAWWIDTH, GLDRAWHEIGHT - y2, GL_BGRA, GL_UNSIGNED_BYTE, @screen32[y2 * GLDRAWWIDTH]);
         end;

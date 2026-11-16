@@ -273,7 +273,7 @@ procedure RX_HudDrawTime(const x, y: integer);
 var
   clock: TRadixHudClock;
 begin
-  clock := TRadixHudGauges.Clock(leveltime);
+  clock := TRadixHudGauges.Clock(TTickState.LevelTime);
   if clock.Overflow then
     M_WriteSmallText(x, y, 'SUCKS', SCN_HUD) // JVAL 20200316 - SUCKS easter egg
   else
@@ -386,7 +386,7 @@ begin
   if mo = nil then
     exit;
 
-  if TRadixHudGauges.RadarJammed(hud_player.playerstate = PST_DEAD, hud_radix.scannerjam, leveltime) then
+  if TRadixHudGauges.RadarJammed(hud_player.playerstate = PST_DEAD, hud_radix.scannerjam, TTickState.LevelTime) then
   begin
     RX_HudReplaceColor(x - range - 1, y - range, x + range + 1, y + range,
       TRadixHudGauges.RADAR_BASE_COLOR, TRadixHudGauges.RADAR_JAMMED_COLOR);
@@ -394,7 +394,7 @@ begin
   end;
 
   // JVAL: 20200424 - Radar glow effect
-  newcolor := TRadixHudGauges.RadarGlowColor(leveltime);
+  newcolor := TRadixHudGauges.RadarGlowColor(TTickState.LevelTime);
   if newcolor <> TRadixHudGauges.RADAR_BASE_COLOR then
     RX_HudReplaceColor(x - range - 1, y - range, x + range + 1, y + range,
       TRadixHudGauges.RADAR_BASE_COLOR, newcolor);
@@ -512,7 +512,7 @@ begin
   if hud_player.playerstate = PST_DEAD then
     exit;
 
-  p := crosshairs[TRadixHudGauges.CrossHairIndex(hud_radix.plinetarget <> nil, leveltime, hud_radix.pcrosstic)];
+  p := crosshairs[TRadixHudGauges.CrossHairIndex(hud_radix.plinetarget <> nil, TTickState.LevelTime, hud_radix.pcrosstic)];
   if withstatusbar then
     V_DrawPatch(160 - p.width div 2, 100 - (STATUSBAR_HEIGHT + p.height) div 2, SCN_HUD, p, false)
   else
@@ -617,7 +617,7 @@ begin
   RX_HudDrawKills(204, 227, SB_Y + 30);
 
   // Draw threat indicator
-  V_DrawPatch(290, SB_Y + 16, SCN_HUD, treatimages[TRadixHudGauges.ThreatLit(hud_radix.threat, leveltime)], false);
+  V_DrawPatch(290, SB_Y + 16, SCN_HUD, treatimages[TRadixHudGauges.ThreatLit(hud_radix.threat, TTickState.LevelTime)], false);
 
   // Draw armor, shield and energy bars
   RX_HudDrawBar(189, SB_Y + 7, ArmourBar, hud_player.armorpoints);
@@ -701,7 +701,7 @@ begin
 
   // Draw threat indicator
   if full then
-    V_DrawPatch(147, 23, SCN_HUD, treatimages[TRadixHudGauges.ThreatLit(hud_radix.threat, leveltime)], false);
+    V_DrawPatch(147, 23, SCN_HUD, treatimages[TRadixHudGauges.ThreatLit(hud_radix.threat, TTickState.LevelTime)], false);
 
   // Draw armor, shield and energy bars
   RX_HudDrawBar(202, 156, ArmourBar, hud_player.armorpoints);

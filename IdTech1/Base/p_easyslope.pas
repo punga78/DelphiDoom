@@ -223,8 +223,8 @@ begin
 
   slopeinfo := mallocz(numsectors * SizeOf(slopeitem_t));
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -430,8 +430,8 @@ begin
 
   slopeinfo := mallocz(numsectors * SizeOf(slopeitem_t));
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin

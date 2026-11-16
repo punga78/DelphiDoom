@@ -146,9 +146,9 @@ begin
   if LSpinAngle <> 0 then
   begin
     if not isgamesuspended then
-      LSpinAngle := Round(((leveltime + ticfrac / FRACUNIT) / TICRATE * LSpinAngle) * (ANGLE_MAX / 360))
+      LSpinAngle := Round(((TTickState.LevelTime + ticfrac / FRACUNIT) / TICRATE * LSpinAngle) * (ANGLE_MAX / 360))
     else
-      LSpinAngle := Round((leveltime / TICRATE * LSpinAngle) * (ANGLE_MAX / 360));
+      LSpinAngle := Round((TTickState.LevelTime / TICRATE * LSpinAngle) * (ANGLE_MAX / 360));
   end;
   LAngleDifference := LSpinAngle - LAngleDifference;
 

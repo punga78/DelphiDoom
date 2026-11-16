@@ -130,10 +130,10 @@ begin
   if p.playerstate = PST_DEAD then
     exit;
 
-  if leveltime - p.lastbreath < 3 * TICRATE + (C_Random(rnd_breath) mod TICRATE) then
+  if TTickState.LevelTime - p.lastbreath < 3 * TICRATE + (C_Random(rnd_breath) mod TICRATE) then
     exit;
 
-  p.lastbreath := leveltime;
+  p.lastbreath := TTickState.LevelTime;
 
   if allowplayerbreath then
   begin

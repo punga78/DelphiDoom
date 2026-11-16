@@ -203,8 +203,8 @@ begin
       if player.mo.z < flheight then
       begin
         player.mo.z := flheight;
-        player.lastautocrouchtime := leveltime;
-        player.lastongroundtime := leveltime;
+        player.lastautocrouchtime := TTickState.LevelTime;
+        player.lastongroundtime := TTickState.LevelTime;
         range := clheight - flheight;
         player.crouchheight := player.mo.info.height - range;
         if player.crouchheight > PMAXCROUCHHEIGHT then
@@ -225,7 +225,7 @@ begin
     exit;
   end;
 
-  angle := (FINEANGLES div 20 * leveltime) and FINEMASK;
+  angle := (FINEANGLES div 20 * TTickState.LevelTime) and FINEMASK;
   player.viewbob := FixedMul(player.bob div 2, finesine[angle]);
 
   // move viewheight
@@ -308,7 +308,7 @@ begin
     exit;
   end;
 
-  angle := (FINEANGLES div 20 * leveltime) and FINEMASK;
+  angle := (FINEANGLES div 20 * TTickState.LevelTime) and FINEMASK;
   player.viewbob := FixedMul(player.bob div 2, finesine[angle]);
 
   // move viewheight
@@ -410,7 +410,7 @@ begin
     exit;
   end;
 
-  angle := (FINEANGLES div 20 * leveltime) and FINEMASK;
+  angle := (FINEANGLES div 20 * TTickState.LevelTime) and FINEMASK;
   player.viewbob := FixedMul(player.bob div 2, finesine[angle]) div (player.slopetics + 1);
 
   // move viewheight
@@ -575,13 +575,13 @@ begin
   end;
 
   // JVAL: 20211101 - Crouch
-  if (leveltime - player.lastongroundtime < TICRATE) and (cmd_crouch <> 0) then
+  if (TTickState.LevelTime - player.lastongroundtime < TICRATE) and (cmd_crouch <> 0) then
   begin
     player.crouchheight := player.crouchheight + cmd_crouch * FRACUNIT;
     if player.crouchheight > PMAXCROUCHHEIGHT then
       player.crouchheight := PMAXCROUCHHEIGHT;
   end
-  else if (leveltime - player.lastautocrouchtime > TICRATE) and (player.crouchheight <> 0) then
+  else if (TTickState.LevelTime - player.lastautocrouchtime > TICRATE) and (player.crouchheight <> 0) then
   begin
     player.crouchheight := player.crouchheight - 2 * FRACUNIT;
     if player.crouchheight < 0 then
@@ -618,7 +618,7 @@ begin
   TUserGameRules.SetOnGround(player);
 
   if onground then
-    player.lastongroundtime := leveltime; // JVAL: 20211101 - Crouch
+    player.lastongroundtime := TTickState.LevelTime; // JVAL: 20211101 - Crouch
 
   // JVAL: 20220225 - NOJUMP sector flag (UDMF)
   if Psubsector_t(player.mo.subsector).sector.flags and SF_NOJUMP <> 0 then

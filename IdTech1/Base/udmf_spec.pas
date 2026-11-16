@@ -374,7 +374,7 @@ begin
     end
     else
     begin
-      if (P_Random < 128) and (leveltime and 32 = 0) then
+      if (P_Random < 128) and (TTickState.LevelTime and 32 = 0) then
         NextLightningFlash := ((P_Random and 7) + 2) * TICRATE
       else
         NextLightningFlash := ((P_Random and 15) + 5) * TICRATE;
@@ -588,7 +588,7 @@ var
   lastfound: Pthinker_t;
 begin
   result := false;
-  lastfound := @thinkercap;
+  lastfound := @TTickState.ThinkerCap;
   repeat
     focus := P_FindMobjFromTID(args[4], Pointer(lastfound));
     if focus <> nil then

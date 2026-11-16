@@ -111,7 +111,7 @@ begin
 
   P_AimLineAttack(player.mo, player.mo.angle, 16 * 64 * FRACUNIT);
   if (player.plinetarget = nil) and (TMapAim.LineTarget <> nil) then
-    player.pcrosstic := leveltime;
+    player.pcrosstic := TTickState.LevelTime;
   player.plinetarget := TMapAim.LineTarget;
 
   if player.playerstate = PST_DEAD then

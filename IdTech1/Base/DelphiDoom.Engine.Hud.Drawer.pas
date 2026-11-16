@@ -361,7 +361,7 @@ begin
     target := THudCrosshairTarget.Friend
   else
     target := THudCrosshairTarget.Enemy;
-  cidx := THudCrosshair.PatchIndex(target, leveltime, plr.pcrosstic);
+  cidx := THudCrosshair.PatchIndex(target, TTickState.LevelTime, plr.pcrosstic);
   dx := THudCrosshair.OffsetX(plr.lookdir2, viewwidth);
 
   p := FCrosshairs[cidx];
@@ -486,7 +486,7 @@ begin
   if drawfps then
     DrawFramesPerSecond;
 {$IF DEFINED(DOOM) OR DEFINED(STRIFE)}
-  if demoplayback and showdemoplaybackprogress then
+  if TGameSession.DemoPlayback and showdemoplaybackprogress then
     DrawDemoProgress;
 
 {$ENDIF}
@@ -496,7 +496,7 @@ begin
     DrawTextLine(FView.ChatLine.Line, true); // draw the line w/ cursor
   if amstate = am_only then
   begin
-    FView.UpdateLevelTime(leveltime);
+    FView.UpdateLevelTime(TTickState.LevelTime);
     DrawTextLine(FView.LevelTime, false);
     DrawTextLine(FView.Title, false);
 {$IFDEF DOOM}

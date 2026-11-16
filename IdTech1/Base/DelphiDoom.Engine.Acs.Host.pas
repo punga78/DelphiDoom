@@ -131,7 +131,7 @@ end;
 
 function TEngineAcsHost.LevelTime: Integer;
 begin
-  Result := leveltime;
+  Result := TTickState.LevelTime;
 end;
 
 function TEngineAcsHost.GameType: TAcsGameType;
@@ -253,7 +253,7 @@ begin
     {$IFDEF HEXEN}
     LSearcher := -1;
     {$ELSE}
-    LSearcher := @thinkercap;
+    LSearcher := @TTickState.ThinkerCap;
     {$ENDIF}
     repeat
       LMobj := P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
@@ -271,8 +271,8 @@ begin
   end
   else
   begin // count only the type
-    LThink := thinkercap.next;
-    while LThink <> @thinkercap do
+    LThink := TTickState.ThinkerCap.next;
+    while LThink <> @TTickState.ThinkerCap do
     begin
       if @LThink._function.acp1 = @P_MobjThinker then
       begin
@@ -385,7 +385,7 @@ begin
   {$IFDEF HEXEN}
   LSearcher := -1;
   {$ELSE}
-  LSearcher := @thinkercap;
+  LSearcher := @TTickState.ThinkerCap;
   {$ENDIF}
   LMobj := P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
   while LMobj <> nil do

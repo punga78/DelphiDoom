@@ -1316,7 +1316,7 @@ begin
       if P_AproxDistance(x - x2, y - y2) < (128 * FRACUNIT) div FRACTOMAPUNIT then
       begin
 
-        colordiff := (i + leveltime div 4) and (2 * PTRACECOLORRANGE - 1);
+        colordiff := (i + TTickState.LevelTime div 4) and (2 * PTRACECOLORRANGE - 1);
         if colordiff > PTRACECOLORRANGE then
           colordiff := 2 * PTRACECOLORRANGE - colordiff;
 

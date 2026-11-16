@@ -501,10 +501,10 @@ begin
         // damaging falls (moved outside the above if).
         Pplayer_t(mo.player).centerview := true;
 
-        if leveltime > player.nextoof then
+        if TTickState.LevelTime > player.nextoof then
         begin
           S_StartSound(mo, Ord(sfx_oof));
-          player.nextoof := leveltime + 4 * TICRATE;
+          player.nextoof := TTickState.LevelTime + 4 * TICRATE;
         end;
       end;
       mo.momz := 0;
@@ -1244,7 +1244,7 @@ begin
      ((mobj.flags and MF_DROPPED) = 0) then
   begin
     queue := P_World.ItemRespawn;
-    newest := queue.Reserve(mobj.spawnpoint, leveltime + 30 * TICRATE);  // [STRIFE]
+    newest := queue.Reserve(mobj.spawnpoint, TTickState.LevelTime + 30 * TICRATE);  // [STRIFE]
 
     // [STRIFE] haleyjd 20130915
     // -random parameter affects the behavior of respawning items here.
@@ -1275,7 +1275,7 @@ end;
 class function TMobjGameRules.ItemRespawnWaits(const AQueuedTime: integer): boolean;
 begin
   // haleyjd [STRIFE]: 30 second wait is not accounted for here, see above.
-  result := leveltime < AQueuedTime;
+  result := TTickState.LevelTime < AQueuedTime;
 end;
 
 class procedure TMobjGameRules.SpawnItemFog(x, y, z: fixed_t; mthing: Pmapthing_t);
@@ -1356,7 +1356,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or TGameSession.NetGame;
+  result := (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

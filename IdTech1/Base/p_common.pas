@@ -8640,8 +8640,8 @@ begin
   else
     friend := nil;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -8677,8 +8677,8 @@ begin
   else
     friend := nil;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -9208,8 +9208,8 @@ begin
   else
     flags := 0;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -9241,8 +9241,8 @@ begin
   else
     flags := 0;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -9266,8 +9266,8 @@ var
   think: Pthinker_t;
   mo: Pmobj_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -9293,8 +9293,8 @@ begin
   if actor.master = nil then
     exit;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -12452,7 +12452,7 @@ begin
   else
     tics := state.params.IntVal[0];
 
-  p.nextfire := leveltime + tics;
+  p.nextfire := TTickState.LevelTime + tics;
 end;
 
 //==============================================================================

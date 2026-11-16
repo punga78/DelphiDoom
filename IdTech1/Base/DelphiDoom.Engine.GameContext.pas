@@ -61,7 +61,7 @@ end;
 
 function TEngineGameContext.IsDemoPlayback: Boolean;
 begin
-  Result := demoplayback;
+  Result := TGameSession.DemoPlayback;
 end;
 
 function TEngineGameContext.IsPaused: Boolean;

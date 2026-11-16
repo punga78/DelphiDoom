@@ -834,7 +834,7 @@ begin
     dec(player.powers[Ord(pw_ironfeet)]);
 
     // villsa [STRIFE] gasmask sound
-    if leveltime and $3f = 0 then
+    if TTickState.LevelTime and $3f = 0 then
       S_StartSound(player.mo, Ord(sfx_mask));
   end;
 
@@ -849,7 +849,7 @@ begin
   if player.nukagecount > 0 then
   begin
     dec(player.nukagecount);
-    if leveltime and $1f = 0 then
+    if TTickState.LevelTime and $1f = 0 then
       if player.nukagecount > 16 * TICRATE then
         P_DamageMobj(player.mo, nil, nil, 5);
   end;

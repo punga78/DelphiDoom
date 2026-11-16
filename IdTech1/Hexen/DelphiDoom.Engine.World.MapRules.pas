@@ -901,7 +901,7 @@ begin
         if (thing.player = nil) and
            (thing.flags2 and MF2_BOSS = 0) and
            (thing.flags_ex and MF_EX_BOSS = 0) and
-           (leveltime and 1 = 0) then
+           (TTickState.LevelTime and 1 = 0) then
         begin
           if (thing._type = Ord(MT_CENTAUR)) or
              (thing._type = Ord(MT_CENTAURLEADER)) then
@@ -959,7 +959,7 @@ begin
           end
           else if lmo.special1 = 0 then
             lmo.special1 := NativeInt(thing);
-          if leveltime and 3 = 0 then
+          if TTickState.LevelTime and 3 = 0 then
             dec(lmo.health);
         end;
       end;

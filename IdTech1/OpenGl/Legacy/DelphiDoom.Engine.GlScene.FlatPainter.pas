@@ -80,7 +80,7 @@ var
   LSin, LCos: TGLfloat;
   LFraction: Integer;
 begin
-  LFraction := leveltime and 63;
+  LFraction := TTickState.LevelTime and 63;
   if FRippleLastFraction = LFraction then
     Exit;
 
@@ -174,7 +174,7 @@ begin
   if AFlat.whitefog then TEngineGlSceneFog.StartWhite;  // JVAL: Mars fog sectors
 
   if AFlat.ripple and not gl_old_ripple_effect then
-    gld_BindFlat(AFlat.gltexture, leveltime and 31)
+    gld_BindFlat(AFlat.gltexture, TTickState.LevelTime and 31)
   else
     gld_BindFlat(AFlat.gltexture, -1);
   gld_StaticLight(AFlat.light);

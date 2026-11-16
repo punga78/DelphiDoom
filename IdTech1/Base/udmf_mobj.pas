@@ -67,7 +67,7 @@ var
 begin
   th := searchPosition;
   th := th.next;
-  while th <> @thinkercap do
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin

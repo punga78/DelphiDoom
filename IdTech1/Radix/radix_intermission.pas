@@ -124,7 +124,7 @@ begin
 
   // RX_StorePlayerScore of Rad-X: the place is asked before the level enters the table
   in_skillplace := RX_ScoreTable.PositionOf(TRadixScoreTable.ProjectedRating(in_score));
-  RX_StoreLevelScore(in_score, TGameSession.GameEpisode, in_struct.last + 1, Ord(TGameSession.GameSkill), not TGameSession.NetGame and not demoplayback);
+  RX_StoreLevelScore(in_score, TGameSession.GameEpisode, in_struct.last + 1, Ord(TGameSession.GameSkill), not TGameSession.NetGame and not TGameSession.DemoPlayback);
 end;
 
 //==============================================================================

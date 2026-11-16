@@ -473,7 +473,7 @@ begin
   target.angle := target.angle + LongWord((P_Random - P_Random) * $100000);
   target.momx := target.momx + (P_Random - P_Random) * 1024;
   target.momy := target.momy + (P_Random - P_Random) * 1024;
-  if (leveltime and 16 <> 0) and (target.flags2 and MF2_BOSS = 0) then
+  if (TTickState.LevelTime and 16 <> 0) and (target.flags2 and MF2_BOSS = 0) then
   begin
     randVal := P_Random;
     if randVal > 160 then
@@ -482,7 +482,7 @@ begin
     if target.momz > 12 * FRACUNIT then
       target.momz := 12 * FRACUNIT;
   end;
-  if leveltime and 7 = 0 then
+  if TTickState.LevelTime and 7 = 0 then
     P_DamageMobj(target, nil, nil, 3);
 end;
 

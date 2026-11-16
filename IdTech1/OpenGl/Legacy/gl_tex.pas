@@ -1455,7 +1455,7 @@ var
   psd: Pside_t;
   psec: Psector_t;
 begin
-  if demoplayback then
+  if TGameSession.DemoPlayback then
     exit;
 
   if numflats > numsprites then
@@ -1512,8 +1512,8 @@ begin
   // Precache sprites.
   ZeroMemory(hitlist, numsprites);
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
       hitlist[Ord(Pmobj_t(th).sprite)] := true;

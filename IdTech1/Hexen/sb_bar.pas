@@ -210,7 +210,7 @@ var
 function SB_CmdCheckPlayerStatus: boolean;
 begin
   if (CPlayer = nil) or (CPlayer.mo = nil) or (CPlayer.mo = nil) or
-     (gamestate <> GS_LEVEL) or demoplayback or TGameSession.NetGame then
+     (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -1259,7 +1259,7 @@ var
   txt: string;
   x, y: integer;
 begin
-  if leveltime and 16 <> 0 then
+  if TTickState.LevelTime and 16 <> 0 then
     SB_WriteText(si_xPos[0], 20, '*** SOUND DEBUG INFO ***');
 
   S_GetChannelInfo(@s);
@@ -1371,7 +1371,7 @@ begin
     if (CPlayer.powers[Ord(pw_flight)] > BLINKTHRESHOLD) or
        (CPlayer.powers[Ord(pw_flight)] and 16 = 0) then
     begin
-      frame := (leveltime div 3) and 15;
+      frame := (TTickState.LevelTime div 3) and 15;
       if CPlayer.mo.flags2 and MF2_FLY <> 0 then
       begin
         if hitCenterFrame and (frame <> 15) and (frame <> 0) then
@@ -1409,7 +1409,7 @@ begin
   begin
     if (CPlayer.powers[Ord(pw_speed)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_speed)] and 16 = 0) then
     begin
-      frame := (leveltime div 3) and 15;
+      frame := (TTickState.LevelTime div 3) and 15;
       SB_DrawPatch(60, 19, W_CacheLumpNum(SpinSpeedLump + frame, PU_CACHE));
       sbiconsactive := true;
     end;
@@ -1420,7 +1420,7 @@ begin
   begin
     if (CPlayer.powers[Ord(pw_invulnerability)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_invulnerability)] and 16 = 0) then
     begin
-      frame := (leveltime div 3) and 15;
+      frame := (TTickState.LevelTime div 3) and 15;
       SB_DrawPatch(260, 19, W_CacheLumpNum(SpinDefenseLump + frame, PU_CACHE));
       sbiconsactive := true;
     end;
@@ -1431,7 +1431,7 @@ begin
   begin
     if (CPlayer.powers[Ord(pw_minotaur)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_minotaur)] and 16 = 0) then
     begin
-      frame := (leveltime div 3) and 15;
+      frame := (TTickState.LevelTime div 3) and 15;
       SB_DrawPatch(300, 19, W_CacheLumpNum(SpinMinotaurLump + frame, PU_CACHE));
       sbiconsactive := true;
     end;
@@ -1761,14 +1761,14 @@ begin
   SB_DrawPatch(50 + curpos * 31, 163, PatchSELECTBOX);
   if x <> 0 then
   begin
-    if leveltime and 4 = 0 then
+    if TTickState.LevelTime and 4 = 0 then
       SB_DrawPatch(42, 163, PatchINVLFGEM1)
     else
       SB_DrawPatch(42, 163, PatchINVLFGEM2);
   end;
   if CPlayer.inventorySlotNum - x > 7 then
   begin
-    if leveltime and 4 = 0 then
+    if TTickState.LevelTime and 4 = 0 then
       SB_DrawPatch(269, 163, PatchINVRTGEM1)
     else
       SB_DrawPatch(269, 163, PatchINVRTGEM2);
@@ -1883,14 +1883,14 @@ begin
     SB_DrawPatch(50 + curpos * 31, 167, PatchSELECTBOX);
     if x <> 0 then
     begin
-      if leveltime and 4 = 0 then
+      if TTickState.LevelTime and 4 = 0 then
         SB_DrawPatch(40, 167, PatchINVLFGEM1)
       else
         SB_DrawPatch(40, 167, PatchINVLFGEM2);
     end;
     if CPlayer.inventorySlotNum - x > 7 then
     begin
-      if leveltime and 4 = 0 then
+      if TTickState.LevelTime and 4 = 0 then
         SB_DrawPatch(268, 167, PatchINVRTGEM1)
       else
         SB_DrawPatch(268, 167, PatchINVRTGEM2);

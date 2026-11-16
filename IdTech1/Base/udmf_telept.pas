@@ -233,7 +233,7 @@ begin
   end;
 
   count := 0;
-  searcher := {$IFDEF HEXEN}-1{$ELSE}@thinkercap{$ENDIF};
+  searcher := {$IFDEF HEXEN}-1{$ELSE}@TTickState.ThinkerCap{$ENDIF};
   while P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF}) <> nil do
     inc(count);
 
@@ -244,7 +244,7 @@ begin
   end;
 
   count := TTeleportGeometry.PickDestination(count, TeleportRandom);
-  searcher := {$IFDEF HEXEN}-1{$ELSE}@thinkercap{$ENDIF};
+  searcher := {$IFDEF HEXEN}-1{$ELSE}@TTickState.ThinkerCap{$ENDIF};
   mo := nil;
   for i := 0 to count - 1 do
   begin

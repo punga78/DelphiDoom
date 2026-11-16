@@ -765,7 +765,7 @@ begin
   if player.morphTics = 0 then
   begin
     // Bob the weapon based on movement speed.
-    angle := (128 * leveltime) and FINEMASK;
+    angle := (128 * TTickState.LevelTime) and FINEMASK;
     psp.sx := FRACUNIT + FixedMul(player.bob, finecosine[angle]);
     angle := angle and (FINEANGLES div 2-1);
     psp.sy := WEAPONTOP + FixedMul(player.bob, finesine[angle]);
@@ -2052,7 +2052,7 @@ begin
   angle := actor.angle shr ANGLETOFINESHIFT;
   actor.momx := FixedMul(actor.info.speed, finecosine[angle]);
   actor.momy := FixedMul(actor.info.speed, finesine[angle]);
-  if (leveltime and 15 = 0) or
+  if (TTickState.LevelTime and 15 = 0) or
      (actor.z > target.z + target.height) or
      (actor.z + actor.height < target.z) then
   begin
@@ -2129,7 +2129,7 @@ begin
   if actor.special1 <> 0 then
   begin
     P_CHolySeekerMissile(actor, actor.args[0] * ANG1, actor.args[0] * ANG1 * 2);
-    if (leveltime + 7) and 15 <> 0 then
+    if (TTickState.LevelTime + 7) and 15 <> 0 then
       actor.args[0] := 5 + (P_Random div 20);
   end;
   A_CHolyWeave(actor);

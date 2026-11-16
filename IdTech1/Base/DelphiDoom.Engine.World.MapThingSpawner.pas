@@ -197,7 +197,7 @@ begin
     exit;
 
   // don't spawn any monsters if -nomonsters
-  if nomonsters and TMobjGameRules.SkipsMonster(i) then
+  if TGameSession.NoMonsters and TMobjGameRules.SkipsMonster(i) then
     exit;
 
   if TMobjGameRules.KeepsMapThingOff(i, mthing) then

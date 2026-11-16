@@ -788,8 +788,8 @@ begin
   // scan the remaining thinkers
   // to see if all Keens are dead
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -814,7 +814,7 @@ function P_DogFollowPlayerHandler(actor: Pmobj_t): boolean;
 begin
   // JVAL: 20200512 - Drones follow player 's trace
   if actor.info.doomednum = 888 then
-    if leveltime > actor.playerfollowtime then
+    if TTickState.LevelTime > actor.playerfollowtime then
       if actor.flags2_ex and MF2_EX_FRIEND <> 0 then
       begin
         if P_FollowPlayer(actor, P_NearestPlayer(actor)) then
@@ -968,7 +968,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not TGameSession.FastParm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -985,7 +985,7 @@ begin
   if actor.info.missilestate <> 0 then
   begin
     nomissile := false;
-    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;
@@ -1093,7 +1093,7 @@ begin
   if actor.flags and MF_JUSTATTACKED <> 0 then
   begin
     actor.flags := actor.flags and not MF_JUSTATTACKED;
-    if (TGameSession.GameSkill <> sk_nightmare) and not fastparm then
+    if (TGameSession.GameSkill <> sk_nightmare) and not TGameSession.FastParm then
       P_NewChaseDir(actor);
     exit;
   end;
@@ -1113,7 +1113,7 @@ begin
   begin
     if (G_PlayingEngineVersion <= VERSION110) or (G_PlayingEngineVersion > VERSION205) then
     begin
-      if not ((TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0)) then
+      if not ((TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0)) then
         if P_CheckMissileRange(actor) then
         begin
           P_SetMobjState(actor, statenum_t(actor.info.missilestate));
@@ -1124,7 +1124,7 @@ begin
     else
     begin
       nomissile := False;
-      if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+      if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
         nomissile := True
       else if not P_CheckMissileRange(actor) then
         nomissile := True;
@@ -2012,8 +2012,8 @@ begin
   // count total number of skull currently on the level
   count := 0;
 
-  currentthinker := thinkercap.next;
-  while currentthinker <> @thinkercap do
+  currentthinker := TTickState.ThinkerCap.next;
+  while currentthinker <> @TTickState.ThinkerCap do
   begin
     if (@currentthinker._function.acp1 = @P_MobjThinker) and
        (Pmobj_t(currentthinker)._type = Ord(MT_SKULL)) then
@@ -2221,8 +2221,8 @@ begin
 
     // scan the remaining thinkers to see
     // if all bosses are dead
-    th := thinkercap.next;
-    while th <> @thinkercap do
+    th := TTickState.ThinkerCap.next;
+    while th <> @TTickState.ThinkerCap do
     begin
       if @th._function.acp1 = @P_MobjThinker then
       begin
@@ -2318,8 +2318,8 @@ begin
 
   // scan the remaining thinkers to see
   // if all bosses are dead
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -2467,8 +2467,8 @@ begin
   numbraintargets := 0;
   braintargeton := 0;
 
-  thinker := thinkercap.next;
-  while Pointer(thinker) <> Pointer(@thinkercap) do
+  thinker := TTickState.ThinkerCap.next;
+  while Pointer(thinker) <> Pointer(@TTickState.ThinkerCap) do
   begin
     if @thinker._function.acp1 = @P_MobjThinker then // is a mobj
     begin
@@ -2513,8 +2513,8 @@ begin
   fnumbraintargets := 0;
   mapvars.IntVal[S_BRAINTARGETON] := 0;
 
-  thinker := thinkercap.next;
-  while Pointer(thinker) <> Pointer(@thinkercap) do
+  thinker := TTickState.ThinkerCap.next;
+  while Pointer(thinker) <> Pointer(@TTickState.ThinkerCap) do
   begin
     if @thinker._function.acp1 = @P_MobjThinker then // is a mobj
     begin
@@ -2839,8 +2839,8 @@ var
   mo: Pmobj_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -2931,7 +2931,7 @@ begin
   // check for missile attack
   if actor.info.missilestate <> 0 then
   begin
-    if (TGameSession.GameSkill < sk_nightmare) and not fastparm and (actor.movecount <> 0) then
+    if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
     else if not P_CheckMissileRange(actor) then
       nomissile := true;

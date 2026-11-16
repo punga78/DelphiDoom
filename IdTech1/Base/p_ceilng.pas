@@ -195,7 +195,7 @@ begin
 
   CeilingLoadState(ceiling, state);
   actions := TCeilingMachine.AfterMove(CeilingKindOf(ceiling._type), state, moved,
-    leveltime and 7 = 0);
+    TTickState.LevelTime and 7 = 0);
   CeilingStoreState(ceiling, state);
 
   if actions <> [] then

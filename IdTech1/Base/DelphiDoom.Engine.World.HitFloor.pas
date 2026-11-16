@@ -101,7 +101,7 @@ begin
       // JVAL
       // If we record a demo or playing demo (version > 114)
       // then we force splashes
-        if allowterrainsplashes or TGameSession.DemoRecording or demoplayback then
+        if allowterrainsplashes or TGameSession.DemoRecording or TGameSession.DemoPlayback then
         begin
           P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SPLASHBASE));
           mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SPLASH));
@@ -116,7 +116,7 @@ begin
       end;
     FLOOR_LAVA:
       begin
-        if allowterrainsplashes or TGameSession.DemoRecording or demoplayback then
+        if allowterrainsplashes or TGameSession.DemoRecording or TGameSession.DemoPlayback then
         begin
           P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASPLASH));
           mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASMOKE));
@@ -128,7 +128,7 @@ begin
       end;
     FLOOR_SLUDGE:
       begin
-        if allowterrainsplashes or TGameSession.DemoRecording or demoplayback then
+        if allowterrainsplashes or TGameSession.DemoRecording or TGameSession.DemoPlayback then
         begin
           P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SLUDGESPLASH));
           mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SLUDGECHUNK));
@@ -143,7 +143,7 @@ begin
       end;
     FLOOR_NUKAGE:
       begin
-        if allowterrainsplashes or TGameSession.DemoRecording or demoplayback then
+        if allowterrainsplashes or TGameSession.DemoRecording or TGameSession.DemoPlayback then
         begin
           P_SpawnMobj(thing.x, thing.y, TMobjGameRules.NukageSplashZ(z), Ord(MT_NUKAGESPLASH));
           mo := P_SpawnMobj(thing.x, thing.y, TMobjGameRules.NukageSplashZ(z), Ord(MT_NUKAGECHUNK));

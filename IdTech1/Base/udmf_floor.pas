@@ -901,8 +901,8 @@ var
 begin
   result := false;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 <> @TH_MoveFloor then
     begin

@@ -331,7 +331,7 @@ end;
 
 procedure TEngineConsoleScreen.ToggleFreeze;
 begin
-  if demoplayback or TGameSession.DemoRecording then
+  if TGameSession.DemoPlayback or TGameSession.DemoRecording then
   begin
     printf('Can not freeze game while demo playback/recording'#13#10);
     Exit;

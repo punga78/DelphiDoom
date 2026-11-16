@@ -339,14 +339,14 @@ var
 begin
   step := events.CountdownStep;
   // the start: Engines (0) has no picture, then 3, 2, 1 and GO (RACE_0 .. RACE_3 of the game are 3, 2, 1, GO!)
-  if (step >= Ord(TRacingCountdownStep.Three)) and (leveltime - events.CountdownTic < COUNTDOWN_TICS) then
+  if (step >= Ord(TRacingCountdownStep.Three)) and (TTickState.LevelTime - events.CountdownTic < COUNTDOWN_TICS) then
   begin
     p := hud_countdown[4 - step];
     if p <> nil then
       V_DrawPatch(HUD_WIDTH div 2 + p.leftoffset, HUD_HEIGHT div 2 + p.topoffset, SCN_HUD, p, false);
   end;
 
-  if (events.LapCompletedTic >= 0) and (leveltime - events.LapCompletedTic < FINAL_LAP_TICS) and
+  if (events.LapCompletedTic >= 0) and (TTickState.LevelTime - events.LapCompletedTic < FINAL_LAP_TICS) and
      (SH_Race.Cars[SH_Race.PlayerIndex].LapsCompleted = SH_RaceSettings.NumLaps - 1) and (hud_finallap <> nil) then
     V_DrawPatch(HUD_WIDTH div 2 + hud_finallap.leftoffset, 60 + hud_finallap.topoffset, SCN_HUD, hud_finallap, false);
 

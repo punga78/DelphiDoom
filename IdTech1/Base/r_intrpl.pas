@@ -817,7 +817,7 @@ begin
   // Poly objects
   if interpolatepolyobjs then
     // JVAL: Polyobj interpolation may cause desync, needs verification
-    if not demoplayback and not TGameSession.DemoRecording then
+    if not TGameSession.DemoPlayback and not TGameSession.DemoRecording then
       for i := 0 to po_NumPolyobjs - 1 do
         if polyobjs[i].specialdata <> nil then
         begin
@@ -830,8 +830,8 @@ begin
         end;
 
   // Map Objects
-  th := thinkercap.next;
-  while (th <> nil) and (th <> @thinkercap) do
+  th := TTickState.ThinkerCap.next;
+  while (th <> nil) and (th <> @TTickState.ThinkerCap) do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
