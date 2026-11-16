@@ -101,4 +101,9 @@
   R_DrawSpanLow = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanLow'; Unit = 'r_span' }
   R_DrawSpanNormal = @{ Expression = 'TRendererSpan32Drawers.R_DrawSpanNormal'; Unit = 'r_span32' }
   R_DrawSpanNormal_Ripple = @{ Expression = 'TRendererSpan32RippleDrawers.R_DrawSpanNormal_Ripple'; Unit = 'r_span32_ripple' }
+  R_DrawSpanMediumMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanMediumMT'; Unit = 'r_flat8' }
+  R_DrawSpanMedium_RippleMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanMedium_RippleMT'; Unit = 'r_flat8' }
+  R_DrawSpanLowMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanLowMT'; Unit = 'r_flat8' }
+  R_DrawSpanNormalMT = @{ Expression = 'TRendererFlat32Drawers.R_DrawSpanNormalMT'; Unit = 'r_flat32' }
+  R_DrawSpanNormal_RippleMT = @{ Expression = 'TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT'; Unit = 'r_flat32_ripple' }
 }

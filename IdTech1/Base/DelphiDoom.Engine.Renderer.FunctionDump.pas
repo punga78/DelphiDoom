@@ -464,7 +464,7 @@ begin
     Exit('R_DrawColumnSubtractLowestMT');
   if AValue = @R_StoreFlatSpan8 then
     Exit('R_StoreFlatSpan8');
-  if AValue = @R_DrawSpanLowMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanLowMT then
     Exit('R_DrawSpanLowMT');
   if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
@@ -522,9 +522,9 @@ begin
     Exit('R_DrawColumnAddMediumMT');
   if AValue = @R_DrawColumnSubtractMediumMT then
     Exit('R_DrawColumnSubtractMediumMT');
-  if AValue = @R_DrawSpanMediumMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanMediumMT then
     Exit('R_DrawSpanMediumMT');
-  if AValue = @R_DrawSpanMedium_RippleMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanMedium_RippleMT then
     Exit('R_DrawSpanMedium_RippleMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawWhiteLightColumnHi_Batch then
     Exit('R_DrawWhiteLightColumnHi_Batch');
@@ -608,9 +608,9 @@ begin
     Exit('R_DrawColumnSubtractHiMT');
   if AValue = @R_StoreFlatSpan32 then
     Exit('R_StoreFlatSpan32');
-  if AValue = @R_DrawSpanNormalMT then
+  if AValue = @TRendererFlat32Drawers.R_DrawSpanNormalMT then
     Exit('R_DrawSpanNormalMT');
-  if AValue = @R_DrawSpanNormal_RippleMT then
+  if AValue = @TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT then
     Exit('R_DrawSpanNormal_RippleMT');
   if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn32 then
     Exit('R_DrawFuzzColumn32');
@@ -806,7 +806,7 @@ begin
     Exit('R_DrawColumnSubtractLowestMT');
   if AValue = @R_StoreFlatSpan8 then
     Exit('R_StoreFlatSpan8');
-  if AValue = @R_DrawSpanLowMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanLowMT then
     Exit('R_DrawSpanLowMT');
   if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
@@ -864,9 +864,9 @@ begin
     Exit('R_DrawColumnAddMediumMT');
   if AValue = @R_DrawColumnSubtractMediumMT then
     Exit('R_DrawColumnSubtractMediumMT');
-  if AValue = @R_DrawSpanMediumMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanMediumMT then
     Exit('R_DrawSpanMediumMT');
-  if AValue = @R_DrawSpanMedium_RippleMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanMedium_RippleMT then
     Exit('R_DrawSpanMedium_RippleMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawColumnHi_Batch then
     Exit('R_DrawColumnHi_Batch');
@@ -960,9 +960,9 @@ begin
     Exit('R_DrawColumnSubtractHiMT');
   if AValue = @R_StoreFlatSpan32 then
     Exit('R_StoreFlatSpan32');
-  if AValue = @R_DrawSpanNormalMT then
+  if AValue = @TRendererFlat32Drawers.R_DrawSpanNormalMT then
     Exit('R_DrawSpanNormalMT');
-  if AValue = @R_DrawSpanNormal_RippleMT then
+  if AValue = @TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT then
     Exit('R_DrawSpanNormal_RippleMT');
   if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
@@ -1126,7 +1126,7 @@ begin
     Exit('R_DrawColumnSubtractLowestMT');
   if AValue = @R_StoreFlatSpan8 then
     Exit('R_StoreFlatSpan8');
-  if AValue = @R_DrawSpanLowMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanLowMT then
     Exit('R_DrawSpanLowMT');
   if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
@@ -1184,9 +1184,9 @@ begin
     Exit('R_DrawColumnAddMediumMT');
   if AValue = @R_DrawColumnSubtractMediumMT then
     Exit('R_DrawColumnSubtractMediumMT');
-  if AValue = @R_DrawSpanMediumMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanMediumMT then
     Exit('R_DrawSpanMediumMT');
-  if AValue = @R_DrawSpanMedium_RippleMT then
+  if AValue = @TRendererFlat8Drawers.R_DrawSpanMedium_RippleMT then
     Exit('R_DrawSpanMedium_RippleMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawColumnHi_Batch then
     Exit('R_DrawColumnHi_Batch');
@@ -1272,9 +1272,9 @@ begin
     Exit('R_DrawColumnSubtractHiMT');
   if AValue = @R_StoreFlatSpan32 then
     Exit('R_StoreFlatSpan32');
-  if AValue = @R_DrawSpanNormalMT then
+  if AValue = @TRendererFlat32Drawers.R_DrawSpanNormalMT then
     Exit('R_DrawSpanNormalMT');
-  if AValue = @R_DrawSpanNormal_RippleMT then
+  if AValue = @TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT then
     Exit('R_DrawSpanNormal_RippleMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn32_Batch then
     Exit('R_DrawFuzzColumn32_Batch');

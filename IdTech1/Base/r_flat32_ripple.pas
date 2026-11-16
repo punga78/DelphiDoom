@@ -38,7 +38,16 @@ interface
 // R_DrawSpanNormal_RippleMT
 //
 //==============================================================================
-procedure R_DrawSpanNormal_RippleMT(const fi: pointer);
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererFlat32RippleDrawers = class sealed
+  public
+    class procedure R_DrawSpanNormal_RippleMT(const fi: pointer); static;
+  end;
 
 implementation
 
@@ -55,7 +64,7 @@ uses
 // R_DrawSpanNormal_RippleMT
 //
 //==============================================================================
-procedure R_DrawSpanNormal_RippleMT(const fi: pointer);
+class procedure TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT(const fi: pointer);
 var
   ds_source32: PLongWordArray;
   ds_y, ds_x1, ds_x2: integer;
