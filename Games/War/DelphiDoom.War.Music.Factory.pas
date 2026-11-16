@@ -10,7 +10,7 @@ unit DelphiDoom.War.Music.Factory;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.Midi.Intf, DelphiDoom.War.Music.Intf;
+  DelphiDoom.Logging.Intf, DelphiDoom.Midi.Intf, DelphiDoom.Midi.Output.Intf, DelphiDoom.War.Music.Intf;
 
 type
   /// <summary>
@@ -21,6 +21,10 @@ type
   public
     /// <summary>The synth that makes no sound</summary>
     class function CreateSilentSynth: IWarMusicSynth; static;
+    /// <summary>The synth that sends the song to a MIDI output (a fake in a test)</summary>
+    class function CreateMidiSynth(const AOutput: IMidiShortOutput): IWarMusicSynth; static;
+    /// <summary>The MIDI output of Windows (the MIDI mapper); it is not opened</summary>
+    class function CreateWindowsMidiOutput: IMidiShortOutput; static;
     /// <summary>The events of a song on a sequencer of Framework\Midi that is given (a fake in a test)</summary>
     class function CreateTimeline(const ASequencer: IMidiStreamSequencer): IWarMusicTimeline; overload; static;
     /// <summary>The events of a song on the real sequencer; ALog may be nil</summary>
@@ -32,14 +36,25 @@ type
 implementation
 
 uses
-  DelphiDoom.Midi.Factory, DelphiDoom.War.Audio.Types, DelphiDoom.War.Music.SilentSynth,
-  DelphiDoom.War.Music.Timeline, DelphiDoom.War.Music.Player;
+  DelphiDoom.Midi.Factory, DelphiDoom.Midi.Win.ShortOutput, DelphiDoom.War.Audio.Types,
+  DelphiDoom.War.Music.SilentSynth, DelphiDoom.War.Music.MidiSynth, DelphiDoom.War.Music.Timeline,
+  DelphiDoom.War.Music.Player;
 
 { TWarMusicFactory }
 
 class function TWarMusicFactory.CreateSilentSynth: IWarMusicSynth;
 begin
   Result := TWarSilentMusicSynth.Create;
+end;
+
+class function TWarMusicFactory.CreateMidiSynth(const AOutput: IMidiShortOutput): IWarMusicSynth;
+begin
+  Result := TWarMidiMusicSynth.Create(AOutput);
+end;
+
+class function TWarMusicFactory.CreateWindowsMidiOutput: IMidiShortOutput;
+begin
+  Result := TMidiWinShortOutput.Create;
 end;
 
 class function TWarMusicFactory.CreateTimeline(const ASequencer: IMidiStreamSequencer): IWarMusicTimeline;

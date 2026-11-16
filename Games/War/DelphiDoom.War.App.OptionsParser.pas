@@ -38,7 +38,8 @@ resourcestring
   SWarOptionUnknown = 'Unknown option %s';
   SWarOptionNeedsValue = 'The option %s needs a value';
   SWarOptionBadNumber = 'The option %s needs a whole number from %d to %d, not "%s"';
-  SWarOptionBadRace = 'The option -play needs human or orc and the number of the mission (1..12), not "%s"';
+  SWarOptionBadMusic = 'The option -music needs midi or none, not "%s"';
+  SWarOptionBadRace ='The option -play needs human or orc and the number of the mission (1..12), not "%s"';
 
 { TWarAppOptionsParser }
 
@@ -113,6 +114,25 @@ var
       AError := Format(SWarOptionBadRace, [LRace + ' ' + LMission]);
   end;
 
+  function TakeMusic: Boolean;
+  var
+    LMode: string;
+  begin
+    Result := TakeValue(LMode);
+    if not Result then
+      Exit;
+    LMode := LMode.ToLowerInvariant;
+    if LMode = 'midi' then
+      AOptions.Music := wmmMidi
+    else if LMode = 'none' then
+      AOptions.Music := wmmNone
+    else
+    begin
+      Result := False;
+      AError := Format(SWarOptionBadMusic, [LMode]);
+    end;
+  end;
+
 begin
   AOptions := TWarAppOptions.Standard;
   AError := '';
@@ -135,6 +155,8 @@ begin
       Result := TakeText(AOptions.SavePath)
     else if LName = '-play' then
       Result := TakePlay
+    else if LName = '-music' then
+      Result := TakeMusic
     else if LName = '-seed' then
     begin
       Result := TakeNumber(0, High(Cardinal));

@@ -34,7 +34,7 @@ Mouse e tastiera come nell'originale (e nel remake). In piu', di questo programm
 | Invio | la riga dei trucchi (`Yours truly` = vittoria, `Crushing defeat` = sconfitta, ...) |
 
 `-play human|orc N` va subito alla missione N della campagna; `-scale N` (1..8) la dimensione della finestra; `-nosound` niente
-uscita audio; `-nointro` salta l'introduzione. Le impostazioni (volumi di musica ed effetti, accesi o spenti) sono in `Warcraft32.ini` accanto al programma e si
+uscita audio (e niente musica); `-music midi|none` i brani sul MIDI di Windows (predefinito) o nessuno; `-nointro` salta l'introduzione. Le impostazioni (volumi di musica ed effetti, accesi o spenti) sono in `Warcraft32.ini` accanto al programma e si
 riscrivono quando si chiude la finestra.
 
 ## Introduzione (issue #238)

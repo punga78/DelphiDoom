@@ -38,6 +38,18 @@ type
   end;
 
   /// <summary>
+  ///   What a synth that is a device (the MIDI of the machine) adds to IWarMusicSynth: it makes no samples, so the player
+  ///   cannot scale them for the fade and tells the device the gain, and it cannot start from a clean state by itself
+  /// </summary>
+  IWarMusicDevice = interface
+    ['{5D2B8E14-70A3-4C96-9F1E-B84A63C0D7E5}']
+    /// <summary>The gain of the fade, 0 to WAR_MUSIC_GAIN_FULL: told at the start of every block the player mixes</summary>
+    procedure SetGain(AGain: Integer);
+    /// <summary>A song starts: the controllers of the channels go back to the standard values</summary>
+    procedure ResetChannels;
+  end;
+
+  /// <summary>
   ///   The events of a song, in order and with the time in whole milliseconds, built on the MIDI stream sequencer
   ///   of Framework\Midi (what tml_load gives the original)
   /// </summary>

@@ -35,6 +35,15 @@ type
     property Rendered: Integer read FRendered;
   end;
 
+  /// <summary>A synth that is also a device: it writes down the gains and the resets the player gives it</summary>
+  TFakeDeviceSynth = class(TFakeMusicSynth, IWarMusicDevice)
+  public
+    Gains: TArray<Integer>;
+    Resets: Integer;
+    procedure SetGain(AGain: Integer);
+    procedure ResetChannels;
+  end;
+
   /// <summary>A timeline that gives the events it is given (and refuses what it is told to)</summary>
   TFakeMusicTimeline = class(TInterfacedObject, IWarMusicTimeline)
   strict private
@@ -131,6 +140,16 @@ end;
 procedure TFakeMusicSynth.AllNotesOff;
 begin
   FCalls.Add(Format('%d AO', [FRendered]));
+end;
+
+procedure TFakeDeviceSynth.SetGain(AGain: Integer);
+begin
+  Gains := Gains + [AGain];
+end;
+
+procedure TFakeDeviceSynth.ResetChannels;
+begin
+  Inc(Resets);
 end;
 
 procedure TFakeMusicSynth.Render(ABuffer: PSmallInt; ASampleCount: Integer);

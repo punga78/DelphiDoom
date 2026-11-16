@@ -31,6 +31,7 @@ type
   strict private
     FLock: TCriticalSection;
     FSynth: IWarMusicSynth;
+    FDevice: IWarMusicDevice;
     FTimeline: IWarMusicTimeline;
     FFade: TWarMusicFade;
     FState: TWarMusicState;
@@ -45,6 +46,8 @@ type
     FEnabled: Boolean;
     FSilenced: Boolean;
     FNotesSilenced: Boolean;
+    /// <summary>A note has started since the last time every note was put off</summary>
+    FNotesSounding: Boolean;
     FScratch: array[0..WAR_MUSIC_SCRATCH_SAMPLES - 1] of SmallInt;
     procedure PlayEvent(const AEvent: TWarMusicEvent; AVolume: Single);
     procedure FireDueEvents(AVolume: Single);
@@ -82,6 +85,8 @@ begin
     raise EWarException.Create('The sample rate of the music player must be positive');
   FLock := TCriticalSection.Create;
   FSynth := ASynth;
+  // a synth that is a device (the MIDI of the machine) gets the gain of the fade and the start of a song
+  Supports(ASynth, IWarMusicDevice, FDevice);
   FTimeline := ATimeline;
   FFade := TWarMusicFade.Create(ASampleRate);
   FStepMs := 1000.0 / ASampleRate;
@@ -114,6 +119,7 @@ begin
   FState := wmsStopped;
   FHasNext := False;
   FEnding := False;
+  FNotesSounding := False;
 end;
 
 function TWarMusicPlayer.Play(const AMidi: TBytes; ALoop: Boolean; AFadeInMs: Integer): Boolean;
@@ -134,6 +140,8 @@ begin
     else
       FFade.Reset;
     FNotesSilenced := False;
+    if Assigned(FDevice) then
+      FDevice.ResetChannels;
     FState := wmsPlaying;
   finally
     FLock.Leave;
@@ -197,6 +205,7 @@ begin
         LVelocity := AEvent.Value / 127.0;
         LVelocity := LVelocity * AVolume;
         FSynth.NoteOn(AEvent.Channel, AEvent.Key, LVelocity);
+        FNotesSounding := True;
       end;
     wmkNoteOff:
       FSynth.NoteOff(AEvent.Channel, AEvent.Key);
@@ -282,15 +291,25 @@ begin
       if not FNotesSilenced then
         FSynth.AllNotesOff;
       FNotesSilenced := True;
+      FNotesSounding := False;
       Exit;
     end;
-    FNotesSilenced := False;
     if FEnabled then
       LVolume := FVolume
     else
       LVolume := 0;
     if LVolume <= 0 then
+    begin
+      // a song at volume 0 does not advance; the notes that sound would go on forever on a device that holds them
+      // (the MIDI of the machine), so they stop once, as when the scene changes
+      if FNotesSounding then
+      begin
+        FSynth.AllNotesOff;
+        FNotesSounding := False;
+      end;
       Exit;
+    end;
+    FNotesSilenced := False;
     LDone := 0;
     while (LDone < ASampleCount) and (FState in [wmsPlaying, wmsFadingOut]) do
     begin
@@ -298,6 +317,8 @@ begin
       if LChunk > WAR_MUSIC_SCRATCH_SAMPLES then
         LChunk := WAR_MUSIC_SCRATCH_SAMPLES;
       FillChar(FScratch[0], LChunk * SizeOf(SmallInt), 0);
+      if Assigned(FDevice) then
+        FDevice.SetGain(FFade.Gain);
       LOffset := 0;
       while LOffset < LChunk do
       begin

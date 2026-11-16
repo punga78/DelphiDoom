@@ -28,6 +28,12 @@ type
     FSongsStopped: Integer;
     FFailures: Integer;
     FMuted: Boolean;
+    // what the song asked for while Muted was True: the last request only, started when the sound comes back
+    FDeferredSong: Integer;
+    FDeferredLoop: Boolean;
+    FDeferredStop: Boolean;
+    procedure SetMuted(AValue: Boolean);
+    procedure StartSong(AAudioId: Integer; ALoop: Boolean);
   public
     /// <summary>The music player may be nil (no song is played)</summary>
     constructor Create(const ALibrary: IWarAudioLibrary; const AMixer: IWarSoundMixer; const AMusic: IWarMusicPlayer);
@@ -52,10 +58,12 @@ type
     /// <summary>The audio ids that could not be played</summary>
     property Failures: Integer read FFailures;
     /// <summary>
-    ///   While True nothing is played (a saved game that is loaded plays its old frames again and they must not be heard);
-    ///   what is asked in the meantime is dropped
+    ///   While True no sound is played (a saved game that is loaded plays its old frames again and they must not be
+    ///   heard); the effects asked in the meantime are dropped. The song is not: a song starts once at the entrance
+    ///   of a scene, so the last request about it (play or stop) is remembered and done when Muted goes back to False,
+    ///   otherwise a loaded game would have no music
     /// </summary>
-    property Muted: Boolean read FMuted write FMuted;
+    property Muted: Boolean read FMuted write SetMuted;
   end;
 
 implementation
@@ -76,28 +84,67 @@ begin
   FLibrary := ALibrary;
   FMixer := AMixer;
   FMusic := AMusic;
+  FDeferredSong := -1;
+end;
+
+procedure TWarSceneAudio.SetMuted(AValue: Boolean);
+var
+  LSong: Integer;
+begin
+  if AValue = FMuted then
+    Exit;
+  FMuted := AValue;
+  if AValue then
+  begin
+    FDeferredSong := -1;
+    FDeferredStop := False;
+    Exit;
+  end;
+  LSong := FDeferredSong;
+  FDeferredSong := -1;
+  if LSong >= 0 then
+    StartSong(LSong, FDeferredLoop)
+  else if FDeferredStop then
+    StopMusic;
+  FDeferredStop := False;
+end;
+
+procedure TWarSceneAudio.StartSong(AAudioId: Integer; ALoop: Boolean);
+begin
+  if not Assigned(FMusic) then
+    Exit;
+  try
+    if FMusic.Play(FLibrary.GetMusic(AAudioId), ALoop, 0) then
+      Inc(FSongsStarted)
+    else
+      Inc(FFailures);
+  except
+    on EWarException do
+      Inc(FFailures);
+  end;
 end;
 
 procedure TWarSceneAudio.Play(AAudioId: Integer; ALoop: Boolean);
 var
   LKind: TWarAudioKind;
 begin
-  if FMuted then
-    Exit;
   try
     LKind := FLibrary.KindOf(AAudioId);
     if LKind = wakWave then
     begin
+      if FMuted then
+        Exit;
       FMixer.Play(AAudioId, ALoop);
       Inc(FSoundsStarted);
     end
-    else if Assigned(FMusic) then
+    else if FMuted then
     begin
-      if FMusic.Play(FLibrary.GetMusic(AAudioId), ALoop, 0) then
-        Inc(FSongsStarted)
-      else
-        Inc(FFailures);
-    end;
+      FDeferredSong := AAudioId;
+      FDeferredLoop := ALoop;
+      FDeferredStop := False;
+    end
+    else
+      StartSong(AAudioId, ALoop);
   except
     on EWarException do
       Inc(FFailures);
@@ -127,7 +174,13 @@ end;
 
 procedure TWarSceneAudio.StopMusic;
 begin
-  if Assigned(FMusic) and not FMuted then
+  if FMuted then
+  begin
+    FDeferredSong := -1;
+    FDeferredStop := True;
+    Exit;
+  end;
+  if Assigned(FMusic) then
   begin
     FMusic.Stop(0);
     Inc(FSongsStopped);

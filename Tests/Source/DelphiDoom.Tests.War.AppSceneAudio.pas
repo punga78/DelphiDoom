@@ -97,6 +97,12 @@ type
     [Test]
     procedure DovrebbeTacereDaMutoESuonareDopo;
     [Test]
+    procedure DovrebbeSuonareDopoIlRigiocoLUltimoBranoChiestoDaMuto;
+    [Test]
+    procedure DovrebbeFermareDopoIlRigiocoSeLUltimaRichiestaEraUnArresto;
+    [Test]
+    procedure DovrebbeDimenticareLeRichiesteDelRigiocoPrecedente;
+    [Test]
     procedure DovrebbeDareAlMixerEAlPlayerVolumiEInterruttori;
     [Test]
     procedure DovrebbeTacereMentreLeScenaCambiano;
@@ -349,6 +355,40 @@ begin
   FAudio.Muted := False;
   FAudio.Play(10, False);
   Assert.AreEqual<Integer>(1, FMixer.Played.Count);
+end;
+
+procedure TTestWarAppSceneAudio.DovrebbeSuonareDopoIlRigiocoLUltimoBranoChiestoDaMuto;
+begin
+  // the song of a map starts once, when the scene is entered: during the replay of a loaded game that is while muted
+  FAudio.Muted := True;
+  FAudio.Play(0, True);
+  FAudio.Play(1, True);
+  Assert.AreEqual<Integer>(0, FMusic.Songs.Count);
+  FAudio.Muted := False;
+  Assert.AreEqual<Integer>(1, FMusic.Songs.Count);
+  Assert.AreEqual<Integer>(1, FMusic.Songs[0]);
+  Assert.IsTrue(FMusic.Loops[0]);
+  Assert.AreEqual(1, FAudio.SongsStarted);
+end;
+
+procedure TTestWarAppSceneAudio.DovrebbeFermareDopoIlRigiocoSeLUltimaRichiestaEraUnArresto;
+begin
+  FAudio.Muted := True;
+  FAudio.Play(0, False);
+  FAudio.StopMusic;
+  FAudio.Muted := False;
+  Assert.AreEqual<Integer>(0, FMusic.Songs.Count);
+  Assert.AreEqual(1, FMusic.Stops);
+end;
+
+procedure TTestWarAppSceneAudio.DovrebbeDimenticareLeRichiesteDelRigiocoPrecedente;
+begin
+  FAudio.Muted := True;
+  FAudio.Play(0, False);
+  FAudio.Muted := False;
+  FAudio.Muted := True;
+  FAudio.Muted := False;
+  Assert.AreEqual<Integer>(1, FMusic.Songs.Count);
 end;
 
 procedure TTestWarAppSceneAudio.DovrebbeDareAlMixerEAlPlayerVolumiEInterruttori;
