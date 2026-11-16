@@ -2,7 +2,8 @@
 # classi che li sostituiscono (usata da Migra-MapStato.ps1 e da Prova-MapStato.ps1).
 # Ogni nome ha la classe e il campo; 'Solo' limita la sostituzione ai file indicati (nome del file senza percorso):
 # 'Resta': file dove il nome storico resta come parametro di ShootSpecialLine (la sostituzione e' stata rifatta a mano).
-# 'Solo' serve dove un'altra unit ha un nome omonimo suo (topslope e bottomslope di p_sight, parametri e locali).
+# 'Solo' serve dove un'altra unit ha un nome omonimo suo (topslope e bottomslope di p_sight, i parametri usething,
+# bombspot, bombsource e bombdamage delle regole dei giochi, onmobj di Hexen, locali).
 $MapStatoGroups = @{
   Slide = @(
     @{ Old = 'bestslidefrac'; Class = 'TMapSlide'; Field = 'BestFrac' }
@@ -23,11 +24,11 @@ $MapStatoGroups = @{
     @{ Old = 'aim_flags_mask2_ex'; Class = 'TMapAim'; Field = 'AimFlagsMask2Ex'; Solo = @('p_map.pas') }
   )
   Use   = @(
-    @{ Old = 'usething'; Class = 'TMapUse'; Field = 'Thing' }
-    @{ Old = 'bombsource'; Class = 'TMapBlast'; Field = 'Source' }
-    @{ Old = 'bombspot'; Class = 'TMapBlast'; Field = 'Spot' }
-    @{ Old = 'bombdamage'; Class = 'TMapBlast'; Field = 'Damage' }
-    @{ Old = 'bombradius'; Class = 'TMapBlast'; Field = 'Radius' }
+    @{ Old = 'usething'; Class = 'TMapUse'; Field = 'Thing'; Solo = @('p_map.pas') }
+    @{ Old = 'bombsource'; Class = 'TMapBlast'; Field = 'Source'; Solo = @('p_map.pas') }
+    @{ Old = 'bombspot'; Class = 'TMapBlast'; Field = 'Spot'; Solo = @('p_map.pas') }
+    @{ Old = 'bombdamage'; Class = 'TMapBlast'; Field = 'Damage'; Solo = @('p_map.pas') }
+    @{ Old = 'bombradius'; Class = 'TMapBlast'; Field = 'Radius'; Solo = @('p_map.pas') }
     @{ Old = 'onmobj'; Class = 'TMapCheck'; Field = 'OnMobj'; Solo = @('p_map.pas') }
     @{ Old = 'crushchange'; Class = 'TMapCheck'; Field = 'CrushChange' }
     @{ Old = 'nofit'; Class = 'TMapCheck'; Field = 'NoFit' }

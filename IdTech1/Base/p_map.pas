@@ -93,6 +93,36 @@ type
     class var MaxSpecHit: integer;
     /// <summary>True if the move would be ok when within FloorZ and CeilingZ.</summary>
     class var FloatOk: boolean;
+    /// <summary>The thing a thing has landed on (P_CheckOnmobj; used for landing on pods and players).</summary>
+    class var OnMobj: Pmobj_t;
+    /// <summary>P_ChangeSector: crush the things that do not fit, and true if one does not fit.</summary>
+    class var CrushChange: boolean;
+    class var NoFit: boolean;
+  end;
+
+  /// <summary>
+  /// The state of P_UseLines and PTR_UseTraverse: the former global usething (issue #244).
+  /// Declared here as a class variable for the same reason as TMapCheck.
+  /// </summary>
+  TMapUse = class sealed
+  public
+    /// <summary>The thing that uses the lines.</summary>
+    class var Thing: Pmobj_t;
+  end;
+
+  /// <summary>
+  /// The state of the radius attacks (P_RadiusAttack and its variants, PIT_RadiusAttack): the
+  /// former globals bombsource, bombspot, bombdamage and bombradius (issue #244). Declared here
+  /// as class variables for the same reason as TMapCheck. Scratch space of one call.
+  /// </summary>
+  TMapBlast = class sealed
+  public
+    /// <summary>The creature that caused the explosion.</summary>
+    class var Source: Pmobj_t;
+    /// <summary>The thing that explodes, the damage at its centre and the radius.</summary>
+    class var Spot: Pmobj_t;
+    class var Damage: integer;
+    class var Radius: integer;
   end;
 
   /// <summary>
@@ -288,10 +318,6 @@ function PIT_CheckThing(thing: Pmobj_t): boolean;
 //
 //==============================================================================
 function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
-
-var
-  crushchange: boolean;
-  nofit: boolean;
 
 implementation
 
@@ -1147,9 +1173,6 @@ begin
   end;
 end;
 
-var
-  onmobj: Pmobj_t; //generic global onmobj...used for landing on pods/players
-
 //==============================================================================
 //
 // PIT_CheckOnmobjZ
@@ -1191,7 +1214,7 @@ begin
 
   result := thing.flags and MF_SOLID = 0;
   if not result then
-    onmobj := thing;
+    TMapCheck.OnMobj := thing;
 
 end;
 
@@ -1273,7 +1296,7 @@ begin
       if not P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ) then
       begin
         TMapCheck.Thing^ := oldmo;
-        result := onmobj;
+        result := TMapCheck.OnMobj;
         exit;
       end;
 
@@ -2269,9 +2292,6 @@ end;
 //
 // USE LINES
 //
-var
-  usething: Pmobj_t;
-
 //==============================================================================
 //
 // PTR_UseTraverse
@@ -2282,30 +2302,30 @@ var
   side: integer;
   li: Pline_t;
 begin
-  side := P_PointOnLineSide(usething.x, usething.y, intr.d.line);
+  side := P_PointOnLineSide(TMapUse.Thing.x, TMapUse.Thing.y, intr.d.line);
   li := intr.d.line;
 
   if li.flags and ML_TRIGGERSCRIPTS <> 0 then
-    if usething.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-      PS_EventUseLine(usething, pDiff(li, lines, SizeOf(line_t)), side);
+    if TMapUse.Thing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+      PS_EventUseLine(TMapUse.Thing, pDiff(li, lines, SizeOf(line_t)), side);
 
   if li.special = 0 then
   begin
     P_LineOpening(li, true);
     if openrange <= 0 then
     begin
-      TMapGameRules.UseBlockedByWall(usething);
+      TMapGameRules.UseBlockedByWall(TMapUse.Thing);
       // can't use through a wall
       result := false;
       exit;
     end;
-    TMapGameRules.UseNonSpecialLine(usething);
+    TMapGameRules.UseNonSpecialLine(TMapUse.Thing);
     // not a special line, but keep checking
     result := true;
     exit;
   end;
 
-  result := TMapGameRules.UseSpecialLine(usething, li, side);
+  result := TMapGameRules.UseSpecialLine(TMapUse.Thing, li, side);
 end;
 
 //==============================================================================
@@ -2356,15 +2376,15 @@ begin
     exit;
   end;
   // Height.
-  if (usething.z >= mobj.z + mobj.height) or
-     (usething.z + usething.height <= mobj.z) then
+  if (TMapUse.Thing.z >= mobj.z + mobj.height) or
+     (TMapUse.Thing.z + TMapUse.Thing.height <= mobj.z) then
   begin
     result := true;
     exit;
   end;
-  mobj.target := usething;
+  mobj.target := TMapUse.Thing;
   P_SetMobjState(mobj, statenum_t(mobj.info.interactstate));
-  p := usething.player;
+  p := TMapUse.Thing.player;
   if p <> nil then
     if G_PlayingEngineVersion >= VERSION207 then
       p.nextfire := leveltime + TICRATE div 2;
@@ -2385,7 +2405,7 @@ var
   x2: fixed_t;
   y2: fixed_t;
 begin
-  usething := player.mo;
+  TMapUse.Thing := player.mo;
 
   {$IFDEF FPC}
   angle := _SHRW(player.mo.angle, ANGLETOFINESHIFT);
@@ -2410,17 +2430,11 @@ end;
 //
 // RADIUS ATTACK
 //
-var
-  bombsource: Pmobj_t;
-  bombspot: Pmobj_t;
-  bombdamage: integer;
-  bombradius: integer;
-
 //==============================================================================
 //
 // PIT_RadiusAttack
-// "bombsource" is the creature
-// that caused the explosion at "bombspot".
+// "TMapBlast.Source" is the creature
+// that caused the explosion at "TMapBlast.Spot".
 //
 //==============================================================================
 function PIT_RadiusAttack(thing: Pmobj_t): boolean;
@@ -2435,7 +2449,7 @@ begin
     exit;
   end;
 
-  if P_SplashImmune(thing, bombspot) then
+  if P_SplashImmune(thing, TMapBlast.Spot) then
   begin
     result := true;
     exit;
@@ -2457,9 +2471,9 @@ begin
 
   if thing.flags_ex and MF_EX_NORADIUSDMG <> 0 then
   begin
-    if bombsource <> nil then
+    if TMapBlast.Source <> nil then
     begin
-      if bombsource.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
+      if TMapBlast.Source.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
       begin
         result := true;
         exit;
@@ -2472,22 +2486,22 @@ begin
     end;
   end;
 
-  if TMapGameRules.OutOfBlast(thing, bombspot, bombsource) then
+  if TMapGameRules.OutOfBlast(thing, TMapBlast.Spot, TMapBlast.Source) then
   begin
     result := true;
     exit;
   end;
 
-  if bombsource <> nil then
+  if TMapBlast.Source <> nil then
   begin
-    if bombsource.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+    if TMapBlast.Source.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
       begin
         result := true;
         exit;
       end;
 
-    if bombsource.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+    if TMapBlast.Source.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
       begin
         result := true;
@@ -2495,10 +2509,10 @@ begin
       end;
 
     if thing.player = nil then
-      if bombsource.info.doomednum > 0 then
+      if TMapBlast.Source.info.doomednum > 0 then
       begin
-        if bombsource.flags_ex and MF_EX_DONTHURTSPECIES <> 0 then
-          if Info_GetInheritance(thing.info) = Info_GetInheritance(bombsource.info) then
+        if TMapBlast.Source.flags_ex and MF_EX_DONTHURTSPECIES <> 0 then
+          if Info_GetInheritance(thing.info) = Info_GetInheritance(TMapBlast.Source.info) then
           begin
             result := true;
             exit;
@@ -2506,8 +2520,8 @@ begin
       end;
   end;
 
-  dx := abs(thing.x - bombspot.x);
-  dy := abs(thing.y - bombspot.y);
+  dx := abs(thing.x - TMapBlast.Spot.x);
+  dy := abs(thing.y - TMapBlast.Spot.y);
 
   if dx > dy then
     dist := dx
@@ -2518,16 +2532,16 @@ begin
   if dist < 0 then
     dist := 0;
 
-  if dist >= bombdamage then
+  if dist >= TMapBlast.Damage then
   begin
     result := true; // out of range
     exit;
   end;
 
-  if P_CheckSight(thing, bombspot) then
+  if P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
-    P_DamageMobj(thing, bombspot, bombsource, TMapGameRules.BlastDamage(thing, bombdamage, dist));
+    P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, TMapGameRules.BlastDamage(thing, TMapBlast.Damage, dist));
   end;
 
   result := true;
@@ -2566,9 +2580,9 @@ begin
     xl := MapBlockInt(spot.x - dist - bmaporgx);
   end;
 
-  bombspot := spot;
-  bombsource := source;
-  bombdamage := damage;
+  TMapBlast.Spot := spot;
+  TMapBlast.Source := source;
+  TMapBlast.Damage := damage;
   TMapGameRules.SetBlastExtent(distance, dmsource);
 
   for y := yl to yh do
@@ -2611,9 +2625,9 @@ begin
     xl := MapBlockInt(spot.x - dist - bmaporgx);
   end;
 
-  bombspot := spot;
-  bombsource := source;
-  bombdamage := damage;
+  TMapBlast.Spot := spot;
+  TMapBlast.Source := source;
+  TMapBlast.Damage := damage;
 
   for y := yl to yh do
     for x := xl to xh do
@@ -2641,14 +2655,14 @@ begin
     exit;
   end;
 
-  if P_SplashImmune(thing, bombspot) then
+  if P_SplashImmune(thing, TMapBlast.Spot) then
   begin
     result := true;
     exit;
   end;
 
-  dx := abs(thing.x - bombspot.x);
-  dy := abs(thing.y - bombspot.y);
+  dx := abs(thing.x - TMapBlast.Spot.x);
+  dy := abs(thing.y - TMapBlast.Spot.y);
 
   if dx > dy then
     dist := dx
@@ -2659,7 +2673,7 @@ begin
   if dist < 0 then
     dist := 0;
 
-  if dist >= bombradius then
+  if dist >= TMapBlast.Radius then
   begin
     result := true; // out of range
     exit;
@@ -2667,9 +2681,9 @@ begin
 
   if thing.flags_ex and MF_EX_NORADIUSDMG <> 0 then
   begin
-    if bombsource <> nil then
+    if TMapBlast.Source <> nil then
     begin
-      if bombsource.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
+      if TMapBlast.Source.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
       begin
         result := true;
         exit;
@@ -2682,32 +2696,32 @@ begin
     end;
   end;
 
-  if bombsource.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+  if TMapBlast.Source.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
     if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
     begin
       result := true;
       exit;
     end;
 
-  if bombsource.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+  if TMapBlast.Source.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
     if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
     begin
       result := true;
       exit;
     end;
 
-  if P_CheckSight(thing, bombspot) then
+  if P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
-    if bombradius = 0 then
-      P_DamageMobj(thing, bombspot, bombsource, bombdamage)
+    if TMapBlast.Radius = 0 then
+      P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, TMapBlast.Damage)
     else
     begin
-      cl := FixedDiv((bombradius - dist) * FRACUNIT, bombradius * FRACUNIT);
-      damage := FixedInt(FixedMul(bombdamage * FRACUNIT, cl));
+      cl := FixedDiv((TMapBlast.Radius - dist) * FRACUNIT, TMapBlast.Radius * FRACUNIT);
+      damage := FixedInt(FixedMul(TMapBlast.Damage * FRACUNIT, cl));
       if damage < 1 then
         damage := 1;
-      P_DamageMobj(thing, bombspot, bombsource, damage);
+      P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, damage);
     end;
   end;
 
@@ -2745,10 +2759,10 @@ begin
     xl := MapBlockInt(spot.x - dist - bmaporgx);
   end;
 
-  bombspot := spot;
-  bombsource := source;
-  bombdamage := damage;
-  bombradius := distance;
+  TMapBlast.Spot := spot;
+  TMapBlast.Source := source;
+  TMapBlast.Damage := damage;
+  TMapBlast.Radius := distance;
 
   for y := yl to yh do
     for x := xl to xh do
@@ -2814,9 +2828,9 @@ begin
     exit;
   end;
 
-  nofit := true;
+  TMapCheck.NoFit := true;
 
-  if crushchange and (leveltime and 3 = 0) then
+  if TMapCheck.CrushChange and (leveltime and 3 = 0) then
   begin
     P_DamageMobj(thing, nil, nil, TMapGameRules.CrushDamage);
 
@@ -2859,8 +2873,8 @@ function P_ChangeSector(sector: Psector_t; crunch: boolean): boolean;
 var
   i: integer;
 begin
-  nofit := false;
-  crushchange := crunch;
+  TMapCheck.NoFit := false;
+  TMapCheck.CrushChange := crunch;
 
   if (G_PlayingEngineVersion >= TMapGameRules.SlopesVersion) and (sector.num_saffectees > 0) then
   begin
@@ -2870,7 +2884,7 @@ begin
   else
     P_DoChangeSector(sector, crunch);
 
-  result := nofit;
+  result := TMapCheck.NoFit;
 end;
 
 //==============================================================================

@@ -863,7 +863,7 @@ begin
   if thing.player <> nil then
     if Psubsector_t(thing.subsector).sector.ceilingdata <> nil then
     begin
-      nofit := true;
+      TMapCheck.NoFit := true;
       result := false;
       exit;
     end;
