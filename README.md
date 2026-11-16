@@ -22,7 +22,7 @@ Tutta la documentazione sta in `docs\`.
 
 ## Struttura e comandi principali
 
-- Progetti: `Doom\Doom32.dpr`, `Doom\GLDoom32.dpr`, `Heretic\`, `Hexen\`, `Strife\` (software e OpenGL, piu `ddc_<gioco>`), `Launcher\`, `DD_IDE\`, `DD_Tools\`, `Framework\Ddc\ddc.dpr`, `Games\Keen\`, DLL in `Libs\<Lib>\DD*.dpr`, test in `Tests\`.
+- Progetti: `Doom\Doom32.dpr`, `Doom\GLDoom32.dpr`, `Heretic\`, `Hexen\`, `Strife\` (software e OpenGL, piu `ddc_<gioco>`), `Strumenti\Launcher\`, `Strumenti\DD_IDE\`, `Strumenti\DD_Tools\`, `Framework\Ddc\ddc.dpr`, `Games\Keen\`, DLL in `Libs\<Lib>\DD*.dpr`, test in `Tests\`.
 - Gruppo di progetti per l'IDE: i gruppi `DelphiDoom.Games.groupproj`, `DelphiDoom.Dll.groupproj`, `DelphiDoom.Tools.groupproj` e `DelphiDoom.Tests.groupproj`.
 - Costruzione senza IDE (da qualsiasi cartella):
 

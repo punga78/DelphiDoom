@@ -10,7 +10,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Come leggerlo**
 - Le unit sono ordinate per numero totale di chiamate crescente (prima quelle cancellate o senza funzioni pubbliche); dentro ogni unit le funzioni sono ordinate per chiamate crescente.
-- "Chiamate" e il numero di occorrenze del nome in codice (commenti esclusi, stringhe incluse: copre `ps_import` e le registrazioni per nome) nei file che compilano insieme alla unit (le unit di un gioco non contano i file degli altri giochi), esclusi la unit stessa, `Libs\` e `Tests\` (contano anche i file `.inc`, `DD_IDE\`, `Launcher\` e i `.dpr`, questi ultimi come "n .dpr"). Una voce `DelphiDoom.Engine.Composition` e il cablaggio (`*_Configure*`), non un chiamante di dominio.
+- "Chiamate" e il numero di occorrenze del nome in codice (commenti esclusi, stringhe incluse: copre `ps_import` e le registrazioni per nome) nei file che compilano insieme alla unit (le unit di un gioco non contano i file degli altri giochi), esclusi la unit stessa, `Libs\` e `Tests\` (contano anche i file `.inc`, `Strumenti\DD_IDE\`, `Strumenti\Launcher\` e i `.dpr`, questi ultimi come "n .dpr"). Una voce `DelphiDoom.Engine.Composition` e il cablaggio (`*_Configure*`), non un chiamante di dominio.
 - "[test: n]" sono i riferimenti nei test (di solito nomi omonimi: non sono chiamanti).
 - Le unit `w_wadreader.pas` e `w_wadwriter.pas` hanno solo classi (`TWadReader`, `TWadWriter`), nessuna funzione: per toglierle i chiamanti (`w_pak`, `r_data`, `vx_*`, `s_pk3sounds`) dovrebbero usare `IWadDirectory` e `IWadBuilder`.
 - Il conteggio e statico, non sostituisce una lettura del chiamante.

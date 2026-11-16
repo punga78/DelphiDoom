@@ -265,7 +265,7 @@ Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo 
 * **Contesto implicito**: `ps_currentactor` e impostata da `PS_Event*` e letta da `PS_Actor` e da `mobj_from_key(0)`; `A_RunScript` passa l'attore a `RunScript` per un'altra strada: due percorsi da lasciare cosi fino a 2f-5 e da testare entrambi.
 * **Prestazioni**: `psi_overlay` per fotogramma e `psi_globals` per parametro valutato; limite +5% con `-timedemo` e microbenchmark (come #148/#150). Non aggiungere allocazioni per chiamata (le `Actors.All*` allocano gia: non peggiorarle).
 * **Errori di dichiarazione invisibili**: un refuso in una delle 579 stringhe si vede solo quando uno script usa la funzione. Per questo L1 e L2 sono parte di ogni fetta.
-* **DD_IDE e le DLL `ddc_*`**: usano `PS_InitProcLists`/`PS_ImportUnits`/`GetDeclarations` (suggerimenti di `Libs\Ide`); la nuova API deve restare usabile senza partita (`ComposeEngine` nel `begin` del `.dpr`) e dare le stesse stringhe.
+* **DD_IDE e le DLL `ddc_*`**: usano `PS_InitProcLists`/`PS_ImportUnits`/`GetDeclarations` (suggerimenti di `Strumenti\Ide`); la nuova API deve restare usabile senza partita (`ComposeEngine` nel `begin` del `.dpr`) e dare le stesse stringhe.
 * Le copie sotto `Reference\Mars3D` sono un'altra linea: non toccarle.
 
 ### 7.2 Cosa NON conviene fare

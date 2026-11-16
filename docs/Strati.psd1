@@ -156,13 +156,13 @@
     'Games\XcomUfopaedia' = 'Giochi'
     'Games\XcomUi' = 'Giochi'
     # Strumenti
-    'Libs\Ide' = 'Strumenti'
-    'Libs\ToolsCore' = 'Strumenti'
-    'Libs\EndoomEditor' = 'Strumenti'
-    'Libs\Font' = 'Strumenti'
-    'Libs\FontEditor' = 'Strumenti'
-    'Libs\VoxelEditor' = 'Strumenti'
-    'Libs\Launcher' = 'Strumenti'
+    'Strumenti\Ide' = 'Strumenti'
+    'Strumenti\ToolsCore' = 'Strumenti'
+    'Strumenti\EndoomEditor' = 'Strumenti'
+    'Strumenti\Font' = 'Strumenti'
+    'Strumenti\FontEditor' = 'Strumenti'
+    'Strumenti\VoxelEditor' = 'Strumenti'
+    'Strumenti\Launcher' = 'Strumenti'
     # Cartelle dei prodotti
     'Base' = 'IdTech1'
     'Common' = 'IdTech1'
@@ -173,9 +173,8 @@
     'Radix' = 'IdTech1'
     'Speed' = 'IdTech1'
     'Games\OpenXcom' = 'Giochi'
-    'DD_IDE' = 'Strumenti'
-    'DD_Tools' = 'Strumenti'
-    'Launcher' = 'Strumenti'
+    'Strumenti\DD_IDE' = 'Strumenti'
+    'Strumenti\DD_Tools' = 'Strumenti'
   }
 
   # Difetti noti (censimento, docs\FRAMEWORK_CENSIMENTO.md). Ogni voce dice chi la toglie.

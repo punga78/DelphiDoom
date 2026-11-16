@@ -4,10 +4,10 @@
     </PropertyGroup>
     <ItemGroup/>
     <ItemGroup>
-        <Projects Include="DD_IDE\DD_IDE.dproj">
+        <Projects Include="Strumenti\DD_IDE\DD_IDE.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="DD_Tools\DD_Tools.dproj">
+        <Projects Include="Strumenti\DD_Tools\DD_Tools.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Doom\ddc_doom.dproj">
@@ -19,7 +19,7 @@
         <Projects Include="Hexen\ddc_hexen.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Launcher\Launcher.dproj">
+        <Projects Include="Strumenti\Launcher\Launcher.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Framework\Ddc\ddc.dproj">
@@ -40,22 +40,22 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="DD_IDE">
-        <MSBuild Projects="DD_IDE\DD_IDE.dproj"/>
+        <MSBuild Projects="Strumenti\DD_IDE\DD_IDE.dproj"/>
     </Target>
     <Target Name="DD_IDE:Clean">
-        <MSBuild Projects="DD_IDE\DD_IDE.dproj" Targets="Clean"/>
+        <MSBuild Projects="Strumenti\DD_IDE\DD_IDE.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DD_IDE:Make">
-        <MSBuild Projects="DD_IDE\DD_IDE.dproj" Targets="Make"/>
+        <MSBuild Projects="Strumenti\DD_IDE\DD_IDE.dproj" Targets="Make"/>
     </Target>
     <Target Name="DD_Tools">
-        <MSBuild Projects="DD_Tools\DD_Tools.dproj"/>
+        <MSBuild Projects="Strumenti\DD_Tools\DD_Tools.dproj"/>
     </Target>
     <Target Name="DD_Tools:Clean">
-        <MSBuild Projects="DD_Tools\DD_Tools.dproj" Targets="Clean"/>
+        <MSBuild Projects="Strumenti\DD_Tools\DD_Tools.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DD_Tools:Make">
-        <MSBuild Projects="DD_Tools\DD_Tools.dproj" Targets="Make"/>
+        <MSBuild Projects="Strumenti\DD_Tools\DD_Tools.dproj" Targets="Make"/>
     </Target>
     <Target Name="ddc_doom">
         <MSBuild Projects="Doom\ddc_doom.dproj"/>
@@ -85,13 +85,13 @@
         <MSBuild Projects="Hexen\ddc_hexen.dproj" Targets="Make"/>
     </Target>
     <Target Name="Launcher">
-        <MSBuild Projects="Launcher\Launcher.dproj"/>
+        <MSBuild Projects="Strumenti\Launcher\Launcher.dproj"/>
     </Target>
     <Target Name="Launcher:Clean">
-        <MSBuild Projects="Launcher\Launcher.dproj" Targets="Clean"/>
+        <MSBuild Projects="Strumenti\Launcher\Launcher.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Launcher:Make">
-        <MSBuild Projects="Launcher\Launcher.dproj" Targets="Make"/>
+        <MSBuild Projects="Strumenti\Launcher\Launcher.dproj" Targets="Make"/>
     </Target>
     <Target Name="ddc">
         <MSBuild Projects="Framework\Ddc\ddc.dproj"/>
