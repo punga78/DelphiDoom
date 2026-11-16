@@ -36,42 +36,6 @@ uses
   r_main;
 
 //==============================================================================
-// R_DrawColumnLowest
-//
-// Column drawers
-//
-//==============================================================================
-procedure R_DrawColumnLowest;
-
-//==============================================================================
-//
-// R_DrawColumnLow
-//
-//==============================================================================
-procedure R_DrawColumnLow;
-
-//==============================================================================
-//
-// R_DrawColumnMedium
-//
-//==============================================================================
-procedure R_DrawColumnMedium;
-
-//==============================================================================
-//
-// R_DrawColumnHi
-//
-//==============================================================================
-procedure R_DrawColumnHi;
-
-//==============================================================================
-//
-// R_DrawColumnUltra
-//
-//==============================================================================
-procedure R_DrawColumnUltra;
-
-//==============================================================================
 //
 // R_DrawColumnBase32
 //
@@ -109,6 +73,21 @@ var
 // JVAL for hi resolution
   dc_source32: PLongWordArray;
 
+type
+  /// <summary>
+  ///   The column drawers that read the registers dc_* (the old R_DrawColumnLowest, R_DrawColumnLow, R_DrawColumnMedium,
+  ///   R_DrawColumnHi and R_DrawColumnUltra): static methods with the text of the old procedures. They stay in this unit
+  ///   because a routine in another unit than the registers it reads is compiled worse (the compiler does not keep the
+  ///   registers in its registers: Tools\Verifica\247)
+  /// </summary>
+  TRendererColumnDrawers = class sealed
+  public
+    class procedure DrawLowest; static;
+    class procedure DrawLow; static;
+    class procedure DrawMedium; static;
+    class procedure DrawHi; static;
+    class procedure DrawUltra; static;
+  end;
 implementation
 
 uses
@@ -127,7 +106,7 @@ uses
 //  be used. It has also been used with Wolfenstein 3D.
 //
 //==============================================================================
-procedure R_DrawColumnLowest;
+class procedure TRendererColumnDrawers.DrawLowest;
 var
   count: integer;
   i: integer;
@@ -185,7 +164,7 @@ end;
 // R_DrawColumnLow
 //
 //==============================================================================
-procedure R_DrawColumnLow;
+class procedure TRendererColumnDrawers.DrawLow;
 var
   count: integer;
   i: integer;
@@ -237,7 +216,7 @@ end;
 // R_DrawColumnMedium
 //
 //==============================================================================
-procedure R_DrawColumnMedium;
+class procedure TRendererColumnDrawers.DrawMedium;
 var
   count: integer;
   dest: PByte;
@@ -356,7 +335,7 @@ end;
 // R_DrawColumnHi
 //
 //==============================================================================
-procedure R_DrawColumnHi;
+class procedure TRendererColumnDrawers.DrawHi;
 var
   count: integer;
   destl: PLongWord;
@@ -493,7 +472,7 @@ end;
 // R_DrawColumnUltra
 //
 //==============================================================================
-procedure R_DrawColumnUltra;
+class procedure TRendererColumnDrawers.DrawUltra;
 var
   count: integer;
   destl: PLongWord;

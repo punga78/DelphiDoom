@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - dump of the drawing functions of the detail levels (test)
+{  DelphiDoom: engine - test dump of the drawing function table                
 }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
@@ -414,7 +414,7 @@ begin
     Exit('R_DrawColumnLow_Batch');
   if AValue = @R_DrawTranslatedColumn_Batch then
     Exit('R_DrawTranslatedColumn_Batch');
-  if AValue = @R_DrawColumnLowest then
+  if AValue = @TRendererColumnDrawers.DrawLowest then
     Exit('R_DrawColumnLowest');
   if AValue = @R_DrawTallColumnLowest then
     Exit('R_DrawTallColumnLowest');
@@ -468,7 +468,7 @@ begin
     Exit('R_DrawSpanLowMT');
   if AValue = @R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
-  if AValue = @R_DrawColumnLow then
+  if AValue = @TRendererColumnDrawers.DrawLow then
     Exit('R_DrawColumnLow');
   if AValue = @R_DrawTallColumnLow then
     Exit('R_DrawTallColumnLow');
@@ -490,7 +490,7 @@ begin
     Exit('R_DrawColumnSubtractLowMT');
   if AValue = @R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
-  if AValue = @R_DrawColumnMedium then
+  if AValue = @TRendererColumnDrawers.DrawMedium then
     Exit('R_DrawColumnMedium');
   if AValue = @R_DrawTallColumnMedium then
     Exit('R_DrawTallColumnMedium');
@@ -548,7 +548,7 @@ begin
     Exit('R_DrawColumnSubtractHi_Batch');
   if AValue = @R_DrawColumnHi_Batch then
     Exit('R_DrawColumnHi_Batch');
-  if AValue = @R_DrawColumnHi then
+  if AValue = @TRendererColumnDrawers.DrawHi then
     Exit('R_DrawColumnHi');
   if AValue = @R_DrawTallColumnHi then
     Exit('R_DrawTallColumnHi');
@@ -626,7 +626,7 @@ begin
     Exit('R_DrawSpanNormal_Fog');
   if AValue = @R_DrawSpanNormal_Fog_Ripple then
     Exit('R_DrawSpanNormal_Fog_Ripple');
-  if AValue = @R_DrawColumnUltra then
+  if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
   if AValue = @R_DrawTallColumnUltra then
     Exit('R_DrawTallColumnUltra');
@@ -756,7 +756,7 @@ begin
     Exit('R_DrawFuzzColumnTL');
   if AValue = @R_DrawFuzzColumnTL_Batch then
     Exit('R_DrawFuzzColumnTL_Batch');
-  if AValue = @R_DrawColumnLowest then
+  if AValue = @TRendererColumnDrawers.DrawLowest then
     Exit('R_DrawColumnLowest');
   if AValue = @R_DrawTallColumnLowest then
     Exit('R_DrawTallColumnLowest');
@@ -810,7 +810,7 @@ begin
     Exit('R_DrawSpanLowMT');
   if AValue = @R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
-  if AValue = @R_DrawColumnLow then
+  if AValue = @TRendererColumnDrawers.DrawLow then
     Exit('R_DrawColumnLow');
   if AValue = @R_DrawTallColumnLow then
     Exit('R_DrawTallColumnLow');
@@ -832,7 +832,7 @@ begin
     Exit('R_DrawColumnSubtractLowMT');
   if AValue = @R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
-  if AValue = @R_DrawColumnMedium then
+  if AValue = @TRendererColumnDrawers.DrawMedium then
     Exit('R_DrawColumnMedium');
   if AValue = @R_DrawTallColumnMedium then
     Exit('R_DrawTallColumnMedium');
@@ -898,7 +898,7 @@ begin
     Exit('R_DrawFuzzColumnHiTL');
   if AValue = @R_DrawFuzzColumnHiTL_Batch then
     Exit('R_DrawFuzzColumnHiTL_Batch');
-  if AValue = @R_DrawColumnHi then
+  if AValue = @TRendererColumnDrawers.DrawHi then
     Exit('R_DrawColumnHi');
   if AValue = @R_DrawTallColumnHi then
     Exit('R_DrawTallColumnHi');
@@ -964,7 +964,7 @@ begin
     Exit('R_DrawSpanNormalMT');
   if AValue = @R_DrawSpanNormal_RippleMT then
     Exit('R_DrawSpanNormal_RippleMT');
-  if AValue = @R_DrawColumnUltra then
+  if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
   if AValue = @R_DrawTallColumnUltra then
     Exit('R_DrawTallColumnUltra');
@@ -1078,7 +1078,7 @@ begin
     Exit('R_DrawFuzzColumn_Batch');
   if AValue = @R_DrawTranslatedColumn_Batch then
     Exit('R_DrawTranslatedColumn_Batch');
-  if AValue = @R_DrawColumnLowest then
+  if AValue = @TRendererColumnDrawers.DrawLowest then
     Exit('R_DrawColumnLowest');
   if AValue = @R_DrawTallColumnLowest then
     Exit('R_DrawTallColumnLowest');
@@ -1130,7 +1130,7 @@ begin
     Exit('R_DrawSpanLowMT');
   if AValue = @R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
-  if AValue = @R_DrawColumnLow then
+  if AValue = @TRendererColumnDrawers.DrawLow then
     Exit('R_DrawColumnLow');
   if AValue = @R_DrawTallColumnLow then
     Exit('R_DrawTallColumnLow');
@@ -1152,7 +1152,7 @@ begin
     Exit('R_DrawColumnSubtractLowMT');
   if AValue = @R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
-  if AValue = @R_DrawColumnMedium then
+  if AValue = @TRendererColumnDrawers.DrawMedium then
     Exit('R_DrawColumnMedium');
   if AValue = @R_DrawTallColumnMedium then
     Exit('R_DrawTallColumnMedium');
@@ -1212,7 +1212,7 @@ begin
     Exit('R_DrawColumnAddHi_Batch');
   if AValue = @R_DrawColumnSubtractHi_Batch then
     Exit('R_DrawColumnSubtractHi_Batch');
-  if AValue = @R_DrawColumnHi then
+  if AValue = @TRendererColumnDrawers.DrawHi then
     Exit('R_DrawColumnHi');
   if AValue = @R_DrawTallColumnHi then
     Exit('R_DrawTallColumnHi');
@@ -1280,7 +1280,7 @@ begin
     Exit('R_DrawFuzzColumn32_Batch');
   if AValue = @R_DrawFuzzColumn32 then
     Exit('R_DrawFuzzColumn32');
-  if AValue = @R_DrawColumnUltra then
+  if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
   if AValue = @R_DrawTallColumnUltra then
     Exit('R_DrawTallColumnUltra');

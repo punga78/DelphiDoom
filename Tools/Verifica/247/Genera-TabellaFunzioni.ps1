@@ -255,7 +255,14 @@ $searchDirs = @{
 }
 $declIndex = @{}
 $dirIndex = @{}
+# Routine passate in una classe (Spostate.psd1): nome storico -> espressione dell'indirizzo e unit. Il golden resta con
+# il nome storico: la tabella e lo scarico confrontano lo stesso nome.
+$moved = @{}
+$movedFile = Join-Path $PSScriptRoot 'Spostate.psd1'
+if (Test-Path $movedFile) { $moved = Import-PowerShellDataFile $movedFile }
+function Value-Expr([string]$Name) { if ($moved.ContainsKey($Name)) { $moved[$Name].Expression } else { $Name } }
 function Find-Unit([string]$Config, [string]$Name) {
+  if ($moved.ContainsKey($Name)) { return $moved[$Name].Unit }
   $key = "$Config|$Name"
   if ($declIndex.ContainsKey($key)) { return $declIndex[$key] }
   $found = $null
@@ -337,7 +344,7 @@ $rowsText = Section-Text {
   $i = 0
   foreach ($r in $c.Rows) {
     $i++
-    if ($r.Value -eq 'nil') { $value = 'nil' } else { $value = '@' + $r.Value }
+    if ($r.Value -eq 'nil') { $value = 'nil' } else { $value = '@' + (Value-Expr $r.Value) }
     $sep = if ($i -lt $c.Rows.Count) { ',' } else { ');' }
     $lines.Add(('    (Detail: {0}; Combos: ${1:X8}; Slot: @@{2}; Value: {3}){4}' -f $r.Detail, [uint32]$r.Mask, $r.Slot, $value, $sep))
   }
@@ -463,7 +470,7 @@ $dumpBodyText = Section-Text {
   $lines.Add('begin')
   $lines.Add('  if AValue = nil then')
   $lines.Add('    Exit(''nil'');')
-  foreach ($v in (Values-For $Key)) { $lines.Add("  if AValue = @$v then"); $lines.Add("    Exit('$v');") }
+  foreach ($v in (Values-For $Key)) { $lines.Add("  if AValue = @$(Value-Expr $v) then"); $lines.Add("    Exit('$v');") }
   $lines.Add('  Result := ''?'' + IntToHex(NativeUInt(AValue), 8);')
   $lines.Add('end;')
   $lines -join $nl

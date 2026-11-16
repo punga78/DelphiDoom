@@ -42,6 +42,10 @@ foreach ($row in $raw) {
   if ($row -match '^[0-9a-f`]{8,17}\s+(?:[0-9a-f]{2,32})\s{2,}(\S.*)$') {
     $text = $Matches[1]
     $text = [regex]::Replace($text, '[A-Za-z0-9_]+![A-Za-z0-9_.+]+( \([0-9a-f`]+\))?', 'ADDR')   # simbolo+offset (indirizzo)
+    # una costante che coincide con la base del modulo viene scritta come "offset Modulo (indirizzo)": come le altre
+    # costanti di 5 o piu' cifre esadecimali e' mascherata (due compilazioni con lo stesso testo la danno uguale)
+    $text = [regex]::Replace($text, 'offset [A-Za-z0-9_.]+( \([0-9a-f`]+\))?', 'ADDR')
+    $text = [regex]::Replace($text, '\b[0-9A-F]{5,8}h\b', 'ADDR')
     $text = [regex]::Replace($text, '\b[0-9a-f]{6,16}\b', 'ADDR')       # indirizzi assoluti o relativi
     $text = [regex]::Replace($text, '\[[A-Za-z0-9_]+(\+0x[0-9a-f]+)?\]', '[ADDR]')   # [modulo+offset]
     $list.Add(($text -replace '\s+', ' ').Trim())
