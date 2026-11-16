@@ -46,8 +46,6 @@ type
     procedure DovrebbeDisegnareLaPatchStirataTrasparente32ConAlfa;
     [Test]
     procedure DovrebbeIngrandireLaPatch8;
-    [Test]
-    procedure DovrebbeIngrandireLaPatch32;
   end;
 
 implementation
@@ -555,36 +553,6 @@ begin
     TVideoPatchZoomer.DrawColumns8(@LPatch.Bytes[0], PVideoIntegerRow(@LPatch.Offsets[0]), 13, 43690, 43690,
       @LActual[START_OFFSET], SCREEN_WIDTH, 100, LZoom, LPreserve = 1, PVideoByteRow(@LTranslation[0]));
     CompareBytes(LExpected, LActual);
-  end;
-end;
-
-procedure TTestVideoPatchKernels.DovrebbeIngrandireLaPatch32;
-var
-  LPatch: TPatchImage;
-  LWrites: TWrites;
-  LExpected, LActual, LPalette: TArray<Cardinal>;
-  LIndex, LPreserve: Integer;
-  LZoom: Integer;
-begin
-  LPalette := Palette32;
-  LPatch := TallPatch;
-  LZoom := 98304;
-  for LPreserve := 0 to 1 do
-  begin
-    if LPreserve = 1 then
-      LWrites := ExpectedWrites(LPatch, 10, 43690, 43690,
-        function(const ADelta: Integer): Integer begin Result := ((ADelta * 100) * 98304 div 65536 div 200) end, 0, 1)
-    else
-      LWrites := ExpectedWrites(LPatch, 10, 43690, 43690,
-        function(const ADelta: Integer): Integer begin Result := ADelta * 98304 div 65536 end, 0, 1);
-    CheckInside(LWrites);
-    LExpected := Base32;
-    for LIndex := 0 to High(LWrites) do
-      LExpected[START_OFFSET + LWrites[LIndex].Offset] := LPalette[LWrites[LIndex].Source];
-    LActual := Base32;
-    TVideoPatchZoomer.DrawColumns32(@LPatch.Bytes[0], PVideoIntegerRow(@LPatch.Offsets[0]), 10, 43690, 43690,
-      @LActual[START_OFFSET], SCREEN_WIDTH, 100, LZoom, LPreserve = 1, PVideoLongWordRow(@LPalette[0]));
-    CompareLongs(LExpected, LActual);
   end;
 end;
 

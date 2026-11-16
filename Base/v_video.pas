@@ -2764,10 +2764,24 @@ end;
 //==============================================================================
 procedure V_DrawPatchZoomed32(x, y: integer; patch: Ppatch_t; preserve: boolean; fraczoom: fixed_t);
 var
+  count: integer;
+  col: integer;
+  column: Pcolumn_t;
+  desttop: PLongWordArray;
+  dest: PLongWord;
+  source: PByte;
   pw: integer;
   ph: integer;
+  fracx: fixed_t;
+  fracy: fixed_t;
+  fracxstep: fixed_t;
+  fracystep: fixed_t;
+  lasty: integer;
+  cury: integer;
   swidth: integer;
   sheight: integer;
+  delta, prevdelta: integer;
+  tallpatch: boolean;
 begin
   if fraczoom = FRACUNIT then
   begin
@@ -2794,13 +2808,65 @@ begin
   if (pw > 0) and (ph > 0) then
   begin
 
+    fracx := 0;
+    fracxstep := FRACUNIT * patch.width div pw;
+    fracystep := FRACUNIT * patch.height div ph;
+
     swidth := V_GetScreenWidth(SCN_FG);
     sheight := V_GetScreenHeight(SCN_FG);
 
-    // the walk of the posts is TVideoPatchZoomer (Libs\Video)
-    TVideoPatchZoomer.DrawColumns32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), pw,
-      FRACUNIT * patch.width div pw, FRACUNIT * patch.height div ph, @screen32[y * swidth + x], swidth, sheight,
-      fraczoom, preserve, PVideoLongWordRow(@videopal[0]));
+    desttop := @screen32[y * swidth + x];
+
+    col := 0;
+
+    while col < pw do
+    begin
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
+      delta := 0;
+      tallpatch := false;
+      // step through the posts in a column
+      while column.topdelta <> $ff do
+      begin
+        source := PByte(NativeInt(column) + 3);
+        delta := delta + column.topdelta;
+        if preserve then
+          dest := @desttop[((delta * sheight) * fraczoom div FRACUNIT div 200) * swidth]
+        else
+          dest := @desttop[(delta * fraczoom div FRACUNIT) * swidth];
+        count := column.length;
+        fracy := 0;
+        lasty := 0;
+
+        while count > 0 do
+        begin
+          dest^ := videopal[source^];
+          inc(dest, swidth);
+          fracy := fracy + fracystep;
+          cury := LongWord(fracy) shr FRACBITS;
+          if cury > lasty then
+          begin
+            lasty := cury;
+            inc(source);
+            dec(count);
+          end;
+        end;
+        if not tallpatch then
+        begin
+          prevdelta := column.topdelta;
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
+          if column.topdelta > prevdelta then
+            delta := 0
+          else
+            tallpatch := true;
+        end
+        else
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
+      end;
+      desttop := @desttop[1];
+      inc(col);
+
+      fracx := fracx + fracxstep;
+    end;
   end;
 
 end;

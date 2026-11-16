@@ -66,7 +66,7 @@ function Test-AutomapRun {
   param($Run, [string]$StateFile, [string]$FrameFile, [string]$Label)
   # a fine copione il gioco esce da solo (I_Quit): Alive = ancora vivo allo scadere del tempo
   if ($Run.Alive -or $Run.Crash -or -not (Test-Path $StateFile) -or -not (Test-Path $FrameFile)) {
-    Write-Output "$Label : ESECUZIONE FALLITA ($($Run.Text))"
+    Write-Host "$Label : ESECUZIONE FALLITA ($($Run.Text))"
     return $false
   }
   $true
