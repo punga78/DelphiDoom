@@ -155,7 +155,7 @@ var
 begin
   if AMode = FULLSCREEN_OFF then
   begin
-    SetWindowLong(hMainWnd, GWL_STYLE, WINDOW_STYLE_W);
+    SetWindowLong(hMainWnd, GWL_STYLE, Longint(WINDOW_STYLE_W));
     SetWindowPos(hMainWnd, HWND_TOP, windowxpos, windowypos, WINDOWWIDTH, WINDOWHEIGHT, SWP_SHOWWINDOW);
     I_GetWindowClientOffset(LDeltaWidth, LDeltaHeight);
     SetWindowPos(hMainWnd, HWND_TOP, windowxpos, windowypos, WINDOWWIDTH + LDeltaWidth,
