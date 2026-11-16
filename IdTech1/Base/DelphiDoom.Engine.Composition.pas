@@ -360,6 +360,7 @@ uses
   DelphiDoom.Engine.GlVSync,
   DelphiDoom.Engine.GlInitializer,
   DelphiDoom.Engine.GlScene.Frame,
+  DelphiDoom.Engine.GlLevel.Preprocessor,
   DelphiDoom.Engine.GlScene.LightMarker,
   DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
@@ -1465,6 +1466,7 @@ begin
   gld_ConfigureFlatCollector(TEngineGlSceneFlatCollector.Create(gld_SceneDrawList, gld_LightTable));
   LWalls := TEngineGlSceneWallCollector.Create(gld_SceneDrawList, gld_LightTable, gld_FlatCollector);
   gld_ConfigureWallCollector(LWalls);
+  gld_ConfigureLevelPreprocessor(TEngineGlLevelPreprocessor.Create(gld_SceneDrawList, gld_FlatCollector, LWalls));
   LWallPainter := TEngineGlSceneWallPainter.Create;
   gld_ConfigureWallPainter(LWallPainter);
   LFlatPainter := TEngineGlSceneFlatPainter.Create;

@@ -56,7 +56,8 @@ uses
   DelphiDoom.Engine.GlScene.SceneDrawer,
   DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlInitializer,
-  DelphiDoom.Engine.GlScene.Frame;
+  DelphiDoom.Engine.GlScene.Frame,
+  DelphiDoom.Engine.GlLevel.Preprocessor;
 
 //==============================================================================
 //
@@ -175,6 +176,16 @@ procedure gld_ConfigureLightPainter(const APainter: TEngineGlSceneLightPainter);
 //
 //==============================================================================
 procedure gld_ConfigureInitializer(const AInitializer: TEngineGlInitializer);
+
+//==============================================================================
+//
+// gld_ConfigureLevelPreprocessor
+//
+// The class that prepares the renderer for a loaded level (gld_PreprocessLevel): gl_render owns it from then on.
+// Without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureLevelPreprocessor(const APreprocessor: TEngineGlLevelPreprocessor);
 
 //==============================================================================
 //
@@ -879,31 +890,6 @@ begin
   TEngineGl2dMode.Finish;
 end;
 
-{*****************
- *               *
- * structs       *
- *               *
- *****************}
-
-var
-  gld_max_vertexes: integer = 0;
-  gld_num_vertexes: integer = 0;
-
-//==============================================================================
-//
-// gld_AddGlobalVertexes
-//
-//==============================================================================
-procedure gld_AddGlobalVertexes(count: integer);
-begin
-  if (gld_num_vertexes + count) >= gld_max_vertexes then
-  begin
-    gld_max_vertexes := gld_max_vertexes + count + 1024;
-    gld_vertexes := Z_Realloc(gld_vertexes, gld_max_vertexes * SizeOf(GLVertex), PU_LEVEL, nil);
-    gld_texcoords := Z_Realloc(gld_texcoords, gld_max_vertexes * SizeOf(GLTexcoord), PU_LEVEL, nil);
-  end;
-end;
-
 var
   // the walls, flats and sprites of the frame (IdTech1\GlScene), given by the composition root (gld_ConfigureDrawList)
   gld_drawlist: TGlSceneDrawList = nil;
@@ -943,6 +929,8 @@ var
   gld_flatcarver: IGlFlatCarver = nil;
   // the checks on the sectors (IdTech1\GlLevel), given by the composition root (gld_ConfigureSectorPreprocessor)
   gld_sectorpreprocessor: IGlSectorPreprocessor = nil;
+  // the preparation of the level (IdTech1\OpenGl), given by the composition root (gld_ConfigureLevelPreprocessor)
+  gld_levelpreprocessor: TEngineGlLevelPreprocessor = nil;
 
 //==============================================================================
 //
@@ -1147,115 +1135,25 @@ end;
 //
 //==============================================================================
 procedure gld_AddFlatLoop(const sectorid: integer; const points: PGlFixedPoint; const count: integer);
-var
-  i: integer;
-  epoint: PGlFixedPoint;
-  glsec: PGLSector;
-  ploop: PGLLoopDef;
-  vert: PGLVertex;
 begin
-  gld_AddGlobalVertexes(count);
-  if (gld_vertexes <> nil) and (gld_texcoords <> nil) then
-  begin
-    glsec := @sectorloops[sectorid];
-    glsec.loops := Z_Realloc(glsec.loops, SizeOf(GLLoopDef) * (glsec.loopcount + 1), PU_LEVEL, nil);
-    ploop := @glsec.loops[glsec.loopcount];
-    ploop.mode := GL_TRIANGLE_FAN;
-    ploop.vertexcount := count;
-    ploop.vertexindex := gld_num_vertexes;
-    inc(glsec.loopcount);
-
-    epoint := points;
-    for i := 0 to count - 1 do
-    begin
-      gld_texcoords[gld_num_vertexes].u := (epoint.X / FRACUNIT) / 64.0;
-      gld_texcoords[gld_num_vertexes].v := (-epoint.Y / FRACUNIT) / 64.0;
-      vert := @gld_vertexes[gld_num_vertexes];
-      vert.x := -epoint.X / MAP_SCALE;
-      vert.y := 0.0;
-      vert.z := epoint.Y / MAP_SCALE;
-      inc(gld_num_vertexes);
-      inc(epoint);
-    end;
-  end;
-end;
-
-// gld_PreprocessLevel
-//
-// this checks all sectors if they are closed and calls gld_PrecalculateSector to
-// calculate the loops for every sector
-// the idea to check for closed sectors is from DEU. check next commentary
-(*
-      Note from RQ:
-      This is a very simple idea, but it works!  The first test (above)
-      checks that all Sectors are closed.  But if a closed set of LineDefs
-      is moved out of a Sector and has all its 'external' SideDefs pointing
-      to that Sector instead of the new one, then we need a second test.
-      That's why I check if the SideDefs facing each other are bound to
-      the same Sector.
-
-      Other note from RQ:
-      Nowadays, what makes the power of a good editor is its automatic tests.
-      So, if you are writing another Doom editor, you will probably want
-      to do the same kind of tests in your program.  Fine, but if you use
-      these ideas, don't forget to credit DEU...  Just a reminder... :-)
-*)
-
-//==============================================================================
-// gld_PreprocessSectors
-//
-// so I credited DEU
-//
-//==============================================================================
-procedure gld_PreprocessSectors;
-var
-  sectorclosed: PBooleanArray;
-begin
-  if gld_sectorpreprocessor = nil then
-    I_Error('gld_PreprocessSectors(): the sector preprocessor is not configured (ComposeEngine was not called)');
-  if gld_flatcarver = nil then
-    I_Error('gld_PreprocessSectors(): the flat carver is not configured (ComposeEngine was not called)');
-
-  sectorclosed := Z_Malloc2(numsectors * SizeOf(boolean), PU_LEVEL, nil);
-  if sectorclosed = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array sectorclosed');
-  ZeroMemory(sectorclosed, SizeOf(boolean) * numsectors);
-
-  sectorloops := Z_Malloc2(numsectors * SizeOf(GLSector), PU_LEVEL, nil);
-  if sectorloops = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array sectorloops');
-  ZeroMemory(sectorloops, numsectors * SizeOf(GLSector));
-
-  gld_flats.BeginLevel(numsectors);
-
-  gld_vertexes := nil;
-  gld_texcoords := nil;
-  gld_max_vertexes := 0;
-  gld_num_vertexes := 0;
-  gld_AddGlobalVertexes(numvertexes * 2);
-
-  gld_sectorpreprocessor.Preprocess;
-
-  // figgi -- adapted for glnodes // JVAL
-  if glnodesver = 0 then
-    gld_flatcarver.CarveFlats(numnodes - 1,
-      function(const sectorid: integer): boolean
-      begin
-        result := sectorclosed[sectorid];
-      end)
-  else
-    gld_flatcarver.AddSubsectorLoops(
-      function(const sectorid: integer): boolean
-      begin
-        result := sectorclosed[sectorid];
-      end);
-
-  Z_Free(sectorclosed);
+  gld_levelpreprocessor.AddFlatLoop(sectorid, points, count);
 end;
 
 var
   // given by the composition root (gld_ConfigureSceneFrame)
   gld_sceneframe: TEngineGlSceneFrame = nil;
+
+//==============================================================================
+//
+// gld_ConfigureLevelPreprocessor
+//
+//==============================================================================
+procedure gld_ConfigureLevelPreprocessor(const APreprocessor: TEngineGlLevelPreprocessor);
+begin
+  if gld_levelpreprocessor <> APreprocessor then
+    gld_levelpreprocessor.Free;
+  gld_levelpreprocessor := APreprocessor;
+end;
 
 //==============================================================================
 //
@@ -1297,16 +1195,6 @@ end;
 procedure gld_AddWall(seg: Pseg_t; const ispolyobj: boolean = false; const ssec: Psector_t = nil);
 begin
   gld_walls.Add(seg, ispolyobj, ssec);
-end;
-
-//==============================================================================
-//
-// gld_PreprocessSegs
-//
-//==============================================================================
-procedure gld_PreprocessSegs;
-begin
-  gld_walls.BeginLevel(numsegs);
 end;
 
 //==============================================================================
@@ -1371,37 +1259,6 @@ begin
   gld_scenedrawer.Draw(gld_sceneframe.Pitch);
 end;
 
-{$IFDEF DOOM}
-
-//==============================================================================
-//
-// gld_SkyTextureHack
-//
-//==============================================================================
-procedure gld_SkyTextureHack;
-var
-  i: integer;
-  s, l: integer;
-begin
-  for i := 0 to numsectors - 1 do
-    if sectors[i].sky and PL_SKYFLAT <> 0 then
-    begin
-      l := sectors[i].sky and not PL_SKYFLAT;
-      if l >= 0 then
-        if l < numlines then
-        begin
-          s := lines[l].sidenum[0];
-          if s >= 0 then
-            if s < numsides then
-            begin
-              skytexture := sides[s].toptexture;
-              exit;
-            end;
-        end;
-    end;
-end;
-{$ENDIF}
-
 //==============================================================================
 //
 // gld_PreprocessLevel
@@ -1432,19 +1289,10 @@ begin
   if gld_sceneframe = nil then
     I_Error('gld_PreprocessLevel(): the scene frame is not configured (ComposeEngine was not called)');
 
-  // preload graphics
-  // JVAL
-  // Precache if we have external textures
-  {$IFDEF DOOM}
-  gld_SkyTextureHack;
-  {$ENDIF}
-  if precache or externalpakspresent then
-    gld_Precache;
-  gld_PreprocessSectors;
-  gld_PreprocessSegs;
-  gld_drawlist.Release;
-  glTexCoordPointer(2, GL_FLOAT, 0, gld_texcoords);
-  glVertexPointer(3, GL_FLOAT, 0, gld_vertexes);
+  if gld_levelpreprocessor = nil then
+    I_Error('gld_PreprocessLevel(): the level preprocessor is not configured (ComposeEngine was not called)');
+
+  gld_levelpreprocessor.Preprocess(gld_flatcarver, gld_sectorpreprocessor);
 end;
 
 //==============================================================================
@@ -1501,6 +1349,7 @@ initialization
 
 finalization
   gld_ConfigureSceneFrame(nil);
+  gld_ConfigureLevelPreprocessor(nil);
   gld_ConfigureInitializer(nil);
   // the collectors use the draw list: they go first
   gld_ConfigureSpriteCollector(nil);
