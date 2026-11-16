@@ -42,8 +42,6 @@ uses
   p_spec,
   r_defs;
 
-var
-  activeplats: array[0..MAXPLATS - 1] of Pplat_t;
 
 //==============================================================================
 //
@@ -190,9 +188,9 @@ var
   i: integer;
   plt: Pplat_t;
 begin
-  for i := 0 to MAXPLATS - 1 do
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
   begin
-    plt := activeplats[i];
+    plt := Pplat_t(P_World.ActivePlats[i]);
     if (plt <> nil) and
       (plt.tag = tag) and
       (plt.status = in_stasis) then
@@ -217,9 +215,9 @@ var
   state: TPlatState;
 begin
   result := 0;
-  for i := 0 to MAXPLATS - 1 do
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
   begin
-    plt := activeplats[i];
+    plt := Pplat_t(P_World.ActivePlats[i]);
     if (plt <> nil) and
       (plt.status <> in_stasis) and
       (plt.tag = line.tag) then
@@ -243,10 +241,10 @@ procedure P_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if activeplats[i] = nil then
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+    if Pplat_t(P_World.ActivePlats[i]) = nil then
     begin
-      activeplats[i] := plat;
+      P_World.ActivePlats.Add(plat);
       exit;
     end;
 
@@ -262,12 +260,12 @@ procedure P_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if plat = activeplats[i] then
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+    if plat = Pplat_t(P_World.ActivePlats[i]) then
     begin
-      activeplats[i].sector.floordata := nil;
-      P_RemoveThinker(@activeplats[i].thinker);
-      activeplats[i] := nil;
+      Pplat_t(P_World.ActivePlats[i]).sector.floordata := nil;
+      P_RemoveThinker(@Pplat_t(P_World.ActivePlats[i]).thinker);
+      P_World.ActivePlats.Release(i);
       exit;
     end;
 

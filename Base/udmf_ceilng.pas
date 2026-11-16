@@ -41,8 +41,6 @@ uses
   p_spec,
   r_defs;
 
-var
-  hactiveceilings: array[0..MAXCEILINGS - 1] of Pceiling_t;
 
 //==============================================================================
 //
@@ -100,10 +98,10 @@ procedure PH_AddActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXCEILINGS - 1 do
-    if hactiveceilings[i] = nil then
+  for i := 0 to P_World.UdmfCeilings.Capacity - 1 do
+    if Pceiling_t(P_World.UdmfCeilings[i]) = nil then
     begin
-      hactiveceilings[i] := c;
+      P_World.UdmfCeilings.Add(c);
       exit;
     end;
   I_Warning('PH_AddActiveCeiling(): Can not add ceiling, limit %d reached'#13#10, [MAXCEILINGS]);
@@ -119,13 +117,13 @@ procedure PH_RemoveActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXCEILINGS - 1 do
-    if hactiveceilings[i] = c then
+  for i := 0 to P_World.UdmfCeilings.Capacity - 1 do
+    if Pceiling_t(P_World.UdmfCeilings[i]) = c then
     begin
-      hactiveceilings[i].sector.specialdata := nil;
-      P_RemoveThinker(@hactiveceilings[i].thinker);
-      P_TagFinished(hactiveceilings[i].sector.tag);
-      hactiveceilings[i] := nil;
+      Pceiling_t(P_World.UdmfCeilings[i]).sector.specialdata := nil;
+      P_RemoveThinker(@Pceiling_t(P_World.UdmfCeilings[i]).thinker);
+      P_TagFinished(Pceiling_t(P_World.UdmfCeilings[i]).sector.tag);
+      P_World.UdmfCeilings.Release(i);
       exit;
     end;
 end;
@@ -388,19 +386,19 @@ var
   i: integer;
 begin
   result := false;
-  for i := 0 to MAXCEILINGS - 1 do
-    if (hactiveceilings[i] <> nil) and
-       (hactiveceilings[i].tag = args[0]) then
+  for i := 0 to P_World.UdmfCeilings.Capacity - 1 do
+    if (Pceiling_t(P_World.UdmfCeilings[i]) <> nil) and
+       (Pceiling_t(P_World.UdmfCeilings[i]).tag = args[0]) then
     begin
       {$IFDEF HEXEN}
-      S_StopSequence(Pmobj_t(@hactiveceilings[i].sector.soundorg));
+      S_StopSequence(Pmobj_t(@Pceiling_t(P_World.UdmfCeilings[i]).sector.soundorg));
       {$ELSE}
-      S_StopSound(@hactiveceilings[i].sector.soundorg);
+      S_StopSound(@Pceiling_t(P_World.UdmfCeilings[i]).sector.soundorg);
       {$ENDIF}
-      hactiveceilings[i].sector.specialdata := nil;
-      P_RemoveThinker(@hactiveceilings[i].thinker);
-      P_TagFinished(hactiveceilings[i].sector.tag);
-      hactiveceilings[i] := nil;
+      Pceiling_t(P_World.UdmfCeilings[i]).sector.specialdata := nil;
+      P_RemoveThinker(@Pceiling_t(P_World.UdmfCeilings[i]).thinker);
+      P_TagFinished(Pceiling_t(P_World.UdmfCeilings[i]).sector.tag);
+      P_World.UdmfCeilings.Release(i);
       result := true;
       exit;
     end;

@@ -2449,17 +2449,10 @@ begin
   end;
 
   //  Init other misc stuff
-  for i := 0 to MAXCEILINGS - 1 do
-  begin
-    activeceilings[i] := nil;
-    hactiveceilings[i] := nil;
-  end;
-
-  for i := 0 to MAXPLATS - 1 do
-  begin
-    activeplats[i] := nil;
-    hactiveplats[i] := nil;
-  end;
+  P_World.ActiveCeilings.Clear;
+  P_World.UdmfCeilings.Clear;
+  P_World.ActivePlats.Clear;
+  P_World.UdmfPlats.Clear;
 
   for i := 0 to MAXBUTTONS - 1 do
     ZeroMemory(@buttonlist[i], SizeOf(button_t));

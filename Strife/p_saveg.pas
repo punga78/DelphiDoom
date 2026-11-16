@@ -1464,15 +1464,7 @@ begin
 
     if not Assigned(th._function.acv) then
     begin
-      i := 0;
-      while i < MAXCEILINGS do
-      begin
-        if activeceilings[i] = Pceiling_t(th) then
-          break;
-        inc(i);
-      end;
-
-      if i < MAXCEILINGS then
+      if P_World.ActiveCeilings.Contains(th) then
       begin
         save_p[0] := Ord(tc_ceiling);
         save_p := @save_p[1];
@@ -1483,15 +1475,7 @@ begin
       end;
 
       // JVAL: 20220218 - Handle hactiveceilings
-      i := 0;
-      while i < MAXCEILINGS do
-      begin
-        if hactiveceilings[i] = Pceiling_t(th) then
-          break;
-        inc(i);
-      end;
-
-      if i < MAXCEILINGS then
+      if P_World.UdmfCeilings.Contains(th) then
       begin
         save_p[0] := Ord(tch_moveceiling);
         save_p := @save_p[1];
