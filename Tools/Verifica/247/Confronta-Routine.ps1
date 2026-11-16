@@ -31,6 +31,39 @@ function Get-Instructions([string]$Exe, [string]$Map, [string]$Name, [string]$Fi
   while ($list.Count -gt 0 -and $list[$list.Count - 1] -match '^(int 3|nop|add byte ptr \[eax\],al|add byte ptr \[rax\],al)') { $list.RemoveAt($list.Count - 1) }
   , $list
 }
+# Confronta le due liste. Dopo un `jmp dword ptr [tabella + reg*4]` (switch) il compilatore mette la tabella dei salti: sono
+# indirizzi assoluti, che il disassemblatore legge come istruzioni (e che cambiano con la posizione del codice, anche a
+# parita' di codice). Una differenza che cade entro 8 righe da un tale `jmp` e che poi si riallinea (16 righe uguali, scarto
+# di lunghezza fino a 8) e' una tabella dei salti: si salta e si conta in Gaps. Ogni altra differenza resta tale.
+function Compare-Instructions($A, $B) {
+  $i = 0
+  $j = 0
+  $gaps = 0
+  while ($i -lt $A.Count -and $j -lt $B.Count) {
+    if ($A[$i] -ceq $B[$j]) { $i++; $j++; continue }
+    $nearTable = $false
+    for ($k = [Math]::Max(0, $i - 8); $k -le $i; $k++) { if ($A[$k] -match '^jmp dword ptr ADDR\[') { $nearTable = $true; break } }
+    for ($k = [Math]::Max(0, $j - 8); $k -le $j -and -not $nearTable; $k++) { if ($B[$k] -match '^jmp dword ptr ADDR\[') { $nearTable = $true; break } }
+    if (-not $nearTable) { return @{ Same = $false; First = $i; Gaps = $gaps } }
+    $resync = $false
+    for ($k = 1; $k -le 120 -and -not $resync; $k++) {
+      for ($d = -8; $d -le 8 -and -not $resync; $d++) {
+        $ii = $i + $k
+        $jj = $j + $k + $d
+        if ($jj -lt 0 -or $ii + 16 -gt $A.Count -or $jj + 16 -gt $B.Count) { continue }
+        $ok = $true
+        for ($m = 0; $m -lt 16; $m++) { if ($A[$ii + $m] -cne $B[$jj + $m]) { $ok = $false; break } }
+        if ($ok) { $i = $ii; $j = $jj; $resync = $true }
+      }
+    }
+    if (-not $resync) { return @{ Same = $false; First = $i; Gaps = $gaps } }
+    $gaps++
+  }
+  # un riempimento finale (tabella in coda) di al piu' 3 righe di scarto
+  $rest = [Math]::Max($A.Count - $i, $B.Count - $j)
+  if ($rest -gt 0) { return @{ Same = $false; First = $i; Gaps = $gaps } }
+  @{ Same = $true; First = -1; Gaps = $gaps }
+}
 $different = 0
 foreach ($pair in @($Pairs | ForEach-Object { $_ -split ';' } | Where-Object { $_ -ne '' })) {
   $names = $pair -split '=', 2
@@ -41,11 +74,13 @@ foreach ($pair in @($Pairs | ForEach-Object { $_ -split ';' } | Where-Object { $
   if ((-not $inOld) -or (-not $inNew)) { $different++; Write-Output ("{0}{1} : DIVERSO (presente solo in uno)" -f $Label, $names[0]); continue }
   $a = Get-Instructions $OldExe $OldMap $names[0] (Join-Path $tmp 'a.txt')
   $b = Get-Instructions $NewExe $NewMap $names[1] (Join-Path $tmp 'b.txt')
-  $same = ($a.Count -eq $b.Count)
-  $first = -1
-  if ($same) { for ($i = 0; $i -lt $a.Count; $i++) { if ($a[$i] -cne $b[$i]) { $same = $false; $first = $i; break } } }
+  $cmp = Compare-Instructions $a $b
+  $same = $cmp.Same
+  $first = $cmp.First
   if ($same) {
-    Write-Output ("{0}{1} : UGUALE ({2} istruzioni)" -f $Label, $names[0], $a.Count)
+    $gapNote = ''
+    if ($cmp.Gaps -gt 0) { $gapNote = ", {0} tabella/e dei salti esclusa/e" -f $cmp.Gaps }
+    Write-Output ("{0}{1} : UGUALE ({2} istruzioni{3})" -f $Label, $names[0], $a.Count, $gapNote)
   } else {
     $different++
     Write-Output ("{0}{1} : DIVERSO ({2} istruzioni -> {3})" -f $Label, $names[0], $a.Count, $b.Count)

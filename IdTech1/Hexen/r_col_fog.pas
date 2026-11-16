@@ -36,14 +36,23 @@ interface
 // R_DrawColumnHi_Fog
 //
 //==============================================================================
-procedure R_DrawColumnHi_Fog;
 
 //==============================================================================
 //
 // R_DrawColumnUltra_Fog
 //
 //==============================================================================
-procedure R_DrawColumnUltra_Fog;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColFogDrawers = class sealed
+  public
+    class procedure R_DrawColumnHi_Fog; static;
+    class procedure R_DrawColumnUltra_Fog; static;
+  end;
 
 implementation
 
@@ -62,7 +71,7 @@ uses
 // R_DrawColumnHi_Fog
 //
 //==============================================================================
-procedure R_DrawColumnHi_Fog;
+class procedure TRendererColFogDrawers.R_DrawColumnHi_Fog;
 var
   count: integer;
   destl: PLongWord;
@@ -152,7 +161,7 @@ end;
 // R_DrawColumnUltra_Fog
 //
 //==============================================================================
-procedure R_DrawColumnUltra_Fog;
+class procedure TRendererColFogDrawers.R_DrawColumnUltra_Fog;
 var
   count: integer;
   destl: PLongWord;

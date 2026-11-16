@@ -47,7 +47,16 @@ var
 // R_DrawSpanNormal
 //
 //==============================================================================
-procedure R_DrawSpanNormal;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSpan32Drawers = class sealed
+  public
+    class procedure R_DrawSpanNormal; static;
+  end;
 
 implementation
 
@@ -63,7 +72,7 @@ uses
 // Draws the actual span (Normal resolution).
 //
 //==============================================================================
-procedure R_DrawSpanNormal;
+class procedure TRendererSpan32Drawers.R_DrawSpanNormal;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;

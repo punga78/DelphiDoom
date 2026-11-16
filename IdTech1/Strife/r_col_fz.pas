@@ -42,56 +42,65 @@ interface
 // R_DrawFuzzColumn1
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn2
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2;
 
 //==============================================================================
 //
 // R_DrawFuzzColumnTL
 //
 //==============================================================================
-procedure R_DrawFuzzColumnTL;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn1Hi
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1Hi;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn2Hi
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2Hi;
 
 //==============================================================================
 //
 // R_DrawFuzzColumnHiTL
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHiTL;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn1Hi32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1Hi32;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn2Hi32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2Hi32;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColFzDrawers = class sealed
+  public
+    class procedure R_DrawFuzzColumn1; static;
+    class procedure R_DrawFuzzColumn2; static;
+    class procedure R_DrawFuzzColumnTL; static;
+    class procedure R_DrawFuzzColumn1Hi; static;
+    class procedure R_DrawFuzzColumn2Hi; static;
+    class procedure R_DrawFuzzColumnHiTL; static;
+    class procedure R_DrawFuzzColumn1Hi32; static;
+    class procedure R_DrawFuzzColumn2Hi32; static;
+  end;
 
 implementation
 
@@ -115,7 +124,7 @@ uses
 //  i.e. spectres and invisible players.
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1; // DrawTLColumn
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn1; // DrawTLColumn
 var
   count: integer;
   i: integer;
@@ -148,7 +157,7 @@ end;
 // R_DrawFuzzColumn2
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2; // DrawMVisTLColumn
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn2; // DrawMVisTLColumn
 var
   count: integer;
   i: integer;
@@ -181,7 +190,7 @@ end;
 // R_DrawFuzzColumnTL
 //
 //==============================================================================
-procedure R_DrawFuzzColumnTL;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumnTL;
 var
   count: integer;
   i: integer;
@@ -214,7 +223,7 @@ end;
 // R_DrawFuzzColumn1Hi
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1Hi;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn1Hi;
 var
   count: integer;
   destl: PLongWord;
@@ -278,7 +287,7 @@ end;
 // R_DrawFuzzColumn2Hi
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2Hi;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn2Hi;
 var
   count: integer;
   destl: PLongWord;
@@ -342,7 +351,7 @@ end;
 // R_DrawFuzzColumnHiTL
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHiTL;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumnHiTL;
 var
   count: integer;
   destl: PLongWord;
@@ -406,7 +415,7 @@ end;
 // R_DrawFuzzColumn1Hi32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn1Hi32;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn1Hi32;
 {$DEFINE ONE}
 {$I R_DrawFuzzColumnHi32.inc}
 
@@ -415,7 +424,7 @@ procedure R_DrawFuzzColumn1Hi32;
 // R_DrawFuzzColumn2Hi32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn2Hi32;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn2Hi32;
 {$UNDEF ONE}
 {$I R_DrawFuzzColumnHi32.inc}
 

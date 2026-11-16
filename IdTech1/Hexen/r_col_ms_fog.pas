@@ -37,28 +37,37 @@ interface
 // Masked column drawing functions
 //
 //==============================================================================
-procedure R_DrawMaskedColumnNormal_Fog;
 
 //==============================================================================
 //
 // R_DrawMaskedColumnHi_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi_Fog;
 
 //==============================================================================
 //
 // R_DrawMaskedColumnHi32_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi32_Fog;
 
 //==============================================================================
 //
 // R_DrawMaskedColumnUltra32_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnUltra32_Fog;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColMsFogDrawers = class sealed
+  public
+    class procedure R_DrawMaskedColumnNormal_Fog; static;
+    class procedure R_DrawMaskedColumnHi_Fog; static;
+    class procedure R_DrawMaskedColumnHi32_Fog; static;
+    class procedure R_DrawMaskedColumnUltra32_Fog; static;
+  end;
 
 implementation
 {$DEFINE FOG}
@@ -79,7 +88,7 @@ uses
 // R_DrawMaskedColumnNormal_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnNormal_Fog;
+class procedure TRendererColMsFogDrawers.R_DrawMaskedColumnNormal_Fog;
 var
   count: integer;
   destl: PLongWord;
@@ -126,7 +135,7 @@ end;
 // R_DrawMaskedColumnHi_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi_Fog;
+class procedure TRendererColMsFogDrawers.R_DrawMaskedColumnHi_Fog;
 var
   count: integer;
   destl: PLongWord;
@@ -175,7 +184,7 @@ end;
 // R_DrawMaskedColumnHi32_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi32_Fog;
+class procedure TRendererColMsFogDrawers.R_DrawMaskedColumnHi32_Fog;
 var
   count: integer;
   destl: PLongWord;
@@ -231,7 +240,7 @@ end;
 // R_DrawMaskedColumnUltra32_Fog
 //
 //==============================================================================
-procedure R_DrawMaskedColumnUltra32_Fog;
+class procedure TRendererColMsFogDrawers.R_DrawMaskedColumnUltra32_Fog;
 var
   count: integer;
   destl: PLongWord;

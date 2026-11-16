@@ -100,21 +100,30 @@ var
 // R_DrawSpanLowMT
 //
 //==============================================================================
-procedure R_DrawSpanLowMT(const fi: pointer);
 
 //==============================================================================
 //
 // R_DrawSpanMediumMT
 //
 //==============================================================================
-procedure R_DrawSpanMediumMT(const fi: pointer);
 
 //==============================================================================
 //
 // R_DrawSpanMedium_RippleMT
 //
 //==============================================================================
-procedure R_DrawSpanMedium_RippleMT(const fi: pointer);
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererFlat8Drawers = class sealed
+  public
+    class procedure R_DrawSpanLowMT(const fi: pointer); static;
+    class procedure R_DrawSpanMediumMT(const fi: pointer); static;
+    class procedure R_DrawSpanMedium_RippleMT(const fi: pointer); static;
+  end;
 
 implementation
 
@@ -784,7 +793,7 @@ end;
 // Draws the actual span (Low resolution).
 //
 //==============================================================================
-procedure R_DrawSpanLowMT(const fi: pointer);
+class procedure TRendererFlat8Drawers.R_DrawSpanLowMT(const fi: pointer);
 var
   ds_source: PByteArray;
   ds_colormap: PByteArray;
@@ -1055,7 +1064,7 @@ end;
 // Draws the actual span (Medium resolution).
 //
 //==============================================================================
-procedure R_DrawSpanMediumMT(const fi: pointer);
+class procedure TRendererFlat8Drawers.R_DrawSpanMediumMT(const fi: pointer);
 var
   ds_source: PByteArray;
   ds_colormap: PByteArray;
@@ -1100,7 +1109,7 @@ end;
 // R_DrawSpanMedium_RippleMT
 //
 //==============================================================================
-procedure R_DrawSpanMedium_RippleMT(const fi: pointer);
+class procedure TRendererFlat8Drawers.R_DrawSpanMedium_RippleMT(const fi: pointer);
 var
   ds_source: PByteArray;
   ds_colormap: PByteArray;
