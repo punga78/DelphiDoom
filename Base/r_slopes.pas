@@ -99,6 +99,8 @@ implementation
 uses
   d_delphi,
   DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.LightIndex,
+  DelphiDoom.Renderer.SlopesX87,
   DelphiDoom.Renderer.X87,
   doomdata,
   doomdef,
@@ -351,9 +353,17 @@ begin
   screenDX := xright - xleft + 1;
 
   zleft := zleft * screenDX;
+{$IFDEF CPUX86}
   inv_zleft := 1.0 / zleft;
+{$ELSE}
+  inv_zleft := TRendererSlopesX87.SingleReciprocal(zleft);
+{$ENDIF}
   zright := zright * screenDX;
+{$IFDEF CPUX86}
   inv_zright := 1.0 / zright;
+{$ELSE}
+  inv_zright := TRendererSlopesX87.SingleReciprocal(zright);
+{$ENDIF}
 
   ds_y := y;
 
@@ -422,9 +432,7 @@ begin
       begin
         if not forcecolormaps then
         begin
-          ncolornum := _SHR(distance, HLL_ZDISTANCESHIFT);
-          if ncolornum >= HLL_MAXLIGHTZ then
-            ncolornum := HLL_MAXLIGHTZ - 1;
+          ncolornum := TRendererLightIndex.Clamp(_SHR(distance, HLL_ZDISTANCESHIFT), HLL_MAXLIGHTZ);
           ds_lightlevel := zlightlevels[ds_llzindex, ncolornum];
         end
         else
@@ -508,9 +516,17 @@ begin
   screenDX := xright - xleft + 1;
 
   zleft := zleft * screenDX;
+{$IFDEF CPUX86}
   inv_zleft := 1.0 / zleft;
+{$ELSE}
+  inv_zleft := TRendererSlopesX87.SingleReciprocal(zleft);
+{$ENDIF}
   zright := zright * screenDX;
+{$IFDEF CPUX86}
   inv_zright := 1.0 / zright;
+{$ELSE}
+  inv_zright := TRendererSlopesX87.SingleReciprocal(zright);
+{$ENDIF}
 
   ds_y := y;
 
@@ -603,9 +619,7 @@ begin
         begin
           if not forcecolormaps then
           begin
-            ncolornum := _SHR(distance, HLL_ZDISTANCESHIFT);
-            if ncolornum >= HLL_MAXLIGHTZ then
-              ncolornum := HLL_MAXLIGHTZ - 1;
+            ncolornum := TRendererLightIndex.Clamp(_SHR(distance, HLL_ZDISTANCESHIFT), HLL_MAXLIGHTZ);
             ds_lightlevel := zlightlevels[ds_llzindex, ncolornum];
           end
           else
@@ -696,9 +710,17 @@ begin
   screenDX := xright - xleft + 1;
 
   zleft := zleft * screenDX;
+{$IFDEF CPUX86}
   inv_zleft := 1.0 / zleft;
+{$ELSE}
+  inv_zleft := TRendererSlopesX87.SingleReciprocal(zleft);
+{$ENDIF}
   zright := zright * screenDX;
+{$IFDEF CPUX86}
   inv_zright := 1.0 / zright;
+{$ELSE}
+  inv_zright := TRendererSlopesX87.SingleReciprocal(zright);
+{$ENDIF}
 
   ds_y := y;
 
@@ -790,9 +812,7 @@ begin
         begin
           if not forcecolormaps then
           begin
-            ncolornum := _SHR(distance, HLL_ZDISTANCESHIFT);
-            if ncolornum >= HLL_MAXLIGHTZ then
-              ncolornum := HLL_MAXLIGHTZ - 1;
+            ncolornum := TRendererLightIndex.Clamp(_SHR(distance, HLL_ZDISTANCESHIFT), HLL_MAXLIGHTZ);
             ds_lightlevel := zlightlevels[ds_llzindex, ncolornum];
           end
           else
@@ -904,12 +924,22 @@ begin
   begin
     ds_anglex := pl.anglex;
     ds_angley := pl.angley;
+{$IFDEF CPUX86}
     ds_sine := sin(-ds_angle * ANGLE_T_TO_RAD);   // JVAL: 20200225 - Texture angle
     ds_cosine := cos(ds_angle * ANGLE_T_TO_RAD);  // JVAL: 20200225 - Texture angle
     ds_viewsine := sin((viewangle - ds_angle) * ANGLE_T_TO_RAD);    // JVAL: 20200225 - Texture angle
     ds_viewcosine := cos((viewangle - ds_angle) * ANGLE_T_TO_RAD);  // JVAL: 20200225 - Texture angle
     ds_tviewx := Round((viewx - ds_anglex) * ds_cosine - (viewy - ds_angley) * ds_sine) + ds_anglex;
     ds_tviewy := Round((viewx - ds_anglex) * ds_sine + (viewy - ds_angley) * ds_cosine) + ds_angley;
+{$ELSE}
+    // the same numbers as the 32 bit FPU (issue #40)
+    ds_sine := TRendererX87.AngleSineSingle(-Int64(ds_angle));
+    ds_cosine := TRendererX87.AngleCosineSingle(ds_angle);
+    ds_viewsine := TRendererX87.AngleSineSingle(angle_t(viewangle - ds_angle));
+    ds_viewcosine := TRendererX87.AngleCosineSingle(angle_t(viewangle - ds_angle));
+    ds_tviewx := TX87Double.RoundCrossProducts(viewx - ds_anglex, ds_cosine, viewy - ds_angley, -ds_sine) + ds_anglex;
+    ds_tviewy := TX87Double.RoundCrossProducts(viewx - ds_anglex, ds_sine, viewy - ds_angley, ds_cosine) + ds_angley;
+{$ENDIF}
     // Slope with angle
     for x := pl.minx to stop do
     begin
@@ -996,7 +1026,11 @@ begin
   if stop > start then
   begin
     rw_scale_dbl2 := R_ScaleFromGlobalAngle_DBL(viewangle + xtoviewangle[stop]);
+{$IFDEF CPUX86}
     rw_scalestep_dbl := (rw_scale_dbl2 - rw_scale_dbl) / (stop - start);
+{$ELSE}
+    rw_scalestep_dbl := TX87Double.DifferenceQuotient(rw_scale_dbl2, rw_scale_dbl, stop - start);
+{$ENDIF}
     pds.scale2 := Round(rw_scale_dbl2);
     rw_scalestep := Round(rw_scalestep_dbl);
     pds.scalestep := rw_scalestep;
@@ -1173,8 +1207,16 @@ begin
     side := intval(@sides[linedef.sidenum[0]] = sidedef);
     if linedef.clslopestep[side] <> 0.0 then
     begin
+{$IFDEF CPUX86}
       s11 := Round(texturecolumn * linedef.clslopestep[side]);
+{$ELSE}
+      s11 := TRendererSlopesX87.RoundColumnStep(texturecolumn, linedef.clslopestep[side]);
+{$ENDIF}
+{$IFDEF CPUX86}
       s22 := Round(texturecolumn2 * linedef.clslopestep[side]);
+{$ELSE}
+      s22 := TRendererSlopesX87.RoundColumnStep(texturecolumn2, linedef.clslopestep[side]);
+{$ENDIF}
       if side <> 0 then
       begin
         s11 := -s11;
@@ -1184,18 +1226,40 @@ begin
       sc1 := sc1 + s11;
     end;
 
+{$IFDEF CPUX86}
     pixhigh_dbl := (centeryfrac / WORLDUNIT) - (rw_scale_dbl / FRACUNIT) * (sc1 / WORLDUNIT);
+{$ELSE}
+    pixhigh_dbl := TRendererSlopesX87.WallEdge(centeryfrac / WORLDUNIT, rw_scale_dbl / FRACUNIT, sc1 / WORLDUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
     pixhighstep_dbl := - (rw_scalestep_dbl / FRACUNIT) * (sc2 / WORLDUNIT) +
         (rw_scale_dbl / FRACUNIT) * ((sc1 - sc2) / WORLDUNIT) / (rw_stopx - rw_x);
+{$ELSE}
+    pixhighstep_dbl := TRendererSlopesX87.WallEdgeStep(rw_scalestep_dbl / FRACUNIT, sc2 / WORLDUNIT,
+      rw_scale_dbl / FRACUNIT, (sc1 - sc2) / WORLDUNIT, rw_stopx - rw_x);
+{$ENDIF}
 
     pixhigh := (int64(centeryfrac) div WORLDUNIT) - int64(sc1 div WORLDUNIT) * int64(rw_scale) div FRACUNIT;
+{$IFDEF CPUX86}
     pixhighstep := -FixedMul(rw_scalestep, sc2 div WORLDUNIT) +
         Round(FixedMul(rw_scale, (sc1 - sc2) div WORLDUNIT) / (rw_stopx - rw_x));
+{$ELSE}
+    pixhighstep := -FixedMul(rw_scalestep, sc2 div WORLDUNIT) +
+        TX87Double.RoundQuotient(FixedMul(rw_scale, (sc1 - sc2) div WORLDUNIT), rw_stopx - rw_x);
+{$ENDIF}
 
     if linedef.flslopestep[side] <> 0.0 then
     begin
+{$IFDEF CPUX86}
       s11 := Round(texturecolumn * linedef.flslopestep[side]);
+{$ELSE}
+      s11 := TRendererSlopesX87.RoundColumnStep(texturecolumn, linedef.flslopestep[side]);
+{$ENDIF}
+{$IFDEF CPUX86}
       s22 := Round(texturecolumn2 * linedef.flslopestep[side]);
+{$ELSE}
+      s22 := TRendererSlopesX87.RoundColumnStep(texturecolumn2, linedef.flslopestep[side]);
+{$ENDIF}
       if side <> 0 then
       begin
         s11 := -s11;
@@ -1205,21 +1269,43 @@ begin
       sf1 := sf1 + s11;
     end;
 
+{$IFDEF CPUX86}
     pixlow_dbl := (centeryfrac / WORLDUNIT) - (rw_scale / FRACUNIT) * (sf1 / WORLDUNIT);
+{$ELSE}
+    pixlow_dbl := TRendererSlopesX87.WallEdge(centeryfrac / WORLDUNIT, rw_scale / FRACUNIT, sf1 / WORLDUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
     pixlowstep_dbl := -(rw_scalestep_dbl / FRACUNIT) * (sf2 / WORLDUNIT) +
         (rw_scale_dbl / FRACUNIT) * ((sf1 - sf2) / WORLDUNIT) / (rw_stopx - rw_x);
+{$ELSE}
+    pixlowstep_dbl := TRendererSlopesX87.WallEdgeStep(rw_scalestep_dbl / FRACUNIT, sf2 / WORLDUNIT,
+      rw_scale_dbl / FRACUNIT, (sf1 - sf2) / WORLDUNIT, rw_stopx - rw_x);
+{$ENDIF}
 
     pixlow := (int64(centeryfrac) div WORLDUNIT) - int64(sf1 div WORLDUNIT) * int64(rw_scale) div FRACUNIT;
+{$IFDEF CPUX86}
     pixlowstep := -FixedMul(rw_scalestep, sf2 div WORLDUNIT) +
         Round(FixedMul(rw_scale, (sf1 - sf2) div WORLDUNIT) / (rw_stopx - rw_x));
+{$ELSE}
+    pixlowstep := -FixedMul(rw_scalestep, sf2 div WORLDUNIT) +
+        TX87Double.RoundQuotient(FixedMul(rw_scale, (sf1 - sf2) div WORLDUNIT), rw_stopx - rw_x);
+{$ENDIF}
   end;
 
   side := intval(@sides[linedef.sidenum[0]] <> sidedef);
 
   if linedef.clslopestep[side] <> 0.0 then
   begin
+{$IFDEF CPUX86}
     s11 := Round(texturecolumn * linedef.clslopestep[side]);
+{$ELSE}
+    s11 := TRendererSlopesX87.RoundColumnStep(texturecolumn, linedef.clslopestep[side]);
+{$ENDIF}
+{$IFDEF CPUX86}
     s22 := Round(texturecolumn2 * linedef.clslopestep[side]);
+{$ELSE}
+    s22 := TRendererSlopesX87.RoundColumnStep(texturecolumn2, linedef.clslopestep[side]);
+{$ENDIF}
     if side <> 0 then
     begin
       s11 := -s11;
@@ -1228,18 +1314,40 @@ begin
     sc22 := sc22 - s22;
     sc11 := sc11 - s11;
   end;
+{$IFDEF CPUX86}
   topfrac_dbl := (centeryfrac / WORLDUNIT) - (rw_scale_dbl / FRACUNIT) * (sc11 / WORLDUNIT);
+{$ELSE}
+  topfrac_dbl := TRendererSlopesX87.WallEdge(centeryfrac / WORLDUNIT, rw_scale_dbl / FRACUNIT, sc11 / WORLDUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
   topstep_dbl := -(rw_scalestep_dbl / FRACUNIT) * (sc22 / WORLDUNIT) +
       (rw_scale_dbl / FRACUNIT) * ((sc11 - sc22) / WORLDUNIT) / (rw_stopx - rw_x);
+{$ELSE}
+  topstep_dbl := TRendererSlopesX87.WallEdgeStep(rw_scalestep_dbl / FRACUNIT, sc22 / WORLDUNIT,
+    rw_scale_dbl / FRACUNIT, (sc11 - sc22) / WORLDUNIT, rw_stopx - rw_x);
+{$ENDIF}
 
   topfrac := (int64(centeryfrac) div WORLDUNIT) - int64(sc11 div WORLDUNIT) * int64(rw_scale) div FRACUNIT;
+{$IFDEF CPUX86}
   topstep := -FixedMul(rw_scalestep, sc22 div WORLDUNIT) +
       Round(FixedMul(rw_scale, (sc11 - sc22) div WORLDUNIT) / (rw_stopx - rw_x));
+{$ELSE}
+  topstep := -FixedMul(rw_scalestep, sc22 div WORLDUNIT) +
+      TX87Double.RoundQuotient(FixedMul(rw_scale, (sc11 - sc22) div WORLDUNIT), rw_stopx - rw_x);
+{$ENDIF}
 
   if linedef.flslopestep[side] <> 0.0 then
   begin
+{$IFDEF CPUX86}
     s11 := Round(texturecolumn * linedef.flslopestep[side]);
+{$ELSE}
+    s11 := TRendererSlopesX87.RoundColumnStep(texturecolumn, linedef.flslopestep[side]);
+{$ENDIF}
+{$IFDEF CPUX86}
     s22 := Round(texturecolumn2 * linedef.flslopestep[side]);
+{$ELSE}
+    s22 := TRendererSlopesX87.RoundColumnStep(texturecolumn2, linedef.flslopestep[side]);
+{$ENDIF}
     if side <> 0 then
     begin
       s11 := -s11;
@@ -1248,13 +1356,27 @@ begin
     sf22 := sf22 - s22;
     sf11 := sf11 - s11;
   end;
+{$IFDEF CPUX86}
   bottomfrac_dbl := (centeryfrac / WORLDUNIT) - (rw_scale_dbl / FRACUNIT) * (sf11 / WORLDUNIT);
+{$ELSE}
+  bottomfrac_dbl := TRendererSlopesX87.WallEdge(centeryfrac / WORLDUNIT, rw_scale_dbl / FRACUNIT, sf11 / WORLDUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
   bottomstep_dbl := -(rw_scalestep_dbl / FRACUNIT) * (sf22 / WORLDUNIT) +
       (rw_scale_dbl / FRACUNIT) * ((sf11 - sf22) / WORLDUNIT) / (rw_stopx - rw_x);
+{$ELSE}
+  bottomstep_dbl := TRendererSlopesX87.WallEdgeStep(rw_scalestep_dbl / FRACUNIT, sf22 / WORLDUNIT,
+    rw_scale_dbl / FRACUNIT, (sf11 - sf22) / WORLDUNIT, rw_stopx - rw_x);
+{$ENDIF}
 
   bottomfrac := (int64(centeryfrac) div WORLDUNIT) - int64(sf11 div WORLDUNIT) * int64(rw_scale) div FRACUNIT;
+{$IFDEF CPUX86}
   bottomstep := -FixedMul(rw_scalestep, sf22 div WORLDUNIT) +
       Round(FixedMul(rw_scale, (sf11 - sf22) div WORLDUNIT) / (rw_stopx - rw_x));
+{$ELSE}
+  bottomstep := -FixedMul(rw_scalestep, sf22 div WORLDUNIT) +
+      TX87Double.RoundQuotient(FixedMul(rw_scale, (sf11 - sf22) div WORLDUNIT), rw_stopx - rw_x);
+{$ENDIF}
 
   midtexture := 0;
   toptexture := 0;
@@ -1531,6 +1653,7 @@ var
 //
 //==============================================================================
 procedure R_SlopesCalcSSPoint(const wx, wy, wz: fixed_t; var x, y, z: Double);
+{$IFDEF CPUX86}
 var
   x1, y1: Double;
   tr_x: Double;
@@ -1541,7 +1664,9 @@ var
   xscale: Double;
   yscale: Double;
   dcos, dsin: Double;
+{$ENDIF}
 begin
+{$IFDEF CPUX86}
   tr_x := (wx - viewx) / FRACUNIT;
   tr_y := (wy - viewy) / FRACUNIT;
   tr_z := (wz - viewz) / FRACUNIT;
@@ -1562,6 +1687,11 @@ begin
 
   x := x1;
   y := y1;
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40)
+  TRendererSlopesX87.ProjectPoint(wx, wy, wz, viewx, viewy, viewz, projection, projectiony, centerx, centery,
+    dviewsin, dviewcos, x, y, z);
+{$ENDIF}
 end;
 
 const
@@ -1635,6 +1765,7 @@ begin
   // MOVE THIS TO R_RenderPlayerView ?
   SetLength(clipI, 1);
   SetLength(clipI[0], 4);
+{$IFDEF CPUX86}
   clipI[0][0] := R_MakeClipperPoint(
     viewx + Round(cos((viewangle + fovhangle) * ANGLE_T_TO_RAD) * MINZ),
     viewy + Round(sin((viewangle + fovhangle) * ANGLE_T_TO_RAD) * MINZ));
@@ -1647,6 +1778,22 @@ begin
   clipI[0][3] := R_MakeClipperPoint(
     viewx + Round(cos((viewangle + fovhangle) * ANGLE_T_TO_RAD) * MAXZ),
     viewy + Round(sin((viewangle + fovhangle) * ANGLE_T_TO_RAD) * MAXZ));
+
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40)
+  clipI[0][0] := R_MakeClipperPoint(
+    viewx + TRendererX87.RoundAngleProduct(angle_t(viewangle + fovhangle), MINZ, true),
+    viewy + TRendererX87.RoundAngleProduct(angle_t(viewangle + fovhangle), MINZ, false));
+  clipI[0][1] := R_MakeClipperPoint(
+    viewx + TRendererX87.RoundAngleProduct(angle_t(viewangle - fovhangle), MINZ, true),
+    viewy + TRendererX87.RoundAngleProduct(angle_t(viewangle - fovhangle), MINZ, false));
+  clipI[0][2] := R_MakeClipperPoint(
+    viewx + TRendererX87.RoundAngleProduct(angle_t(viewangle - fovhangle), MAXZ, true),
+    viewy + TRendererX87.RoundAngleProduct(angle_t(viewangle - fovhangle), MAXZ, false));
+  clipI[0][3] := R_MakeClipperPoint(
+    viewx + TRendererX87.RoundAngleProduct(angle_t(viewangle + fovhangle), MAXZ, true),
+    viewy + TRendererX87.RoundAngleProduct(angle_t(viewangle + fovhangle), MAXZ, false));
+{$ENDIF}
 
   with TClipper.Create([ioPreserveCollinear]) do
   try
@@ -1716,6 +1863,7 @@ begin
       );
 
       // Find best spot
+{$IFDEF CPUX86}
       if Abs(centery - tY) > Abs(centery - sspoints[numsspoints].screenY) then
         sspoints[numsspoints].worldZ := (h - viewz + SLOPECOEFF) /
                            (-centeryfrac - FRACUNIT div 2 + tY * FRACUNIT) *
@@ -1724,6 +1872,15 @@ begin
         sspoints[numsspoints].worldZ := (h - viewz) /
                            (-centeryfrac - FRACUNIT div 2 + sspoints[numsspoints].screenY * FRACUNIT) *
                             projectiony;
+{$ELSE}
+      // the same numbers as the 32 bit FPU (issue #40)
+      if Abs(centery - tY) > Abs(centery - sspoints[numsspoints].screenY) then
+        sspoints[numsspoints].worldZ := TRendererSlopesX87.WorldDepth(h - viewz + SLOPECOEFF,
+          -centeryfrac - FRACUNIT div 2, tY, projectiony)
+      else
+        sspoints[numsspoints].worldZ := TRendererSlopesX87.WorldDepth(h - viewz,
+          -centeryfrac - FRACUNIT div 2, sspoints[numsspoints].screenY, projectiony);
+{$ENDIF}
 
       Inc(numsspoints);
     end;
@@ -1760,6 +1917,7 @@ begin
       );
 
       // Find best spot
+{$IFDEF CPUX86}
       if Abs(centery - tY) > Abs(centery - sspoints[numsspoints].screenY) then
         sspoints[numsspoints].worldZ := (h - viewz + SLOPECOEFF) /
                            (-centeryfrac - FRACUNIT div 2 + tY * FRACUNIT) *
@@ -1768,6 +1926,15 @@ begin
         sspoints[numsspoints].worldZ := (h - viewz) /
                            (-centeryfrac - FRACUNIT div 2 + sspoints[numsspoints].screenY * FRACUNIT) *
                             projectiony;
+{$ELSE}
+      // the same numbers as the 32 bit FPU (issue #40)
+      if Abs(centery - tY) > Abs(centery - sspoints[numsspoints].screenY) then
+        sspoints[numsspoints].worldZ := TRendererSlopesX87.WorldDepth(h - viewz + SLOPECOEFF,
+          -centeryfrac - FRACUNIT div 2, tY, projectiony)
+      else
+        sspoints[numsspoints].worldZ := TRendererSlopesX87.WorldDepth(h - viewz,
+          -centeryfrac - FRACUNIT div 2, sspoints[numsspoints].screenY, projectiony);
+{$ENDIF}
 
       Inc(numsspoints);
 
@@ -1832,12 +1999,23 @@ begin
     end
     else
     begin
+{$IFDEF CPUX86}
       xfrac := (p1.screenX - p2.screenX) / (p1.screenY - p2.screenY);
       tfrac := (p1.screenZ - p2.screenZ) / (p1.screenY - p2.screenY);
+{$ELSE}
+      // the same numbers as the 32 bit FPU (issue #40)
+      xfrac := TRendererSlopesX87.EdgeStep(p1.screenX, p2.screenX, p1.screenY, p2.screenY);
+      tfrac := TRendererSlopesX87.EdgeStep(p1.screenZ, p2.screenZ, p1.screenY, p2.screenY);
+{$ENDIF}
     end;
 
+{$IFDEF CPUX86}
     xpos := p1.screenX + xfrac * (y1 - p1.screenY);
     tpos := p1.screenZ + tfrac * (y1 - p1.screenY);
+{$ELSE}
+    xpos := TRendererSlopesX87.EdgeStart(p1.screenX, xfrac, y1, p1.screenY);
+    tpos := TRendererSlopesX87.EdgeStart(p1.screenZ, tfrac, y1, p1.screenY);
+{$ENDIF}
 
     // For all columns in span
     repeat
@@ -1863,11 +2041,20 @@ begin
         end
         else
         begin
+{$IFDEF CPUX86}
           Theta := (1.0 / tpos - 1.0 / p1.screenZ) / (1.0 / p2.screenZ - 1.0 / p1.screenZ);
           rTheta := 1.0 - Theta;
 
           plane.ds_zleft[y1] :=
             Round(rTheta * p1.worldZ + Theta * p2.worldZ);
+{$ELSE}
+          // the same numbers as the 32 bit FPU (issue #40)
+          Theta := TRendererSlopesX87.Theta(tpos, p1.screenZ, p2.screenZ);
+          rTheta := TRendererSlopesX87.ThetaComplement(Theta);
+
+          plane.ds_zleft[y1] :=
+            TRendererSlopesX87.RoundInterpolated(rTheta, Theta, p1.worldZ, p2.worldZ);
+{$ENDIF}
         end;
       end;
       if x > plane.screenright[y1] then
@@ -1891,16 +2078,30 @@ begin
         end
         else
         begin
+{$IFDEF CPUX86}
           Theta := (1.0 / tpos - 1.0 / p1.screenZ) / (1.0 / p2.screenZ - 1.0 / p1.screenZ);
           rTheta := 1.0 - Theta;
 
           plane.ds_zright[y1] :=
             Round(rTheta * p1.worldZ + Theta * p2.worldZ);
+{$ELSE}
+          // the same numbers as the 32 bit FPU (issue #40)
+          Theta := TRendererSlopesX87.Theta(tpos, p1.screenZ, p2.screenZ);
+          rTheta := TRendererSlopesX87.ThetaComplement(Theta);
+
+          plane.ds_zright[y1] :=
+            TRendererSlopesX87.RoundInterpolated(rTheta, Theta, p1.worldZ, p2.worldZ);
+{$ENDIF}
         end;
       end;
 
+{$IFDEF CPUX86}
       xpos := xpos + xfrac;
       tpos := tpos + tfrac;
+{$ELSE}
+      xpos := TX87Double.Add(xpos, xfrac);
+      tpos := TX87Double.Add(tpos, tfrac);
+{$ENDIF}
 
       Inc(y1);
     until y1 >= y2stop;

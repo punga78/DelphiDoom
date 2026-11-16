@@ -109,6 +109,12 @@ type
     class function SubtractProduct(const AMinuend, A, B: Double): Double; static;
     /// <summary>(AEnd - AStart) / ACount stored in a Double (always the exact way)</summary>
     class function DifferenceQuotient(const AEnd, AStart: Double; ACount: Integer): Double; static;
+    /// <summary>ABase + ACount * AStep stored in a Double (always the exact way)</summary>
+    class function MultiplyAdd(const ABase: Double; ACount: Integer; const AStep: Double): Double; static;
+    /// <summary>A * B + ACount * AStep stored in a Double (always the exact way)</summary>
+    class function ProductPlusCount(const A, B: Double; ACount: Integer; const AStep: Double): Double; static;
+    /// <summary>Trunc((A + B) / ADivisor) (always the exact way)</summary>
+    class function TruncSumDivide(const A, B: Double; ADivisor: Integer): Integer; static;
   end;
 
 implementation
@@ -548,6 +554,36 @@ begin
 {$ELSE}
   Result := ((TSoftExtended.FromDouble(AEnd) - TSoftExtended.FromDouble(AStart)) /
     TSoftExtended.FromInt64(ACount)).ToDouble;
+{$IFEND}
+end;
+
+class function TX87Double.MultiplyAdd(const ABase: Double; ACount: Integer; const AStep: Double): Double;
+begin
+{$IF SizeOf(Extended) > SizeOf(Double)}
+  Result := ABase + ACount * AStep;
+{$ELSE}
+  Result := (TSoftExtended.FromDouble(ABase) +
+    TSoftExtended.FromInt64(ACount) * TSoftExtended.FromDouble(AStep)).ToDouble;
+{$IFEND}
+end;
+
+class function TX87Double.ProductPlusCount(const A, B: Double; ACount: Integer; const AStep: Double): Double;
+begin
+{$IF SizeOf(Extended) > SizeOf(Double)}
+  Result := A * B + ACount * AStep;
+{$ELSE}
+  Result := (TSoftExtended.FromDouble(A) * TSoftExtended.FromDouble(B) +
+    TSoftExtended.FromInt64(ACount) * TSoftExtended.FromDouble(AStep)).ToDouble;
+{$IFEND}
+end;
+
+class function TX87Double.TruncSumDivide(const A, B: Double; ADivisor: Integer): Integer;
+begin
+{$IF SizeOf(Extended) > SizeOf(Double)}
+  Result := Trunc((A + B) / ADivisor);
+{$ELSE}
+  Result := Integer(((TSoftExtended.FromDouble(A) + TSoftExtended.FromDouble(B)) /
+    TSoftExtended.FromInt64(ADivisor)).Truncate);
 {$IFEND}
 end;
 

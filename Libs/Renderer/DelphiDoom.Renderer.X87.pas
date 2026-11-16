@@ -42,6 +42,13 @@ type
     class function AngleSineSingle(AAngle: Int64): Single; static;
     /// <summary>Cos(AAngle * ANGLE_T_TO_RAD) stored in a Single: ds_cosine and ds_viewcosine</summary>
     class function AngleCosineSingle(AAngle: Int64): Single; static;
+    /// <summary>
+    ///   Round(Sin(AAngle * ANGLE_T_TO_RAD) * ADistance), or the cosine: the corners of the view frustum of the
+    ///   slopes (r_slopes.pas)
+    /// </summary>
+    class function RoundAngleProduct(AAngle: Cardinal; ADistance: Integer; ACosine: Boolean): Integer; static;
+    /// <summary>The same with Trunc instead of Round (the clipper of the 3D floors, r_3dfloors.pas)</summary>
+    class function TruncAngleProduct(AAngle: Cardinal; ADistance: Integer; ACosine: Boolean): Integer; static;
     /// <summary>dviewsin of R_SetupFrame: Sin(AViewAngle / $FFFFFFFF * 2 * pi)</summary>
     class function ViewSine(AViewAngle: Cardinal): Double; static;
     /// <summary>dviewcos of R_SetupFrame: Cos(AViewAngle / $FFFFFFFF * 2 * pi)</summary>
@@ -137,6 +144,28 @@ end;
 class function TRendererX87.AngleCosineSingle(AAngle: Int64): Single;
 begin
   Result := TSoftExtended.Cos(TSoftExtended.FromInt64(AAngle) * AngleToRadians).ToSingle;
+end;
+
+class function TRendererX87.RoundAngleProduct(AAngle: Cardinal; ADistance: Integer; ACosine: Boolean): Integer;
+var
+  LArgument: TSoftExtended;
+begin
+  LArgument := TSoftExtended.FromInt64(AAngle) * AngleToRadians;
+  if ACosine then
+    Result := Integer((TSoftExtended.Cos(LArgument) * TSoftExtended.FromInt64(ADistance)).Round)
+  else
+    Result := Integer((TSoftExtended.Sin(LArgument) * TSoftExtended.FromInt64(ADistance)).Round);
+end;
+
+class function TRendererX87.TruncAngleProduct(AAngle: Cardinal; ADistance: Integer; ACosine: Boolean): Integer;
+var
+  LArgument: TSoftExtended;
+begin
+  LArgument := TSoftExtended.FromInt64(AAngle) * AngleToRadians;
+  if ACosine then
+    Result := Integer((TSoftExtended.Cos(LArgument) * TSoftExtended.FromInt64(ADistance)).Truncate)
+  else
+    Result := Integer((TSoftExtended.Sin(LArgument) * TSoftExtended.FromInt64(ADistance)).Truncate);
 end;
 
 class function TRendererX87.ViewSine(AViewAngle: Cardinal): Double;

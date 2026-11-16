@@ -348,6 +348,8 @@ ceilingplane_a = -0.099459415;
 ceilingplane_b = 0.029837825;
 ceilingplane_c = -0.994594153;
 ceilingplane_d = 254.616103136;
+rotationfloor = 35;
+rotationceiling = 50;
 }
 sector
 {
@@ -357,6 +359,7 @@ texturefloor = "FLOOR0_1";
 textureceiling = "CEIL3_5";
 lightlevel = 200;
 id = 2;
+rotationfloor = 20;
 }
 sector
 {
@@ -365,4 +368,12 @@ heightceiling = 128;
 texturefloor = "FLAT1";
 textureceiling = "FLAT1";
 lightlevel = 220;
+floorplane_a = -0.049927657;
+floorplane_b = -0.019971063;
+floorplane_c = 0.998553146;
+floorplane_d = -63.907401353;
+ceilingplane_a = 0.049927657;
+ceilingplane_b = 0.019971063;
+ceilingplane_c = -0.998553146;
+ceilingplane_d = 127.814802707;
 }

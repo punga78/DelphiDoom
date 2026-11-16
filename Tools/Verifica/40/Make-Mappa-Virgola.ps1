@@ -38,6 +38,8 @@ function Get-Plane([double]$dzdx, [double]$dzdy, [double]$z0, [bool]$floor) {
 }
 $floorPlane = Get-Plane 0.2 0.07 0 $true
 $ceilingPlane = Get-Plane -0.1 0.03 256 $false
+$controlFloorPlane = Get-Plane 0.05 0.02 64 $true
+$controlCeilingPlane = Get-Plane 0.05 0.02 128 $false
 
 $text = New-Object System.Text.StringBuilder
 [void]$text.AppendLine('namespace = "doom";')
@@ -114,11 +116,16 @@ if (-not $NoControl) {
 
 # --- settori ----------------------------------------------------------------------------------------------------
 $planes = "floorplane_a = $(F $floorPlane[0]);`nfloorplane_b = $(F $floorPlane[1]);`nfloorplane_c = $(F $floorPlane[2]);`nfloorplane_d = $(F $floorPlane[3]);`n" +
-  "ceilingplane_a = $(F $ceilingPlane[0]);`nceilingplane_b = $(F $ceilingPlane[1]);`nceilingplane_c = $(F $ceilingPlane[2]);`nceilingplane_d = $(F $ceilingPlane[3]);`n"
+  "ceilingplane_a = $(F $ceilingPlane[0]);`nceilingplane_b = $(F $ceilingPlane[1]);`nceilingplane_c = $(F $ceilingPlane[2]);`nceilingplane_d = $(F $ceilingPlane[3]);`n" +
+  "rotationfloor = 35;`nrotationceiling = 50;`n"
 if ($NoSlopes) { $planes = '' }
+$controlPlanes = "floorplane_a = $(F $controlFloorPlane[0]);`nfloorplane_b = $(F $controlFloorPlane[1]);`nfloorplane_c = $(F $controlFloorPlane[2]);`nfloorplane_d = $(F $controlFloorPlane[3]);`n" +
+  "ceilingplane_a = $(F $controlCeilingPlane[0]);`nceilingplane_b = $(F $controlCeilingPlane[1]);`nceilingplane_c = $(F $controlCeilingPlane[2]);`nceilingplane_d = $(F $controlCeilingPlane[3]);`n"
+if ($NoSlopes) { $controlPlanes = '' }
 [void]$text.AppendLine("sector`n{`nheightfloor = 0;`nheightceiling = 256;`ntexturefloor = `"FLOOR4_8`";`ntextureceiling = `"CEIL3_5`";`nlightlevel = 200;`n$planes}")
-[void]$text.AppendLine("sector`n{`nheightfloor = 0;`nheightceiling = 256;`ntexturefloor = `"FLOOR0_1`";`ntextureceiling = `"CEIL3_5`";`nlightlevel = 200;`nid = 2;`n}")
-[void]$text.AppendLine("sector`n{`nheightfloor = 64;`nheightceiling = 128;`ntexturefloor = `"FLAT1`";`ntextureceiling = `"FLAT1`";`nlightlevel = 220;`n}")
+[void]$text.AppendLine("sector`n{`nheightfloor = 0;`nheightceiling = 256;`ntexturefloor = `"FLOOR0_1`";`ntextureceiling = `"CEIL3_5`";`nlightlevel = 200;`nid = 2;`nrotationfloor = 20;`n}")
+[void]$text.AppendLine("sector`n{`nheightfloor = 64;`nheightceiling = 128;`ntexturefloor = `"FLAT1`";`ntextureceiling = `"FLAT1`";`nlightlevel = 220;`n$controlPlanes}")
+
 
 $map = [Text.Encoding]::ASCII.GetBytes($text.ToString())
 
