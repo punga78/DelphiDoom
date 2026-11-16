@@ -1,5 +1,5 @@
 # Writes a Doom 3 style .aas file made of boxes on a grid (64 units each, 64 high), as a coherent file for the
-# routing tests of Libs\Aas (issue #109): planes in pairs (2k and 2k+1 are opposite), vertices, shared edges and
+# routing tests of IdTech4\Aas (issue #109): planes in pairs (2k and 2k+1 are opposite), vertices, shared edges and
 # faces, areas with reachabilities, a BSP tree, portals and clusters. The numbers are invented: no data of Doom 3
 # is used. The same file is read by the Delphi tests and by the C++ harness (Tools\Verifica\109\LEGGIMI.md).
 #

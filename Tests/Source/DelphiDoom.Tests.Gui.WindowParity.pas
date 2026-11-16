@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   Runs the scenarios of Tests\Data\Gui\window\window.input.txt with the classes of Libs\Gui and
+  ///   Runs the scenarios of Tests\Data\Gui\window\window.input.txt with the classes of IdTech4\Gui and
   ///   compares the text with the answer of the real windows of Doom 3 (window.golden.txt, made by
   ///   the harness of Tools\Verifica\111 with the C++ of ui\Window.cpp, Winvar.h, RegExp.cpp, GuiScript.cpp...)
   /// </summary>

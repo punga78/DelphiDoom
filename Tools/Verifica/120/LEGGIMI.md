@@ -1,6 +1,6 @@
 # Tools\Verifica\120 - parita' della macchina virtuale QVM (issue #120)
 
-Strumenti che producono le risposte di riferimento di `Libs\Qvm` con il **codice di Quake III Arena** (`Reference\quake3\code\qcommon\vm.c`, `vm_interpreted.c`, `vm_local.h`, sola lettura). Non c'e' un compilatore C nel PATH: si usa il gcc di `Reference\_dati\_strumenti\w64devkit`, che produce programmi **x86 a 32 bit** (`i686-w64-mingw32`).
+Strumenti che producono le risposte di riferimento di `IdTech4\Qvm` con il **codice di Quake III Arena** (`Reference\quake3\code\qcommon\vm.c`, `vm_interpreted.c`, `vm_local.h`, sola lettura). Non c'e' un compilatore C nel PATH: si usa il gcc di `Reference\_dati\_strumenti\w64devkit`, che produce programmi **x86 a 32 bit** (`i686-w64-mingw32`).
 
 - `build.sh [cartella]` (sh, da Git Bash): costruisce `vm_original.inc` con **i tre file interi** (tolte solo le righe `#include`) piu' le funzioni di `game\q_shared.c` che usano (`COM_StripExtension`, `COM_Parse`, `SkipWhitespace`, `COM_ParseExt`, `Q_strncpyz`, `Q_stricmpn`, `Q_stricmp`, `Com_sprintf`, estratte per nome con awk, mai riscritte) e compila quattro programmi dallo stesso `qvmrun.c`:
   - `qvmrun.exe`: `-O1`, float con le istruzioni SSE (`-msse2 -mfpmath=sse`), `VM_MAGIC` `0x12721444`. E' quello dei golden.

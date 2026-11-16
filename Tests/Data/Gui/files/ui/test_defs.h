@@ -1,4 +1,4 @@
-// Own test header, written for the tests of Libs\Gui (not a Team Arena file)
+// Own test header, written for the tests of IdTech4\Gui (not a Team Arena file)
 #define WIDE 640
 #define TALL 480
 #define HALFWIDE 320

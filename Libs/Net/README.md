@@ -14,7 +14,7 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
   chiamanti nel motore; parita sul C++ con `Tests\Data\Net\bitmsg-golden.txt`. Dettagli in [CLAUDE.md](CLAUDE.md). I compressori sono in
   [Framework\Compression](../../Framework/Compression/README.md).
 
-- **Rete di Quake III / id Tech 3**: spostata in [Libs\NetQ3](../NetQ3/README.md) (#237).
+- **Rete di Quake III / id Tech 3**: spostata in [IdTech4\NetQ3](../../IdTech4/NetQ3/README.md) (#237).
 
 ## Prova
 

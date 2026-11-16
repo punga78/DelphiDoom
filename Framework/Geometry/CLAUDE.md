@@ -1,6 +1,6 @@
 # Framework\Geometry — note per Claude
 
-Il paragrafo che riguarda questa libreria sta nel CLAUDE.md di `Libs\Collision`: [Libs/Collision/CLAUDE.md](../../Libs/Collision/CLAUDE.md).
+Il paragrafo che riguarda questa libreria sta nel CLAUDE.md di `IdTech4\Collision`: [IdTech4/Collision/CLAUDE.md](../../IdTech4/Collision/CLAUDE.md).
 
 Le unit della issue #96 (piani, bounds, sfere, scatole; frustum, winding 2D, vertici, superfici, polytope e patch) sono descritte nel CLAUDE.md di `Framework\MathCore` ("Issue #96"), dove stanno anche la parita' col C++ e i difetti dell'originale; i test sono in `Tests\DelphiDoom.Tests.Geometry`. `TGeoMath` e' un ponte a `TIdMath` (`Framework\IdLib\Math`).
 

@@ -1,7 +1,7 @@
 ﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the AAS library - the BSP of the bots on the collision  }
-{  model of Libs\Collision (the synthetic map q3world0.bsp)                     }
+{  model of IdTech4\Collision (the synthetic map q3world0.bsp)                  }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

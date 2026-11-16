@@ -21,7 +21,7 @@ uses
 type
   /// <summary>
   ///   The interpreter of the cases: the same operations and the same output lines as the driver of the
-  ///   C++ harness, on the classes of Libs\Decl
+  ///   C++ harness, on the classes of IdTech4\Decl
   /// </summary>
   TDeclGoldenRunner = class
   strict private

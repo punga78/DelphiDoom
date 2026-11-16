@@ -39,4 +39,4 @@ Hierarchy; idList e idHashTable sono i generics della RTL, non verificato caso p
 
 ## Rete di Quake III
 
-Spostata in [Libs\NetQ3](../NetQ3/CLAUDE.md) (#237): le unit `DelphiDoom.Net.Q3.*` hanno ora la loro cartella, nel modulo id Tech 3 di `docs\Strati.psd1`.
+Spostata in [IdTech4\NetQ3](../../IdTech4/NetQ3/CLAUDE.md) (#237): le unit `DelphiDoom.Net.Q3.*` hanno ora la loro cartella, nel modulo id Tech 3 di `docs\Strati.psd1`.

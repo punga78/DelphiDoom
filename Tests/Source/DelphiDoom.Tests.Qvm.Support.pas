@@ -86,7 +86,7 @@ type
     procedure AddCall(const AValues: array of Integer);
   end;
 
-  /// <summary>Does on the classes of Libs\Qvm what the driver does on the C, and writes the same lines</summary>
+  /// <summary>Does on the classes of IdTech4\Qvm what the driver does on the C, and writes the same lines</summary>
   TQvmScenarioRunner = class
   strict private
     class var

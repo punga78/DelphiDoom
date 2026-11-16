@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the Gui library - the scenarios of the C++ harness     }
 {                                                                              }
 {  Reads the scenarios of Tools\Verifica\111 (the files Tests\Data\Gui\window\ }
-{  and \draw\ ...input.txt) and runs them with the classes of Libs\Gui: the    }
+{  and \draw\ ...input.txt) and runs them with the classes of IdTech4\Gui: the }
 {  text it writes is what the driver of the C++ harness writes for the real    }
 {  code of Doom 3.                                                             }
 {                                                                              }

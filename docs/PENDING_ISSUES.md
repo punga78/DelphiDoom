@@ -34,7 +34,7 @@ Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_
 - `TEngineWadServices` e `ComposeEngine` non hanno test DUnitX (dipendono da `d_delphi`, che i progetti di test non linkano): sono coperti dall'avvio dei giochi.
 ## #45 — Motore a classi con dependency injection (conclusa)
 
-Tutte le fette sono collegate al motore e il vecchio codice è cancellato dove c'era un equivalente: Wad, argomenti, configurazione, log, clock, input, video (parte pura), audio, ACS, UDMF, special di linea, scanner, preprocessore e valutatore, MapInfo, MusInfo, ActorDef, Dehacked, definizioni (ANIMDEFS, interruttori di Doom, terreno), palette, texture, console, immagini (parti fredde), MathCore, DynLights, rete, JPEG, texture esterne, modelli 3D e geometria di OpenGL. `Libs\Collision`, `Framework\Geometry` e `Framework\IdLib` (porting da Doom 3) non hanno chiamanti nel motore di id Tech 1: hanno un `WIRING.md` per un uso futuro.
+Tutte le fette sono collegate al motore e il vecchio codice è cancellato dove c'era un equivalente: Wad, argomenti, configurazione, log, clock, input, video (parte pura), audio, ACS, UDMF, special di linea, scanner, preprocessore e valutatore, MapInfo, MusInfo, ActorDef, Dehacked, definizioni (ANIMDEFS, interruttori di Doom, terreno), palette, texture, console, immagini (parti fredde), MathCore, DynLights, rete, JPEG, texture esterne, modelli 3D e geometria di OpenGL. `IdTech4\Collision`, `Framework\Geometry` e `Framework\IdLib` (porting da Doom 3) non hanno chiamanti nel motore di id Tech 1: hanno un `WIRING.md` per un uso futuro.
 
 Restano **codice storico, per scelta documentata** in `CLAUDE.md` e nei `Libs\<Nome>\CLAUDE.md`:
 

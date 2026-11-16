@@ -2,7 +2,7 @@
 
 Sintesi di quattro analisi in sola lettura (nessuna build, nessun gioco avviato). I rapporti completi, con tabelle file per file e righe,
 sono in `Reference\_analisi\` (cartella ignorata da git): `mars3d-radx-speed.md`, `strumenti-ddfont-ddvoxel-endedit.md`,
-`xgreed-keen.md`, `openxcom.md`. Doom 3 e Quake 3 sono giÃ  stati portati (`Framework\IdLib`, `Libs\Collision`, `Framework\Geometry`).
+`xgreed-keen.md`, `openxcom.md`. Doom 3 e Quake 3 sono giÃ  stati portati (`Framework\IdLib`, `IdTech4\Collision`, `Framework\Geometry`).
 OpenArena contiene solo dati di riferimento per Quake 3 (`MANIFESTO.md`): nessuna analisi di codice.
 
 ## Quadro d'insieme

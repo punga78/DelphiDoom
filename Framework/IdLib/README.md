@@ -77,7 +77,7 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
 | `idParser` (macro, `#define`, `#if`) | **non portata**: 3250 righe di preprocessore; il repository ha gia `Framework\Scanner` (scanner dei testi di Doom con `#define`/`#ifdef`/`#include`), con un dialetto diverso. Da portare quando serve il dialetto di Doom 3 (le macro `__LINE__`, `__DATE__`) |
 | `idDict`, `idKeyValue` | **non portato**: `TDictionary<string,string>` con `TIStringComparer` copre l'uso; il pool globale di chiavi e valori (`globalKeys`) e un'ottimizzazione di memoria |
 | `idLangDict` | **non portato** (usa `idDict` e `idLexer`; una classe di 300 righe sopra `TDictionary`, da fare) |
-| `idMapFile` | **portato in `Libs\MapFile`** (issue #106) |
+| `idMapFile` | **portato in `IdTech4\MapFile`** (issue #106) |
 | `idTimer`, `idTimerReport` | non portati: `TStopwatch` della RTL |
 
 ### Hash
@@ -117,8 +117,8 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
   distinti: non c'e conflitto di nomi (`TIdVec*` contro `TVec*`), ne unit in comune. Per unificarli basta un `Implicit` tra
   `TIdVec3` e `TVec3` (stessa disposizione di 3 `Single`).
 * `TCrc32` (MathCore) e `CRC32_BlockChecksum` di idLib sono lo stesso algoritmo: nessuna classe nuova.
-* Il lavoro su `Reference\doom3\neo\cm` (`Libs\Collision`) avra bisogno di `idPlane`, `idBounds`, `idWinding`, `idTraceModel`,
-  `idMat3`, `idVec5/6`, `idPluecker`: **non sono qui** (e `Libs\Collision` non e stato toccato). Cio che e gia pronto per quel
+* Il lavoro su `Reference\doom3\neo\cm` (`IdTech4\Collision`) avra bisogno di `idPlane`, `idBounds`, `idWinding`, `idTraceModel`,
+  `idMat3`, `idVec5/6`, `idPluecker`: **non sono qui** (e `IdTech4\Collision` non e stato toccato). Cio che e gia pronto per quel
   lavoro: `TIdVec2/3/4`, `TIdMath`, `TIdHashIndex`, `TIdBTree`, `TIdLinkList`, i contenitori e `TIdLexer` (per i file `.cm`).
 
 ## Differenze volute dal C++

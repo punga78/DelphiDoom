@@ -59,7 +59,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\MapFile;..\Framework\Scanner;..\Framework\IdLib\Core;..\Framework\IdLib\Text;..\Framework\IdLib\Math;..\Framework\Geometry;..\Framework\MathCore;..\Framework\GameMath;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\IdTech4\MapFile;..\Framework\Scanner;..\Framework\IdLib\Core;..\Framework\IdLib\Text;..\Framework\IdLib\Math;..\Framework\Geometry;..\Framework\MathCore;..\Framework\GameMath;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>

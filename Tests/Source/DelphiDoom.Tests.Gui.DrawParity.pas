@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   Runs Tests\Data\Gui\draw\*.input.txt with the classes of Libs\Gui and compares what they send to the renderer,
+  ///   Runs Tests\Data\Gui\draw\*.input.txt with the classes of IdTech4\Gui and compares what they send to the renderer,
   ///   the results of the text calls and the warnings with the golden: the answer of the real ui\DeviceContext.cpp,
   ///   Window.cpp, SimpleWindow.cpp and UserInterface.cpp of Doom 3 (and of RegisterFont of renderer\tr_font.cpp),
   ///   made by Tools\Verifica\111
