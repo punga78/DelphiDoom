@@ -2516,16 +2516,16 @@ begin
   an := mo.angle;
   bulletslope := P_AimLineAttack(mo, an, 16 * 64 * FRACUNIT, igflags);
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     bulletslope := P_AimLineAttack(mo, an, 16 * 64 * FRACUNIT, igflags);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       bulletslope := P_AimLineAttack(mo, an, 16 * 64 * FRACUNIT, igflags);
       if mo.player <> nil then
-        if zaxisshift and (linetarget = nil) then
+        if zaxisshift and (TMapAim.LineTarget = nil) then
           bulletslope := (Pplayer_t(mo.player).lookdir * FRACUNIT) div 173;
     end;
   end;
@@ -2541,7 +2541,7 @@ begin
   if G_PlayingEngineVersion >= 207 then
   begin
     P_DoBulletSlope(mo, MF2_EX_FRIEND);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
       P_DoBulletSlope(mo, 0);
   end
   else
@@ -2670,7 +2670,7 @@ begin
   begin
     // Does the player aim at something that can be shot?
     P_BulletSlope(actor);
-    target := linetarget;
+    target := TMapAim.LineTarget;
   end;
 
   // No target - no jump
@@ -5884,7 +5884,7 @@ begin
   begin
     // Does the player aim at something that can be shot?
     P_BulletSlope(actor);
-    target := linetarget;
+    target := TMapAim.LineTarget;
   end;
 
   // No target - no jump
@@ -6239,7 +6239,7 @@ begin
   begin
     // Does the player aim at something that can be shot?
     P_BulletSlope(actor);
-    result := linetarget;
+    result := TMapAim.LineTarget;
   end;
 end;
 
@@ -11933,7 +11933,7 @@ begin
   // set tracer to the player's autoaim target,
   // so player seeker missiles prioritizing the
   // baddie the player is actually aiming at. ;)
-  mo.tracer := linetarget;
+  mo.tracer := TMapAim.LineTarget;
 end;
 
 //==============================================================================
@@ -12028,14 +12028,14 @@ begin
 
   // make autoaim prefer enemies
   slope := P_AimLineAttack(player.mo, angle, range, MF2_EX_FRIEND);
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
     slope := P_AimLineAttack(player.mo, angle, range);
 
   // attack, dammit!
   P_LineAttack(player.mo, angle, range, slope, damage);
 
   // missed? ah, welp.
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
     exit;
 
   // un-missed!
@@ -12051,7 +12051,7 @@ begin
     S_StartSound(player.mo, hitsound);
 
   // turn to face target
-  player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+  player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
 end;
 
 //==============================================================================

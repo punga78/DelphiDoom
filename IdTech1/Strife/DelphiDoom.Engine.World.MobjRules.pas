@@ -871,7 +871,7 @@ begin
 
   // don't make punches spark on the wall
   // [STRIFE] Use a separate melee attack range for the player
-  if attackrange = PLAYERMELEERANGE then
+  if TMapAim.AttackRange = PLAYERMELEERANGE then
     P_SetMobjState(th, S_POW2_00);
 end;
 
@@ -1102,7 +1102,7 @@ end;
 
 class procedure TMobjGameRules.AimWithoutTarget(source: Pmobj_t; var an: angle_t; var slope: fixed_t);
 begin
-  if zaxisshift and (linetarget = nil) then
+  if zaxisshift and (TMapAim.LineTarget = nil) then
   begin
     an := source.angle;
     slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
@@ -1112,8 +1112,8 @@ end;
 class procedure TMobjGameRules.AfterAim(source: Pmobj_t);
 begin
   // villsa [STRIFE]
-  if linetarget <> nil then
-    source.target := linetarget;
+  if TMapAim.LineTarget <> nil then
+    source.target := TMapAim.LineTarget;
 end;
 
 class procedure TMobjGameRules.AdjustMissileZ(source: Pmobj_t; var z: fixed_t);

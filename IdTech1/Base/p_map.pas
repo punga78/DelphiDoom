@@ -93,6 +93,80 @@ type
     class var MaxSpecHit: integer;
     /// <summary>True if the move would be ok when within FloorZ and CeilingZ.</summary>
     class var FloatOk: boolean;
+    /// <summary>The thing a thing has landed on (P_CheckOnmobj; used for landing on pods and players).</summary>
+    class var OnMobj: Pmobj_t;
+    /// <summary>P_ChangeSector: crush the things that do not fit, and true if one does not fit.</summary>
+    class var CrushChange: boolean;
+    class var NoFit: boolean;
+  end;
+
+  /// <summary>
+  /// The state of P_UseLines and PTR_UseTraverse: the former global usething (issue #244).
+  /// Declared here as a class variable for the same reason as TMapCheck.
+  /// </summary>
+  TMapUse = class sealed
+  public
+    /// <summary>The thing that uses the lines.</summary>
+    class var Thing: Pmobj_t;
+  end;
+
+  /// <summary>
+  /// The state of the radius attacks (P_RadiusAttack and its variants, PIT_RadiusAttack): the
+  /// former globals bombsource, bombspot, bombdamage and bombradius (issue #244). Declared here
+  /// as class variables for the same reason as TMapCheck. Scratch space of one call.
+  /// </summary>
+  TMapBlast = class sealed
+  public
+    /// <summary>The creature that caused the explosion.</summary>
+    class var Source: Pmobj_t;
+    /// <summary>The thing that explodes, the damage at its centre and the radius.</summary>
+    class var Spot: Pmobj_t;
+    class var Damage: integer;
+    class var Radius: integer;
+  end;
+
+  /// <summary>
+  /// The state of the shots and of the aim (P_AimLineAttack, P_LineAttack and their traverse
+  /// functions): the former globals linetarget, attackrange, shootthing, shootz, la_damage,
+  /// aimslope, topslope, bottomslope and aim_flags_mask2_ex (issue #244). Declared here as
+  /// class variables for the same reason as TMapCheck. Scratch space of one call, except
+  /// LineTarget, that the callers read after the call (who got hit, or nil). The topslope
+  /// and bottomslope of p_sight are another thing, and stay there.
+  /// </summary>
+  TMapAim = class sealed
+  public
+    /// <summary>Who got hit (or nil).</summary>
+    class var LineTarget: Pmobj_t;
+    /// <summary>The range of the attack, and where it starts from.</summary>
+    class var AttackRange: fixed_t;
+    class var ShootThing: Pmobj_t;
+    /// <summary>Height if not aiming up or down (???: use slope for monsters?).</summary>
+    class var ShootZ: fixed_t;
+    /// <summary>The damage of the shot of P_LineAttack.</summary>
+    class var Damage: integer;
+    /// <summary>The slope of the aim and the limits of the slopes (to the top and bottom of the target).</summary>
+    class var AimSlope: fixed_t;
+    class var TopSlope: fixed_t;
+    class var BottomSlope: fixed_t;
+    /// <summary>MBF21: the flags2_ex that friends do not aim at (killough 8/2/98).</summary>
+    class var AimFlagsMask2Ex: integer;
+  end;
+
+  /// <summary>
+  /// The state of P_SlideMove, P_HitSlideLine and PTR_SlideTraverse: the former globals
+  /// bestslidefrac, bestslideline, slidemo, tmxmove and tmymove (issue #244). Declared here
+  /// as class variables for the same reason as TMapCheck. Scratch space of one call.
+  /// </summary>
+  TMapSlide = class sealed
+  public
+    /// <summary>The nearest line the slide has hit, and how far along the move it is.</summary>
+    class var BestFrac: fixed_t;
+    class var BestLine: Pline_t;
+    /// <summary>The thing that slides.</summary>
+    class var Mobj: Pmobj_t;
+    /// <summary>The move that is left after the slide line has been hit.</summary>
+    class var XMove: fixed_t;
+    class var YMove: fixed_t;
   end;
 
 //==============================================================================
@@ -233,15 +307,10 @@ function P_ContactPickup(thing: Pmobj_t): boolean;
 //==============================================================================
 function PIT_CheckThing(thing: Pmobj_t): boolean;
 
-var
-  linetarget: Pmobj_t;  // who got hit (or NULL)
-
-// (floatok, spechit and ceilingline are in TMapCheck too)
-// If "floatok" true, move would be ok
+// (linetarget, attackrange, shootthing, shootz and la_damage are in TMapAim, and
+// floatok, spechit and ceilingline in TMapCheck)
+// If "TMapCheck.FloatOk" true, move would be ok
 // if within "TMapCheck.FloorZ - TMapCheck.CeilingZ".
-
-var
-  attackrange: fixed_t;
 
 //==============================================================================
 //
@@ -249,20 +318,6 @@ var
 //
 //==============================================================================
 function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
-
-var
-  bestslidefrac: fixed_t;
-  bestslideline: Pline_t;
-  slidemo: Pmobj_t;
-
-  shootthing: Pmobj_t;
-  // Height if not aiming up or down
-  // ???: use slope for monsters?
-  shootz: fixed_t;
-  la_damage: integer;
-
-  crushchange: boolean;
-  nofit: boolean;
 
 implementation
 
@@ -1118,9 +1173,6 @@ begin
   end;
 end;
 
-var
-  onmobj: Pmobj_t; //generic global onmobj...used for landing on pods/players
-
 //==============================================================================
 //
 // PIT_CheckOnmobjZ
@@ -1162,7 +1214,7 @@ begin
 
   result := thing.flags and MF_SOLID = 0;
   if not result then
-    onmobj := thing;
+    TMapCheck.OnMobj := thing;
 
 end;
 
@@ -1244,7 +1296,7 @@ begin
       if not P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ) then
       begin
         TMapCheck.Thing^ := oldmo;
-        result := onmobj;
+        result := TMapCheck.OnMobj;
         exit;
       end;
 
@@ -1527,10 +1579,8 @@ end;
 //
 // SLIDE MOVE
 // Allows the player to slide along any angled walls.
+// (its state is in TMapSlide)
 //
-var
-  tmxmove: fixed_t;
-  tmymove: fixed_t;
 
 //==============================================================================
 //
@@ -1550,24 +1600,24 @@ var
 begin
   if ld.slopetype = ST_HORIZONTAL then
   begin
-    tmymove := 0;
+    TMapSlide.YMove := 0;
     exit;
   end;
 
   if ld.slopetype = ST_VERTICAL then
   begin
-    tmxmove := 0;
+    TMapSlide.XMove := 0;
     exit;
   end;
 
-  side := P_PointOnLineSide(slidemo.x, slidemo.y, ld);
+  side := P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, ld);
 
   lineangle := R_PointToAngle2(0, 0, ld.dx, ld.dy);
 
   if side = 1 then
     lineangle := lineangle + ANG180;
 
-  moveangle := R_PointToAngle2(0, 0, tmxmove, tmymove);
+  moveangle := R_PointToAngle2(0, 0, TMapSlide.XMove, TMapSlide.YMove);
   deltaangle := moveangle - lineangle;
 
   if deltaangle > ANG180 then
@@ -1582,11 +1632,11 @@ begin
   deltaangle := deltaangle shr ANGLETOFINESHIFT;
   {$ENDIF}
 
-  movelen := P_AproxDistance(tmxmove, tmymove);
+  movelen := P_AproxDistance(TMapSlide.XMove, TMapSlide.YMove);
   newlen := FixedMul(movelen, finecosine[deltaangle]);
 
-  tmxmove := FixedMul(newlen, finecosine[lineangle]);
-  tmymove := FixedMul(newlen, finesine[lineangle]);
+  TMapSlide.XMove := FixedMul(newlen, finecosine[lineangle]);
+  TMapSlide.YMove := FixedMul(newlen, finesine[lineangle]);
 end;
 
 //==============================================================================
@@ -1603,10 +1653,10 @@ var
   begin
     // the line does block movement,
     // see if it is closer than best so far
-    if intr.frac < bestslidefrac then
+    if intr.frac < TMapSlide.BestFrac then
     begin
-      bestslidefrac := intr.frac;
-      bestslideline := li;
+      TMapSlide.BestFrac := intr.frac;
+      TMapSlide.BestLine := li;
     end;
   end;
 
@@ -1618,7 +1668,7 @@ begin
 
   if li.flags and ML_TWOSIDED = 0 then
   begin
-    if P_PointOnLineSide(slidemo.x, slidemo.y, li) <> 0 then
+    if P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
     begin
       // don't hit the back side
       result := true;
@@ -1632,35 +1682,35 @@ begin
   // set openrange, opentop, openbottom
   P_LineOpening(li, true);
 
-  if openrange < slidemo.height then
+  if openrange < TMapSlide.Mobj.height then
   begin
     isblocking; // doesn't fit
     result := false; // stop
     exit;
   end;
 
-  if opentop - slidemo.z < slidemo.height then
+  if opentop - TMapSlide.Mobj.z < TMapSlide.Mobj.height then
   begin
     isblocking; // mobj is too high
     result := false; // stop
     exit;
   end;
 
-  if slidemo.flags4_ex and MF4_EX_CANNOTSTEP <> 0 then
+  if TMapSlide.Mobj.flags4_ex and MF4_EX_CANNOTSTEP <> 0 then
     margin := 0
   else
   begin
     margin := TMapGameRules.SlideStepMargin;
     if G_PlayingEngineVersion >= VERSION207 then
-      if slidemo.info.maxstepheight > 0 then
+      if TMapSlide.Mobj.info.maxstepheight > 0 then
       begin
-        margin := slidemo.info.maxstepheight;
+        margin := TMapSlide.Mobj.info.maxstepheight;
         if margin < 64 then
           margin := margin * FRACUNIT
       end;
   end;
 
-  if openbottom - slidemo.z > margin then
+  if openbottom - TMapSlide.Mobj.z > margin then
   begin
     isblocking; // too big a step up
     result := false; // stop
@@ -1699,7 +1749,7 @@ var
   end;
 
 begin
-  slidemo := mo;
+  TMapSlide.Mobj := mo;
   hitcount := 0;
 
   repeat
@@ -1734,7 +1784,7 @@ begin
       traily := mo.y + mo.radius;
     end;
 
-    bestslidefrac := FRACUNIT + 1;
+    TMapSlide.BestFrac := FRACUNIT + 1;
 
     P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy,
       PT_ADDLINES, PTR_SlideTraverse);
@@ -1744,7 +1794,7 @@ begin
       PT_ADDLINES, PTR_SlideTraverse);
 
     // move up to the wall
-    if bestslidefrac = FRACUNIT + 1 then
+    if TMapSlide.BestFrac = FRACUNIT + 1 then
     begin
       // the move most have hit the middle, so stairstep
       stairstep;
@@ -1752,11 +1802,11 @@ begin
     end;
 
     // fudge a bit to make sure it doesn't hit
-    bestslidefrac := bestslidefrac - $800;
-    if bestslidefrac > 0 then
+    TMapSlide.BestFrac := TMapSlide.BestFrac - $800;
+    if TMapSlide.BestFrac > 0 then
     begin
-      newx := FixedMul(mo.momx, bestslidefrac);
-      newy := FixedMul(mo.momy, bestslidefrac);
+      newx := FixedMul(mo.momx, TMapSlide.BestFrac);
+      newy := FixedMul(mo.momy, TMapSlide.BestFrac);
 
       if not P_TryMove(mo, mo.x + newx, mo.y + newy) then
       begin
@@ -1767,42 +1817,37 @@ begin
 
     // Now continue along the wall.
     // First calculate remainder.
-    bestslidefrac := FRACUNIT - (bestslidefrac + $800);
+    TMapSlide.BestFrac := FRACUNIT - (TMapSlide.BestFrac + $800);
 
-    if bestslidefrac > FRACUNIT then
-      bestslidefrac := FRACUNIT;
+    if TMapSlide.BestFrac > FRACUNIT then
+      TMapSlide.BestFrac := FRACUNIT;
 
-    if bestslidefrac <= 0 then
+    if TMapSlide.BestFrac <= 0 then
       exit;
 
-    tmxmove := FixedMul(mo.momx, bestslidefrac);
-    tmymove := FixedMul(mo.momy, bestslidefrac);
+    TMapSlide.XMove := FixedMul(mo.momx, TMapSlide.BestFrac);
+    TMapSlide.YMove := FixedMul(mo.momy, TMapSlide.BestFrac);
 
-    P_HitSlideLine(bestslideline);  // clip the moves
+    P_HitSlideLine(TMapSlide.BestLine);  // clip the moves
 
-    mo.momx := tmxmove;
-    mo.momy := tmymove;
+    mo.momx := TMapSlide.XMove;
+    mo.momy := TMapSlide.YMove;
 
-  until P_TryMove(mo, mo.x + tmxmove, mo.y + tmymove);
+  until P_TryMove(mo, mo.x + TMapSlide.XMove, mo.y + TMapSlide.YMove);
 
 end;
 
 //
 // P_LineAttack
+// (its state is in TMapAim)
 //
-var
-  aimslope: fixed_t;
-
-  aim_flags_mask2_ex: integer;  // JVAL: 20220111 - MBF21
 
 // JVAL: 3d floors : Moved from P_Sight
-  bottomslope: fixed_t; // slopes to top and bottom of target
-  topslope: fixed_t;
 
 //==============================================================================
 //
 // PTR_AimTraverse
-// Sets linetaget and aimslope when a target is aimed at.
+// Sets linetaget and TMapAim.AimSlope when a target is aimed at.
 //
 //==============================================================================
 function PTR_AimTraverse(intr: Pintercept_t): boolean;
@@ -1841,23 +1886,23 @@ begin
       exit;
     end;
 
-    dist := FixedMul(attackrange, intr.frac);
+    dist := FixedMul(TMapAim.AttackRange, intr.frac);
 
     if li.frontsector.floorheight <> li.backsector.floorheight then
     begin
-      slope := FixedDiv(openbottom - shootz, dist);
-      if slope > bottomslope then
-        bottomslope := slope;
+      slope := FixedDiv(openbottom - TMapAim.ShootZ, dist);
+      if slope > TMapAim.BottomSlope then
+        TMapAim.BottomSlope := slope;
     end;
 
     if li.frontsector.ceilingheight <> li.backsector.ceilingheight then
     begin
-      slope := FixedDiv(opentop - shootz, dist);
-      if slope < topslope then
-        topslope := slope;
+      slope := FixedDiv(opentop - TMapAim.ShootZ, dist);
+      if slope < TMapAim.TopSlope then
+        TMapAim.TopSlope := slope;
     end;
 
-    if topslope <= bottomslope then
+    if TMapAim.TopSlope <= TMapAim.BottomSlope then
     begin
       result := false; // stop
       exit;
@@ -1869,7 +1914,7 @@ begin
 
   // shoot a thing
   th := intr.d.thing;
-  if th = shootthing then
+  if th = TMapAim.ShootThing then
   begin
     result := true;  // can't shoot self
     exit;
@@ -1883,7 +1928,7 @@ begin
 
   // killough 7/19/98, 8/2/98:
   // friends don't aim at friends (except players), at least not first
-  if (th.flags2_ex and shootthing.flags2_ex and aim_flags_mask2_ex <> 0) and (th.player = nil) then
+  if (th.flags2_ex and TMapAim.ShootThing.flags2_ex and TMapAim.AimFlagsMask2Ex <> 0) and (th.player = nil) then
   begin
     result := true; // corpse or something
     exit;
@@ -1903,32 +1948,32 @@ begin
   end;
 
   // check angles to see if the thing can be aimed at
-  dist := FixedMul(attackrange, intr.frac);
-  thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
+  dist := FixedMul(TMapAim.AttackRange, intr.frac);
+  thingtopslope := FixedDiv(th.z + th.height - TMapAim.ShootZ, dist);
 
-  if thingtopslope < bottomslope then
+  if thingtopslope < TMapAim.BottomSlope then
   begin
     result := true; // shot over the thing
     exit;
   end;
 
-  thingbottomslope := FixedDiv(th.z - shootz, dist);
+  thingbottomslope := FixedDiv(th.z - TMapAim.ShootZ, dist);
 
-  if thingbottomslope > topslope then
+  if thingbottomslope > TMapAim.TopSlope then
   begin
     result := true; // shot under the thing
     exit;
   end;
 
   // this thing can be hit!
-  if thingtopslope > topslope then
-    thingtopslope := topslope;
+  if thingtopslope > TMapAim.TopSlope then
+    thingtopslope := TMapAim.TopSlope;
 
-  if thingbottomslope < bottomslope then
-    thingbottomslope := bottomslope;
+  if thingbottomslope < TMapAim.BottomSlope then
+    thingbottomslope := TMapAim.BottomSlope;
 
-  aimslope := (thingtopslope + thingbottomslope) div 2;
-  linetarget := th;
+  TMapAim.AimSlope := (thingtopslope + thingbottomslope) div 2;
+  TMapAim.LineTarget := th;
 
   result := false; // don't go any farther
 end;
@@ -1981,14 +2026,14 @@ var
           midback := nil;
         end;
         ok := true;
-        if (FixedDiv(midfront.ceilingheight - shootz, dist) <= aimslope) or
-           (FixedDiv(midfront.floorheight - shootz, dist) >= aimslope) then
+        if (FixedDiv(midfront.ceilingheight - TMapAim.ShootZ, dist) <= TMapAim.AimSlope) or
+           (FixedDiv(midfront.floorheight - TMapAim.ShootZ, dist) >= TMapAim.AimSlope) then
         else
           ok := false;
         if midback <> nil then
         begin
-          if (FixedDiv(midback.ceilingheight - shootz, dist) <= aimslope) or
-             (FixedDiv(midback.floorheight - shootz, dist) >= aimslope) then
+          if (FixedDiv(midback.ceilingheight - TMapAim.ShootZ, dist) <= TMapAim.AimSlope) or
+             (FixedDiv(midback.floorheight - TMapAim.ShootZ, dist) >= TMapAim.AimSlope) then
             ok := true
           else
             ok := false;
@@ -2003,10 +2048,10 @@ var
 
     // hit line
     // position a bit closer
-    frac := intr.frac - FixedDiv(4 * FRACUNIT, attackrange);
+    frac := intr.frac - FixedDiv(4 * FRACUNIT, TMapAim.AttackRange);
     x := trace.x + FixedMul(trace.dx, frac);
     y := trace.y + FixedMul(trace.dy, frac);
-    z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
+    z := TMapAim.ShootZ + FixedMul(TMapAim.AimSlope, FixedMul(frac, TMapAim.AttackRange));
 
     if li.frontsector.ceilingpic = skyflatnum then
     begin
@@ -2059,11 +2104,11 @@ begin
     li := intr.d.line;
 
     if li.flags and ML_TRIGGERSCRIPTS <> 0 then
-      if shootthing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-        PS_EventShootLine(shootthing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(shootthing.x, shootthing.y, li));
+      if TMapAim.ShootThing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+        PS_EventShootLine(TMapAim.ShootThing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(TMapAim.ShootThing.x, TMapAim.ShootThing.y, li));
 
     if li.special <> 0 then
-      TMapGameRules.ShootSpecialLine(shootthing, li);
+      TMapGameRules.ShootSpecialLine(TMapAim.ShootThing, li);
 
     if li.flags and ML_TWOSIDED = 0 then
     begin
@@ -2080,12 +2125,12 @@ begin
     // crosses a two sided line
     P_LineOpening(li, false);
 
-    dist := FixedMul(attackrange, intr.frac);
+    dist := FixedMul(TMapAim.AttackRange, intr.frac);
 
     if li.frontsector.floorheight <> li.backsector.floorheight then
     begin
-      slope := FixedDiv(openbottom - shootz, dist);
-      if slope > aimslope then
+      slope := FixedDiv(openbottom - TMapAim.ShootZ, dist);
+      if slope > TMapAim.AimSlope then
       begin
         result := hitline(true);
         exit;
@@ -2094,8 +2139,8 @@ begin
 
     if li.frontsector.ceilingheight <> li.backsector.ceilingheight then
     begin
-      slope := FixedDiv(opentop - shootz, dist);
-      if slope < aimslope then
+      slope := FixedDiv(opentop - TMapAim.ShootZ, dist);
+      if slope < TMapAim.AimSlope then
       begin
         result := hitline(true);
         exit;
@@ -2109,7 +2154,7 @@ begin
 
   // shoot a thing
   th := intr.d.thing;
-  if th = shootthing then
+  if th = TMapAim.ShootThing then
   begin
     result := true; // can't shoot self
     exit;
@@ -2128,18 +2173,18 @@ begin
   end;
 
   // check angles to see if the thing can be aimed at
-  dist := FixedMul(attackrange, intr.frac);
-  thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
+  dist := FixedMul(TMapAim.AttackRange, intr.frac);
+  thingtopslope := FixedDiv(th.z + th.height - TMapAim.ShootZ, dist);
 
-  if thingtopslope < aimslope then
+  if thingtopslope < TMapAim.AimSlope then
   begin
     result := true; // shot over the thing
     exit;
   end;
 
-  thingbottomslope := FixedDiv(th.z - shootz, dist);
+  thingbottomslope := FixedDiv(th.z - TMapAim.ShootZ, dist);
 
-  if thingbottomslope > aimslope then
+  if thingbottomslope > TMapAim.AimSlope then
   begin
     result := true; // shot under the thing
     exit;
@@ -2147,15 +2192,15 @@ begin
 
   // JVAL: 3d Floors
   // Can not shoot if in same subsector but different floor
-  if shootthing.subsector = th.subsector then
+  if TMapAim.ShootThing.subsector = th.subsector then
   begin
-    midn := Psubsector_t(shootthing.subsector).sector.midsec;
+    midn := Psubsector_t(TMapAim.ShootThing.subsector).sector.midsec;
 
     if midn > -1 then
     begin
       mid := @sectors[midn];
-      if ((shootz <= mid.floorheight) and (th.z >= mid.ceilingheight)) or
-         ((th.z + th.height <= mid.floorheight) and (shootz >= mid.ceilingheight)) then
+      if ((TMapAim.ShootZ <= mid.floorheight) and (th.z >= mid.ceilingheight)) or
+         ((th.z + th.height <= mid.floorheight) and (TMapAim.ShootZ >= mid.ceilingheight)) then
       begin
         result := false;
         exit;
@@ -2165,11 +2210,11 @@ begin
 
   // hit thing
   // position a bit closer
-  frac := intr.frac - FixedDiv(10 * FRACUNIT, attackrange);
+  frac := intr.frac - FixedDiv(10 * FRACUNIT, TMapAim.AttackRange);
 
   x := trace.x + FixedMul(trace.dx, frac);
   y := trace.y + FixedMul(trace.dy, frac);
-  z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
+  z := TMapAim.ShootZ + FixedMul(TMapAim.AimSlope, FixedMul(frac, TMapAim.AttackRange));
 
   // Puff or blood, and the damage: never goes any farther
   result := TMapGameRules.ShotHitsThing(intr, th, x, y, z);
@@ -2190,26 +2235,26 @@ begin
   {$ELSE}
   angle := angle shr ANGLETOFINESHIFT;
   {$ENDIF}
-  shootthing := t1;
+  TMapAim.ShootThing := t1;
 
   x2 := t1.x + FixedInt(distance) * finecosine[angle];
   y2 := t1.y + FixedInt(distance) * finesine[angle];
-  shootz := TMapGameRules.AimOriginZ(t1);
+  TMapAim.ShootZ := TMapGameRules.AimOriginZ(t1);
 
   // can't shoot outside view angles
-  topslope := (100 * FRACUNIT) div 160;
-  bottomslope := -topslope; // JVAL
+  TMapAim.TopSlope := (100 * FRACUNIT) div 160;
+  TMapAim.BottomSlope := -TMapAim.TopSlope; // JVAL
 
-  attackrange := distance;
-  linetarget := nil;
+  TMapAim.AttackRange := distance;
+  TMapAim.LineTarget := nil;
 
   // killough 8/2/98: prevent friends from aiming at friends
-  aim_flags_mask2_ex := mask2_ex;
+  TMapAim.AimFlagsMask2Ex := mask2_ex;
 
   P_PathTraverse(t1.x, t1.y, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_AimTraverse);
 
-  if linetarget <> nil then
-    result := aimslope
+  if TMapAim.LineTarget <> nil then
+    result := TMapAim.AimSlope
   else
     result := TMapGameRules.NoTargetSlope(t1);
 end;
@@ -2218,7 +2263,7 @@ end;
 //
 // P_LineAttack
 // If damage == 0, it is just a test trace
-// that will leave linetarget set.
+// that will leave TMapAim.LineTarget set.
 //
 //==============================================================================
 procedure P_LineAttack(t1: Pmobj_t; angle: angle_t;
@@ -2232,13 +2277,13 @@ begin
   {$ELSE}
   angle := angle shr ANGLETOFINESHIFT;
   {$ENDIF}
-  shootthing := t1;
-  la_damage := damage;
+  TMapAim.ShootThing := t1;
+  TMapAim.Damage := damage;
   x2 := t1.x + FixedInt(distance) * finecosine[angle];
   y2 := t1.y + FixedInt(distance) * finesine[angle];
-  shootz := TMapGameRules.AttackOriginZ(t1);
-  attackrange := distance;
-  aimslope := slope;
+  TMapAim.ShootZ := TMapGameRules.AttackOriginZ(t1);
+  TMapAim.AttackRange := distance;
+  TMapAim.AimSlope := slope;
 
   if P_PathTraverse(t1.x, t1.y, x2, y2, TMapGameRules.LineAttackFlags(damage), PTR_ShootTraverse) then
     TMapGameRules.LineAttackMissed(t1, x2, y2, slope, distance);
@@ -2247,9 +2292,6 @@ end;
 //
 // USE LINES
 //
-var
-  usething: Pmobj_t;
-
 //==============================================================================
 //
 // PTR_UseTraverse
@@ -2260,30 +2302,30 @@ var
   side: integer;
   li: Pline_t;
 begin
-  side := P_PointOnLineSide(usething.x, usething.y, intr.d.line);
+  side := P_PointOnLineSide(TMapUse.Thing.x, TMapUse.Thing.y, intr.d.line);
   li := intr.d.line;
 
   if li.flags and ML_TRIGGERSCRIPTS <> 0 then
-    if usething.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-      PS_EventUseLine(usething, pDiff(li, lines, SizeOf(line_t)), side);
+    if TMapUse.Thing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+      PS_EventUseLine(TMapUse.Thing, pDiff(li, lines, SizeOf(line_t)), side);
 
   if li.special = 0 then
   begin
     P_LineOpening(li, true);
     if openrange <= 0 then
     begin
-      TMapGameRules.UseBlockedByWall(usething);
+      TMapGameRules.UseBlockedByWall(TMapUse.Thing);
       // can't use through a wall
       result := false;
       exit;
     end;
-    TMapGameRules.UseNonSpecialLine(usething);
+    TMapGameRules.UseNonSpecialLine(TMapUse.Thing);
     // not a special line, but keep checking
     result := true;
     exit;
   end;
 
-  result := TMapGameRules.UseSpecialLine(usething, li, side);
+  result := TMapGameRules.UseSpecialLine(TMapUse.Thing, li, side);
 end;
 
 //==============================================================================
@@ -2334,15 +2376,15 @@ begin
     exit;
   end;
   // Height.
-  if (usething.z >= mobj.z + mobj.height) or
-     (usething.z + usething.height <= mobj.z) then
+  if (TMapUse.Thing.z >= mobj.z + mobj.height) or
+     (TMapUse.Thing.z + TMapUse.Thing.height <= mobj.z) then
   begin
     result := true;
     exit;
   end;
-  mobj.target := usething;
+  mobj.target := TMapUse.Thing;
   P_SetMobjState(mobj, statenum_t(mobj.info.interactstate));
-  p := usething.player;
+  p := TMapUse.Thing.player;
   if p <> nil then
     if G_PlayingEngineVersion >= VERSION207 then
       p.nextfire := leveltime + TICRATE div 2;
@@ -2363,7 +2405,7 @@ var
   x2: fixed_t;
   y2: fixed_t;
 begin
-  usething := player.mo;
+  TMapUse.Thing := player.mo;
 
   {$IFDEF FPC}
   angle := _SHRW(player.mo.angle, ANGLETOFINESHIFT);
@@ -2388,17 +2430,11 @@ end;
 //
 // RADIUS ATTACK
 //
-var
-  bombsource: Pmobj_t;
-  bombspot: Pmobj_t;
-  bombdamage: integer;
-  bombradius: integer;
-
 //==============================================================================
 //
 // PIT_RadiusAttack
-// "bombsource" is the creature
-// that caused the explosion at "bombspot".
+// "TMapBlast.Source" is the creature
+// that caused the explosion at "TMapBlast.Spot".
 //
 //==============================================================================
 function PIT_RadiusAttack(thing: Pmobj_t): boolean;
@@ -2413,7 +2449,7 @@ begin
     exit;
   end;
 
-  if P_SplashImmune(thing, bombspot) then
+  if P_SplashImmune(thing, TMapBlast.Spot) then
   begin
     result := true;
     exit;
@@ -2435,9 +2471,9 @@ begin
 
   if thing.flags_ex and MF_EX_NORADIUSDMG <> 0 then
   begin
-    if bombsource <> nil then
+    if TMapBlast.Source <> nil then
     begin
-      if bombsource.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
+      if TMapBlast.Source.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
       begin
         result := true;
         exit;
@@ -2450,22 +2486,22 @@ begin
     end;
   end;
 
-  if TMapGameRules.OutOfBlast(thing, bombspot, bombsource) then
+  if TMapGameRules.OutOfBlast(thing, TMapBlast.Spot, TMapBlast.Source) then
   begin
     result := true;
     exit;
   end;
 
-  if bombsource <> nil then
+  if TMapBlast.Source <> nil then
   begin
-    if bombsource.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+    if TMapBlast.Source.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
       begin
         result := true;
         exit;
       end;
 
-    if bombsource.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+    if TMapBlast.Source.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
       begin
         result := true;
@@ -2473,10 +2509,10 @@ begin
       end;
 
     if thing.player = nil then
-      if bombsource.info.doomednum > 0 then
+      if TMapBlast.Source.info.doomednum > 0 then
       begin
-        if bombsource.flags_ex and MF_EX_DONTHURTSPECIES <> 0 then
-          if Info_GetInheritance(thing.info) = Info_GetInheritance(bombsource.info) then
+        if TMapBlast.Source.flags_ex and MF_EX_DONTHURTSPECIES <> 0 then
+          if Info_GetInheritance(thing.info) = Info_GetInheritance(TMapBlast.Source.info) then
           begin
             result := true;
             exit;
@@ -2484,8 +2520,8 @@ begin
       end;
   end;
 
-  dx := abs(thing.x - bombspot.x);
-  dy := abs(thing.y - bombspot.y);
+  dx := abs(thing.x - TMapBlast.Spot.x);
+  dy := abs(thing.y - TMapBlast.Spot.y);
 
   if dx > dy then
     dist := dx
@@ -2496,16 +2532,16 @@ begin
   if dist < 0 then
     dist := 0;
 
-  if dist >= bombdamage then
+  if dist >= TMapBlast.Damage then
   begin
     result := true; // out of range
     exit;
   end;
 
-  if P_CheckSight(thing, bombspot) then
+  if P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
-    P_DamageMobj(thing, bombspot, bombsource, TMapGameRules.BlastDamage(thing, bombdamage, dist));
+    P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, TMapGameRules.BlastDamage(thing, TMapBlast.Damage, dist));
   end;
 
   result := true;
@@ -2544,9 +2580,9 @@ begin
     xl := MapBlockInt(spot.x - dist - bmaporgx);
   end;
 
-  bombspot := spot;
-  bombsource := source;
-  bombdamage := damage;
+  TMapBlast.Spot := spot;
+  TMapBlast.Source := source;
+  TMapBlast.Damage := damage;
   TMapGameRules.SetBlastExtent(distance, dmsource);
 
   for y := yl to yh do
@@ -2589,9 +2625,9 @@ begin
     xl := MapBlockInt(spot.x - dist - bmaporgx);
   end;
 
-  bombspot := spot;
-  bombsource := source;
-  bombdamage := damage;
+  TMapBlast.Spot := spot;
+  TMapBlast.Source := source;
+  TMapBlast.Damage := damage;
 
   for y := yl to yh do
     for x := xl to xh do
@@ -2619,14 +2655,14 @@ begin
     exit;
   end;
 
-  if P_SplashImmune(thing, bombspot) then
+  if P_SplashImmune(thing, TMapBlast.Spot) then
   begin
     result := true;
     exit;
   end;
 
-  dx := abs(thing.x - bombspot.x);
-  dy := abs(thing.y - bombspot.y);
+  dx := abs(thing.x - TMapBlast.Spot.x);
+  dy := abs(thing.y - TMapBlast.Spot.y);
 
   if dx > dy then
     dist := dx
@@ -2637,7 +2673,7 @@ begin
   if dist < 0 then
     dist := 0;
 
-  if dist >= bombradius then
+  if dist >= TMapBlast.Radius then
   begin
     result := true; // out of range
     exit;
@@ -2645,9 +2681,9 @@ begin
 
   if thing.flags_ex and MF_EX_NORADIUSDMG <> 0 then
   begin
-    if bombsource <> nil then
+    if TMapBlast.Source <> nil then
     begin
-      if bombsource.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
+      if TMapBlast.Source.flags4_ex and MF4_EX_FORCERADIUSDMG = 0 then
       begin
         result := true;
         exit;
@@ -2660,32 +2696,32 @@ begin
     end;
   end;
 
-  if bombsource.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+  if TMapBlast.Source.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
     if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
     begin
       result := true;
       exit;
     end;
 
-  if bombsource.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+  if TMapBlast.Source.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
     if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
     begin
       result := true;
       exit;
     end;
 
-  if P_CheckSight(thing, bombspot) then
+  if P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
-    if bombradius = 0 then
-      P_DamageMobj(thing, bombspot, bombsource, bombdamage)
+    if TMapBlast.Radius = 0 then
+      P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, TMapBlast.Damage)
     else
     begin
-      cl := FixedDiv((bombradius - dist) * FRACUNIT, bombradius * FRACUNIT);
-      damage := FixedInt(FixedMul(bombdamage * FRACUNIT, cl));
+      cl := FixedDiv((TMapBlast.Radius - dist) * FRACUNIT, TMapBlast.Radius * FRACUNIT);
+      damage := FixedInt(FixedMul(TMapBlast.Damage * FRACUNIT, cl));
       if damage < 1 then
         damage := 1;
-      P_DamageMobj(thing, bombspot, bombsource, damage);
+      P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, damage);
     end;
   end;
 
@@ -2723,10 +2759,10 @@ begin
     xl := MapBlockInt(spot.x - dist - bmaporgx);
   end;
 
-  bombspot := spot;
-  bombsource := source;
-  bombdamage := damage;
-  bombradius := distance;
+  TMapBlast.Spot := spot;
+  TMapBlast.Source := source;
+  TMapBlast.Damage := damage;
+  TMapBlast.Radius := distance;
 
   for y := yl to yh do
     for x := xl to xh do
@@ -2792,9 +2828,9 @@ begin
     exit;
   end;
 
-  nofit := true;
+  TMapCheck.NoFit := true;
 
-  if crushchange and (leveltime and 3 = 0) then
+  if TMapCheck.CrushChange and (leveltime and 3 = 0) then
   begin
     P_DamageMobj(thing, nil, nil, TMapGameRules.CrushDamage);
 
@@ -2837,8 +2873,8 @@ function P_ChangeSector(sector: Psector_t; crunch: boolean): boolean;
 var
   i: integer;
 begin
-  nofit := false;
-  crushchange := crunch;
+  TMapCheck.NoFit := false;
+  TMapCheck.CrushChange := crunch;
 
   if (G_PlayingEngineVersion >= TMapGameRules.SlopesVersion) and (sector.num_saffectees > 0) then
   begin
@@ -2848,7 +2884,7 @@ begin
   else
     P_DoChangeSector(sector, crunch);
 
-  result := nofit;
+  result := TMapCheck.NoFit;
 end;
 
 //==============================================================================

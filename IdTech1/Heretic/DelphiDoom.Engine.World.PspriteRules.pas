@@ -796,9 +796,9 @@ begin
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
-  if linetarget <> nil then
+  if TMapAim.LineTarget <> nil then
   begin
-    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
   S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
   player.chickenPeck := 12;
@@ -825,8 +825,8 @@ begin
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
-  if linetarget <> nil then
-    player.mo.angle := R_PointToAngle2(player.mo.x,  player.mo.y, linetarget.x, linetarget.y);
+  if TMapAim.LineTarget <> nil then
+    player.mo.angle := R_PointToAngle2(player.mo.x,  player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
   player.chickenPeck := 12;
   psp.tics := psp.tics - P_Random and 3;
@@ -853,11 +853,11 @@ begin
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_STAFFPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
-  if linetarget <> nil then
+  if TMapAim.LineTarget <> nil then
   begin
     //S_StartSound(player.mo, sfx_stfhit);
     // turn to face target
-    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
 end;
 
@@ -883,11 +883,11 @@ begin
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_STAFFPUFF2;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
-  if linetarget <> nil then
+  if TMapAim.LineTarget <> nil then
   begin
     //S_StartSound(player.mo, sfx_stfpow);
     // turn to face target
-    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
 end;
 
@@ -1198,8 +1198,8 @@ begin
     mo.momx := mo.momx + player.mo.momx;
     mo.momy := mo.momy + player.mo.momy;
     mo.momz := 2 * FRACUNIT + (player.lookdir * 2048);
-    if linetarget <> nil then
-      mo.special1 := NativeInt(linetarget);
+    if TMapAim.LineTarget <> nil then
+      mo.special1 := NativeInt(TMapAim.LineTarget);
   end;
   S_StartSound(player.mo, Ord(sfx_lobsht));
 end;
@@ -1246,10 +1246,10 @@ begin
       for i := 0 to 15 do
       begin
         P_AimLineAttack(ball, angle, 10 * 64 * FRACUNIT);
-        if (linetarget <> nil) and (ball.target <> linetarget) then
+        if (TMapAim.LineTarget <> nil) and (ball.target <> TMapAim.LineTarget) then
         begin
-          ball.special1 := NativeInt(linetarget);
-          angle := R_PointToAngle2(ball.x, ball.y, linetarget.x, linetarget.y);
+          ball.special1 := NativeInt(TMapAim.LineTarget);
+          angle := R_PointToAngle2(ball.x, ball.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
           newAngle := true;
           break;
         end;
@@ -1411,8 +1411,8 @@ begin
   else // Always use red missiles in single player games
     MissileMobj.special2 := 2;
 
-  if linetarget <> nil then
-    MissileMobj.special1 := NativeInt(linetarget);
+  if TMapAim.LineTarget <> nil then
+    MissileMobj.special1 := NativeInt(TMapAim.LineTarget);
 
   S_StartSound(MissileMobj, Ord(sfx_hrnpow));
 end;
@@ -1731,7 +1731,7 @@ begin
   end;
   slope := P_AimLineAttack(player.mo, angle, dist);
   P_LineAttack(player.mo, angle, dist, slope, damage);
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     if P_Random > 64 then
     begin
@@ -1760,7 +1760,7 @@ begin
     S_StartSound(player.mo, Ord(sfx_gnthit));
 
   // turn to face target
-  angle := R_PointToAngle2(player.mo.x, player.mo.y,  linetarget.x, linetarget.y);
+  angle := R_PointToAngle2(player.mo.x, player.mo.y,  TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   if angle - player.mo.angle > ANG180 then
   begin
     if angle - player.mo.angle < $FFFFFFFF - ANG90 div 20 then

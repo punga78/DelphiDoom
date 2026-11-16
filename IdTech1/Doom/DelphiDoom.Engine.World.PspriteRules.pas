@@ -620,7 +620,7 @@ begin
   if G_PlayingEngineVersion >= VERSION207 then
   begin
     slope := P_AimLineAttack(player.mo, angle, mrange, MF2_EX_FRIEND);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
       slope := P_AimLineAttack(player.mo, angle, mrange);
   end
   else
@@ -629,11 +629,11 @@ begin
   P_LineAttack(player.mo, angle, mrange, slope, damage);
 
   // turn to face target
-  if linetarget <> nil then
+  if TMapAim.LineTarget <> nil then
   begin
     S_StartSound(player.mo, Ord(sfx_punch));
     player.mo.angle :=
-      R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+      R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
 end;
 
@@ -658,7 +658,7 @@ begin
   if G_PlayingEngineVersion >= VERSION207 then
   begin
     slope := P_AimLineAttack(player.mo, angle, mrange + 1, MF2_EX_FRIEND);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
       slope := P_AimLineAttack(player.mo, angle, mrange + 1);
   end
   else
@@ -666,7 +666,7 @@ begin
 
   P_LineAttack(player.mo, angle, mrange + 1, slope, damage);
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     S_StartSound(player.mo, Ord(sfx_sawful));
     exit;
@@ -676,7 +676,7 @@ begin
 
   // turn to face target
   angle :=
-    R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+    R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   if angle - player.mo.angle > ANG180 then
   begin
     if integer(angle - player.mo.angle) < - integer(ANG90 div 20) then
@@ -896,17 +896,17 @@ begin
     //  of the missile
     P_AimLineAttack(mo.target, an, 16 * 64 * FRACUNIT);
 
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
       continue;
 
     P_SpawnMobj(
-      linetarget.x, linetarget.y, linetarget.z + _SHR(linetarget.height, 2), Ord(MT_EXTRABFG));
+      TMapAim.LineTarget.x, TMapAim.LineTarget.y, TMapAim.LineTarget.z + _SHR(TMapAim.LineTarget.height, 2), Ord(MT_EXTRABFG));
 
     damage := 0;
     for j := 0 to 14 do
       damage := damage + (P_Random and 7) + 1;
 
-    P_DamageMobj(linetarget, mo.target, mo.target, damage);
+    P_DamageMobj(TMapAim.LineTarget, mo.target, mo.target, damage);
   end;
 end;
 

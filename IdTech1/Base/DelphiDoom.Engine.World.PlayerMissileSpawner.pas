@@ -66,12 +66,12 @@ begin
   an := source.angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);

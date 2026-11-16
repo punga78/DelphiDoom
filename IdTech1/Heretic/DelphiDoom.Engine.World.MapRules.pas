@@ -792,10 +792,10 @@ begin
   if intr.d.thing.flags and MF_NOBLOOD <> 0 then
     P_SpawnPuff(x, y, z)
   else
-    P_SpawnBlood(x, y, z, la_damage, intr.d.thing);
+    P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
 
-  if la_damage <> 0 then
-    P_DamageMobj(th, shootthing, shootthing, la_damage);
+  if TMapAim.Damage <> 0 then
+    P_DamageMobj(th, TMapAim.ShootThing, TMapAim.ShootThing, TMapAim.Damage);
 
   // don't go any farther
   result := false;

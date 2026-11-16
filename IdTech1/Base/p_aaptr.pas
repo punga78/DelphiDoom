@@ -154,7 +154,7 @@ begin
       AAPTR_PLAYER_GETTARGET:
         begin
           P_BulletSlope(origin);
-          result := linetarget;
+          result := TMapAim.LineTarget;
           exit;
         end;
       AAPTR_PLAYER_GETCONVERSATION:
@@ -216,7 +216,7 @@ begin
   AAPTR_GET_LINETARGET:
     begin
       P_BulletSlope(origin);
-      result := linetarget;
+      result := TMapAim.LineTarget;
       exit;
     end;
   end;

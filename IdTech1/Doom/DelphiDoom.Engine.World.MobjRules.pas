@@ -835,7 +835,7 @@ begin
     th.tics := 1;
 
   // don't make punches spark on the wall
-  if attackrange = MELEERANGE then
+  if TMapAim.AttackRange = MELEERANGE then
     P_SetMobjState(th, S_PUFF3);
 end;
 
@@ -993,7 +993,7 @@ begin
   begin
     if ver < VERSION204 then
     begin
-      if zaxisshift and (linetarget = nil) then
+      if zaxisshift and (TMapAim.LineTarget = nil) then
       begin
         an := source.angle;
         slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
@@ -1001,7 +1001,7 @@ begin
     end
     else
     begin
-      if linetarget = nil then
+      if TMapAim.LineTarget = nil then
       begin
         an := source.angle;
         slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
@@ -1010,7 +1010,7 @@ begin
   end
   else
   begin
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := source.angle;
       slope := 0;
