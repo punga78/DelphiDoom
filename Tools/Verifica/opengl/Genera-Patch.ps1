@@ -7,7 +7,7 @@
 # The patch touches only:
 #   IdTech1\Doom\GLDoom32.dpr, IdTech1\Heretic\GLHeretic32.dpr, IdTech1\Hexen\GLHexen32.dpr, IdTech1\Strife\GLStrife32.dpr  (the harness units)
 #   IdTech1\OpenGl\Legacy\gl_main.pas     one call after ReadImplementationProperties (installs the thunks)
-#   IdTech1\OpenGl\Legacy\gl_render.pas   one call at the end of gld_Finish (end of a frame)
+#   IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlLevel.Preprocessor.pas   one call after the walls of the level are prepared
 #   IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas   one call at the end of SetupLevel (the level is loaded)
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -74,10 +74,11 @@ Edit-File 'IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas' {
   Replace-Once $t "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf" "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf  HarnessGl_FrameEnd;$crlf"
 }
 
-Edit-File 'IdTech1\OpenGl\Legacy\gl_render.pas' {
+# since #177 (ondata 3) the level is prepared by TEngineGlLevelPreprocessor: the hook follows the old point (after the walls)
+Edit-File 'IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlLevel.Preprocessor.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
-  Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
+  Replace-Once $t "  FWalls.BeginLevel(numsegs);$crlf" "  FWalls.BeginLevel(numsegs);$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, FNumVertexes, sectorloops);$crlf"
 }
 
 Edit-File 'IdTech1\Base\DelphiDoom.Engine.Composition.pas' {
