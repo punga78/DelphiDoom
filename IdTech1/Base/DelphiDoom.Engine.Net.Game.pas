@@ -344,7 +344,7 @@ end;
 // Called before quitting to leave a net game without hanging the other players
 procedure TEngineNetGame.Quit;
 begin
-  if not netgame or not usergame or (consoleplayer = -1) or demoplayback then
+  if not netgame or not TGameSession.UserGame or (consoleplayer = -1) or demoplayback then
     Exit;
 
   CheckStarted;

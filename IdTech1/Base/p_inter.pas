@@ -200,7 +200,7 @@ begin
     I_Warning('P_CmdSuicide(): You can''t suicide during demo playback.'#13#10);
     exit;
   end;
-  if demorecording then
+  if TGameSession.DemoRecording then
   begin
     I_Warning('P_CmdSuicide(): You can''t suicide during demo recording.'#13#10);
     exit;

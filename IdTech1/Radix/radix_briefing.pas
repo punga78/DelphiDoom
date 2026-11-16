@@ -534,7 +534,7 @@ end;
 procedure RB_LevelLoaded(const epi, map: integer);
 begin
   briefingactive := false;
-  if demoplayback or demorecording or netgame or not showbriefingscreen then
+  if demoplayback or TGameSession.DemoRecording or netgame or not showbriefingscreen then
     exit;
   if (parity_hooks <> nil) and (M_CheckParm(BRIEFING_OPTION) <= 0) then
     exit;

@@ -1162,7 +1162,7 @@ var
   erroraddress: string;
 {$ENDIF}
 begin
-  if demorecording then
+  if TGameSession.DemoRecording then
     G_BeginRecording;
 
   while true do
@@ -1287,7 +1287,7 @@ procedure D_DoAdvanceDemo;
 begin
   players[consoleplayer].playerstate := PST_LIVE;  // not reborn
   advancedemo := false;
-  usergame := false; // no save/end game here
+  TGameSession.UserGame := false; // no save/end game here
   paused := false;
   gameaction := ga_nothing;
 
@@ -1805,7 +1805,7 @@ begin
     exit;
   end;
 
-  if demorecording then
+  if TGameSession.DemoRecording then
   begin
     I_Warning('Thinkers can not be disabled during demo recording.'#13#10);
     exit;

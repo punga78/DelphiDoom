@@ -31,6 +31,7 @@ uses
   DelphiDoom.MapInfo.MapName in '..\IdTech1\MapInfo\DelphiDoom.MapInfo.MapName.pas',
   DelphiDoom.MapInfo.LevelProgression in '..\IdTech1\MapInfo\DelphiDoom.MapInfo.LevelProgression.pas',
   DelphiDoom.MapInfo.LevelExit in '..\IdTech1\MapInfo\DelphiDoom.MapInfo.LevelExit.pas',
+  DelphiDoom.MapInfo.IntermissionPlanner in '..\IdTech1\MapInfo\DelphiDoom.MapInfo.IntermissionPlanner.pas',
   DelphiDoom.MapInfo.NewGameLimits in '..\IdTech1\MapInfo\DelphiDoom.MapInfo.NewGameLimits.pas',
   DelphiDoom.MapInfo.SkillSpeed in '..\IdTech1\MapInfo\DelphiDoom.MapInfo.SkillSpeed.pas',
   DelphiDoom.Tests.MapInfo.Fakes in 'Source\DelphiDoom.Tests.MapInfo.Fakes.pas',
@@ -40,6 +41,7 @@ uses
   DelphiDoom.Tests.MapInfo.MapName in 'Source\DelphiDoom.Tests.MapInfo.MapName.pas',
   DelphiDoom.Tests.MapInfo.LevelProgression in 'Source\DelphiDoom.Tests.MapInfo.LevelProgression.pas',
   DelphiDoom.Tests.MapInfo.LevelExit in 'Source\DelphiDoom.Tests.MapInfo.LevelExit.pas',
+  DelphiDoom.Tests.MapInfo.IntermissionPlanner in 'Source\DelphiDoom.Tests.MapInfo.IntermissionPlanner.pas',
   DelphiDoom.Tests.MapInfo.NewGameLimits in 'Source\DelphiDoom.Tests.MapInfo.NewGameLimits.pas',
   DelphiDoom.Tests.MapInfo.SkillSpeed in 'Source\DelphiDoom.Tests.MapInfo.SkillSpeed.pas';
 

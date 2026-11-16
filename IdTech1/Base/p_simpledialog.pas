@@ -236,7 +236,7 @@ begin
   if menuactive or netgame then
     exit;
 
-  if demoplayback or demorecording then
+  if demoplayback or TGameSession.DemoRecording then
     exit;
 
   if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then

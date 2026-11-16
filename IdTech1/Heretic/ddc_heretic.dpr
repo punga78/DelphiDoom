@@ -702,6 +702,7 @@ uses
   DelphiDoom.Demo.CommandCodec in '..\Demo\DelphiDoom.Demo.CommandCodec.pas',
   DelphiDoom.MapInfo.LevelProgression in '..\MapInfo\DelphiDoom.MapInfo.LevelProgression.pas',
   DelphiDoom.MapInfo.LevelExit in '..\MapInfo\DelphiDoom.MapInfo.LevelExit.pas',
+  DelphiDoom.MapInfo.IntermissionPlanner in '..\MapInfo\DelphiDoom.MapInfo.IntermissionPlanner.pas',
   DelphiDoom.Serializer.SaveGameName in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameName.pas',
   DelphiDoom.Serializer.SaveGameHeader in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameHeader.pas',
   DelphiDoom.Serializer.SaveGameVersions in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameVersions.pas',

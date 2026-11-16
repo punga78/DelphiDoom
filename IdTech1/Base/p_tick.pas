@@ -313,7 +313,7 @@ begin
      not demoplayback and (players[consoleplayer].viewz <> 1) then
     exit;
 
-  if not demoplayback and not demorecording and P_TickerConsole.IsActive and not netgame and (leveltime <> 0) then
+  if not demoplayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not netgame and (leveltime <> 0) then
     exit;
 
   isgamesuspended := false;
@@ -340,7 +340,7 @@ begin
   end;
 
 {$ENDIF}
-  if demoplayback or demorecording then
+  if demoplayback or TGameSession.DemoRecording then
     isgamefreezed := false;
 
   P_World.RunThinkers;

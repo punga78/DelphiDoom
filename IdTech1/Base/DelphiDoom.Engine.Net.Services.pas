@@ -108,7 +108,7 @@ begin
   LMessage := 'Player 1 left the game';
   LMessage[8] := Chr(Ord(LMessage[8]) + APlayer);
   players[consoleplayer]._message := LMessage;
-  if demorecording then
+  if TGameSession.DemoRecording then
     G_CheckDemoStatus;
 end;
 

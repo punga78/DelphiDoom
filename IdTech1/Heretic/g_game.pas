@@ -204,6 +204,22 @@ function G_Responder(ev: Pevent_t): boolean;
 //==============================================================================
 procedure G_ScreenShot;
 
+type
+  /// <summary>
+  ///   The state of the game in progress that outlives a level (issue #245). Plain class vars with
+  ///   a fixed address, like the globals they replace: no property (the address is taken), no
+  ///   method (it would be a call at every read); the class lives here, in the unit that writes
+  ///   the most, because a variable of another unit costs a load more (see PIANO_TUTTO_A_CLASSI 11.16)
+  /// </summary>
+  TGameSession = class sealed
+  public
+    /// <summary>The game was started by the player (ok to save / end game); false while a demo plays</summary>
+    class var UserGame: boolean;
+    /// <summary>Monsters respawn (nightmare skill or -respawn)</summary>
+    class var RespawnMonsters: boolean;
+    /// <summary>A demo is being recorded</summary>
+    class var DemoRecording: boolean;
+  end;
 var
   sendpause: boolean;        // send a pause event next tic
 
@@ -298,17 +314,14 @@ var
 
   precache: boolean; // if true, load all graphics at start
 
-  respawnmonsters: boolean;
 
   viewactive: boolean;
 
   singledemo: boolean; // quit after playing a demo from cmdline
 
-  demorecording: boolean = false;
 
   gameaction: gameaction_t;
 
-  usergame: boolean; // ok to save / end game
 
 //==============================================================================
 //
@@ -485,6 +498,7 @@ uses
   DelphiDoom.Input.EventScaling,
   DelphiDoom.Serializer.SaveGameName,
   DelphiDoom.MapInfo.LevelProgression,
+  DelphiDoom.MapInfo.IntermissionPlanner,
   DelphiDoom.MapInfo.LevelExit,
   DelphiDoom.Thinkers.PlayerRespawn.Intf,
   DelphiDoom.Thinkers.PlayerRespawn,
@@ -1322,7 +1336,7 @@ begin
   // automatic wand start when advancing from one level to the next
   if wandstart then
   begin
-    if not demorecording and not demoplayback and not netgame then
+    if not TGameSession.DemoRecording and not demoplayback and not netgame then
       G_PlayerReborn(0)
     else if (demoplayback or netdemo) and not singledemo then
     begin
@@ -1332,7 +1346,7 @@ begin
     else
     begin
       if demo_p = nil then
-        demorecording := false;
+        TGameSession.DemoRecording := false;
       I_Error('The -wandstart option is not supported for demos and'#13#10' network play.');
     end;
   end;
@@ -1643,7 +1657,7 @@ begin
       if demoplayback then
         G_ReadDemoTiccmd(cmd);
 
-      if demorecording then
+      if TGameSession.DemoRecording then
         G_WriteDemoTiccmd(cmd);
 
       // check for turbo cheats
@@ -1994,11 +2008,9 @@ end;
 procedure G_DoCompleted;
 var
   i: integer;
-  next: string;
   exitcustom: TLevelExitCustom;
-  exitverdict: TLevelExitVerdict;
-label
-  frommapinfo;
+  request: TIntermissionRequest;
+  plan: TIntermissionPlan;
 begin
   gameaction := ga_nothing;
 
@@ -2016,51 +2028,63 @@ begin
     exitcustom := lecBeta
   else
     exitcustom := lecNone;
-  exitverdict := TLevelExit.Check(legHeretic, false, exitcustom, gamemap);
-  if exitverdict.SecretForAll then
+  request.Game := legHeretic;
+  request.IsCommercial := false;
+  request.IsBfgSecondEdition := false;
+  request.Custom := exitcustom;
+  request.SecretExit := secretexit;
+  request.Episode := gameepisode;
+  request.Map := gamemap;
+  request.ConsoleDidSecret := players[consoleplayer].didsecret;
+  request.PreviousNext := wminfo.next;
+  request.HasMapInfo := gamemapinfo <> nil;
+  request.HasEndPicture := false;
+  request.NoIntermission := false;
+  request.NextSecret := '';
+  request.NextMap := '';
+  request.MapInfoPartime := 0;
+  if gamemapinfo <> nil then
+  begin
+    request.HasEndPicture := (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-');
+    request.NoIntermission := gamemapinfo.nointermission;
+    request.NextSecret := gamemapinfo.nextsecret;
+    request.NextMap := gamemapinfo.nextmap;
+    request.MapInfoPartime := gamemapinfo.partime;
+  end;
+  request.Rules := TMapName.HereticRules;
+  plan := TIntermissionPlanner.Plan(request);
+
+  if plan.SecretForAll then
     for i := 0 to MAXPLAYERS - 1 do
       players[i].didsecret := true;
-  if exitverdict.Victory then
+  if plan.EndsGame then
   begin
     gameaction := ga_victory;
     exit;
   end;
 
-  wminfo.didsecret := players[consoleplayer].didsecret;
-  wminfo.epsd := gameepisode - 1;
-  wminfo.nextep := gameepisode - 1;
-  wminfo.last := gamemap - 1;
+  wminfo.didsecret := plan.DidSecret;
+  wminfo.epsd := plan.Epsd;
+  wminfo.nextep := plan.NextEp;
+  wminfo.last := plan.Last;
+  wminfo.next := plan.Next; // 0 biased, unlike gamemap
 
   wminfo.lastmapinfo := gamemapinfo;
   wminfo.nextmapinfo := nil;
-  if gamemapinfo <> nil then
+  if plan.EndsWithoutIntermission then
   begin
-    if (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-') and gamemapinfo.nointermission then
-    begin
-      gameaction := ga_victory;
-      exit;
-    end;
-    next := TLevelExit.PickNextMapName(secretexit, gamemapinfo.nextsecret, gamemapinfo.nextmap);
-    if next <> '' then
-      if G_ValidateMapName(next, @wminfo.nextep, @wminfo.next) then
-      begin
-        Dec(wminfo.nextep);
-        Dec(wminfo.next);
-        // episode change
-        if wminfo.nextep <> wminfo.epsd then
-          for i := 0 to MAXPLAYERS - 1 do
-            players[i].didsecret := false;
-        wminfo.didsecret := players[consoleplayer].didsecret;
-        wminfo.partime := gamemapinfo.partime;
-        goto frommapinfo; // skip past the default setup.
-      end;
+    gameaction := ga_victory;
+    exit;
   end;
+  // episode change
+  if plan.ResetPlayersDidSecret then
+    for i := 0 to MAXPLAYERS - 1 do
+      players[i].didsecret := false;
 
-  TLevelProgression.HereticNextMap(secretexit, gameepisode, gamemap, wminfo.next);
-
-  wminfo.partime := TICRATE * pars[gameepisode][gamemap];
-
-frommapinfo:
+  if plan.PartimeFromMapInfo then
+    wminfo.partime := plan.Partime
+  else
+    wminfo.partime := TICRATE * pars[gameepisode][gamemap];
   wminfo.nextmapinfo := G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
 
   wminfo.maxkills := P_World.Totals.Kills;
@@ -2476,7 +2500,7 @@ end;
 //==============================================================================
 procedure G_CmdSaveGame(const sname: string; const description: string);
 begin
-  if not usergame or (gamestate <> GS_LEVEL) then
+  if not TGameSession.UserGame or (gamestate <> GS_LEVEL) then
   begin
     printf('You can''t save if you aren''t playing!'#13#10);
     exit;
@@ -2620,7 +2644,7 @@ begin
   PS_NewWorld;
   P_ACSInitNewGame;
 
-  respawnmonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
+  TGameSession.RespawnMonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
   LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, gameskill = sk_nightmare);
@@ -2641,7 +2665,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     players[i].playerstate := PST_REBORN;
 
-  usergame := true;  // will be set false if a demo
+  TGameSession.UserGame := true;  // will be set false if a demo
   paused := false;
   G_FinishedDemoPlayback;
   amstate := am_inactive;
@@ -2782,7 +2806,7 @@ var
   i: integer;
   maxsize: integer;
 begin
-  usergame := false;
+  TGameSession.UserGame := false;
   demoname := name;
   if CharPos('.', demoname) = 0 then
     demoname := demoname + '.lmp';
@@ -2801,7 +2825,7 @@ begin
 
   demoend := @demobuffer[maxsize];
 
-  demorecording := true;
+  TGameSession.DemoRecording := true;
   Info_Init(true); // JVAL: Start thinkers
 end;
 
@@ -3027,7 +3051,7 @@ begin
   preparingdemoplayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
   precache := true;
-  usergame := false;
+  TGameSession.UserGame := false;
   demoplayback := true;
   Info_Init(true); // JVAL: Start thinkers
 
@@ -3100,14 +3124,14 @@ begin
     exit;
   end;
 
-  if demorecording then
+  if TGameSession.DemoRecording then
   begin
     demo_p[0] := DEMOMARKER;
     demo_p := @demo_p[1];
 
     G_Files.WriteFile(demoname, demobuffer, pDiff(demo_p, demobuffer, SizeOf(byte)));
     Z_Free(demobuffer);
-    demorecording := false;
+    TGameSession.DemoRecording := false;
     I_Error('G_CheckDemoStatus(): Demo %s recorded', [demoname]);
   end;
 

@@ -576,7 +576,7 @@ begin
 
   volley := TRadixWeaponRules.NeutronVolley(rp.neutroncannonlevel, rp.energy,
     rp.weaponflags and PWF_NEURONCANNON <> 0,
-    g_vanillalevel1neutroncannon and not demoplayback and not demorecording);
+    g_vanillalevel1neutroncannon and not demoplayback and not TGameSession.DemoRecording);
   RX_FireVolley(player, volley, PWF_NEURONCANNON, radixplasma_id, radixplasma_id, radixplasma_id);
 end;
 
@@ -726,7 +726,7 @@ begin
 
   volley := TRadixWeaponRules.SpreaderVolley(rp.neutronspreaderlevel, rp.energy,
     rp.weaponflags and PWF_NEURONSPREADER <> 0,
-    g_vanillalevel1plasmaspreader and not demoplayback and not demorecording);
+    g_vanillalevel1plasmaspreader and not demoplayback and not TGameSession.DemoRecording);
   RX_FireVolley(player, volley, PWF_NEURONSPREADER, radixplasmaspreadleft_id,
     radixplasmaspreadleft_id, radixplasmaspreadright_id);
 end;

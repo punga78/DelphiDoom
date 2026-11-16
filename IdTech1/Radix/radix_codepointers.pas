@@ -827,7 +827,7 @@ procedure A_BarrelExplosion(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
-  if demoplayback or demorecording then
+  if demoplayback or TGameSession.DemoRecording then
     exit;
   if actor.momz < 0 then
     exit;
@@ -854,7 +854,7 @@ var
   mo: Pmobj_t;
   i: integer;
 begin
-  if demoplayback or demorecording then
+  if demoplayback or TGameSession.DemoRecording then
     exit;
   if g_bigbarrelexplosion then
   begin

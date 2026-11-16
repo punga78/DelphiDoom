@@ -2464,7 +2464,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or demoplayback or demorecording or netgame;
+  result := (gamestate <> GS_LEVEL) or demoplayback or TGameSession.DemoRecording or netgame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

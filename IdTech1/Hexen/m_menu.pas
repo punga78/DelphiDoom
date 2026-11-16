@@ -2086,7 +2086,7 @@ end;
 //==============================================================================
 procedure M_SaveGame(choice: integer);
 begin
-  if not usergame then
+  if not TGameSession.UserGame then
   begin
     M_StartMessage(SAVEDEAD + #13#10 + PRESSKEY, nil, false);
     exit;
@@ -2123,7 +2123,7 @@ procedure M_QuickSave;
 var
   tempstring: string;
 begin
-  if not usergame then
+  if not TGameSession.UserGame then
   begin
     S_StartSound(nil, Ord(SFX_CHAT));
     exit;
@@ -3720,7 +3720,7 @@ end;
 //==============================================================================
 procedure M_CmdEndGame;
 begin
-  if not usergame then
+  if not TGameSession.UserGame then
   begin
     S_StartSound(nil, Ord(SFX_CHAT));
     exit;
