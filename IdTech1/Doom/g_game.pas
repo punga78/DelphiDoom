@@ -540,10 +540,17 @@ procedure G_ConfigureSaveGameExtension(const saveproc, loadproc: savegameextensi
 implementation
 
 uses
+  DelphiDoom.Demo.Types,
+  DelphiDoom.Demo.Profiles,
+  DelphiDoom.Demo.HeaderCodec,
+  DelphiDoom.Demo.CommandCodec,
+  DelphiDoom.Demo.DeathTrimmer,
   DelphiDoom.Input.EventScaling,
   DelphiDoom.Serializer.SaveGameName,
   DelphiDoom.MapInfo.LevelProgression,
   DelphiDoom.MapInfo.MapName,
+  DelphiDoom.MapInfo.NewGameLimits,
+  DelphiDoom.MapInfo.SkillSpeed,
   DelphiDoom.Input.KeyboardLayout,
   c_cmds,
   d_check,
@@ -2687,6 +2694,10 @@ procedure G_InitNew(skill: skill_t; episode, map: integer);
 var
   i: integer;
   levelinf: Plevelinfo_t;
+  LMapMissing: boolean;
+  LEdition: TNewGameEdition;
+  LCustom: TNewGameCustom;
+  LSpeedChange: TSkillSpeedChange;
 begin
   if paused then
   begin
@@ -2697,55 +2708,26 @@ begin
   if skill > sk_nightmare then
     skill := sk_nightmare;
 
+  // The episode is brought to 1 first, then the edition limits apply if the map is not in the WADs
   if episode < 1 then
-    episode := 1;
+    LMapMissing := not EpiCustom and (W_CheckNumForName(P_GetMapName(1, map)) < 0)
+  else
+    LMapMissing := not EpiCustom and (W_CheckNumForName(P_GetMapName(episode, map)) < 0);
 
-  if not EpiCustom and (W_CheckNumForName(P_GetMapName(episode, map)) < 0) then
-    if not (((episode = 9) and (map = 9)) or ((map = 99) and (episode = 0))) then
-    begin
-      // This was quite messy with SPECIAL and commented parts.
-      // Supposedly hacks to make the latest edition work.
-      // It might not work properly.
-      if gamemode = retail then
-      begin
-        if episode > 4 then
-          episode := 4;
-      end
-      else if gamemode = shareware then
-      begin
-        if episode > 1 then
-          episode := 1;  // only start episode 1 on shareware
-      end
-      else
-      begin
-        if episode > 3 then
-          episode := 3;
-      end;
-
-      if map < 1 then
-        map := 1;
-
-      if (map > 9) and (gamemode <> commercial) then
-        map := 9;
-
-      // JVAL: Chex Support
-      if customgame in [cg_chex, cg_chex2] then
-      begin
-        if map > 5 then
-          map := 5;
-        if episode > 1 then
-          episode := 1;
-      end;
-
-      // JVAL: Hacx Support
-      if customgame = cg_hacx then
-      begin
-        if map > 20 then
-          map := 20;
-        if episode > 1 then
-          episode := 1;
-      end;
-    end;
+  case gamemode of
+    shareware: LEdition := ngeShareware;
+    retail: LEdition := ngeRetail;
+    commercial: LEdition := ngeCommercial;
+  else
+    LEdition := ngeRegistered;
+  end;
+  case customgame of
+    cg_chex, cg_chex2: LCustom := ngcChex;
+    cg_hacx: LCustom := ngcHacx;
+  else
+    LCustom := ngcNone;
+  end;
+  TNewGameLimits.Doom(LMapMissing, LEdition, LCustom, episode, map);
 
   levelinf := P_GetLevelInfo(P_GetMapName(episode, map));
   levelinf.musname := stringtochar8('');
@@ -2757,12 +2739,10 @@ begin
   PS_NewWorld;
   P_ACSInitNewGame;
 
-  if (skill = sk_nightmare) or respawnparm then
-    respawnmonsters := true
-  else
-    respawnmonsters := false;
+  respawnmonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
 
-  if fastparm or ((skill = sk_nightmare) and (gameskill <> sk_nightmare)) then
+  LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, gameskill = sk_nightmare);
+  if LSpeedChange = sscFast then
   begin
     for i := 0 to numstates - 1 do
       if states[i].mbf21bits and STATEF_SKILL5FAST <> 0 then
@@ -2775,7 +2755,7 @@ begin
       if mobjinfo[i].fastspeed <> 0 then
         mobjinfo[i].speed := mobjinfo[i].fastspeed;
   end
-  else if (skill <> sk_nightmare) and (gameskill = sk_nightmare) then
+  else if LSpeedChange = sscNormal then
   begin
     for i := 0 to numstates - 1 do
       if states[i].mbf21bits and STATEF_SKILL5FAST <> 0 then
@@ -2821,8 +2801,6 @@ var
 //
 //==============================================================================
 procedure G_SafeCompatibilityDemo;
-var
-  i: integer;
 begin
   if compatibility_done then
     exit;
@@ -2830,16 +2808,7 @@ begin
   if players[consoleplayer].playerstate = PST_DEAD then
   begin
     compatibility_done := true;
-    i := 4;
-    while (NativeInt(@demo_p[i]) < NativeInt(demoend) - 4) and (demo_p[i] <> DEMOMARKER) do
-      inc(i, 4);
-    // JVAL: Leave maximum 4 seconds after player death
-    if i > 4 * TICRATE * 4 then
-    begin
-      i := 4 * TICRATE * 4;
-      demo_p[i] := DEMOMARKER;
-    end;
-    ZeroMemory(demo_p, i);
+    TDemoDeathTrimmer.Trim(System.PByte(demo_p), System.PByte(demoend));
   end;
 end;
 
@@ -2852,6 +2821,9 @@ var
 //
 //==============================================================================
 procedure G_ReadDemoTiccmd(cmd: Pticcmd_t);
+var
+  LPosition: System.PByte;
+  LCommand: TDemoCommand;
 begin
   if demo_p[0] = DEMOMARKER then
   begin
@@ -2863,52 +2835,18 @@ begin
   if olddemo then
     G_SafeCompatibilityDemo;
 
-  cmd.forwardmove := shortint(demo_p[0]);
-  demo_p := @demo_p[1];
+  LPosition := System.PByte(demo_p);
+  TDemoCommandCodec.Read(LPosition, dlDoom, demoversion, olddemo, LCommand);
+  demo_p := PByteArray(LPosition);
 
-  cmd.sidemove := shortint(demo_p[0]);
-  demo_p := @demo_p[1];
-
-  if olddemo then
-  begin
-    cmd.angleturn := shortint(demo_p[0]) * 256;
-    demo_p := @demo_p[1];
-  end
-  else
-  begin
-    cmd.angleturn := PSmallInt(demo_p)^;
-    demo_p := @demo_p[2];
-  end;
-
-  cmd.buttons := demo_p[0] and not BT_SPECIAL;
-  demo_p := @demo_p[1];
-
-  if olddemo then
-  begin
-    cmd.lookupdown := 0;
-    cmd.lookupdown16 := 0; // JVAL Smooth Look Up/Down
-    cmd.lookleftright := 0;
-    cmd.jump_crouch := 0; // JVAL: 20211101 - Crouch
-  end
-  else
-  begin
-    cmd.lookupdown := demo_p[0];
-    demo_p := @demo_p[1];
-
-    // JVAL Smooth Look Up/Down
-    if demoversion >= VERSION203 then
-    begin
-      cmd.lookupdown16 := PWord(demo_p)^;
-      demo_p := @demo_p[2];
-    end
-    else
-      cmd.lookupdown16 := 256 * cmd.lookupdown;
-
-    cmd.lookleftright := demo_p[0];
-    demo_p := @demo_p[1];
-    cmd.jump_crouch := demo_p[0];
-    demo_p := @demo_p[1];
-  end;
+  cmd.forwardmove := LCommand.ForwardMove;
+  cmd.sidemove := LCommand.SideMove;
+  cmd.angleturn := LCommand.AngleTurn;
+  cmd.buttons := LCommand.Buttons;
+  cmd.lookupdown := LCommand.LookUpDown;
+  cmd.lookupdown16 := LCommand.LookUpDown16; // JVAL Smooth Look Up/Down
+  cmd.lookleftright := LCommand.LookLeftRight;
+  cmd.jump_crouch := LCommand.JumpCrouch; // JVAL: 20211101 - Crouch
 end;
 
 //==============================================================================
@@ -2961,38 +2899,21 @@ end;
 //==============================================================================
 procedure G_WriteDemoTiccmd(cmd: Pticcmd_t);
 var
-  demo_start: PByteArray;
+  LCommand: TDemoCommand;
 begin
   if gamekeydown[Ord('q')] then // press q to end demo recording
     G_CheckDemoStatus;
 
-  demo_start := demo_p;
-
-  demo_p[0] := Ord(cmd.forwardmove);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := Ord(cmd.sidemove);
-  demo_p := @demo_p[1];
-
-  PSmallInt(demo_p)^ := cmd.angleturn;
-  demo_p := @demo_p[2];
-
-  demo_p[0] := cmd.buttons and not BT_SPECIAL;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := cmd.lookupdown;
-  demo_p := @demo_p[1];
-
-  // JVAL Smooth Look Up/Down
-  PWord(demo_p)^ := cmd.lookupdown16;
-  demo_p := @demo_p[2];
-
-  demo_p[0] := cmd.lookleftright;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := cmd.jump_crouch;
-
-  demo_p := demo_start;
+  LCommand := Default(TDemoCommand);
+  LCommand.ForwardMove := cmd.forwardmove;
+  LCommand.SideMove := cmd.sidemove;
+  LCommand.AngleTurn := cmd.angleturn;
+  LCommand.Buttons := cmd.buttons;
+  LCommand.LookUpDown := cmd.lookupdown;
+  LCommand.LookUpDown16 := cmd.lookupdown16; // JVAL Smooth Look Up/Down
+  LCommand.LookLeftRight := cmd.lookleftright;
+  LCommand.JumpCrouch := cmd.jump_crouch;
+  TDemoCommandCodec.Write(System.PByte(demo_p), dlDoom, LCommand);
 
   if NativeInt(demo_p) >= NativeInt(demoend) - 2 * SizeOf(ticcmd_t) then
     G_IncreaseDemoBuffer;
@@ -3033,9 +2954,6 @@ begin
   Info_Init(true); // JVAL: Start thinkers
 end;
 
-const
-  DEMOHDR: integer = $4F4D4544; // JVAL: DEMO in hex
-
 //==============================================================================
 //
 // G_BeginRecording
@@ -3044,62 +2962,34 @@ const
 procedure G_BeginRecording;
 var
   i: integer;
+  LPosition: System.PByte;
+  LHeader: TDemoHeader;
 begin
   demo_p := demobuffer;
   demoversion := VERSION;
 
-  PInteger(demo_p)^ := DEMOHDR;
-  demo_p := @demo_p[4];
-
-  demo_p[0] := VERSION;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := Ord(gameskill);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := gameepisode;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := gamemap;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := deathmatch;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := intval(respawnparm);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := intval(fastparm);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := intval(nomonsters);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := intval(compatibilitymode);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := intval(spawnrandommonsters);
-  demo_p := @demo_p[1];
-
-  demo_p[0] := M_GetSystemRandomSeed;
-  demo_p := @demo_p[1];
-
+  LHeader := Default(TDemoHeader);
+  LHeader.Version := VERSION;
+  LHeader.Skill := Ord(gameskill);
+  LHeader.Episode := gameepisode;
+  LHeader.Map := gamemap;
+  LHeader.Deathmatch := deathmatch;
+  LHeader.Respawn := respawnparm;
+  LHeader.Fast := fastparm;
+  LHeader.NoMonsters := nomonsters;
+  LHeader.Compatibility := compatibilitymode;
+  LHeader.SpawnRandomMonsters := spawnrandommonsters;
+  LHeader.Seed := M_GetSystemRandomSeed;
   // JVAL: Version 205 - Dogs
-  demo_p[0] := dogs;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := dog_jumping;
-  demo_p := @demo_p[1];
-
-  demo_p[0] := consoleplayer;
-  demo_p := @demo_p[1];
-
+  LHeader.Dogs := dogs;
+  LHeader.DogJumping := dog_jumping;
+  LHeader.ConsolePlayer := consoleplayer;
   for i := 0 to MAXPLAYERS - 1 do
-  begin
-    demo_p[0] := intval(playeringame[i]);
-    demo_p := @demo_p[1];
-  end;
+    LHeader.PlayersInGame[i] := playeringame[i];
 
+  LPosition := System.PByte(demo_p);
+  TDemoHeaderCodec.Write(LPosition, TDemoProfiles.Doom(MAXPLAYERS), LHeader);
+  demo_p := PByteArray(LPosition);
 end;
 
 //
@@ -3222,6 +3112,9 @@ var
   len: integer;
   oldspawnrandommonsters: boolean;
   olddogs, olddog_jumping: integer;
+  LProfile: TDemoHeaderProfile;
+  LPosition: System.PByte;
+  LHeader: TDemoHeader;
 begin
   gameaction := ga_nothing;
   if externaldemo then
@@ -3242,14 +3135,12 @@ begin
     exit;
   end;
 
-  if PInteger(demo_p)^ = DEMOHDR then
-  begin
-    demo_p := @demo_p[4];
-    demoversion := demo_p[0];
-  end
+  LProfile := TDemoProfiles.Doom(MAXPLAYERS);
+  LPosition := System.PByte(demo_p);
+  if TDemoHeaderCodec.ReadVersion(LPosition, LProfile.Magic, demoversion) then
+    demo_p := PByteArray(LPosition)
   else
   begin
-    demoversion := demobuffer[0];
     olddemo := (demoversion <= 110) and (demoversion >= 109);
     if olddemo then
     begin
@@ -3272,79 +3163,40 @@ begin
     end;
   end;
 
-  demo_p := @demo_p[1];
+  LPosition := System.PByte(demo_p);
+  TDemoHeaderCodec.Read(LPosition, LProfile, olddemo, LHeader);
+  demo_p := PByteArray(LPosition);
 
-  skill := skill_t(demo_p[0]);
-  demo_p := @demo_p[1];
-
-  episode := demo_p[0];
-  demo_p := @demo_p[1];
-
-  map := demo_p[0];
-  demo_p := @demo_p[1];
-
-  deathmatch := demo_p[0];
-  demo_p := @demo_p[1];
-
-  respawnparm := demo_p[0] <> 0;
-  demo_p := @demo_p[1];
-
-  fastparm := demo_p[0] <> 0;
-  demo_p := @demo_p[1];
-
-  nomonsters := demo_p[0] <> 0;
-  demo_p := @demo_p[1];
+  skill := skill_t(LHeader.Skill);
+  episode := LHeader.Episode;
+  map := LHeader.Map;
+  deathmatch := LHeader.Deathmatch;
+  respawnparm := LHeader.Respawn;
+  fastparm := LHeader.Fast;
+  nomonsters := LHeader.NoMonsters;
 
   oldcompatibilitymode := compatibilitymode;
   if olddemo then
     compatibilitymode := true // force old compatibility mode
   else
-  begin
-    compatibilitymode := demo_p[0] <> 0;
-    demo_p := @demo_p[1];
-  end;
+    compatibilitymode := LHeader.Compatibility;
 
   M_SetSystemRandomSeed(0);
   oldspawnrandommonsters := spawnrandommonsters;
-  if demoversion >= VERSION114 then
-  begin
-    spawnrandommonsters := demo_p[0] <> 0;
-    demo_p := @demo_p[1];
-    if demoversion >= VERSION120 then
-    begin
-      M_SetSystemRandomSeed(demo_p[0]);
-      demo_p := @demo_p[1];
-    end;
-  end
-  else
-  begin
-    spawnrandommonsters := false;
-  end;
+  spawnrandommonsters := LHeader.SpawnRandomMonsters;
+  if LHeader.HasSeed then
+    M_SetSystemRandomSeed(LHeader.Seed);
 
   // JVAL: Version 205 - Dogs
   olddogs := dogs;
   olddog_jumping := dog_jumping;
-  if demoversion >= VERSION205 then
-  begin
-    dogs := demo_p[0];
-    demo_p := @demo_p[1];
-    dog_jumping := demo_p[0];
-    demo_p := @demo_p[1];
-  end
-  else
-  begin
-    dogs := 0;
-    dog_jumping := 0;
-  end;
+  dogs := LHeader.Dogs;
+  dog_jumping := LHeader.DogJumping;
 
-  consoleplayer := demo_p[0];
-  demo_p := @demo_p[1];
+  consoleplayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
-  begin
-    playeringame[i] := demo_p[0] <> 0;
-    demo_p := @demo_p[1];
-  end;
+    playeringame[i] := LHeader.PlayersInGame[i];
 
   if playeringame[1] then
   begin

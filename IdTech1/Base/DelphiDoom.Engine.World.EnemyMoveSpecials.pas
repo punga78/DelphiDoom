@@ -24,7 +24,7 @@ type
   TEnemyMoveSpecials = class sealed
   public
     /// <summary>
-    ///   Uses the lines in spechit (numspechit goes down to 0). True if the last of them was
+    ///   Uses the lines in TMapCheck.SpecHit (TMapCheck.NumSpecHit goes down to 0). True if the last of them was
     ///   activated or used (a door that opens)
     /// </summary>
     class function UseHitLines(actor: Pmobj_t): boolean; static;
@@ -58,10 +58,10 @@ var
   ret1, ret2: boolean;
 begin
   result := false;
-  while numspechit > 0 do
+  while TMapCheck.NumSpecHit > 0 do
   begin
-    dec(numspechit);
-    ld := spechit[numspechit];
+    dec(TMapCheck.NumSpecHit);
+    ld := TMapCheck.SpecHit[TMapCheck.NumSpecHit];
 
     if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
       if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then

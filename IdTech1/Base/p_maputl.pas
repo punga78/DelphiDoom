@@ -590,13 +590,13 @@ begin
   begin
     openbottom := front.floorheight;
     lowfloor := back.floorheight;
-    tmfloorpic := front.floorpic;
+    TMapCheck.FloorPic := front.floorpic;
   end
   else
   begin
     openbottom := back.floorheight;
     lowfloor := front.floorheight;
-    tmfloorpic := back.floorpic;
+    TMapCheck.FloorPic := back.floorpic;
   end;
 
   // JVAL: 3d Floors
@@ -605,12 +605,12 @@ begin
     lowestceiling := opentop;
     highestfloor := openbottom;
     lowestfloor := lowfloor;
-    thingtop := tmthing.z + tmthing.height;
+    thingtop := TMapCheck.Thing.z + TMapCheck.Thing.height;
     if front.midsec >= 0 then
     begin
       mid := @sectors[front.midsec];
       rr := (mid.ceilingheight + mid.floorheight) div 2;
-      delta1 := abs(tmthing.z - rr);
+      delta1 := abs(TMapCheck.Thing.z - rr);
       delta2 := abs(thingtop - rr);
       if (mid.floorheight < lowestceiling) and (delta1 >= delta2) then
         lowestceiling := mid.floorheight;
@@ -623,7 +623,7 @@ begin
     begin
       mid := @sectors[back.midsec];
       rr := (mid.ceilingheight + mid.floorheight) div 2;
-      delta1 := abs(tmthing.z - rr);
+      delta1 := abs(TMapCheck.Thing.z - rr);
       delta2 := abs(thingtop - rr);
       if (mid.floorheight < lowestceiling) and (delta1 >= delta2) then
         lowestceiling := mid.floorheight;
@@ -679,21 +679,21 @@ begin
   back := linedef.backsector;
 
   // JVAL: Slopes
-  moside := P_PointOnLineSide(tmthing.x, tmthing.y, linedef);
+  moside := P_PointOnLineSide(TMapCheck.Thing.x, TMapCheck.Thing.y, linedef);
 
-  x := tmthing.x;
-  y := tmthing.y;
+  x := TMapCheck.Thing.x;
+  y := TMapCheck.Thing.y;
   if moside = 0 then
   begin
     frontfloorheight := P_FloorHeight(front, x, y);
     frontceilingheight := P_CeilingHeight(front, x, y);
-    backfloorheight := P_FloorHeight(back, tmx, tmy);
-    backceilingheight := P_CeilingHeight(back, tmx, tmy);
+    backfloorheight := P_FloorHeight(back, TMapCheck.X, TMapCheck.Y);
+    backceilingheight := P_CeilingHeight(back, TMapCheck.X, TMapCheck.Y);
   end
   else
   begin
-    frontfloorheight := P_FloorHeight(front, tmx, tmy);
-    frontceilingheight := P_CeilingHeight(front, tmx, tmy);
+    frontfloorheight := P_FloorHeight(front, TMapCheck.X, TMapCheck.Y);
+    frontceilingheight := P_CeilingHeight(front, TMapCheck.X, TMapCheck.Y);
     backfloorheight := P_FloorHeight(back, x, y);
     backceilingheight := P_CeilingHeight(back, x, y);
   end;
@@ -707,13 +707,13 @@ begin
   begin
     openbottom := frontfloorheight;
     lowfloor := backfloorheight;
-    tmfloorpic := front.floorpic;
+    TMapCheck.FloorPic := front.floorpic;
   end
   else
   begin
     openbottom := backfloorheight;
     lowfloor := frontfloorheight;
-    tmfloorpic := back.floorpic;
+    TMapCheck.FloorPic := back.floorpic;
   end;
 
   // JVAL: 3d Floors
@@ -722,13 +722,13 @@ begin
     lowestceiling := opentop;
     highestfloor := openbottom;
     lowestfloor := lowfloor;
-    thingtop := tmthing.z + tmthing.height;
-    picfloor3d := tmfloorpic;
+    thingtop := TMapCheck.Thing.z + TMapCheck.Thing.height;
+    picfloor3d := TMapCheck.FloorPic;
     if front.midsec >= 0 then
     begin
       mid := @sectors[front.midsec];
       rr := (mid.ceilingheight + mid.floorheight) div 2;
-      delta1 := abs(tmthing.z - rr);
+      delta1 := abs(TMapCheck.Thing.z - rr);
       delta2 := abs(thingtop - rr);
       if (mid.floorheight < lowestceiling) and (delta1 >= delta2) then
         lowestceiling := mid.floorheight;
@@ -744,7 +744,7 @@ begin
     begin
       mid := @sectors[back.midsec];
       rr := (mid.ceilingheight + mid.floorheight) div 2;
-      delta1 := abs(tmthing.z - rr);
+      delta1 := abs(TMapCheck.Thing.z - rr);
       delta2 := abs(thingtop - rr);
       if (mid.floorheight < lowestceiling) and (delta1 >= delta2) then
         lowestceiling := mid.floorheight;
@@ -759,7 +759,7 @@ begin
     if highestfloor > openbottom then
     begin
       openbottom := highestfloor;
-      tmfloorpic := picfloor3d;
+      TMapCheck.FloorPic := picfloor3d;
     end;
     if lowestceiling < opentop then
       opentop := lowestceiling;

@@ -188,16 +188,16 @@ end;  // phares 3/13/98
 //==============================================================================
 function PIT_GetSectors(ld: Pline_t): boolean;
 begin
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
+  if (TMapCheck.BBox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (TMapCheck.BBox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (TMapCheck.BBox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (TMapCheck.BBox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
   end;
 
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -210,7 +210,7 @@ begin
   // allowed to move to this position, then the sector_list
   // will be attached to the Thing's mobj_t at touching_sectorlist.
 
-  sector_list := P_AddSecnode(ld.frontsector, tmthing, sector_list);
+  sector_list := P_AddSecnode(ld.frontsector, TMapCheck.Thing, sector_list);
 
   // Don't assume all lines are 2-sided, since some Things
   // like MT_TFOG are allowed regardless of whether their radius takes
@@ -221,7 +221,7 @@ begin
 
   if ld.backsector <> nil then
     if ld.backsector <> ld.frontsector then
-      sector_list := P_AddSecnode(ld.backsector, tmthing, sector_list);
+      sector_list := P_AddSecnode(ld.backsector, TMapCheck.Thing, sector_list);
 
   result := true;
 end;
@@ -255,33 +255,33 @@ begin
     node := node.m_tnext;
   end;
 
-  tmthing := thing;
-  tmflags := thing.flags;
+  TMapCheck.Thing := thing;
+  TMapCheck.Flags := thing.flags;
 
-  tmx := x;
-  tmy := y;
+  TMapCheck.X := x;
+  TMapCheck.Y := y;
 
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
+  r := TMapCheck.Thing.radius;
+  TMapCheck.BBox[BOX_TOP] := y + r;
+  TMapCheck.BBox[BOX_BOTTOM] := y - r;
+  TMapCheck.BBox[BOX_RIGHT] := x + r;
+  TMapCheck.BBox[BOX_LEFT] := x - r;
 
   inc(validcount); // used to make sure we only process a line once
 
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx));
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx));
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy));
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy));
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy);
   end;
 
   for bx := xl to xh do
