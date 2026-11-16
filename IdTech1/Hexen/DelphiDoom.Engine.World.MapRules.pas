@@ -1419,12 +1419,12 @@ var
   // the line does block movement, see if it is closer than best so far
   procedure bounceblocking;
   begin
-    if intr.frac < bestslidefrac then
+    if intr.frac < TMapSlide.BestFrac then
     begin
-      secondslidefrac := bestslidefrac;
-      secondslideline := bestslideline;
-      bestslidefrac := intr.frac;
-      bestslideline := li;
+      secondslidefrac := TMapSlide.BestFrac;
+      secondslideline := TMapSlide.BestLine;
+      TMapSlide.BestFrac := intr.frac;
+      TMapSlide.BestLine := li;
     end;
   end;
 
@@ -1435,7 +1435,7 @@ begin
   li := intr.d.line;
   if li.flags and ML_TWOSIDED = 0 then
   begin
-    if P_PointOnLineSide(slidemo.x, slidemo.y, li) <> 0 then
+    if P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
     begin
       result := true; // don't hit the back side
       exit;
@@ -1446,14 +1446,14 @@ begin
   end;
 
   P_LineOpening(li, true);  // set openrange, opentop, openbottom
-  if openrange < slidemo.height then
+  if openrange < TMapSlide.Mobj.height then
   begin
     bounceblocking; // doesn't fit
     result := false;
     exit;
   end;
 
-  if opentop - slidemo.z < slidemo.height then
+  if opentop - TMapSlide.Mobj.z < TMapSlide.Mobj.height then
   begin
     bounceblocking; // mobj is too high
     result := false;
@@ -1475,7 +1475,7 @@ var
   lineangle, moveangle, deltaangle: angle_t;
   movelen: fixed_t;
 begin
-  slidemo := mo;
+  TMapSlide.Mobj := mo;
 //
 // trace along the three leading corners
 //
@@ -1489,11 +1489,11 @@ begin
   else
     leady := mo.y - mo.radius;
 
-  bestslidefrac := FRACUNIT + 1;
+  TMapSlide.BestFrac := FRACUNIT + 1;
   P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy, PT_ADDLINES, PTR_BounceTraverse);
 
-  side := P_PointOnLineSide(mo.x, mo.y, bestslideline);
-  lineangle := R_PointToAngle2(0, 0, bestslideline.dx, bestslideline.dy);
+  side := P_PointOnLineSide(mo.x, mo.y, TMapSlide.BestLine);
+  lineangle := R_PointToAngle2(0, 0, TMapSlide.BestLine.dx, TMapSlide.BestLine.dy);
   if side = 1 then
     lineangle := lineangle + ANG180;
   moveangle := R_PointToAngle2(0, 0, mo.momx, mo.momy);

@@ -95,6 +95,23 @@ type
     class var FloatOk: boolean;
   end;
 
+  /// <summary>
+  /// The state of P_SlideMove, P_HitSlideLine and PTR_SlideTraverse: the former globals
+  /// bestslidefrac, bestslideline, slidemo, tmxmove and tmymove (issue #244). Declared here
+  /// as class variables for the same reason as TMapCheck. Scratch space of one call.
+  /// </summary>
+  TMapSlide = class sealed
+  public
+    /// <summary>The nearest line the slide has hit, and how far along the move it is.</summary>
+    class var BestFrac: fixed_t;
+    class var BestLine: Pline_t;
+    /// <summary>The thing that slides.</summary>
+    class var Mobj: Pmobj_t;
+    /// <summary>The move that is left after the slide line has been hit.</summary>
+    class var XMove: fixed_t;
+    class var YMove: fixed_t;
+  end;
+
 //==============================================================================
 //
 // P_TeleportMove
@@ -251,9 +268,6 @@ var
 function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
 
 var
-  bestslidefrac: fixed_t;
-  bestslideline: Pline_t;
-  slidemo: Pmobj_t;
 
   shootthing: Pmobj_t;
   // Height if not aiming up or down
@@ -1527,10 +1541,8 @@ end;
 //
 // SLIDE MOVE
 // Allows the player to slide along any angled walls.
+// (its state is in TMapSlide)
 //
-var
-  tmxmove: fixed_t;
-  tmymove: fixed_t;
 
 //==============================================================================
 //
@@ -1550,24 +1562,24 @@ var
 begin
   if ld.slopetype = ST_HORIZONTAL then
   begin
-    tmymove := 0;
+    TMapSlide.YMove := 0;
     exit;
   end;
 
   if ld.slopetype = ST_VERTICAL then
   begin
-    tmxmove := 0;
+    TMapSlide.XMove := 0;
     exit;
   end;
 
-  side := P_PointOnLineSide(slidemo.x, slidemo.y, ld);
+  side := P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, ld);
 
   lineangle := R_PointToAngle2(0, 0, ld.dx, ld.dy);
 
   if side = 1 then
     lineangle := lineangle + ANG180;
 
-  moveangle := R_PointToAngle2(0, 0, tmxmove, tmymove);
+  moveangle := R_PointToAngle2(0, 0, TMapSlide.XMove, TMapSlide.YMove);
   deltaangle := moveangle - lineangle;
 
   if deltaangle > ANG180 then
@@ -1582,11 +1594,11 @@ begin
   deltaangle := deltaangle shr ANGLETOFINESHIFT;
   {$ENDIF}
 
-  movelen := P_AproxDistance(tmxmove, tmymove);
+  movelen := P_AproxDistance(TMapSlide.XMove, TMapSlide.YMove);
   newlen := FixedMul(movelen, finecosine[deltaangle]);
 
-  tmxmove := FixedMul(newlen, finecosine[lineangle]);
-  tmymove := FixedMul(newlen, finesine[lineangle]);
+  TMapSlide.XMove := FixedMul(newlen, finecosine[lineangle]);
+  TMapSlide.YMove := FixedMul(newlen, finesine[lineangle]);
 end;
 
 //==============================================================================
@@ -1603,10 +1615,10 @@ var
   begin
     // the line does block movement,
     // see if it is closer than best so far
-    if intr.frac < bestslidefrac then
+    if intr.frac < TMapSlide.BestFrac then
     begin
-      bestslidefrac := intr.frac;
-      bestslideline := li;
+      TMapSlide.BestFrac := intr.frac;
+      TMapSlide.BestLine := li;
     end;
   end;
 
@@ -1618,7 +1630,7 @@ begin
 
   if li.flags and ML_TWOSIDED = 0 then
   begin
-    if P_PointOnLineSide(slidemo.x, slidemo.y, li) <> 0 then
+    if P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
     begin
       // don't hit the back side
       result := true;
@@ -1632,35 +1644,35 @@ begin
   // set openrange, opentop, openbottom
   P_LineOpening(li, true);
 
-  if openrange < slidemo.height then
+  if openrange < TMapSlide.Mobj.height then
   begin
     isblocking; // doesn't fit
     result := false; // stop
     exit;
   end;
 
-  if opentop - slidemo.z < slidemo.height then
+  if opentop - TMapSlide.Mobj.z < TMapSlide.Mobj.height then
   begin
     isblocking; // mobj is too high
     result := false; // stop
     exit;
   end;
 
-  if slidemo.flags4_ex and MF4_EX_CANNOTSTEP <> 0 then
+  if TMapSlide.Mobj.flags4_ex and MF4_EX_CANNOTSTEP <> 0 then
     margin := 0
   else
   begin
     margin := TMapGameRules.SlideStepMargin;
     if G_PlayingEngineVersion >= VERSION207 then
-      if slidemo.info.maxstepheight > 0 then
+      if TMapSlide.Mobj.info.maxstepheight > 0 then
       begin
-        margin := slidemo.info.maxstepheight;
+        margin := TMapSlide.Mobj.info.maxstepheight;
         if margin < 64 then
           margin := margin * FRACUNIT
       end;
   end;
 
-  if openbottom - slidemo.z > margin then
+  if openbottom - TMapSlide.Mobj.z > margin then
   begin
     isblocking; // too big a step up
     result := false; // stop
@@ -1699,7 +1711,7 @@ var
   end;
 
 begin
-  slidemo := mo;
+  TMapSlide.Mobj := mo;
   hitcount := 0;
 
   repeat
@@ -1734,7 +1746,7 @@ begin
       traily := mo.y + mo.radius;
     end;
 
-    bestslidefrac := FRACUNIT + 1;
+    TMapSlide.BestFrac := FRACUNIT + 1;
 
     P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy,
       PT_ADDLINES, PTR_SlideTraverse);
@@ -1744,7 +1756,7 @@ begin
       PT_ADDLINES, PTR_SlideTraverse);
 
     // move up to the wall
-    if bestslidefrac = FRACUNIT + 1 then
+    if TMapSlide.BestFrac = FRACUNIT + 1 then
     begin
       // the move most have hit the middle, so stairstep
       stairstep;
@@ -1752,11 +1764,11 @@ begin
     end;
 
     // fudge a bit to make sure it doesn't hit
-    bestslidefrac := bestslidefrac - $800;
-    if bestslidefrac > 0 then
+    TMapSlide.BestFrac := TMapSlide.BestFrac - $800;
+    if TMapSlide.BestFrac > 0 then
     begin
-      newx := FixedMul(mo.momx, bestslidefrac);
-      newy := FixedMul(mo.momy, bestslidefrac);
+      newx := FixedMul(mo.momx, TMapSlide.BestFrac);
+      newy := FixedMul(mo.momy, TMapSlide.BestFrac);
 
       if not P_TryMove(mo, mo.x + newx, mo.y + newy) then
       begin
@@ -1767,23 +1779,23 @@ begin
 
     // Now continue along the wall.
     // First calculate remainder.
-    bestslidefrac := FRACUNIT - (bestslidefrac + $800);
+    TMapSlide.BestFrac := FRACUNIT - (TMapSlide.BestFrac + $800);
 
-    if bestslidefrac > FRACUNIT then
-      bestslidefrac := FRACUNIT;
+    if TMapSlide.BestFrac > FRACUNIT then
+      TMapSlide.BestFrac := FRACUNIT;
 
-    if bestslidefrac <= 0 then
+    if TMapSlide.BestFrac <= 0 then
       exit;
 
-    tmxmove := FixedMul(mo.momx, bestslidefrac);
-    tmymove := FixedMul(mo.momy, bestslidefrac);
+    TMapSlide.XMove := FixedMul(mo.momx, TMapSlide.BestFrac);
+    TMapSlide.YMove := FixedMul(mo.momy, TMapSlide.BestFrac);
 
-    P_HitSlideLine(bestslideline);  // clip the moves
+    P_HitSlideLine(TMapSlide.BestLine);  // clip the moves
 
-    mo.momx := tmxmove;
-    mo.momy := tmymove;
+    mo.momx := TMapSlide.XMove;
+    mo.momy := TMapSlide.YMove;
 
-  until P_TryMove(mo, mo.x + tmxmove, mo.y + tmymove);
+  until P_TryMove(mo, mo.x + TMapSlide.XMove, mo.y + TMapSlide.YMove);
 
 end;
 
