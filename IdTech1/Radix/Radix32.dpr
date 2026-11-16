@@ -946,6 +946,7 @@ uses
   DelphiDoom.Engine.Imaging.Random in '..\Base\DelphiDoom.Engine.Imaging.Random.pas',
   DelphiDoom.Engine.Renderer.PatchSource in '..\Base\DelphiDoom.Engine.Renderer.PatchSource.pas',
   DelphiDoom.Engine.Renderer.SpriteSource in '..\Base\DelphiDoom.Engine.Renderer.SpriteSource.pas',
+  DelphiDoom.Engine.Renderer.FunctionDump in '..\Base\DelphiDoom.Engine.Renderer.FunctionDump.pas',
   DelphiDoom.Engine.Renderer.SubsectorLocator in '..\Base\DelphiDoom.Engine.Renderer.SubsectorLocator.pas',
   DelphiDoom.Engine.Renderer.LumpDirectory in '..\Base\DelphiDoom.Engine.Renderer.LumpDirectory.pas',
   DelphiDoom.Engine.Renderer.SpriteHeaders in '..\Base\DelphiDoom.Engine.Renderer.SpriteHeaders.pas',
