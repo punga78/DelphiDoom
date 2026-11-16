@@ -92,6 +92,7 @@
     'IdTech1\Definitions' = 'IdTech1'
     'IdTech1\Dehacked' = 'IdTech1'
     'IdTech1\DynLights' = 'IdTech1'
+    'IdTech1\Demo' = 'IdTech1'
     'IdTech1\Endoom' = 'IdTech1'
     'IdTech1\Glbsp' = 'IdTech1'
     'IdTech1\Hud' = 'IdTech1'

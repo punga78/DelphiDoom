@@ -389,6 +389,8 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 implementation
 
 uses
+  DelphiDoom.MapInfo.NewGameLimits,
+  DelphiDoom.MapInfo.SkillSpeed,
   DelphiDoom.Input.EventScaling,
   DelphiDoom.Input.KeyboardLayout,
   c_cmds,
@@ -2085,6 +2087,7 @@ procedure G_InitNew(skill: skill_t; episode, map: integer);
 var
   i: integer;
   levelinf: Plevelinfo_t;
+  LSpeedChange: TSkillSpeedChange;
 begin
   if paused then
   begin
@@ -2097,10 +2100,7 @@ begin
   else if skill > sk_nightmare then
     skill := sk_nightmare;
 
-  if map < 1 then
-    map := 1
-  else if map > 99 then
-    map := 99;
+  TNewGameLimits.Hexen(map);
 
   levelinf := P_GetLevelInfo(P_GetMapName(map));
   levelinf.musname := stringtochar8('');
@@ -2111,19 +2111,17 @@ begin
   M_ClearRandom;
   PS_NewWorld;
 
-  if (skill = sk_nightmare) or respawnparm then
-    respawnmonsters := true
-  else
-    respawnmonsters := false;
+  respawnmonsters := TSkillSpeed.RespawnMonsters(skill = sk_nightmare, respawnparm);
 
   // JVAL: 20210207 -> Support for fast speed mobj info field
-  if fastparm or ((skill = sk_nightmare) and (gameskill <> sk_nightmare)) then
+  LSpeedChange := TSkillSpeed.Change(fastparm, skill = sk_nightmare, gameskill = sk_nightmare);
+  if LSpeedChange = sscFast then
   begin
     for i := 0 to nummobjtypes - 1 do
       if mobjinfo[i].fastspeed <> 0 then
         mobjinfo[i].speed := mobjinfo[i].fastspeed;
   end
-  else if (skill <> sk_nightmare) and (gameskill = sk_nightmare) then
+  else if LSpeedChange = sscNormal then
   begin
     for i := 0 to nummobjtypes - 1 do
       if mobjinfo[i].normalspeed <> 0 then
