@@ -476,6 +476,7 @@ uses
   DelphiDoom.GlScene.Light,
   DelphiDoom.GlScene.PaletteTint,
   DelphiDoom.Engine.Gl2dMode,
+  DelphiDoom.Engine.GlHudPainter,
   w_wad,
   z_zone;
 
@@ -732,78 +733,8 @@ end;
 //==============================================================================
 procedure gld_DrawNumPatch(x, y: integer; lump: integer; cm: integer; flags: integer;
   const zoomx: float = 1.0; const zoomy: float = 1.0);
-
-  function SCALE_X(const xx: integer): float;
-  begin
-    if flags and VPT_STRETCH <> 0 then
-      result := xx * SCREENWIDTH / 320.0
-    else
-      result := xx;
-  end;
-
-  function SCALE_Y(const yy: integer): float;
-  begin
-    if flags and VPT_STRETCH <> 0 then
-      result := yy * SCREENHEIGHT / 200.0
-    else
-      result := yy;
-  end;
-
-var
-  gltexture: PGLTexture;
-  fU1, fU2, fV1, fV2: float;
-  width, height: float;
-  xpos, ypos: float;
-  dx, dy: float;
 begin
-  if flags and VPT_TRANS <> 0 then
-  begin
-    gltexture := gld_RegisterPatch(lump, cm, flags and VPT_NOUNLOAD = 0);
-    gld_BindPatch(gltexture, cm);
-  end
-  else
-  begin
-    gltexture := gld_RegisterPatch(lump, Ord(CR_DEFAULT), flags and VPT_NOUNLOAD = 0);
-    gld_BindPatch(gltexture, Ord(CR_DEFAULT));
-  end;
-  if gltexture = nil then
-    exit;
-  fV1 := 0.0;
-  fV2 := gltexture.height / gltexture.tex_height;
-  if flags and VPT_FLIP <> 0 then
-  begin
-    fU1 := gltexture.width / gltexture.tex_width;
-    fU2 := 0.0;
-  end
-  else
-  begin
-    fU1 := 0.0;
-    fU2 := gltexture.width / gltexture.tex_width;
-  end;
-  xpos := SCALE_X(x - gltexture.leftoffset);
-  ypos := SCALE_Y(y - gltexture.topoffset);
-  width := SCALE_X(gltexture.realtexwidth);
-  height := SCALE_Y(gltexture.realtexheight);
-  if (zoomx <> 1.0) or (zoomy <> 1.0) then
-  begin
-    dx := width * zoomx - width;
-    dy := height * zoomy - height;
-    xpos := xpos - dx / 2;
-    ypos := ypos - dy / 2;
-    width := width + dx;
-    height := height + dy;
-  end;
-
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1);
-    glVertex2f(xpos, ypos);
-    glTexCoord2f(fU1, fV2);
-    glVertex2f(xpos, ypos + height);
-    glTexCoord2f(fU2, fV1);
-    glVertex2f(xpos + width, ypos);
-    glTexCoord2f(fU2, fV2);
-    glVertex2f(xpos + width, ypos + height);
-  glEnd;
+  TEngineGlHudPainter.DrawNumPatch(x, y, lump, cm, flags, zoomx, zoomy);
 end;
 
 //==============================================================================
@@ -812,41 +743,8 @@ end;
 //
 //==============================================================================
 procedure gld_DrawBackground(const name: string);
-var
-  gltexture: PGLTexture;
-  fU1, fU2, fV1, fV2: float;
-  width, height: float;
-{$IFDEF DOOM}
-  sbar: Integer;
-{$ENDIF}
 begin
-  gltexture := gld_RegisterFlat(W_GetNumForName(name), false, -1);
-  gld_BindFlat(gltexture, -1);
-  if gltexture = nil then
-    exit;
-  fU1 := 0;
-  fV1 := 0;
-  fU2 := 320 / gltexture.realtexwidth;
-  {$IFDEF DOOM}
-  if statusbarstretch then
-    sbar := 0
-  else
-    sbar := ST_HEIGHT;
-  {$ENDIF}
-  fV2 := (200{$IFDEF DOOM} - sbar{$ENDIF}) / gltexture.realtexheight;
-  width := SCREENWIDTH;
-  height := SCREENHEIGHT{$IFDEF DOOM} - sbar * SCREENHEIGHT / 200{$ENDIF};
-
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1);
-    glVertex2f(0.0, 0.0);
-    glTexCoord2f(fU1, fV2);
-    glVertex2f(0.0, height);
-    glTexCoord2f(fU2, fV1);
-    glVertex2f(width, 0);
-    glTexCoord2f(fU2, fV2);
-    glVertex2f(width, height);
-  glEnd;
+  TEngineGlHudPainter.DrawBackground(name);
 end;
 
 //==============================================================================
@@ -855,29 +753,8 @@ end;
 //
 //==============================================================================
 procedure gld_DrawBackgroundFrame;
-var
-  x1, x2, y1, y2: integer;
 begin
-  if (viewwindowx <= 0) and (viewwindowy <= 0) then
-    Exit;
-
-  x1 := viewwindowx - 1;
-  x2 := x1 + viewwidth + 2;
-  y1 := viewwindowy - 1;
-  y2 := y1 + viewheight + 2;
-
-  glDisable(GL_TEXTURE_2D);
-
-  glColor4f(0.5, 0.5, 0.5, 1.0);
-  glBegin(GL_LINE_STRIP);
-    glVertex2i(x1, y1);
-    glVertex2i(x2, y1);
-    glVertex2i(x2, y2);
-    glVertex2i(x1, y2);
-    glVertex2i(x1, y1);
-  glEnd;
-
-  glEnable(GL_TEXTURE_2D);
+  TEngineGlHudPainter.DrawBackgroundFrame;
 end;
 
 //==============================================================================
@@ -886,69 +763,9 @@ end;
 //
 //==============================================================================
 procedure gld_DrawWeapon(weaponlump: integer; vis: Pvissprite_t; lightlevel: integer);
-var
-  gltexture: PGLTexture;
-  fU1, fU2, fV1, fV2: float;
-  x1, y1, x2, y2: integer;
-  scale: float;
-  light: float;
-  restoreblend: boolean;
 begin
-  gltexture := gld_RegisterPatch(firstspritelump + weaponlump, Ord(CR_DEFAULT));
-  if gltexture = nil then
-    exit;
-  gld_BindPatch(gltexture, Ord(CR_DEFAULT));
-  fU1 := 0.0;
-  fV1 := 0.0;
-  fU2 := gltexture.width / gltexture.tex_width;
-  fV2 := gltexture.height / gltexture.tex_height;
-  x1 := viewwindowx + vis.x1;
-  x2 := viewwindowx + vis.x2;
-  scale := vis.scale / FRACUNIT;
-  y1 := viewwindowy + centery - round((vis.texturemid / FRACUNIT) * scale);
-  y2 := y1 + round(gltexture.realtexheight * scale) + 1;
-  light := gld_CalcLightLevel(lightlevel);
-
-// JVAL??  viewplayer.mo.renderstyle = mrs_translucent
-  if viewplayer.mo.flags and MF_SHADOW <> 0 then
-  begin
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.1);
-    glColor4f(0.2, 0.2, 0.2, 0.33);
-    restoreblend := true;
-  end
-  else
-  begin
-    if (viewplayer.mo.flags_ex and MF_EX_TRANSPARENT <> 0) or
-       (viewplayer.mo.renderstyle = mrs_translucent) then
-    begin
-      gld_StaticLightAlpha(light, tran_filter_pct / 100.0);
-      restoreblend := true;
-    end
-    else
-    begin
-      gld_StaticLight(light);
-      restoreblend := false;
-    end;
-  end;
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1);
-    glVertex2f(x1, y1);
-    glTexCoord2f(fU1, fV2);
-    glVertex2f(x1, y2);
-    glTexCoord2f(fU2, fV1);
-    glVertex2f(x2, y1);
-    glTexCoord2f(fU2, fV2);
-    glVertex2f(x2, y2);
-  glEnd;
-  if restoreblend then
-  begin
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.5);
-  end;
-  glColor3f(1.0, 1.0, 1.0);
+  TEngineGlHudPainter.DrawWeapon(weaponlump, vis, lightlevel);
 end;
-
 var
   last_palette: integer = 0;
 

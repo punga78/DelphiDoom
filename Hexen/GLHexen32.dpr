@@ -1338,6 +1338,7 @@ uses
   DelphiDoom.Engine.GlLightmap.Calculator in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlLightmap.Calculator.pas',
   DelphiDoom.Engine.GlScene.SpritePainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SpritePainter.pas',
   DelphiDoom.Engine.GlScene.LightSorter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightSorter.pas',
+  DelphiDoom.Engine.GlHudPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlHudPainter.pas',
   DelphiDoom.Engine.GlScene.Frame in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.Frame.pas',
   DelphiDoom.GlContext.ExtensionList in '..\Libs\GlContext\DelphiDoom.GlContext.ExtensionList.pas',
   DelphiDoom.GlScene.PaletteTint in '..\Libs\GlScene\DelphiDoom.GlScene.PaletteTint.pas',
