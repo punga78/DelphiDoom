@@ -394,24 +394,24 @@ begin
 
     tmpusher := p; // MT_PUSH/MT_PULL point source
     radius := p.radius; // where force goes to zero
-    tmbbox[BOX_TOP] := p.y + radius;
-    tmbbox[BOX_BOTTOM] := p.y - radius;
-    tmbbox[BOX_RIGHT] := p.x + radius;
-    tmbbox[BOX_LEFT] := p.x - radius;
+    TMapCheck.BBox[BOX_TOP] := p.y + radius;
+    TMapCheck.BBox[BOX_BOTTOM] := p.y - radius;
+    TMapCheck.BBox[BOX_RIGHT] := p.x + radius;
+    TMapCheck.BBox[BOX_LEFT] := p.x - radius;
 
     if internalblockmapformat then
     begin
-      xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
-      xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
-      yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-      yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+      xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+      xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+      yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+      yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
     end
     else
     begin
-      xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
-      xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
-      yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
-      yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+      xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+      xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+      yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+      yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy + MAXRADIUS);
     end;
 
     bx := xl;

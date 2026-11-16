@@ -64,7 +64,7 @@ procedure RX_DamageLine(const lineid: integer; const damage: integer);
 //
 // RX_MissileTargetLine
 // The line that has stopped a missile, when it is a wall that can be shot: a
-// one sided line (tmbounceline) or a two sided one that closes the opening
+// one sided line (TMapCheck.BounceLine) or a two sided one that closes the opening
 // (ceilingline: the walls of Radix are closed sectors); nil for any other
 //
 //==============================================================================
@@ -73,7 +73,7 @@ function RX_MissileTargetLine(const mo: Pmobj_t): Pline_t;
 //==============================================================================
 //
 // RX_MissileHitsLine
-// A missile has exploded against a line (tmbounceline of P_XYMovement): when the
+// A missile has exploded against a line (TMapCheck.BounceLine of P_XYMovement): when the
 // kind of the missile can damage walls the line takes the damage of the missile
 // times 1..3 (P_ExplodeMissile of Rad-X)
 //
@@ -290,13 +290,13 @@ var
 function PIT_RadixTargetLine(ld: Pline_t): boolean;
 begin
   result := true;
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
+  if (TMapCheck.BBox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (TMapCheck.BBox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (TMapCheck.BBox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (TMapCheck.BBox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
     exit;
 
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
     exit;
 
   if not RX_ShootableLine(pDiff(ld, @lines[0], SizeOf(line_t))) then
@@ -318,7 +318,7 @@ end;
 //
 // RX_MissileTargetLine
 // PIT_CheckLine of Rad-X remembered the line that stopped a move (tmline,
-// tmbounceline) for any kind of line; the engine knows only the one sided ones,
+// TMapCheck.BounceLine) for any kind of line; the engine knows only the one sided ones,
 // so the lines of the place that was tried are looked at again, once, for the
 // missile that was stopped
 //
@@ -332,17 +332,17 @@ begin
   targetline := nil;
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx));
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx));
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy));
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy));
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy);
   end;
 
   inc(validcount);

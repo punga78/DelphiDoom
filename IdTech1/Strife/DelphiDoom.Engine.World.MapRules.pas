@@ -63,7 +63,7 @@ type
 
     /// <summary>The sector of a point (Doom follows the original nodes while an old demo plays)</summary>
     class function PointInSector(const x, y: fixed_t): Psector_t; static; inline;
-    /// <summary>The thing being teleported (tmthing) may kill the thing in its way</summary>
+    /// <summary>The thing being teleported (TMapCheck.Thing) may kill the thing in its way</summary>
     class function CanStomp(thing: Pmobj_t): boolean; static;
     /// <summary>Marks a thing that has just been teleported (the renderer does not interpolate it)</summary>
     class procedure MarkJustAppeared(thing: Pmobj_t); static; inline;
@@ -126,7 +126,7 @@ type
     class procedure BlastedHitsWall(mo: Pmobj_t); static; inline;
     /// <summary>
     ///   The part of PIT_CheckLine for the things that are not missiles: false when the line
-    ///   blocks tmthing (tmbounceline is set and the push specials are run)
+    ///   blocks TMapCheck.Thing (TMapCheck.BounceLine is set and the push specials are run)
     /// </summary>
     class function CheckLineBlocking(ld: Pline_t): boolean; static;
     /// <summary>The same for PIT_CheckLineTM (the check that knows the slopes)</summary>
@@ -153,7 +153,7 @@ type
     class procedure CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t); static;
     /// <summary>
     ///   The second half of PIT_CheckThing, after the checks that are the same in every game:
-    ///   what happens when tmthing touches the thing; false when tmthing is blocked
+    ///   what happens when TMapCheck.Thing touches the thing; false when TMapCheck.Thing is blocked
     /// </summary>
     class function CheckThingContact(thing: Pmobj_t): boolean; static;
     /// <summary>PIT_CheckThing: a thing that the moving thing pushes when it touches it</summary>
@@ -255,7 +255,7 @@ begin
   // Basically, one thing involved must be a player.
   // Monsters can telefrag players, and players can telefrag monsters, but
   // monsters cannot telefrag other monsters.
-  result := (tmthing.player <> nil) or (thing.player <> nil);
+  result := (TMapCheck.Thing.player <> nil) or (thing.player <> nil);
 end;
 
 class procedure TMapGameRules.MarkJustAppeared(thing: Pmobj_t);
@@ -436,31 +436,31 @@ begin
   begin
     // villsa [STRIFE] include jumpover flag
     if (ld.flags and ML_BLOCKING <> 0) and
-       ((ld.flags and ML_JUMPOVER = 0) or (tmfloorz + (32 * FRACUNIT) > tmthing.z)) then
+       ((ld.flags and ML_JUMPOVER = 0) or (TMapCheck.FloorZ + (32 * FRACUNIT) > TMapCheck.Thing.z)) then
     begin
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, tmthing);
+        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
-        tmbounceline := ld;
+        TMapCheck.BounceLine := ld;
         exit;
       end;
     end;
 
     // villsa [STRIFE] exclude floaters from blockmonster lines
-    if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-       (tmthing.flags and MF_FLOAT = 0) then
+    if (TMapCheck.Thing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
+       (TMapCheck.Thing.flags and MF_FLOAT = 0) then
     begin
       result := false;  // block monsters only
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
 
     // villsa [STRIFE]
-    if (ld.flags and ML_BLOCKFLOATERS <> 0) and (tmthing.flags and MF_FLOAT <> 0) then
+    if (ld.flags and ML_BLOCKFLOATERS <> 0) and (TMapCheck.Thing.flags and MF_FLOAT <> 0) then
     begin
       result := false;  // block floaters only
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
   end
@@ -468,29 +468,29 @@ begin
   begin
     // villsa [STRIFE] include jumpover flag
     if (ld.flags and ML_BLOCKING <> 0) and
-       ((ld.flags and ML_JUMPOVER = 0) or (tmfloorz + (32 * FRACUNIT) > tmthing.z)) then
+       ((ld.flags and ML_JUMPOVER = 0) or (TMapCheck.FloorZ + (32 * FRACUNIT) > TMapCheck.Thing.z)) then
     begin
-      P_CheckForPushSpecial(ld, 0, tmthing);
+      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
 
     // villsa [STRIFE] exclude floaters from blockmonster lines
-    if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-         (tmthing.flags and MF_FLOAT = 0) then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if (TMapCheck.Thing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
+         (TMapCheck.Thing.flags and MF_FLOAT = 0) then
       begin
         result := false;  // block monsters only
-        tmbounceline := ld;
+        TMapCheck.BounceLine := ld;
         exit;
       end;
 
     // villsa [STRIFE]
-    if (ld.flags and ML_BLOCKFLOATERS <> 0) and (tmthing.flags and MF_FLOAT <> 0) then
+    if (ld.flags and ML_BLOCKFLOATERS <> 0) and (TMapCheck.Thing.flags and MF_FLOAT <> 0) then
     begin
       result := false;  // block floaters only
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
   end;
@@ -502,12 +502,12 @@ class function TMapGameRules.CheckLineBlockingTM(ld: Pline_t): boolean;
 begin
   // villsa [STRIFE] include jumpover flag
   if (ld.flags and ML_BLOCKING <> 0) and
-     ((ld.flags and ML_JUMPOVER = 0) or (tmfloorz + (32 * FRACUNIT) > tmthing.z)) then
+     ((ld.flags and ML_JUMPOVER = 0) or (TMapCheck.FloorZ + (32 * FRACUNIT) > TMapCheck.Thing.z)) then
   begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
       result := false;  // explicitly blocking everything
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
   end;
@@ -515,32 +515,32 @@ begin
   // villsa [STRIFE] exclude floaters from blockmonster lines
   if G_PlayingEngineVersion <= VERSION206 then
   begin
-    if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-       (tmthing.flags and MF_FLOAT = 0) then
+    if (TMapCheck.Thing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
+       (TMapCheck.Thing.flags and MF_FLOAT = 0) then
     begin
-        P_CheckForPushSpecial(ld, 0, tmthing);
+        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // block monsters only
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
   end
   else
   begin
-    if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-         (tmthing.flags and MF_FLOAT = 0) then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if (TMapCheck.Thing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
+         (TMapCheck.Thing.flags and MF_FLOAT = 0) then
       begin
         result := false;  // block monsters only
-        tmbounceline := ld;
+        TMapCheck.BounceLine := ld;
         exit;
       end;
   end;
 
   // villsa [STRIFE]
-  if (ld.flags and ML_BLOCKFLOATERS <> 0) and (tmthing.flags and MF_FLOAT <> 0) then
+  if (ld.flags and ML_BLOCKFLOATERS <> 0) and (TMapCheck.Thing.flags and MF_FLOAT <> 0) then
   begin
     result := false;  // block floaters only
-    tmbounceline := ld;
+    TMapCheck.BounceLine := ld;
     exit;
   end;
 
@@ -565,7 +565,7 @@ end;
 class function TMapGameRules.StepTooHighOnFoot(thing: Pmobj_t): boolean;
 begin
   // villsa [STRIFE] non-robots are limited to 16 unit step height
-  result := (thing.flags and MF_NOBLOOD = 0) and (tmfloorz - thing.z > 16 * FRACUNIT);
+  result := (thing.flags and MF_NOBLOOD = 0) and (TMapCheck.FloorZ - thing.z > 16 * FRACUNIT);
 end;
 
 class function TMapGameRules.IgnoresStepHeight(thing: Pmobj_t): boolean;
@@ -576,7 +576,7 @@ end;
 class function TMapGameRules.MissileStepTooHigh(thing: Pmobj_t): boolean;
 begin
   // villsa [STRIFE] special case for missiles
-  result := (thing.flags and MF_MISSILE <> 0) and (tmfloorz - thing.z > 4 * FRACUNIT);
+  result := (thing.flags and MF_MISSILE <> 0) and (TMapCheck.FloorZ - thing.z > 4 * FRACUNIT);
 end;
 
 class function TMapGameRules.IgnoresDropoff(thing: Pmobj_t): boolean;
@@ -624,38 +624,38 @@ var
   damage: integer;
 begin
   // villsa [STRIFE] see if it went over / under
-  if thing.height + thing.z < tmthing.z then
+  if thing.height + thing.z < TMapCheck.Thing.z then
   begin
     result := true;    // overhead
     exit;
   end;
 
   // villsa [STRIFE] see if it went over / under
-  if tmthing.z + tmthing.height < thing.z then
+  if TMapCheck.Thing.z + TMapCheck.Thing.height < thing.z then
   begin
     result := true;    // underneath
     exit;
   end;
 
   // missiles can hit other things
-  if tmthing.flags and MF_MISSILE <> 0 then
+  if TMapCheck.Thing.flags and MF_MISSILE <> 0 then
   begin
-    if (thing.flags_ex and MF_EX_GHOST <> 0) and (tmthing.flags_ex and MF_EX_THRUGHOST <> 0) then
+    if (thing.flags_ex and MF_EX_GHOST <> 0) and (TMapCheck.Thing.flags_ex and MF_EX_THRUGHOST <> 0) then
     begin
       result := true;
       exit;
     end;
 
     // villsa [STRIFE] updated to strife version
-    if (tmthing.target <> nil) and (
-       (tmthing.target._type = thing._type) or
+    if (TMapCheck.Thing.target <> nil) and (
+       (TMapCheck.Thing.target._type = thing._type) or
        // JVAL: 20211126 - Inherited actors do not hurt each other
-       (Info_GetInheritance(tmthing.target.info) = Info_GetInheritance(thing.info))) then
+       (Info_GetInheritance(TMapCheck.Thing.target.info) = Info_GetInheritance(thing.info))) then
     begin
-      if (G_PlayingEngineVersion <= VERSION206) or P_ProjectileImmune(thing, tmthing.target) then
+      if (G_PlayingEngineVersion <= VERSION206) or P_ProjectileImmune(thing, TMapCheck.Thing.target) then
       begin
         // Don't hit same species as originator.
-        if thing = tmthing.target then
+        if thing = TMapCheck.Thing.target then
         begin
           result := true;
           exit;
@@ -678,14 +678,14 @@ begin
       exit;
     end;
 
-    if tmthing.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
       begin
         result := true;
         exit;
       end;
 
-    if tmthing.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
       begin
         result := true;
@@ -695,30 +695,30 @@ begin
     // haleyjd 09/01/10: [STRIFE] Spectral check:
     // Missiles cannot hit SPECTRAL entities unless the missiles are also
     // flagged as SPECTRAL.
-    if (thing.flags and MF_SPECTRAL <> 0) and (tmthing.flags and MF_SPECTRAL = 0) then
+    if (thing.flags and MF_SPECTRAL <> 0) and (TMapCheck.Thing.flags and MF_SPECTRAL = 0) then
     begin
       result := true; // keep going
       exit;
     end;
 
     // mbf21: ripper projectile
-    if tmthing.flags4_ex and MF4_EX_RIP <> 0 then
+    if TMapCheck.Thing.flags4_ex and MF4_EX_RIP <> 0 then
     begin
-      damage := ((P_Random and 3) + 2) * tmthing.info.damage;
+      damage := ((P_Random and 3) + 2) * TMapCheck.Thing.info.damage;
       if (thing.flags and MF_NOBLOOD = 0) and
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin
         if thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-          P_SpawnBlueBlood(tmthing.x, tmthing.y, tmthing.z, damage)
+          P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage)
         else if thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-          P_SpawnGreenBlood(tmthing.x, tmthing.y, tmthing.z, damage)
+          P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage)
         else
-          P_SpawnBlood(tmthing.x, tmthing.y, tmthing.z, damage, thing);
+          P_SpawnBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
       end;
 
-      A_RipSound1(tmthing);
+      A_RipSound1(TMapCheck.Thing);
 
-      P_DamageMobj(thing, tmthing, tmthing.target, damage);
+      P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
 
       // JVAL: Pushable things
       P_PushByContact(thing);
@@ -730,14 +730,14 @@ begin
     end;
 
     // damage / explode
-    if tmthing.flags3_ex and MF3_EX_ABSOLUTEDAMAGE <> 0 then
-      damage := tmthing.info.damage
-    else if tmthing.flags3_ex and MF3_EX_DOOMDAMAGE <> 0 then
-      damage := ((P_Random mod 8) + 1) * tmthing.info.damage
+    if TMapCheck.Thing.flags3_ex and MF3_EX_ABSOLUTEDAMAGE <> 0 then
+      damage := TMapCheck.Thing.info.damage
+    else if TMapCheck.Thing.flags3_ex and MF3_EX_DOOMDAMAGE <> 0 then
+      damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage
     else
     // haleyjd 09/01/10: [STRIFE] Modified missile damage formula
-      damage := ((P_Random and 3) + 1) * tmthing.info.damage;
-    P_DamageMobj(thing, tmthing, tmthing.target, damage);
+      damage := ((P_Random and 3) + 1) * TMapCheck.Thing.info.damage;
+    P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
 
     // don't traverse any more
     result := false;
@@ -753,7 +753,7 @@ end;
 
 class function TMapGameRules.CanBePushed(thing: Pmobj_t): boolean;
 begin
-  result := (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0);
+  result := (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (TMapCheck.Thing.flags2_ex and MF2_EX_CANNOTPUSH = 0);
 end;
 
 class function TMapGameRules.QuarterMomentum(const momentum: fixed_t): fixed_t;
@@ -764,7 +764,7 @@ end;
 class function TMapGameRules.PicksUpOnContact: boolean;
 begin
   // villsa [STRIFE] no longer checks MF_PICKUP flag
-  result := tmthing.player <> nil;
+  result := TMapCheck.Thing.player <> nil;
 end;
 
 class procedure TMapGameRules.SpawnWallPuff(x, y, z: fixed_t);
@@ -952,16 +952,16 @@ begin
 
   thing.z := height;
 
-  tmthing := thing;
-  tmflags := thing.flags;
-  tmx := x;
-  tmy := y;
+  TMapCheck.Thing := thing;
+  TMapCheck.Flags := thing.flags;
+  TMapCheck.X := x;
+  TMapCheck.Y := y;
 
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
+  r := TMapCheck.Thing.radius;
+  TMapCheck.BBox[BOX_TOP] := y + r;
+  TMapCheck.BBox[BOX_BOTTOM] := y - r;
+  TMapCheck.BBox[BOX_RIGHT] := x + r;
+  TMapCheck.BBox[BOX_LEFT] := x - r;
 
   ceilingline := nil;
   newsubsec := thing.subsector;
@@ -972,11 +972,11 @@ begin
   // will adjust them.
 
   // JVAL: Slopes
-  tmfloorz := P_FloorHeight(newsubsec.sector, x, y);
-  tmdropoffz := tmfloorz;
-  tmceilingz := P_CeilingHeight(newsubsec.sector, x, y);
+  TMapCheck.FloorZ := P_FloorHeight(newsubsec.sector, x, y);
+  TMapCheck.DropOffZ := TMapCheck.FloorZ;
+  TMapCheck.CeilingZ := P_CeilingHeight(newsubsec.sector, x, y);
 
-  if tmflags and MF_NOCLIP <> 0 then
+  if TMapCheck.Flags and MF_NOCLIP <> 0 then
   begin
     result := true;
     exit;
@@ -990,24 +990,24 @@ begin
 
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   for bx := xl to xh do
     for by := yl to yh do
       if not P_BlockThingsIterator(bx, by, PIT_CheckThing) then
       begin
-        tmthing.z := z;
+        TMapCheck.Thing.z := z;
         result := false;
         exit;
       end;

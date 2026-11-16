@@ -301,7 +301,7 @@ begin
     if (actor.flags and MF_FLOAT <> 0) and floatok then
     begin
       // must adjust height
-      if actor.z < tmfloorz then
+      if actor.z < TMapCheck.FloorZ then
         actor.z := actor.z + P_FloatSpeed(actor)
       else
         actor.z := actor.z - P_FloatSpeed(actor);

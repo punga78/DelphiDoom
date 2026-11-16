@@ -56,6 +56,37 @@ uses
 // Data.
   sounddata;
 
+type
+  /// <summary>
+  /// The state of the position check (P_CheckPosition, P_TryMove, ...): the former
+  /// globals tmthing, tmbbox, tmx, tmy, tmfloorz, ... (issue #244). It is declared
+  /// here, in the unit of the routines that run for every line and thing of every
+  /// blockmap cell, and as class variables on purpose: a variable of another unit is
+  /// reached with one more load (the address is read from a slot), a variable of the
+  /// same unit has an absolute address (docs\PIANO_TUTTO_A_CLASSI.md, par. 11.16).
+  /// Scratch space of one call: P_CheckPosition sets it every time, never saved.
+  /// </summary>
+  TMapCheck = class sealed
+  public
+    /// <summary>The thing that is being checked or moved.</summary>
+    class var Thing: Pmobj_t;
+    /// <summary>The flags of the thing being checked (the thing's own or the caller's).</summary>
+    class var Flags: integer;
+    /// <summary>The position being checked.</summary>
+    class var X: fixed_t;
+    class var Y: fixed_t;
+    /// <summary>The bounding box of the thing at the position being checked.</summary>
+    class var BBox: array[0..3] of fixed_t;
+    /// <summary>Highest floor, lowest ceiling and lowest drop off found under the thing.</summary>
+    class var FloorZ: fixed_t;
+    class var CeilingZ: fixed_t;
+    class var DropOffZ: fixed_t;
+    /// <summary>The flat of the floor that gave FloorZ.</summary>
+    class var FloorPic: integer;
+    /// <summary>The line a bouncing thing has hit.</summary>
+    class var BounceLine: Pline_t;
+  end;
+
 //==============================================================================
 //
 // P_TeleportMove
@@ -198,14 +229,8 @@ var
   linetarget: Pmobj_t;  // who got hit (or NULL)
 
 // If "floatok" true, move would be ok
-// if within "tmfloorz - tmceilingz".
+// if within "TMapCheck.FloorZ - TMapCheck.CeilingZ".
   floatok: boolean;
-
-  tmfloorz: fixed_t;
-  tmceilingz: fixed_t;
-  tmdropoffz: fixed_t;
-  tmfloorpic: integer;
-  tmbounceline: Pline_t;
 
 var
   spechit: Pline_tPArray = nil;  // JVAL Now spechit is dynamic
@@ -226,19 +251,6 @@ var
 function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
 
 var
-  tmbbox: array[0..3] of fixed_t;
-
-// JVAL: 3d Floors move from implementation section to interface
-var
-  tmthing: Pmobj_t;
-  tmx: fixed_t; // JVAL: Slopes - move from implementation section to interface
-  tmy: fixed_t; // JVAL: Slopes - move from implementation section to interface
-
-// Moved from the implementation section: the rules of the game
-// (DelphiDoom.Engine.World.MapRules, one unit per game folder) read and write them
-var
-  tmflags: integer;
-
   bestslidefrac: fixed_t;
   bestslideline: Pline_t;
   slidemo: Pmobj_t;
@@ -302,44 +314,44 @@ begin
   end;
 
   // JVAL: 20210209 - MF3_EX_THRUACTORS flag - does not colide with actors
-  if (tmthing.flags3_ex and MF3_EX_THRUACTORS <> 0) or (thing.flags3_ex and MF3_EX_THRUACTORS <> 0) then
+  if (TMapCheck.Thing.flags3_ex and MF3_EX_THRUACTORS <> 0) or (thing.flags3_ex and MF3_EX_THRUACTORS <> 0) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20211031 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
-  if (tmthing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(thing._type) then
+  if (TMapCheck.Thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(thing._type) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20211031 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
-  if (thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(tmthing._type) then
+  if (thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(TMapCheck.Thing._type) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20210209 - MF3_EX_THRUSPECIES flag - does not colide with same species (also inheritance)
-  if tmthing.flags3_ex and MF3_EX_THRUSPECIES <> 0 then
+  if TMapCheck.Thing.flags3_ex and MF3_EX_THRUSPECIES <> 0 then
   begin
-    if tmthing._type = thing._type then
+    if TMapCheck.Thing._type = thing._type then
     begin
       result := true;
       exit;
     end;
-    if Info_GetInheritance(tmthing.info) = Info_GetInheritance(thing.info) then
+    if Info_GetInheritance(TMapCheck.Thing.info) = Info_GetInheritance(thing.info) then
     begin
       result := true;
       exit;
     end;
   end;
 
-  blockdist := thing.radius + tmthing.radius;
+  blockdist := thing.radius + TMapCheck.Thing.radius;
 
-  if (abs(thing.x - tmx) >= blockdist) or (abs(thing.y - tmy) >= blockdist) then
+  if (abs(thing.x - TMapCheck.X) >= blockdist) or (abs(thing.y - TMapCheck.Y) >= blockdist) then
   begin
     // didn't hit it
     result := true;
@@ -347,7 +359,7 @@ begin
   end;
 
   // don't clip against self
-  if thing = tmthing then
+  if thing = TMapCheck.Thing then
   begin
     result := true;
     exit;
@@ -359,7 +371,7 @@ begin
     exit;
   end;
 
-  P_DamageMobj(thing, tmthing, tmthing, 10000);
+  P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing, 10000);
 
   result := true;
 end;
@@ -381,17 +393,17 @@ var
   r: fixed_t;
 begin
   // kill anything occupying the position
-  tmthing := thing;
-  tmflags := thing.flags;
+  TMapCheck.Thing := thing;
+  TMapCheck.Flags := thing.flags;
 
-  tmx := x;
-  tmy := y;
+  TMapCheck.X := x;
+  TMapCheck.Y := y;
 
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
+  r := TMapCheck.Thing.radius;
+  TMapCheck.BBox[BOX_TOP] := y + r;
+  TMapCheck.BBox[BOX_BOTTOM] := y - r;
+  TMapCheck.BBox[BOX_RIGHT] := x + r;
+  TMapCheck.BBox[BOX_LEFT] := x - r;
 
   newsec := TMapGameRules.PointInSector(x, y);
   ceilingline := nil;
@@ -400,13 +412,13 @@ begin
   // that contains the point.
   // Any contacted lines the step closer together
   // will adjust them.
-  //**tmdropoffz := newsubsec.sector.floorheight;
-  tmdropoffz := P_FloorHeight(newsec, x, y); // JVAL: Slopes
-  tmfloorz := tmdropoffz;
+  //**TMapCheck.DropOffZ := newsubsec.sector.floorheight;
+  TMapCheck.DropOffZ := P_FloorHeight(newsec, x, y); // JVAL: Slopes
+  TMapCheck.FloorZ := TMapCheck.DropOffZ;
 
-  //**tmceilingz := newsubsec.sector.ceilingheight + P_SectorJumpOverhead(newsubsec.sector);
-  tmceilingz := P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
-  tmfloorpic := newsec.floorpic;
+  //**TMapCheck.CeilingZ := newsubsec.sector.ceilingheight + P_SectorJumpOverhead(newsubsec.sector);
+  TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
+  TMapCheck.FloorPic := newsec.floorpic;
 
   inc(validcount);
   numspechit := 0;
@@ -414,17 +426,17 @@ begin
   // stomp on any things contacted
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   for bx := xl to xh do
@@ -439,12 +451,12 @@ begin
   // so link the thing into its new position
   P_UnsetThingPosition(thing);
 
-  thing.floorz := tmfloorz;
-  thing.ceilingz := tmceilingz;
+  thing.floorz := TMapCheck.FloorZ;
+  thing.ceilingz := TMapCheck.CeilingZ;
   thing.x := x;
   thing.y := y;
   if TMapGameRules.TeleportSetsZ then
-    thing.z := tmfloorz;
+    thing.z := TMapCheck.FloorZ;
 
   P_SetThingPosition(thing);
 
@@ -462,21 +474,21 @@ end;
 // MOVEMENT ITERATOR FUNCTIONS
 //
 // PIT_CheckLine
-// Adjusts tmfloorz and tmceilingz as lines are contacted
+// Adjusts TMapCheck.FloorZ and TMapCheck.CeilingZ as lines are contacted
 //
 //==============================================================================
 function PIT_CheckLine(ld: Pline_t): boolean;
 begin
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
+  if (TMapCheck.BBox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (TMapCheck.BBox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (TMapCheck.BBox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (TMapCheck.BBox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
   end;
 
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -495,14 +507,14 @@ begin
 
   if ld.backsector = nil then
   begin
-    TMapGameRules.BlastedHitsWall(tmthing);
-    P_CheckForPushSpecial(ld, 0, tmthing);
+    TMapGameRules.BlastedHitsWall(TMapCheck.Thing);
+    P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
     result := false;  // one sided line
-    tmbounceline := ld;
+    TMapCheck.BounceLine := ld;
     exit;
   end;
 
-  if tmthing.flags and MF_MISSILE = 0 then
+  if TMapCheck.Thing.flags and MF_MISSILE = 0 then
     if not TMapGameRules.CheckLineBlocking(ld) then
     begin
       result := false;
@@ -513,17 +525,17 @@ begin
   P_LineOpening(ld, true);
 
   // adjust floor / ceiling heights
-  if opentop < tmceilingz then
+  if opentop < TMapCheck.CeilingZ then
   begin
-    tmceilingz := opentop;
+    TMapCheck.CeilingZ := opentop;
     ceilingline := ld;
   end;
 
-  if openbottom > tmfloorz then
-    tmfloorz := openbottom;
+  if openbottom > TMapCheck.FloorZ then
+    TMapCheck.FloorZ := openbottom;
 
-  if lowfloor < tmdropoffz then
-    tmdropoffz := lowfloor;
+  if lowfloor < TMapCheck.DropOffZ then
+    TMapCheck.DropOffZ := lowfloor;
 
   // if contacted a special line, add it to the list
   if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
@@ -555,10 +567,10 @@ end;
 //==============================================================================
 function PIT_CheckLineTM(ld: Pline_t): boolean;
 begin
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
+  if (TMapCheck.BBox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (TMapCheck.BBox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (TMapCheck.BBox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (TMapCheck.BBox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
     result := true;
     exit;
@@ -571,7 +583,7 @@ begin
     exit;
   end;
 
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -590,14 +602,14 @@ begin
 
   if ld.backsector = nil then
   begin
-    TMapGameRules.BlastedHitsWall(tmthing);
-    P_CheckForPushSpecial(ld, 0, tmthing);
+    TMapGameRules.BlastedHitsWall(TMapCheck.Thing);
+    P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
     result := false;  // one sided line
-    tmbounceline := ld;
+    TMapCheck.BounceLine := ld;
     exit;
   end;
 
-  if tmthing.flags and MF_MISSILE = 0 then
+  if TMapCheck.Thing.flags and MF_MISSILE = 0 then
     if not TMapGameRules.CheckLineBlockingTM(ld) then
     begin
       result := false;
@@ -611,17 +623,17 @@ begin
     P_LineOpeningTM(ld, true);
 
   // adjust floor / ceiling heights
-  if opentop < tmceilingz then
+  if opentop < TMapCheck.CeilingZ then
   begin
-    tmceilingz := opentop;
+    TMapCheck.CeilingZ := opentop;
     ceilingline := ld;
   end;
 
-  if openbottom > tmfloorz then
-    tmfloorz := openbottom;
+  if openbottom > TMapCheck.FloorZ then
+    TMapCheck.FloorZ := openbottom;
 
-  if lowfloor < tmdropoffz then
-    tmdropoffz := lowfloor;
+  if lowfloor < TMapCheck.DropOffZ then
+    TMapCheck.DropOffZ := lowfloor;
 
   // if contacted a special line, add it to the list
   if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
@@ -717,13 +729,13 @@ begin
     pushfactor := thing.pushfactor;
     if pushfactor <= 0 then
     begin
-      thing.momx := thing.momx + TMapGameRules.QuarterMomentum(tmthing.momx);
-      thing.momy := thing.momy + TMapGameRules.QuarterMomentum(tmthing.momy);
+      thing.momx := thing.momx + TMapGameRules.QuarterMomentum(TMapCheck.Thing.momx);
+      thing.momy := thing.momy + TMapGameRules.QuarterMomentum(TMapCheck.Thing.momy);
     end
     else
     begin
-      thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-      thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
+      thing.momx := thing.momx + FixedMul(TMapCheck.Thing.momx, pushfactor);
+      thing.momy := thing.momy + FixedMul(TMapCheck.Thing.momy, pushfactor);
     end;
   end;
 end;
@@ -744,7 +756,7 @@ begin
     if TMapGameRules.PicksUpOnContact then
     begin
       // can remove thing
-      P_TouchSpecialThing(thing, tmthing);
+      P_TouchSpecialThing(thing, TMapCheck.Thing);
     end;
     result := not solid;
   end
@@ -767,72 +779,72 @@ begin
   end;
 
   // don't clip against self
-  if thing = tmthing then
+  if thing = TMapCheck.Thing then
   begin
     result := true;
     exit;
   end;
 
   if G_PlayingEngineVersion >= VERSION205 then
-    if (thing.player <> nil) or (tmthing.player <> nil) then  // Only if a player is involved
-      if not P_ThingsInSameZ(thing, tmthing) then // JVAL: 20200413 -> Check z axis
+    if (thing.player <> nil) or (TMapCheck.Thing.player <> nil) then  // Only if a player is involved
+      if not P_ThingsInSameZ(thing, TMapCheck.Thing) then // JVAL: 20200413 -> Check z axis
       begin
         result := true;
         exit;
       end;
 
   // JVAL: 20200130 - MF2_EX_DONTBLOCKPLAYER flag - does not block players
-  if (thing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (tmthing.player <> nil) then
+  if (thing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (TMapCheck.Thing.player <> nil) then
   begin
     result := true;
     exit;
   end;
 
-  if (tmthing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (thing.player <> nil) then
+  if (TMapCheck.Thing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (thing.player <> nil) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20210209 - MF3_EX_THRUACTORS flag - does not colide with actors
-  if (tmthing.flags3_ex and MF3_EX_THRUACTORS <> 0) or (thing.flags3_ex and MF3_EX_THRUACTORS <> 0) then
+  if (TMapCheck.Thing.flags3_ex and MF3_EX_THRUACTORS <> 0) or (thing.flags3_ex and MF3_EX_THRUACTORS <> 0) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20211031 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
-  if (tmthing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(thing._type) then
+  if (TMapCheck.Thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(thing._type) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20211031 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
-  if (thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(tmthing._type) then
+  if (thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(TMapCheck.Thing._type) then
   begin
     result := true;
     exit;
   end;
 
   // JVAL: 20210209 - MF3_EX_THRUSPECIES flag - does not colide with same species (also inheritance)
-  if tmthing.flags3_ex and MF3_EX_THRUSPECIES <> 0 then
+  if TMapCheck.Thing.flags3_ex and MF3_EX_THRUSPECIES <> 0 then
   begin
-    if tmthing._type = thing._type then
+    if TMapCheck.Thing._type = thing._type then
     begin
       result := true;
       exit;
     end;
-    if Info_GetInheritance(tmthing.info) = Info_GetInheritance(thing.info) then
+    if Info_GetInheritance(TMapCheck.Thing.info) = Info_GetInheritance(thing.info) then
     begin
       result := true;
       exit;
     end;
   end;
 
-  blockdist := thing.radius + tmthing.radius;
+  blockdist := thing.radius + TMapCheck.Thing.radius;
 
-  if (abs(thing.x - tmx) >= blockdist) or (abs(thing.y - tmy) >= blockdist) then
+  if (abs(thing.x - TMapCheck.X) >= blockdist) or (abs(thing.y - TMapCheck.Y) >= blockdist) then
   begin
     // didn't hit it
     result := true;
@@ -842,16 +854,16 @@ begin
   // JVAL: 3d Floors
   if G_PlayingEngineVersion >= TMapGameRules.SlopesVersion then
   begin
-    if (tmthing.player <> nil) or (thing.player <> nil) then
-      if tmfloorz <> thing.floorz then
+    if (TMapCheck.Thing.player <> nil) or (thing.player <> nil) then
+      if TMapCheck.FloorZ <> thing.floorz then
       begin
-        if tmthing.z > thing.z + thing.height then
+        if TMapCheck.Thing.z > thing.z + thing.height then
         begin
           result := true;
           exit;
         end;
 
-        if tmthing.z + tmthing.height < thing.z then
+        if TMapCheck.Thing.z + TMapCheck.Thing.height < thing.z then
         begin // under thing
           result := true;
           exit;
@@ -885,7 +897,7 @@ end;
 //  newsubsec
 //  floorz
 //  ceilingz
-//  tmdropoffz
+//  TMapCheck.DropOffZ
 //   the lowest point contacted
 //   (monsters won't move to a dropoff)
 //  speciallines[]
@@ -904,17 +916,17 @@ var
   msec: Psector_t;
   r: fixed_t;
 begin
-  tmthing := thing;
-  tmflags := thing.flags;
+  TMapCheck.Thing := thing;
+  TMapCheck.Flags := thing.flags;
 
-  tmx := x;
-  tmy := y;
+  TMapCheck.X := x;
+  TMapCheck.Y := y;
 
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
+  r := TMapCheck.Thing.radius;
+  TMapCheck.BBox[BOX_TOP] := y + r;
+  TMapCheck.BBox[BOX_BOTTOM] := y - r;
+  TMapCheck.BBox[BOX_RIGHT] := x + r;
+  TMapCheck.BBox[BOX_LEFT] := x - r;
 
   newsec := TMapGameRules.PointInSector(x, y);
 
@@ -926,27 +938,27 @@ begin
   // Any contacted lines the step closer together
   // will adjust them.
   // JVAL 20191209 - Fix 3d floor problems with A_SpawnItem & A_SpawnItemEx
-  tmdropoffz := P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
-  tmfloorz := tmdropoffz;
-  tmceilingz := P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
+  TMapCheck.DropOffZ := P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
+  TMapCheck.FloorZ := TMapCheck.DropOffZ;
+  TMapCheck.CeilingZ := P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
 
-  tmbounceline := nil;
+  TMapCheck.BounceLine := nil;
 
   if newsec.midsec >= 0 then
   begin
     msec := @sectors[newsec.midsec];
     if thing.z < msec.ceilingheight then
-      tmfloorpic := newsec.floorpic
+      TMapCheck.FloorPic := newsec.floorpic
     else
-      tmfloorpic := msec.ceilingpic
+      TMapCheck.FloorPic := msec.ceilingpic
   end
   else
-    tmfloorpic := newsec.floorpic;
+    TMapCheck.FloorPic := newsec.floorpic;
 
   inc(validcount);
   numspechit := 0;
 
-  if TMapGameRules.NoClipSkipsThings(tmflags) then
+  if TMapGameRules.NoClipSkipsThings(TMapCheck.Flags) then
   begin
     result := true;
     exit;
@@ -959,17 +971,17 @@ begin
   // into adjacent blocks by up to MAXRADIUS units.
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   TMapGameRules.ClearBlockingThing;
@@ -982,7 +994,7 @@ begin
       end;
 
   // check lines
-  if TMapGameRules.NoClipSkipsLines(tmflags) then
+  if TMapGameRules.NoClipSkipsLines(TMapCheck.Flags) then
   begin
     result := true;
     exit;
@@ -991,17 +1003,17 @@ begin
   TMapGameRules.ClearBlockingThing;
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx));
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx));
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy));
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy));
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy);
   end;
 
   // JVAL: Slopes
@@ -1124,25 +1136,25 @@ begin
     exit;
   end;
 
-  blockdist := thing.radius + tmthing.radius;
-  if (abs(thing.x - tmx) >= blockdist) or (abs(thing.y - tmy) >= blockdist) then
+  blockdist := thing.radius + TMapCheck.Thing.radius;
+  if (abs(thing.x - TMapCheck.X) >= blockdist) or (abs(thing.y - TMapCheck.Y) >= blockdist) then
   begin // Didn't hit thing
     result := true;
     exit;
   end;
 
-  if thing = tmthing then
+  if thing = TMapCheck.Thing then
   begin // Don't clip against self
     result := true;
     exit;
   end;
 
-  if tmthing.z > thing.z + thing.height then
+  if TMapCheck.Thing.z > thing.z + thing.height then
   begin
     result := true;
     exit;
   end
-  else if tmthing.z + tmthing.height < thing.z then
+  else if TMapCheck.Thing.z + TMapCheck.Thing.height < thing.z then
   begin // under thing
     result := true;
     exit;
@@ -1172,19 +1184,19 @@ var
 begin
   x := thing.x;
   y := thing.y;
-  tmthing := thing;
-  tmflags := thing.flags;
+  TMapCheck.Thing := thing;
+  TMapCheck.Flags := thing.flags;
   oldmo := thing^; // save the old mobj before the fake zmovement
-  P_FakeZMovement(tmthing);
+  P_FakeZMovement(TMapCheck.Thing);
 
-  tmx := x;
-  tmy := y;
+  TMapCheck.X := x;
+  TMapCheck.Y := y;
 
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
+  r := TMapCheck.Thing.radius;
+  TMapCheck.BBox[BOX_TOP] := y + r;
+  TMapCheck.BBox[BOX_BOTTOM] := y - r;
+  TMapCheck.BBox[BOX_RIGHT] := x + r;
+  TMapCheck.BBox[BOX_LEFT] := x - r;
 
   newsec := TMapGameRules.PointInSector(x, y);
   ceilingline := nil;
@@ -1193,14 +1205,14 @@ begin
 // the base floor / ceiling is from the subsector that contains the
 // point.  Any contacted lines the step closer together will adjust them
 //
-  tmfloorz := P_FloorHeight(newsec, x, y);  // JVAL: Slopes
-  tmdropoffz := tmfloorz;
-  tmceilingz := P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
+  TMapCheck.FloorZ := P_FloorHeight(newsec, x, y);  // JVAL: Slopes
+  TMapCheck.DropOffZ := TMapCheck.FloorZ;
+  TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
 
   inc(validcount);
   numspechit := 0;
 
-  if tmflags and MF_NOCLIP <> 0 then
+  if TMapCheck.Flags and MF_NOCLIP <> 0 then
   begin
     result := nil;
     exit;
@@ -1214,29 +1226,29 @@ begin
 //
   if internalblockmapformat then
   begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+    xl := MapBlockIntX(int64(TMapCheck.BBox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(TMapCheck.BBox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(TMapCheck.BBox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(TMapCheck.BBox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
   end
   else
   begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+    xl := MapBlockInt(TMapCheck.BBox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(TMapCheck.BBox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(TMapCheck.BBox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(TMapCheck.BBox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
   for bx := xl to xh do
     for by := yl to yh do
       if not P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ) then
       begin
-        tmthing^ := oldmo;
+        TMapCheck.Thing^ := oldmo;
         result := onmobj;
         exit;
       end;
 
-  tmthing^ := oldmo;
+  TMapCheck.Thing^ := oldmo;
   result := nil;
 end;
 
@@ -1266,7 +1278,7 @@ var
   begin
     if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
     begin
-      TMapGameRules.BlastedHitsWall(tmthing);
+      TMapGameRules.BlastedHitsWall(TMapCheck.Thing);
       numSpecHitTemp := numspechit;
       while numSpecHitTemp > 0 do
       begin
@@ -1292,7 +1304,7 @@ begin
 
   if thing.flags and MF_NOCLIP = 0 then
   begin
-    if tmceilingz - tmfloorz < thing.height then
+    if TMapCheck.CeilingZ - TMapCheck.FloorZ < thing.height then
     begin
       pushline;
       result := false;  // doesn't fit
@@ -1302,7 +1314,7 @@ begin
     floatok := true;
 
     if not TMapGameRules.IgnoresCeilingFit(thing) and
-       (tmceilingz - thing.z < thing.height) then
+       (TMapCheck.CeilingZ - thing.z < thing.height) then
     begin
       pushline;
       result := false;  // mobj must lower itself to fit
@@ -1326,7 +1338,7 @@ begin
     p := thing.player;
     if p <> nil then
       if p.laddertics > 0 then
-        if tmfloorz > thing.z then
+        if TMapCheck.FloorZ > thing.z then
         begin
           result := false;
           exit;
@@ -1353,7 +1365,7 @@ begin
         jumpupmargin := jumpupmargin + 32 * FRACUNIT;
 
     if not TMapGameRules.IgnoresStepHeight(thing) and
-       (tmfloorz - thing.z > jumpupmargin) then
+       (TMapCheck.FloorZ - thing.z > jumpupmargin) then
     begin
       pushline;
       result := false;  // too big a step up
@@ -1387,7 +1399,7 @@ begin
         dropoffmargin := dropoffmargin + TMapGameRules.JumpDownMargin;
 
     if (thing.flags and (MF_DROPOFF or MF_FLOAT) = 0) and
-       (tmfloorz - tmdropoffz > dropoffmargin) and
+       (TMapCheck.FloorZ - TMapCheck.DropOffZ > dropoffmargin) and
        not TMapGameRules.IgnoresDropoff(thing) then
     begin
       result := false;  // don't stand over a dropoff
@@ -1396,8 +1408,8 @@ begin
 
     // JVAL: Version 204
     if TMapGameRules.CannotLeaveFloorPic(thing) and
-       ((tmfloorpic <> Psubsector_t(thing.subsector).sector.floorpic) or
-         (tmfloorz - thing.z <> 0)) then
+       ((TMapCheck.FloorPic <> Psubsector_t(thing.subsector).sector.floorpic) or
+         (TMapCheck.FloorZ - thing.z <> 0)) then
     begin // must stay within a sector of a certain floor type
       result := false;
       exit;
@@ -1414,8 +1426,8 @@ begin
   oldx := thing.x;
   oldy := thing.y;
 
-  thing.floorz := tmfloorz;
-  thing.ceilingz := tmceilingz;
+  thing.floorz := TMapCheck.FloorZ;
+  thing.ceilingz := TMapCheck.CeilingZ;
 
   TMapGameRules.StoreFloorPic(thing);
   thing.x := x;
@@ -1429,15 +1441,15 @@ begin
     p := thing.player;
     if p = nil then
     begin
-      if thing.z < tmfloorz then
-        thing.z := tmfloorz;
+      if thing.z < TMapCheck.FloorZ then
+        thing.z := TMapCheck.FloorZ;
     end
     else
     begin
       p.slopetics := SLOPECOUNTDOWN;
       if oldonfloorz then
-        if oldfloorz > tmfloorz then
-          thing.momz := thing.momz + (tmfloorz - oldfloorz);
+        if oldfloorz > TMapCheck.FloorZ then
+          thing.momz := thing.momz + (TMapCheck.FloorZ - oldfloorz);
     end;
 
   end;
@@ -1492,8 +1504,8 @@ begin
   P_CheckPosition(thing, thing.x, thing.y);
   // what about stranding a monster partially off an edge?
 
-  thing.floorz := tmfloorz;
-  thing.ceilingz := tmceilingz;
+  thing.floorz := TMapCheck.FloorZ;
+  thing.ceilingz := TMapCheck.CeilingZ;
   TMapGameRules.StoreFloorPic(thing);
 
   if onfloor then

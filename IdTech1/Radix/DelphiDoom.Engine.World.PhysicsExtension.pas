@@ -49,7 +49,7 @@ type
     /// <summary>
     ///   PIT_CheckLine and P_XYMovement of Rad-X, before the explosion: true when the line that
     ///   stopped the missile is a wall that can be shot (RX_ShootableLine). A one sided line is
-    ///   tmbounceline; a two sided one whose opening does not hold the missile is found among the
+    ///   TMapCheck.BounceLine; a two sided one whose opening does not hold the missile is found among the
     ///   lines of the place that was tried (a closed sector, or the panel under an opening, is how
     ///   the walls of Radix are made). The line is remembered, because the explosion runs states
     ///   that move things and change what the movement code leaves behind

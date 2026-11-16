@@ -1258,9 +1258,9 @@ begin
     TPhysicsExtension.MissileExploded(mo);
   end
   // JVAL: 20211121 - New bounce on walls mechanics
-  else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (tmbounceline <> nil) then
+  else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (TMapCheck.BounceLine <> nil) then
   begin
-    P_WallBounceMobj(mo, tmbounceline);
+    P_WallBounceMobj(mo, TMapCheck.BounceLine);
     xmove := 0;
     ymove := 0;
   end
