@@ -77,112 +77,96 @@ procedure R_SpriteRenderMT;
 // R_DrawColumnLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnLowestMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnLowMT
 //
 //==============================================================================
-procedure R_DrawColumnLowMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnMediumMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnAddLowestMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddLowMT
 //
 //==============================================================================
-procedure R_DrawColumnAddLowMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnAddMediumMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddHiMT
 //
 //==============================================================================
-procedure R_DrawColumnAddHiMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddHi_SmallStepMT
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_SmallStepMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnSubtractLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLowestMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnSubtractLowMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLowMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnSubtractMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMediumMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnSubtractHiMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHiMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAverageLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageLowestMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAverageLowMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageLowMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAverageMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageMediumMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAverageHiMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageHiMT(p: Pspriterenderinfo_t);
 
 //
 // Normal functions
@@ -193,7 +177,6 @@ procedure R_DrawColumnAverageHiMT(p: Pspriterenderinfo_t);
 // R_DrawMaskedColumnNormalMT
 //
 //==============================================================================
-procedure R_DrawMaskedColumnNormalMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 // R_DrawColumnLow_BatchMT
@@ -203,7 +186,6 @@ procedure R_DrawMaskedColumnNormalMT(p: Pspriterenderinfo_t);
 // Low res
 //
 //==============================================================================
-procedure R_DrawColumnLow_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 // R_DrawColumnMedium_BatchMT
@@ -211,28 +193,24 @@ procedure R_DrawColumnLow_BatchMT(p: Pspriterenderinfo_t);
 // Medium res
 //
 //==============================================================================
-procedure R_DrawColumnMedium_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAlphaMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMedium_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAddMedium_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnSubtractMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMedium_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 // R_DrawColumnHi_BatchMT
@@ -240,42 +218,73 @@ procedure R_DrawColumnSubtractMedium_BatchMT(p: Pspriterenderinfo_t);
 // Hi res
 //
 //==============================================================================
-procedure R_DrawColumnHi_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAverageMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageMedium_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAverageHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageHi_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAlphaHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAlphaHi_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnAddHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_BatchMT(p: Pspriterenderinfo_t);
 
 //==============================================================================
 //
 // R_DrawColumnSubtractHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHi_BatchMT(p: Pspriterenderinfo_t);
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSpriteDrawers = class sealed
+  public
+    class procedure R_DrawColumnLowestMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnLowMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnMediumMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddLowestMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddLowMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddMediumMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddHiMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddHi_SmallStepMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnSubtractLowestMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnSubtractLowMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnSubtractMediumMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnSubtractHiMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAverageLowestMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAverageLowMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAverageMediumMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAverageHiMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawMaskedColumnNormalMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnLow_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnMedium_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAlphaMedium_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddMedium_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnSubtractMedium_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnHi_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAverageMedium_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAverageHi_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAlphaHi_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnAddHi_BatchMT(p: Pspriterenderinfo_t); static;
+    class procedure R_DrawColumnSubtractHi_BatchMT(p: Pspriterenderinfo_t); static;
+  end;
 
 implementation
 
@@ -299,7 +308,7 @@ uses
 // R_DrawColumnLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnLowestMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnLowestMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -357,7 +366,7 @@ end;
 // R_DrawColumnLowMT
 //
 //==============================================================================
-procedure R_DrawColumnLowMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnLowMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -409,7 +418,7 @@ end;
 // R_DrawColumnMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnMediumMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnMediumMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -532,7 +541,7 @@ end;
 // R_DrawColumnAddLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnAddLowestMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddLowestMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -590,7 +599,7 @@ end;
 // R_DrawColumnAddLowMT
 //
 //==============================================================================
-procedure R_DrawColumnAddLowMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddLowMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -642,7 +651,7 @@ end;
 // R_DrawColumnAddMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnAddMediumMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddMediumMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -699,7 +708,7 @@ end;
 // R_DrawColumnAddHiMT
 //
 //==============================================================================
-procedure R_DrawColumnAddHiMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddHiMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -774,7 +783,7 @@ end;
 // R_DrawColumnAddHi_SmallStepMT
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_SmallStepMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddHi_SmallStepMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -892,7 +901,7 @@ end;
 // R_DrawColumnSubtractLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLowestMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnSubtractLowestMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -950,7 +959,7 @@ end;
 // R_DrawColumnSubtractLowMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractLowMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnSubtractLowMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -1002,7 +1011,7 @@ end;
 // R_DrawColumnSubtractMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMediumMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnSubtractMediumMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -1059,7 +1068,7 @@ end;
 // R_DrawColumnSubtractHiMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHiMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnSubtractHiMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -1140,7 +1149,7 @@ end;
 // R_DrawColumnAverageLowestMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageLowestMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAverageLowestMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -1198,7 +1207,7 @@ end;
 // R_DrawColumnAverageLowMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageLowMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAverageLowMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -1250,7 +1259,7 @@ end;
 // R_DrawColumnAverageMediumMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageMediumMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAverageMediumMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -1296,7 +1305,7 @@ end;
 // R_DrawColumnAverageHiMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageHiMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAverageHiMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destb: PByte;
@@ -1343,7 +1352,7 @@ end;
 // R_DrawMaskedColumnNormalMT
 //
 //==============================================================================
-procedure R_DrawMaskedColumnNormalMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawMaskedColumnNormalMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -1418,7 +1427,7 @@ end;
 // Batch functions
 //
 //==============================================================================
-procedure R_DrawColumnLow_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnLow_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   i: integer;
@@ -1497,7 +1506,7 @@ end;
 // R_DrawColumnMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnMedium_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnMedium_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -2304,7 +2313,7 @@ end;
 // R_DrawColumnAlphaMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMedium_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAlphaMedium_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -2362,7 +2371,7 @@ end;
 // R_DrawColumnAddMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAddMedium_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddMedium_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -2420,7 +2429,7 @@ end;
 // R_DrawColumnSubtractMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractMedium_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnSubtractMedium_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -2478,7 +2487,7 @@ end;
 // R_DrawColumnHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnHi_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnHi_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -2654,7 +2663,7 @@ end;
 // R_DrawColumnAverageMedium_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageMedium_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAverageMedium_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   dest: PByte;
@@ -2712,7 +2721,7 @@ end;
 // R_DrawColumnAverageHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAverageHi_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAverageHi_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destb: PByte;
@@ -2773,7 +2782,7 @@ end;
 // R_DrawColumnAlphaHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAlphaHi_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAlphaHi_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -2848,7 +2857,7 @@ end;
 // R_DrawColumnAddHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnAddHi_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
@@ -2931,7 +2940,7 @@ end;
 // R_DrawColumnSubtractHi_BatchMT
 //
 //==============================================================================
-procedure R_DrawColumnSubtractHi_BatchMT(p: Pspriterenderinfo_t);
+class procedure TRendererSpriteDrawers.R_DrawColumnSubtractHi_BatchMT(p: Pspriterenderinfo_t);
 var
   count: integer;
   destl: PLongWord;
