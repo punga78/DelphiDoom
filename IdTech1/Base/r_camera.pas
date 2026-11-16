@@ -164,7 +164,9 @@ procedure R_AdjustTeleportZoom(const player: Pplayer_t);
 var
   mo: Pmobj_t;
   an: angle_t;
+{$IFDEF CPUX86}
   distf: float;
+{$ENDIF}
   dist: fixed_t;
 begin
   if player.teleporttics <= 0 then

@@ -161,15 +161,20 @@ var
 procedure R_ComputeFake3DTables(const l: integer);
 var
   f3d: Pf3dinfo_t;
-  i, j: integer;
+  i: integer;
+{$IFDEF CPUX86}
+  j: integer;
   buffer: array[0..MAXHEIGHT - 1] of double;
   buffer2: array[0..MAXHEIGHT - 1] of double;
-  c, c1, c2: Double;
+  c1: Double;
   c1frac: Double;
   invc2: Double;
   r: double;
   leftstep: double;
   rightstep: double;
+  correction: Double;
+{$ENDIF}
+  c, c2: Double;
   ymin, ymax: integer;
   df: integer;
   viewheightdiff: integer;
@@ -177,7 +182,6 @@ var
   frac: fixed_t;
   left, right: integer;
   err: integer;
-  correction: Double;
 begin
   if l = 0 then
     exit;

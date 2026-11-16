@@ -434,8 +434,10 @@ end;
 //
 //==============================================================================
 function R_InterpolationCalcA(const prev, next: angle_t): angle_t;
+{$IFDEF CPUX86}
 var
   prev_e, next_e, mid_e: float;
+{$ENDIF}
 begin
   if prev = next then
     result := prev
