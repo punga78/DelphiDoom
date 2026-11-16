@@ -16,7 +16,7 @@ uses
 
 type
   /// <summary>
-  ///   An <c>IDeclSource</c> over the file system of <c>Libs\Wad</c> (issue #99): the files of the search list,
+  ///   An <c>IDeclSource</c> over the file system of <c>Framework\Wad</c> (issue #99): the files of the search list,
   ///   the ones in folders and the ones in the paks (PK4 and PK3: the same ZIP reader), the first in the list
   ///   winning, exactly as <c>fileSystem->ReadFile</c> and <c>ListFilesTree</c> do for the declaration manager.
   ///   Writing goes through an <c>IGameFileWriter</c> to the dev path (the original opens decl files with

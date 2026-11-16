@@ -128,12 +128,12 @@ if (-not $SenzaCompilare) {
   Set-Content "$uscita\src\d_ints.pas" ($d.Substring(0, $i + 1) + (Get-Content "$PSScriptRoot\d_ints.impl.txt" -Raw))
 
   $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-  $u = "$PSScriptRoot\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\GameMath;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Tests\Source"
+  $u = "$PSScriptRoot\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
   # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
   & $dcc -B -Q -CC -H- -W- '-$O+' "-U$u" "-I$Riferimento" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\WorldGolden.dpr" | Select-String 'Error|Fatal'
   if ($LASTEXITCODE -ne 0) { exit 1 }
   if ($Libreria) {
-    $u = "$radice\Libs\Greed;$radice\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\GameMath;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Libs\Png;$radice\Libs\Video;$radice\Libs\Palette;$radice\Libs\Zlib;$radice\Tests\Source"
+    $u = "$radice\Libs\Greed;$radice\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Framework\Png;$radice\Framework\Video;$radice\Framework\Palette;$radice\Framework\Zlib;$radice\Tests\Source"
     & $dcc -B -Q '-$O+' "-U$u" "-N0$uscita\libreria" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\WorldLibrary.dpr" | Select-String 'Error|Fatal'
     if ($LASTEXITCODE -ne 0) { exit 1 }
   }

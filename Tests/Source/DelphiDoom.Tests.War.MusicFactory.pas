@@ -4,7 +4,7 @@
 {  Libs\War                                                                    }
 {                                                                              }
 {  The whole chain with no sound: a MIDI file built in memory, the real        }
-{  sequencer of Libs\Midi, the player and the synth that adds nothing.         }
+{  sequencer of Framework\Midi, the player and the synth that adds nothing.    }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

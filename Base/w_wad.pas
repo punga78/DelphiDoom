@@ -341,7 +341,7 @@ uses
   DelphiDoom.Wad.FileBase;
 
 //
-// The directory of the lumps is kept by the WAD library (Libs\Wad): it reads the
+// The directory of the lumps is kept by the WAD library (Framework\Wad): it reads the
 // directories of the files, orders the lumps, finds them by name and knows which
 // ones are between the F_START/F_END, S_START/S_END, ... marker pairs.
 // lumpinfo[] is a view of it that W_SyncLumpInfo makes again whenever the
@@ -432,7 +432,7 @@ end;
 //==============================================================================
 procedure ExtractFileBase(const path: string; var dest: string);
 begin
-  // the rule of the base name is TWadFileBase of Libs\Wad
+  // the rule of the base name is TWadFileBase of Framework\Wad
   try
     dest := TWadFileBase.Extract(path);
   except
@@ -1136,7 +1136,7 @@ end;
 //==============================================================================
 //
 // W_LumpCRC32
-// The CRC-32 of the bytes of a lump (TCrc32 of Libs\MathCore) in 8 hexadecimal
+// The CRC-32 of the bytes of a lump (TCrc32 of Framework\MathCore) in 8 hexadecimal
 // digits in lower case; 'DEADDEAD' if lump < 0 (the old GetLumpCRC32 of m_crc32)
 //
 //==============================================================================
@@ -1230,7 +1230,7 @@ begin
   end;
 
   p := W_CacheLumpNum(lump, PU_STATIC);
-  // one character per byte, a #0 is a space (TWadLumpText of Libs\Wad)
+  // one character per byte, a #0 is a space (TWadLumpText of Framework\Wad)
   result := TWadLumpText.FromBuffer(p, W_LumpLength(lump));
 
   Z_Free(p);

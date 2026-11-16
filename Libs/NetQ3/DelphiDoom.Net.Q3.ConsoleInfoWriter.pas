@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: net library - info strings for the Quake III console            }
 {                                                                              }
-{  Connects the console (IQ3InfoStringWriter of Libs\Console) to the info      }
+{  Connects the console (IQ3InfoStringWriter of Framework\Console) to the info }
 {  strings of Quake III (TQ3InfoString): the console does not depend on this   }
 {  library, this unit knows both.                                              }
 {  Based on the Quake III Arena GPL Source Code (id Software).                 }

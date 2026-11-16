@@ -404,7 +404,7 @@ var
 //==============================================================================
 //
 // R_ConfigureNameHash
-// The hash table of the names of Libs\MathCore, given by the composition root
+// The hash table of the names of Framework\MathCore, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureNameHash(const ATable: IStringHashTable);
@@ -477,7 +477,7 @@ end;
 //==============================================================================
 //
 // R_ConfigureColormaps
-// The color matcher and the colormap preparer of Libs\Palette, given by the
+// The color matcher and the colormap preparer of Framework\Palette, given by the
 // composition root
 //
 //==============================================================================
@@ -492,7 +492,7 @@ end;
 //==============================================================================
 //
 // R_ConfigureComposite
-// The painter and the rebuilder of columns of Libs\Imaging, given by the
+// The painter and the rebuilder of columns of Framework\Imaging, given by the
 // composition root
 //
 //==============================================================================

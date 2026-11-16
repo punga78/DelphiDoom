@@ -104,7 +104,7 @@ type
     /// <summary>What says the kind of a lump</summary>
     class function CreateClassifier(const AArchive: IGreedArchive): IGreedLumpClassifier; static;
     /// <summary>
-    ///   Plays a map with TGreedGame: the window of Libs\GameHost with the keys of the original (or no window at
+    ///   Plays a map with TGreedGame: the window of Framework\GameHost with the keys of the original (or no window at
     ///   all), the mixer of the sound on the PCM output, the music of the map, the commands of a script. It ends
     ///   when the window is closed, when the game is over (Escape, or the last map) or after the tics asked for.
     ///   Returns the tics played
@@ -798,7 +798,7 @@ begin
     // one of the system (a run with a script must give the same game whatever the mouse of the machine does)
     LMouse := CreateScriptMouse(LScript, LScriptMouse);
     LRealMouse := (not AOptions.Headless) and (not AOptions.NoMouse) and (LScript.Count = 0);
-    // the window of Libs\GameHost with its display on GDI and the keys of the original, or nothing at all. The
+    // the window of Framework\GameHost with its display on GDI and the keys of the original, or nothing at all. The
     // system cursor is hidden when the game reads it: the game keeps it in the middle of the window
     if AOptions.Headless then
     begin

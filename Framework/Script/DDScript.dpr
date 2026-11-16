@@ -1,0 +1,46 @@
+{******************************************************************************}
+{                                                                              }
+{  DDScript.dll: Pascal Script compiler and interpreter for DelphiDoom         }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+library DDScript;
+
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
+uses
+  ps_defs in '..\PascalScript\ps_defs.pas',
+  ps_keywords in '..\PascalScript\ps_keywords.pas',
+  ps_utils in '..\PascalScript\ps_utils.pas',
+  ps_compiler in '..\PascalScript\ps_compiler.pas',
+  uPSPreProcessor in '..\PascalScript\uPSPreProcessor.pas',
+  ps_runtime in '..\PascalScript\ps_runtime.pas',
+  DelphiDoom.Script.Intf in 'DelphiDoom.Script.Intf.pas',
+  DelphiDoom.Script.Native in 'DelphiDoom.Script.Native.pas',
+  DelphiDoom.Script.Native.Compiler in 'DelphiDoom.Script.Native.Compiler.pas',
+  DelphiDoom.Script.Native.Executor in 'DelphiDoom.Script.Native.Executor.pas',
+  DelphiDoom.Script.Engine.Compiler in 'DelphiDoom.Script.Engine.Compiler.pas',
+  DelphiDoom.Script.Engine.Executor in 'DelphiDoom.Script.Engine.Executor.pas',
+  DelphiDoom.Script.Engine in 'DelphiDoom.Script.Engine.pas';
+
+function DDScriptCreate(out ALibrary: IScriptLibrary): Integer; stdcall;
+begin
+  ALibrary := nil;
+  try
+    ALibrary := TScriptEngine.Create;
+    Result := SCRIPT_OK;
+  except
+    Result := SCRIPT_ERROR_MEMORY;
+  end;
+end;
+
+exports
+  DDScriptCreate;
+
+begin
+end.

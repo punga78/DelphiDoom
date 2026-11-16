@@ -24,7 +24,7 @@
 //  The sizes of the flats that the renderers share.
 //  The FLATINFO lump is read by R_InitFlats (r_data) with the parser of
 //  Libs\TextureDefs, the reduction to 64x64 is done by V_TileScreen8
-//  (v_video) with the shrinker of Libs\Imaging.
+//  (v_video) with the shrinker of Framework\Imaging.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/

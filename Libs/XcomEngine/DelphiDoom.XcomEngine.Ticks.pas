@@ -18,7 +18,7 @@ uses
 
 type
   /// <summary>
-  ///   The two things OpenXcom asks to the time, said to the IClock of Libs\Clock: the milliseconds since the clock
+  ///   The two things OpenXcom asks to the time, said to the IClock of Framework\Clock: the milliseconds since the clock
   ///   was first read, cut to 32 bits (SDL_GetTicks), and the wait (SDL_Delay)
   /// </summary>
   TXcomTicks = class

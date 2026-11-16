@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: tests of TRoqJpegDecoder                                        }
 {                                                                              }
-{  The JPEG files are the ones of the tests of Libs\Jpeg (Tests\Data\Jpeg).     }
+{  The JPEG files are the ones of the tests of Framework\Jpeg (Tests\Data\Jpeg). }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -114,7 +114,7 @@ var
   LData: TBytes;
 begin
   LData := TRoqTestData.ReadJpeg('encoder-48x48-c3-q100.jpg');
-  // the header is valid, the data of the pixels are cut: the decoder of Libs\Jpeg gives pixels from
+  // the header is valid, the data of the pixels are cut: the decoder of Framework\Jpeg gives pixels from
   // the end-of-image marker that it invents, so it is the size check that is not asked here; only a cut
   // inside the header is an error
   SetLength(LData, 12);

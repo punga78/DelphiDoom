@@ -20,8 +20,8 @@ $inc = Join-Path $Work 'inc'
 
 $units = @(
   (Join-Path $root 'Libs\Racing'),
-  (Join-Path $root 'Libs\MathCore'),
-  (Join-Path $root 'Libs\GameMath'),
+  (Join-Path $root 'Framework\MathCore'),
+  (Join-Path $root 'Framework\GameMath'),
   (Join-Path $root 'Tests\Source'),
   $here,
   $inc

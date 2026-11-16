@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   ILog of Libs\Logging on the log of the game: what Libs\GameHost says goes there with the levels of OpenXcom
+  ///   ILog of Framework\Logging on the log of the game: what Framework\GameHost says goes there with the levels of OpenXcom
   ///   (INFO, WARN and ERROR). An error is only written: nothing ends the program here
   /// </summary>
   TXcomHostLog = class(TInterfacedObject, ILog)

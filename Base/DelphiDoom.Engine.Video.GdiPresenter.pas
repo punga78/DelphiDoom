@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: engine - the frame of the software renderer in the window with   }
-{  GDI (the step of Libs\GameHost), instead of the blit of DirectDraw           }
+{  GDI (the step of Framework\GameHost), instead of the blit of DirectDraw      }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

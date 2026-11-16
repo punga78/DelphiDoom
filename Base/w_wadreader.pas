@@ -39,7 +39,7 @@ uses
 type
   /// <summary>
   ///   Reads the lumps of one WAD file, apart from the lumps the game has loaded.
-  ///   It is the API the engine had, kept on top of the WAD library (Libs\Wad)
+  ///   It is the API the engine had, kept on top of the WAD library (Framework\Wad)
   /// </summary>
   TWadReader = class
   private

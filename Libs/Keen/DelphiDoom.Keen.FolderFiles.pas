@@ -16,7 +16,7 @@ uses
 
 type
   /// <summary>
-  ///   The files of the game on disk: IKeenDataFiles over the IFolderFiles of Libs\Platform, with the errors of
+  ///   The files of the game on disk: IKeenDataFiles over the IFolderFiles of Framework\Platform, with the errors of
   ///   the keen library. Several folders can be given (the data of the game in one, the dictionaries and
   ///   headers of the .KDR files in another): a file is taken from the first that has it
   /// </summary>

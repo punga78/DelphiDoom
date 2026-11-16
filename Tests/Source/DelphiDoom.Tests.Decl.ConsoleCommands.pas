@@ -4,7 +4,7 @@
 {  (listDecls, reloadDecls, touch, list<Type>, print<Type>) and the numbers    }
 {  behind them                                                                 }
 {                                                                              }
-{  The commands run in the real command system of Libs\Console (the idTech 4  }
+{  The commands run in the real command system of Framework\Console (the idTech 4 }
 {  profile) over a manager with decl files in memory. ListType and PrintType   }
 {  were compared with the C++ in the golden of the manager; the text of the    }
 {  commands themselves is checked against the code of DeclManager.cpp read     }

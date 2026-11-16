@@ -1,6 +1,6 @@
 # Libs\XcomBattle - note per Claude
 
-`Libs\XcomBattle` (issue #176, **Battlescape**: modello e logica, senza UI) porta a classi i pezzi della battaglia tattica di **OpenXcom**. Sta sopra `Libs\XcomMod` (regole, `TXcomRuleset`, `TXcomMapData`, `TXcomMapDataSet`, `IXcomRandom`), `Libs\XcomSave` (`TXcomNode`, `TXcomSoldier`, `TXcomBattleUnitStatistics`, `TXcomNodeWriter`) e `Libs\Yaml`. **Non tocca** `ComposeEngine` ne' `TIdTechGeneration`. **Licenza**: derivato da OpenXcom, GPL v3 o successiva (intestazioni di ogni unit); il repository resta GPL v2 o successiva, la scelta e' dell'utente.
+`Libs\XcomBattle` (issue #176, **Battlescape**: modello e logica, senza UI) porta a classi i pezzi della battaglia tattica di **OpenXcom**. Sta sopra `Libs\XcomMod` (regole, `TXcomRuleset`, `TXcomMapData`, `TXcomMapDataSet`, `IXcomRandom`), `Libs\XcomSave` (`TXcomNode`, `TXcomSoldier`, `TXcomBattleUnitStatistics`, `TXcomNodeWriter`) e `Framework\Yaml`. **Non tocca** `ComposeEngine` ne' `TIdTechGeneration`. **Licenza**: derivato da OpenXcom, GPL v3 o successiva (intestazioni di ogni unit); il repository resta GPL v2 o successiva, la scelta e' dell'utente.
 
 ## Fetta 1: il modello salvato (fatta)
 

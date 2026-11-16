@@ -2,7 +2,7 @@
 
 > Note per Claude e paragrafi di dettaglio: [CLAUDE.md](CLAUDE.md).
 
-Il **collegamento di Pascal Script al motore di id Tech 1** (issue #221): cio' che nomina `mobj_t`, `players[]`, `d_main`, `g_game`, `info`, `deh_*`. Strato: modulo `IdTech1` (`Libs\Strati.psd1`). La parte generica (registro delle funzioni, variabili, eventi, serializzatore, catalogo delle classi, compilatore, interprete) sta in `Libs\ScriptHost`, il nucleo del linguaggio in `Libs\PascalScript`.
+Il **collegamento di Pascal Script al motore di id Tech 1** (issue #221): cio' che nomina `mobj_t`, `players[]`, `d_main`, `g_game`, `info`, `deh_*`. Strato: modulo `IdTech1` (`docs\Strati.psd1`). La parte generica (registro delle funzioni, variabili, eventi, serializzatore, catalogo delle classi, compilatore, interprete) sta in `Framework\ScriptHost`, il nucleo del linguaggio in `Framework\PascalScript`.
 
 | Unit | Ruolo |
 |---|---|

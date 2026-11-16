@@ -27,11 +27,11 @@ program DD_IDE;
 {$DESCRIPTION 'DelphiDoom Script IDE'}
 
 uses
-  DelphiDoom.Platform.Types in '..\Libs\Platform\DelphiDoom.Platform.Types.pas',
-  DelphiDoom.Platform.DataFolder.Intf in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Intf.pas',
-  DelphiDoom.Platform.DataFolder in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.pas',
-  DelphiDoom.Platform.DataFolder.Disk in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Disk.pas',
-  DelphiDoom.Platform.DataFolder.Factory in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Factory.pas',
+  DelphiDoom.Platform.Types in '..\Framework\Platform\DelphiDoom.Platform.Types.pas',
+  DelphiDoom.Platform.DataFolder.Intf in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.Intf.pas',
+  DelphiDoom.Platform.DataFolder in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.pas',
+  DelphiDoom.Platform.DataFolder.Disk in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.Disk.pas',
+  DelphiDoom.Platform.DataFolder.Factory in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.Factory.pas',
   Forms,
   main in '..\DD_IDE\main.pas' {Form1},
   DelphiDoom.Ide.Types in '..\Libs\Ide\DelphiDoom.Ide.Types.pas',
@@ -119,8 +119,8 @@ uses
   frm_ReplaceText in '..\DD_IDE\frm_ReplaceText.pas' {TextReplaceDialog},
   frm_ConfirmReplace in '..\DD_IDE\frm_ConfirmReplace.pas' {ConfirmReplaceDialog},
   frm_message in '..\DD_IDE\frm_message.pas' {frmMessage},
-  DelphiDoom.ScriptHost.Compiled in '..\Libs\ScriptHost\DelphiDoom.ScriptHost.Compiled.pas',
-  ddc_base in '..\Libs\Ddc\ddc_base.pas',
+  DelphiDoom.ScriptHost.Compiled in '..\Framework\ScriptHost\DelphiDoom.ScriptHost.Compiled.pas',
+  ddc_base in '..\Framework\Ddc\ddc_base.pas',
   frm_unitfunctions in '..\DD_IDE\frm_unitfunctions.pas' {Frame_UnitFunctions: TFrame},
   frm_PageSetup in '..\DD_IDE\SynEdit\frm_PageSetup.pas' {PageSetupDlg},
   frm_PrintPreview in '..\DD_IDE\SynEdit\frm_PrintPreview.pas' {ScriptPrintPreviewDlg},

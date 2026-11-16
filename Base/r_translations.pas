@@ -48,7 +48,7 @@ type
 //==============================================================================
 //
 // R_ConfigureTranslations
-// The names of the translations of Libs\Palette and the PAK file system (a table can be a
+// The names of the translations of Framework\Palette and the PAK file system (a table can be a
 // file of 256 bytes), given by the composition root. The blood colors are TTranslationBlood
 //
 //==============================================================================

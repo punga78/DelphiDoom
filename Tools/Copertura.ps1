@@ -3,7 +3,7 @@
 
   Uso:
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone
-    powershell -NoProfile -File Tools\Copertura.ps1 -Test IdLib.Hashing -Cartella Libs\IdLib\Hashing
+    powershell -NoProfile -File Tools\Copertura.ps1 -Test IdLib.Hashing -Cartella Framework\IdLib\Hashing
     powershell -NoProfile -File Tools\Copertura.ps1 -Test XcomTour -Cartella "Libs\XcomGeoscape,Libs\XcomBasescape"
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SenzaCompilare
     powershell -NoProfile -File Tools\Copertura.ps1 -Tutti
@@ -13,7 +13,7 @@
                   "" o "Zlib" = Tests\DelphiDoom.Tests (il progetto di zlib).
   -Cartella       cartella dei sorgenti da misurare: tutte le *.pas della cartella. Senza, si misurano le unit
                   che il .dpr di test compila dalla cartella della sua libreria (Libs\<Nome>, Libs\<A>\<B> per
-                  "A.B"; Sndfile anche Libs\Sound): le librerie da cui dipende contano nel loro progetto.
+                  "A.B"; Sndfile anche Framework\Sound): le librerie da cui dipende contano nel loro progetto.
   -Tutti          esegue tutti i progetti di test elencati in Tools\build.bat (variabile TESTS) uno dopo l'altro
                   e scrive un riepilogo in logs\copertura\riepilogo.txt.
   -SenzaCompilare usa l'eseguibile gia' in bin\Win32\Debug\Tests, che deve essere compilato in Debug (senza questa
@@ -60,8 +60,8 @@ function Find-CodeCoverage([string]$Explicit) {
 # libraries it depends on (Screenshot compiles Jpeg, Png and Zlib), but their lines belong to their own
 # project and would only dilute the number. Projects whose library has another name are listed here.
 $ownedFolders = @{
-  'Zlib'    = @('Libs\Zlib')
-  'Sndfile' = @('Libs\Sndfile', 'Libs\Sound')   # the engine that the game uses is Libs\Sound
+  'Zlib'    = @('Framework\Zlib')
+  'Sndfile' = @('Framework\Sndfile', 'Framework\Sound')   # the engine that the game uses is Framework\Sound
   'Common'  = @('Common')
 }
 

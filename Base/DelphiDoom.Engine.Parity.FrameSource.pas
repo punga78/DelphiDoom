@@ -19,7 +19,7 @@ type
   ///   Gives the frame that the software renderer has just drawn (before it is blitted): in the modes of
   ///   8 bits the buffer of the indexes of the palette and the palette, in the modes of 32 bits the buffer of
   ///   the pixels. The OpenGL executables have no such frame (the calls to OpenGL are recorded by
-  ///   Libs\OpenGlBinding\Recorder): there Capture says False and ReadRgb raises EParityException
+  ///   Framework\OpenGlBinding\Recorder): there Capture says False and ReadRgb raises EParityException
   /// </summary>
   TEngineParityFrameSource = class
 {$IFNDEF OPENGL}

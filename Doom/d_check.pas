@@ -355,7 +355,7 @@ var
 //==============================================================================
 //
 // D_FileCRC32
-// The CRC-32 of the bytes of a file (TCrc32 of Libs\MathCore) in 8 hexadecimal
+// The CRC-32 of the bytes of a file (TCrc32 of Framework\MathCore) in 8 hexadecimal
 // digits in lower case, 'DEADDEAD' if the file does not exist (as the old
 // GetCRC32 of m_crc32)
 //

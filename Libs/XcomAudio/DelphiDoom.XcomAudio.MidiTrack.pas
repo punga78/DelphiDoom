@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   A MIDI music. The file is read by the loader of Libs\Midi (reader and merger of the tracks of Libs\M2m); the
+  ///   A MIDI music. The file is read by the loader of Framework\Midi (reader and merger of the tracks of Framework\M2m); the
   ///   events go to the synthesizer at their time, counted in samples of the mixer
   /// </summary>
   TXcomMidiTrack = class(TInterfacedObject, IXcomMusicTrack, IXcomMusicPreparation)

@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom audio library - MP3 files as samples of the mixer, on the   }
-{  decoder of Libs\Mp3                                                          }
+{  decoder of Framework\Mp3                                                     }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   IXcomSampleDecoder on an IMp3 (Libs\Mp3): a file with an ID3 tag or with the sync of a layer III frame is
+  ///   IXcomSampleDecoder on an IMp3 (Framework\Mp3): a file with an ID3 tag or with the sync of a layer III frame is
   ///   decoded whole to 16 bit stereo at the rate of the mixer
   /// </summary>
   TXcomMp3Decoder = class(TInterfacedObject, IXcomSampleDecoder)

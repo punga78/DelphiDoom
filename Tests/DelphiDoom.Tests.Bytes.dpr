@@ -15,10 +15,10 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
-  DelphiDoom.Bytes.Archive.Intf in '..\Libs\Bytes\DelphiDoom.Bytes.Archive.Intf.pas',
-  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
-  DelphiDoom.Bytes.StreamReader in '..\Libs\Bytes\DelphiDoom.Bytes.StreamReader.pas',
+  DelphiDoom.Bytes.Types in '..\Framework\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Archive.Intf in '..\Framework\Bytes\DelphiDoom.Bytes.Archive.Intf.pas',
+  DelphiDoom.Bytes.Reader in '..\Framework\Bytes\DelphiDoom.Bytes.Reader.pas',
+  DelphiDoom.Bytes.StreamReader in '..\Framework\Bytes\DelphiDoom.Bytes.StreamReader.pas',
   DelphiDoom.Tests.Bytes.Reader in 'Source\DelphiDoom.Tests.Bytes.Reader.pas',
   DelphiDoom.Tests.Bytes.StreamReader in 'Source\DelphiDoom.Tests.Bytes.StreamReader.pas';
 

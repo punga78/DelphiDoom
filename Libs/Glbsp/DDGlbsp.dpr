@@ -14,12 +14,12 @@ library DDGlbsp;
 {$ENDIF}
 
 uses
-  DelphiDoom.Zlib.Intf in '..\Zlib\DelphiDoom.Zlib.Intf.pas',
-  DelphiDoom.Zlib.Inflater in '..\Zlib\DelphiDoom.Zlib.Inflater.pas',
-  DelphiDoom.Zlib.Deflater in '..\Zlib\DelphiDoom.Zlib.Deflater.pas',
-  DelphiDoom.Zlib.Engine in '..\Zlib\DelphiDoom.Zlib.Engine.pas',
-  DelphiDoom.Zlib.Client in '..\Zlib\DelphiDoom.Zlib.Client.pas',
-  DelphiDoom.Zlib.Provider in '..\Zlib\DelphiDoom.Zlib.Provider.pas',
+  DelphiDoom.Zlib.Intf in '..\..\Framework\Zlib\DelphiDoom.Zlib.Intf.pas',
+  DelphiDoom.Zlib.Inflater in '..\..\Framework\Zlib\DelphiDoom.Zlib.Inflater.pas',
+  DelphiDoom.Zlib.Deflater in '..\..\Framework\Zlib\DelphiDoom.Zlib.Deflater.pas',
+  DelphiDoom.Zlib.Engine in '..\..\Framework\Zlib\DelphiDoom.Zlib.Engine.pas',
+  DelphiDoom.Zlib.Client in '..\..\Framework\Zlib\DelphiDoom.Zlib.Client.pas',
+  DelphiDoom.Zlib.Provider in '..\..\Framework\Zlib\DelphiDoom.Zlib.Provider.pas',
   DelphiDoom.Glbsp.Intf in 'DelphiDoom.Glbsp.Intf.pas',
   DelphiDoom.Glbsp.Util in 'DelphiDoom.Glbsp.Util.pas',
   DelphiDoom.Glbsp.Options in 'DelphiDoom.Glbsp.Options.pas',

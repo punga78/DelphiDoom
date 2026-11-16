@@ -30,7 +30,7 @@ type
     ///   of the console (C_Init)
     /// </summary>
     procedure Initialize;
-    /// <summary>Frees the objects of Libs\Console that the console owns (C_ShutDown)</summary>
+    /// <summary>Frees the objects of Framework\Console that the console owns (C_ShutDown)</summary>
     procedure Shutdown;
     /// <summary>The size of the console from the size of its screen (C_AdjustScreenSize)</summary>
     procedure AdjustScreenSize;

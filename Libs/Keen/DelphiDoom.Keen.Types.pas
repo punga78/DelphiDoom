@@ -327,7 +327,7 @@ type
   end;
 
   /// <summary>An image with one byte for each pixel: the EGA color 0..15, or KEEN_PIXEL_TRANSPARENT.
-  /// It is the common picture of Libs\Png (width, height, a byte for each pixel)</summary>
+  /// It is the common picture of Framework\Png (width, height, a byte for each pixel)</summary>
   TKeenChunkyImage = TIndexedImage;
 
 implementation

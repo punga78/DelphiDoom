@@ -72,8 +72,8 @@ index 5dac3b80..1eece3e9 100644
    i_system in 'Base\i_system.pas',
 +  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
    i_video in 'Base\i_video.pas',
-   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
 diff --git a/Hexen32.dpr b/Hexen32.dpr
 index 0a8f0210..bd1d0bd4 100644
 --- a/Hexen32.dpr
@@ -84,8 +84,8 @@ index 0a8f0210..bd1d0bd4 100644
    i_system in 'Base\i_system.pas',
 +  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
    i_video in 'Base\i_video.pas',
-   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
 diff --git a/Strife32.dpr b/Strife32.dpr
 index 6a9f396b..27ae7135 100644
 --- a/Strife32.dpr
@@ -96,5 +96,5 @@ index 6a9f396b..27ae7135 100644
    i_system in 'Base\i_system.pas',
 +  Harness151 in 'Tools\Verifica\harness151\Harness151.pas',
    i_video in 'Base\i_video.pas',
-   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',

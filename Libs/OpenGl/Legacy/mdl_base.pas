@@ -22,7 +22,7 @@
 //
 //  DESCRIPTION:
 //    Base model class (Abstract). The models read their files with the
-//    classes of Libs\Models (TModelsFactory): there is no service to configure.
+//    classes of Framework\Models (TModelsFactory): there is no service to configure.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/

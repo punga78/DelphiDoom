@@ -36,7 +36,7 @@ begin
 | `VM_Create`, prima meta' (intestazione, segmenti, `dataMask`) | `TQvmImage` (`Qvm.Image`) |
 | `VM_PrepareInterpreter` | `TQvmCode` (`Qvm.Code`): un intero per byte del codice, come l'originale (cosi' un program counter e' lo stesso numero che l'originale salva nello stack: la memoria resta uguale byte per byte) |
 | la memoria di `vm_t` (`dataBase`, `dataMask`), `VM_ArgPtr`, `VM_ExplicitArgPtr`, la copia di `OP_BLOCK_COPY`, la parte dati di `VM_Restart` | `TQvmMemory` (`Qvm.Memory`) |
-| `VM_LoadSymbols`, `ParseHex`, `VM_ValueToSymbol`, `VM_ValueToFunctionSymbol`, `VM_SymbolToValue`, `VM_VmProfile_f` | `TQvmSymbols` (`Qvm.Symbols`); i token con `TQ3TokenReader` di `Libs\Models` (il `COM_Parse` gia' portato) |
+| `VM_LoadSymbols`, `ParseHex`, `VM_ValueToSymbol`, `VM_ValueToFunctionSymbol`, `VM_SymbolToValue`, `VM_VmProfile_f` | `TQvmSymbols` (`Qvm.Symbols`); i token con `TQ3TokenReader` di `Framework\Models` (il `COM_Parse` gia' portato) |
 | i casi float di `VM_CallInterpreted` | `TQvmFloatMath` (`Qvm.FloatMath`) |
 | `VM_CallInterpreted` | `TQvmInterpreter` (`Qvm.Interpreter`) |
 | `vm_t`, `VM_Call`, `VM_Restart`, `VM_StackTrace` | `TQvmMachine` (`Qvm.Machine`) |
@@ -104,4 +104,4 @@ Il ciclo non ha chiamate virtuali ne' a interfaccia per istruzione: solo una sys
 
 ## Test
 
-`Tests\DelphiDoom.Tests.Qvm` (`Tools\build.bat Tests\DelphiDoom.Tests.Qvm Release both`): 236 test a Win32 e a Win64, tutti verdi; i 4 di OpenArena si saltano se `Reference\openarena` (o `DELPHIDOOM_OPENARENA`) non c'e'. I file di OpenArena si leggono dai pk3 con `TZipFileSource` di `Libs\Wad`. Come rifare i golden: `Tools\Verifica\120\LEGGIMI.md`. Copertura (`Tools\Copertura.ps1 -Test Qvm`, con `QVM_FUZZ_DIVISOR=100` perche' lo strumento e' lento su ogni eccezione): 96% di `Libs\Qvm` (947 righe su 978); le righe non contate sono i corpi delle funzioni `inline`, espanse nel chiamante.
+`Tests\DelphiDoom.Tests.Qvm` (`Tools\build.bat Tests\DelphiDoom.Tests.Qvm Release both`): 236 test a Win32 e a Win64, tutti verdi; i 4 di OpenArena si saltano se `Reference\openarena` (o `DELPHIDOOM_OPENARENA`) non c'e'. I file di OpenArena si leggono dai pk3 con `TZipFileSource` di `Framework\Wad`. Come rifare i golden: `Tools\Verifica\120\LEGGIMI.md`. Copertura (`Tools\Copertura.ps1 -Test Qvm`, con `QVM_FUZZ_DIVISOR=100` perche' lo strumento e' lento su ogni eccezione): 96% di `Libs\Qvm` (947 righe su 978); le righe non contate sono i corpi delle funzioni `inline`, espanse nel chiamante.

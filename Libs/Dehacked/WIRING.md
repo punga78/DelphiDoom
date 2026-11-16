@@ -4,7 +4,7 @@ La libreria legge una patch DEHACKED/BEX e ne fa un **modello neutro**: `IDehack
 
 ## Unit da aggiungere ai `.dpr` dei giochi (e a quelli dei `ddc_*` se linkano `deh_main`)
 
-Le unit di `Libs\Logging` ci sono gia'. Aggiungere, con il percorso `Libs\Dehacked\`:
+Le unit di `Framework\Logging` ci sono gia'. Aggiungere, con il percorso `Libs\Dehacked\`:
 
 ```
 DelphiDoom.Dehacked.Types, .Strings, .Text, .Section, .Intf, .Patch, .LineSource, .FieldTable,

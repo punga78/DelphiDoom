@@ -1,5 +1,5 @@
 MD5Version 10
-commandline "synthetic cube written for the tests of Libs\Models (not a commercial model)"
+commandline "synthetic cube written for the tests of Framework\Models (not a commercial model)"
 
 numJoints 2
 numMeshes 1

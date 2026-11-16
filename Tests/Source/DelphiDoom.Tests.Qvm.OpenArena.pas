@@ -27,7 +27,7 @@ type
   /// <summary>
   ///   vm/qagame.qvm, vm/cgame.qvm and vm/ui.qvm of baseoa\pak0.pk3, pak6-patch085.pk3, pak6-patch088.pk3
   ///   and missionpack\mp-pak0.pk3 (DELPHIDOOM_OPENARENA = the folder with baseoa and missionpack, or
-  ///   Reference\openarena\openarena-0.8.8), read with TZipFileSource of Libs\Wad. Nothing of OpenArena is
+  ///   Reference\openarena\openarena-0.8.8), read with TZipFileSource of Framework\Wad. Nothing of OpenArena is
   ///   in the repository: Tests\Data\Qvm\openarena.golden.txt has what the virtual machine of Quake III
   ///   (Tools\Verifica\120) returned, counted and printed on the same files.
   ///   OpenArena is built with ioquake3: its files have the VM_MAGIC_VER2 header ($12721445, one more field

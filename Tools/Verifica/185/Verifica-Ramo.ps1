@@ -79,7 +79,7 @@ for ($i = 0; $i -lt $games.Count; $i++) {
   Check (($e -eq 0) -and ($w -le $baseline[$i])) ("build {0}: errori {1}, avvisi {2} (base {3})" -f $games[$i], $e, $w, $baseline[$i])
 }
 $tools = @('ddc_doom', 'ddc_heretic', 'ddc_hexen', 'ddc_strife', 'Launcher', 'DD_IDE', 'DD_Tools', 'ddc')
-$toolPaths = @{ 'Launcher' = 'Launcher\Launcher'; 'DD_IDE' = 'DD_IDE\DD_IDE'; 'DD_Tools' = 'DD_Tools\DD_Tools'; 'ddc' = 'Libs\Ddc\ddc' }
+$toolPaths = @{ 'Launcher' = 'Launcher\Launcher'; 'DD_IDE' = 'DD_IDE\DD_IDE'; 'DD_Tools' = 'DD_Tools\DD_Tools'; 'ddc' = 'Framework\Ddc\ddc' }
 foreach ($t in $tools) {
   $target = if ($toolPaths.ContainsKey($t)) { $toolPaths[$t] } else { $t }
   if (-not $NoBuild) { Build $target }

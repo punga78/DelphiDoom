@@ -15,7 +15,7 @@ uses
 type
   /// <summary>
   ///   Every I3D model of SPEEDH.JCL (the shareware of Speed Haste, 50 models) read through the container and
-  ///   the reader of Libs\Models gives the lines that the old TI3DModelLoader gave (golden file i3d.shareware.golden.txt:
+  ///   the reader of Framework\Models gives the lines that the old TI3DModelLoader gave (golden file i3d.shareware.golden.txt:
   ///   header, fingerprints of faces and textures, tires and three drawings, before and after some corrections).
   ///   The test is skipped if SPEEDH.JCL is not there.
   /// </summary>

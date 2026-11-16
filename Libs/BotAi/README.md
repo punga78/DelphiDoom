@@ -31,7 +31,7 @@ Le dipendenze verso il gioco sono interfacce iniettate (`Import.Intf`): `IBotImp
 | `RandomString` | `TBotRandomStrings` |
 | `BotExpandChatMessage`, `BotConstructChatMessage` | `TBotChatMessageBuilder` (scrive nel buffer del messaggio dello stato, come il C) |
 | `IsWhiteSpace`, `BotRemoveTildes`, `UnifyWhiteSpaces`, `StringContains`, `StringContainsWord`, `StringReplaceWords` | `TBotChatText` |
-| `LoadSourceFile`, `PC_ReadToken`, `PC_Expect*`, `PC_Check*`, `SourceError`, `SourceWarning` (`l_precomp.c`) | `TBotChatSource` sopra `TIdParser` di `Libs\Scanner` |
+| `LoadSourceFile`, `PC_ReadToken`, `PC_Expect*`, `PC_Check*`, `SourceError`, `SourceWarning` (`l_precomp.c`) | `TBotChatSource` sopra `TIdParser` di `Framework\Scanner` |
 | `LoadScriptFile` (con `COM_Compress` di `q_shared.c`) | `TBotScriptFileSystem` (file system di `TIdParser`), `TBotScriptCompressor` |
 | `ScriptWarning`, `SourceWarning` del preprocessore | `TBotScriptLog` -> `IBotImport.Print(PRT_WARNING)` |
 | `random()` di `q_shared.h`; `LibVarValue/GetValue/String` (`l_libvar.c`) | `IBotRandom` / `TBotMsvcRandom`; `IBotLibVars` / `TBotLibVarTable` |

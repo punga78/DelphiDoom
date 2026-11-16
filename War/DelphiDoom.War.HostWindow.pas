@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  Warcraft32: the picture of the game in a window of Libs\GameHost            }
+{  Warcraft32: the picture of the game in a window of Framework\GameHost       }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

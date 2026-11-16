@@ -39,7 +39,7 @@ type
 //==============================================================================
 //
 // C_ConfigureCommands
-// The registry and the interpreter of Libs\Console, given by the composition root
+// The registry and the interpreter of Framework\Console, given by the composition root
 //
 //==============================================================================
 procedure C_ConfigureCommands(const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter);

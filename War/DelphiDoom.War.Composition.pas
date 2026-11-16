@@ -203,7 +203,7 @@ begin
   LLog := TLogFactory.CreateLog(nil, nil);
   FLibrary := TWarAudioFactory.CreateLibrary(FArchive, FCatalog);
   FMixer := TWarAudioFactory.CreateMixer(FLibrary);
-  // the songs are read and followed (the timeline of Libs\Midi); the synthesizer is the silent one: the SoundFont of the
+  // the songs are read and followed (the timeline of Framework\Midi); the synthesizer is the silent one: the SoundFont of the
   // remake has no declared license (see Libs\War\CLAUDE.md)
   FMusic := TWarMusicFactory.CreatePlayer(TWarMusicFactory.CreateSilentSynth, TWarMusicFactory.CreateTimeline(LLog));
   FSceneAudioObject := TWarSceneAudio.Create(FLibrary, FMixer, FMusic);

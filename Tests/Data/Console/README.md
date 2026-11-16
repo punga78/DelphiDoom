@@ -1,4 +1,4 @@
-# Dati di prova di Libs\Console
+# Dati di prova di Framework\Console
 
 Issue #76. I file `*.golden.txt` sono l'effetto del **vecchio** codice (`Base\c_cmds.pas`, `Base\m_cheat.pas`,
 `Cmd_Set`/`Cmd_Get`/`Cmd_TypeOf` di `Base\m_misc.pas`, `C_ExecCommandFile`/`C_ExecCommands` di `Base\c_con.pas`)

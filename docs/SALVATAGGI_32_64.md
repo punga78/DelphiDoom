@@ -2,14 +2,14 @@
 
 Issue #40, sotto-issue #43 (punto "record scritti su disco"). Un salvataggio fatto da `Doom32.exe`, `Heretic32.exe`,
 `Hexen32.exe` o `Strife32.exe` a 32 bit si carica con lo stesso programma a 64 bit e viceversa; il formato su disco e'
-quello che il programma a 32 bit ha sempre scritto. Librerie: `Libs\Serializer` (`Libs\Serializer\CLAUDE.md`) e
+quello che il programma a 32 bit ha sempre scritto. Librerie: `Framework\Serializer` (`Framework\Serializer\CLAUDE.md`) e
 `Libs\Parity` (le opzioni di prova); script: `Tools\Verifica\40`.
 
 ## 1. Che cosa c'era
 
 Un salvataggio contiene due tipi di dati:
 
-- **record scritti campo per campo** dal serializzatore (`Libs\Serializer`): i mobj, i settori, le linee, i lati. Il
+- **record scritti campo per campo** dal serializzatore (`Framework\Serializer`): i mobj, i settori, le linee, i lati. Il
   formato (numero del campo a 16 bit, valore) non dipende dalla macchina, con due eccezioni: `special1`/`special2`
   dei mobj di Heretic e Hexen (dalla #44 sono `NativeInt`, 8 byte a 64 bit, ma la tabella li dichiarava `st_integer`:
   si scrivevano i 4 byte bassi e al caricamento i 4 alti restavano quelli di prima, cosi' un -1 tornava 4294967295)
@@ -33,7 +33,7 @@ puntatore e un `NativeInt` sono 4 byte allineati a 4, gli altri campi tengono di
 record su disco e quello in memoria sono gli stessi byte (il record si copia intero, padding compreso, come prima); a
 64 bit si converte.
 
-- `TDiskLayoutBuilder` (`Libs\Serializer`) ricava il layout su disco di un record **dalle informazioni di tipo del
+- `TDiskLayoutBuilder` (`Framework\Serializer`) ricava il layout su disco di un record **dalle informazioni di tipo del
   compilatore** (RTTI): non c'e' una seconda dichiarazione dei record da tenere allineata a mano. Prima dimostra di
   aver capito il record ricalcolando il layout in memoria del programma che gira (offset e dimensione devono essere
   quelli del compilatore, altrimenti errore), poi applica le stesse regole con le dimensioni a 32 bit. A 32 bit il

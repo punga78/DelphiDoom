@@ -59,8 +59,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Decl;..\Libs\Collision;..\Libs\Imaging;..\Libs\Scanner;..\Libs\Logging;..\Libs\IdLib\Core;..\Libs\IdLib\Text;..\Libs\IdLib\Math;..\Libs\IdLib\Containers;..\Libs\IdLib\Hashing;..\Libs\MathCore;..\Libs\GameMath;..\Libs\Geometry;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Decl;..\Libs\Collision;..\Framework\Imaging;..\Framework\Scanner;..\Framework\Logging;..\Framework\IdLib\Core;..\Framework\IdLib\Text;..\Framework\IdLib\Math;..\Framework\IdLib\Containers;..\Framework\IdLib\Hashing;..\Framework\MathCore;..\Framework\GameMath;..\Framework\Geometry;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Framework\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Tests\Decl</DCC_DcuOutput>

@@ -3,7 +3,7 @@ rem Spike #173: RegisterDelphiMethod a 32 e 64 bit (programma console fuori dal 
 rem Compila con dcc32 e dcc64 e lascia gli eseguibili in out32\ e out64\ (non committati).
 call "C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\rsvars.bat"
 set R=%~dp0..\..\..\..
-set S=%R%\Libs\Script\Shim;%R%\Libs\PascalScript
+set S=%R%\Framework\Script\Shim;%R%\Framework\PascalScript
 set H=%~dp0
 if not exist "%H%out32" mkdir "%H%out32"
 if not exist "%H%out64" mkdir "%H%out64"

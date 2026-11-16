@@ -5,19 +5,19 @@ cosa resta nel motore, cosa si può cancellare.
 
 ## 1. Unit da aggiungere ai `.dpr` dei giochi (e a `ddc_*` solo se `d_net` è nei loro `uses`)
 
-Dipendenze già nei progetti: `Libs\Logging` (Types, Intf), `Libs\Clock` (Intf), `Libs\GameState` (Intf).
+Dipendenze già nei progetti: `Framework\Logging` (Types, Intf), `Framework\Clock` (Intf), `Libs\GameState` (Intf).
 
 ```
-DelphiDoom.Net.Transport.Types      in 'Libs\NetTransport\DelphiDoom.Net.Transport.Types.pas'
-DelphiDoom.Net.Transport.Intf       in 'Libs\NetTransport\DelphiDoom.Net.Transport.Intf.pas'
+DelphiDoom.Net.Transport.Types      in 'Framework\NetTransport\DelphiDoom.Net.Transport.Types.pas'
+DelphiDoom.Net.Transport.Intf       in 'Framework\NetTransport\DelphiDoom.Net.Transport.Intf.pas'
 DelphiDoom.Net.Types                in 'Libs\Net\DelphiDoom.Net.Types.pas'
 DelphiDoom.Net.Intf                 in 'Libs\Net\DelphiDoom.Net.Intf.pas'
 DelphiDoom.Net.PacketCodec          in 'Libs\Net\DelphiDoom.Net.PacketCodec.pas'
 DelphiDoom.Net.TicSync              in 'Libs\Net\DelphiDoom.Net.TicSync.pas'
 DelphiDoom.Net.ConsistencyTracker   in 'Libs\Net\DelphiDoom.Net.ConsistencyTracker.pas'
 DelphiDoom.Net.StartArbiter         in 'Libs\Net\DelphiDoom.Net.StartArbiter.pas'
-DelphiDoom.Net.NodeListParser       in 'Libs\NetTransport\DelphiDoom.Net.NodeListParser.pas'
-DelphiDoom.Net.WinsockTransport     in 'Libs\NetTransport\DelphiDoom.Net.WinsockTransport.pas'
+DelphiDoom.Net.NodeListParser       in 'Framework\NetTransport\DelphiDoom.Net.NodeListParser.pas'
+DelphiDoom.Net.WinsockTransport     in 'Framework\NetTransport\DelphiDoom.Net.WinsockTransport.pas'
 DelphiDoom.Net.Factory              in 'Libs\Net\DelphiDoom.Net.Factory.pas'
 ```
 

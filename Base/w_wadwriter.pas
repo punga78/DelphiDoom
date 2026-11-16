@@ -39,7 +39,7 @@ uses
 type
   /// <summary>
   ///   Makes a PWAD in memory and writes it to a stream or a file. It is the
-  ///   API the engine had, kept on top of the WAD library (Libs\Wad): the
+  ///   API the engine had, kept on top of the WAD library (Framework\Wad): the
   ///   lumps are in an IWadBuilder. The WAD has the layout of the library (data
   ///   aligned to 4 bytes, directory at the end)
   /// </summary>

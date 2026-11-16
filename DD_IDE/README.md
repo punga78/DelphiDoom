@@ -2,7 +2,7 @@
 
 DD_IDE e l'editor degli script di DelphiDoom: un'applicazione VCL separata (`DD_IDE.dpr`, uscita `bin\Win32\Release\Tools\DD_IDE.exe`).
 Non fa parte dei giochi e non e usata dai `ddc_*`. Compila e disassembla gli script con le DLL `ddc_<gioco>.dll`
-(le stesse che usa `ddc.exe`, tramite `Libs\Ddc\ddc_base.pas`). SynEdit (`DD_IDE\SynEdit`, 39 file) e di terze parti e non e stato toccato.
+(le stesse che usa `ddc.exe`, tramite `Framework\Ddc\ddc_base.pas`). SynEdit (`DD_IDE\SynEdit`, 39 file) e di terze parti e non e stato toccato.
 
 ## 1. Com'era (commit `abc9da77`)
 

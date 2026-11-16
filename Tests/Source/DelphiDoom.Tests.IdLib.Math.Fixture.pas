@@ -69,7 +69,7 @@ uses
   DelphiDoom.Tests.IdLib.Math.Cases;
 
 const
-  // tolerance, in ULPs of a float, for the results of the transcendental functions (see Libs\IdLib\README.md):
+  // tolerance, in ULPs of a float, for the results of the transcendental functions (see Framework\IdLib\README.md):
   // the Dinkumware library of the C++ harness and the x87 of Delphi do not round them the same way
   ULPS_LIBM = 16;
   ABS_LIBM = 0.00001;

@@ -35,12 +35,12 @@ uses
   DelphiDoom.Threading.Intf;
 
 type
-  // The job of a thread: the same type as TWorkerProc of Libs\Threading
+  // The job of a thread: the same type as TWorkerProc of Framework\Threading
   threadfunc_t = TWorkerProc;
 
 type
   //
-  // TDThread: thin facade over IWorkerThread (Libs\Threading), kept for the units
+  // TDThread: thin facade over IWorkerThread (Framework\Threading), kept for the units
   // that create their own threads (walls, fake 3d, depth buffer, menu shader, automap).
   // The thread waits on an event, is never suspended and is joined by Free.
   //

@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   The rules of X-COM for the common encoder of Libs\Png: the palette is the one of the image and the pixels of
+  ///   The rules of X-COM for the common encoder of Framework\Png: the palette is the one of the image and the pixels of
   ///   index 0 are transparent when asked (they keep their color). The file is 8 bit RGBA
   /// </summary>
   TXcomPngEncoder = class(TInterfacedObject, IXcomImageEncoder)

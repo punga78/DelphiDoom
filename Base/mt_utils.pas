@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  MultiThreading Utility functions: a facade over the runners of Libs\Threading
+//  MultiThreading Utility functions: a facade over the runners of Framework\Threading
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -298,7 +298,7 @@ const
 const
   NUMTASKTHREADS = 8;
 
-// The runners of Libs\Threading: the job runner (MT_Execute, MT_Iterate), the memory
+// The runners of Framework\Threading: the job runner (MT_Execute, MT_Iterate), the memory
 // runner (MT_memXXX) and the task scheduler. They exist between MT_Init and MT_ShutDown.
 var
   mt_jobs: TWorkerJobRunner = nil;

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: war library - XMI to MIDI with the converter of Libs\Xmi        }
+{  DelphiDoom: war library - XMI to MIDI with the converter of Framework\Xmi   }
 {                                                                              }
 {  Replaces x2m_transcode of shl/xmi2mid.h (war1, acoto87/war1, MIT License)   }
 {  with the converter the engine already has: no second XMI converter.         }

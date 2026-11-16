@@ -13,7 +13,7 @@ Analisi completa dei tre fork: `Reference\_analisi\mars3d-radx-speed.md` (cartel
 | `DelphiDoom.GameData.Types` | `EGameDataException`, `TGamePatchHeader` (8 byte, `packed`), `TGamePatchOptions` (le tre varianti dei fork) e le costanti |
 | `DelphiDoom.GameData.Intf` | `IGamePatchBuilder` e `IGameWadComposer` |
 | `DelphiDoom.GameData.PatchBuilder` | `TGamePatchBuilder`: il costruttore di patch (`MARS_CreateDoomPatch`, `RX_CreateDoomPatch`, `SH_CreateDoomPatch` e le varianti da lump) |
-| `DelphiDoom.GameData.WadComposer` | `TGameWadComposer`: il `TWadWriter` dei fork (`AddData`, `AddString`, `AddSeparator`) sopra `IWadBuilder` di `Libs\Wad` |
+| `DelphiDoom.GameData.WadComposer` | `TGameWadComposer`: il `TWadWriter` dei fork (`AddData`, `AddString`, `AddSeparator`) sopra `IWadBuilder` di `Framework\Wad` |
 | `DelphiDoom.GameData.Factory` | `TGameDataFactory`, l'unico punto che conosce le classi |
 | `DelphiDoom.GameData.Aliases` | `TGameAliases`: il profilo che un gioco prende in prestito (vedi sotto) |
 
@@ -22,7 +22,7 @@ Analisi completa dei tre fork: `Reference\_analisi\mars3d-radx-speed.md` (cartel
 palette in cui si cerca il colore più vicino (Mars e Speed 16..239, Rad-X 0..255). Le operazioni sono:
 `FromColumns` (immagine a colonne, con o senza offset), `FromRows` (immagine a righe), `FromPalettedRows` (con la palette
 VGA a 6 bit del file, i colori vanno alla palette del gioco), `FromPalettedRowsWithBackground` (la variante "opaca" di Rad-X)
-e `SkyFromColumns`. Il colore più vicino lo dà `IColorMatcher` di `Libs\Palette`.
+e `SkyFromColumns`. Il colore più vicino lo dà `IColorMatcher` di `Framework\Palette`.
 
 **Verifica**: `Tests\Data\GameData\patch.golden.txt` (1300 righe) ha lunghezza e impronta FNV-1a delle patch che le **tre copie
 vecchie** hanno dato su 50 immagini sintetiche (10 misure per 5 contenuti, `TGameDataScenarios`, la stessa unit compilata dall'harness
@@ -88,7 +88,7 @@ eseguibili non sono stati avviati: la scelta dei profili è la stessa per i quat
    `Doom\DelphiDoom.Engine.Level.DoomRules.pas`, perché Speed ha cose, tag e statistiche suoi (i livelli sono corse). Oggi la scelta è
    per `{$IFDEF}` dentro `ComposeLevelRules`: anche lì un `case` sul nome del gioco, preso da `TGameAliases`, sostituirebbe gli `{$IFDEF}`.
 4. **Mobj e giocatore**: `mobj_t` e `player_t` di Speed hanno altri campi (`carid`, `tiredistance[0..3]: double`, ...): serve la tabella dei
-   campi di `Libs\Serializer` per il gioco e, finché i thinker restano record nella zone memory, una cartella `Speed\` con le unit
+   campi di `Framework\Serializer` per il gioco e, finché i thinker restano record nella zone memory, una cartella `Speed\` con le unit
    diverse da `Doom\` (fetta S5).
 5. **Definitions** (`TERRAIN_GAME`): Speed ha il terreno di Doom, quindi `TDefGame.Doom`.
 

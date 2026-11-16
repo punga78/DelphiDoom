@@ -16,8 +16,8 @@ uses
 
 type
   /// <summary>
-  ///   The only place that knows the classes of the audio: the decoders of Libs\Sound and Libs\Mp3, the tracker of
-  ///   Libs\Mikmod, the sequencer of Libs\Midi, the Adlib, the mixer and the music player
+  ///   The only place that knows the classes of the audio: the decoders of Framework\Sound and Framework\Mp3, the tracker of
+  ///   Framework\Mikmod, the sequencer of Framework\Midi, the Adlib, the mixer and the music player
   /// </summary>
   TXcomAudioFactory = class
   public
@@ -30,9 +30,9 @@ type
     /// <param name="ARate">The rate of the mixer; 0 or less takes Options::audioSampleRate (22050 by default)</param>
     class procedure CreateAudio(AOptions: TXcomOptions; const AOutput: IXcomPcmOutput; ARate: Integer;
       out ADevice: IXcomAudioDevice; out AMusic: IXcomMusicPlayer); static;
-    /// <summary>The decoder of WAV, OGG Vorbis, FLAC and the other sound files (Libs\Sound)</summary>
+    /// <summary>The decoder of WAV, OGG Vorbis, FLAC and the other sound files (Framework\Sound)</summary>
     class function CreateSoundDecoder: IXcomSampleDecoder; static;
-    /// <summary>The decoder of MP3 files (Libs\Mp3)</summary>
+    /// <summary>The decoder of MP3 files (Framework\Mp3)</summary>
     class function CreateMp3Decoder: IXcomSampleDecoder; static;
     /// <summary>The loaders of every format of music, in the order of MusicFormat</summary>
     class function CreateLoaders(const ASettings: IXcomMusicSettings; ARate: Integer): TArray<IXcomMusicFormatLoader>; static;

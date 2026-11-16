@@ -16,7 +16,7 @@ uses
 
 type
   /// <summary>
-  ///   IGreedFramePresenter and IGreedInput on the window of Libs\GameHost: the pictures go to its display, which
+  ///   IGreedFramePresenter and IGreedInput on the window of Framework\GameHost: the pictures go to its display, which
   ///   stretches them AScale times, and the keys come from its key state: arrows or W, S to walk, left and right
   ///   arrows or Q, E to turn, A, D to step aside, Shift to run, Escape to quit
   /// </summary>

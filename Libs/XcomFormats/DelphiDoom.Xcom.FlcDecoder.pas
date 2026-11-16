@@ -27,8 +27,8 @@ type
 
   /// <summary>
   ///   FlcPlayer without the screen. Since the issue #229 this is a thin adapter over TFlicFrameDecoder of
-  ///   Libs\Flic (the decoder, with its oddities of the C++ kept, lives there and is shared with
-  ///   Libs\Cinematic): it keeps the API of before, the palette as TXcomColor and the errors as
+  ///   Framework\Flic (the decoder, with its oddities of the C++ kept, lives there and is shared with
+  ///   Framework\Cinematic): it keeps the API of before, the palette as TXcomColor and the errors as
   ///   EXcomFlcException
   /// </summary>
   TXcomFlcDecoder = class

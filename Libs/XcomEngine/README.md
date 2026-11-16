@@ -29,7 +29,7 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 | `Font::loadTerminal` e `DosFont.h` | `TXcomTerminalFont`, `DelphiDoom.XcomEngine.DosFontData` |
 | `Surface::loadImage` (i PNG dei font) | `TXcomPngSurfaceLoader` |
 | il thread di `StartState::load` | `TXcomGameLoadTask` (`TXcomThreadLoadTask`, `TXcomImmediateLoadTask`, `TXcomHeldLoadTask`) sopra `IXcomGameLoader` (`TXcomModGameLoader`) |
-| SDL (finestra, eventi, tempo) | `IXcomVideoDevice`, `IXcomEventSource`, `IClock` di `Libs\Clock` (con `TXcomTicks`), `IXcomAudioDevice`, `IXcomFileSystem`, `IXcomLog`; finti: `TXcomMemoryVideoDevice`, `TXcomQueueEventSource`, `TManualClock` di `Libs\Clock`; file: `TXcomDiskFileSystem` |
+| SDL (finestra, eventi, tempo) | `IXcomVideoDevice`, `IXcomEventSource`, `IClock` di `Framework\Clock` (con `TXcomTicks`), `IXcomAudioDevice`, `IXcomFileSystem`, `IXcomLog`; finti: `TXcomMemoryVideoDevice`, `TXcomQueueEventSource`, `TManualClock` di `Framework\Clock`; file: `TXcomDiskFileSystem` |
 
 Cambiamenti a `Libs\XcomSurface` (le superfici devono essere polimorfiche): `Draw`, `Blit`, `SetWidth`, `SetHeight`, `SetX`, `SetY`, `SetVisible` virtuali; `TXcomFont.GetChar` imposta il crop come `Font::getChar` (prima non lo faceva: i testi non si disegnavano giusti); `ImageCount`/`ImageSurface` per `Font::setPalette` e `getPalette`.
 
@@ -49,7 +49,7 @@ Il riferimento e' **il vero OpenXcom** (nightly ufficiale 2026-06-05, `Reference
 
 ## Non portato
 
-`Sound`, `Music`, `SoundSet`, `CatFile`, `GMCat`, `AdlibMusic` (sopra `Libs\Audio`/`Libs\Opl`: il collegamento al dispositivo audio e' la prossima fetta), `Zoom` con i filtri, `OpenGL`, `FlcPlayer`, `Options` completo con `OptionInfo`, `ModInfo` e la scoperta dei mod, `CrossPlatform`, `Mod` e le sue `Rule*`, `SurfaceSet`, `Unicode` (solo i token e i test usati da `Text`).
+`Sound`, `Music`, `SoundSet`, `CatFile`, `GMCat`, `AdlibMusic` (sopra `Framework\Audio`/`Framework\Opl`: il collegamento al dispositivo audio e' la prossima fetta), `Zoom` con i filtri, `OpenGL`, `FlcPlayer`, `Options` completo con `OptionInfo`, `ModInfo` e la scoperta dei mod, `CrossPlatform`, `Mod` e le sue `Rule*`, `SurfaceSet`, `Unicode` (solo i token e i test usati da `Text`).
 
 Test: `Tests\DelphiDoom.Tests.XcomEngine` (209 test con `XcomUi` e `XcomMenu`; copertura `XcomEngine` 93%, `XcomUi` 96%, `XcomMenu` 93%); `Tools\build.bat Tests\DelphiDoom.Tests.XcomEngine`.
 

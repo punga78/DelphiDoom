@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   IXcomPcmOutput on the sound output of Libs\GameHost (waveOut). The mixer of the game is asked through a
+  ///   IXcomPcmOutput on the sound output of Framework\GameHost (waveOut). The mixer of the game is asked through a
   ///   bridge that does not keep it alive (the mixer owns its output, not the other way round): when the mixer is
   ///   gone the output plays silence until it is closed
   /// </summary>

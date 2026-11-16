@@ -1020,7 +1020,7 @@ begin
   R_ConfigureFlatInfo(TTextureDefsFactory.CreateFlatInfoParser(ALog), TEngineFlatCatalog.Create, APakFiles);
 end;
 
-// The console on the screen; it owns the objects of Libs\Console. ARegistry and AInterpreter
+// The console on the screen; it owns the objects of Framework\Console. ARegistry and AInterpreter
 // are given back: the defaults register their commands and run "get"
 function ComposeConsole(const ALog: ILog; const AGame: IGameContext;
   const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames;

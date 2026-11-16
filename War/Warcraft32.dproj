@@ -59,7 +59,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_UnitSearchPath>..\Libs\Bytes;..\Libs\War;..\Libs\AudioMix;..\Libs\GameHost;..\Libs\Audio;..\Libs\Xmi;..\Libs\M2m;..\Libs\Midi;..\Libs\Input;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Configuration;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;..\Libs\Cinematic;..\Libs\Flic;..\Libs\Imaging;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Framework\Bytes;..\Libs\War;..\Framework\AudioMix;..\Framework\GameHost;..\Framework\Audio;..\Framework\Xmi;..\Framework\M2m;..\Framework\Midi;..\Framework\Input;..\Framework\Clock;..\Framework\Logging;..\Framework\MathCore;..\Framework\Video;..\Framework\CommandLine;..\Framework\Configuration;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\Cinematic;..\Framework\Flic;..\Framework\Imaging;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\War</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\War\Warcraft32</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

@@ -15,13 +15,13 @@ uses
 type
   /// <summary>
   ///   The only place that knows the concrete classes of the music. In its own unit: who uses it lists also the
-  ///   units of Libs\Midi, Libs\M2m and Libs\Logging (see Tests\DelphiDoom.Tests.War.dpr)
+  ///   units of Framework\Midi, Framework\M2m and Framework\Logging (see Tests\DelphiDoom.Tests.War.dpr)
   /// </summary>
   TWarMusicFactory = class
   public
     /// <summary>The synth that makes no sound</summary>
     class function CreateSilentSynth: IWarMusicSynth; static;
-    /// <summary>The events of a song on a sequencer of Libs\Midi that is given (a fake in a test)</summary>
+    /// <summary>The events of a song on a sequencer of Framework\Midi that is given (a fake in a test)</summary>
     class function CreateTimeline(const ASequencer: IMidiStreamSequencer): IWarMusicTimeline; overload; static;
     /// <summary>The events of a song on the real sequencer; ALog may be nil</summary>
     class function CreateTimeline(const ALog: ILog): IWarMusicTimeline; overload; static;

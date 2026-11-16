@@ -17,7 +17,7 @@ uses
 
 type
   /// <summary>
-  ///   The small object that gives a row of Libs\Configuration the global of the engine it
+  ///   The small object that gives a row of Framework\Configuration the global of the engine it
   ///   describes: the location of a row of the table defaults (m_defs). Only the methods of the
   ///   kind of the row are called, as the old code read the pointer as PInteger, PBoolean or
   ///   PString according to the type of the row

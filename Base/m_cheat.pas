@@ -39,7 +39,7 @@ uses
 
 type
   // The record keeps the keys of the cheat as the games write them; the state of the
-  // recognition is a TCheatSequence of Libs\Console, created at the first key
+  // recognition is a TCheatSequence of Framework\Console, created at the first key
   cheatseq_t = record
     sequence: AnsiString;
     p: AnsiString; // set to '' to start the recognition again

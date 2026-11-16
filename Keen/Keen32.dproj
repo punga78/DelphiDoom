@@ -59,7 +59,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_UnitSearchPath>..\Libs\Keen;..\Libs\GameHost;..\Libs\Opl;..\Libs\Clock;..\Libs\Logging;..\Libs\Input;..\Libs\Video;..\Libs\Palette;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Libs\Keen;..\Framework\GameHost;..\Framework\Opl;..\Framework\Clock;..\Framework\Logging;..\Framework\Input;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Keen</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Keen\Keen32</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

@@ -19,7 +19,7 @@ type
   /// <summary>
   ///   Reads numbers of the voxel files (little endian) from the bytes: a read beyond the end is
   ///   an EVoxelException, never a read of memory that is not there. The cursor is the common
-  ///   TByteReader of Libs\Bytes; this class only gives it the exception of this library
+  ///   TByteReader of Framework\Bytes; this class only gives it the exception of this library
   /// </summary>
   TVoxelByteReader = class(TByteReader)
   protected

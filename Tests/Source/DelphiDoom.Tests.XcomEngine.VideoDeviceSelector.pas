@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: unit tests of the display of Libs\GameHost that chooses between  }
+{  DelphiDoom: unit tests of the display of Framework\GameHost that chooses between }
 {  GDI and OpenGL as Xcom32 uses it (through its adapter) and of what           }
 {  TXcomScreen does with a display that scales the picture itself               }
 {                                                                              }

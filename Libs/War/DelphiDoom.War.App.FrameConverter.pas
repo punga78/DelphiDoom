@@ -11,7 +11,7 @@ interface
 
 type
   /// <summary>
-  ///   The canvas of the game is RGBA, one byte per channel (R first); the display of Libs\GameHost wants one
+  ///   The canvas of the game is RGBA, one byte per channel (R first); the display of Framework\GameHost wants one
   ///   $FFRRGGBB value per pixel (blue in the low byte). The picture of the game is always opaque
   /// </summary>
   TWarFrameConverter = class

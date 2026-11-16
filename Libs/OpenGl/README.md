@@ -1,6 +1,6 @@
 # Libs\OpenGl (issue #177)
 
-> **Divisione (issue #220):** il binding (`dglOpenGL.pas`) e il registratore di chiamate stanno ora in [`Libs\OpenGlBinding`](../OpenGlBinding/README.md) (strato L3, senza dipendenze dal motore); qui resta il renderer di id Tech 1 (`Legacy\`, modulo `IdTech1`). I nomi delle unit non sono cambiati.
+> **Divisione (issue #220):** il binding (`dglOpenGL.pas`) e il registratore di chiamate stanno ora in [`Framework\OpenGlBinding`](../../Framework/OpenGlBinding/README.md) (strato L3, senza dipendenze dal motore); qui resta il renderer di id Tech 1 (`Legacy\`, modulo `IdTech1`). I nomi delle unit non sono cambiati.
 
 > Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
 
@@ -9,18 +9,18 @@ Qui sta tutto cio' che prima era nella cartella `OPENGL\` della radice (che non 
 | Cartella | Contenuto |
 |---|---|
 | `Legacy\` | le altre unit del renderer di Doom (vedi sotto). |
-| (fuori da qui) | **`Libs\OpenGlBinding`** (issue #220): `dglOpenGL.pas`, il binding OpenGL di terzi (strato L3, usato anche da `Libs\GameHost`), e `Recorder\`, il registratore delle chiamate GL. Non dipendono dal motore di Doom. |
+| (fuori da qui) | **`Framework\OpenGlBinding`** (issue #220): `dglOpenGL.pas`, il binding OpenGL di terzi (strato L3, usato anche da `Framework\GameHost`), e `Recorder\`, il registratore delle chiamate GL. Non dipendono dal motore di Doom. |
 | `Legacy\` | le altre 26 unit (`gl_*.pas`, `mdl_*.pas`, `DelphiDoom.Engine.Models.Renderer.pas`): codice procedurale del renderer OpenGL, con stato globale. Il nome dice che si svuotera: ogni fetta del piano sposta le sue unit nella libreria nuova. |
 
 Regole:
 
-- Le unit (tranne gl_voxels.pas, fetta 2: l'ottimizzatore di mesh e in Libs\Voxel) non hanno cambiato nome ne contenuto: i quattro `GL*32.dpr` le citano con `..\Libs\OpenGl\Legacy\...` e `..\Libs\OpenGlBinding\dglOpenGL.pas`.
+- Le unit (tranne gl_voxels.pas, fetta 2: l'ottimizzatore di mesh e in Libs\Voxel) non hanno cambiato nome ne contenuto: i quattro `GL*32.dpr` le citano con `..\Libs\OpenGl\Legacy\...` e `..\Framework\OpenGlBinding\dglOpenGL.pas`.
 - Le chiamate GL restano chiamate dirette a `dglOpenGL`; le interfacce stanno a granularita di fotogramma, mai per vertice o per chiamata.
 - Le unit di `Legacy` seguono la regola del codice storico (niente rinomina ne riformattazione in massa).
 
 ## Recorder: il registratore delle chiamate GL (fetta 1)
 
-E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5): ogni fetta che sposta codice di disegno deve dare, con lo stesso stato di gioco, **lo stesso flusso di chiamate GL**. Sta in `Libs\OpenGlBinding\Recorder` (spostato da `Libs\OpenGl\Recorder` con la #220) e **non cambia nulla nelle build normali**: e compilato nei giochi solo con `GLRECORD` (lo fanno gli script di `Tools\Verifica\opengl`); `dglOpenGL.pas` e il motore non sono toccati.
+E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5): ogni fetta che sposta codice di disegno deve dare, con lo stesso stato di gioco, **lo stesso flusso di chiamate GL**. Sta in `Framework\OpenGlBinding\Recorder` (spostato da `Libs\OpenGl\Recorder` con la #220) e **non cambia nulla nelle build normali**: e compilato nei giochi solo con `GLRECORD` (lo fanno gli script di `Tools\Verifica\opengl`); `dglOpenGL.pas` e il motore non sono toccati.
 
 | Unit | Ruolo |
 |---|---|
@@ -43,7 +43,7 @@ E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5)
 | Libreria | Fetta | Contenuto |
 |---|---|---|
 | `Libs\Voxel` (`DelphiDoom.Voxel.Mesh*`) | 2 | ottimizzatore di mesh dei voxel, senza OpenGL |
-| `Libs\Models` (`DelphiDoom.Models.Definition.*`) | 3 | parser del lump MODELDEF (modelli, texture, stati) verso un sink |
+| `Framework\Models` (`DelphiDoom.Models.Definition.*`) | 3 | parser del lump MODELDEF (modelli, texture, stati) verso un sink |
 | `Libs\GlTexture` | 5 | buffer delle texture: patch, flat, ripple, trasparenza, palette (classi statiche a freddo) |
 | `Libs\GlLevel` | 4 (parte pura) | carving dei flat dal BSP (`IGlFlatCarver`) con mondo e sink iniettati |
 

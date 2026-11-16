@@ -3,7 +3,7 @@
 {  DelphiDoom: declaration manager - TMaterialImageProgramNamer                }
 {                                                                              }
 {  Written for this repository (GPL v2 or later): it only connects the         }
-{  material to the image program interpreter of Libs\Imaging, which is the     }
+{  material to the image program interpreter of Framework\Imaging, which is the }
 {  port of renderer\Image_program.cpp.                                         }
 {                                                                              }
 {******************************************************************************}

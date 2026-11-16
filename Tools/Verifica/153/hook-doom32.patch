@@ -6,8 +6,8 @@
    DelphiDoom.Engine.Plane.Host in 'Base\DelphiDoom.Engine.Plane.Host.pas',
 +  plane_parity in 'Tools\Verifica\153\plane_parity.pas',
    DelphiDoom.Engine.Log.Sink in 'Base\DelphiDoom.Engine.Log.Sink.pas',
-   DelphiDoom.Configuration.Types in 'Libs\Configuration\DelphiDoom.Configuration.Types.pas',
-   DelphiDoom.Configuration.Intf in 'Libs\Configuration\DelphiDoom.Configuration.Intf.pas',
+   DelphiDoom.Configuration.Types in 'Framework\Configuration\DelphiDoom.Configuration.Types.pas',
+   DelphiDoom.Configuration.Intf in 'Framework\Configuration\DelphiDoom.Configuration.Intf.pas',
 @@ -1194,6 +1195,7 @@
  begin
    I_InstallCrashLogger;

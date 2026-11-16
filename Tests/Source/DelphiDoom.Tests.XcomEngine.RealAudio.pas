@@ -284,7 +284,7 @@ begin
       for LValue := 0 to High(LSamples) do
         LHash := (LHash xor UInt64(Word(LSamples[LValue]))) * UInt64($100000001B3);
     end;
-  // the fingerprint was made with the decoder of WAV files that XcomAudio had before it used Libs\Sound
+  // the fingerprint was made with the decoder of WAV files that XcomAudio had before it used Framework\Sound
   // (TXcomWaveDecoder, deleted): the same 152 sounds of GEO.CAT, BATTLE.CAT and BATTLE2.CAT give the same samples
   Assert.AreEqual(152, LCount);
   Assert.AreEqual('4C39B952E722C1A5', IntToHex(Int64(LHash), 16));

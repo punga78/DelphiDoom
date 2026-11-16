@@ -46,7 +46,7 @@ const
 //==============================================================================
 //
 // R_ConfigureFlatCache
-// The grower of the 64x64 flats of Libs\Imaging, given by the composition root
+// The grower of the 64x64 flats of Framework\Imaging, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
@@ -173,7 +173,7 @@ end;
 //==============================================================================
 //
 // R_GrowSpan
-// The 64x64 pixels of the cache go to the grower of Libs\Imaging and the
+// The 64x64 pixels of the cache go to the grower of Framework\Imaging and the
 // bigger flat comes back in the same cache item (it was r_grow.pas)
 //
 //==============================================================================

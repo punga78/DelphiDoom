@@ -442,13 +442,13 @@ const
 
 var
   // The gamma tables, one row of 256 bytes for each level: they come from
-  // Libs\Palette (V_ConfigureGamma), given by the composition root
+  // Framework\Palette (V_ConfigureGamma), given by the composition root
   gammatable: array[0..GAMMASIZE - 1, 0..255] of byte;
 
 //==============================================================================
 //
 // V_ConfigureGamma
-// Fills gammatable with the tables of Libs\Palette
+// Fills gammatable with the tables of Framework\Palette
 //
 //==============================================================================
 procedure V_ConfigureGamma(const ATables: IGammaTables);
@@ -456,7 +456,7 @@ procedure V_ConfigureGamma(const ATables: IGammaTables);
 //==============================================================================
 //
 // V_ConfigureFlatShrink
-// The shrinker of the flats of Libs\Imaging (V_TileScreen8), given by the
+// The shrinker of the flats of Framework\Imaging (V_TileScreen8), given by the
 // composition root
 //
 //==============================================================================
@@ -929,7 +929,7 @@ begin
 
       desty := V_PreserveY(desty);
 
-      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      // The loops over the rows are TVideoRectCopy (Framework\Video)
       params.Source := System.PByte(screens[srcscrn]);
       params.Destination := screens[destscrn];
       params.SourcePitch := swidth;
@@ -1007,7 +1007,7 @@ begin
 
       desty := V_PreserveY(desty);
 
-      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      // The loops over the rows are TVideoRectCopy (Framework\Video)
       params.Source := System.PByte(screens[srcscrn]);
       params.Destination := screens[destscrn];
       params.SourcePitch := swidth;
@@ -1101,7 +1101,7 @@ begin
       fracystep := FRACUNIT;
     end;
 
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := @screen32[0];
     params.SourcePitch := swidth;
@@ -1180,7 +1180,7 @@ begin
       fracystep := FRACUNIT;
     end;
 
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := @screen32[0];
     params.SourcePitch := swidth;
@@ -1466,7 +1466,7 @@ begin
 
       desty := V_PreserveY(desty);
 
-      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      // The loops over the rows are TVideoRectCopy (Framework\Video)
       params.Source := System.PByte(screens[srcscrn]);
       params.Destination := screens[destscrn];
       params.SourcePitch := swidth;
@@ -1528,7 +1528,7 @@ begin
 
       desty := V_PreserveY(desty);
 
-      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      // The loops over the rows are TVideoRectCopy (Framework\Video)
       params.Source := System.PByte(screens[srcscrn]);
       params.Destination := screens[destscrn];
       params.SourcePitch := swidth;
@@ -1607,7 +1607,7 @@ begin
       fracystep := FRACUNIT;
     end;
 
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := @screen32[0];
     params.SourcePitch := swidth;
@@ -1681,7 +1681,7 @@ begin
       fracystep := FRACUNIT;
     end;
 
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := @screen32[0];
     params.SourcePitch := swidth;
@@ -1839,7 +1839,7 @@ begin
   dwidth := V_GetScreenWidth(destscrn);
   if (destw <> 0) and (desth <> 0) then
   begin
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := screens[destscrn];
     params.SourcePitch := swidth;
@@ -1884,7 +1884,7 @@ begin
   dwidth := V_GetScreenWidth(destscrn);
   if (destw <> 0) and (desth <> 0) then
   begin
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := screens[destscrn];
     params.SourcePitch := swidth;
@@ -1927,7 +1927,7 @@ begin
   dwidth := V_GetScreenWidth(SCN_FG);
   if (destw <> 0) and (desth <> 0) then
   begin
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := @screen32[0];
     params.SourcePitch := swidth;
@@ -1971,7 +1971,7 @@ begin
   dwidth := V_GetScreenWidth(SCN_FG);
   if (destw <> 0) and (desth <> 0) then
   begin
-    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    // The loops over the rows are TVideoRectCopy (Framework\Video)
     params.Source := System.PByte(screens[srcscrn]);
     params.Destination := @screen32[0];
     params.SourcePitch := swidth;
@@ -2332,7 +2332,7 @@ begin
 
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-    // the walk of the posts is TVideoPatchPainter (Libs\Video)
+    // the walk of the posts is TVideoPatchPainter (Framework\Video)
     TVideoPatchPainter.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), patch.width,
       System.PByte(desttop), swidth, PVideoByteRow(v_translation), false);
 
@@ -2382,7 +2382,7 @@ begin
   if not V_NeedsPreserve(SCN_FG, SCN_320x200, preserve) then
   begin
 
-    // the walk of the posts is TVideoPatchPainter32 (Libs\Video)
+    // the walk of the posts is TVideoPatchPainter32 (Framework\Video)
     TVideoPatchPainter32.DrawColumns32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), patch.width,
       @screen32[y * swidth + x], swidth, PVideoLongWordRow(@videopal[0]), PVideoByteRow(v_translation));
 
@@ -2481,7 +2481,7 @@ begin
 
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-    // the walk of the posts is TVideoPatchPainter (Libs\Video)
+    // the walk of the posts is TVideoPatchPainter (Framework\Video)
     TVideoPatchPainter.DrawColumnsTransparent8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]),
       patch.width, System.PByte(desttop), swidth, PVideoByteRow(v_translation), PVideoByteRow(trans),
       idx, numidxs);
@@ -2557,7 +2557,7 @@ begin
   if not V_NeedsPreserve(SCN_FG, SCN_320x200, preserve) then
   begin
 
-    // the walk of the posts is TVideoPatchPainter32 (Libs\Video)
+    // the walk of the posts is TVideoPatchPainter32 (Framework\Video)
 {$IFDEF OPENGL}
     TVideoPatchPainter32.DrawColumnsTransparentAlpha32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]),
       patch.width, @screen32[y * swidth + x], swidth, PVideoLongWordRow(@videopal[0]));
@@ -2749,7 +2749,7 @@ begin
 
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-    // the walk of the posts is TVideoPatchZoomer (Libs\Video)
+    // the walk of the posts is TVideoPatchZoomer (Framework\Video)
     TVideoPatchZoomer.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), pw,
       FRACUNIT * patch.width div pw, FRACUNIT * patch.height div ph, System.PByte(desttop), swidth, sheight,
       fraczoom, preserve, PVideoByteRow(v_translation));
@@ -2920,7 +2920,7 @@ begin
     exit;
 
   newimage := malloc(AWidth * AHeight);
-  // The scaling loop is TVideoStretch (Libs\Video)
+  // The scaling loop is TVideoStretch (Framework\Video)
   TVideoStretch.ScaleNearest8(PVideoByteRow(FData), PVideoByteRow(newimage), FWidth, FHeight, AWidth, AHeight);
   memfree(FData, FWidth * FHeight);
   FData := newimage;
@@ -3161,7 +3161,7 @@ end;
 //==============================================================================
 procedure V_CalcPreserveTables;
 begin
-  // The tables and the multipliers are TVideoPreserveTables (Libs\Video)
+  // The tables and the multipliers are TVideoPreserveTables (Framework\Video)
   if preservetables = nil then
     preservetables := TVideoPreserveTables.Create;
   preservetables.Calculate(
@@ -3180,7 +3180,7 @@ end;
 //==============================================================================
 procedure V_SetPalette(const palette: PByteArray);
 begin
-  // The conversion of the 256 colors is TScreenPalette (Libs\Palette)
+  // The conversion of the 256 colors is TScreenPalette (Framework\Palette)
   TScreenPalette.Convert(System.PByte(palette), System.PByte(@gammatable[usegamma]), PCardinal(@videopal[0]),
     SCREEN_PALETTE_OPAQUE);
 {$IFNDEF OPENGL}
@@ -3394,7 +3394,7 @@ begin
     Z_ChangeTag(flat, PU_CACHE);
     if isflat then
     begin
-      // the rows of the flat repeated on the 320x200 screen are TVideoScreenOps (Libs\Video)
+      // the rows of the flat repeated on the 320x200 screen are TVideoScreenOps (Framework\Video)
       TVideoScreenOps.TileFlat64(@src[0], System.PByte(@screens[dstscn, 0]), 320, 200);
       result := true;
 
@@ -3402,7 +3402,7 @@ begin
     else
     begin
       p := W_CacheLumpNum(lump, PU_STATIC);
-      // the inspector of Libs\Texture reads a copy of the lump (the old T_IsValidPatchImage)
+      // the inspector of Framework\Texture reads a copy of the lump (the old T_IsValidPatchImage)
       SetLength(patchbytes, sz);
       if sz > 0 then
         Move(p^, patchbytes[0], sz);

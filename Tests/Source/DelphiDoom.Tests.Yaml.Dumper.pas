@@ -5,7 +5,7 @@
 {  Writes exactly what Tools\Verifica\176\yaml\harness.cpp (Dump, Num, Esc,    }
 {  RunCase) writes for the real yaml-cpp 0.7.0: the golden files are compared  }
 {  with this text, byte by byte                                                }
-{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Libs\Yaml\README.md          }
+{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Framework\Yaml\README.md     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Yaml.Dumper;

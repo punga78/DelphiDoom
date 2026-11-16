@@ -4,7 +4,7 @@
 
 Port in classi di **xGreed**, il source port Delphi di Jim Valavanis (2020-2022; licenza: vedi sotto, **non risolta**) di **"In Pursuit of Greed"** (Softdisk / Channel 7, 1996, motore "Raven 3D", disegno di John Carmack). Sorgenti originali in `Reference\xGreed` (non si modificano); issue #175.
 
-Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, composition root `Greed\DelphiDoom.Greed.Composition.pas`, `Tools\build.bat Greed\Greed32`, output `bin\Greed`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`), `Libs\Platform` (`IFileStore`) e `Libs\MathCore` (`TCrc32`).
+Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, composition root `Greed\DelphiDoom.Greed.Composition.pas`, `Tools\build.bat Greed\Greed32`, output `bin\Greed`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration`. Riusa `Framework\Video` (`IPaletteConverter`), `Framework\Png` (`TPngClient`), `Framework\Platform` (`IFileStore`) e `Framework\MathCore` (`TCrc32`).
 
 ## Licenza: stato esatto (2026-11-14) — NON risolta
 
@@ -13,7 +13,7 @@ Cosa dice il sorgente che abbiamo (`Reference\xGreed`, 45 file `.pas`, verificat
 - **Non c'e' un file di licenza** (`LICENSE`, `COPYING`) e il `README.md` di xGreed non nomina nessuna licenza.
 - **10 unit hanno il testo della GPL v2 o successiva** ("License applies to this source file", copyright 2020-2022 Jim Valavanis): `Base\g_delphi`, `g_fixlump`, `i_main`, `i_video`, `i_windows`, `m_crc32`, `m_screenshot`, `scriptengine`, `Greed\m_defs`, `Greed\r_interpolate`. Sono il codice scritto da Valavanis per il port (finestra, video, configurazione, interpolazione, correzione dei lump).
 - **Le 28 unit del gioco in `Greed\`, `LaunchXG\main` e `xGreed.dpr` non hanno nessun testo di licenza**: `Greed\raven`, `utils`, `spawn`, `sprites`, `event`, `display`, `menu`, `intro`, `net`, `modplay`, `playfli`, `constant`, `protos_h`, `timer`, `d_disk`, `d_font`, `d_ints`, `d_ints_h`, `d_misc`, `d_video`, `r_conten`, `r_plane`, `r_public`, `r_public_h`, `r_refdef`, `r_render`, `r_spans`, `r_walls`. Hanno solo l'intestazione "xGreed (C) 2020-2022 by Jim Valavanis / Raven 3D Engine (C) 1996 by Softdisk Publishing / Original Design: John Carmack of id Software / Enhancements by: Robert Morgan of Channel 7, Todd Lewis e John Bianca of Softdisk Publishing, Carlos Hasan". E' un avviso di copyright, non una licenza.
-- Di terzi: `Base\bass.pas` (BASS di Un4seen, licenza proprietaria: non usato, sostituito da `Libs\Mikmod` e dal mixer), `Base\DirectX.pas` (JEDI), `Base\pngimage.pas`, `FASTMM4`, `zlib` (nessuno e' portato).
+- Di terzi: `Base\bass.pas` (BASS di Un4seen, licenza proprietaria: non usato, sostituito da `Framework\Mikmod` e dal mixer), `Base\DirectX.pas` (JEDI), `Base\pngimage.pas`, `FASTMM4`, `zlib` (nessuno e' portato).
 
 Cosa ne segue per questa libreria:
 
@@ -39,7 +39,7 @@ Cosa ne segue per questa libreria:
 | G10 (secondo pezzo) | liste di sprite e ascensori, ascensori, movimento del giocatore, morte dei sprite | `Actor.Types`, `LinkedPool`, `Elevator.Intf`, `ElevatorRules`, `PlayerMovement`, `SpriteDeath` |
 | G11 | renderer a fotogramma di Raven 3D (muri, scalini, pavimenti e soffitti inclinati, cielo, porte, sprite, trasparenze, interpolazione), parita' sui pixel con l'originale su 699 fotogrammi | `Render.Types`, `Render.Tables`, `Render.State`, `Render.WallRenderer`, `Render.PlaneRenderer`, `Render.ContentRenderer`, `Render.SpanDrawer`, `Render.SpanSorter`, `Render.SpriteInterpolator`, `Render.FrameRenderer`, `Render.Assets.Intf`, `Render.ArchiveAssets`, `Random` |
 | G10 (porte) | le porte della mappa e `CheckDoors` | `Door.Intf`, `DoorSpawner`, `DoorRules` |
-| G12 (parziale) | ciclo di gioco a 70 tic, finestra GDI e vista in prima persona a 640x400 (`-topdown` per la vista dall'alto): `Greed32 -play` | `Frame.Intf`, `GameLoop`, `TopDownRenderer`, `MovementHost`, `Greed\DelphiDoom.Greed.HostWindow` (sulla finestra di `Libs\GameHost`), `AutoPlayInput` |
+| G12 (parziale) | ciclo di gioco a 70 tic, finestra GDI e vista in prima persona a 640x400 (`-topdown` per la vista dall'alto): `Greed32 -play` | `Frame.Intf`, `GameLoop`, `TopDownRenderer`, `MovementHost`, `Greed\DelphiDoom.Greed.HostWindow` (sulla finestra di `Framework\GameHost`), `AutoPlayInput` |
 | G4 | prova visiva: `Greed32 -data <cartella> [-list] [-map N] [-lump nome] [-png file]` | `PngEncoder`, `MapRenderer`, `PngExporter`, `Greed\` |
 
 **Stato (2026-11-12)**: tutte le unit di xGreed sono portate (censimento in [CLAUDE.md](CLAUDE.md)) e `Greed32` senza argomenti, con `GREED.BLO` accanto all'eseguibile, e' il gioco: titoli, menu, briefing, livelli, finali, salva e carica. Fette oltre la G4 (ognuna con parita' sull'originale): G5 audio (`SoundEffects`, `Music`, `PcmMixer`), G6 `FixedMath`, G7 salvataggi, G8 impostazioni, G9 mondo, G10 logica (`Spawner`, `SpriteLogic`, `PlayerControl`, `PlayerWeapons`, `ItemRules`, `SwitchRules`, `LevelRules`, `CheatCodes`, `Events`, `MapSession`), G11 renderer, HUD (`Canvas`, `Font`, `Hud`...), menu (`Menu*`), filmati (`FliDecoder`, `FliPlayer`), introduzione (`Intro`, `Briefing`, `EndGame`), `TGreedGame` e `TGreedApplication`. **Non fatto**: `RearView` (rendering), rete, demo registrate, joystick e mouse, Win64.
@@ -59,7 +59,7 @@ Cosa ne segue per questa libreria:
 | `LoadTextures` (`utils.pas`, colonne dei muri) | `TGreedWallDecoder` |
 | `scalepic_t`, `DrawSprite`, `ScaleMaskedPost` (`r_spans.pas`) | `TGreedSpriteDecoder` |
 | i gruppi `startsprites`/`endsprites`... (`r_public.pas:176-182`) | `TGreedLumpClassifier` |
-| `m_screenshot`, `pngimage` | `TGreedPngEncoder` sopra `Libs\Png` |
+| `m_screenshot`, `pngimage` | `TGreedPngEncoder` sopra `Framework\Png` |
 
 ## Formati (dall'originale e dai dati delle demo)
 

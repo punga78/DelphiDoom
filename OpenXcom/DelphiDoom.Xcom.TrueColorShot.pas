@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   Writes a frame of colors ($FFRRGGBB per pixel) as an 8 bit RGB PNG: the encoder of Libs\Png makes the bytes
+  ///   Writes a frame of colors ($FFRRGGBB per pixel) as an 8 bit RGB PNG: the encoder of Framework\Png makes the bytes
   ///   and the file store of the platform library writes them
   /// </summary>
   TXcomTrueColorShot = class

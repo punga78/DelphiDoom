@@ -36,7 +36,7 @@ type
   end;
 
   /// <summary>
-  ///   IGreedCommandSource that adds a joystick of Libs\Input to another source: a command is pressed if the
+  ///   IGreedCommandSource that adds a joystick of Framework\Input to another source: a command is pressed if the
   ///   other source or the joystick says so. The stick is the four directions (north, south, west, east: with
   ///   the strafe command the game steps aside, as with the arrows), measured from where the stick is at the
   ///   first reading (jcenx and jceny); the first two buttons are the commands of the options. The joystick is

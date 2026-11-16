@@ -17,7 +17,7 @@ type
   ///   Takes out the comments and the extra white space of a script: line and block comments go, every
   ///   run of spaces and tabs is one space, every run of line ends is one line feed (so the line
   ///   numbers of the messages are those of the compressed text), quoted strings are copied as they are.
-  ///   The code is TQ3ScriptCompressor of Libs\Scanner (issue #236: one copy for the whole library)
+  ///   The code is TQ3ScriptCompressor of Framework\Scanner (issue #236: one copy for the whole library)
   /// </summary>
   TBotScriptCompressor = class
   public

@@ -19,7 +19,7 @@ uses
 
 type
   /// <summary>
-  ///   The resampler of the sounds of the game: the strategy TPcmFixedPointResampler of Libs\AudioMix (which holds
+  ///   The resampler of the sounds of the game: the strategy TPcmFixedPointResampler of Framework\AudioMix (which holds
   ///   the code), with the errors as EWarException
   /// </summary>
   TWarPcmResampler = class

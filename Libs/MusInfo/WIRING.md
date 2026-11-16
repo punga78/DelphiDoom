@@ -1,6 +1,6 @@
 # Libs\MusInfo - come collegarla al motore (issue #72, parte della #45)
 
-La libreria legge il testo del lump MUSINFO e ne fa un catalogo neutro: per ogni coppia (mappa, id del music changer) il nome e il numero della musica. Non conosce il motore: dipende solo da `Libs\Logging` e `Libs\Scanner`. Il collegamento non e' stato fatto: `Base\p_musinfo.pas` e' com'era. Qui sotto cosa serve.
+La libreria legge il testo del lump MUSINFO e ne fa un catalogo neutro: per ogni coppia (mappa, id del music changer) il nome e il numero della musica. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner`. Il collegamento non e' stato fatto: `Base\p_musinfo.pas` e' com'era. Qui sotto cosa serve.
 
 ## 0. Cosa c'e' (e cosa no) in `p_musinfo.pas` e `p_sounds.pas`
 

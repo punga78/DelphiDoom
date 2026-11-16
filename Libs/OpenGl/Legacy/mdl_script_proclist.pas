@@ -40,7 +40,7 @@ uses
 
 type
   // the function of the model scripts (it was in ps_proclist.pas, that the other scripts do not use any more:
-  // their functions are in the registry of Libs\ScriptHost)
+  // their functions are in the registry of Framework\ScriptHost)
   procitem_t = record
     proc: Pointer;
     decl: TString;

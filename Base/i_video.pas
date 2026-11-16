@@ -427,7 +427,7 @@ begin
   begin
     if usemultithread then
     begin
-      // The bounds of the slices are TVideoBlitSlices (Libs\Video); the conversion loops stay here
+      // The bounds of the slices are TVideoBlitSlices (Framework\Video); the conversion loops stay here
       slicecount := TVideoBlitSlices.SliceCount(I_GetNumCPUs);
       for i := 0 to slicecount - 1 do
       begin

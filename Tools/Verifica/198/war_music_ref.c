@@ -167,7 +167,7 @@ static void putvlq(Buf* b, u32 v)
    - EOT con delta 0 nei brani che non si ripetono (con un delta tml lo tiene nella lista e l'EOT di una traccia
      fermerebbe le altre); nei brani che si ripetono una sola traccia e EOT con delta: senza un messaggio EOT nella
      lista wa_playMidi non ricomincia mai (finisce in silenzio) e con piu' tracce il primo EOT ferma il giro;
-   - nessun evento meta o sysex (il sequencer di Libs\Midi non li da': il tempo fino all'ultimo messaggio sarebbe
+   - nessun evento meta o sysex (il sequencer di Framework\Midi non li da': il tempo fino all'ultimo messaggio sarebbe
      diverso) */
 static Buf makeSmf(u32 seed, int tracks, int division, int events, int lastKind, int eotDelta)
 {

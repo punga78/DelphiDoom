@@ -1,6 +1,6 @@
 # Libs\Net
 
-Protocollo dei pacchetti e sincronizzazione dei ticcmd di Doom. Il trasporto UDP (`INetTransport`, Winsock, elenco dei computer) e' in [Libs\NetTransport](../NetTransport/README.md) (#225, quarta fetta).
+Protocollo dei pacchetti e sincronizzazione dei ticcmd di Doom. Il trasporto UDP (`INetTransport`, Winsock, elenco dei computer) e' in [Framework\NetTransport](../../Framework/NetTransport/README.md) (#225, quarta fetta).
 
 Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
 
@@ -12,7 +12,7 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 - **Messaggi a bit di idTech 4** (issue #98): `TBitMessage` e `TBitMessageDelta` (port di `idBitMsg` e `idBitMsgDelta`), interfacce
   `IBitMessageWriter` e `IBitMessageReader`, `EBitMessageException`, `TBitMessageNetAddress` (unit `DelphiDoom.Net.BitMessage*`). Senza
   chiamanti nel motore; parita sul C++ con `Tests\Data\Net\bitmsg-golden.txt`. Dettagli in [CLAUDE.md](CLAUDE.md). I compressori sono in
-  [Libs\Compression](../Compression/README.md).
+  [Framework\Compression](../../Framework/Compression/README.md).
 
 - **Rete di Quake III / id Tech 3**: spostata in [Libs\NetQ3](../NetQ3/README.md) (#237).
 

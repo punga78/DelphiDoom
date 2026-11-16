@@ -37,4 +37,4 @@ Se si cambia `pmgen.c` il golden **cambia per intero** (la generazione e' a seme
 ### Non portato, resta
 
 Vedi README: MISSIONPACK (Team Arena), `PM_CheckStuck`, il ramo `_DEBUG` di `BG_AddPredictableEventToPlayerstate`; il mondo vero con entita'; le patch nella collisione (`Libs\Collision`).
-Un altro uso di `PlayerState`/animazioni dei giocatori Q3 e' in `Libs\Models` (`TQ3PlayerAnimator`, `Models.Q3Player.*`): legge `legsAnim`/`torsoAnim` e i campi dello stesso stato; non e' stato toccato.
+Un altro uso di `PlayerState`/animazioni dei giocatori Q3 e' in `Framework\Models` (`TQ3PlayerAnimator`, `Models.Q3Player.*`): legge `legsAnim`/`torsoAnim` e i campi dello stesso stato; non e' stato toccato.

@@ -69,7 +69,7 @@ procedure R_InitBuffer(width, height: integer);
 //==============================================================================
 //
 // R_ConfigurePlayerTranslations
-// The color ramps of the players of Libs\Palette, given by the composition root
+// The color ramps of the players of Framework\Palette, given by the composition root
 // (not in Hexen: it reads its tables from the lumps TRANTBL)
 //
 //==============================================================================
@@ -305,7 +305,7 @@ begin
   translationtables := Z_Malloc(256 * 3 + 255, PU_STATIC, nil);
   translationtables := PByteArray((NativeInt(translationtables) + 255 ) and not 255);
 {$ENDIF}
-  // the color ramps of the players, mapped by Libs\Palette
+  // the color ramps of the players, mapped by Framework\Palette
   tables := player_translations.Build;
   memcpy(translationtables, @tables[0], Length(tables));
 {$ENDIF}

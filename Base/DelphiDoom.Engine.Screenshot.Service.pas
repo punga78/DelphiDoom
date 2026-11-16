@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - the screenshots of the game over Libs\Screenshot       }
+{  DelphiDoom: engine - the screenshots of the game over Framework\Screenshot  }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -21,7 +21,7 @@ uses
 type
   /// <summary>
   ///   M_ScreenShot and M_FixScreenshotFormat of the old m_misc.pas: the screen is read once with
-  ///   I_ReadScreen32 and given to the writer of Libs\Screenshot, which chooses the names and the
+  ///   I_ReadScreen32 and given to the writer of Framework\Screenshot, which chooses the names and the
   ///   encoders (and the copy in JPEG of the option mirrorjpgsshot)
   /// </summary>
   TEngineScreenshotService = class(TInterfacedObject, IEngineScreenshot)

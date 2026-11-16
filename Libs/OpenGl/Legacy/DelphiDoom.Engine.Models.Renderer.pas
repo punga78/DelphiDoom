@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   The renderer that Libs\Models plays a procedural model on: every call is the OpenGL call
+  ///   The renderer that Framework\Models plays a procedural model on: every call is the OpenGL call
   ///   of the old DoRenderFrame. A model is played once for each frame, into a display list,
   ///   so the interface calls are not on the path of the drawing of a frame.
   /// </summary>

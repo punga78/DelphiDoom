@@ -59,8 +59,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Libs\Bytes;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\GameHost;..\Libs\Clock;..\Libs\XcomMod;..\Libs\XcomAudio;..\Libs\Sound;..\Libs\Ogg;..\Libs\Sndfile;..\Libs\Mp3;..\Libs\Mp3\Decoder;..\Libs\Mikmod;..\Libs\Midi;..\Libs\M2m;..\Libs\Logging;..\Libs\Opl;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Libs\Flic;..\Libs\Yaml;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;..\Libs\Video;..\Libs\Palette;..\Libs\CommandLine;.\Source;..\Libs\AudioMix;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\Framework\Bytes;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Framework\GameHost;..\Framework\Clock;..\Libs\XcomMod;..\Libs\XcomAudio;..\Framework\Sound;..\Framework\Ogg;..\Framework\Sndfile;..\Framework\Mp3;..\Framework\Mp3\Decoder;..\Framework\Mikmod;..\Framework\Midi;..\Framework\M2m;..\Framework\Logging;..\Framework\Opl;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Framework\Flic;..\Framework\Yaml;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;.\Source;..\Framework\AudioMix;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Framework\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Tests\XcomEngine</DCC_DcuOutput>

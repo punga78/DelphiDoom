@@ -20,7 +20,7 @@ uses
 type
   /// <summary>
   ///   The voices that play now. Called by two threads (the game starts and stops voices, the audio output mixes):
-  ///   every method takes the lock of the list of voices (TPcmVoiceList of Libs\AudioMix, which holds the voices, the
+  ///   every method takes the lock of the list of voices (TPcmVoiceList of Framework\AudioMix, which holds the voices, the
   ///   handles and the order). The voices of the original are entities of the world, removed by the main
   ///   thread when the audio thread says so; here a finished voice is removed by Mix itself. What is of the game
   ///   (the viewport, the volume, the attenuation of a voice that has a place) stays here

@@ -1,11 +1,11 @@
 program Launcher;
 
 uses
-  DelphiDoom.Platform.Types in '..\Libs\Platform\DelphiDoom.Platform.Types.pas',
-  DelphiDoom.Platform.DataFolder.Intf in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Intf.pas',
-  DelphiDoom.Platform.DataFolder in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.pas',
-  DelphiDoom.Platform.DataFolder.Disk in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Disk.pas',
-  DelphiDoom.Platform.DataFolder.Factory in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Factory.pas',
+  DelphiDoom.Platform.Types in '..\Framework\Platform\DelphiDoom.Platform.Types.pas',
+  DelphiDoom.Platform.DataFolder.Intf in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.Intf.pas',
+  DelphiDoom.Platform.DataFolder in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.pas',
+  DelphiDoom.Platform.DataFolder.Disk in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.Disk.pas',
+  DelphiDoom.Platform.DataFolder.Factory in '..\Framework\Platform\DelphiDoom.Platform.DataFolder.Factory.pas',
   DelphiDoom.Launcher.Engines in '..\Libs\Launcher\DelphiDoom.Launcher.Engines.pas',
   Forms,
   Launcher_main in '..\Launcher\Launcher_main.pas' {Form1},

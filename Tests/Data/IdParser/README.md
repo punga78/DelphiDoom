@@ -1,6 +1,6 @@
 # Tests\Data\IdParser
 
-Dati del confronto di `TIdParser`, `TIdDict` e `TIdLangDict` (`Libs\Scanner`, issue #97) con il **vero** idLib di Doom 3.
+Dati del confronto di `TIdParser`, `TIdDict` e `TIdLangDict` (`Framework\Scanner`, issue #97) con il **vero** idLib di Doom 3.
 
 - `parser.input.txt`: 120 casi scritti per il test (nessun testo di Doom 3). Un caso va da `@case nome` a `@end`; dentro: `@flags N` (flag `LEXFL_*` del parser), `@name` (nome dello script, predefinito `test`), `@text` (il testo, righe fino alla prossima direttiva), `@file nome` (un file in memoria per `#include` e per le lingue), `@gdef testo` (define globale aggiunto prima di creare il parser), `@op operazione` (eseguite in ordine; senza operazioni si leggono tutti i token). Operazioni: `tokens`, `expect S`, `check S`, `peek S`, `skipuntil S`, `skiprest`, `skipbraced`, `parseint`, `parsebool`, `parsefloat`, `braced N`, `restofline`, `readonline`, `adddef T`, `gdef T`, `rmgdef N`, `rmallgdef`, `builtins`, `incpath P`, `setflags N`, `marker`, `frommarker`, `frommarkerclean`, `whitespace`, `pos`, `free`, `freekeep`, `dict`, `dictops`, `langload F`. Le righe sono prese senza il CR finale; ogni riga del testo finisce con LF.
 - `parser.golden.txt`: la risposta del C++ (888 righe): per ogni token `T tipo sottotipo Lriga Xrighe_attraversate Fflag i=intero f=#bit_del_float |testo|`, gli avvisi del log (`W:`, `P:`), gli errori (`ERR file F, line N: ...`), i risultati delle chiamate.

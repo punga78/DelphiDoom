@@ -46,5 +46,5 @@ index 5dac3b80..a4f5eb3c 100644
    i_system in 'Base\i_system.pas',
 +  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',
    i_video in 'Base\i_video.pas',
-   DelphiDoom.Video.Types in 'Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in 'Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',

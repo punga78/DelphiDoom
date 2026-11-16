@@ -27,7 +27,7 @@
 {$I Doom32.inc}
 
 // Facade (issue #185, slice 1b): the rules of an entry with several names live in
-// Libs\Scanner\DelphiDoom.Scanner.TokenEntry; the list stays a TDStringList because the
+// Framework\Scanner\DelphiDoom.Scanner.TokenEntry; the list stays a TDStringList because the
 // callers read statenames and the other token lists with Strings, Add and Count.
 
 unit sc_tokens;

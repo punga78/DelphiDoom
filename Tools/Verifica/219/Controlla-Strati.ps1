@@ -3,7 +3,7 @@
 
   Legge le clausole uses di ogni .pas (interface e implementation, commenti e stringhe tolti),
   attribuisce ogni unit usata alla sua cartella (area) e controlla il grafo tra aree contro il
-  manifesto Libs\Strati.psd1 (leggibile: Libs\STRATI.md): uno strato puo' usare solo strati uguali
+  manifesto docs\Strati.psd1 (leggibile: docs\STRATI.md): uno strato puo' usare solo strati uguali
   o piu' bassi, un modulo puo' usare gli strati e i moduli che dichiara in Ammessi.
 
   Metodo (derivato dal censimento di docs\FRAMEWORK_CENSIMENTO.md, estendendolo):
@@ -39,7 +39,7 @@ param(
 $ErrorActionPreference = 'Stop'
 if ($Radice -eq '') { $Radice = Join-Path $PSScriptRoot '..\..\..' }
 $Radice = (Resolve-Path $Radice).Path.TrimEnd('\')
-if ($Manifesto -eq '') { $Manifesto = Join-Path $Radice 'Libs\Strati.psd1' }
+if ($Manifesto -eq '') { $Manifesto = Join-Path $Radice 'docs\Strati.psd1' }
 $manifest = Import-PowerShellDataFile -Path $Manifesto
 
 # --- Manifesto ---------------------------------------------------------------------------------
@@ -232,7 +232,7 @@ foreach ($e in $eccPar) {
   $unita = @($mie | ForEach-Object { $_.Unit.ToLower() } | Select-Object -Unique)
   $titolo = "{0} -> {1} (#{2})" -f $e.Da, $e.A, $e.Issue
   if ($mie.Count -eq 0) {
-    $stantie.Add("ECCEZIONE STANTIA: $titolo non ha piu' usi fuori regola: toglierla da Libs\Strati.psd1. Motivo dichiarato: $($e.Motivo)")
+    $stantie.Add("ECCEZIONE STANTIA: $titolo non ha piu' usi fuori regola: toglierla da docs\Strati.psd1. Motivo dichiarato: $($e.Motivo)")
     continue
   }
   $note.Add(("  eccezione nota: {0}: {1} unit, {2} usi - {3}" -f $titolo, $unita.Count, $mie.Count, $e.Motivo))
@@ -241,7 +241,7 @@ foreach ($e in $eccPar) {
     $nuove.Add(("ECCEZIONE SUPERATA: {0}: {1} unit di arrivo invece di al piu' {2} (nuove dipendenze fuori regola): {3}" -f $titolo, $unita.Count, $e.Massimo, ($unita -join ', ')))
   }
   elseif ($e.Massimo -and $unita.Count -lt [int]$e.Massimo) {
-    $stantie.Add(("ECCEZIONE RIDOTTA: {0}: {1} unit di arrivo invece di {2}: abbassare Massimo a {1} in Libs\Strati.psd1" -f $titolo, $unita.Count, $e.Massimo))
+    $stantie.Add(("ECCEZIONE RIDOTTA: {0}: {1} unit di arrivo invece di {2}: abbassare Massimo a {1} in docs\Strati.psd1" -f $titolo, $unita.Count, $e.Massimo))
   }
 }
 
@@ -255,7 +255,7 @@ foreach ($v in $violazioniAmbigue) {
   $nuove.Add(("VIOLAZIONE AMBIGUA: {0}: usa '{1}' che sta solo in aree non ammesse a {2} (strato {3}): {4}" -f $v.File, $v.Unit, $v.Da, $v.DaStrato, $v.Candidati))
 }
 foreach ($k in ($nonAssegnati.Keys | Sort-Object)) {
-  $nuove.Add(("AREA NON ASSEGNATA: {0} ({1} file .pas) non e' in Libs\Strati.psd1: assegnarla a uno strato o a un modulo" -f $k, $nonAssegnati[$k]))
+  $nuove.Add(("AREA NON ASSEGNATA: {0} ({1} file .pas) non e' in docs\Strati.psd1: assegnarla a uno strato o a un modulo" -f $k, $nonAssegnati[$k]))
 }
 
 # --- Cicli tra aree ----------------------------------------------------------------------------
@@ -314,7 +314,7 @@ foreach ($e in $eccCicli) {
     $note.Add("  eccezione nota: $titolo - $($e.Motivo)")
   }
   else {
-    $stantie.Add("ECCEZIONE STANTIA: $titolo non esiste piu': toglierla da Libs\Strati.psd1. Motivo dichiarato: $($e.Motivo)")
+    $stantie.Add("ECCEZIONE STANTIA: $titolo non esiste piu': toglierla da docs\Strati.psd1. Motivo dichiarato: $($e.Motivo)")
   }
 }
 foreach ($k in ($cicliTrovati.Keys | Sort-Object)) {

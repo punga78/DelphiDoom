@@ -7,7 +7,7 @@
 {  1999-2011 id Software LLC, a ZeniMax Media company. This unit is derived    }
 {  from the Doom 3 GPL source code and is therefore available under the GNU    }
 {  General Public License, version 3, with the additional terms of the Doom 3  }
-{  Source Code License (see README.md of Libs\IdLib); the repository as a      }
+{  Source Code License (see README.md of Framework\IdLib); the repository as a }
 {  whole is GPL v2 or later.                                                   }
 {                                                                              }
 {******************************************************************************}
@@ -21,7 +21,7 @@ interface
 type
   /// <summary>
   ///   The "CRC" of a map is not a CRC-32: it is the exclusive or of the bit patterns of the
-  ///   floats and of a text hash, so it cannot be computed with TCrc32 of Libs\MathCore
+  ///   floats and of a text hash, so it cannot be computed with TCrc32 of Framework\MathCore
   /// </summary>
   TMapGeometryCrc = class
   public

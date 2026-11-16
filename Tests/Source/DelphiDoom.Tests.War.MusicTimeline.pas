@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: tests of the timeline of the music of Libs\War                  }
 {                                                                              }
-{  It runs on the real sequencer of Libs\Midi and on small files built in      }
+{  It runs on the real sequencer of Framework\Midi and on small files built in }
 {  memory. With a division of 100 and the tempo of 500000 a tick is 5 ms.      }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

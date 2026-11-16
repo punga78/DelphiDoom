@@ -14,7 +14,7 @@ sta in [CLAUDE.md](CLAUDE.md).
   conosce le classi concrete. Nessuno stato globale: due macchine sono indipendenti.
 - L'host implementa `IDoomScriptHost` (tempo, numeri casuali, percorsi, cvar `g_debugScript`/`developer`/`g_disasm`,
   testo per lo sviluppatore) e, se ha un mondo, `IDoomScriptWorld` (cerca e crea entita', segnali). Log e file sono
-  `IIdLibLog` e `IIdLibFileSystem` di `Libs\IdLib`.
+  `IIdLibLog` e `IIdLibFileSystem` di `Framework\IdLib`.
 - Le entita' dell'host sono `TDoomScriptEventTarget` (una classe di eventi dichiarata sotto `idClass`, con i gestori
   aggiunti con `AddEvent`) registrate in `Machine.Entities` con un numero da 0 a 4095; lo script le vede come
   numero + 1.
@@ -58,5 +58,5 @@ diretti del lexer e del parser, come un `#include` che non si trova).
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
-- Parser e dizionario di idTech 4 (`TIdParser`, `TIdDict`): [Libs\Scanner](../Scanner/README.md); lexer, stringhe,
-  vettori, MD4, log e file: [Libs\IdLib](../IdLib/README.md); angoli: [Libs\MathCore](../MathCore/README.md).
+- Parser e dizionario di idTech 4 (`TIdParser`, `TIdDict`): [Framework\Scanner](../../Framework/Scanner/README.md); lexer, stringhe,
+  vettori, MD4, log e file: [Framework\IdLib](../../Framework/IdLib/README.md); angoli: [Framework\MathCore](../../Framework/MathCore/README.md).

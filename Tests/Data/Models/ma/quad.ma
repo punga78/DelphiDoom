@@ -1,6 +1,6 @@
 //Maya ASCII 4.0 scene
 //Name: quad.ma
-//Last modified: written for the tests of Libs\Models
+//Last modified: written for the tests of Framework\Models
 requires maya "4.0";
 fileInfo "application" "maya";
 createNode transform -n "pQuad1";

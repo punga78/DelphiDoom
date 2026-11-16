@@ -48,7 +48,7 @@ const
 //==============================================================================
 //
 // R_ConfigureCustomColormaps
-// The colormap preparer of Libs\Palette and the default palette, given by the
+// The colormap preparer of Framework\Palette and the default palette, given by the
 // composition root
 //
 //==============================================================================

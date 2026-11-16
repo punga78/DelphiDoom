@@ -22,7 +22,7 @@
         <Projects Include="Launcher\Launcher.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Ddc\ddc.dproj">
+        <Projects Include="Framework\Ddc\ddc.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Libs\Parity\ParityTool.dproj">
@@ -94,13 +94,13 @@
         <MSBuild Projects="Launcher\Launcher.dproj" Targets="Make"/>
     </Target>
     <Target Name="ddc">
-        <MSBuild Projects="Libs\Ddc\ddc.dproj"/>
+        <MSBuild Projects="Framework\Ddc\ddc.dproj"/>
     </Target>
     <Target Name="ddc:Clean">
-        <MSBuild Projects="Libs\Ddc\ddc.dproj" Targets="Clean"/>
+        <MSBuild Projects="Framework\Ddc\ddc.dproj" Targets="Clean"/>
     </Target>
     <Target Name="ddc:Make">
-        <MSBuild Projects="Libs\Ddc\ddc.dproj" Targets="Make"/>
+        <MSBuild Projects="Framework\Ddc\ddc.dproj" Targets="Make"/>
     </Target>
     <Target Name="ParityTool">
         <MSBuild Projects="Libs\Parity\ParityTool.dproj"/>

@@ -17,7 +17,7 @@ DelphiDoom.DynLights.Loader       in 'Libs\DynLights\DelphiDoom.DynLights.Loader
 DelphiDoom.DynLights.Factory      in 'Libs\DynLights\DelphiDoom.DynLights.Factory.pas',
 ```
 
-Dipende da `Libs\Scanner` (`Scanner.Strings`, `Scanner.Scanner`), `Libs\Logging` (`Logging.Intf`, `Logging.Types`) e `Libs\GameState` (`GameState.Intf`, per la modalità sviluppatore). Nessun `uses` di unit storiche.
+Dipende da `Framework\Scanner` (`Scanner.Strings`, `Scanner.Scanner`), `Framework\Logging` (`Logging.Intf`, `Logging.Types`) e `Libs\GameState` (`GameState.Intf`, per la modalità sviluppatore). Nessun `uses` di unit storiche.
 
 Riga per `Tools\build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.DynLights`
 

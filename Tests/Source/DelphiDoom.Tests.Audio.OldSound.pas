@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests - the sound rules of s_sound.pas as they were before the  }
-{  classes of Libs\Audio                                                       }
+{  classes of Framework\Audio                                                  }
 {  Copyright (C) 1993-1996 by id Software, Inc.                                }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }

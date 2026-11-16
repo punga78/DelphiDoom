@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   The rules of Keen for the common encoder of Libs\Png: the 16 colors of the EGA are the palette, and
+  ///   The rules of Keen for the common encoder of Framework\Png: the 16 colors of the EGA are the palette, and
   ///   KEEN_PIXEL_TRANSPARENT is a pixel that is not drawn (black with alpha 0). The file is 8 bit RGBA
   /// </summary>
   TKeenPngEncoder = class(TInterfacedObject, IKeenImageEncoder)

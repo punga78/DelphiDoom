@@ -16,7 +16,7 @@ var
   LBuilder: TCollisionModelBuilder;
   LModel: TCollisionModel;
 begin
-  LManager := TCollisionFactory.CreateManager(LCatalog, LLog);   // LLog: ILog di Libs\Logging, può essere nil
+  LManager := TCollisionFactory.CreateManager(LCatalog, LLog);   // LLog: ILog di Framework\Logging, può essere nil
   // 1. da un file .cm
   LManager.LoadModelFile(LStream, LMapFileCrc);
   // 2. da brush e poligoni
@@ -38,7 +38,7 @@ end;
 |---|---|---|
 | materiali: nome, `Contents`, due facce | `ICollisionMaterialCatalog` (`FindMaterial`) con `TCollisionMaterial` | `idMaterial`, `declManager->FindMaterial`; deve contenere `_tracemodel` e vivere quanto i modelli |
 | geometria da convertire | `ICollisionGeometrySource` (brush con i lati, poligoni sciolti con piano e materiale) | `idMapEntity`/`idMapBrush`; per una mappa Doom 3 serve un adattatore dal parser del `.map`; per patch o modelli ASE/LWO, i poligoni già triangolati |
-| log | `ILog` (`Libs\Logging`), opzionale | `common->Printf/Warning` |
+| log | `ILog` (`Framework\Logging`), opzionale | `common->Printf/Warning` |
 | file | `TStream` per `LoadModelFile` e `TCollisionFileWriter.ToStream`; testo per `Parse`/`ToText` | `fileSystem` (aprire, nominare e chiudere i file è del chiamante) |
 | disegno di debug | nessuno oggi | `DrawModel`, `cm_draw*`: se serve, un `ICollisionDebugDraw` con `DrawLine`/`DrawText` dato al manager; la camminata dei poligoni di un modello è già in `TCollisionModel.TreePolygons` |
 

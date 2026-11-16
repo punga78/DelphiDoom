@@ -19,7 +19,7 @@ uses
 type
   /// <summary>
   ///   FIXEDMUL, FIXEDMUL1, FIXEDADD, FIXEDMUL64, FIXEDDIV and the shifts of xGreed in pure Pascal (the
-  ///   original FIXEDMUL, FIXEDDIV2, _SHL and _SHR are asm). The arithmetic is the one of Libs\MathCore
+  ///   original FIXEDMUL, FIXEDDIV2, _SHL and _SHR are asm). The arithmetic is the one of Framework\MathCore
   ///   (TFixedMath); the wraparound is wanted, as in the original, so range and overflow checks are off.
   /// </summary>
   TGreedFixedMath = class

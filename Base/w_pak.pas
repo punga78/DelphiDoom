@@ -29,7 +29,7 @@
 {
   The API of the PAK file system for the procedural modules of the engine (TPakStream and the
   PAK_* functions). The file system is TPakFileSystem (DelphiDoom.Pak.FileSystem), with the
-  index and the rules of the paths of Libs\Wad; the composition root gives it with PAK_Configure.
+  index and the rules of the paths of Framework\Wad; the composition root gives it with PAK_Configure.
   The classes of the engine receive IPakFileSystem from their constructor instead.
 }
 

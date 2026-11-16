@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 //  DESCRIPTION:
-//    External MD2 model support. The file is read by Libs\Models (IMd2Parser);
+//    External MD2 model support. The file is read by Framework\Models (IMd2Parser);
 //    the model keeps the pointers to the vertexes of each frame and the OpenGL
 //    display lists, and draws.
 //

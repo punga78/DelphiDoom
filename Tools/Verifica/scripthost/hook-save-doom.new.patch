@@ -49,10 +49,10 @@ index 7a50300f..1b6262b6 100644
  initialization
  
    forwardmove[0] := $19;
-diff --git a/Libs/ScriptHost/ps_main.pas b/Libs/ScriptHost/ps_main.pas
+diff --git a/Framework/ScriptHost/ps_main.pas b/Framework/ScriptHost/ps_main.pas
 index ac569421..f727f2aa 100644
---- a/Libs/ScriptHost/ps_main.pas
-+++ b/Libs/ScriptHost/ps_main.pas
+--- a/Framework/ScriptHost/ps_main.pas
++++ b/Framework/ScriptHost/ps_main.pas
 @@ -220,6 +220,7 @@ function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedu
  implementation
  

@@ -13,10 +13,10 @@ chiamanti nel motore** e non toccano il protocollo UDP di Doom (`PacketCodec`): 
   `TBitMessageNetAddress` (6 byte `packed`, `SizeOf` testato) in `DelphiDoom.Net.BitMessage.Types`.
 - Proprieta: il buffer e un `TBytes` del chiamante (`Init` lo condivide, non lo copia ne lo ridimensiona); `TBitMessage` **non e contato**
   (`TSingletonImplementation`): lo libera chi lo crea, i riferimenti a interfaccia non lo liberano. `TBitMessageDelta` non possiede niente.
-- Riuso: `TIdMath.FloatToBits/BitsToFloat/FtoiFast/Ftoi/Fabs` e `TIdVec3` di `Libs\IdLib` (direzioni, float compatti, angoli),
-  `TIdDict` di `Libs\Scanner` (i dizionari delta, chiavi senza distinzione di maiuscole), `TIdStrings.Icmp/Cmp`, `IIdLibLog` (avvisi di
+- Riuso: `TIdMath.FloatToBits/BitsToFloat/FtoiFast/Ftoi/Fabs` e `TIdVec3` di `Framework\IdLib` (direzioni, float compatti, angoli),
+  `TIdDict` di `Framework\Scanner` (i dizionari delta, chiavi senza distinzione di maiuscole), `TIdStrings.Icmp/Cmp`, `IIdLibLog` (avvisi di
   "value overflow", nil = silenzio). Scritto di nuovo: il flusso di bit (non c'era un equivalente con questo ordine dei bit e questo
-  formato: i bit reader di `Libs\Jpeg`, `Mp3`, `Sound` e `Png` sono per altri formati).
+  formato: i bit reader di `Framework\Jpeg`, `Mp3`, `Sound` e `Png` sono per altri formati).
 - Differenze dal C++: `common->Error` e un'eccezione; `ReadString` restituisce la stringa invece di riempire un buffer (taglia a
   `ABufferSize - 1` ma consuma tutta la stringa, `%` diventa `.`); niente `WriteString(NULL)` (si scrive `''`: stesso byte);
   `WriteString(s, 0)` e un errore (l'originale scrive un byte fuori dallo spazio riservato); `ReadData` ha anche la forma che restituisce
@@ -33,10 +33,10 @@ chiamanti nel motore** e non toccano il protocollo UDP di Doom (`PacketCodec`): 
 
 **Resta**: il codice di idTech 4 che usa i messaggi (non portato: la rete di idTech 4 non e nella #98); la rete di Quake III (#121: `msg.c`,
 `huffman.c`, netchan) potra appoggiarsi a questi messaggi ma ha un formato proprio e non e stata fatta; i contenitori della #98 (idList,
-idHashTable, idLinkList, idHierarchy, idStaticList) non sono stati toccati (`Libs\IdLib\Containers` ha gia HashIndex, LinkList,
+idHashTable, idLinkList, idHierarchy, idStaticList) non sono stati toccati (`Framework\IdLib\Containers` ha gia HashIndex, LinkList,
 Hierarchy; idList e idHashTable sono i generics della RTL, non verificato caso per caso).
 
 
 ## Rete di Quake III
 
-Spostata in [Libs\NetQ3](../NetQ3/CLAUDE.md) (#237): le unit `DelphiDoom.Net.Q3.*` hanno ora la loro cartella, nel modulo id Tech 3 di `Libs\Strati.psd1`.
+Spostata in [Libs\NetQ3](../NetQ3/CLAUDE.md) (#237): le unit `DelphiDoom.Net.Q3.*` hanno ora la loro cartella, nel modulo id Tech 3 di `docs\Strati.psd1`.

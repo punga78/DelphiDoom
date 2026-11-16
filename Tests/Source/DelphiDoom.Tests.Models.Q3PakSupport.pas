@@ -19,7 +19,7 @@ uses
 
 type
   /// <summary>
-  ///   The files of some pk3 (ZIP) read with Libs\Wad: a later pak hides the same name of an earlier
+  ///   The files of some pk3 (ZIP) read with Framework\Wad: a later pak hides the same name of an earlier
   ///   one, the names do not distinguish upper and lower case (as the file system of Quake III).
   /// </summary>
   TQ3PakFiles = class(TInterfacedObject, IQ3TextSource, IQ3FileProbe)

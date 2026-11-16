@@ -40,7 +40,7 @@ uses
 //==============================================================================
 //
 // M_ConfigureRandom
-// The generator of Libs\MathCore, given by the composition root
+// The generator of Framework\MathCore, given by the composition root
 //
 //==============================================================================
 procedure M_ConfigureRandom(const ARandom: IGameRandom);

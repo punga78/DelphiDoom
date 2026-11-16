@@ -10,7 +10,7 @@
 {  lists; each call that the original makes to the synth is a line with the    }
 {  sample at which its block of 64 started. The file is in the golden itself   }
 {  (hexadecimal), so there is no generator to keep equal: the player of       }
-{  Libs\War, with the real sequencer of Libs\Midi, must make the same calls    }
+{  Libs\War, with the real sequencer of Framework\Midi, must make the same calls }
 {  at the same samples, velocities included (bits of the float). The notes    }
 {  that the player stops at the end (AO) are a choice of the port and are     }
 {  not compared.                                                               }

@@ -9,7 +9,7 @@ if not exist "..\..\..\logs" mkdir "..\..\..\logs"
 if not exist "..\..\..\bin\Tools\Verifica" mkdir "..\..\..\bin\Tools\Verifica"
 if not exist "..\..\..\dcu\Verifica83" mkdir "..\..\..\dcu\Verifica83"
 dcc32.exe -B -Q -GD -E"..\..\..\bin\Tools\Verifica" -N0"..\..\..\dcu\Verifica83" ^
-  -U"..\..\..\Libs\Logging;..\..\..\Libs\Audio;..\..\..\Tests\Source" ^
+  -U"..\..\..\Framework\Logging;..\..\..\Framework\Audio;..\..\..\Tests\Source" ^
   -NS"Winapi;System;System.Win" DumpOldMidi.dpr > "..\..\..\logs\DumpOldMidi.log"
 set RESULT=%ERRORLEVEL%
 popd

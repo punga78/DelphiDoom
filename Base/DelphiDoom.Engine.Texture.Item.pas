@@ -29,7 +29,7 @@ type
   PTexture = ^TTexture;
 
   /// <summary>
-  ///   An external texture (the old object of t_main): a TTextureImage of Libs\Texture with the
+  ///   An external texture (the old object of t_main): a TTextureImage of Framework\Texture with the
   ///   methods that the renderers call. The files are read by IEngineTextureFiles
   /// </summary>
   TTexture = object

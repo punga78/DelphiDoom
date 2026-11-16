@@ -21,9 +21,9 @@ program BenchAsm;
 uses
   System.SysUtils,
   System.Diagnostics,
-  DelphiDoom.MathCore.Types in '..\..\..\Libs\GameMath\DelphiDoom.MathCore.Types.pas',
-  DelphiDoom.MathCore.FixedMath in '..\..\..\Libs\GameMath\DelphiDoom.MathCore.FixedMath.pas',
-  DelphiDoom.MathCore.MemoryFill in '..\..\..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
+  DelphiDoom.MathCore.Types in '..\..\..\Framework\GameMath\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.FixedMath in '..\..\..\Framework\GameMath\DelphiDoom.MathCore.FixedMath.pas',
+  DelphiDoom.MathCore.MemoryFill in '..\..\..\Framework\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
   DelphiDoom.Tests.AsmParity.Oracles in '..\..\..\Tests\Source\DelphiDoom.Tests.AsmParity.Oracles.pas';
 
 const

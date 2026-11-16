@@ -16,7 +16,7 @@ uses
 type
   /// <summary>
   ///   The files next to the archive on disk (the .LAY maps of the demos): IGreedExternalFiles over the
-  ///   IFolderFiles of Libs\Platform, with the errors of the greed library. The files must be the ones that take
+  ///   IFolderFiles of Framework\Platform, with the errors of the greed library. The files must be the ones that take
   ///   file names only (TFolderFilesFactory.CreateFileNamesOnly): a name with a folder would let a lump of the
   ///   archive point anywhere on the disk
   /// </summary>

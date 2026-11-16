@@ -13,7 +13,7 @@ operativo o conosce le classi concrete. Uso e tasti: [README.md](README.md). Mod
   AudioMix, GameHost, Audio, Xmi, M2m, Midi, Input, Clock, Logging, MathCore, Video, CommandLine, Configuration, Png, Zlib,
   Platform). **Una unit nuova di `Libs\War` che usa un'altra libreria vuole la cartella nel percorso del `.dproj` e, per il
   progetto di test, le unit nel `.dpr` (F2613).** Voce in `Tools\build.bat` (lista `STRUMENTI`, accanto a Greed32), in
-  `DelphiDoom.Games.groupproj` e `'War' = 'Giochi'` in `Libs\Strati.psd1`.
+  `DelphiDoom.Games.groupproj` e `'War' = 'Giochi'` in `docs\Strati.psd1`.
 - `DelphiDoom.War.Composition` (`TWarComposition.Run`): **l'unico** posto che mette insieme le classi. Apre i dati
   (`TWarDataLocator`, `TDataFolderLocator`), fa il suono, la funzione che fa un gioco (`MakeUiGame`: `TWarMapLauncher` con
   `UnsignedDirections = True` come il C fatto con gcc e un `TWarSeededRandom` per gioco, `TWarUiFactory.CreateGame` con le
@@ -23,7 +23,7 @@ operativo o conosce le classi concrete. Uso e tasti: [README.md](README.md). Mod
   `DelphiDoom.War.HostAudio` (apre l'`IGameHostPcmOutput` sul `TWarPcmSource` di mixer e musica; il sorgente resta vivo fino a
   `Close`), `DelphiDoom.War.FileSaveStorage` (`IWarSaveStorage` su file, scrive accanto e rinomina).
 - In `Libs\War` (nuove, una classe per unit, con test): `DelphiDoom.War.App.*` (opzioni, lettore delle opzioni, ricerca dei
-  dati, impostazioni `.ini` sopra `Libs\Configuration`, `TWarSceneAudio` = `IWarSceneAudio` sul mixer e sul player della musica,
+  dati, impostazioni `.ini` sopra `Framework\Configuration`, `TWarSceneAudio` = `IWarSceneAudio` sul mixer e sul player della musica,
   `TWarFrameConverter` RGBA -> `$FFRRGGBB`, `TWarSession`, `TWarSessionRequests`, `TWarSessionEventSink`, `TWarRunner`,
   `TWarUiSessionGame`) e `DelphiDoom.War.Save.*`.
 
@@ -54,7 +54,7 @@ stato (pool delle entita', stati, mappa, nebbia, muri, IA, generatore): non fatt
 - Il mouse di una finestra e' diviso per la scala (`TWarSessionEventSink`): il gioco vuole pixel di 320 x 200.
 - Una finestra senza mouse (`-headless`) mette il mouse al centro con un evento registrato nella storia; senza, la mappa scorre
   verso l'angolo (0, 0).
-- Le impostazioni (`Warcraft32.ini`): header `[Warcraft32 ver 1.10]`; la versione parte da 1.10 perche' `Libs\Configuration` accetta
+- Le impostazioni (`Warcraft32.ini`): header `[Warcraft32 ver 1.10]`; la versione parte da 1.10 perche' `Framework\Configuration` accetta
   da `CONFIGURATION_OLDEST_VERSION` = 110, il formato non controlla di chi e' il file (lo fa `TWarAppSettings.TryFromLines`).
 - Leak: il `.dpr` ha `ReportMemoryLeaksOnShutdown := True` sotto `{$IFDEF DEBUG}`; in un'applicazione console scrive "Unexpected
   Memory Leak" su stderr (non apre finestre): una esecuzione senza finestra con niente su stderr non ha perdite.

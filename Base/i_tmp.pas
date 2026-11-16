@@ -32,7 +32,7 @@
 unit i_tmp;
 
 // What is left of the facade of the temporary files (issue #133). The classes of the
-// engine receive the ITempFiles of Libs\Platform from ComposeEngine (the backends of the
+// engine receive the ITempFiles of Framework\Platform from ComposeEngine (the backends of the
 // MIDI and XMI songs, the palette and voxel sprite generators, s_pk3sounds and the
 // glBSP input of the level). These functions stay for the procedural code that has no
 // object to give it to: the savegames (the PascalScript state of the map goes through a

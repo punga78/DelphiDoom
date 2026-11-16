@@ -21,7 +21,7 @@ uses
 type
   /// <summary>
   ///   #CREATEPALETTE: builds PLAYPAL, COLORMAP and (not in Hexen) FOGMAP from a palette lump
-  ///   with the IPaletteBuilder of Libs\Palette, writes them in a temporary WAD and loads it
+  ///   with the IPaletteBuilder of Framework\Palette, writes them in a temporary WAD and loads it
   ///   (it was V_AutoGeneratePalettes of v_palettes.pas)
   /// </summary>
   TEnginePaletteGenerator = class(TInterfacedObject, IPaletteGenerator)

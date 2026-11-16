@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the OPL library - a chip that records its writes        }
 {                                                                              }
 {  Derived from fmopl.c (MAME 0.37a fork for OpenXcom, LGPL 2.1 or later) and   }
-{  OpenXcom (GPL v3 or later): see Libs\Opl\README.md                           }
+{  OpenXcom (GPL v3 or later): see Framework\Opl\README.md                      }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Opl.Recorder;

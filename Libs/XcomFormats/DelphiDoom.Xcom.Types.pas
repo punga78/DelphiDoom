@@ -219,7 +219,7 @@ type
     Texture: Integer;
   end;
 
-  /// <summary>An entry of the index that starts a CAT file (declared in Libs\Bytes: TCatEntry)</summary>
+  /// <summary>An entry of the index that starts a CAT file (declared in Framework\Bytes: TCatEntry)</summary>
   TXcomCatEntry = TCatEntry;
 
 implementation

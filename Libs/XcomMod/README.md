@@ -2,7 +2,7 @@
 
 > Note per Claude: [CLAUDE.md](CLAUDE.md).
 
-Le **regole** (ruleset) di **OpenXcom** lette da YAML, a classi: primo gruppo di `Rule*` e il necessario per leggerle. Issue #176 (quarta fetta, dopo `Libs\XcomFormats`, `Libs\Yaml` e `Libs\XcomSurface`). Usa `Libs\Yaml` (il port di yaml-cpp 0.7.0) per leggere i nodi.
+Le **regole** (ruleset) di **OpenXcom** lette da YAML, a classi: primo gruppo di `Rule*` e il necessario per leggerle. Issue #176 (quarta fetta, dopo `Libs\XcomFormats`, `Framework\Yaml` e `Libs\XcomSurface`). Usa `Framework\Yaml` (il port di yaml-cpp 0.7.0) per leggere i nodi.
 
 Non e' un gioco del motore Doom: nessun collegamento a `ComposeEngine` ne' a `TIdTechGeneration`.
 
@@ -24,7 +24,7 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 | `RNG` (`generate`, `setSeed`) | `IXcomRandom` / `TXcomRandom` (iniettato: il C++ ha un globale) |
 | `Deg2Rad`, `Rad2Deg` (`fmath.h`), le caselle lon/lat dei paesi e delle regioni | `XcomDegToRad`, `XcomRadToDeg`, `TXcomGlobeAreas` |
 | `std::map<std::string, V>` (ordinata per byte UTF-8) | `TXcomStringMap<V>` |
-| `node["k"].as<T>(default)` e i convertitori `std::vector`, `std::map` di yaml-cpp | `TXcomNodeReader` (sopra `IYamlNode` di `Libs\Yaml`) |
+| `node["k"].as<T>(default)` e i convertitori `std::vector`, `std::map` di yaml-cpp | `TXcomNodeReader` (sopra `IYamlNode` di `Framework\Yaml`) |
 
 ## Parita'
 

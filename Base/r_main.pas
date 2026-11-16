@@ -1541,7 +1541,7 @@ var
 //==============================================================================
 //
 // R_ConfigureLightTables
-// The calculator of the light tables of Libs\Palette, given by the composition root
+// The calculator of the light tables of Framework\Palette, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
@@ -1555,7 +1555,7 @@ var
 //==============================================================================
 //
 // R_ConfigureMenuThumbnail
-// The builder of the thumbnails of the saved games of Libs\Imaging, given by
+// The builder of the thumbnails of the saved games of Framework\Imaging, given by
 // the composition root
 //
 //==============================================================================

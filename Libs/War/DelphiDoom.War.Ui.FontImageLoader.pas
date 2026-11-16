@@ -19,7 +19,7 @@ uses
 type
   /// <summary>
   ///   Reads a PNG file of a font (war1_font_1.png, war1_font_2.png: images made for the remake, not in DATA.WAR)
-  ///   into RGBA bytes. stbi_load applies no gamma and keeps the alpha, and so does the decoder of Libs\Png
+  ///   into RGBA bytes. stbi_load applies no gamma and keeps the alpha, and so does the decoder of Framework\Png
   /// </summary>
   TWarFontImageLoader = class
   public

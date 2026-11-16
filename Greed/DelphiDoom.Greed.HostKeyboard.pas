@@ -16,7 +16,7 @@ uses
 
 type
   /// <summary>
-  ///   IGreedKeyboard on the key state of the window of Libs\GameHost: the keys that the menus and the screens read
+  ///   IGreedKeyboard on the key state of the window of Framework\GameHost: the keys that the menus and the screens read
   ///   (the arrows, Enter, Escape, Space, Backspace, the letters, the digits and the few signs of the names of the
   ///   saved games), each by the scan code of the original. A key that goes down and up between two tics is down
   ///   for the tic that follows (TGameHostKeyLatch): IsDown is asked once a tic for each code

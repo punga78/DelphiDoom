@@ -22,7 +22,7 @@
 //
 //  DESCRIPTION:
 //    DelphiDoom procedural models (DDMODEL source, DMX binary): the commands are
-//    in a list of Libs\Models (IModelCommandStream), the model keeps the OpenGL
+//    in a list of Framework\Models (IModelCommandStream), the model keeps the OpenGL
 //    display lists.
 //
 //------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ begin
   fyscale := yscale / MAP_COEFF;
   fzscale := zscale / MAP_COEFF;
 
-  // an empty list of commands of Libs\Models: a value of this model, without dependencies
+  // an empty list of commands of Framework\Models: a value of this model, without dependencies
   fmdl := TModelsFactory.CreateCommandStream;
   fRenderer := TEngineModelRenderer.Create;
   fNumFrames := 0;

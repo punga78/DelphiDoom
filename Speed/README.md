@@ -23,8 +23,8 @@ Speed32 -jcl <...> -level 1..8 -laps 2 -cars 8 -tics 20000     una gara di auto 
 ## Che cosa manca per il gioco (S5)
 
 Il gioco su motore id Tech 1 (`GLSpeed32`): `m_base` con `_GAME`, profilo Iwad e `TSpeedLevelRules` in `ComposeLevelRules`; `mobj_t` e `player_t` propri (con `TRacingCarState` copiato da e verso l'oggetto);
-le azioni `A_*` di `speed_actions`, HUD (`speed_hud`), menu, schermate, intermission, `speed_end_screen`; il file dei record su disco (`TRacingScoreTableStore`); i savegame (`Libs\Serializer` con la tabella del
-gioco); l'adattatore OpenGL dei modelli I3D (`Libs\Models`). Vedi `Libs\Speed\README.md` e `Libs\Racing\README.md` ("Come si collega").
+le azioni `A_*` di `speed_actions`, HUD (`speed_hud`), menu, schermate, intermission, `speed_end_screen`; il file dei record su disco (`TRacingScoreTableStore`); i savegame (`Framework\Serializer` con la tabella del
+gioco); l'adattatore OpenGL dei modelli I3D (`Framework\Models`). Vedi `Libs\Speed\README.md` e `Libs\Racing\README.md` ("Come si collega").
 
 ## SpeedHaste32: il gioco sul motore di Doom (primo passo)
 

@@ -4,7 +4,7 @@
 {                                                                              }
 {  The trap_PC_* calls of the ui module of Quake III Arena reach the botlib    }
 {  precompiler (l_script.c, l_precomp.c). idLexer and idParser of Doom 3       }
-{  (Libs\Scanner, Libs\IdLib) come from the same lineage and read the same     }
+{  (Framework\Scanner, Framework\IdLib) come from the same lineage and read the same }
 {  dialect (#define with parameters, #include, #ifdef, strings that join,      }
 {  C punctuation), so they are used here instead of a second port: see         }
 {  Libs\Gui\README.md for the differences that were found.                     }

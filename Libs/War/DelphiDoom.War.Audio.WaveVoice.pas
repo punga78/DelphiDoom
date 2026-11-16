@@ -19,7 +19,7 @@ uses
 type
   /// <summary>
   ///   The state of a voice (sampleIndex, playbackTime, loop of WarAudioComponent) and wa_playWave: the voice of 8 bit
-  ///   unsigned mono samples of Libs\AudioMix, which holds the code
+  ///   unsigned mono samples of Framework\AudioMix, which holds the code
   /// </summary>
   TWarWaveVoice = TPcmUnsignedMonoVoice;
 

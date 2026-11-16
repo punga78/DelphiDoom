@@ -24,7 +24,7 @@ uses
 
 type
   /// <summary>
-  ///   Reads the song with the sequencer of Libs\Midi (it merges the tracks and counts the ticks) and gives the
+  ///   Reads the song with the sequencer of Framework\Midi (it merges the tracks and counts the ticks) and gives the
   ///   time of each event in whole milliseconds the way tml_load does: the time is the one of the last change of
   ///   tempo plus the ticks since it times the milliseconds of a tick, truncated. Tempo events are not given, they
   ///   only change the time of the events after them

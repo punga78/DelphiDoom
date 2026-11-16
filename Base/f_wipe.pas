@@ -126,7 +126,7 @@ uses
 //
 //                       SCREEN WIPE PACKAGE
 //
-// The melt is TImagingMeltWipe of Libs\Imaging (given by the composition
+// The melt is TImagingMeltWipe of Framework\Imaging (given by the composition
 // root with wipe_Configure): here stay the reading of the screen, the
 // buffers and the state of the wipe in progress.
 //

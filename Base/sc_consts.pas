@@ -74,7 +74,7 @@ uses
   DelphiDoom.Scanner.ConstTable;
 
 var
-  // the rules of the table (names, buckets, duplicates) are in Libs\Scanner
+  // the rules of the table (names, buckets, duplicates) are in Framework\Scanner
   consts: TScannerConstTable = nil;
 
 //==============================================================================

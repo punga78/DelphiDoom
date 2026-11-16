@@ -21,7 +21,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\i_exec.pas` - cancellata
 
-**Tolta (#133)**: `I_ExecProgram` non aveva chiamanti; dalla #145 non c'e piu nemmeno `TProcessRunner` in `Libs\Platform`.
+**Tolta (#133)**: `I_ExecProgram` non aveva chiamanti; dalla #145 non c'e piu nemmeno `TProcessRunner` in `Framework\Platform`.
 
 ### `Libs\OpenGl\Legacy\gl_frustum.pas` - cancellata
 
@@ -33,7 +33,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\v_palettes.pas` - cancellata
 
-**Tolta (#135)**: `#CREATEPALETTE` (`TEnginePaletteGenerator`) usa `IPaletteBuilder` di `Libs\Palette`.
+**Tolta (#135)**: `#CREATEPALETTE` (`TEnginePaletteGenerator`) usa `IPaletteBuilder` di `Framework\Palette`.
 
 ### `Libs\OpenGl\Legacy\mdl_base.pas` - nessuna funzione pubblica
 
@@ -41,11 +41,11 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\m_sha1.pas` - cancellata
 
-**Tolta (#145)**: codice morto, l'ultimo chiamante (`vx_voxelsprite`) era stato cancellato dalla #134; chi calcola uno SHA-1 usa `TSha1` di `Libs\MathCore`.
+**Tolta (#145)**: codice morto, l'ultimo chiamante (`vx_voxelsprite`) era stato cancellato dalla #134; chi calcola uno SHA-1 usa `TSha1` di `Framework\MathCore`.
 
 ### `Base\m_bbox.pas` - cancellata
 
-**Tolta (#133)**: i chiamanti usano `TBoundingBoxMath` di `Libs\MathCore`.
+**Tolta (#133)**: i chiamanti usano `TBoundingBoxMath` di `Framework\MathCore`.
 
 ### `Base\r_flatinfo.pas` - nessuna funzione pubblica
 
@@ -77,7 +77,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\mn_screenshot.pas` - nessuna funzione pubblica
 
-**Non piu facciata (#135)**: resta il record `menuscreenbuffer_t` del savegame; la miniatura e di `Libs\Imaging`.
+**Non piu facciata (#135)**: resta il record `menuscreenbuffer_t` del savegame; la miniatura e di `Framework\Imaging`.
 
 ### `Base\r_grow.pas` - cancellata
 
@@ -89,7 +89,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\sc_evaluate_actor.pas` - cancellata
 
-**Tolta (#132)**: `TContextExpressionEvaluator` (`Libs\Scanner`) con `TEngineActorExpressionFunctions` e `TEngineActorExpressionVariables`, dato da `ComposeEngine` a `SC_ConfigureParams` di `sc_params`.
+**Tolta (#132)**: `TContextExpressionEvaluator` (`Framework\Scanner`) con `TEngineActorExpressionFunctions` e `TEngineActorExpressionVariables`, dato da `ComposeEngine` a `SC_ConfigureParams` di `sc_params`.
 
 ### `Base\w_autoload.pas` - cancellata
 
@@ -97,7 +97,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\sc_engine.pas` - cancellata
 
-**Tolta (#132)**: i chiamanti usano `TScriptScanner` e `TScannerText` di `Libs\Scanner`.
+**Tolta (#132)**: i chiamanti usano `TScriptScanner` e `TScannerText` di `Framework\Scanner`.
 
 ### `Strife\p_terrain.pas` - cancellata
 
@@ -109,7 +109,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\m_vectors.pas` - cancellata
 
-**Tolta (#133)**: i chiamanti usano `TVectorMath` di `Libs\MathCore`.
+**Tolta (#133)**: i chiamanti usano `TVectorMath` di `Framework\MathCore`.
 
 ### `Base\p_gender.pas` - nessuna funzione pubblica
 
@@ -141,7 +141,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\m_misc.pas` - nessuna funzione pubblica
 
-**Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`, dalla #185 fetta 1c solo come dichiarazione delle voci: le righe sono `IConfigurationItem` di `Libs\Configuration`, costruite da `TEngineConfigurationTable`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
+**Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`, dalla #185 fetta 1c solo come dichiarazione delle voci: le righe sono `IConfigurationItem` di `Framework\Configuration`, costruite da `TEngineConfigurationTable`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
 
 ### `Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `Libs\Hud`, #185 fetta 1a)
 
@@ -151,7 +151,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `Libs\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
 
-### `Base\sc_tokens.pas`, `Base\sc_consts.pas`, `Base\sc_params.pas`, `Base\sc_states.pas` (facciate sopra `Libs\Scanner`, `Libs\ActorDef` e `Libs\Info`, #185 fetta 1b)
+### `Base\sc_tokens.pas`, `Base\sc_consts.pas`, `Base\sc_params.pas`, `Base\sc_states.pas` (facciate sopra `Framework\Scanner`, `Libs\ActorDef` e `Libs\Info`, #185 fetta 1b)
 
 **Facciate (#185)**: `TTokenList` (resta una `TDStringList`; `IndexOfToken` e `AllTokensWithIndex` usano `TScannerTokenEntry`), `SC_EvalueateIntToken`, `SC_InitConsts`/`SC_ShutDownConsts`/`SC_AddConst`/`SC_GetConst` (`TScannerConstTable`; i dati di `SC_InitConsts` restano), `TCustomParamList` (stesse proprieta', sopra `TActorDefParamList`) e `SC_EvalString` (`TActorDefParamString`) hanno le firme di prima. `P_GetStateFromName` e `P_GetStateFromNameWithOffsetCheck` chiamano `IEngineStateNames` (`TInfoStateNames` di `Libs\Info`), dato da `ComposeInfoTables` con `SC_ConfigureStateNames`; senza configurazione `I_Error`. Restano nell'unit di `sc_states` la lettura del lump `STATEDEF` e `SC_DefaultStatedefLump`/`SC_FillStateNames` (riempiono la lista globale `statenames`). Righe: `sc_tokens` 161 -> 119, `sc_consts` 326 -> 290, `sc_params` 998 -> 224, `sc_states` 358 -> 238.
 
@@ -163,11 +163,11 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Facciata (#185)**: i sette `DEH_Save*` chiamano `ITableExportSaver` (dato da `DEH_ConfigureExport`, che ha un parametro in piu'), `DEH_ParseFile` prende i nomi da `TDehackedFileNames`, `DEH_AmmoType`/`DEH_WeaponType`/`DEH_PlayerClass` il prefisso da `TDehackedTokenName`, `DEH_CStringToString`/`DEH_StringValue` chiamano `TDehackedText`. Restano nell'unit i lump e i PAK (`DEH_ParseLumpName*`, `DEH_ParseLumpNum`, il flusso del file), la stampa a console e il registro delle azioni. Righe 1321 -> 1204 (le funzioni d'appoggio dei salvataggi ne aggiungono una cinquantina).
 
-### `Base\f_wipe.pas` (facciata sopra `Libs\Imaging`, #185 chiusura della fase 1)
+### `Base\f_wipe.pas` (facciata sopra `Framework\Imaging`, #185 chiusura della fase 1)
 
-**Facciata (#185)**: `wipe_StartScreen`, `wipe_EndScreen`, `wipe_Ticker` (e `wipe_ClearMemory`, `w_screen32`, `WIPESCREENWIDTH/HEIGHT` negli eseguibili OpenGL) hanno le firme di prima. Il melt (`wipe_initMelt`, `wipe_doMelt`) e' `TImagingMeltWipe` di `Libs\Imaging`, che lavora sui buffer del motore con `StartOnBuffers`; lo da' `ComposeImaging` con `wipe_Configure` (senza configurazione `I_Error` al primo wipe). Restano nell'unit la lettura dello schermo (`I_ReadScreen32`, `I_ReverseScreen`), i due buffer e lo stato "wipe in corso". Strife non usa l'unit (`Strife\f_fade.pas`). Righe 354 -> 260.
+**Facciata (#185)**: `wipe_StartScreen`, `wipe_EndScreen`, `wipe_Ticker` (e `wipe_ClearMemory`, `w_screen32`, `WIPESCREENWIDTH/HEIGHT` negli eseguibili OpenGL) hanno le firme di prima. Il melt (`wipe_initMelt`, `wipe_doMelt`) e' `TImagingMeltWipe` di `Framework\Imaging`, che lavora sui buffer del motore con `StartOnBuffers`; lo da' `ComposeImaging` con `wipe_Configure` (senza configurazione `I_Error` al primo wipe). Restano nell'unit la lettura dello schermo (`I_ReadScreen32`, `I_ReverseScreen`), i due buffer e lo stato "wipe in corso". Strife non usa l'unit (`Strife\f_fade.pas`). Righe 354 -> 260.
 
-### `Base\s_sound.pas` (regole in `Libs\Audio`, #185 chiusura della fase 1)
+### `Base\s_sound.pas` (regole in `Framework\Audio`, #185 chiusura della fase 1)
 
 **In parte facciata (#185)**: `S_AdjustSoundParams` chiama `TSfxAttenuation.Adjust` (la regola per gioco del livello 8 resta qui, e' un booleano passato alla classe), `S_GetChannel` chiama `TSfxChannelPicker.Pick` e poi ferma e riempie il canale, i ritocchi del pitch di `S_StartSoundAtVolume` chiamano `TSfxAttenuation.PerturbPitch`, la lista dei nomi mp3 di `S_DoChangeMusic` e' `TExternalMusicNames.Candidates` (`S_GetListFromAlias` non c'e' piu'). Sono classi di funzioni statiche: non c'e' una `S_Configure*` nuova, le costanti e le due tabelle (`R_PointToAngle2`, `finesine`) le riempie `S_Init` in `sound_attenuation`. Restano nell'unit, perche' legati ai record del motore e diversi per gioco: `S_StartSoundAtVolume`, `S_StartVoiceAtVolume`, `S_UpdateSounds`, `S_StopChannel`, la ricerca del lump della musica, `S_DefaultMusicForMap`, `S_Init`, `S_PrecacheSounds`, i comandi di console. Righe 2297 -> 2135.
 
@@ -177,7 +177,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\mt_utils.pas`, `Base\c_utils.pas`, `Base\d_notifications.pas` (#185, fetta 1e)
 
-`c_utils`: `C_RegisterUtilityCommands` chiama il gruppo `IConsoleCommandGroup` (`TConsoleUtilityCommands` di `Libs\Console`: `dir`, `cd`, `cat`, le pagine web; file e browser dietro `IConsoleFileLister` e `IConsoleBrowser`, adattatori `DelphiDoom.Engine.Console.FileLister` e `.Browser`) che `ComposeConsole` da' con `C_ConfigureUtilityCommands`. `d_notifications`: `D_NotifyVideoModeChange`, `D_NotifyGLDisplayMode` (solo GL) e `D_RunNotifications` chiamano `IDeferredNotifications` (`TDeferredNotifications` di `Libs\Video`, applicatore `DelphiDoom.Engine.Video.DisplayModeApplier` con gli `{$IFDEF OPENGL}`), dato da `ComposeDisplayModes` con `D_ConfigureNotifications`. Senza configurazione `I_Error`.
+`c_utils`: `C_RegisterUtilityCommands` chiama il gruppo `IConsoleCommandGroup` (`TConsoleUtilityCommands` di `Framework\Console`: `dir`, `cd`, `cat`, le pagine web; file e browser dietro `IConsoleFileLister` e `IConsoleBrowser`, adattatori `DelphiDoom.Engine.Console.FileLister` e `.Browser`) che `ComposeConsole` da' con `C_ConfigureUtilityCommands`. `d_notifications`: `D_NotifyVideoModeChange`, `D_NotifyGLDisplayMode` (solo GL) e `D_RunNotifications` chiamano `IDeferredNotifications` (`TDeferredNotifications` di `Framework\Video`, applicatore `DelphiDoom.Engine.Video.DisplayModeApplier` con gli `{$IFDEF OPENGL}`), dato da `ComposeDisplayModes` con `D_ConfigureNotifications`. Senza configurazione `I_Error`.
 
 ### `Base\sc_utils.pas` - cancellata
 
@@ -197,7 +197,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `TEXLIB\t_main.pas` - cancellata (e con lei `t_draw.pas`, `t_png.pas`: classi `TEngineDrawTextures` e `TEngineTextureSettings`, issue #171; `TEXLIB` non esiste più)
 
-**Tolta (#146)**, con `TEXLIB\t_detect.pas`: `T_LoadHiResImage` e i caricatori sono `TEngineTextureFiles` (`IEngineTextureFiles`, dato da `ComposeTexture`); la classe `TTexture` e in `Base\DelphiDoom.Engine.Texture.Item.pas`; il riconoscimento di patch, PCX e flat lo fanno `TTexturePatchInspector`, `TTexturePcxDecoder` e `TTextureFlatDecoder` di `Libs\Texture`.
+**Tolta (#146)**, con `TEXLIB\t_detect.pas`: `T_LoadHiResImage` e i caricatori sono `TEngineTextureFiles` (`IEngineTextureFiles`, dato da `ComposeTexture`); la classe `TTexture` e in `Base\DelphiDoom.Engine.Texture.Item.pas`; il riconoscimento di patch, PCX e flat lo fanno `TTexturePatchInspector`, `TTexturePcxDecoder` e `TTextureFlatDecoder` di `Framework\Texture`.
 
 ### `Base\sc_actordef.pas` - cancellata
 
@@ -317,7 +317,7 @@ Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` c
 
 ### `Base\i_midi_new.pas` - cancellata
 
-**Tolta (#158)**: il corpo e `TEngineMidiSongPlayer` (`IEngineMidiSongPlayer`), creata da `ComposeMusic` e data a `i_midi` con `I_ConfigureMidi`. Storia: dalla #83 il sequencer dei buffer di stream e `Libs\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
+**Tolta (#158)**: il corpo e `TEngineMidiSongPlayer` (`IEngineMidiSongPlayer`), creata da `ComposeMusic` e data a `i_midi` con `I_ConfigureMidi`. Storia: dalla #83 il sequencer dei buffer di stream e `Framework\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -415,7 +415,7 @@ Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `T
 
 ### `Base\i_threads.pas` - 4 funzioni pubbliche, 19 chiamate
 
-Per toglierla: dalla #148 e una facciata sottile `TDThread` sopra `IWorkerThread` di `Libs\Threading` (`I_ConfigureThreads`) per chi si crea i propri thread (muri software, `r_fake3d`, `r_depthbuffer`, `am_textured`, `m_menu`): passare un `IWorkerThreadFactory` a quei moduli. `TestActiveThreads` non fa piu nulla.
+Per toglierla: dalla #148 e una facciata sottile `TDThread` sopra `IWorkerThread` di `Framework\Threading` (`I_ConfigureThreads`) per chi si crea i propri thread (muri software, `r_fake3d`, `r_depthbuffer`, `am_textured`, `m_menu`): passare un `IWorkerThreadFactory` a quei moduli. `TestActiveThreads` non fa piu nulla.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -993,7 +993,7 @@ Per toglierla: tabelle del renderer: resta.
 
 ### `Base\m_cheat.pas` - 3 funzioni pubbliche, 185 chiamate
 
-Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la `TCheatTable` della libreria e una tabella per gioco. **#185 fetta 1c**: `get_cheatseq_string` chiama `TCheatSequenceReader.FromChars`/`FromString` di `Libs\Console` (una sequenza senza `$FF` ora e' `I_Error`: prima si leggeva oltre la fine); `cht_CheckCheat`/`cht_GetParam` erano gia' sopra `TCheatSequence`.
+Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la `TCheatTable` della libreria e una tabella per gioco. **#185 fetta 1c**: `get_cheatseq_string` chiama `TCheatSequenceReader.FromChars`/`FromString` di `Framework\Console` (una sequenza senza `$FF` ora e' `I_Error`: prima si leggeva oltre la fine); `cht_CheckCheat`/`cht_GetParam` erano gia' sopra `TCheatSequence`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1003,7 +1003,7 @@ Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la 
 
 ### `Base\mt_utils.pas` - 18 funzioni pubbliche, 207 chiamate
 
-**Facciata (#185, fetta 1e)**: dalla #148 i tre gruppi di thread sono `IWorkerPool` creati da `MT_Init`; ora il lavoro e' di `TWorkerJobRunner` (`MT_Execute*`, `MT_Iterate`), `TWorkerMemoryRunner` (`MT_ZeroMemory`, `MT_memset`, `MT_memseti`, `MT_memcpy`) e `TWorkerTaskScheduler` (i task) di `Libs\Threading`, che `MT_Init` crea (`MT_ConfigureThreads(fabbrica, messaggi, primitive di memoria)`; adattatore `DelphiDoom.Engine.Threading.Services`). Le routine pubbliche hanno le firme di prima (anche i 6 overload di `MT_Execute` e `MT_Execute4/6/8/12/16`): ognuna e' una chiamata al runner. Restano i tipi `iterator_t`, `mt_range_t` e `NUMEXECTHREADS`. Chiamate per fotogramma o per blocco, mai per elemento.
+**Facciata (#185, fetta 1e)**: dalla #148 i tre gruppi di thread sono `IWorkerPool` creati da `MT_Init`; ora il lavoro e' di `TWorkerJobRunner` (`MT_Execute*`, `MT_Iterate`), `TWorkerMemoryRunner` (`MT_ZeroMemory`, `MT_memset`, `MT_memseti`, `MT_memcpy`) e `TWorkerTaskScheduler` (i task) di `Framework\Threading`, che `MT_Init` crea (`MT_ConfigureThreads(fabbrica, messaggi, primitive di memoria)`; adattatore `DelphiDoom.Engine.Threading.Services`). Le routine pubbliche hanno le firme di prima (anche i 6 overload di `MT_Execute` e `MT_Execute4/6/8/12/16`): ognuna e' una chiamata al runner. Restano i tipi `iterator_t`, `mt_range_t` e `NUMEXECTHREADS`. Chiamate per fotogramma o per blocco, mai per elemento.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1103,7 +1103,7 @@ Per toglierla: migrare le circa 270 chiamate `C_AddCmd` a un registratore per ar
 
 ### `Base\m_argv.pas` - 5 funzioni pubbliche, 459 chiamate
 
-Per toglierla: `M_CheckParm` ha ~380 chiamanti e `myargv`/`myargc` sono letti direttamente: servirebbe passare `ICommandLine` ai moduli. Dalla #150 `M_CheckParm` chiede all'`ICommandLine` (`M_ConfigureArgv`), le classi del motore ricevono `ICommandLine`/`IQueriedCommandLine`/`ISaveFileNames` e `M_CmdShowCmdline`/`M_CmdShowCommandLineParams` non esistono piu (sono comandi di `TEngineConsoleScreen`). **#185 fetta 1c**: `M_InitArgv` chiede la riga di comando a `ICommandLineStartup` (`TCommandLineStartup` di `Libs\CommandLine`: argomenti del processo, `Doom32.cmd`, CD-ROM, sopra `IProgramEnvironment` = `TEngineProgramEnvironment`), data da `ComposeEngine` con `M_ConfigureArgv`; nell'unit restano la copia `myargv`/`myargc`, la stampa e `ChDir`.
+Per toglierla: `M_CheckParm` ha ~380 chiamanti e `myargv`/`myargc` sono letti direttamente: servirebbe passare `ICommandLine` ai moduli. Dalla #150 `M_CheckParm` chiede all'`ICommandLine` (`M_ConfigureArgv`), le classi del motore ricevono `ICommandLine`/`IQueriedCommandLine`/`ISaveFileNames` e `M_CmdShowCmdline`/`M_CmdShowCommandLineParams` non esistono piu (sono comandi di `TEngineConsoleScreen`). **#185 fetta 1c**: `M_InitArgv` chiede la riga di comando a `ICommandLineStartup` (`TCommandLineStartup` di `Framework\CommandLine`: argomenti del processo, `Doom32.cmd`, CD-ROM, sopra `IProgramEnvironment` = `TEngineProgramEnvironment`), data da `ComposeEngine` con `M_ConfigureArgv`; nell'unit restano la copia `myargv`/`myargc`, la stampa e `ChDir`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1437,7 +1437,7 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Hexen\sv_save.pas`: P_ArchiveScreenShot, P_UnArchiveScreenShot
 - `Libs\OpenGl\Legacy\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
 - `Libs\OpenGl\Legacy\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
-- `Libs\ScriptHost\psi_game.pas`: PS_GetMobjInfoGravity
+- `Framework\ScriptHost\psi_game.pas`: PS_GetMobjInfoGravity
 - `Strife\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
 - `Strife\g_game.pas`: G_DoLoadGame
 - `Strife\m_menu.pas`: M_StringWidth2, M_StringWidth3, M_WriteText2, M_WriteText3

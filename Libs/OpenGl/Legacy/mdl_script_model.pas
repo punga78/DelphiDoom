@@ -22,7 +22,7 @@
 //
 //  DESCRIPTION:
 //  DDMODEL script host: the functions that a model script calls (PascalScript)
-//  add commands to the list of Libs\Models (IModelCommandStream).
+//  add commands to the list of Framework\Models (IModelCommandStream).
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/

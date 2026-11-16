@@ -17,7 +17,7 @@ interface
 type
   /// <summary>
   ///   The files of declarations. Names use '/' and are relative to the game; they are compared without
-  ///   regard to case. A game that keeps its files in a PK4 or in the file system of <c>Libs\Wad</c>
+  ///   regard to case. A game that keeps its files in a PK4 or in the file system of <c>Framework\Wad</c>
   ///   implements this interface over it; the tests use <c>TDeclMemorySource</c>.
   /// </summary>
   IDeclSource = interface

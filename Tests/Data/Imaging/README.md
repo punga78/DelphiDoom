@@ -26,7 +26,7 @@ esteso (le liste di post del ricostruttore, `topdelta:lunghezza:impronta`).
 
 ## Differenze volute e difetti conservati
 
-Sono elencati in `Libs\Imaging\WIRING.md` (sezioni 5 e 6). Qui solo ciò che riguarda i golden:
+Sono elencati in `Framework\Imaging\WIRING.md` (sezioni 5 e 6). Qui solo ciò che riguarda i golden:
 
 - **Colonne alte che non terminano**: nessun golden. Il vecchio ricostruttore girava all'infinito (un run oltre
   il pixel 254 a più di 254 dal precedente); i casi di `rebuild.golden.txt` sono scelti perché terminino.

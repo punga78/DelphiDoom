@@ -2,7 +2,7 @@
 
 La libreria legge il testo di ACTORDEF e DECORATE (e SNDINFO) e ne fa un modello neutro
 (`TActorDefActor`, `TActorDefWeapon`, `TActorDefThinker`, `TActorDefState`) che dà, appena ogni cosa
-finisce, a dei sink. Non conosce il motore: dipende solo da `Libs\Logging` e `Libs\Scanner`.
+finisce, a dei sink. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner`.
 Il collegamento non è stato fatto (non era compito di questo lavoro): qui sotto c'è cosa serve.
 
 ## 1. Unit da aggiungere ai `.dpr`
@@ -125,7 +125,7 @@ patchata di `sc_actordef.pas` e con un `main` che fa `ComposeEngine`, `Z_Init`, 
 3. thinker, script e file DEH (`SC_SubmitThinker`, `PS_Add*`, `PAK_Read*`) non si eseguono: si scrive l'evento;
 4. `SC_Preprocess` è saltato (il testo dei casi è già pronto, con CR LF).
 
-L'uscita del log del motore (`I_Warning`) passa da un `ILog` di `Libs\Logging` che scrive nel transcript; i test usano lo stesso `TLog`.
+L'uscita del log del motore (`I_Warning`) passa da un `ILog` di `Framework\Logging` che scrive nel transcript; i test usano lo stesso `TLog`.
 
 I file in `Tests\Data\ActorDef\<Gioco>\`:
 `*.in.txt` (il testo, generato da un modello comune con `Imp`/`Golem`/`Centaur`/`Zombie` come base, e armi/munizioni del gioco),

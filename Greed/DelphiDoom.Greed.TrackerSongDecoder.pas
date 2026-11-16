@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   IGreedSongDecoder on the tracker of Libs\Mikmod: the songs of the game are S3M and MOD modules (the original
+  ///   IGreedSongDecoder on the tracker of Framework\Mikmod: the songs of the game are S3M and MOD modules (the original
   ///   gave them to BASS); the tracker also reads XM and IT. A song plays in a loop, as in the original
   /// </summary>
   TGreedTrackerSongDecoder = class(TInterfacedObject, IGreedSongDecoder)

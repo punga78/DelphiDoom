@@ -1,14 +1,14 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the greed library - TGreedFliDecoder against the shared }
-{  FLI/FLC decoder of Libs\Flic (issue #229)                                    }
+{  FLI/FLC decoder of Framework\Flic (issue #229)                               }
 {                                                                              }
 {  TGreedFliDecoder is NOT replaced by TFlicFrameDecoder: the two read the same }
 {  format but differ in what they draw. These tests pin both sides: the common  }
 {  subset (COLOR_64, BYTE_RUN, DELTA_FLI, FLI_COPY on a picture without a zero  }
 {  pixel) gives the same pixels and colors, and each known difference gives     }
 {  different bytes, so a future merge cannot hide it. The table is in           }
-{  Libs\Flic\CLAUDE.md.                                                         }
+{  Framework\Flic\CLAUDE.md.                                                    }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

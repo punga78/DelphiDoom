@@ -14,7 +14,7 @@ uses
   System.SysUtils, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomAudio.Types;
 
 type
-  /// <summary>MUSIC_MOD: name.mod in the SOUND folder, read by the tracker of Libs\Mikmod</summary>
+  /// <summary>MUSIC_MOD: name.mod in the SOUND folder, read by the tracker of Framework\Mikmod</summary>
   TXcomTrackerMusicLoader = class(TInterfacedObject, IXcomMusicFormatLoader)
   strict private
     FRate: Integer;

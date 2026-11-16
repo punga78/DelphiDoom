@@ -60,7 +60,7 @@ type
 
   /// <summary>
   ///   Turns the bytes of a sound or of a music file into samples (what Mix_LoadWAV_RW and Mix_LoadMUS_RW do): the
-  ///   decoders of the other libraries (Libs\Sound, Libs\Mp3) stay behind this contract
+  ///   decoders of the other libraries (Framework\Sound, Framework\Mp3) stay behind this contract
   /// </summary>
   IXcomSampleDecoder = interface
     ['{5B1D7E92-C3A4-4F08-9E26-D0A87B14F5C3}']

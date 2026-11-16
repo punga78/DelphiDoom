@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - the default palette in 32 bits over Libs\Palette       }
+{  DelphiDoom: engine - the default palette in 32 bits over Framework\Palette  }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -21,7 +21,7 @@ uses
 type
   /// <summary>
   ///   R_DefaultPalette of the old r_palette.pas: the palette comes from V_ReadPalette, the
-  ///   colors from the unpacker of Libs\Palette; it is read the first time and then kept
+  ///   colors from the unpacker of Framework\Palette; it is read the first time and then kept
   /// </summary>
   TEngineDefaultPalette = class(TInterfacedObject, IEngineDefaultPalette)
   strict private

@@ -9,8 +9,8 @@ index ef572351..cb837766 100644
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
 +  harness_sweep in '..\Tools\Verifica\harness\harness_sweep.pas',
    i_video in '..\Base\i_video.pas',
-   DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in '..\Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
 diff --git a/Hexen/g_game.pas b/Hexen/g_game.pas
 index b3cd6d0b..16b2a433 100644
 --- a/Hexen/g_game.pas
@@ -49,10 +49,10 @@ index b3cd6d0b..16b2a433 100644
  initialization
  
    mousebuttons := PBooleanArray(@mousearray[0]);
-diff --git a/Libs/ScriptHost/ps_main.pas b/Libs/ScriptHost/ps_main.pas
+diff --git a/Framework/ScriptHost/ps_main.pas b/Framework/ScriptHost/ps_main.pas
 index 4a23ce9c..1408274c 100644
---- a/Libs/ScriptHost/ps_main.pas
-+++ b/Libs/ScriptHost/ps_main.pas
+--- a/Framework/ScriptHost/ps_main.pas
++++ b/Framework/ScriptHost/ps_main.pas
 @@ -210,6 +210,7 @@ function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedu
  implementation
  

@@ -21,7 +21,7 @@ Una sola modalita' per invocazione (-Modes 8, poi -Modes 32: con powershell -Fil
 
 2. Vecchio contro nuovo con un'altra configurazione (-ExtraIni): valori fuori intervallo e chiavi sconosciute
 -----------------------------------------------------------------------------------------------------------
-La tabella delle impostazioni (m_defs) ora e' letta e scritta dalle classi di Libs\Configuration: lo stato e i
+La tabella delle impostazioni (m_defs) ora e' letta e scritta dalle classi di Framework\Configuration: lo stato e i
 fotogrammi devono restare uguali tra vecchio e nuovo anche con valori strani. Tre configurazioni, ognuna a 8 e a 32:
 
   A) -ExtraIni 'screenblocks=99;detaillevel=-7;usegamma=0x7FFFFFFF;showmessages=maybe;unknown_option_1c=42;defaultskill=17'

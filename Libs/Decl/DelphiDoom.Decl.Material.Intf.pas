@@ -9,7 +9,7 @@
 {  This unit is derived from the Doom 3 GPL source code and is therefore       }
 {  available under the GNU General Public License, version 3, with the         }
 {  additional terms of the Doom 3 Source Code License (see README.md of        }
-{  Libs\IdLib); the repository as a whole is GPL v2 or later.                  }
+{  Framework\IdLib); the repository as a whole is GPL v2 or later.             }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Decl.Material.Intf;
@@ -23,7 +23,7 @@ type
   /// <summary>
   ///   Reads one image program from a lexer that is in the middle of a material and gives its canonical text
   ///   (<c>R_ParsePastImageProgram</c>); the images are not loaded. The implementation over the interpreter of
-  ///   <c>Libs\Imaging</c> is <c>TMaterialImageProgramNamer</c>.
+  ///   <c>Framework\Imaging</c> is <c>TMaterialImageProgramNamer</c>.
   /// </summary>
   IMaterialImageNamer = interface
     ['{7A3B2C10-5D4E-4F61-9A72-8B1C0D3E4F01}']

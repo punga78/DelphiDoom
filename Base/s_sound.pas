@@ -759,7 +759,7 @@ type
   channel_tArray = packed array[0..$FFFF] of channel_t;
   Pchannel_tArray = ^channel_tArray;
 
-// TSfxChannelPicker of Libs\Audio reads the channels as TSfxChannelSlot
+// TSfxChannelPicker of Framework\Audio reads the channels as TSfxChannelSlot
 {$IF SizeOf(channel_t) <> SizeOf(TSfxChannelSlot)}
   {$MESSAGE ERROR 'channel_t and TSfxChannelSlot must have the same layout'}
 {$IFEND}
@@ -1741,7 +1741,7 @@ begin
     begin
 
     // JVAL: Create a list with external mp3 filenames to check
-    // (TExternalMusicNames of Libs\Audio: map name, song name and aliases)
+    // (TExternalMusicNames of Framework\Audio: map name, song name and aliases)
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
       externalmusicfilenames := TExternalMusicNames.Candidates(music.mapname, music.name,
         '', 'MUS_', false);
@@ -1914,7 +1914,7 @@ begin
 {$ENDIF}
 
   // The rule (distance, clipping, stereo separation, volume) is
-  // TSfxAttenuation of Libs\Audio
+  // TSfxAttenuation of Framework\Audio
   result := TSfxAttenuation.Adjust(sound_attenuation, listener.x, listener.y,
     listener.angle + listener.viewangle, source.x, source.y, snd_SfxVolume,
     fullvolumelevel, vol^, sep^);
@@ -1942,7 +1942,7 @@ var
   choice: TSfxChannelChoice;
   c: Pchannel_t;
 begin
-  // The choice is TSfxChannelPicker of Libs\Audio: a free channel, the one
+  // The choice is TSfxChannelPicker of Framework\Audio: a free channel, the one
   // of the same origin, or one that matters less
   choice := TSfxChannelPicker.Pick(PSfxChannelSlot(channels), numChannels, origin,
     players[consoleplayer].mo, sfxinfo.priority, @S_ChannelPriority);

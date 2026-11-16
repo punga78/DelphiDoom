@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  Warcraft32: the sound of the game on the PCM output of Libs\GameHost        }
+{  Warcraft32: the sound of the game on the PCM output of Framework\GameHost   }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

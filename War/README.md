@@ -17,7 +17,7 @@ Warcraft32 -data <cartella>                  la cartella ha DATA.WAR, o la sotto
 Warcraft32 -fonts <cartella>                 se i PNG dei font stanno altrove
 ```
 
-Senza `-data` si cerca nella cartella del programma (con `TDataFolderLocator` di `Libs\Platform`: `bin\War` se l'eseguibile sta in
+Senza `-data` si cerca nella cartella del programma (con `TDataFolderLocator` di `Framework\Platform`: `bin\War` se l'eseguibile sta in
 `bin\<Piattaforma>\<Configurazione>\War`) e in quella corrente. I font si cercano nella cartella dei dati (e in `FONTS`,
 `assets`) e in `Reference\war1\assets` di una cartella sopra. Se manca qualcosa il programma lo dice con i percorsi guardati.
 Per le prove: `Reference\_dati\warcraft` (estratto da `Reference\_dati\_download\warcraft.zip`, immagine disco `warcraft.img`).
@@ -95,8 +95,8 @@ con `TWarRunner`. Nessun `{$IFDEF}`.
 | `Libs\War\DelphiDoom.War.App.*` | opzioni e lettore, ricerca dei dati, impostazioni, suono delle scene, tela -> colori, sessione, richieste, sink degli eventi, ciclo |
 | `Libs\War\DelphiDoom.War.Save.*` | formato, scrittura, lettura e checksum del salvataggio |
 | `Libs\War\DelphiDoom.War.Ui.*`, `MapUi.*` | le scene e la mappa (estese: i bottoni Save e Load, il suono dei suoni scelti) |
-| `Libs\GameHost` | finestra, eventi, schermo GDI a colori, uscita PCM waveOut |
-| `War\DelphiDoom.War.HostWindow` | `IWarFramePresenter` sullo schermo di `Libs\GameHost` |
+| `Framework\GameHost` | finestra, eventi, schermo GDI a colori, uscita PCM waveOut |
+| `War\DelphiDoom.War.HostWindow` | `IWarFramePresenter` sullo schermo di `Framework\GameHost` |
 | `War\DelphiDoom.War.HostAudio` | apre e chiude l'uscita PCM sul mixer degli effetti e della musica |
 | `War\DelphiDoom.War.FileSaveStorage` | lo slot rapido su file |
 

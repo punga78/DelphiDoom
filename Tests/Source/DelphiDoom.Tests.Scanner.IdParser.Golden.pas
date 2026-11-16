@@ -20,7 +20,7 @@ uses
 type
   /// <summary>
   ///   Runs the cases of Tests\Data\IdParser\parser.input.txt as the harness of the real idLib did (the
-  ///   golden file is its output, see the README of Libs\Scanner) and writes the same lines
+  ///   golden file is its output, see the README of Framework\Scanner) and writes the same lines
   /// </summary>
   TIdParserGoldenRunner = class
   strict private

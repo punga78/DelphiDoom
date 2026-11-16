@@ -39,18 +39,18 @@ function Replace-Once([string]$text, [string]$old, [string]$new) {
 }
 
 $units = @(
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks',
-  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook'
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks',
+  'Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook'
 )
 $unitLines = ''
 foreach ($u in $units) {

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: keen library - the AdLib card on the OPL2 emulator of Libs\Opl   }
+{  DelphiDoom: keen library - the AdLib card on the OPL2 emulator of Framework\Opl }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -21,7 +21,7 @@ const
 
 type
   /// <summary>
-  ///   The AdLib card of the game: what alOut writes goes to a YM3812 of Libs\Opl, and the chip gives the samples.
+  ///   The AdLib card of the game: what alOut writes goes to a YM3812 of Framework\Opl, and the chip gives the samples.
   ///   The delays of alOut (SDL_Delay) are for the real card and are not here
   /// </summary>
   TKeenOplAdLib = class(TInterfacedObject, IKeenAdLibPort, IKeenSampleSource)

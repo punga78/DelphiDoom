@@ -6,7 +6,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {  The TWadWriter of the forks (AddData, AddString, AddSeparator), on top of   }
-{  the WAD builder of Libs\Wad                                                 }
+{  the WAD builder of Framework\Wad                                            }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameData.WadComposer;

@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the greed library - the mixer to PCM on            }
-{  Libs\AudioMix against a copy of the mixer as it was before (issue #228):     }
+{  Framework\AudioMix against a copy of the mixer as it was before (issue #228): }
 {  the same calls, the same samples and statistics, byte by byte                }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

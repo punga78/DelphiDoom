@@ -5,7 +5,7 @@
 {  Runs the scripts of Tests\Data\Yaml\emit_*.corpus.txt (the format is        }
 {  described in Tools\Verifica\176\yaml\emitcases.h) on the emitter of the     }
 {  library and writes the same log as the harness writes for yaml-cpp          }
-{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Libs\Yaml\README.md          }
+{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Framework\Yaml\README.md     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Yaml.EmitScript;

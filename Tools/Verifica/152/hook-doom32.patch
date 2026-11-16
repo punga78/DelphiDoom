@@ -80,5 +80,5 @@ index b8d9d2dd..1c4438c9 100644
 +  DelphiDoom.Tests.Thinkers.OldDoors in 'Tests\Source\DelphiDoom.Tests.Thinkers.OldDoors.pas',
 +  door_parity in 'Tools\Verifica\152\door_parity.pas',
    DelphiDoom.Engine.Log.Sink in 'Base\DelphiDoom.Engine.Log.Sink.pas',
-   DelphiDoom.Configuration.Types in 'Libs\Configuration\DelphiDoom.Configuration.Types.pas',
-   DelphiDoom.Configuration.Intf in 'Libs\Configuration\DelphiDoom.Configuration.Intf.pas',
+   DelphiDoom.Configuration.Types in 'Framework\Configuration\DelphiDoom.Configuration.Types.pas',
+   DelphiDoom.Configuration.Intf in 'Framework\Configuration\DelphiDoom.Configuration.Intf.pas',

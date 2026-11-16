@@ -16,7 +16,7 @@ DelphiDoom.MapInfo.Loader         in 'Libs\MapInfo\DelphiDoom.MapInfo.Loader.pas
 DelphiDoom.MapInfo.Factory        in 'Libs\MapInfo\DelphiDoom.MapInfo.Factory.pas',
 ```
 
-Dipende da `Libs\Scanner` (`DelphiDoom.Scanner.Strings`, `DelphiDoom.Scanner.Scanner`, già nei `.dpr`) e da `Libs\Logging` (`Logging.Intf`, `Logging.Types`). Nessun `uses` di unit storiche.
+Dipende da `Framework\Scanner` (`DelphiDoom.Scanner.Strings`, `DelphiDoom.Scanner.Scanner`, già nei `.dpr`) e da `Framework\Logging` (`Logging.Intf`, `Logging.Types`). Nessun `uses` di unit storiche.
 
 Riga per `Tools\build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.MapInfo`
 
@@ -67,14 +67,14 @@ I consumatori da riscrivere (cercare `u_mapinfo`, `default_mapinfo`, `Pmapentry_
 
 ## 5. Come sono stati ottenuti i golden
 
-`Tests\Data\MapInfo\{doom,heretic,strife}.golden.txt` sono stati scritti dal **vero** `Base\p_umapinfo.pas`, compilato fuori dal motore con `dcc32` per i tre giochi (`-DDOOM`, `-DHERETIC`, `-DSTRIFE`), insieme ai veri `Common\d_delphi.pas` e `Base\sc_engine.pas` (la facciata sopra `Libs\Scanner`, già verificata contro il vecchio `TScriptEngine`). Le unit del motore da cui `p_umapinfo` dipende sono sostituite da *stub* in una cartella messa prima nel percorso di ricerca (fuori dal repository, harness temporaneo):
+`Tests\Data\MapInfo\{doom,heretic,strife}.golden.txt` sono stati scritti dal **vero** `Base\p_umapinfo.pas`, compilato fuori dal motore con `dcc32` per i tre giochi (`-DDOOM`, `-DHERETIC`, `-DSTRIFE`), insieme ai veri `Common\d_delphi.pas` e `Base\sc_engine.pas` (la facciata sopra `Framework\Scanner`, già verificata contro il vecchio `TScriptEngine`). Le unit del motore da cui `p_umapinfo` dipende sono sostituite da *stub* in una cartella messa prima nel percorso di ricerca (fuori dal repository, harness temporaneo):
 
 - `g_game.G_ValidateMapName`: stessa regola della libreria di prova (MAPxx 01..99, ExMy 1..8/1..9), `sounds.S_GetMusicNumForName`: numero calcolato dal nome, `w_wad.W_CheckNumForName`: esiste se inizia con `D_`, `info_common.Info_GetMobjNumForName` e `p_uactornames.ActorNames`: tre nomi piccoli, `sc_utils.SC_Preprocess`: identità, `m_menu`: scrive su una stringa le chiamate a `M_ClearEpisodes`/`M_AddEpisode`, `i_system.I_Warning`: scrive su una stringa, `z_zone` su `ReallocMem`, `w_wad`/`w_pak`: lump e voci PAK finti.
 - il programma legge `Tests\Data\MapInfo\cases.txt` (65 casi), esegue ogni caso con `U_ParseMapInfo` e scarica `u_mapinfo`, `default_mapinfo`, gli avvisi e le chiamate sugli episodi.
 
 Affidabilità: alta per il parser, la fusione e il caricatore (è il codice vero, non una copia). I test usano gli stessi stub *riscritti* (`DelphiDoom.Tests.MapInfo.Fakes`): se uno stub e il suo finto divergono, il test fallirebbe. Non è coperto: i veri `G_ValidateMapName` (Doom ha `not len in [4,5]`), `S_GetMusicNumForName`, `Info_GetMobjNumForName` (accetta anche numeri e `-1`), l'ordine di `ActorNames`, i caratteri sopra 127 (corpus solo ASCII) e un `SC_Preprocess` vero (direttive `#`).
 
-Per rigenerarli: ricostruire l'harness (programma console che usa `p_umapinfo` e gli stub sopra), compilare con `-DDOOM|HERETIC|STRIFE -U<stub>;Common;Base;Libs\Scanner;Libs\Logging -I<radice>` ed eseguirlo su `cases.txt`.
+Per rigenerarli: ricostruire l'harness (programma console che usa `p_umapinfo` e gli stub sopra), compilare con `-DDOOM|HERETIC|STRIFE -U<stub>;Common;Base;Framework\Scanner;Framework\Logging -I<radice>` ed eseguirlo su `cases.txt`.
 
 ## 6. Differenze volute dal vecchio
 

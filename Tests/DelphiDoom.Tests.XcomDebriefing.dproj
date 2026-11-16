@@ -59,8 +59,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Libs\Bytes;..\Libs\Clock;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\XcomDebriefing;..\Libs\XcomStrategy;..\Libs\XcomGeoscape;..\Libs\XcomBasescape;..\Libs\XcomMenu;..\Libs\XcomAudio;..\Libs\XcomBattle;..\Libs\XcomBattlescape;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Libs\Flic;..\Libs\XcomSave;..\Libs\XcomMod;..\Libs\Yaml;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;..\Libs\Video;..\Libs\Palette;..\Libs\CommandLine;.\Source;..\Libs\AudioMix;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\Framework\Bytes;..\Framework\Clock;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\XcomDebriefing;..\Libs\XcomStrategy;..\Libs\XcomGeoscape;..\Libs\XcomBasescape;..\Libs\XcomMenu;..\Libs\XcomAudio;..\Libs\XcomBattle;..\Libs\XcomBattlescape;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Framework\Flic;..\Libs\XcomSave;..\Libs\XcomMod;..\Framework\Yaml;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;.\Source;..\Framework\AudioMix;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Framework\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Tests\XcomDebriefing</DCC_DcuOutput>

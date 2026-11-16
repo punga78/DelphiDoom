@@ -14,7 +14,7 @@
 // idToken and idParser are stand-ins: this harness has a minimal idStr (see precompiled.h.txt), which the real
 // Token.h and Lexer.h cannot use. They split the text at white space (a quoted string is one token, without the
 // quotes) and read numbers with atoi and atof; the lexical details of the real parser have their own parity
-// (Tests\Data\Decl, Libs\Scanner). What is real here is every line of Model_liquid.cpp.
+// (Tests\Data\Decl, Framework\Scanner). What is real here is every line of Model_liquid.cpp.
 extern char g_parserWarning[512];
 class idToken {
 public:

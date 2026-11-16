@@ -1,0 +1,38 @@
+# Framework\MathCore
+
+Parti generiche di CRC, SHA-1, pile e code di interi, `Extended` in software e matematica in virgola mobile di id Tech 4 e Quake III. **La parte di id Tech 1** (generatore casuale e tabella dei nomi di Doom, tabelle trigonometriche, aritmetica fixed, vettori e bbox, `X87Double`, `PixelBatch`) e' in [`Framework\GameMath`](../GameMath/README.md) dalla issue #225, con gli stessi nomi di unit.
+
+Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
+
+## Contenuto
+
+- Unit nella cartella: 87 (nome a punti `DelphiDoom.MathCore.*`; 19 unit di id Tech 1 sono passate a `Framework\GameMath`).
+- Interfacce e factory (`IEntropySource`, `IGameRandom`, `IStringHashTable`, `TMathCoreFactory`): in `Framework\GameMath`.
+
+## Prova
+
+- Progetto di test in `Tests\`: `DelphiDoom.Tests.MathCore`. Si compila con `Tools\build.bat` (vedi "Build e prove" nel [CLAUDE.md di radice](../../CLAUDE.md)).
+
+## Legami
+
+- Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+## Virgola mobile di id Tech 4 (issue #95, prima fetta)
+
+`DelphiDoom.MathCore.Float.*`: `TIdAngles`, `TIdQuat`, `TIdCQuat`, `TIdMat3`, `TIdRotation`, `TIdComplex`, `TIdPolynomial` e `TIdRotationConversions` (conversioni tra angoli, matrice, quaternione e rotazione), record con operatori in `Single` come il `float` di `idlib\math` (Doom 3, GPL v3 con termini aggiuntivi), sopra `TIdVec3` e `TIdMath` di `Framework\IdLib\Math`. Parita' con il C++ vero (golden in `Tests\Data\MathCore\float.golden.txt`, tolleranza 2 ULP o 4e-6 relativo; radici di polinomi 2e-3): vedi [CLAUDE.md](CLAUDE.md). Non ancora: `idMat2`/`idMat4`/`idMat5`/`idMat6`/`idMatX`, vettori a 5, 6 e N componenti, `idLCP`, `idODE`, curve e interpolazioni.
+
+## Geometria e volumi di id Tech 4 (issue #96, prima fetta)
+
+Piani, bounds, sfere e scatole orientate di `idlib\bv` e `idlib\math\Plane` (Doom 3, GPL v3 con termini aggiuntivi). **Non sono tipi nuovi di MathCore**: stanno in `Framework\Geometry`, dove c'erano gia' `TGeoPlane`, `TGeoBounds`, `TGeoVec3`, `TGeoMat3`, `TGeoWinding` e `TTraceModel` (usati da `Libs\Collision`), e li si e' **estesi**: `TGeoPlane` (`Translate`, `Rotate`, `LineIntersection`, `RayIntersection`, `PlaneIntersection`, `FromVecs`, `Compare` con epsilon), `TGeoBounds` (raggio, volume, `Intersect`, `Expand`, `Rotate`, linea e raggio, `FromTransformedBounds`, `FromPoints`, traslazioni, `ToPoints`, `ToSphere`, proiezioni), `TGeoMat3.Compare`; nuovi `TGeoSphere` (`idSphere`) e `TGeoBox` (`idBox`, con le silhouette). In `Framework\MathCore` stanno solo i due pezzi che toccano i tipi di MathCore: `TIdGeometryAdapter` (`TIdVec3`/`TIdMat3` <-> `TGeoVec3`/`TGeoMat3`) e `TIdBoundsRotation` (i membri di `idBounds` e `idSphere` che prendono un `idRotation`). Parita' con il C++ vero: `Tests\Data\MathCore\geometry.golden.txt` (9109 righe), vedi [CLAUDE.md](CLAUDE.md). Non ancora: frustum, `idWinding2D`, `idSurface*`, `idJointTransform`, `idDrawVert`, `idBox::FromPoints`.
+
+## Patch di Bezier di Quake III (issue #117, prima fetta)
+
+Suddivisione di una patch biquadratica (3x3 punti di controllo, o 3xN, Nx3, NxM dispari fino a 32) in una griglia di vertici secondo l'errore massimo (`r_subdivisions`), con le normali: `R_SubdividePatchToGrid`, `R_CreateSurfaceGridMesh`, `R_GridInsertColumn`/`R_GridInsertRow` di `tr_curve.c` (GPL v2 o successiva, "Based on the Quake III Arena GPL Source Code (id Software)"). Unit `DelphiDoom.MathCore.Patch.*`: `Types` (`TPatchVertex`, limiti, `EPatchException`), `Intf` (`IPatchGrid`, `IPatchSubdivider`, `IPatchGridEditor`), `VertexMath` (`LerpDrawVert` e le funzioni vettoriali di q_shared), `ControlMesh`, `Normals` (`MakeMeshNormals`), `Grid`, `Subdivider`, `GridEditor`, `Factory`. Percorso freddo, nessun chiamante nel motore. Parita' esatta (bit per bit) con il C: `Tests\Data\MathCore\patch.golden.txt`. **Non ancora**: cucitura tra patch vicine (`R_FixSharedVertexLodError`, `R_StitchPatches`: in `tr_bsp.c`, lavorano sulla lista delle superfici del mondo), la collisione (`CM_GeneratePatchCollide`, issue #118), la lettura delle patch dai BSP di OpenArena (#116), `idSurface_Patch` di Doom 3. Dettagli in [CLAUDE.md](CLAUDE.md).
+
+## Matrici e vettori di dimensione qualsiasi, LCP, ODE e curve (issue #95, seconda fetta)
+
+In DelphiDoom.MathCore.Float.*, sopra TIdVec3/TIdMath di Framework\IdLib\Math (Doom 3 GPL, Single come il loat del C++): Vec5, Vec6, Polar3, Mat2, Mat4, Mat5, Mat6 (record, inverse e determinanti tradotti dal C++), VecX e MatX (classi con memoria propria o del chiamante) con le fattorizzazioni MatX.Inverse (Gauss-Jordan e aggiornamenti), LU (dentro MatX), MatX.Cholesky, MatX.Ldlt, MatX.TriDiagonal, MatX.Eigen (matrici simmetriche), il solutore idLCP (Lcp.Intf, Lcp.Base, Lcp.Square, Lcp.Symmetric, Lcp.Factory, con ILog iniettato), PlaneFit (idPlane::HeightFit), BoxFit (idBox::FromPoints), Ode.* (idODE: Euler, punto medio, Runge-Kutta 4 e adattivo) e Curve.* (idCurve: Bezier, spline, B-spline, NURBS, con l'aritmetica del tipo di punto iniettata). Percorso freddo, nessun chiamante nel motore. Parita' con il C++ vero (Tests\Data\MathCore\matx.golden.txt, ode.golden.txt, curve.golden.txt, harness in Tests\Data\MathCore\harness): 2 ULP o errore relativo fra 4e-6 e 1e-4 a seconda della famiglia, vedi [CLAUDE.md](CLAUDE.md). Non ancora: QR_*, SVD_*, LU_Update*, gli autovalori di una matrice non simmetrica, Extrapolate.h e Interpolate.h.
+
+## Issue #236, parte A
+
+`TIdMatXLuUpdate`, `TIdMatXQr`, `TIdMatXSvd`, `TIdMatXEigenGeneral` (autovalori e autovettori di una matrice non simmetrica), `TIdExtrapolate<T>`, `TIdInterpolate<T>`, `TIdInterpolateAccelDecelLinear<T>` e `...Sine<T>`, `TIdCurveVecXArithmetic` (curve di vettori di qualsiasi dimensione) e `TIdSurfaceSweptSpline`, tutti verificati sul C++ di Doom 3 (golden `matx2`, `interp`, `swept`). Dettagli, differenze e difetti dell'originale in `CLAUDE.md`.

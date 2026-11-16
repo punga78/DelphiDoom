@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: engine - the defaults of the configuration file over            }
-{  Libs\Configuration                                                          }
+{  Framework\Configuration                                                     }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -25,7 +25,7 @@ type
   ///   M_LoadDefaults, M_SaveDefaults, M_SetDefault and M_ForceDefault* of the old m_misc.pas:
   ///   the rows of the options are an IConfigurationTable (built from the data of m_defs by the
   ///   composition root), what is done on them is the IConfigurationTableStore of
-  ///   Libs\Configuration; here stay the file on disk, the command line, the messages, the
+  ///   Framework\Configuration; here stay the file on disk, the command line, the messages, the
   ///   commands "get" and "setdefault" of the console and what the games do after the load
   /// </summary>
   TEngineDefaults = class(TInterfacedObject, IEngineDefaults, IConfigurationResetSink)

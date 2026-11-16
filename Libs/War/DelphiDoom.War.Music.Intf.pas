@@ -39,7 +39,7 @@ type
 
   /// <summary>
   ///   The events of a song, in order and with the time in whole milliseconds, built on the MIDI stream sequencer
-  ///   of Libs\Midi (what tml_load gives the original)
+  ///   of Framework\Midi (what tml_load gives the original)
   /// </summary>
   IWarMusicTimeline = interface
     ['{C85B2F40-1E93-47A6-8D0C-6A3F57E9B124}']

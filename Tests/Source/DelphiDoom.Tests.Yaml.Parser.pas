@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: tests of the yaml library - the parser, the encodings and the   }
 {  files                                                                       }
-{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Libs\Yaml\README.md          }
+{  Port of yaml-cpp 0.7.0 (MIT, Jesse Beder): see Framework\Yaml\README.md     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Yaml.Parser;

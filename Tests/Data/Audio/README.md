@@ -1,8 +1,8 @@
 # Tests\Data\Audio
 
-Dati dei test di `Libs\Audio`.
+Dati dei test di `Framework\Audio`.
 
-- `audio.golden.txt`: l'uscita del vecchio `I_CacheSFX` e del vecchio `GetSongLength`/`I_MusToMidi` (vedi `Libs\Audio\CLAUDE.md`).
+- `audio.golden.txt`: l'uscita del vecchio `I_CacheSFX` e del vecchio `GetSongLength`/`I_MusToMidi` (vedi `Framework\Audio\CLAUDE.md`).
 
 ## Preset EFX e intestazione WAVE di Doom 3 (issue #112)
 
@@ -17,4 +17,4 @@ Confronto di `TEfxEffectsFile` e di `TWaveHeaderReader` con i **veri** `snd_efxf
 ## Lettura e posizione di idWaveFile (issue #236, parte B, #112)
 
 - `waveio.input.txt` (5 casi) e `waveio.golden.txt`: l'uscita del **vero** `snd_wavefile.cpp` su `Open`, `Read`, `Seek`, `ResetFile`, `Close` e `OpenFromMemory`. Operazioni (oltre a quelle di `wave.input.txt`): `open NOME` (il file resta aperto), `read N` (`ret`, `got` = `*pdwSizeRead` e l'impronta FNV-1a dei byte letti), `seek N`, `reset`, `mem N` (N byte, il byte i vale `i * 7 + 3`), `close`.
-- Il test e' `TTestWaveFileGolden` (`DelphiDoom.Tests.Audio.WaveFileGolden`). L'harness e' quello di sopra (`harness\driver_wave.cpp.txt` esteso); l'idlib e' una copia di quella dell'AAS di Doom 3 con `Str.cpp` che usa `malloc` al posto dell'allocatore a blocchi (e i suoi metodi vuoti) e `Simd_Generic.cpp` senza `register`. `OpenFromMemory` ha nel C++ un difetto (`mpbDataCur` e' un `short *`): i casi usano solo cio' che e' giusto (vedi `Libs\Audio\CLAUDE.md`).
+- Il test e' `TTestWaveFileGolden` (`DelphiDoom.Tests.Audio.WaveFileGolden`). L'harness e' quello di sopra (`harness\driver_wave.cpp.txt` esteso); l'idlib e' una copia di quella dell'AAS di Doom 3 con `Str.cpp` che usa `malloc` al posto dell'allocatore a blocchi (e i suoi metodi vuoti) e `Simd_Generic.cpp` senza `register`. `OpenFromMemory` ha nel C++ un difetto (`mpbDataCur` e' un `short *`): i casi usano solo cio' che e' giusto (vedi `Framework\Audio\CLAUDE.md`).

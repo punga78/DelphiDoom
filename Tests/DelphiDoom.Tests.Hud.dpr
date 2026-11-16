@@ -16,9 +16,9 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
 {$IFNDEF CPUX86}
-  DelphiDoom.MathCore.Types in '..\Libs\GameMath\DelphiDoom.MathCore.Types.pas',
-  DelphiDoom.MathCore.FixedMath in '..\Libs\GameMath\DelphiDoom.MathCore.FixedMath.pas',
-  DelphiDoom.MathCore.MemoryFill in '..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
+  DelphiDoom.MathCore.Types in '..\Framework\GameMath\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.FixedMath in '..\Framework\GameMath\DelphiDoom.MathCore.FixedMath.pas',
+  DelphiDoom.MathCore.MemoryFill in '..\Framework\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
 {$ENDIF}
   d_delphi in '..\Common\d_delphi.pas',
   DelphiDoom.Hud.Types in '..\Libs\Hud\DelphiDoom.Hud.Types.pas',

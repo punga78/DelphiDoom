@@ -43,7 +43,7 @@ uses
 //==============================================================================
 //
 // R_ConfigurePrecalc
-// The precalculated tables of Libs\Palette, given by the composition root
+// The precalculated tables of Framework\Palette, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigurePrecalc(const ATables: IPrecalcTables);

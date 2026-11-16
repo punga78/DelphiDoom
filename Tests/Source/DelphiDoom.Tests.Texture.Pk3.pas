@@ -240,7 +240,7 @@ var
   LBytes: TBytes;
   LRelative: string;
 begin
-  // the PNG is decoded by Libs\Png (with its own tests): here only the header, which is what
+  // the PNG is decoded by Framework\Png (with its own tests): here only the header, which is what
   // the decoders of the engine start from
   for LRelative in ['textures\ZPKPNG.png', 'flats\ZPKFLAT.png'] do
   begin
@@ -260,7 +260,7 @@ var
   LBytes: TBytes;
   LPosition: Integer;
 begin
-  // the JPEG is decoded by Libs\Jpeg (with its own tests): here SOI, JFIF and the baseline frame
+  // the JPEG is decoded by Framework\Jpeg (with its own tests): here SOI, JFIF and the baseline frame
   LBytes := Load('textures\ZPKJPG.jpg');
   Assert.AreEqual(Integer($FF), Integer(LBytes[0]), 'SOI');
   Assert.AreEqual(Integer($D8), Integer(LBytes[1]), 'SOI');

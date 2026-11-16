@@ -295,7 +295,7 @@ var
   LHostLog: ILog;
   LShaders: IGameHostShaderLoader;
 begin
-  // the display of Libs\GameHost speaks to the log and reads the shaders of the game through two adapters
+  // the display of Framework\GameHost speaks to the log and reads the shaders of the game through two adapters
   LHostLog := nil;
   if Assigned(ALog) then
     LHostLog := TXcomHostLog.Create(ALog);

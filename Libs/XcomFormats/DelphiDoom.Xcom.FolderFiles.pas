@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   The files of the game on disk: IXcomDataFiles over the IFolderFiles of Libs\Platform, with the errors of
+  ///   The files of the game on disk: IXcomDataFiles over the IFolderFiles of Framework\Platform, with the errors of
   ///   the xcom library. Several folders can be given (the data of UFO in one, a mod in another): a file is taken
   ///   from the first folder that has it, as the stack of folders of OpenXcom does. The file system of Windows
   ///   does not care about the case of the names

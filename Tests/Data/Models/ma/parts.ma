@@ -1,7 +1,7 @@
 //Maya ASCII 4.0 scene
 //Name: parts.ma
 //Two triangles under two nested transforms, with vertex offsets (pt), no normals, two shading networks
-//that point at the same picture (written for the tests of Libs\Models)
+//that point at the same picture (written for the tests of Framework\Models)
 requires maya "4.0";
 createNode transform -n "grp1";
 	setAttr ".t" -type "double3" 0 0 5 ;

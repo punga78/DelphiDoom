@@ -28,7 +28,7 @@ $g = $g -replace '(?<![\.\w])ThousandSeparator', 'FormatSettings.ThousandSeparat
 Set-Content "$uscita\src\g_delphi.pas" $g
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
 if ($Davanti -ne '') { $Davanti = "$Davanti;" }
-$u = "$Davanti$PSScriptRoot\stubs;$PSScriptRoot\..\175-render\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\GameMath;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Tests\Source"
+$u = "$Davanti$PSScriptRoot\stubs;$PSScriptRoot\..\175-render\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
 & $dcc -B -Q -CC -GD -H- -W- '-$O+' "-U$u" "-I$Riferimento" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\SpritesParity.dpr" | Select-String 'Error|Fatal'
 if ($LASTEXITCODE -ne 0) { exit 1 }

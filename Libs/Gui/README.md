@@ -33,7 +33,7 @@ Il disegno (`Item_Paint`, `Menu_Paint`, `Window_Paint`, `Fade`, bordi, gradienti
 
 ## Lexer
 
-I `.menu` si leggono con `TIdParser` (`Libs\Scanner`, sopra `TIdLexer` di `Libs\IdLib`) con `LEXFL_NOFATALERRORS or LEXFL_NODOLLARPRECOMPILE`, **non** con un secondo port del precompilatore di botlib (`l_script.c`, `l_precomp.c`, che il modulo ui raggiunge con `trap_PC_*`): idLexer e idParser discendono da quel codice. Le differenze trovate col vero botlib sono sotto.
+I `.menu` si leggono con `TIdParser` (`Framework\Scanner`, sopra `TIdLexer` di `Framework\IdLib`) con `LEXFL_NOFATALERRORS or LEXFL_NODOLLARPRECOMPILE`, **non** con un secondo port del precompilatore di botlib (`l_script.c`, `l_precomp.c`, che il modulo ui raggiunge con `trap_PC_*`): idLexer e idParser discendono da quel codice. Le differenze trovate col vero botlib sono sotto.
 
 ## Differenze dal C e difetti
 
@@ -87,7 +87,7 @@ Parita' esatta (nessuna tolleranza, Win32 e Win64) con il vero `ui_shared.c` su 
 
 # La GUI di Doom 3 (`.gui`, issue #111)
 
-Prima fetta della GUI di id Tech 4 a classi, **accanto** ai menu di Quake III (che non sono toccati): lettura dei `.gui` in un albero di finestre con variabili, registri e script, e il passo del tempo (valutazione delle espressioni, transizioni, eventi del tempo e con nome) **senza disegno e senza input**. Port di `neo\ui` di Doom 3 (id Software, **GPL v3 con i termini aggiuntivi di Doom 3**, "Based on the Doom 3 GPL Source Code (id Software)" nell'intestazione di ogni unit; il repository e' GPL v2 o successiva, come in `Libs\IdLib`). **Percorso freddo, nessun chiamante nel motore.**
+Prima fetta della GUI di id Tech 4 a classi, **accanto** ai menu di Quake III (che non sono toccati): lettura dei `.gui` in un albero di finestre con variabili, registri e script, e il passo del tempo (valutazione delle espressioni, transizioni, eventi del tempo e con nome) **senza disegno e senza input**. Port di `neo\ui` di Doom 3 (id Software, **GPL v3 con i termini aggiuntivi di Doom 3**, "Based on the Doom 3 GPL Source Code (id Software)" nell'intestazione di ogni unit; il repository e' GPL v2 o successiva, come in `Framework\IdLib`). **Percorso freddo, nessun chiamante nel motore.**
 
 ## Cosa e' portato
 

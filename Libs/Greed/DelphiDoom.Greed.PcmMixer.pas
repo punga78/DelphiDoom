@@ -86,7 +86,7 @@ type
         function IsStopped: Boolean;
       end;
 
-      /// <summary>An effect that plays: the voice of Libs\AudioMix, which is also the channel the game holds</summary>
+      /// <summary>An effect that plays: the voice of Framework\AudioMix, which is also the channel the game holds</summary>
       TEffectVoice = class(TPcmNearestRateVoice, IGreedEffectChannel)
       end;
 

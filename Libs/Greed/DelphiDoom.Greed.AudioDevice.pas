@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: greed library - the sound device on top of Libs\Audio            }
+{  DelphiDoom: greed library - the sound device on top of Framework\Audio       }
 {  Port of xGreed (Jim Valavanis, GPL v2 or later): the BASS calls of modplay   }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

@@ -1,4 +1,4 @@
-# Dati di prova di Libs\Models (issue #45)
+# Dati di prova di Framework\Models (issue #45)
 
 `models.golden.txt` è l'uscita del **vecchio codice del motore** (`Libs\OpenGl\Legacy\mdl_md2.pas`: costruttore e `MergeFrames`; `mdl_base.pas`;
 `mdl_script_model.pas`: `TDDModelLoader` senza lo script), compilato con Delphi 11 Win32 in un programma di prova **fuori dal
@@ -16,6 +16,6 @@ I file MD2 sono costruiti in memoria (`DelphiDoom.Tests.Models.Samples`, xorshif
 | `md2.merges` | 15 unioni di due file con un solo fotogramma nel secondo (l'unico caso in cui il vecchio `MergeFrames` è giusto), di cui 3 rifiutate perché i triangoli sono diversi |
 | `dmx.streams` | 30 serie di comandi di modelli procedurali (da 6 a 125 comandi, con cambi di fotogramma e chiamate): fotogrammi, posizione di ogni fotogramma, file binario byte per byte, file riletto, riproduzione di ogni fotogramma con profondità 20, 2 e 0 |
 
-Dal confronto con il vecchio codice com'è oggi (record con `Char` da 2 byte) escono le differenze volute: vedi `Libs\Models\README.md`.
+Dal confronto con il vecchio codice com'è oggi (record con `Char` da 2 byte) escono le differenze volute: vedi `Framework\Models\README.md`.
 Le serie di `dmx.streams` hanno sempre il fotogramma 0 per primo e i nuovi fotogrammi in ordine crescente: sono gli unici casi in cui
 l'elenco dei fotogrammi del vecchio codice è giusto (il difetto ha un test a parte).

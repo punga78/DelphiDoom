@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - the console on the screen over Libs\Console            }
+{  DelphiDoom: engine - the console on the screen over Framework\Console       }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -32,7 +32,7 @@ const
 type
   /// <summary>
   ///   C_Init, C_Responder, C_Ticker, C_Drawer and the text of the old c_con.pas: the commands,
-  ///   the line of input, the queue and the autoexec are the objects of Libs\Console that the
+  ///   the line of input, the queue and the autoexec are the objects of Framework\Console that the
   ///   console receives and owns; the drawing uses the screens and the fonts of the engine
   /// </summary>
   TEngineConsoleScreen = class(TInterfacedObject, IEngineConsole)
@@ -96,7 +96,7 @@ type
     /// <param name="AInterpreter">Runs the commands that the console calls by name (use)</param>
     /// <param name="ACommandLine">What the commands "cmdline" and "commandlineparams" show</param>
     /// <remarks>
-    ///   The console owns the objects of Libs\Console and frees them in Shutdown (or when it is
+    ///   The console owns the objects of Framework\Console and frees them in Shutdown (or when it is
     ///   destroyed). Raises EArgumentNilException if one of them is nil
     /// </remarks>
     constructor Create(const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter;

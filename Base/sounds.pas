@@ -25,7 +25,7 @@
 //   Kept as a sample, DOOM2  sounds. Frozen.
 //
 //   The tables S_sfx and S_music are data (sounddata.pas); the numbers of sounds and
-//   songs come from the rules of Libs\Audio (TSfxNumberResolver, TMusicNumberResolver),
+//   songs come from the rules of Framework\Audio (TSfxNumberResolver, TMusicNumberResolver),
 //   that the composition root gives here
 //
 //------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ uses
 //
 // S_ConfigureSoundNumbers
 //
-// The rules of the numbers of the sounds (TSfxNumberResolver of Libs\Audio, on the
+// The rules of the numbers of the sounds (TSfxNumberResolver of Framework\Audio, on the
 // table of the game and the aliases of SNDINFO that the ACTORDEF lumps fill), given
 // by the composition root; without them S_GetSoundNumForName stops with I_Error
 //
@@ -57,7 +57,7 @@ procedure S_ConfigureSoundNumbers(const AResolver: ISfxNumberResolver);
 //
 // S_ConfigureMusicNumbers
 //
-// The rules of the numbers of the songs (TMusicNumberResolver of Libs\Audio), given by
+// The rules of the numbers of the songs (TMusicNumberResolver of Framework\Audio), given by
 // the composition root; without them S_GetMusicNumForName stops with I_Error
 //
 //==============================================================================

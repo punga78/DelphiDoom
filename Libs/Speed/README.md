@@ -34,7 +34,7 @@ modelli I3D, `r_soft3d`) è S3 e oltre, vedi sotto.
 | `Container` | `TSpeedContainer` (**S1**): intestazione, directory, lettura per nome e per indice |
 | `PaletteBuilder` | `SH_CreateDoomPalette`: PLAYPAL (14 palette) e COLORMAP (34 mappe) dalla palette del gioco |
 | `Is2Decoder` | `TSpeedBitmap.AttachIS2` |
-| `CircuitReader` | la lettura di `CIRCUITS.LST` (sopra `TScriptScanner` di `Libs\Scanner`) |
+| `CircuitReader` | la lettura di `CIRCUITS.LST` (sopra `TScriptScanner` di `Framework\Scanner`) |
 | `LevelBuilder` | `SH_CreateDoomLevel`: una pista come livello di Doom (THINGS, LINEDEFS, SIDEDEFS, VERTEXES, SECTORS, PATH, più le correzioni di E1M1 ed E1M8 per le piste originali, riconosciute dal CRC32 del `.DAT`) |
 | `MapBitmapBuilder` | `GenerateMapBitmap`: le 64x64 tessere ruotate in un'immagine di 4096x4096 (il lump `FMAPnn`, 16 MB) |
 | `FontData`, `FontBuilder` | `GenerateFonts`: i caratteri 33..127 in due misure e cinque colori, con il rumore di Perlin |
@@ -76,9 +76,9 @@ Uso: `TSpeedFactory.CreateTranslator(log).Translate(TSpeedFactory.OpenContainer(
 
 | Fetta | Che cosa | Note |
 |---|---|---|
-| S3 (fatta, #168) | `Libs\Models`: parser e disegno su contratto dei modelli I3D (`Libs\OpenGl\Legacy\i3d_*`, `mdl_i3d`), vedi `Libs\Models\README.md` sez. 2b | il traduttore dà le voci `MODELS\x.I3D`; manca solo l'adattatore OpenGL nel motore (con S5) |
+| S3 (fatta, #168) | `Framework\Models`: parser e disegno su contratto dei modelli I3D (`Libs\OpenGl\Legacy\i3d_*`, `mdl_i3d`), vedi `Framework\Models\README.md` sez. 2b | il traduttore dà le voci `MODELS\x.I3D`; manca solo l'adattatore OpenGL nel motore (con S5) |
 | S4 (fatta, #168) | `Libs\Racing`: auto, guida, IA, percorso, gara, record, campionato (`speed_cars`, `speed_path`, `speed_race`, `speed_score`, `speed_particles`, `speed_championship`), vedi `Libs\Racing\README.md` | parità con il vecchio codice compilato in un harness (0 differenze su 111 righe); il `double` del `mobj_t` resta nel `TRacingCarState` che il gioco copia da e verso l'oggetto; a 64 bit compila ma la parità è provata solo a 32 |
-| S5 (iniziata, #168) | cartella `Speed\` e il gioco: `mobj_t`/`player_t` propri, azioni, HUD, menu, schermate, record su disco, `m_base` e `TSpeedLevelRules`, profilo Iwad; eseguibile `GLSpeed32` | **fatto**: `Speed\Speed32.dpr` (`Tools\build.bat Speed\Speed32`), programma di prova senza finestra né motore che traduce `SPEEDH.JCL` e fa correre le auto del computer sui dati veri (`-list`, `-level`, `-laps`, `-cars`, `-tics`; `DelphiDoom.Speed.RaceSimulation`). **Resta tutto il gioco**: il meccanismo di profilo è in `Libs\GameData\README.md`; i savegame vanno a `Libs\Serializer` con la tabella del gioco |
+| S5 (iniziata, #168) | cartella `Speed\` e il gioco: `mobj_t`/`player_t` propri, azioni, HUD, menu, schermate, record su disco, `m_base` e `TSpeedLevelRules`, profilo Iwad; eseguibile `GLSpeed32` | **fatto**: `Speed\Speed32.dpr` (`Tools\build.bat Speed\Speed32`), programma di prova senza finestra né motore che traduce `SPEEDH.JCL` e fa correre le auto del computer sui dati veri (`-list`, `-level`, `-laps`, `-cars`, `-tics`; `DelphiDoom.Speed.RaceSimulation`). **Resta tutto il gioco**: il meccanismo di profilo è in `Libs\GameData\README.md`; i savegame vanno a `Framework\Serializer` con la tabella del gioco |
 | S6 | `r_soft3d` (rasterizzatore software dell'auto del menu) | opzionale: Speed è solo OpenGL |
 
 Non verificato a runtime nel motore: nulla di questa libreria è collegato al motore (non esiste ancora il gioco Speed); la parità è sui byte dei lump. `Speed32` ha fatto correre le auto di `Libs\Racing` sui lump veri dello shareware (E1M1 ed E1M2) senza errori, ma senza un riferimento dal vecchio gioco.

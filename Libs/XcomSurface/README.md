@@ -2,7 +2,7 @@
 
 > Note per Claude: [CLAUDE.md](CLAUDE.md).
 
-Superficie indicizzata a 8 bit di **OpenXcom** (`Surface`, `Font`, `ShaderDraw`/`ShaderMove`) senza SDL, issue #176 (terza fetta, dopo `Libs\XcomFormats` e `Libs\Yaml`). Solo classi pure; usa `TXcomImage` e `TXcomPalette` di `Libs\XcomFormats`.
+Superficie indicizzata a 8 bit di **OpenXcom** (`Surface`, `Font`, `ShaderDraw`/`ShaderMove`) senza SDL, issue #176 (terza fetta, dopo `Libs\XcomFormats` e `Framework\Yaml`). Solo classi pure; usa `TXcomImage` e `TXcomPalette` di `Libs\XcomFormats`.
 
 Non e' un gioco del motore Doom: nessun collegamento a `ComposeEngine` ne' a `TIdTechGeneration`.
 

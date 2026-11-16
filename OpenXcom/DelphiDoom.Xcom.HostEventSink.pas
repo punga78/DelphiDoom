@@ -16,7 +16,7 @@ uses
 
 type
   /// <summary>
-  ///   IGameHostEventSink that puts the events of the window of Libs\GameHost in the queue of the game, as SDL 1.2
+  ///   IGameHostEventSink that puts the events of the window of Framework\GameHost in the queue of the game, as SDL 1.2
   ///   made them: the key is an SDLKey (a key without a name of its own is the lower case ASCII of what it types),
   ///   a turn of the wheel is a press and a release of button 4 or 5 where the mouse of the game is
   /// </summary>

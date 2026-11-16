@@ -19,7 +19,7 @@ type
   /// <summary>
   ///   The script compiler and the lists of the compiler library of a game, which live in
   ///   ddc_doom.dll, ddc_heretic.dll, ddc_hexen.dll and ddc_strife.dll (the same ones the
-  ///   command line compiler ddc.exe uses, through Libs\Ddc\ddc_base). Between Open and Close the dll
+  ///   command line compiler ddc.exe uses, through Framework\Ddc\ddc_base). Between Open and Close the dll
   ///   stays loaded, so that the many calls that follow do not load it again
   ///   A game without a dll of its own asks the one of the game whose engine it runs on
   ///   (TIdeGames.CompilerGame: Radix compiles with ddc_doom.dll)

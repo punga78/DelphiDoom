@@ -10,7 +10,7 @@
 {  Based on the Doom 3 GPL Source Code (id Software). This unit is derived     }
 {  from it and is therefore available under the GNU General Public License,    }
 {  version 3, with the additional terms of the Doom 3 Source Code License      }
-{  (see Reference\doom3\README.txt and Libs\IdLib\README.md); the repository    }
+{  (see Reference\doom3\README.txt and Framework\IdLib\README.md); the repository }
 {  as a whole is GPL v2 or later.                                              }
 {                                                                              }
 {******************************************************************************}
@@ -27,7 +27,7 @@ uses
 type
   /// <summary>
   ///   Registers the console commands of the declaration manager in a command system (<c>ICmdCommands</c>, the
-  ///   <c>idCmdSystem</c> profile of <c>Libs\Console</c>), in the order of <c>idDeclManagerLocal::Init</c>:
+  ///   <c>idCmdSystem</c> profile of <c>Framework\Console</c>), in the order of <c>idDeclManagerLocal::Init</c>:
   ///   <c>listDecls</c>, <c>reloadDecls</c>, <c>touch</c>, the <c>list&lt;Type&gt;</c> commands and the
   ///   <c>print&lt;Type&gt;</c> commands, all <c>CMD_FL_SYSTEM</c>. The object owns the helpers the commands
   ///   call and must live as long as the commands do. <c>listHuffmanFrequencies</c> comes last (the manager does

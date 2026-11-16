@@ -18,7 +18,7 @@ type
   /// <summary>
   ///   Reads little endian numbers from the bytes of a file. A read beyond the end is an EVoxelEditorException: the
   ///   old loaders read what the stream gave, and a short file left the rest of their variables as they were. The
-  ///   cursor is the common TByteReader of Libs\Bytes; this class only gives it the exception of this library
+  ///   cursor is the common TByteReader of Framework\Bytes; this class only gives it the exception of this library
   /// </summary>
   TVoxelEditorByteReader = class(TByteReader)
   strict private

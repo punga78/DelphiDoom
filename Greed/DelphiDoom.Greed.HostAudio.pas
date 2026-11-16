@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   Gives the samples of the mixer of the game to the PCM output of Libs\GameHost (waveOut): the output asks
+  ///   Gives the samples of the mixer of the game to the PCM output of Framework\GameHost (waveOut): the output asks
   ///   from its thread, the mixer answers. The output does not keep its source alive: this object is the source and
   ///   lives until Close has returned. Without a device (Open false) the game goes on and the mixer is never asked
   /// </summary>

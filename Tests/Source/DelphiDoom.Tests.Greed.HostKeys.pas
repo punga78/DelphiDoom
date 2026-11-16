@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: unit tests of the keys of Greed32 from the messages of the       }
 {  window: TGreedHostControls and TGreedHostKeyboard over the translator and    }
-{  the key state of Libs\GameHost (no window: made up messages)                 }
+{  the key state of Framework\GameHost (no window: made up messages)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

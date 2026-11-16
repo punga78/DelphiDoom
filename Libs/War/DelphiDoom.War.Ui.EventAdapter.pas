@@ -19,7 +19,7 @@ uses
 
 type
   /// <summary>
-  ///   Turns the events of a window of Libs\GameHost (IGameHostEventSink) into what wg_processGameEvent does with the
+  ///   Turns the events of a window of Framework\GameHost (IGameHostEventSink) into what wg_processGameEvent does with the
   ///   events of SDL: the position of the mouse and its buttons (left and right; the middle one is ignored), the keys
   ///   (Shift, Ctrl and Alt take their state from the modifiers of the event, not from the key that went down or up), the
   ///   characters that the keys type (SDL_EVENT_TEXT_INPUT: only the ones from 32 to 126 count in the cheat panel) and the

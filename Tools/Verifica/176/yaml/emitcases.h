@@ -1,4 +1,4 @@
-// Emitter part of the parity harness for Libs\Yaml (own code, no OpenXcom code).
+// Emitter part of the parity harness for Framework\Yaml (own code, no OpenXcom code).
 // "emit-gen <dir>" writes the corpora (scripts of emitter operations, one per case, cases separated by "%%%%"),
 // "emit-run <file>" runs every case on the real YAML::Emitter and prints what it did.
 //

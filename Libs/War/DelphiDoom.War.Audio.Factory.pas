@@ -15,11 +15,11 @@ uses
 type
   /// <summary>
   ///   The only place that knows the concrete classes of the audio. In its own unit so that who uses the archive
-  ///   and the graphics of Libs\War does not need Libs\Xmi and Libs\GameHost
+  ///   and the graphics of Libs\War does not need Framework\Xmi and Framework\GameHost
   /// </summary>
   TWarAudioFactory = class
   public
-    /// <summary>The converter of the songs: TXmiConverter of Libs\Xmi</summary>
+    /// <summary>The converter of the songs: TXmiConverter of Framework\Xmi</summary>
     class function CreateMusicConverter: IWarMusicConverter; static;
     /// <summary>The sounds and songs of an archive</summary>
     class function CreateLibrary(const AArchive: IWarArchive; const ACatalog: IWarCatalog): IWarAudioLibrary; overload; static;

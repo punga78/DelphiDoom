@@ -4,7 +4,7 @@
 
 Lettura e scrittura dei file **`.map` di id Tech 4** (Doom 3): modello neutro (mappa, entita', brush, facce, patch), lettore, scrittore. Issue #106 (indice: #94). Port a classi di `idMapFile`, `idMapEntity`, `idMapBrush`, `idMapBrushSide` e `idMapPatch` di `idlib\MapFile.cpp/.h` (`Reference\doom3`, sola lettura). **Non ha chiamanti nel motore** (percorso freddo): serve a creare e a leggere livelli (#47) e ai file compilati (#107: .proc e .aas, sezione sotto) e, in seguito, al BSP di Quake III (#116).
 
-**Licenza.** Port di codice di Doom 3: **GPL v3 con i termini aggiuntivi di Doom 3**, dichiarato nell'intestazione di ogni unit ("Based on the Doom 3 GPL Source Code (id Software)"); il repository e' GPL v2 o successiva (vedi `Libs\IdLib\README.md`). Le unit scritte per questa libreria senza derivare da `MapFile.cpp` (`Factory`) hanno la licenza del repository.
+**Licenza.** Port di codice di Doom 3: **GPL v3 con i termini aggiuntivi di Doom 3**, dichiarato nell'intestazione di ogni unit ("Based on the Doom 3 GPL Source Code (id Software)"); il repository e' GPL v2 o successiva (vedi `Framework\IdLib\README.md`). Le unit scritte per questa libreria senza derivare da `MapFile.cpp` (`Factory`) hanno la licenza del repository.
 
 ## Cosa fa
 
@@ -19,14 +19,14 @@ Lettura e scrittura dei file **`.map` di id Tech 4** (Doom 3): modello neutro (m
 
 | Si usa | Da |
 |---|---|
-| `TIdLexer`, `TIdToken`, `TIdStr`, `TIdStrings` (anche `FloatArrayToString` per i float scritti) | `Libs\IdLib\Text` |
-| `TIdDict` (le coppie di entita' e primitive, `MatchPrefix`, `GetVector`) | `Libs\Scanner` |
-| `TIdCNumbers.ScanFloats` (la chiave `origin`) | `Libs\Scanner` |
-| `TGeoVec3`, `TGeoPlane` (`FromPoints`) | `Libs\Geometry` |
-| `TIdVec4` (vettori della texture), `TIdMath` | `Libs\IdLib\Math` |
-| `IIdLibFileSystem`, `IIdLibLog`, `EIdLibException` | `Libs\IdLib\Core` |
+| `TIdLexer`, `TIdToken`, `TIdStr`, `TIdStrings` (anche `FloatArrayToString` per i float scritti) | `Framework\IdLib\Text` |
+| `TIdDict` (le coppie di entita' e primitive, `MatchPrefix`, `GetVector`) | `Framework\Scanner` |
+| `TIdCNumbers.ScanFloats` (la chiave `origin`) | `Framework\Scanner` |
+| `TGeoVec3`, `TGeoPlane` (`FromPoints`) | `Framework\Geometry` |
+| `TIdVec4` (vettori della texture), `TIdMath` | `Framework\IdLib\Math` |
+| `IIdLibFileSystem`, `IIdLibLog`, `EIdLibException` | `Framework\IdLib\Core` |
 
-Estensione fatta altrove: `TIdStrings.FormatFixed` (`Libs\IdLib\Text`) e' ora esatta fino a **10 decimali** (prima 9).
+Estensione fatta altrove: `TIdStrings.FormatFixed` (`Framework\IdLib\Text`) e' ora esatta fino a **10 decimali** (prima 9).
 
 ## Differenze dal C++
 
@@ -55,7 +55,7 @@ Estensione fatta altrove: `TIdStrings.FormatFixed` (`Libs\IdLib\Text`) e' ora es
 ## Non portato (resta da fare)
 
 - Il **collegamento al motore** e al codice che usa le mappe (dmap, collisione: `Libs\Collision` ha un lettore e uno scrittore dei `.cm`, ma non legge le mappe).
-- **Tassellazione delle patch di Doom 3** (`idSurface_Patch`: `Subdivide`, `SubdivideExplicit`, normali, tangenti, indici): serve la parte `idSurface` (superfici di `idDrawVert`, normali e tangenti, #96) che non e' in `Libs\Geometry` ne' in `Libs\MathCore` (la suddivisione di `Libs\MathCore\Patch` e' quella di Quake III, `tr_curve.c`, altra cosa). Resta annotata: **dipende dalla #96**.
+- **Tassellazione delle patch di Doom 3** (`idSurface_Patch`: `Subdivide`, `SubdivideExplicit`, normali, tangenti, indici): serve la parte `idSurface` (superfici di `idDrawVert`, normali e tangenti, #96) che non e' in `Framework\Geometry` ne' in `Framework\MathCore` (la suddivisione di `Framework\MathCore\Patch` e' quella di Quake III, `tr_curve.c`, altra cosa). Resta annotata: **dipende dalla #96**.
 - Scrittura nel formato di Quake III: fatta (seconda fetta della #106, in fondo).
 - File compilati del livello (#107) e BSP di Quake III (#116): vedi le loro sezioni.
 
@@ -78,7 +78,7 @@ Estensione fatta altrove: `TIdStrings.FormatFixed` (`Libs\IdLib\Text`) e' ora es
 **Prova**: 85 test nuovi in `Tests\DelphiDoom.Tests.MapFile` (181 in tutto), copertura 91-100% delle unit nuove (98% di tutta la libreria). Win32 e Win64: 181 passano (a 64 bit servono i dati in `bin\Win32\Release\Tests\Data`, li copia `build.bat tests`).
 ## BSP di Quake III (#116, prima fetta): IBSP 46
 
-**Unit** `DelphiDoom.MapFile.Bsp.*` nella stessa cartella, percorso freddo, nessun chiamante nel motore. **Licenza**: codice derivato da Quake III Arena (`qfiles.h`, `cm_load.c`, `tr_bsp.c`), **GPL v2 o successiva**, intestazione "Based on the Quake III Arena GPL Source Code (id Software)" come in `Libs\MathCore\DelphiDoom.MathCore.Patch.*`.
+**Unit** `DelphiDoom.MapFile.Bsp.*` nella stessa cartella, percorso freddo, nessun chiamante nel motore. **Licenza**: codice derivato da Quake III Arena (`qfiles.h`, `cm_load.c`, `tr_bsp.c`), **GPL v2 o successiva**, intestazione "Based on the Quake III Arena GPL Source Code (id Software)" come in `Framework\MathCore\DelphiDoom.MathCore.Patch.*`.
 
 **Portato**
 - `Types`: costanti (`BSP_IDENT`, `BSP_VERSION` 46, `HEADER_LUMPS` 17, `LUMP_*`, `MST_*`, `SURF_NODRAW`) e i record `packed` senza puntatori `TBspHeader` (144 byte), `TBspLump` (8), `TBspModel` (40), `TBspShader` (72), `TBspPlane` (16), `TBspNode` (36), `TBspLeaf` (48), `TBspBrushSide` (8), `TBspBrush` (12), `TBspFog` (72), `TBspDrawVert` (44), `TBspSurface` (104); `EBspFileException`. Le dimensioni sono quelle delle **vere** struct di `qfiles.h` (le stampa il pilota C, `bsp.golden.txt`).
@@ -86,7 +86,7 @@ Estensione fatta altrove: `TIdStrings.FormatFixed` (`Libs\IdLib\Text`) e' ora es
 - `IBspReader` / `TBspReader` (`Parse(nome)` dal file system iniettato `IIdLibFileSystem`, `ParseBytes`): intestazione, versione (`CM_LoadMap`: "wrong version number"), `funny lump size` per ogni lump a record, "Map with no shaders / models / nodes / leafs / planes", `MAX_SUBMODELS` 256.
 - `IBspValidator` / `TBspValidator`: indici dei nodi (piano, figli: >= 0 nodo, < 0 foglia `-(n+1)`), intervalli di foglie / modelli / brush / superfici dentro i lump, `shaderNum` dei brush, dei lati e delle superfici (come `CMod_LoadBrushes`, `CMod_LoadBrushSides`, `ShaderForShaderNum`), piani dei lati, brush e lato visibile delle nebbie, nebbia delle superfici, tipo di superficie, dimensioni e vertici delle patch (dispari, da 3 a 32), triangoli e indici (`ParseTriSurf`: "Bad index in triangle surface"), cluster delle foglie, righe di visibilita'.
 - `TBspEntityReader`: il testo delle entita' diventa le stesse `TMapEntity` del `.map` (`TIdDict`, chiavi senza maiuscole), con `TMapEntityReader`.
-- **Collegamento delle patch alla suddivisione** (la parte di `tr_bsp.c` rimasta alla #117): `TBspPatchLoader` (`IBspPatchLoader`: `ParseMesh` per ogni superficie `MST_PATCH` con `TPatchSubdivider`; salta le patch con `SURF_NODRAW`; origine e raggio LOD dal gruppo in `lightmapVecs[0..1]`; poi la cucitura e la correzione), `TBspPatchStitcher` (`R_StitchPatches`, `R_TryStitchingPatch`, `R_StitchAllPatches` sopra `TPatchGridEditor`), `TBspLodFixer` (`R_FixSharedVertexLodError(_r)`), `TBspGridEdges` (`R_MergedWidthPoints`, `R_MergedHeightPoints` e il confronto delle posizioni, tolleranze `.1` e `.01` in `Double` come nel C), `TBspColorShift` (`R_ColorShiftLightingBytes`), `TBspFactory`. In `Libs\MathCore` `IPatchGrid` ha ora `SetWidthLodError` e `SetHeightLodError` (il fissaggio scrive nelle griglie).
+- **Collegamento delle patch alla suddivisione** (la parte di `tr_bsp.c` rimasta alla #117): `TBspPatchLoader` (`IBspPatchLoader`: `ParseMesh` per ogni superficie `MST_PATCH` con `TPatchSubdivider`; salta le patch con `SURF_NODRAW`; origine e raggio LOD dal gruppo in `lightmapVecs[0..1]`; poi la cucitura e la correzione), `TBspPatchStitcher` (`R_StitchPatches`, `R_TryStitchingPatch`, `R_StitchAllPatches` sopra `TPatchGridEditor`), `TBspLodFixer` (`R_FixSharedVertexLodError(_r)`), `TBspGridEdges` (`R_MergedWidthPoints`, `R_MergedHeightPoints` e il confronto delle posizioni, tolleranze `.1` e `.01` in `Double` come nel C), `TBspColorShift` (`R_ColorShiftLightingBytes`), `TBspFactory`. In `Framework\MathCore` `IPatchGrid` ha ora `SetWidthLodError` e `SetHeightLodError` (il fissaggio scrive nelle griglie).
 
 **Riuso**: `TPatchSubdivider`, `TPatchGridEditor`, `TPatchGrid`, `TPatchVertex` e `TPatchVertexMath` (MathCore, #117) per le griglie; `TMapEntityReader`, `TIdLexer`, `TIdDict` per le entita'; `IIdLibFileSystem` per la sorgente binaria; `TCrc32` (MathCore) nei test. Nuovo solo il modello del file e i record (non c'era nulla per il BSP) e le classi della cucitura (non c'era nulla: `tr_bsp.c` non era portato).
 

@@ -221,7 +221,7 @@ end;
 //==============================================================================
 //
 // W_TextureAsPatch
-// The patch is written by IImagingColorPatchBuilder (Libs\Imaging): this
+// The patch is written by IImagingColorPatchBuilder (Framework\Imaging): this
 // function only gathers the colors of the texture and the default palette
 //
 //==============================================================================

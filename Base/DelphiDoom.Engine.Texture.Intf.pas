@@ -26,7 +26,7 @@ uses
 type
   /// <summary>
   ///   The external textures (hi-resolution textures and sprites) of the folders and of the PAK
-  ///   file system, read with the decoders of Libs\Texture (the old T_LoadHiResTexture and
+  ///   file system, read with the decoders of Framework\Texture (the old T_LoadHiResTexture and
   ///   T_IsTextureExtension of t_main)
   /// </summary>
   IEngineTextureFiles = interface

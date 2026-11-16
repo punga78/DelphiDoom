@@ -1,4 +1,4 @@
-# Tests\Data\Palette - golden della libreria Libs\Palette (issue #74)
+# Tests\Data\Palette - golden della libreria Framework\Palette (issue #74)
 
 I file `*.golden.txt` sono scritti dal **vecchio codice**, copiato tale e quale in un programma console
 temporaneo (fuori dal repository, non committato), compilato con Delphi 11 Win32. Ogni riga e` `chiave=valore`:

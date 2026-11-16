@@ -1,8 +1,8 @@
 # Libs\TextureDefs - come collegarla al motore (issue #73, parte della #45)
 
 La libreria legge le **definizioni** delle texture e dei flat e ne fa un modello neutro; non compone pixel, non
-tocca zone memory, cache, `textures[]` o `flats[]`. Non conosce il motore: dipende solo da `Libs\Logging` e
-`Libs\Scanner` (solo `FlatInfoParser`). Il collegamento non è stato fatto: qui sotto c'è cosa serve.
+tocca zone memory, cache, `textures[]` o `flats[]`. Non conosce il motore: dipende solo da `Framework\Logging` e
+`Framework\Scanner` (solo `FlatInfoParser`). Il collegamento non è stato fatto: qui sotto c'è cosa serve.
 
 | Origine nel motore | Classe della libreria | Modello |
 |---|---|---|

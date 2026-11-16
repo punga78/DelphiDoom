@@ -1,4 +1,4 @@
-{ LEGACY COPY (parity tests of issue 228): DelphiDoom.War.Audio.Mixer as it was before it moved to Libs\AudioMix, commit b6fedafb. Do not tidy. }
+{ LEGACY COPY (parity tests of issue 228): DelphiDoom.War.Audio.Mixer as it was before it moved to Framework\AudioMix, commit b6fedafb. Do not tidy. }
 unit DelphiDoom.Tests.War.LegacyMixer;
 
 interface

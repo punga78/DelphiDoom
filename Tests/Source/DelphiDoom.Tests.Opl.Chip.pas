@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the OPL2 chip                                           }
 {                                                                              }
 {  Derived from fmopl.c (MAME 0.37a fork for OpenXcom, LGPL 2.1 or later):      }
-{  see Libs\Opl\README.md                                                       }
+{  see Framework\Opl\README.md                                                  }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Opl.Chip;

@@ -20,7 +20,7 @@ type
     /// <summary>A patch builder that matches colors with AMatcher</summary>
     class function CreatePatchBuilder(const AOptions: TGamePatchOptions;
       const AMatcher: IColorMatcher): IGamePatchBuilder; overload; static;
-    /// <summary>A patch builder with the standard color matcher of Libs\Palette</summary>
+    /// <summary>A patch builder with the standard color matcher of Framework\Palette</summary>
     class function CreatePatchBuilder(const AOptions: TGamePatchOptions): IGamePatchBuilder; overload; static;
     /// <summary>An empty WAD in memory (a PWAD)</summary>
     class function CreateWadComposer: IGameWadComposer; static;

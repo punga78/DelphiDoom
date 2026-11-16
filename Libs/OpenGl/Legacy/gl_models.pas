@@ -324,7 +324,7 @@ const
 //
 // SC_ParseModelDefinition
 //
-// JVAL: Parse a MODELDEF lump. The text is read by the parser of Libs\Models
+// JVAL: Parse a MODELDEF lump. The text is read by the parser of Framework\Models
 // (issue #177), the models, textures and states go to modeldef_sink.
 //
 //==============================================================================

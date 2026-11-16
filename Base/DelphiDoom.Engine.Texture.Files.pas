@@ -29,7 +29,7 @@ uses
 
 type
   /// <summary>
-  ///   IEngineTextureFiles on the decoders of Libs\Texture and the PAK file system: a name is
+  ///   IEngineTextureFiles on the decoders of Framework\Texture and the PAK file system: a name is
   ///   looked for with each extension of the decoders, in the game folders when the option
   ///   preferetexturesnamesingamedirectory is on, else by its short name and in the folder
   ///   TEXTURES (T_LoadHiResImage of the old t_main)

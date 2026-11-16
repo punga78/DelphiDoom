@@ -1,6 +1,6 @@
 # Libs\Definitions - come collegarla al motore (issue #71, parte della #45)
 
-La libreria legge ANIMDEFS, la tabella degli interruttori (lump SWITCHES di BOOM e tabelle compilate dei quattro giochi) e la tabella del terreno dei flat, e ne fa dei modelli neutri. Non conosce il motore: dipende solo da `Libs\Logging` e `Libs\Scanner` (`Strings`, `Scanner`, `Text`). **Il collegamento non e' stato fatto**: `Base\p_animdefs.pas`, `<Gioco>\p_switch.pas` e `<Gioco>\p_terrain.pas` sono com'erano. Qui sotto cosa serve.
+La libreria legge ANIMDEFS, la tabella degli interruttori (lump SWITCHES di BOOM e tabelle compilate dei quattro giochi) e la tabella del terreno dei flat, e ne fa dei modelli neutri. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner` (`Strings`, `Scanner`, `Text`). **Il collegamento non e' stato fatto**: `Base\p_animdefs.pas`, `<Gioco>\p_switch.pas` e `<Gioco>\p_terrain.pas` sono com'erano. Qui sotto cosa serve.
 
 ## 1. Unit da aggiungere ai `.dpr`
 

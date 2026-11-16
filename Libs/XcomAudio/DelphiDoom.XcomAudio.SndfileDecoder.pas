@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom audio library - WAV, OGG Vorbis, FLAC and the other sound   }
-{  files as samples of the mixer, on the decoders of Libs\Sound                 }
+{  files as samples of the mixer, on the decoders of Framework\Sound            }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   IXcomSampleDecoder on an ISndfile (Libs\Sound): the file is opened by its content as SDL_mixer does, read as
+  ///   IXcomSampleDecoder on an ISndfile (Framework\Sound): the file is opened by its content as SDL_mixer does, read as
   ///   16 bit, mono is played on both sides, more than two channels keep the first two, and the rate becomes the one
   ///   of the mixer (TXcomResampler)
   /// </summary>

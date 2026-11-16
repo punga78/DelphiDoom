@@ -23,7 +23,7 @@
 // DESCRIPTION:
 //   Save/Load screen preview: the thumbnail that a saved game keeps.
 //   The thumbnail is made by R_RenderPlayerView (r_main) with the
-//   IImagingThumbnailBuilder of Libs\Imaging and checked by the menus with
+//   IImagingThumbnailBuilder of Framework\Imaging and checked by the menus with
 //   TImagingSaveThumbnailFormat: this unit keeps only the record of the
 //   savegames and the last thumbnail taken.
 //

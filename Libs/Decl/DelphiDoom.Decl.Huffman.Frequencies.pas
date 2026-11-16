@@ -10,7 +10,7 @@
 {  Based on the Doom 3 GPL Source Code (id Software). This unit is derived     }
 {  from it and is therefore available under the GNU General Public License,    }
 {  version 3, with the additional terms of the Doom 3 Source Code License      }
-{  (see Reference\doom3\README.txt and Libs\IdLib\README.md); the repository    }
+{  (see Reference\doom3\README.txt and Framework\IdLib\README.md); the repository }
 {  as a whole is GPL v2 or later.                                              }
 {                                                                              }
 {******************************************************************************}

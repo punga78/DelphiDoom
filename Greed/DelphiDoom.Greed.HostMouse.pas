@@ -18,8 +18,8 @@ uses
 
 type
   /// <summary>
-  ///   The device that the mouse of Greed32 reads: the mouse of the system inside the window of Libs\GameHost.
-  ///   The class moved to Libs\GameHost (TGameHostWindowMouse, issue #165) when Keen32 needed the same device;
+  ///   The device that the mouse of Greed32 reads: the mouse of the system inside the window of Framework\GameHost.
+  ///   The class moved to Framework\GameHost (TGameHostWindowMouse, issue #165) when Keen32 needed the same device;
   ///   here it keeps the name that Greed32 and its tests use
   /// </summary>
   TGreedHostMouse = TGameHostWindowMouse;

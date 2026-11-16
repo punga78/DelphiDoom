@@ -1,4 +1,4 @@
-# Dati di prova di Libs\MathCore (issue #75)
+# Dati di prova di Framework\MathCore (issue #75)
 
 I file `*.golden.txt` sono l'uscita del **vecchio codice del motore** (`Base\m_fixed.pas`, `tables.pas`,
 `m_vectors.pas`, `m_bbox.pas`, `m_rnd.pas`, `m_stack.pas`, `m_hash.pas`, `m_crc32.pas`, `m_sha1.pas`),
@@ -60,7 +60,7 @@ Se si cambia un ingresso (`Samples`) vanno rifatti tutti i file.
 
 ## `geometry.golden.txt` (issue #96)
 
-Risposte di `idPlane`, `idBounds`, `idSphere` e `idBox` veri (compilati con `bcc32c`, x87): 9109 righe `nome ingressi | uscite`, float come `#` più i bit in esadecimale, interi e flag in chiaro; gli ingressi stanno sulla riga. Test: `DelphiDoom.Tests.MathCore.Geometry.Parity`. Dettagli e tolleranze in `Libs\MathCore\CLAUDE.md`.
+Risposte di `idPlane`, `idBounds`, `idSphere` e `idBox` veri (compilati con `bcc32c`, x87): 9109 righe `nome ingressi | uscite`, float come `#` più i bit in esadecimale, interi e flag in chiaro; gli ingressi stanno sulla riga. Test: `DelphiDoom.Tests.MathCore.Geometry.Parity`. Dettagli e tolleranze in `Framework\MathCore\CLAUDE.md`.
 
 ## `patch.golden.txt` (issue #117)
 

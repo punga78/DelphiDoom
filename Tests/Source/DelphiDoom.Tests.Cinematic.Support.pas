@@ -65,7 +65,7 @@ type
     class function Path(const AFileName: string): string; static;
     class function ReadBytes(const AFileName: string): TBytes; static;
     class function ReadLines(const AFileName: string): TStringList; static;
-    /// <summary>A file of Tests\Data\Jpeg (the JPEG files of the tests of Libs\Jpeg)</summary>
+    /// <summary>A file of Tests\Data\Jpeg (the JPEG files of the tests of Framework\Jpeg)</summary>
     class function ReadJpeg(const AFileName: string): TBytes; static;
   end;
 

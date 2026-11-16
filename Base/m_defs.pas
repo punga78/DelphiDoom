@@ -204,7 +204,7 @@ const
 // The declaration of the options of the game (issue #185): name, global, who can change it,
 // values it starts with and kind, in the order of the file. Nobody reads or writes the array
 // after the start: TEngineConfigurationTable (DelphiDoom.Engine.Configuration.Table) builds
-// the rows of Libs\Configuration from it, and they are what the file, the console and the
+// the rows of Framework\Configuration from it, and they are what the file, the console and the
 // scripts use.
 // JVAL
 // Note: All setable defaults must be in lowercase, don't ask why. Just do it. :)

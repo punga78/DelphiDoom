@@ -4,12 +4,12 @@
 {                                                                              }
 {  Port of ParsePatch of the dmap compiler (tools\compilers\dmap\map.cpp)      }
 {  that turns an idMapPatch into the triangles of idSurface_Patch. The         }
-{  subdivision itself is TGeoSurfacePatch of Libs\Geometry, which has its own  }
+{  subdivision itself is TGeoSurfacePatch of Framework\Geometry, which has its own }
 {  parity with the idSurface_Patch of Doom 3.                                  }
 {  Based on the Doom 3 GPL Source Code (id Software). This unit is derived     }
 {  from it and is therefore available under the GNU General Public License,    }
 {  version 3, with the additional terms of the Doom 3 Source Code License      }
-{  (see Reference\doom3\README.txt and Libs\IdLib\README.md); the repository   }
+{  (see Reference\doom3\README.txt and Framework\IdLib\README.md); the repository }
 {  as a whole is GPL v2 or later. Copyright (C) 1999-2011 id Software LLC.     }
 {                                                                              }
 {******************************************************************************}

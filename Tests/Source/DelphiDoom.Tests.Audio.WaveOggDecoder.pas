@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TWaveSoundOggDecoder, the OGG decoder of a wave file   }
-{  on Libs\Sound (DUnitX), in the project of the sound library tests           }
+{  on Framework\Sound (DUnitX), in the project of the sound library tests      }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -45,7 +45,7 @@ begin
   LData := TSoundTestVorbisFile.Build(TSoundTestVorbisOptions.Plain);
   LDecoder := TWaveSoundOggDecoder.Create;
   Assert.IsTrue(LDecoder.TryDecode(LData, LChannels, LRate, LPcm));
-  // the same samples as the engine of Libs\Sound reads
+  // the same samples as the engine of Framework\Sound reads
   LEngine := TSoundFactory.CreateEngine;
   Assert.AreEqual(SNDFILE_OK, LEngine.OpenMemory(@LData[0], Length(LData), LFile));
   Assert.AreEqual(SNDFILE_OK, LFile.GetInfo(LInfo));

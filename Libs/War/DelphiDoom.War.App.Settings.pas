@@ -16,7 +16,7 @@ type
   /// <summary>
   ///   What the player changes in the menus and expects to find again: the volumes of the music and of the effects (0 to
   ///   100) and whether each one is on. The file Warcraft32.ini is next to the program, in the format of the other
-  ///   programs of the repository (Libs\Configuration)
+  ///   programs of the repository (Framework\Configuration)
   /// </summary>
   TWarAppSettings = record
     MusicVolume: Integer;
@@ -31,7 +31,7 @@ type
     procedure ApplyTo(const AGame: IWarGameSettings);
     /// <summary>
     ///   The lines of the file. The header is the one of the other .ini files of the repository; the format is the
-    ///   one of Libs\Configuration
+    ///   one of Framework\Configuration
     /// </summary>
     function ToLines(const AFormat: IConfigurationFormat): TArray<string>;
     /// <summary>
@@ -47,7 +47,7 @@ const
   /// <summary>The name of the settings file, next to the program</summary>
   WAR_SETTINGS_FILE_NAME = 'Warcraft32.ini';
   WAR_SETTINGS_TITLE = 'Warcraft32';
-  // the versions that Libs\Configuration accepts start at 1.10 (CONFIGURATION_OLDEST_VERSION)
+  // the versions that Framework\Configuration accepts start at 1.10 (CONFIGURATION_OLDEST_VERSION)
   WAR_SETTINGS_VERSION = 110;
 
 implementation

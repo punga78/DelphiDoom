@@ -66,7 +66,7 @@ type
 
   /// <summary>
   ///   A .CAT file: an index of entries, each with a name that starts it (CatFile). The contract lives in
-  ///   Libs\Bytes (DelphiDoom.Bytes.Archive.Intf), where the Adlib music of Libs\Opl can use it too
+  ///   Framework\Bytes (DelphiDoom.Bytes.Archive.Intf), where the Adlib music of Framework\Opl can use it too
   /// </summary>
   IXcomCatArchive = ICatArchive;
 

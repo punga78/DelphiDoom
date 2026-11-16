@@ -10,7 +10,7 @@
 {  This unit is derived from the Doom 3 GPL source code and is therefore       }
 {  available under the GNU General Public License, version 3, with the        }
 {  additional terms of the Doom 3 Source Code License (see README.md of        }
-{  Libs\IdLib); the repository as a whole is GPL v2 or later.                  }
+{  Framework\IdLib); the repository as a whole is GPL v2 or later.             }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Decl.ArticulatedFigure.Types;
@@ -41,7 +41,7 @@ type
 
   /// <summary>
   ///   The shape of a body: the values and the order of <c>TRM_*</c> of idTraceModel, so that a caller turns it into
-  ///   a <c>TTraceModelKind</c> of <c>Libs\Geometry</c> by its ordinal (the declaration itself does not build any model)
+  ///   a <c>TTraceModelKind</c> of <c>Framework\Geometry</c> by its ordinal (the declaration itself does not build any model)
   /// </summary>
   TAfBodyModel = (abmInvalid, abmBox, abmOctahedron, abmDodecahedron, abmCylinder, abmCone, abmBone);
 

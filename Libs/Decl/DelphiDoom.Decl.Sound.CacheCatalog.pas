@@ -4,7 +4,7 @@
 {                                                                              }
 {  Not derived from Doom 3 code: written for this repository (GPL v2 or       }
 {  later). It connects the sound shader (ISoundSampleCatalog) to the sound     }
-{  cache of Libs\Audio and the sound file probe to the file system.            }
+{  cache of Framework\Audio and the sound file probe to the file system.       }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Decl.Sound.CacheCatalog;

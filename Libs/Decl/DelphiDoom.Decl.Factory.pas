@@ -27,7 +27,7 @@ type
     class function CreateStandardManager(const ASource: IDeclSource; const ALog: IIdLibLog = nil;
       const ALoadFolders: Boolean = True): IDeclManager; static;
     /// <summary>
-    ///   The decl files as the file system of <c>Libs\Wad</c> has them (folders, PK4 and PK3). The writer may be nil
+    ///   The decl files as the file system of <c>Framework\Wad</c> has them (folders, PK4 and PK3). The writer may be nil
     ///   (a read-only source); decl files are written to the dev path
     /// </summary>
     class function CreateFileSystemSource(const AFileSystem: IGameFileSystem;

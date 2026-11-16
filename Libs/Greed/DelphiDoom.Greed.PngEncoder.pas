@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>
-  ///   The rules of Greed for the common encoder of Libs\Png: the palette is the one given with the image and the
+  ///   The rules of Greed for the common encoder of Framework\Png: the palette is the one given with the image and the
   ///   pixels of index 0 are transparent when asked (they keep their color). The file is 8 bit RGBA
   /// </summary>
   TGreedPngEncoder = class(TInterfacedObject, IGreedImageEncoder)

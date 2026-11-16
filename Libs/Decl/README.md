@@ -24,7 +24,7 @@ Un tipo nuovo: una classe che deriva da `TDecl` e `Registry.RegisterDeclType(...
 
 ## Materiali (`.mtr`, issue #102)
 
-`TDeclStandardTypes` registra `material` con `TDeclMaterial`; i dati si leggono con `Supports(Decl, IDeclMaterial, M)` e i registri delle espressioni con `Supports(Decl, IMaterialRegisters, R)`. Le immagini sono nominate (testo canonico del programma d'immagine, `Libs\Imaging`), mai caricate.
+`TDeclStandardTypes` registra `material` con `TDeclMaterial`; i dati si leggono con `Supports(Decl, IDeclMaterial, M)` e i registri delle espressioni con `Supports(Decl, IMaterialRegisters, R)`. Le immagini sono nominate (testo canonico del programma d'immagine, `Framework\Imaging`), mai caricate.
 
 ```pascal
 if Supports(LManager.FindType(DECL_MATERIAL, 'textures/test/wall'), IDeclMaterial, LMaterial) then
@@ -43,7 +43,7 @@ Opzioni (`TMaterialOptions`: `image_ignoreHighQuality`, `ARBFragmentProgramAvail
 
 ## Legami
 
-- Sopra `Libs\IdLib` (`TIdLexer`, `TIdHashIndex`, `TIdMd5`, `TIdStrings`, `TIdMath`) e `Libs\Scanner` (`TIdDict`).
+- Sopra `Framework\IdLib` (`TIdLexer`, `TIdHashIndex`, `TIdMd5`, `TIdStrings`, `TIdMath`) e `Framework\Scanner` (`TIdDict`).
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
 
 ## Particelle ed effetti (`particle` e `fx`, issue #101)
@@ -107,12 +107,12 @@ LManager.GetRegistry.RegisterDeclFolder('def', '.def', DECL_ENTITYDEF);   // le 
 // Quake III: solo il tipo shader, dai PK3 (LSettings.Game := 'baseq3'; LSettings.PakExtension := '.pk3')
 LShaders := TDeclFactory.CreateQuake3ShaderManagerOnDisk(LSettings);
 
-// comandi: listDecls, reloadDecls, touch, list<Tipo>, print<Tipo> (il profilo id Tech 4 di Libs\Console)
+// comandi: listDecls, reloadDecls, touch, list<Tipo>, print<Tipo> (il profilo id Tech 4 di Framework\Console)
 LCommands := TDeclConsoleCommands.Create(LManager, LConsole.Commands, LLog);
 LCommands.Register;
 ```
 
-- `TDeclGameFileSource` (`IDeclSource` sopra `IGameFileSystem` di `Libs\Wad`: cartelle, PK4 e PK3, il primo della lista vince), `TDeclConsoleCommands` e `TDeclTypeCommands`, `IDeclStatistics` (i numeri di `listDecls`, implementata da `TDeclManager`).
+- `TDeclGameFileSource` (`IDeclSource` sopra `IGameFileSystem` di `Framework\Wad`: cartelle, PK4 e PK3, il primo della lista vince), `TDeclConsoleCommands` e `TDeclTypeCommands`, `IDeclStatistics` (i numeri di `listDecls`, implementata da `TDeclManager`).
 - Materiali: `IMaterialPersistence` (`Save` = `ReplaceSourceFileText`; `ReloadImages` consegna le immagini nominate a un `IMaterialImageReloader` del renderer, non ne carica).
 - Prova: `Tests\DelphiDoom.Tests.Decl` (408 test a 32 e a 64 bit, copertura 97%). I comandi non hanno un harness del C++ (`ListType` e `PrintType` si': nel golden del gestore). Dettagli, limiti e cosa resta: [CLAUDE.md](CLAUDE.md), sezione "File system, comandi di console e Save dei materiali".
 

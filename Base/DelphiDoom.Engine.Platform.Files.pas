@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - whole files over the store of Libs\Platform            }
+{  DelphiDoom: engine - whole files over the store of Framework\Platform       }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -22,7 +22,7 @@ uses
 type
   /// <summary>
   ///   M_WriteFile, M_AppendFile and M_ReadFile of the old m_misc.pas over the IFileStore of
-  ///   Libs\Platform: what is read goes to the zone memory, a file that can not be read is an
+  ///   Framework\Platform: what is read goes to the zone memory, a file that can not be read is an
   ///   I_Error
   /// </summary>
   TEngineFiles = class(TInterfacedObject, IEngineFiles)

@@ -385,7 +385,7 @@ begin
   LShot := nil;
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
-  // waveOut of Libs\GameHost, which the mixer of the game sees through its adapter
+  // waveOut of Framework\GameHost, which the mixer of the game sees through its adapter
   LOutput := TGameHostFactory.CreatePcmOutput;
   LOutputRef := TXcomHostPcmOutput.Create(LOutput);
   LSettings := AArguments.Settings;
@@ -396,7 +396,7 @@ begin
       LMeter := AMeter;
     end;
   LGame := nil;
-  // the window of Libs\GameHost: its events reach the queue of the game as SDL made them, the cursor is the game's
+  // the window of Framework\GameHost: its events reach the queue of the game as SDL made them, the cursor is the game's
   LWindow := TGameHostFactory.CreateWindow('OpenXcom ' + AArguments.Settings.VersionText,
     TXcomHostEventSink.Create(LEvents), True);
   try
@@ -406,7 +406,7 @@ begin
       begin
         Say(ALine);
       end));
-    // the clock of Libs\Clock, for the game and for the loop
+    // the clock of Framework\Clock, for the game and for the loop
     LClock := TClockFactory.CreateClock(nil);
     LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
     // the screenshot key (F12 by default): screenNNN.png in the folder of the user, as OpenXcom does

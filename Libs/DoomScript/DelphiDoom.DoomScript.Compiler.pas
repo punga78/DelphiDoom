@@ -9,7 +9,7 @@
 {  This unit is derived from the Doom 3 GPL source code and is therefore       }
 {  available under the GNU General Public License, version 3 or later, with    }
 {  the additional terms of the Doom 3 Source Code License (see README.md of    }
-{  Libs\IdLib); the repository as a whole is GPL v2 or later.                  }
+{  Framework\IdLib); the repository as a whole is GPL v2 or later.             }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.DoomScript.Compiler;
@@ -28,7 +28,7 @@ type
   /// <summary>
   ///   idCompiler: compiles the text of a script into a program (statements, definitions, types and
   ///   functions). Nothing is kept between two calls of <c>CompileFile</c>: every call starts from the
-  ///   global namespace with a new parser (<c>Libs\Scanner</c>, <c>TIdParser</c>), which reads
+  ///   global namespace with a new parser (<c>Framework\Scanner</c>, <c>TIdParser</c>), which reads
   ///   <c>script/doom_defs.script</c> first as the original does. An error is an
   ///   EDoomScriptCompileError with the text of the original ("Error: file F, line N: ...").
   /// </summary>

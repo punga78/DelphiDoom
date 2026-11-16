@@ -11,7 +11,7 @@
 {  id Software LLC, a ZeniMax Media company. This unit is derived from the     }
 {  Doom 3 GPL source code and is therefore available under the GNU General     }
 {  Public License, version 3, with the additional terms of the Doom 3 Source   }
-{  Code License (see README.md of Libs\IdLib); the repository as a whole is    }
+{  Code License (see README.md of Framework\IdLib); the repository as a whole is }
 {  GPL v2 or later.                                                            }
 {                                                                              }
 {******************************************************************************}

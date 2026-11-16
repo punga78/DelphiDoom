@@ -25,7 +25,7 @@ const
 
 type
   /// <summary>
-  ///   The mouse of d_ints.pas on the devices of Libs\Input: the cursor and the buttons (IMouseDevice: lbuttondown,
+  ///   The mouse of d_ints.pas on the devices of Framework\Input: the cursor and the buttons (IMouseDevice: lbuttondown,
   ///   rbuttondown, mbuttondown, getcursorposfunc and setcursorposfunc of the original), the size of the window
   ///   (IScreenSize: I_WindowWidth and I_WindowHeight) and, if given, when the program listens (IInputGate: the
   ///   window is in the foreground). A reading takes the three buttons, how far the cursor is from the place where

@@ -4,7 +4,7 @@
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {  (the chip is derived from fmopl.c, LGPL 2.1 or later; the player from        }
-{  OpenXcom, GPL v3 or later: see Libs\Opl\README.md)                           }
+{  OpenXcom, GPL v3 or later: see Framework\Opl\README.md)                           }
 {                                                                              }
 {******************************************************************************}
 program DelphiDoom.Tests.Opl;
@@ -17,24 +17,24 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
-  DelphiDoom.Bytes.Archive.Intf in '..\Libs\Bytes\DelphiDoom.Bytes.Archive.Intf.pas',
+  DelphiDoom.Bytes.Types in '..\Framework\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Archive.Intf in '..\Framework\Bytes\DelphiDoom.Bytes.Archive.Intf.pas',
   DelphiDoom.Xcom.Types in '..\Libs\XcomFormats\DelphiDoom.Xcom.Types.pas',
   DelphiDoom.Xcom.Intf in '..\Libs\XcomFormats\DelphiDoom.Xcom.Intf.pas',
   DelphiDoom.Xcom.CatArchive in '..\Libs\XcomFormats\DelphiDoom.Xcom.CatArchive.pas',
-  DelphiDoom.Opl.Types in '..\Libs\Opl\DelphiDoom.Opl.Types.pas',
-  DelphiDoom.Opl.Intf in '..\Libs\Opl\DelphiDoom.Opl.Intf.pas',
-  DelphiDoom.Opl.Tables in '..\Libs\Opl\DelphiDoom.Opl.Tables.pas',
-  DelphiDoom.Opl.Noise in '..\Libs\Opl\DelphiDoom.Opl.Noise.pas',
-  DelphiDoom.Opl.Chip in '..\Libs\Opl\DelphiDoom.Opl.Chip.pas',
-  DelphiDoom.Opl.Factory in '..\Libs\Opl\DelphiDoom.Opl.Factory.pas',
-  DelphiDoom.XcomAdlib.Types in '..\Libs\Opl\DelphiDoom.XcomAdlib.Types.pas',
-  DelphiDoom.XcomAdlib.Intf in '..\Libs\Opl\DelphiDoom.XcomAdlib.Intf.pas',
-  DelphiDoom.XcomAdlib.RegisterWriter in '..\Libs\Opl\DelphiDoom.XcomAdlib.RegisterWriter.pas',
-  DelphiDoom.XcomAdlib.Sequencer in '..\Libs\Opl\DelphiDoom.XcomAdlib.Sequencer.pas',
-  DelphiDoom.XcomAdlib.Player in '..\Libs\Opl\DelphiDoom.XcomAdlib.Player.pas',
-  DelphiDoom.XcomAdlib.CatSource in '..\Libs\Opl\DelphiDoom.XcomAdlib.CatSource.pas',
-  DelphiDoom.XcomAdlib.Factory in '..\Libs\Opl\DelphiDoom.XcomAdlib.Factory.pas',
+  DelphiDoom.Opl.Types in '..\Framework\Opl\DelphiDoom.Opl.Types.pas',
+  DelphiDoom.Opl.Intf in '..\Framework\Opl\DelphiDoom.Opl.Intf.pas',
+  DelphiDoom.Opl.Tables in '..\Framework\Opl\DelphiDoom.Opl.Tables.pas',
+  DelphiDoom.Opl.Noise in '..\Framework\Opl\DelphiDoom.Opl.Noise.pas',
+  DelphiDoom.Opl.Chip in '..\Framework\Opl\DelphiDoom.Opl.Chip.pas',
+  DelphiDoom.Opl.Factory in '..\Framework\Opl\DelphiDoom.Opl.Factory.pas',
+  DelphiDoom.XcomAdlib.Types in '..\Framework\Opl\DelphiDoom.XcomAdlib.Types.pas',
+  DelphiDoom.XcomAdlib.Intf in '..\Framework\Opl\DelphiDoom.XcomAdlib.Intf.pas',
+  DelphiDoom.XcomAdlib.RegisterWriter in '..\Framework\Opl\DelphiDoom.XcomAdlib.RegisterWriter.pas',
+  DelphiDoom.XcomAdlib.Sequencer in '..\Framework\Opl\DelphiDoom.XcomAdlib.Sequencer.pas',
+  DelphiDoom.XcomAdlib.Player in '..\Framework\Opl\DelphiDoom.XcomAdlib.Player.pas',
+  DelphiDoom.XcomAdlib.CatSource in '..\Framework\Opl\DelphiDoom.XcomAdlib.CatSource.pas',
+  DelphiDoom.XcomAdlib.Factory in '..\Framework\Opl\DelphiDoom.XcomAdlib.Factory.pas',
   DelphiDoom.Tests.Opl.Recorder in 'Source\DelphiDoom.Tests.Opl.Recorder.pas',
   DelphiDoom.Tests.Opl.Script in 'Source\DelphiDoom.Tests.Opl.Script.pas',
   DelphiDoom.Tests.Opl.Golden in 'Source\DelphiDoom.Tests.Opl.Golden.pas',

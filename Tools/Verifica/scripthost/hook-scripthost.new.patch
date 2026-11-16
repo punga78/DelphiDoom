@@ -52,8 +52,8 @@ index b72497d1..2e261850 100644
    i_system in '..\Base\i_system.pas',
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
    i_video in '..\Base\i_video.pas',
-   DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in '..\Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
 diff --git a/Hexen/Hexen32.dpr b/Hexen/Hexen32.dpr
 index a2ce0c78..be2d8d9e 100644
 --- a/Hexen/Hexen32.dpr
@@ -64,12 +64,12 @@ index a2ce0c78..be2d8d9e 100644
    i_system in '..\Base\i_system.pas',
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
    i_video in '..\Base\i_video.pas',
-   DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in '..\Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
-diff --git a/Libs/ScriptHost/ps_main.pas b/Libs/ScriptHost/ps_main.pas
+   DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+diff --git a/Framework/ScriptHost/ps_main.pas b/Framework/ScriptHost/ps_main.pas
 index ac569421..f727f2aa 100644
---- a/Libs/ScriptHost/ps_main.pas
-+++ b/Libs/ScriptHost/ps_main.pas
+--- a/Framework/ScriptHost/ps_main.pas
++++ b/Framework/ScriptHost/ps_main.pas
 @@ -220,6 +220,7 @@ function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedu
  implementation
  
@@ -105,5 +105,5 @@ index 24ce67e4..9d53d2f6 100644
    i_system in '..\Base\i_system.pas',
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
    i_video in '..\Base\i_video.pas',
-   DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
-   DelphiDoom.Video.DisplayModeCatalog in '..\Libs\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
+   DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
+   DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',

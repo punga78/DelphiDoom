@@ -59,7 +59,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.;..\Zlib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>.;..\..\Framework\Zlib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>.;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\..\bin\$(Platform)\$(Config)\Libs</DCC_ExeOutput>

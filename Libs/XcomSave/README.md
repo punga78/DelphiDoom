@@ -2,7 +2,7 @@
 
 > Note per Claude: [CLAUDE.md](CLAUDE.md).
 
-Gli oggetti di una **partita salvata** di **OpenXcom** (`Savegame\`) che si leggono e si scrivono in YAML, a classi. Issue #176 (quinta fetta, dopo `Libs\XcomFormats`, `Libs\Yaml`, `Libs\XcomSurface` e `Libs\XcomMod`): la prima fetta tiene gli oggetti che non dipendono da `Mod` ne' da `SavedGame` (data e ora, paese, regione, ricerca) e le funzioni dei numeri. Usa `Libs\Yaml` per i nodi e per l'**emitter** e `Libs\XcomMod` per le regole.
+Gli oggetti di una **partita salvata** di **OpenXcom** (`Savegame\`) che si leggono e si scrivono in YAML, a classi. Issue #176 (quinta fetta, dopo `Libs\XcomFormats`, `Framework\Yaml`, `Libs\XcomSurface` e `Libs\XcomMod`): la prima fetta tiene gli oggetti che non dipendono da `Mod` ne' da `SavedGame` (data e ora, paese, regione, ricerca) e le funzioni dei numeri. Usa `Framework\Yaml` per i nodi e per l'**emitter** e `Libs\XcomMod` per le regole.
 
 Non e' un gioco del motore Doom: nessun collegamento a `ComposeEngine` ne' a `TIdTechGeneration`.
 
@@ -18,7 +18,7 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 | `Country` (`load`, `save`, `newMonth`, patto, tetto del finanziamento) | `TXcomCountry` (con `IXcomRandom` iniettato) |
 | `Region` (`load`, `save`, `newMonth`, attivita') | `TXcomRegion` |
 | `ResearchProject` (`load`, `save`, `step`, `getResearchProgress`) | `TXcomResearchProject` |
-| `unserializeInt`, `serializeInt`, `serializeDouble` (`SerializationHelper`) | `TXcomSerialization` (`serializeDouble` usa `TYamlConvert.FormatGeneral` di `Libs\Yaml`: `%.17g`) |
+| `unserializeInt`, `serializeInt`, `serializeDouble` (`SerializationHelper`) | `TXcomSerialization` (`serializeDouble` usa `TYamlConvert.FormatGeneral` di `Framework\Yaml`: `%.17g`) |
 | `node["k"] = value` e `vector<int>` di `save()` | `TXcomNodeWriter` (anche mappa vuota, sequenza, nodo dentro un nodo) |
 | `Target` (`load`, `save`, `saveId`, `setLongitude`, `setLatitude`, `getDistance`, nome del marcatore) | `TXcomTarget` (astratta; i `MovingTarget` seguaci e i nomi con `Language` non sono portati) |
 | `Waypoint`, `AlienBase`, `MissionSite` | `TXcomWaypoint`, `TXcomAlienBase`, `TXcomMissionSite` (regole minime `IXcomDeploymentRule`, `IXcomMissionRule`) |
@@ -30,7 +30,7 @@ Il codice deriva da OpenXcom, **GPL v3 o successiva** (intestazione di ogni unit
 
 ## Parita'
 
-`Tests\Data\XcomSave\save.corpus.txt` ha 900 casi (un'intestazione con il tipo e gli argomenti e un nodo YAML casuale con seme fisso: campi giusti, mancanti, con tipo sbagliato, interi enormi) e `save.golden.txt` (12122 righe) e' cio' che i **veri** `GameTime.cpp`, `Country.cpp`, `Region.cpp`, `ResearchProject.cpp`, `SerializationHelper.cpp`, `RuleCountry.cpp`, `RuleRegion.cpp`, `RuleResearch.cpp` e `RNG.cpp` di OpenXcom con la **vera yaml-cpp 0.7.0** (g++ MinGW 32 bit, SSE) hanno stampato: lo stato dopo `load`, **il testo YAML che `save()` produce emesso dall'`Emitter` di yaml-cpp** (quindi vale anche come prova dell'emitter di `Libs\Yaml` su oggetti veri, per esempio la sequenza vuota che esce come `[]` su una riga a parte), e cio' che gli oggetti fanno dopo (40 `advance`, 4 `newMonth` con seme fisso, 14 mesi di una regione, `getResearchProgress`, `step`, interi di 1, 2 e 4 byte, nove `double` come testo). `TXcomSaveScenario` (in `Tests\Source`) fa lo stesso in Pascal: **zero differenze**.
+`Tests\Data\XcomSave\save.corpus.txt` ha 900 casi (un'intestazione con il tipo e gli argomenti e un nodo YAML casuale con seme fisso: campi giusti, mancanti, con tipo sbagliato, interi enormi) e `save.golden.txt` (12122 righe) e' cio' che i **veri** `GameTime.cpp`, `Country.cpp`, `Region.cpp`, `ResearchProject.cpp`, `SerializationHelper.cpp`, `RuleCountry.cpp`, `RuleRegion.cpp`, `RuleResearch.cpp` e `RNG.cpp` di OpenXcom con la **vera yaml-cpp 0.7.0** (g++ MinGW 32 bit, SSE) hanno stampato: lo stato dopo `load`, **il testo YAML che `save()` produce emesso dall'`Emitter` di yaml-cpp** (quindi vale anche come prova dell'emitter di `Framework\Yaml` su oggetti veri, per esempio la sequenza vuota che esce come `[]` su una riga a parte), e cio' che gli oggetti fanno dopo (40 `advance`, 4 `newMonth` con seme fisso, 14 mesi di una regione, `getResearchProgress`, `step`, interi di 1, 2 e 4 byte, nove `double` come testo). `TXcomSaveScenario` (in `Tests\Source`) fa lo stesso in Pascal: **zero differenze**.
 
 ### Seconda famiglia di oggetti (`objects.corpus.txt`, `objects.golden.txt`)
 

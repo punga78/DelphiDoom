@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: fakes of the tests of the Quake III sound (Libs\Audio\Q3)       }
+{  DelphiDoom: fakes of the tests of the Quake III sound (Framework\Audio\Q3)  }
 {                                                                              }
 {  A clock and a device that the test moves by hand, a source of files in      }
 {  memory and the FNV-1a digest of the golden files (Tests\Data\Audio\Q3).     }

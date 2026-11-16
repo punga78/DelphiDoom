@@ -40,7 +40,7 @@ uses
 //==============================================================================
 //
 // R_ConfigureFixedColumn
-// The builder of fixed columns of Libs\Imaging, given by the composition root
+// The builder of fixed columns of Framework\Imaging, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureFixedColumn(const ABuilder: IImagingFixedColumnBuilder);

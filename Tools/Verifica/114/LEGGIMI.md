@@ -1,6 +1,6 @@
 # Tools\Verifica\114 - parita' del decoder RoQ (issue #114)
 
-Strumenti che producono le risposte di riferimento di `Libs\Cinematic` con il **codice di Quake III Arena** (`Reference\quake3\code\client\cl_cin.c`, sola lettura). Non c'e' un compilatore C nel PATH: si usa il gcc del kit `Reference\_dati\_strumenti\w64devkit`.
+Strumenti che producono le risposte di riferimento di `Framework\Cinematic` con il **codice di Quake III Arena** (`Reference\quake3\code\client\cl_cin.c`, sola lettura). Non c'e' un compilatore C nel PATH: si usa il gcc del kit `Reference\_dati\_strumenti\w64devkit`.
 
 - `build.sh [cartella]` (sh, da Git Bash): costruisce `roq_original.inc` con intervalli di righe di `cl_cin.c` (l'originale non e' riscritto), compila `roqextract.exe` (con il gcc **i686** del kit) e `roqgen.exe`. Le variabili `DELPHIDOOM_ROOT` (radice del repository principale, dove sta `Reference\`) cambia il percorso di default `/c/Progetti/DelphiDoom`.
 - `stubs.h`: i sostituti minimi del motore (file system su un buffer in memoria, `S_RawSamples`, orologio, `glConfig`).
@@ -19,4 +19,4 @@ roqextract.exe --tables > tables.golden.txt
 roqextract.exe idlogo.RoQ > idlogo.golden.txt
 ```
 
-`idlogo.RoQ` e' `video/idlogo.RoQ` in `Reference\openarena\openarena-0.8.8\baseoa\pak6-misc.pk3` (920336 byte, 512x512, 124 fotogrammi, 123 blocchi audio stereo): **non e' nel repository** (c'e' solo il golden con i CRC). Le ultime 11 righe `frame` del golden sono i fotogrammi fantasma di Quake III (vedi `Libs\Cinematic\CLAUDE.md`, "Difetti del C"). Il file `.sh` deve restare con le fine riga LF.
+`idlogo.RoQ` e' `video/idlogo.RoQ` in `Reference\openarena\openarena-0.8.8\baseoa\pak6-misc.pk3` (920336 byte, 512x512, 124 fotogrammi, 123 blocchi audio stereo): **non e' nel repository** (c'e' solo il golden con i CRC). Le ultime 11 righe `frame` del golden sono i fotogrammi fantasma di Quake III (vedi `Framework\Cinematic\CLAUDE.md`, "Difetti del C"). Il file `.sh` deve restare con le fine riga LF.

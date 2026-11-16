@@ -4,7 +4,7 @@
 
 Lettori in Delphi dei **formati dei dati originali di UFO: Enemy Unknown e X-COM: Terror from the Deep** (Microprose 1994/1995), nella forma in cui li legge **OpenXcom** (`Reference\OpenXcom`). Solo classi pure: niente SDL, YAML né finestra. Issue #176, prima fetta del port di OpenXcom (analisi in `Reference\_analisi\openxcom.md`).
 
-Non è un gioco del motore Doom: ha il suo eseguibile (`OpenXcom\Xcom32.dpr`, che e' anche il gioco: issue #180; composition root dell'esportazione `OpenXcom\DelphiDoom.Xcom.Composition.pas`) e **non tocca** `ComposeEngine` né `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`) e `Libs\Platform` (`IFileStore`).
+Non è un gioco del motore Doom: ha il suo eseguibile (`OpenXcom\Xcom32.dpr`, che e' anche il gioco: issue #180; composition root dell'esportazione `OpenXcom\DelphiDoom.Xcom.Composition.pas`) e **non tocca** `ComposeEngine` né `TIdTechGeneration`. Riusa `Framework\Video` (`IPaletteConverter`), `Framework\Png` (`TPngClient`) e `Framework\Platform` (`IFileStore`).
 
 ## Licenza (da decidere)
 
@@ -73,7 +73,7 @@ Differenze volute (difetti o comportamenti indefiniti del C++), ognuna con un te
 
 ## Non fatto (fette successive)
 
-`Libs\Yaml` (parser delle regole `.rul`, opzioni, lingue, salvataggi), `Libs\XcomSurface` (`Surface8` con blit, ombra, `Zoom`, linee) e `Libs\Opl`; i formati `LOC.DAT`, `SCANG.DAT`, `TEXTURE.DAT`, `INTERWIN.DAT` (è un `.SCR`, già leggibile), `LOFTEMPS` come voxel di tile, i file `.CAT` di suoni (`SoundSet`: conversione a 11025 Hz e WAV), `GM.CAT`, i filmati `.FLC` (`Libs\Flic`) e il `Palette::savePal`; **`GEO.DAT`** non ha un lettore nel C++ con questo nome (non l'ho trovato in `src`). Poi `XcomMod`, `XcomSave`, `XcomUi`, il Geoscape, il Basescape e il Battlescape (generatore, `TileEngine`, `Pathfinding`, AI). Il collegamento delle classi di questa libreria a un `Mod` è la fetta successiva a `Yaml`.
+`Framework\Yaml` (parser delle regole `.rul`, opzioni, lingue, salvataggi), `Libs\XcomSurface` (`Surface8` con blit, ombra, `Zoom`, linee) e `Framework\Opl`; i formati `LOC.DAT`, `SCANG.DAT`, `TEXTURE.DAT`, `INTERWIN.DAT` (è un `.SCR`, già leggibile), `LOFTEMPS` come voxel di tile, i file `.CAT` di suoni (`SoundSet`: conversione a 11025 Hz e WAV), `GM.CAT`, i filmati `.FLC` (`Framework\Flic`) e il `Palette::savePal`; **`GEO.DAT`** non ha un lettore nel C++ con questo nome (non l'ho trovato in `src`). Poi `XcomMod`, `XcomSave`, `XcomUi`, il Geoscape, il Basescape e il Battlescape (generatore, `TileEngine`, `Pathfinding`, AI). Il collegamento delle classi di questa libreria a un `Mod` è la fetta successiva a `Yaml`.
 
 ## Dati veri (TFTD, 2026-11-09)
 

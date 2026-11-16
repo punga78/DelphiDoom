@@ -15,7 +15,7 @@ type
   ///   Changes the rate of interleaved 16 bit stereo samples. When one rate is a power of two times the other
   ///   (11025 Hz at 22050 Hz, 44100 Hz at 22050 Hz) it takes the nearest earlier sample, as SDL 1.2 repeats or drops
   ///   samples; any other ratio is interpolated linearly. The code is the strategy TPcmFramePositionResampler of
-  ///   Libs\AudioMix
+  ///   Framework\AudioMix
   /// </summary>
   TXcomResampler = class
   public

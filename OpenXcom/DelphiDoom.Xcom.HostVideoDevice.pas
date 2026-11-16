@@ -16,7 +16,7 @@ uses
 type
   /// <summary>
   ///   IXcomVideoDevice, and the optional interfaces of a window that the screen asks for, on a display of
-  ///   Libs\GameHost (the window with GDI or OpenGL): the same calls with the types of the game turned into the
+  ///   Framework\GameHost (the window with GDI or OpenGL): the same calls with the types of the game turned into the
   ///   neutral ones. What the display of the host does not have is ignored (a display that does not scale never
   ///   presents an unscaled picture and says that OpenGL is not in use; one that shows no pictures of colors
   ///   refuses the frames in true color, and the screen presents the 8 bit picture)

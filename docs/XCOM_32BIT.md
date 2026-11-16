@@ -89,7 +89,7 @@ TXcomScreen.Flip ── senza strategia ──> Zoom a indici ──> IXcomVideo
 - **Quale interfaccia cambia.** Nessuna firma esistente. Si aggiungono:
   `IXcomFrameComposer` e `IXcomDetailLayers` (`DelphiDoom.XcomEngine.TrueColor.Intf`), l'interfaccia opzionale del
   dispositivo `IXcomTrueColorDisplay` (come `IXcomWindowStyle`/`IXcomFilteredDisplay`: chi non ce l'ha non è
-  usato), e in `Libs\GameHost` `IGameHostTrueColorDisplay` (unit nuova) implementata dai dispositivi GDI (DIB a 32
+  usato), e in `Framework\GameHost` `IGameHostTrueColorDisplay` (unit nuova) implementata dai dispositivi GDI (DIB a 32
   bit) e OpenGL (la texture BGRA che già usa) e inoltrata dal selettore. `TXcomScreen.Create` prende un terzo
   argomento facoltativo (`AComposer = nil`).
 - **Come si sceglie il percorso.** Nel composition root (`OpenXcom\DelphiDoom.Xcom.GameComposition.pas`): se le

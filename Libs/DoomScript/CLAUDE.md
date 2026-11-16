@@ -214,10 +214,10 @@ provocare.
 
 ## Riuso
 
-Da `Libs\IdLib`: `TIdLexer`, `TIdToken` (vettori tra apici, token), `TIdStrings` (`%f`, `%.2f`, ricerca), `TIdVec3`,
-`TIdMath`, `TIdMd4` (checksum del programma), `IIdLibLog`, `IIdLibFileSystem`, `EIdLibException`. Da `Libs\Scanner`:
+Da `Framework\IdLib`: `TIdLexer`, `TIdToken` (vettori tra apici, token), `TIdStrings` (`%f`, `%.2f`, ricerca), `TIdVec3`,
+`TIdMath`, `TIdMd4` (checksum del programma), `IIdLibLog`, `IIdLibFileSystem`, `EIdLibException`. Da `Framework\Scanner`:
 `TIdParser` (preprocessore e `#include`), `TIdDict` (argomenti di spawn), `TIdCNumbers` (`atoi`/`atof`). Da
-`Libs\MathCore`: `TIdAngles`. Nessuna di queste librerie e' stata modificata.
+`Framework\MathCore`: `TIdAngles`. Nessuna di queste librerie e' stata modificata.
 
 Nuovo, perche' non esisteva: tutto cio' che e' specifico dello script (tipi, def, opcode, compilatore, interprete,
 thread), il sistema degli eventi (`idEvent`/`idEventDef`/`idTypeInfo` non erano portati), la tabella delle entita' e

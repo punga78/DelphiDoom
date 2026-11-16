@@ -17,7 +17,7 @@ uses
 
 type
   /// <summary>
-  ///   IGreedCommandSource on the key state of the window of Libs\GameHost, with the default keys of the
+  ///   IGreedCommandSource on the key state of the window of Framework\GameHost, with the default keys of the
   ///   original: arrows to walk and turn, Ctrl fires, Alt strafes, Space uses (and starts again when dead), Shift
   ///   runs, Z jumps, X uses the item of the inventory, Insert and Delete choose it, A the rear view, Page Up,
   ///   Page Down and Home look, comma and period step aside, S the motion mode, M the map, H the heat mode, Tab

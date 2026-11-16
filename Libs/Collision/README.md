@@ -3,14 +3,14 @@
 > Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
 
 Port a classi di `Reference\doom3\neo\cm` (`CollisionModel_*.cpp`, `CollisionModel.h`, `CollisionModel_local.h`),
-con la matematica e la geometria di idlib in `Libs\Geometry`. **Non è collegato al motore**: DelphiDoom è un source
+con la matematica e la geometria di idlib in `Framework\Geometry`. **Non è collegato al motore**: DelphiDoom è un source
 port di id Tech 1 e il modello di id Tech 4 non ha un chiamante in Doom, Heretic, Hexen e Strife
 (vedi `WIRING.md` per come lo userebbe un chiamante).
 
 ## Licenza
 
 Doom 3 è sotto **GPL v3 con termini aggiuntivi** (`Reference\doom3\COPYING.txt`, `README.txt`); il repository è
-GPL v2 o successiva. Le unit di `Libs\Geometry` e `Libs\Collision` sono **codice derivato** (traduzione del
+GPL v2 o successiva. Le unit di `Framework\Geometry` e `Libs\Collision` sono **codice derivato** (traduzione del
 comportamento e della struttura del C++, non riscrittura da zero): portano l'intestazione di copyright di id Software
 e la dicitura "GPL v3". L'opera che le contiene, quando le si compila insieme, ricade quindi nella GPL v3.
 Fa eccezione `DelphiDoom.Collision.CmFile.Tokenizer`, scritto da zero a partire dal solo comportamento di `idLexer`
@@ -60,7 +60,7 @@ Legato al resto di id Tech 4, sostituito da una interfaccia o da un tipo piccolo
 |---|---|
 | `idMaterial` (`GetContentFlags`, `GetName`, `GetCullType`, `ShouldCreateBackSides`) + `declManager->FindMaterial` | `TCollisionMaterial` (nome, contenuti, due facce) + `ICollisionMaterialCatalog` |
 | `idMapEntity`/`idMapBrush`/`idMapBrushSide` | `ICollisionGeometrySource` (brush con lati e poligoni sciolti) |
-| `common->Printf/Warning` | `ILog` di `Libs\Logging` (può essere nil) |
+| `common->Printf/Warning` | `ILog` di `Framework\Logging` (può essere nil) |
 | `common->Error`/`src->Error` | `ECollisionFormatException` (`ECollisionException`) |
 | `fileSystem->OpenFile*`, `idLexer(fileName)` | `TStream`/`string` dati dal chiamante; `TCollisionTokenizer` |
 | globali e statici (`checkCount`, `cm_vertexHash`, `cm_edgeHash`, `cm_modelBounds`, `static cm_traceWork_t tw`, `getContacts`, `contacts`) | `TCollisionCheckCounter`, `TCollisionGeometryTable`, `TCmTraceWork` (uno per chiamata), parametri e liste |
@@ -69,10 +69,10 @@ Legato al resto di id Tech 4, sostituito da una interfaccia o da un tipo piccolo
 
 ## Fette e unit
 
-**`Libs\Geometry`** (namespace `DelphiDoom.Geometry.*`): `Types` (costanti `PLANESIDE_*`, `PLANETYPE_*`, `MAX_WORLD_*`),
+**`Framework\Geometry`** (namespace `DelphiDoom.Geometry.*`): `Types` (costanti `PLANESIDE_*`, `PLANETYPE_*`, `MAX_WORLD_*`),
 `FloatMath` (`TGeoMath`: `Rint` come `floorf(f+0.5f)`, macro del bit di segno, `1<<n` a 32 bit), `Vec3`, `Mat3`, `Plane`,
 `Bounds`, `Pluecker` (record, con gli stessi byte del C++), `Winding` (classe: `BaseForPlane`, `ClipInPlace`,
-`ReverseSelf`, `IsHuge`), `TraceModel` (box, cilindro, poligono e suo volume, normali degli spigoli). In `Libs\MathCore`
+`ReverseSelf`, `IsHuge`), `TraceModel` (box, cilindro, poligono e suo volume, normali degli spigoli). In `Framework\MathCore`
 non c'era nulla di riusabile: `TVec3` di `m_vectors` è un `array[0..2] of Single` senza operatori, per il motore a punto
 fisso.
 

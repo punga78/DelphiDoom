@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom audio library - a music made of a module (MOD, S3M, XM,     }
-{  IT) played by the tracker of Libs\Mikmod                                     }
+{  IT) played by the tracker of Framework\Mikmod                                }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
@@ -16,7 +16,7 @@ uses
 type
   /// <summary>
   ///   A module music. The tracker makes the samples when the mixer asks for them (no thread and no device of its
-  ///   own: Libs\Mikmod gives the sequencer and the mixer of the channels, the output is the mixer of the game)
+  ///   own: Framework\Mikmod gives the sequencer and the mixer of the channels, the output is the mixer of the game)
   /// </summary>
   TXcomTrackerTrack = class(TInterfacedObject, IXcomMusicTrack, IXcomMusicPreparation)
   strict private

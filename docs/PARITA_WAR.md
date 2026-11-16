@@ -1,6 +1,6 @@
 # Parita' di Warcraft: Orcs & Humans (issue #201, indice #203)
 
-Il criterio con cui si prova che `Libs\War` e `Libs\Cinematic` fanno quello che fa il remake in C (`Reference\war1`,
+Il criterio con cui si prova che `Libs\War` e `Framework\Cinematic` fanno quello che fa il remake in C (`Reference\war1`,
 acoto87/war1, zlib), come per Greed (#175) e Rad-X. Le regole generali del repository (golden, test DUnitX, copertura)
 sono in `CLAUDE.md`; qui c'e' cio' che e' specifico di War e i comandi per ripeterlo.
 
@@ -80,14 +80,14 @@ Per compilare i test: `Tools\build.bat DelphiDoom.Tests.War Release` (e `DelphiD
 I test risalgono dalla cartella dell'exe fino a `Tests\Data` (dalla #230 `build.bat` non copia più nulla).
 A 64 bit `DelphiDoom.Tests.Cinematic` compila e passa. `DelphiDoom.Tests.War` compila e passa per intero a 64 bit; il suo
 `.dproj` dichiara oggi solo Win32 (lo estende la #40), quindi per provarlo a 64 bit si compila il `.dpr` con `dcc64` a
-parte (da `Tests\`): `dcc64 -B -Q -$O+ -NSSystem;Winapi;System.Win;Xml;Data;Vcl -U..\Libs\AudioMix;<DUnitX\Source>;..\Libs\War;..\Libs\MathCore;.\Source
+parte (da `Tests\`): `dcc64 -B -Q -$O+ -NSSystem;Winapi;System.Win;Xml;Data;Vcl -U..\Framework\AudioMix;<DUnitX\Source>;..\Libs\War;..\Framework\MathCore;.\Source
 -I..\Libs\War;.\Include;<DUnitX\Source> -E..\bin\Win64\Release\Tests -N0..\dcu\Win64\Release\DelphiDoom.Tests.War.manual -DRELEASE DelphiDoom.Tests.War.dpr`.
 
 ## Copertura
 
-`Tools\Copertura.ps1 -Test War -Cartella Libs\War` e `-Test Cinematic -Cartella Libs\Cinematic` (richiede CodeCoverage.exe,
+`Tools\Copertura.ps1 -Test War -Cartella Libs\War` e `-Test Cinematic -Cartella Framework\Cinematic` (richiede CodeCoverage.exe,
 `DELPHI_CODECOVERAGE`; compila in Debug). Obiettivo 90% sulle librerie nuove. Risultato (2026-11-13): `Libs\War` 99%
-(2107 righe su 2118), `Libs\Cinematic` 99% (1119 su 1130); le unit nuove di #198 e #199: 97-100% ciascuna.
+(2107 righe su 2118), `Framework\Cinematic` 99% (1119 su 1130); le unit nuove di #198 e #199: 97-100% ciascuna.
 Dopo il completamento della #194 (2026-11-14): `Libs\War` 98% (7923 righe su 8004), le unit dei comandi, degli
 incantesimi e delle animazioni 97-100%. Dopo la #195: `Libs\War` 98% (8646 su 8740), 1291 test (1290 passati, 1 ignorato) a Win32 e a Win64,
 `Confronta-Golden.ps1 -Solo 194` 31 golden su 31 identici; le unit nuove 94-100% (gli `inline` non sono contati dallo strumento).
