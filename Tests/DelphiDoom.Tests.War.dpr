@@ -380,6 +380,7 @@ uses
   DelphiDoom.Tests.War.MapDump in 'Source\DelphiDoom.Tests.War.MapDump.pas',
   DelphiDoom.Tests.War.MapParity in 'Source\DelphiDoom.Tests.War.MapParity.pas',
   DelphiDoom.Tests.War.Level in 'Source\DelphiDoom.Tests.War.Level.pas',
+  DelphiDoom.Tests.War.LevelUnitCoverage in 'Source\DelphiDoom.Tests.War.LevelUnitCoverage.pas',
   DelphiDoom.Tests.War.LevelParity in 'Source\DelphiDoom.Tests.War.LevelParity.pas',
   DelphiDoom.Tests.War.Campaign in 'Source\DelphiDoom.Tests.War.Campaign.pas',
   DelphiDoom.Tests.War.Autotile in 'Source\DelphiDoom.Tests.War.Autotile.pas',
