@@ -38,3 +38,5 @@ Tests/Data/DoomScript/** -text
 IdTech1/Radix/Data/*.bin binary
 Tests/Data/Pmove/** -text
 Tools/Verifica/127/*.sh eol=lf
+Tools/Verifica/254/*.sh eol=lf
+Tests/Data/Q3Host/** -text
