@@ -1,0 +1,76 @@
+# Automap of the software renderer (issue #246): the player walks, opens the automap and goes through its keys:
+# the cheat of the lines and of the things (iddt twice), grid, marks, follow, rotate, big, the three states of TAB,
+# clear marks. Every frame is hashed by -framehash: old and new program must give the same lines.
+hold 40 forward 25
+hold 20 forward 25 turn 3
+key 9
+hold 3
+shot 1
+hold 12 forward 25 turn -2
+shot 2
+# iddt: every line of the map
+key 116
+hold 2
+key 111
+hold 2
+key 112
+hold 2
+key 111
+hold 3
+shot 3
+# iddt again: the things
+key 116
+hold 2
+key 111
+hold 2
+key 112
+hold 2
+key 111
+hold 3
+shot 4
+# the grid
+key 103
+hold 3
+shot 5
+# two marks
+key 109
+hold 3 forward 25
+key 109
+hold 3
+shot 6
+# follow off, the player moves on the map
+key 102
+hold 20 forward 25 turn 3
+shot 7
+# big (the whole level)
+key 111
+hold 3
+shot 8
+key 111
+hold 3
+# rotate on, follow on
+key 114
+hold 3
+key 102
+hold 20 forward 25 turn -3
+shot 9
+hold 10 forward 25 turn 3
+shot 10
+# clear the marks
+key 99
+hold 3
+shot 11
+# rotate on again
+key 114
+hold 12 forward 25 turn 3
+shot 14
+# TAB: the next state of the automap (overlay or off), then the next
+key 9
+hold 3
+shot 12
+key 9
+hold 3
+shot 13
+key 9
+hold 3
+hold 20 forward 25 turn 2
