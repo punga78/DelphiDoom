@@ -614,17 +614,17 @@ begin
     Exit('R_DrawSpanNormal_RippleMT');
   if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn32 then
     Exit('R_DrawFuzzColumn32');
-  if AValue = @R_DrawColumnHi_Fog then
+  if AValue = @TRendererColFogDrawers.R_DrawColumnHi_Fog then
     Exit('R_DrawColumnHi_Fog');
   if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnHi_Fog then
     Exit('R_DrawTallColumnHi_Fog');
-  if AValue = @R_DrawMaskedColumnNormal_Fog then
+  if AValue = @TRendererColMsFogDrawers.R_DrawMaskedColumnNormal_Fog then
     Exit('R_DrawMaskedColumnNormal_Fog');
-  if AValue = @R_DrawMaskedColumnHi32_Fog then
+  if AValue = @TRendererColMsFogDrawers.R_DrawMaskedColumnHi32_Fog then
     Exit('R_DrawMaskedColumnHi32_Fog');
-  if AValue = @R_DrawSpanNormal_Fog then
+  if AValue = @TRendererSpan32FogDrawers.R_DrawSpanNormal_Fog then
     Exit('R_DrawSpanNormal_Fog');
-  if AValue = @R_DrawSpanNormal_Fog_Ripple then
+  if AValue = @TRendererSpan32FogRippleDrawers.R_DrawSpanNormal_Fog_Ripple then
     Exit('R_DrawSpanNormal_Fog_Ripple');
   if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
@@ -632,11 +632,11 @@ begin
     Exit('R_DrawTallColumnUltra');
   if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi then
     Exit('R_DrawMaskedColumnHi');
-  if AValue = @R_DrawColumnUltra_Fog then
+  if AValue = @TRendererColFogDrawers.R_DrawColumnUltra_Fog then
     Exit('R_DrawColumnUltra_Fog');
   if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnUltra_Fog then
     Exit('R_DrawTallColumnUltra_Fog');
-  if AValue = @R_DrawMaskedColumnHi_Fog then
+  if AValue = @TRendererColMsFogDrawers.R_DrawMaskedColumnHi_Fog then
     Exit('R_DrawMaskedColumnHi_Fog');
   if AValue = @TRendererAverageDrawers.R_DrawColumnAverageUltra then
     Exit('R_DrawColumnAverageUltra');
@@ -644,7 +644,7 @@ begin
     Exit('R_DrawMaskedColumnUltra32');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnUltra then
     Exit('R_DrawSkyColumnUltra');
-  if AValue = @R_DrawMaskedColumnUltra32_Fog then
+  if AValue = @TRendererColMsFogDrawers.R_DrawMaskedColumnUltra32_Fog then
     Exit('R_DrawMaskedColumnUltra32_Fog');
   Result := '?' + IntToHex(NativeUInt(AValue), 8);
 end;

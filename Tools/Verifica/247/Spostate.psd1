@@ -88,4 +88,12 @@
   R_DrawFuzzColumnHiTL = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnHiTL'; Unit = 'r_col_fz' }
   R_DrawFuzzColumn1Hi32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1Hi32'; Unit = 'r_col_fz' }
   R_DrawFuzzColumn2 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2'; Unit = 'r_col_fz' }
+  R_DrawColumnHi_Fog = @{ Expression = 'TRendererColFogDrawers.R_DrawColumnHi_Fog'; Unit = 'r_col_fog' }
+  R_DrawColumnUltra_Fog = @{ Expression = 'TRendererColFogDrawers.R_DrawColumnUltra_Fog'; Unit = 'r_col_fog' }
+  R_DrawMaskedColumnHi32_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnHi32_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawMaskedColumnNormal_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnNormal_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawMaskedColumnUltra32_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnUltra32_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawMaskedColumnHi_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnHi_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawSpanNormal_Fog = @{ Expression = 'TRendererSpan32FogDrawers.R_DrawSpanNormal_Fog'; Unit = 'r_span32_fog' }
+  R_DrawSpanNormal_Fog_Ripple = @{ Expression = 'TRendererSpan32FogRippleDrawers.R_DrawSpanNormal_Fog_Ripple'; Unit = 'r_span32_fog_ripple' }
 }
