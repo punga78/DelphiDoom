@@ -39,8 +39,6 @@ uses
   p_spec,
   r_defs;
 
-var
-  activeplats: array[0..MAXPLATS - 1] of Pplat_t;
 
 //==============================================================================
 //
@@ -179,15 +177,15 @@ procedure P_ActivateInStasis(tag: integer);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if (activeplats[i] <> nil) and
-      (activeplats[i].tag = tag) and
-      (activeplats[i].status = in_stasis) then
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+    if (Pplat_t(P_World.ActivePlats[i]) <> nil) and
+      (Pplat_t(P_World.ActivePlats[i]).tag = tag) and
+      (Pplat_t(P_World.ActivePlats[i]).status = in_stasis) then
     begin
-      activeplats[i].status := PlatEngineStatusOf(
-        PlatMachine.WakeUpStatus(PlatKindOf(activeplats[i]._type),
-          PlatStatusOf(activeplats[i].oldstatus)));
-      activeplats[i].thinker._function.acp1 := @T_PlatRaise;
+      Pplat_t(P_World.ActivePlats[i]).status := PlatEngineStatusOf(
+        PlatMachine.WakeUpStatus(PlatKindOf(Pplat_t(P_World.ActivePlats[i])._type),
+          PlatStatusOf(Pplat_t(P_World.ActivePlats[i]).oldstatus)));
+      Pplat_t(P_World.ActivePlats[i]).thinker._function.acp1 := @T_PlatRaise;
     end;
 end;
 
@@ -201,16 +199,16 @@ var
   i: integer;
   state: TPlatState;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if (activeplats[i] <> nil) and
-      (activeplats[i].status <> in_stasis) and
-      (activeplats[i].tag = line.tag) then
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+    if (Pplat_t(P_World.ActivePlats[i]) <> nil) and
+      (Pplat_t(P_World.ActivePlats[i]).status <> in_stasis) and
+      (Pplat_t(P_World.ActivePlats[i]).tag = line.tag) then
     begin
-      PlatLoadState(activeplats[i], state);
+      PlatLoadState(Pplat_t(P_World.ActivePlats[i]), state);
       PlatMachine.Pause(state);
-      activeplats[i].oldstatus := PlatEngineStatusOf(state.OldStatus);
-      activeplats[i].status := PlatEngineStatusOf(state.Status);
-      activeplats[i].thinker._function.acv := nil;
+      Pplat_t(P_World.ActivePlats[i]).oldstatus := PlatEngineStatusOf(state.OldStatus);
+      Pplat_t(P_World.ActivePlats[i]).status := PlatEngineStatusOf(state.Status);
+      Pplat_t(P_World.ActivePlats[i]).thinker._function.acv := nil;
     end;
 end;
 
@@ -223,10 +221,10 @@ procedure P_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if activeplats[i] = nil then
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+    if Pplat_t(P_World.ActivePlats[i]) = nil then
     begin
-      activeplats[i] := plat;
+      P_World.ActivePlats.Add(plat);
       exit;
     end;
 
@@ -242,12 +240,12 @@ procedure P_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if plat = activeplats[i] then
+  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+    if plat = Pplat_t(P_World.ActivePlats[i]) then
     begin
-      activeplats[i].sector.specialdata := nil;
-      P_RemoveThinker(@activeplats[i].thinker);
-      activeplats[i] := nil;
+      Pplat_t(P_World.ActivePlats[i]).sector.specialdata := nil;
+      P_RemoveThinker(@Pplat_t(P_World.ActivePlats[i]).thinker);
+      P_World.ActivePlats.Release(i);
       exit;
     end;
 

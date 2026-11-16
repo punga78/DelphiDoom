@@ -13,6 +13,7 @@ interface
 
 uses
   DelphiDoom.MathCore.Intf,
+  DelphiDoom.Thinkers.ActiveSlots,
   DelphiDoom.Thinkers.BodyQueue,
   DelphiDoom.Thinkers.List,
   DelphiDoom.Thinkers.LevelTotals,
@@ -20,6 +21,12 @@ uses
   doomdata,
   d_think,
   p_mobj_h;
+
+const
+  /// <summary>The slots of the ceilings (MAXCEILINGS of p_spec_h: the same in the four games)</summary>
+  WORLD_CEILING_SLOTS = 128;
+  /// <summary>The slots of the platforms (MAXPLATS of p_spec_h: the same in the four games)</summary>
+  WORLD_PLATFORM_SLOTS = 512;
 
 type
   /// <summary>
@@ -54,6 +61,10 @@ type
     FPlayerCorpses: TBodyQueue;
     FTotals: TLevelTotals;
     FEnemyCorpses: TBodyQueue;
+    FActiveCeilings: TActiveSlots;
+    FActivePlats: TActiveSlots;
+    FUdmfCeilings: TActiveSlots;
+    FUdmfPlats: TActiveSlots;
   public
     /// <param name="AThinkerCap">The head of the list of the thinkers (it stays where the saved games look for it)</param>
     /// <param name="ATime">Where the time of the level is kept; only TimerGame may be nil</param>
@@ -77,6 +88,14 @@ type
     property EnemyCorpses: TBodyQueue read FEnemyCorpses;
     /// <summary>The monsters, items and secret sectors of the level (totalkills, totalitems, totalsecret; not written in the saved games)</summary>
     property Totals: TLevelTotals read FTotals;
+    /// <summary>The classic ceilings that can be stopped (activeceilings); not written in the saved games: the loader adds them again</summary>
+    property ActiveCeilings: TActiveSlots read FActiveCeilings;
+    /// <summary>The classic platforms that can be stopped (activeplats); same as the ceilings</summary>
+    property ActivePlats: TActiveSlots read FActivePlats;
+    /// <summary>The ceilings of the special actions (hactiveceilings)</summary>
+    property UdmfCeilings: TActiveSlots read FUdmfCeilings;
+    /// <summary>The platforms of the special actions (hactiveplats)</summary>
+    property UdmfPlats: TActiveSlots read FUdmfPlats;
 
     /// <summary>Keeps the corpse of a player left on a spawn spot and removes the oldest one if the queue is full</summary>
     procedure AddPlayerCorpse(AMobj: Pmobj_t);
@@ -157,10 +176,18 @@ begin
   FPlayerCorpses := TBodyQueue.Create;
   FEnemyCorpses := TBodyQueue.Create;
   FTotals := TLevelTotals.Create;
+  FActiveCeilings := TActiveSlots.Create(WORLD_CEILING_SLOTS);
+  FActivePlats := TActiveSlots.Create(WORLD_PLATFORM_SLOTS);
+  FUdmfCeilings := TActiveSlots.Create(WORLD_CEILING_SLOTS);
+  FUdmfPlats := TActiveSlots.Create(WORLD_PLATFORM_SLOTS);
 end;
 
 destructor TEngineWorld.Destroy;
 begin
+  FUdmfPlats.Free;
+  FUdmfCeilings.Free;
+  FActivePlats.Free;
+  FActiveCeilings.Free;
   FTotals.Free;
   FEnemyCorpses.Free;
   FPlayerCorpses.Free;

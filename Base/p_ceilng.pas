@@ -41,8 +41,6 @@ uses
   s_sound,
   sounddata;
 
-var
-  activeceilings: array[0..MAXCEILINGS - 1] of Pceiling_t;
 
 //==============================================================================
 //
@@ -103,10 +101,10 @@ procedure P_AddActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXCEILINGS - 1 do
-    if activeceilings[i] = nil then
+  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
+    if Pceiling_t(P_World.ActiveCeilings[i]) = nil then
     begin
-      activeceilings[i] := c;
+      P_World.ActiveCeilings.Add(c);
       exit;
     end;
   I_Warning('P_AddActiveCeiling(): Can not add ceiling, limit %d reached'#13#10, [MAXCEILINGS]);
@@ -122,12 +120,12 @@ procedure P_RemoveActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXCEILINGS - 1 do
-    if activeceilings[i] = c then
+  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
+    if Pceiling_t(P_World.ActiveCeilings[i]) = c then
     begin
-      CeilingAttach(activeceilings[i].sector, nil);
-      P_RemoveThinker(@activeceilings[i].thinker);
-      activeceilings[i] := nil;
+      CeilingAttach(Pceiling_t(P_World.ActiveCeilings[i]).sector, nil);
+      P_RemoveThinker(@Pceiling_t(P_World.ActiveCeilings[i]).thinker);
+      P_World.ActiveCeilings.Release(i);
       exit;
     end;
 end;
@@ -143,13 +141,13 @@ var
   i: integer;
 begin
   result := 0;
-  for i := 0 to MAXCEILINGS - 1 do
-    if (activeceilings[i] <> nil) and
-       (activeceilings[i].tag = line.tag) and
-       (activeceilings[i].direction = 0) then
+  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
+    if (Pceiling_t(P_World.ActiveCeilings[i]) <> nil) and
+       (Pceiling_t(P_World.ActiveCeilings[i]).tag = line.tag) and
+       (Pceiling_t(P_World.ActiveCeilings[i]).direction = 0) then
     begin
-      activeceilings[i].direction := activeceilings[i].olddirection;
-      activeceilings[i].thinker._function.acp1 := @T_MoveCeiling;
+      Pceiling_t(P_World.ActiveCeilings[i]).direction := Pceiling_t(P_World.ActiveCeilings[i]).olddirection;
+      Pceiling_t(P_World.ActiveCeilings[i]).thinker._function.acp1 := @T_MoveCeiling;
       result := 1;
     end;
 end;
@@ -297,14 +295,14 @@ var
   i: integer;
 begin
   result := 0;
-  for i := 0 to MAXCEILINGS - 1 do
-    if (activeceilings[i] <> nil) and
-       (activeceilings[i].tag = line.tag) and
-       (activeceilings[i].direction <> 0) then
+  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
+    if (Pceiling_t(P_World.ActiveCeilings[i]) <> nil) and
+       (Pceiling_t(P_World.ActiveCeilings[i]).tag = line.tag) and
+       (Pceiling_t(P_World.ActiveCeilings[i]).direction <> 0) then
     begin
-      activeceilings[i].olddirection := activeceilings[i].direction;
-      activeceilings[i].thinker._function.acv := nil;
-      activeceilings[i].direction := 0; // in-stasis
+      Pceiling_t(P_World.ActiveCeilings[i]).olddirection := Pceiling_t(P_World.ActiveCeilings[i]).direction;
+      Pceiling_t(P_World.ActiveCeilings[i]).thinker._function.acv := nil;
+      Pceiling_t(P_World.ActiveCeilings[i]).direction := 0; // in-stasis
       result := 1;
     end;
 end;

@@ -127,6 +127,15 @@ procedure P_ConfigureWorld(const AWorld: TEngineWorld);
 //==============================================================================
 function P_World: TEngineWorld;
 
+//==============================================================================
+//
+// P_ThinkerHead
+// The head of the list of the thinkers, as the world has it: the saved games
+// walk the list from here (thinkercap stays the memory behind it)
+//
+//==============================================================================
+function P_ThinkerHead: Pthinker_t;
+
 implementation
 
 uses
@@ -225,6 +234,16 @@ begin
   if p_world_ref = nil then
     I_Error('P_ConfigureWorld() was not called: the world is missing');
   result := p_world_ref;
+end;
+
+//==============================================================================
+//
+// P_ThinkerHead
+//
+//==============================================================================
+function P_ThinkerHead: Pthinker_t;
+begin
+  result := Pthinker_t(P_World.Thinkers.Head);
 end;
 
 //==============================================================================

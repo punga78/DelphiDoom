@@ -37,8 +37,6 @@ uses
   p_spec,
   r_defs;
 
-var
-  hactiveplats: array[0..MAXPLATS - 1] of Pplat_t;
 
 //==============================================================================
 //
@@ -160,15 +158,15 @@ procedure EVH_StopPlat(line: Pline_t; args: PByteArray);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
+  for i := 0 to P_World.UdmfPlats.Capacity - 1 do
   begin
-    hactiveplats[i].tag := args[0]; // JVAL SOS
+    Pplat_t(P_World.UdmfPlats[i]).tag := args[0]; // JVAL SOS
     if args[0] <> 0 then
     begin
-      hactiveplats[i].sector.specialdata := nil;
-      P_TagFinished(hactiveplats[i].sector.tag);
-      P_RemoveThinker(@hactiveplats[i].thinker);
-      hactiveplats[i] := nil;
+      Pplat_t(P_World.UdmfPlats[i]).sector.specialdata := nil;
+      P_TagFinished(Pplat_t(P_World.UdmfPlats[i]).sector.tag);
+      P_RemoveThinker(@Pplat_t(P_World.UdmfPlats[i]).thinker);
+      P_World.UdmfPlats.Release(i);
 
       exit;
     end;
@@ -185,10 +183,10 @@ procedure PH_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if hactiveplats[i] = nil then
+  for i := 0 to P_World.UdmfPlats.Capacity - 1 do
+    if Pplat_t(P_World.UdmfPlats[i]) = nil then
     begin
-      hactiveplats[i] := plat;
+      P_World.UdmfPlats.Add(plat);
       exit;
     end;
   I_Error('PH_AddActivePlat(): no more plats!');
@@ -203,13 +201,13 @@ procedure PH_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to MAXPLATS - 1 do
-    if plat = hactiveplats[i] then
+  for i := 0 to P_World.UdmfPlats.Capacity - 1 do
+    if plat = Pplat_t(P_World.UdmfPlats[i]) then
     begin
-      hactiveplats[i].sector.specialdata := nil;
+      Pplat_t(P_World.UdmfPlats[i]).sector.specialdata := nil;
       P_TagFinished(plat.sector.tag);
-      P_RemoveThinker(@hactiveplats[i].thinker);
-      hactiveplats[i] := nil;
+      P_RemoveThinker(@Pplat_t(P_World.UdmfPlats[i]).thinker);
+      P_World.UdmfPlats.Release(i);
       exit;
     end;
   I_Error('PH_RemoveActivePlat(): can''t find plat!');

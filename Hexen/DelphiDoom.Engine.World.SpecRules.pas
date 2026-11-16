@@ -1141,11 +1141,10 @@ begin
   //
   //      Init other misc stuff
   //
-  for i := 0 to MAXCEILINGS - 1 do
-    hactiveceilings[i] := nil;
-
-  for i := 0 to MAXPLATS - 1 do
-    hactiveplats[i] := nil;
+  P_World.ActiveCeilings.Clear;
+  P_World.UdmfCeilings.Clear;
+  P_World.ActivePlats.Clear;
+  P_World.UdmfPlats.Clear;
 
   for i := 0 to MAXBUTTONS - 1 do
     memset(@buttonlist[i], 0, SizeOf(button_t));

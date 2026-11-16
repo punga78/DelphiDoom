@@ -1061,8 +1061,8 @@ var
   parm: Pmobjcustomparam_t;
 begin
   // save off the current thinkers
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := P_ThinkerHead.next;
+  while th <> P_ThinkerHead do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -1266,8 +1266,8 @@ var
   parm: mobjcustomparam_t;
 begin
   // remove all the current thinkers
-  currentthinker := thinkercap.next;
-  while currentthinker <> @thinkercap do
+  currentthinker := P_ThinkerHead.next;
+  while currentthinker <> P_ThinkerHead do
   begin
     next := currentthinker.next;
 
@@ -1290,8 +1290,8 @@ begin
         begin
           if savegameversion <> VERSION120 then
           begin
-            currentthinker := thinkercap.next;
-            while currentthinker <> @thinkercap do
+            currentthinker := P_ThinkerHead.next;
+            while currentthinker <> P_ThinkerHead do
             begin
               next := currentthinker.next;
 
@@ -1454,8 +1454,8 @@ var
 
 begin
   // save off the current thinkers
-  th1 := thinkercap.next;
-  while th1 <> @thinkercap do
+  th1 := P_ThinkerHead.next;
+  while th1 <> P_ThinkerHead do
   begin
     th := th1;
     th1 := th1.next;
@@ -1464,15 +1464,7 @@ begin
 
     if not Assigned(th._function.acv) then
     begin
-      i := 0;
-      while i < MAXCEILINGS do
-      begin
-        if activeceilings[i] = Pceiling_t(th) then
-          break;
-        inc(i);
-      end;
-
-      if i < MAXCEILINGS then
+      if P_World.ActiveCeilings.Contains(th) then
       begin
         save_p[0] := Ord(tc_ceiling);
         save_p := @save_p[1];
@@ -1483,15 +1475,7 @@ begin
       end;
 
       // JVAL: 20220218 - Handle hactiveceilings
-      i := 0;
-      while i < MAXCEILINGS do
-      begin
-        if hactiveceilings[i] = Pceiling_t(th) then
-          break;
-        inc(i);
-      end;
-
-      if i < MAXCEILINGS then
+      if P_World.UdmfCeilings.Contains(th) then
       begin
         save_p[0] := Ord(tch_moveceiling);
         save_p := @save_p[1];

@@ -1422,8 +1422,8 @@ var
   thinker: Pthinker_t;
 begin
   MapMobjCount := 0;
-  thinker := thinkercap.next;
-  while thinker <> @thinkercap do
+  thinker := P_ThinkerHead.next;
+  while thinker <> P_ThinkerHead do
   begin
     if @thinker._function.acp1 = @P_MobjThinker then
     begin
@@ -1548,8 +1548,8 @@ begin
   StreamOutLong(ASEG_MOBJS);
   StreamOutLong(MapMobjCount);
   count := 0;
-  thinker := thinkercap.next;
-  while thinker <> @thinkercap do
+  thinker := P_ThinkerHead.next;
+  while thinker <> P_ThinkerHead do
   begin
     if @thinker._function.acp1 <> @P_MobjThinker then
     begin // Not a mobj thinker
@@ -1839,8 +1839,8 @@ var
   buffer: array[0..MAX_THINKER_SIZE - 1] of byte;
 begin
   StreamOutLong(ASEG_THINKERS);
-  thinker := thinkercap.next;
-  while thinker <> @thinkercap do
+  thinker := P_ThinkerHead.next;
+  while thinker <> P_ThinkerHead do
   begin
     if @thinker._function.acp1 <> @P_MobjThinker then // JVAL Speed up, leave out P_MobjThinker
     begin
@@ -2112,8 +2112,8 @@ var
   thinker: Pthinker_t;
   nextThinker: Pthinker_t;
 begin
-  thinker := thinkercap.next;
-  while thinker <> @thinkercap do
+  thinker := P_ThinkerHead.next;
+  while thinker <> P_ThinkerHead do
   begin
     nextThinker := thinker.next;
     if @thinker._function.acp1 = @P_MobjThinker then
@@ -2382,7 +2382,7 @@ begin
   StreamOutLong(VERSION);
 
   // Write the level timer
-  StreamOutLong(leveltime);
+  StreamOutLong(P_World.Time.LevelTime^);
 
   // Set the mobj archive numbers
   SetMobjArchiveNums;
@@ -2499,7 +2499,7 @@ begin
     LOADVERSION := VERSION141;
 
   // Read the level timer
-  leveltime := GET_LONG;
+  P_World.Time.LevelTime^ := GET_LONG;
 
   UnarchiveWorld;
   UnarchivePolyobjs;
