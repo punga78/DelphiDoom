@@ -54,7 +54,8 @@ uses
   DelphiDoom.Engine.GlScene.LightSorter,
   DelphiDoom.Engine.GlScene.LightPainter,
   DelphiDoom.Engine.GlScene.SceneDrawer,
-  DelphiDoom.Engine.GlScene.SpriteCollector;
+  DelphiDoom.Engine.GlScene.SpriteCollector,
+  DelphiDoom.Engine.GlInitializer;
 
 //==============================================================================
 //
@@ -166,6 +167,13 @@ procedure gld_ConfigureLightSorter(const ASorter: TEngineGlSceneLightSorter);
 //
 //==============================================================================
 procedure gld_ConfigureLightPainter(const APainter: TEngineGlSceneLightPainter);
+
+//==============================================================================
+//
+// gld_ConfigureInitializer
+//
+//==============================================================================
+procedure gld_ConfigureInitializer(const AInitializer: TEngineGlInitializer);
 
 //==============================================================================
 //
@@ -458,12 +466,16 @@ uses
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
   DelphiDoom.GlScene.Light,
+  DelphiDoom.GlScene.PaletteTint,
+  DelphiDoom.Engine.Gl2dMode,
   w_wad,
   z_zone;
 
 var
   // given by the composition root (gld_ConfigureDynamicLights)
   gl_dynlights: IDynLightRenderCache = nil;
+  // given by the composition root (gld_ConfigureInitializer)
+  gld_initializer: TEngineGlInitializer = nil;
 
 //==============================================================================
 //
@@ -695,271 +707,14 @@ end;
 
 //==============================================================================
 //
-// gld_InitExtensions
-//
-//==============================================================================
-procedure gld_InitExtensions(ext_list: TDStringList);
-begin
-  gl_texture_filter_anisotropic := ext_list.IndexOf('GL_EXT_TEXTURE_FILTER_ANISOTROPIC') > -1;
-  if gl_texture_filter_anisotropic then
-    printf('enabled anisotropic texture filtering'#13#10);
-  if gl_use_paletted_texture <> 0 then
-  begin
-    gl_paletted_texture := ext_list.IndexOf('GL_EXT_PALETTED_TEXTURE') > -1;
-    gld_ColorTableEXT := lp3DFXFUNC(wglGetProcAddress('glColorTableEXT'));
-    if not Assigned(gld_ColorTableEXT) then
-      gl_paletted_texture := false
-    else
-      printf('using GL_EXT_paletted_texture'#13#10);
-  end;
-  if gl_use_shared_texture_palette <> 0 then
-  begin
-    gl_shared_texture_palette := ext_list.IndexOf('GL_EXT_SHARED_TEXTURE_PALETTE') > -1;
-    gld_ColorTableEXT := lp3DFXFUNC(wglGetProcAddress('glColorTableEXT'));
-    if not Assigned(gld_ColorTableEXT) then
-      gl_shared_texture_palette := false
-    else
-      printf('using GL_EXT_shared_texture_palette'#13#10);
-  end;
-
-  canuselightmaps := ext_list.IndexOf('GL_ARB_MULTITEXTURE') > -1;
-  if not canuselightmaps then
-  begin
-    I_Warning('gld_InitExtensions(): GL_ARB_MULTITEXTURE extension not supported, lightmap will be disabled'#13#10);
-    gl_uselightmaps := false;
-  end
-  else
-  begin
-    canuselightmaps := ext_list.IndexOf('GL_EXT_TEXTURE3D') > -1;
-    if not canuselightmaps then
-    begin
-      I_Warning('gld_InitExtensions(): GL_EXT_TEXTURE3D extension not supported, lightmap will be disabled'#13#10);
-      gl_uselightmaps := false;
-    end;
-  end;
-  gld_InitAutomap;
-end;
-
-{-------------------------------------------------------------------}
-{ V-Sync
-{ Ok for all system windows 32                                      }
-{-------------------------------------------------------------------}
-type
-  TVSyncMode = (vsmSync, vsmNoSync);
-
-var
-  gld_VSync_Warning: boolean = false;
-
-//==============================================================================
-//
-// gld_VSync
-//
-//==============================================================================
-function gld_VSync(vsync: TVSyncMode): boolean;
-var
-  i: Integer;
-begin
-  if WGL_EXT_swap_control then
-  begin
-    result := True;
-    i := wglGetSwapIntervalEXT;
-    case VSync of
-      vsmSync    : if i <> 1 then wglSwapIntervalEXT(1);
-      vsmNoSync  : if i <> 0 then wglSwapIntervalEXT(0);
-    else
-      Assert(False);
-    end;
-  end
-  else
-  begin
-    result := False;
-    if not gld_VSync_Warning then
-    begin
-      I_Warning('gld_VSync(): wglSwapIntervalEXT() not assigned'#13#10);
-      gld_VSync_Warning := true;
-    end;
-  end;
-end;
-
-var
-  gld_InitLightTable_initialized: Boolean = false;
-
-//==============================================================================
-//
-// gld_InitLightTable
-//
-//==============================================================================
-procedure gld_InitLightTable;
-var
-  sc: TScriptScanner;
-  lump: integer;
-  i, j: integer;
-begin
-  if gld_InitLightTable_initialized then
-    Exit;
-
-  lump := W_CheckNumForName('GLGAMMA');
-  if lump > 0 then
-  begin
-
-    sc := TScriptScanner.Create(W_TextLumpNum(lump), TEngineScannerLog.Create);
-    for i := 0 to GAMMASIZE - 1 do
-      for j := 0 to 255 do
-      begin
-        sc.MustGetFloat;
-        gl_lighttable[i, j] := sc.AsFloat;
-      end;
-    sc.Free;
-  end;
-
-  for i := 0 to GAMMASIZE - 1 do
-    for j := 0 to 255 do
-      gl_lighttable[i, j] := Sqrt(gl_lighttable[i, j]);
-
-  gld_InitLightTable_initialized := true;
-end;
-
-var
-  last_screensync: boolean;
-
-//==============================================================================
-//
 // gld_Init
 //
 //==============================================================================
 procedure gld_Init(width, height: integer);
-var
-  params: array[0..3] of TGLfloat;
-  BlackFogColor: array[0..3] of TGLfloat;
-  ext_lst: TDStringList;
-  i, tf_id: integer;
-  extensions,
-  extensions_l: string;
 begin
-  params[0] := 0.0;
-  params[1] := 0.0;
-  params[2] := 1.0;
-  params[3] := 0.0;
-  BlackFogColor[0] := 0.0;
-  BlackFogColor[1] := 0.0;
-  BlackFogColor[2] := 0.0;
-  BlackFogColor[3] := 0.0;
-
-  printf('GL_VENDOR: %s'#13#10 , [glGetString(GL_VENDOR)]);
-  printf('GL_RENDERER: %s'#13#10, [glGetString(GL_RENDERER)]);
-  printf('GL_VERSION: %s'#13#10, [glGetString(GL_VERSION)]);
-
-  if devparm then
-    printf('GL_EXTENSIONS:'#13#10);
-
-  extensions := StringVal(glGetString(GL_EXTENSIONS));
-  extensions_l := '';
-  for i := 1 to Length(extensions) do
-  begin
-    if extensions[i] = ' ' then
-      extensions_l := extensions_l + #13#10
-    else
-      extensions_l := extensions_l + toupper(extensions[i]);
-  end;
-
-  ext_lst := TDStringList.Create;
-  try
-    ext_lst.Text := extensions_l;
-    if devparm then
-      for i := 0 to ext_lst.count - 1 do
-        printf('  %s'#13#10, [ext_lst.strings[i]]);
-    gld_InitExtensions(ext_lst);
-  finally
-    ext_lst.Free;
-  end;
-
-  gld_InitPalettedTextures;
-
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-
-  {$IFDEF DEBUG}
-  glClearColor(0.0, 0.5, 0.5, 1.0);
-  glClearDepth(1.0);
-  {$ELSE}
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glClearDepth(1.0);
-  {$ENDIF}
-
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @gld_max_texturesize);
-  printf('GL_MAX_TEXTURE_SIZE=%d'#13#10, [gld_max_texturesize]);
-  glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, @gld_max_texturesize3d);
-  printf('GL_MAX_3D_TEXTURE_SIZE=%d'#13#10, [gld_max_texturesize3d]);
-
-  if canuselightmaps then
-    canuselightmaps := (gld_max_texturesize3d >= LIGHTMAPSIZEX) and
-                       (gld_max_texturesize3d >= LIGHTMAPSIZEY) and
-                       (gld_max_texturesize3d >= LIGHTMAPSIZEZ);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  glShadeModel(GL_FLAT);
-  glEnable(GL_TEXTURE_2D);
-  glDepthFunc(GL_LEQUAL);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_GEQUAL, 0.5);
-  glDisable(GL_CULL_FACE);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-  glTexGenfv(GL_Q, GL_EYE_PLANE, @params);
-  glTexGenf(GL_S,GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  glTexGenf(GL_T,GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  glTexGenf(GL_Q,GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  glFogi(GL_FOG_MODE, GL_EXP);
-  glFogfv(GL_FOG_COLOR, @BlackFogColor);
-  glFogf(GL_FOG_DENSITY, fog_density / 1000.0);
-  glHint(GL_FOG_HINT, GL_NICEST);
-  glFogf(GL_FOG_START, 0.0);
-  glFogf(GL_FOG_END, 1.0);
-
-  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-// Texture filtering and mipmaping
-  gld_SetCurrTexFiltering(gld_GetCurrTexFiltering);
-
-// Texture format
-  gl_tex_format := DEF_TEX_FORMAT;
-  gl_tex_format_string := strupper(gl_tex_format_string);
-  tf_id := -1;
-  for i := 0 to NUM_GL_TEX_FORMATS - 1 do
-    if gl_tex_format_string = gl_tex_formats[i].desc then
-    begin
-      gl_tex_format := gl_tex_formats[i].tex_format;
-      tf_id := i;
-      break;
-    end;
-
-  if tf_id < 0 then
-    printf('Using default texture format.'#13#10)
-  else
-    printf('Using texture format %s.'#13#10, [gl_tex_format_string]);
-
-  if gl_screensync then
-    gld_VSync(vsmSync)
-  else
-    gld_VSync(vsmNoSync);
-  last_screensync := gl_screensync;
-
-  gld_InitLightTable;
-  gld_CalculateSky(100000.0);
-  if gl_dynlights = nil then
-    I_Error('R_InitDynamicLights(): the dynamic lights are not configured (ComposeEngine was not called)');
-  printf('SC_ParceDynamicLights: Parsing LIGHTDEF lumps.'#13#10);
-  if gl_dynlights.Load(gldefs_as_lightdef) then
-    lightdeflumppresent := true;
-  gld_InitDynamicShadows;
-  gld_InitModels;
-  gld_InitVoxels;
-  gld_InitLightmap;
-  gld_InitAmbient;
+  if gld_initializer = nil then
+    I_Error('gld_Init(): the initializer is not configured (ComposeEngine was not called)');
+  gld_initializer.Initialize(width, height, gl_dynlights);
 end;
 
 //==============================================================================
@@ -1204,6 +959,7 @@ var
   pal: array[0..1023] of byte;
   i: integer;
   col, pcol: integer;
+  tint: TGlScenePaletteTint;
 begin
   extra_red := 0.0;
   extra_green := 0.0;
@@ -1252,57 +1008,11 @@ begin
   end
   else
   begin
-    if palette > 0 then
-    begin
-      if palette <= 8 then
-      begin
-        extra_red := palette / 2.0;
-        extra_green := 0.0;
-        extra_blue := 0.0;
-        extra_alpha := palette / 10.0;
-      end
-      else if palette <= 12 then
-      begin
-        palette := palette - 8;
-        extra_red := palette * 1.0;
-        extra_green := palette * 0.8;
-        extra_blue := palette * 0.1;
-        extra_alpha := palette / 11.0;
-      end
-      else if palette = 13 then
-      begin
-        extra_red := 0.4;
-        extra_green := 1.0;
-        extra_blue := 0.0;
-        extra_alpha := 0.2;
-      end
-      {$IFDEF  HEXEN}
-      else if palette < 21 then
-      begin
-        palette := palette - 13;
-        extra_red := 0.0;
-        extra_green := palette / 2.0;
-        extra_blue := 0.0;
-        extra_alpha := palette / 10.0;
-      end
-      else if palette = 21 then
-      begin
-        extra_red := 0.0;
-        extra_green := 0.0;
-        extra_blue := 1.0;
-        extra_alpha := 0.8;
-      end
-      {$ENDIF}
-      ;
-    end;
-    if extra_red > 1.0 then
-      extra_red := 1.0;
-    if extra_green > 1.0 then
-      extra_green := 1.0;
-    if extra_blue > 1.0 then
-      extra_blue := 1.0;
-    if extra_alpha > 1.0 then
-      extra_alpha := 1.0;
+    tint := TGlScenePaletteTints.Compute(palette, {$IFDEF HEXEN}True{$ELSE}False{$ENDIF});
+    extra_red := tint.Red;
+    extra_green := tint.Green;
+    extra_blue := tint.Blue;
+    extra_alpha := tint.Alpha;
   end;
 end;
 
@@ -1312,23 +1022,8 @@ end;
 //
 //==============================================================================
 procedure gld_Enable2D;
-var
-  vPort: array[0..3] of GLInt;
 begin
-  glGetIntegerv(GL_VIEWPORT, @vPort);
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix;
-  glLoadIdentity;
-
-  glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glLoadIdentity;
-
-  glMatrixMode(GL_TEXTURE);
-  glPushMatrix;
-  glLoadIdentity;
+  TEngineGl2dMode.Enable;
 end;
 
 //==============================================================================
@@ -1338,12 +1033,7 @@ end;
 //==============================================================================
 procedure gld_Disable2D;
 begin
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
-  glMatrixMode(GL_TEXTURE);
-  glPopMatrix;
+  TEngineGl2dMode.Disable;
 end;
 
 //==============================================================================
@@ -1353,19 +1043,7 @@ end;
 //==============================================================================
 procedure gld_Set2DMode;
 begin
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity;
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity;
-  glOrtho(
-    0,
-    SCREENWIDTH,
-    SCREENHEIGHT,
-    0,
-    -1.0,
-    1.0
-  );
-  glDisable(GL_DEPTH_TEST);
+  TEngineGl2dMode.SetMode;
 end;
 
 //==============================================================================
@@ -1375,14 +1053,7 @@ end;
 //==============================================================================
 procedure gld_Finish;
 begin
-  gld_Set2DMode;
-  // JVAL:
-  //  Hack to avoid Intel HD4000 problem with Win10
-  //  https://communities.intel.com/thread/117626
-  if not gl_no_glfinish_hack then
-    glFinish;
-  glFlush;
-  GL_SwapBuffers;
+  TEngineGl2dMode.Finish;
 end;
 
 {*****************
@@ -1623,6 +1294,18 @@ end;
 
 //==============================================================================
 //
+// gld_ConfigureInitializer
+//
+//==============================================================================
+procedure gld_ConfigureInitializer(const AInitializer: TEngineGlInitializer);
+begin
+  if gld_initializer <> AInitializer then
+    gld_initializer.Free;
+  gld_initializer := AInitializer;
+end;
+
+//==============================================================================
+//
 // gld_ConfigureSpriteCollector
 //
 //==============================================================================
@@ -1795,9 +1478,6 @@ begin
 end;
 
 var
-  didfirstscreensync: boolean = false;
-
-var
   xCamera, yCamera, zCamera: float;
 
 //==============================================================================
@@ -1808,35 +1488,12 @@ var
 procedure gld_StartDrawScene;
 var
   height: integer;
-  syncret: boolean;
 begin
   if gl_shared_texture_palette then
     glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
   gld_SetPalette(-1);
 
-  if (last_screensync <> gl_screensync) or not didfirstscreensync then
-  begin
-    if gl_screensync then
-    begin
-      syncret := gld_VSync(vsmSync);
-      if not didfirstscreensync then
-      begin
-        gld_VSync(vsmNoSync);
-        gld_VSync(vsmSync);
-      end;
-    end
-    else
-    begin
-      syncret := gld_VSync(vsmNoSync);
-      if not didfirstscreensync then
-      begin
-        gld_VSync(vsmSync);
-        gld_VSync(vsmNoSync);
-      end;
-    end;
-    last_screensync := gl_screensync;
-    didfirstscreensync := syncret;
-  end;
+  gld_initializer.VSync.Update;
 
   if screenblocks > 10 then
     height := SCREENHEIGHT
@@ -2334,6 +1991,7 @@ end;
 initialization
 
 finalization
+  gld_ConfigureInitializer(nil);
   // the collectors use the draw list: they go first
   gld_ConfigureSpriteCollector(nil);
   gld_ConfigureSceneDrawer(nil);

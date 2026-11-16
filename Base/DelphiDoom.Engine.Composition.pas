@@ -348,6 +348,8 @@ uses
   DelphiDoom.Engine.GlScene.LightSorter,
   DelphiDoom.Engine.GlScene.LightPainter,
   DelphiDoom.Engine.GlScene.SceneDrawer,
+  DelphiDoom.Engine.GlVSync,
+  DelphiDoom.Engine.GlInitializer,
   DelphiDoom.Engine.GlScene.LightMarker,
   DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
@@ -1451,6 +1453,8 @@ begin
   gld_ConfigureLightPainter(LLightPainter);
   gld_ConfigureSceneDrawer(TEngineGlSceneDrawer.Create(gld_SceneDrawList, LWalls, LWallPainter,
     LFlatPainter, LSpritePainter, LLightSorter, LLightPainter));
+  // the start of the renderer (gld_Init) owns the vertical sync object and fills the light table of gl_render
+  gld_ConfigureInitializer(TEngineGlInitializer.Create(TEngineGlVSync.Create, gld_LightTable));
 end;
 
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
