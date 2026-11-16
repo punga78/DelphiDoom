@@ -36,5 +36,5 @@ LCompressor.Read(@LBack[0], Length(LData));   // si chiede la lunghezza esatta
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
-- I messaggi a bit (`idBitMsg`) stanno in [Libs\Net](../../Libs/Net/README.md); il contenitore `idHashIndex` di LZW e quello di
+- I messaggi a bit (`idBitMsg`) stanno in [IdTech1\Net](../../IdTech1/Net/README.md); il contenitore `idHashIndex` di LZW e quello di
   [Framework\IdLib](../IdLib/README.md).

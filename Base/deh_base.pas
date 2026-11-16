@@ -43,7 +43,7 @@ uses
 // DEH_ConfigureApplier
 //
 // What reads a patch and applies it to the tables of the game (the class of the
-// game, with the parser of Libs\Dehacked): ComposeEngine gives it
+// game, with the parser of IdTech1\Dehacked): ComposeEngine gives it
 //
 //==============================================================================
 procedure DEH_ConfigureApplier(const AApplier: IEngineDehackedApplier);

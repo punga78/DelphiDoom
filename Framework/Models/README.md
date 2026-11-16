@@ -1,10 +1,10 @@
-﻿# Framework\Models e Libs\GlMath - analisi di `Libs\OpenGl\Legacy\` e cosa è stato portato (issue #45)
+﻿# Framework\Models e IdTech1\GlMath - analisi di `IdTech1\OpenGl\Legacy\` e cosa è stato portato (issue #45)
 
 > Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
 
-La cartella `Libs\OpenGl\Legacy\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
+La cartella `IdTech1\OpenGl\Legacy\` ha 28 unit (39831 righe). Questo documento dice, unit per unit, chi la chiama, se sta sul percorso
 caldo del fotogramma o è caricamento a freddo, e perché è stata portata a classi oppure no. Le due librerie nate da
-questo lavoro sono `Framework\Models` (modelli 3D) e `Libs\GlMath` (geometria pura del renderer); `GlMath` ha il suo
+questo lavoro sono `Framework\Models` (modelli 3D) e `IdTech1\GlMath` (geometria pura del renderer); `GlMath` ha il suo
 paragrafo qui perché è nata dalla stessa analisi.
 
 ## 1. Analisi
@@ -29,8 +29,8 @@ contesto GL, i buffer del renderer, o è sul percorso caldo (per muro, per sprit
 | `gl_shadows` | 132 | 0 | `gl_render`, `m_defs`, menu | tabella di 16 `GLDRenderLight` di cui il renderer tiene i puntatori | resta |
 | `gl_lightmaps` | 874 | 44 | `gl_render`, `m_defs`, menu | calcolo a freddo per voxel, ma sopra `vx_*`, settori e GL | resta (candidata a una fetta futura) |
 | `gl_voxels` | 1989 | 30 | `r_things`, `vx_base`, `gl_render` | costruisce le mesh dei voxel con il loader `vx_*` e liste GL | resta (candidata a una fetta futura) |
-| **`gl_frustum`** | 346 | 3 (2 `glGetFloatv`) | `gl_render` (una chiamata per fotogramma) | matematica pura, i test `fr_*InFrustum` non hanno chiamanti | **portata a `Libs\GlMath`** (`TGlFrustum`); la unit è stata **cancellata** (#134): i piani non li leggeva nessuno |
-| **`gl_clipper`** | 423 | 0 | `r_bsp` (per ogni muro), `r_main`, `gl_render` | lista di intervalli di angoli, matematica pura sull'angolo | **portata a `Libs\GlMath`** (`TGlAngleClipper`, `TGlViewAngle`), la unit è una facciata |
+| **`gl_frustum`** | 346 | 3 (2 `glGetFloatv`) | `gl_render` (una chiamata per fotogramma) | matematica pura, i test `fr_*InFrustum` non hanno chiamanti | **portata a `IdTech1\GlMath`** (`TGlFrustum`); la unit è stata **cancellata** (#134): i piani non li leggeva nessuno |
+| **`gl_clipper`** | 423 | 0 | `r_bsp` (per ogni muro), `r_main`, `gl_render` | lista di intervalli di angoli, matematica pura sull'angolo | **portata a `IdTech1\GlMath`** (`TGlAngleClipper`, `TGlViewAngle`), la unit è una facciata |
 | **`gl_models`** | 727 | 2 | `r_things`, `gl_render`, `m_defs`, menu | registro di modelli e parser di MODELDEF (usa `sc_*`) | resta (legato a scanner, `states[]`, texture GL) |
 | **`mdl_md2`** | 568 | 7 | `gl_models` | lettura del file a freddo + disegno (percorso caldo: `Draw`) | **lettura portata** (`Framework\Models`), il disegno resta |
 | **`mdl_ddmodel`** | 255 | 8 | `gl_models` | caricamento a freddo + display list | **comandi portati** (`Framework\Models`), il disegno resta |
@@ -56,7 +56,7 @@ per ogni modello); `mdl_md2` legge i byte con `TPakStream`, li dà al parser e d
 chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel` esegue lo script con
 `MDL_AppendFromScript` (`mdl_script_model`: le funzioni `MDLS_*` aggiungono comandi allo stream), legge un DMX con
 `LoadFromBytes` e suona il fotogramma nella display list con `TEngineModelRenderer`
-(`Libs\OpenGl\Legacy\DelphiDoom.Engine.Models.Renderer.pas`, le chiamate `gl*` di prima). Il rendering resta nel motore.
+(`IdTech1\OpenGl\Legacy\DelphiDoom.Engine.Models.Renderer.pas`, le chiamate `gl*` di prima). Il rendering resta nel motore.
 
 ### Differenze volute dal vecchio codice
 
@@ -99,8 +99,8 @@ chiamata a interfaccia per vertice: i puntatori sono in `fframes`); `mdl_ddmodel
 ### 2b. Modelli I3D di Speed Haste (issue #168, fetta S3 di Speed)
 
 Il formato I3D ("OBJECT3D" di Iguana, 1995) è quello dei modelli di Speed (`Reference\Speed\OPENGL\i3d_*`, `mdl_i3d`). Sta in
-`Framework\Models` e non in `Libs\Speed` perché non dipende dal contenitore `SPEEDH.JCL` (il parser prende i byte, che arrivano da
-`ISpeedContainer.TryRead` o da un file) e non dalle regole del gioco; `Framework\Models` non conosce `Libs\Speed` e il test sul gioco vero
+`Framework\Models` e non in `IdTech1\Speed` perché non dipende dal contenitore `SPEEDH.JCL` (il parser prende i byte, che arrivano da
+`ISpeedContainer.TryRead` o da un file) e non dalle regole del gioco; `Framework\Models` non conosce `IdTech1\Speed` e il test sul gioco vero
 (che ha bisogno del contenitore) sta nel progetto di test di Speed.
 
 **Il formato.** Il file è: firma `$443342` ("B3D"), la dimensione dell'immagine, l'immagine, poi i pixel delle texture. L'immagine è lo
@@ -127,7 +127,7 @@ su disco sono `packed`, senza puntatori (uguali a 32 e 64 bit), con `SizeOf` cop
 `II3dRenderTarget` estende `IModelRenderer` (le chiamate di `BeginPrimitive`, `Vertex3f`, `Color4f`, `PushMatrix`...) con la sola scelta della
 texture (`SetTexturing`, `BindTexture(indice)`, `ResetTextureCache`): è il contratto che un adattatore OpenGL del motore realizzerà (una classe come
 `TEngineModelRenderer` che tiene le texture GPU, create da `II3dModel.TextureToRgba`, e cambia quella di un `.material` per nome con
-`FindMaterialByTextureName`, come faceva `RenderGLEx`); **non c'è ancora nel motore**: `Libs\OpenGl\` non è stata toccata e il disegno esistente non
+`FindMaterialByTextureName`, come faceva `RenderGLEx`); **non c'è ancora nel motore**: `IdTech1\OpenGl\` non è stata toccata e il disegno esistente non
 passa da qui. Il renderer non ha stato e scorre le facce una volta per modello (una chiamata a interfaccia per faccia e per vertice, come per i
 comandi MD2).
 
@@ -297,7 +297,7 @@ Portati: tutto `idAnimBlend` tranne `Save`/`Restore` (`GetWeight`, `SetWeight`, 
 
 `DelphiDoom.Models.Dynamic.LiquidModel` (`TLiquidModel`, derivata da Doom 3, GPL v3 con termini aggiuntivi, intestazione come in `Framework\IdLib`): la griglia di vertici di un file `.liquid` le cui altezze seguono una simulazione a due pagine con una goccia in un posto a caso ogni `drop_delay`. `InitFromText` (`InitFromFile` sul testo: `seed`, `size_x`, `size_y`, `verts_x`, `verts_y`, `liquid_type` 1-3, `density`, `drop_height`, `drop_radius`, `drop_delay`, `shader`, `update_rate`; un valore o un nome non validi sono un avviso del parser e un modello `Defaulted`, cioe' `MakeDefaultModel` per il chiamante), `Reset`, `Instantiate(tempo)` (`InstantiateDynamicModel`: al massimo 5 aggiornamenti per volta, poi la superficie fra le ultime due pagine con normali e tangenti), `IntersectBounds`. **Il tempo e' un argomento** (il tempo della vista), il generatore e' `TIdRandom` di `Framework\IdLib` con il seme del file; il materiale e' un nome. Sopra: `TStaticDeformBuilder.Build` (`R_BuildDeformInfo` con tangenti non levigate), `TStaticTangentDeriver` (`R_DeriveTangents`), `TStaticTriangles`, `TIdParser` di `Framework\Scanner`, `TIdMath.Cos16`: nessuna classe duplicata. **Parita'** col vero `Model_liquid.cpp` compilato con `bcc32c` dentro l'harness del deform (`Tests\Data\Models\deform\harness\liquid.inc.txt` e `build.ps1.txt`, `liquid.golden.txt`, 197 righe): 10 casi (tre tipi di simulazione, un solido nell'acqua prima della terza superficie, i valori di partenza, quattro file non validi e uno con un parametro sconosciuto) a 5-9 tempi ciascuno, con i `float` come bit: altezze di tutti i vertici, bounds, tempo e tempo della prossima goccia, tolleranza 2 ULP; **nel C++ del harness `idParser`/`idToken` sono sostituti** (lo `idStr` minimo dell'harness non regge `Token.h`; il lessico del parser vero ha la sua parita' in `Framework\Scanner` e in `Tests\Data\Decl`); ogni riga di `Model_liquid.cpp` e' vera. **Normali e tangenti** sono confrontate solo sul primo fotogramma (piatto): vengono dal triangolo dominante di ogni vertice, scelto sulla griglia piatta dove tutti i triangoli di un vertice hanno la stessa area, e `qsort` lascia indefinito l'ordine degli uguali (qui l'ordine in cui compaiono, il C++ del harness quello di bcc32c, quello di Doom 3 quello del suo compilatore). Test `LiquidParity` (10). **Non portati**: i contatori del renderer, le cache dei vertici, `IsDynamicModel`/`Bounds` come interfaccia del modello di rendering (`Bounds` e' una proprieta'), il collegamento al gestore dei modelli (`Register` del `TRenderModelLoaderTable`: il `.liquid` e' dinamico e non passa dal contenitore statico).
 
-## 3. `Libs\GlMath`
+## 3. `IdTech1\GlMath`
 
 | Unit | Ruolo |
 |---|---|

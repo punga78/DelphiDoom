@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - the loop of the game around Libs\Net                   }
+{  DelphiDoom: engine - the loop of the game around IdTech1\Net                }
 {  Copyright (C) 2004-2023 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -29,7 +29,7 @@ type
   /// <summary>
   ///   NetUpdate, D_CheckNetGame, D_RunMultipleTicks, D_RunSingleTick, D_QuitNetGame and the
   ///   consistency of the old d_net.pas: the packets, the nodes, the buffers of the commands and
-  ///   the decisions of how many tics to run belong to Libs\Net; this class gives the game its own
+  ///   the decisions of how many tics to run belong to IdTech1\Net; this class gives the game its own
   ///   loop around them (the tickers of the menu, the console and the game, the display, the
   ///   interpolation)
   /// </summary>

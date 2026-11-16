@@ -131,7 +131,7 @@ begin
     height := 0;
 
   // the amounts of this tic (control sector, killough 3/14/98: acceleration)
-  // are TScrollStep (Libs\Thinkers); no-op if both (x,y) offsets
+  // are TScrollStep (IdTech1\Thinkers); no-op if both (x,y) offsets
   if not TScrollStep.Advance(dx, dy, s.control <> -1, height, s.last_height,
     s.accel <> 0, s.vdx, s.vdy) then
     exit;

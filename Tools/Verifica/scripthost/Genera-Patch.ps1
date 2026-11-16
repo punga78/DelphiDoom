@@ -68,13 +68,13 @@ function Save-Patch([string[]]$Files, [string]$Name) {
 }
 
 function Hook-PsMain {
-  Add-ImplementationUses 'Libs\ScriptEngine\ps_main.pas' 'HarnessScriptHost'
+  Add-ImplementationUses 'IdTech1\ScriptEngine\ps_main.pas' 'HarnessScriptHost'
   if ($New) {
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  ps_manager_ref := TScriptManager\.Create\([\s\S]*?end\);(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(PS_Manager.DoomCompiler, PS_Manager.DoomImporter);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := PS_Manager.RunScript(AActor, PS_Manager.IndexOf(AName)); end);$2'
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  PS_Manager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  ps_manager_ref := TScriptManager\.Create\([\s\S]*?end\);(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(PS_Manager.DoomCompiler, PS_Manager.DoomImporter);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := PS_Manager.RunScript(AActor, PS_Manager.IndexOf(AName)); end);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  PS_Manager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
   } else {
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
-    Edit-Once 'Libs\ScriptEngine\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  psmanager := TPSExecManager\.Create;(\r?\n)  C_AddCmd\(.compile, compilescript, pscomp., @CmdCompileScript\);(\r?\n))' '$1  VSH_AfterPSInit(psmanager.compiler, psmanager.importer);$2  VSH_SetScriptRunner(function(const AActor: Pmobj_t; const AName: string): Boolean begin Result := psmanager.RunScript(AActor, psmanager.IndexOf(AName)); end);$2'
+    Edit-Once 'IdTech1\ScriptEngine\ps_main.pas' '(  psmanager\.Events\.ProcTick\(tick\);(\r?\n))' '$1  VSH_AfterTick(tick);$2'
   }
 }
 
@@ -85,7 +85,7 @@ Hook-PsMain
 $loader = 'Base\DelphiDoom.Engine.Level.Loader.pas'
 Add-ImplementationUses $loader 'HarnessScriptHost'
 Edit-Once $loader '(\r?\n  FinishLevel;(\r?\n))(end;)' '$1  VSH_AfterLevel(LMapName);$2$3'
-Save-Patch ($dprs + @('Libs\ScriptEngine\ps_main.pas', $loader)) 'hook-scripthost.patch'
+Save-Patch ($dprs + @('IdTech1\ScriptEngine\ps_main.pas', $loader)) 'hook-scripthost.patch'
 
 # ---- savegames ----
 foreach ($game in 'Doom', 'Heretic', 'Strife', 'Hexen') {
@@ -98,5 +98,5 @@ foreach ($game in 'Doom', 'Heretic', 'Strife', 'Hexen') {
   Edit-Implementation $gameFile '(procedure G_Ticker;[\s\S]*?\r?\nbegin(\r?\n))' '$1  HarnessSaveCheck;$2'
   if ($game -eq 'Doom' -or $game -eq 'Heretic') { $inc = 'harness_save_Doom.inc' } else { $inc = "harness_save_$game.inc" }
   Edit-Implementation $gameFile '(?m)^initialization' "{`$I ..\Tools\Verifica\harness\$inc}`r`n`r`ninitialization"
-  Save-Patch @($dpr, 'Libs\ScriptEngine\ps_main.pas', $gameFile) "hook-save-$($game.ToLower()).patch"
+  Save-Patch @($dpr, 'IdTech1\ScriptEngine\ps_main.pas', $gameFile) "hook-save-$($game.ToLower()).patch"
 }

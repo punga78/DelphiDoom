@@ -23,7 +23,7 @@
 //  DESCRIPTION:
 //    Dynamic lights (OpenGL & software rendering)
 //    LIGHTDEF/GLDEFS parsing, light animation and the records of every light are in
-//    Libs\DynLights (IDynLightRenderCache, given by the composition root to r_main,
+//    IdTech1\DynLights (IDynLightRenderCache, given by the composition root to r_main,
 //    r_softlights and gl_render); this unit keeps the buffers that the renderers sort
 //
 //------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ uses
   DelphiDoom.DynLights.Types;
 
 type
-  // The record of a light: Libs\DynLights fills it (r, g, b, radius, x, y, z, shadow)
+  // The record of a light: IdTech1\DynLights fills it (r, g, b, radius, x, y, z, shadow)
   GLDRenderLight = TDynLightRender;
   PGLDRenderLight = PDynLightRender;
   GLDRenderLightArray = array[0..$FFF] of GLDRenderLight;

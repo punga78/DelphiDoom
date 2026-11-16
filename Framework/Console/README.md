@@ -20,7 +20,7 @@ Unit `DelphiDoom.Console.Q3.*` (`Types`, `CVar`, `Intf`, `CommandArguments`, `Co
 
 ## Profilo Quake III: servizi di libreria e riga di input (issue #236, parte B)
 
-`Cmd_ArgvBuffer` e `Cmd_ArgsBuffer` (`IQ3CommandArguments`); `TQ3ConsoleLogAdapter` (log su `ILog`), `TQ3GameFileSystem` (file su `IGameFileSystem`) e `TQ3UnhandledCommands` (la coda di `Cmd_ExecuteString`: game del client, del server, ui, inoltro); le info string passano da `TQ3ConsoleInfoWriter` di `Libs\Net`. La riga di input e `Field.*` e `TQ3ConsoleInput` (`Field_KeyDownEvent`, `Field_CharEvent`, `Console_Key`, `Field_CompleteCommand` del C). Parita' col C vero in `Tests\Data\Console\Q3` (`argbuffer`, `infolong`, `field`), strumenti in `Tools\Verifica\113q3`. Dettagli in [CLAUDE.md](CLAUDE.md).
+`Cmd_ArgvBuffer` e `Cmd_ArgsBuffer` (`IQ3CommandArguments`); `TQ3ConsoleLogAdapter` (log su `ILog`), `TQ3GameFileSystem` (file su `IGameFileSystem`) e `TQ3UnhandledCommands` (la coda di `Cmd_ExecuteString`: game del client, del server, ui, inoltro); le info string passano da `TQ3ConsoleInfoWriter` di `IdTech1\Net`. La riga di input e `Field.*` e `TQ3ConsoleInput` (`Field_KeyDownEvent`, `Field_CharEvent`, `Console_Key`, `Field_CompleteCommand` del C). Parita' col C vero in `Tests\Data\Console\Q3` (`argbuffer`, `infolong`, `field`), strumenti in `Tools\Verifica\113q3`. Dettagli in [CLAUDE.md](CLAUDE.md).
 
 ## Prova
 

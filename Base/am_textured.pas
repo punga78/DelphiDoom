@@ -47,7 +47,7 @@ procedure AM_setSubSectorDrawFuncs;
 //
 // AM_drawSubSectors
 //
-// AWindow: the window on the map of Libs\Automap, read once for the frame
+// AWindow: the window on the map of IdTech1\Automap, read once for the frame
 //
 //==============================================================================
 procedure AM_drawSubSectors(const AWindow: TAutomapWindow);

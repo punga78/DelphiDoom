@@ -16,7 +16,7 @@ type
   /// <summary>
   ///   Collects the GL calls of the frames of a renderer and writes them, one line per call, to a
   ///   text stream. After the lines of a frame comes a line with the number of calls and a FNV-1a
-  ///   sum of all of them (see Libs\OpenGl\README.md for the format).
+  ///   sum of all of them (see IdTech1\OpenGl\README.md for the format).
   /// </summary>
   IGlCallRecorder = interface
     ['{6F0E2C1A-84D5-4B77-9A3E-5D21C7B90E14}']

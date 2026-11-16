@@ -1,6 +1,6 @@
 # IdTech4\NetQ3
 
-Rete di Quake III Arena (id Tech 3), port a classi di `qcommon` (GPL v2 o successiva, "Based on the Quake III Arena GPL Source Code (id Software)"). Spostata da `Libs\Net` nella #237 senza cambiare le unit (stessi nomi `DelphiDoom.Net.Q3.*`). Modulo `IdTech4` di `docs\Strati.psd1`.
+Rete di Quake III Arena (id Tech 3), port a classi di `qcommon` (GPL v2 o successiva, "Based on the Quake III Arena GPL Source Code (id Software)"). Spostata da `IdTech1\Net` nella #237 senza cambiare le unit (stessi nomi `DelphiDoom.Net.Q3.*`). Modulo `IdTech4` di `docs\Strati.psd1`.
 
 ## Contenuto
 

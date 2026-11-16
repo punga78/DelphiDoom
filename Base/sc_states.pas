@@ -52,7 +52,7 @@ var
 // SC_ConfigureStateNames
 //
 // What finds the state that a script names for an actor (the rules are in
-// Libs\Info\DelphiDoom.Info.StateNames): ComposeEngine gives it
+// IdTech1\Info\DelphiDoom.Info.StateNames): ComposeEngine gives it
 //
 //==============================================================================
 procedure SC_ConfigureStateNames(const AResolver: IEngineStateNames);

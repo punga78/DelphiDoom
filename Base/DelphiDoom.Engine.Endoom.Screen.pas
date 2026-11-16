@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - the end screen over Libs\Endoom                         }
+{  DelphiDoom: engine - the end screen over IdTech1\Endoom                      }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -27,7 +27,7 @@ type
   /// <summary>
   ///   E_Init, E_Drawer, E_Ticker, E_Responder and E_ShutDown of the old e_endoom.pas: the
   ///   bytes of the lump, of DOSFONT and the palette come from the WAD and the video of the
-  ///   engine, the picture from the renderer of Libs\Endoom and the time from its session
+  ///   engine, the picture from the renderer of IdTech1\Endoom and the time from its session
   /// </summary>
   TEngineEndoomScreen = class(TInterfacedObject, IEngineEndoomScreen)
   private

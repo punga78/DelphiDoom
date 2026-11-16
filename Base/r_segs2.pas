@@ -4393,7 +4393,7 @@ var
 //==============================================================================
 //
 // R_ConfigureLevelPrecalc
-// The measures of the level of Libs\Renderer, given by the composition root
+// The measures of the level of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureLevelPrecalc(const APrecalc: IRendererLevelPrecalc);

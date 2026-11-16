@@ -52,9 +52,9 @@ index c8b5ee600..0ca8b70d5 100644
 --- a/Doom/GLDoom32.dpr
 +++ b/Doom/GLDoom32.dpr
 @@ -57,6 +57,19 @@ uses
-   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
-   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
-   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
+   gl_clipper in '..\IdTech1\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\IdTech1\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\IdTech1\OpenGl\Legacy\gl_defs.pas',
 +  DelphiDoom.OpenGl.Recorder.Types in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
 +  DelphiDoom.OpenGl.Recorder.Intf in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
 +  DelphiDoom.OpenGl.Recorder.Fnv in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
@@ -68,17 +68,17 @@ index c8b5ee600..0ca8b70d5 100644
 +  DelphiDoom.OpenGl.Recorder.Thunks in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
 +  DelphiDoom.OpenGl.Recorder.Hook in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
 +  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
-   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
-   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
-   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
+   gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\IdTech1\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\IdTech1\OpenGl\Legacy\gl_render.pas',
 diff --git a/Heretic/GLHeretic32.dpr b/Heretic/GLHeretic32.dpr
 index 9663db2cf..392e5de12 100644
 --- a/Heretic/GLHeretic32.dpr
 +++ b/Heretic/GLHeretic32.dpr
 @@ -59,6 +59,19 @@ uses
-   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
-   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
-   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
+   gl_clipper in '..\IdTech1\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\IdTech1\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\IdTech1\OpenGl\Legacy\gl_defs.pas',
 +  DelphiDoom.OpenGl.Recorder.Types in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
 +  DelphiDoom.OpenGl.Recorder.Intf in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
 +  DelphiDoom.OpenGl.Recorder.Fnv in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
@@ -92,17 +92,17 @@ index 9663db2cf..392e5de12 100644
 +  DelphiDoom.OpenGl.Recorder.Thunks in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
 +  DelphiDoom.OpenGl.Recorder.Hook in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
 +  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
-   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
-   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
-   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
+   gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\IdTech1\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\IdTech1\OpenGl\Legacy\gl_render.pas',
 diff --git a/Hexen/GLHexen32.dpr b/Hexen/GLHexen32.dpr
 index 663f0552a..39009680c 100644
 --- a/Hexen/GLHexen32.dpr
 +++ b/Hexen/GLHexen32.dpr
 @@ -59,6 +59,19 @@ uses
-   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
-   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
-   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
+   gl_clipper in '..\IdTech1\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\IdTech1\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\IdTech1\OpenGl\Legacy\gl_defs.pas',
 +  DelphiDoom.OpenGl.Recorder.Types in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
 +  DelphiDoom.OpenGl.Recorder.Intf in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
 +  DelphiDoom.OpenGl.Recorder.Fnv in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
@@ -116,13 +116,13 @@ index 663f0552a..39009680c 100644
 +  DelphiDoom.OpenGl.Recorder.Thunks in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
 +  DelphiDoom.OpenGl.Recorder.Hook in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
 +  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
-   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
-   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
-   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
-diff --git a/Libs/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas b/Libs/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas
+   gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\IdTech1\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\IdTech1\OpenGl\Legacy\gl_render.pas',
+diff --git a/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas b/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas
 index 4bd40d3ad..aca8fa264 100644
---- a/Libs/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas
-+++ b/Libs/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas
+--- a/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas
++++ b/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlContext.pas
 @@ -62,6 +62,7 @@ type
  implementation
  
@@ -147,10 +147,10 @@ index 4bd40d3ad..aca8fa264 100644
  end;
  
  end.
-diff --git a/Libs/OpenGl/Legacy/gl_render.pas b/Libs/OpenGl/Legacy/gl_render.pas
+diff --git a/IdTech1/OpenGl/Legacy/gl_render.pas b/IdTech1/OpenGl/Legacy/gl_render.pas
 index 7a7eebfb4..1d3efcb73 100644
---- a/Libs/OpenGl/Legacy/gl_render.pas
-+++ b/Libs/OpenGl/Legacy/gl_render.pas
+--- a/IdTech1/OpenGl/Legacy/gl_render.pas
++++ b/IdTech1/OpenGl/Legacy/gl_render.pas
 @@ -400,6 +400,7 @@ procedure R_ShutDownOpenGL;
  implementation
  
@@ -172,9 +172,9 @@ index 50b58b896..9199e12ad 100644
 --- a/Strife/GLStrife32.dpr
 +++ b/Strife/GLStrife32.dpr
 @@ -57,6 +57,19 @@ uses
-   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
-   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
-   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
+   gl_clipper in '..\IdTech1\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\IdTech1\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\IdTech1\OpenGl\Legacy\gl_defs.pas',
 +  DelphiDoom.OpenGl.Recorder.Types in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
 +  DelphiDoom.OpenGl.Recorder.Intf in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
 +  DelphiDoom.OpenGl.Recorder.Fnv in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
@@ -188,6 +188,6 @@ index 50b58b896..9199e12ad 100644
 +  DelphiDoom.OpenGl.Recorder.Thunks in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
 +  DelphiDoom.OpenGl.Recorder.Hook in '..\Framework\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
 +  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
-   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
-   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
-   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
+   gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\IdTech1\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\IdTech1\OpenGl\Legacy\gl_render.pas',

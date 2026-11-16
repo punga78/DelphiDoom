@@ -6,7 +6,7 @@
   - Initialize-ParityRunDir  cartella di lavoro con WAD, .swd, due file di configurazione (8 e 32 bit) e gli eseguibili
   - Invoke-ParityGame     lancia un gioco con Tools\Esegui-gioco.ps1 (un solo gioco per volta nel computer)
   - Invoke-ParityEntry    una demo del corpus: riproduce con -timedemo e scrive i log di stato e di fotogramma
-  - Get-ParityTool        ParityTool.exe (confronto e compressione dei log), compilato da Libs\Parity se manca
+  - Get-ParityTool        ParityTool.exe (confronto e compressione dei log), compilato da IdTech1\Parity se manca
 
   I WAD non sono nel repository: si prendono da -DataRoot (predefinito: la cartella bin del repository
   principale, quella che ha i WAD).

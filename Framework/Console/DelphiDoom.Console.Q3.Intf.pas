@@ -171,7 +171,7 @@ type
 
   /// <summary>
   ///   Info_SetValueForKey and Info_SetValueForKey_Big of q_shared.c (<c>TQ3InfoString</c> of
-  ///   <c>Libs\Net</c> does it); the console does not depend on that library
+  ///   <c>IdTech1\Net</c> does it); the console does not depend on that library
   /// </summary>
   IQ3InfoStringWriter = interface
     ['{5E1B7A52-2C3D-4B8E-9A60-7D41C0A2E30A}']

@@ -68,7 +68,7 @@ procedure R_ShutDownSpriteSort;
 //==============================================================================
 //
 // R_ConfigureSpriteSort
-// The chooser of the sorting of the sprites of Libs\Renderer, given by the composition root
+// The chooser of the sorting of the sprites of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureSpriteSort(const APolicy: IRendererSpriteSortPolicy);
@@ -132,7 +132,7 @@ begin
   if sort_policy = nil then
     I_Error('R_SortVisSprites(): R_ConfigureSpriteSort() was not called');
 
-  // The order is made by the sorter that fits the number of sprites (Libs\Renderer): here
+  // The order is made by the sorter that fits the number of sprites (IdTech1\Renderer): here
   //  the sprites go in with their keys and come back in order.
   sorter := sort_policy.Select(vissprite_p);
   if Length(sort_items) < vissprite_p then

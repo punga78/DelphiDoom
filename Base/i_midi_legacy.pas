@@ -31,7 +31,7 @@
 
 unit i_midi_legacy;
 
-// The facade of the legacy MIDI player (issue #185): TLegacyMidiPlayer of Libs\EngineSystem does the
+// The facade of the legacy MIDI player (issue #185): TLegacyMidiPlayer of IdTech1\EngineSystem does the
 // work (the play list, the MCI sequencer and the notification window), ComposeEngine gives it
 // (I_ConfigureLegacyMidi). i_midi chooses between this player and the internal one.
 

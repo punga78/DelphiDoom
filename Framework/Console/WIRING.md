@@ -4,7 +4,7 @@ La libreria porta il **meccanismo** della console: registro dei comandi (con ali
 variabili `get`/`set`/`typeof`, `list`, `exec`, `printf`, file `.con`, testi di comandi, autoexec, coda dei
 comandi, cronologia, riga di input, completamento con TAB e le sequenze dei cheat (`m_cheat.pas`).
 Dipende solo da `System.*` e `Framework\Logging` (`ILog`); per sapere se la partita e' in rete riceve una funzione
-(`TConsoleNetGameQuery`, issue #225: prima era `IGameContext` di `Libs\GameState`). Non conosce il motore: il collegamento non e' stato fatto (non era compito di questo lavoro).
+(`TConsoleNetGameQuery`, issue #225: prima era `IGameContext` di `IdTech1\GameState`). Non conosce il motore: il collegamento non e' stato fatto (non era compito di questo lavoro).
 
 ## 1. Unit da aggiungere ai `.dpr`
 

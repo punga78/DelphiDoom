@@ -870,7 +870,7 @@ begin
 end;
 
 // The rules of the game for the loading of the levels: ANIMDEFS (not Hexen, that has p_anim) and,
-// in Doom, the switches of Libs\Definitions and the nodes of the old engine. The switches of
+// in Doom, the switches of IdTech1\Definitions and the nodes of the old engine. The switches of
 // Heretic, Hexen and Strife keep their own tables: they are used after the start
 function ComposeLevelRules(const ALog: ILog; const AContext: IGameContext;
   const ANodesSource: INodesLumpSource; const ACommandLine: ICommandLine;
@@ -1693,7 +1693,7 @@ end;
 
 // The tables of things and states stay data (info.pas of the game); the searches, the names of
 // the groups, the monsters placed at random and the names of the states are the classes of
-// Libs\Info, and info_common, info_rnd, info_fnd and sc_states are facades over them (issue #185, slice 1b)
+// IdTech1\Info, and info_common, info_rnd, info_fnd and sc_states are facades over them (issue #185, slice 1b)
 procedure ComposeInfoTables;
 var
   LTables: TEngineInfoTables;

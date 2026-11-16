@@ -30,7 +30,7 @@
 unit hu_lib;
 
 // The widgets of the heads-up display (text line, scrolling text, input text) are the classes
-// of Libs\Hud since issue #185 (slice 1a): THudTextLine, THudScrollingText, THudInputText, and
+// of IdTech1\Hud since issue #185 (slice 1a): THudTextLine, THudScrollingText, THudInputText, and
 // the drawing is DelphiDoom.Engine.Hud.Drawer. The routines HUlib_* of the records have no
 // caller left and are gone; what remains is the one routine that another unit calls.
 

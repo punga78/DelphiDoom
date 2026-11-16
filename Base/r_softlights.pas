@@ -45,7 +45,7 @@ type
 //
 // R_ConfigureSoftLights
 //
-// The records of the lights (Libs\DynLights) that R_MarkDLights reads.
+// The records of the lights (IdTech1\DynLights) that R_MarkDLights reads.
 // The composition root calls it
 //
 //==============================================================================

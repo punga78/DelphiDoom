@@ -59,8 +59,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Glbsp;..\Framework\Zlib;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\Libs\Glbsp;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\IdTech1\Glbsp;..\Framework\Zlib;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\IdTech1\Glbsp;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Tests\Glbsp</DCC_DcuOutput>

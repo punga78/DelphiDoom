@@ -26,7 +26,7 @@
 
 {$I Doom32.inc}
 
-// Facade (issue #185, slice 1b): the search is Libs\Info\DelphiDoom.Info.SpriteStates
+// Facade (issue #185, slice 1b): the search is IdTech1\Info\DelphiDoom.Info.SpriteStates
 
 unit info_fnd;
 

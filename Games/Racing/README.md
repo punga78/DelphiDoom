@@ -80,4 +80,4 @@ Il `double` del `mobj_t` (`tiredistance[0..3]`) resta un `Double` nel `TRacingCa
 
 * **A runtime nel motore** (non esiste ancora un eseguibile Speed con le regole: S5): le auto sul serio con i `mobj_t`, i suoni, le particelle e i savegame.
 * La parita a 64 bit (Win64 usa SSE al posto di `Extended`: `TireDistance` e `TRacingMath.Distance` possono differire negli ultimi bit).
-* I lump `THINGS` e `PATH` veri di Speed Haste con `TRacingPathReader` (vedi lo stato in `Libs\Speed\README.md`).
+* I lump `THINGS` e `PATH` veri di Speed Haste con `TRacingPathReader` (vedi lo stato in `IdTech1\Speed\README.md`).

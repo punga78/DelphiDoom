@@ -35,7 +35,7 @@
 unit i_crashlog;
 
 // The facade of the crash logger (issue #185): the filter, the report and the file are
-// TWindowsCrashLogger and TCrashReportWriter of Libs\EngineSystem.
+// TWindowsCrashLogger and TCrashReportWriter of IdTech1\EngineSystem.
 
 interface
 

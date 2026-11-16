@@ -191,7 +191,7 @@ begin
     exit;
   end;
 
-  // The height of the thing at the destination (TTeleportPlacement, Libs\Thinkers): on the
+  // The height of the thing at the destination (TTeleportPlacement, IdTech1\Thinkers): on the
   // floor, except a flying player and a missile, which keep their height above it
   player := thing.player;
   settleinput.IsPlayer := player <> nil;

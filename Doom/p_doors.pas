@@ -112,7 +112,7 @@ uses
 //==============================================================================
 procedure T_VerticalDoor(door: Pvldoor_t);
 begin
-  // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+  // the state machine of the door is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*)
   if DoorTickClassic(door) then
   begin
     door.sector.ceilingdata := nil;
@@ -219,7 +219,7 @@ begin
     door.thinker._function.acp1 := @T_VerticalDoor;
     door.sector := sec;
     door.line := nil;
-    // direction, top, speed and sound of the kind: Libs\Thinkers
+    // direction, top, speed and sound of the kind: IdTech1\Thinkers
     DoorInitTagged(door, _type, VDOORSPEED, VDOORWAIT, false);
   end;
 end;
@@ -343,7 +343,7 @@ begin
   door.line := nil;
 
   // kind, speed, top and sound (blazing doors and locked doors have their own)
-  // of the special of the line: Libs\Thinkers
+  // of the special of the line: IdTech1\Thinkers
   if DoorInitManual(door, line.special, VDOORSPEED, VDOORWAIT, false) then
     line.special := 0;
 end;

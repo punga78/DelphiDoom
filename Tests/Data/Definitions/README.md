@@ -1,4 +1,4 @@
-# Dati di prova di Libs\Definitions
+# Dati di prova di IdTech1\Definitions
 
 I file `*.cases.txt` e `terrain.names.txt` sono scritti a mano (issue #71): comprendono commenti, righe vuote, parole mancanti o sbagliate, numeri non validi, nomi lunghi, fine del testo a metà riga, i limiti di 128 animazioni e 512 frame.
 

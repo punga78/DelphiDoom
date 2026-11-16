@@ -32,7 +32,7 @@
 unit i_net;
 
 // What is left of the facade of the network options (issue #185): the reading of the command line is
-// TNetCommandLineReader of Libs\EngineSystem, given by ComposeEngine (I_ConfigureNetOptions).
+// TNetCommandLineReader of IdTech1\EngineSystem, given by ComposeEngine (I_ConfigureNetOptions).
 
 interface
 

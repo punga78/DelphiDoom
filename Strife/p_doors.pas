@@ -160,7 +160,7 @@ uses
 //==============================================================================
 procedure T_VerticalDoor(door: Pvldoor_t);
 begin
-  // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+  // the state machine of the door is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*)
   if DoorTickClassic(door) then
   begin
     door.sector.ceilingdata := nil;
@@ -494,7 +494,7 @@ begin
     door.sector := sec;
     door.line := nil;
     P_SoundNumForDoor(door);    // villsa [STRIFE] set door sounds
-    // direction, top, speed and sound of the kind: Libs\Thinkers
+    // direction, top, speed and sound of the kind: IdTech1\Thinkers
     DoorInitTagged(door, _type, VDOORSPEED, VDOORWAIT, false);
   end;
 end;
@@ -785,7 +785,7 @@ begin
     // over how to move the door. They should have added a default return if
     // they weren't going to handle this unconditionally...
     // JVAL: Added special 221 from svstrife
-    // (the list of the lines that reuse the door is in Libs\Thinkers)
+    // (the list of the lines that reuse the door is in IdTech1\Thinkers)
     if DoorRetrigger(line.special, door.direction, thing.player <> nil, false, action) then
     begin
       case action of
@@ -808,7 +808,7 @@ begin
   P_SoundNumForDoor(door);   // haleyjd 09/15/10: [STRIFE] Get door sounds
 
   // kind (pretty important to have a default one), speed, top and sound of the
-  // special of the line: Libs\Thinkers
+  // special of the line: IdTech1\Thinkers
   if DoorInitManual(door, line.special, VDOORSPEED, VDOORWAIT, false) then
     line.special := 0;
 end;

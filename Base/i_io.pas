@@ -38,7 +38,7 @@ var
   debugfile: TFile;
   stderr: TFile;
   stdout: TFile;
-  // what the engine printed, as lines (TStdoutBuffer of Libs\EngineSystem)
+  // what the engine printed, as lines (TStdoutBuffer of IdTech1\EngineSystem)
   stdoutbuffer: TStdoutBuffer;
 
 //==============================================================================

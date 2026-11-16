@@ -147,7 +147,7 @@ end;
 //==============================================================================
 //
 // R_ConfigureSubsectorGrid
-// The builder of the grid of Libs\Renderer and the finder of the subsector of a point,
+// The builder of the grid of IdTech1\Renderer and the finder of the subsector of a point,
 // given by the composition root
 //
 //==============================================================================

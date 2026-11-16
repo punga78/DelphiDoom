@@ -18,7 +18,7 @@ uses
 type
   /// <summary>
   ///   The converter of Radix: a file with the signature of RADIX.DAT is translated by the library
-  ///   Libs\Radix into the lumps of a WAD (Radix2WAD_Game of the old fork)
+  ///   IdTech1\Radix into the lumps of a WAD (Radix2WAD_Game of the old fork)
   /// </summary>
   TEngineRadixDataConverter = class(TInterfacedObject, IEngineWadConverter, IEngineRadixEdition)
   strict private

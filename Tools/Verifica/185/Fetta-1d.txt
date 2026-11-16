@@ -1,5 +1,5 @@
 Issue #185, fase 1, fetta 1d: la parte fredda di i_* di Base\ (i_system, i_io, i_tmp, i_threads, i_crashlog, i_mikplay,
-i_midi, i_midi_legacy, i_net) a classi in Libs\EngineSystem. Riferimento: master cb5a45e3 (eseguibili di riferimento
+i_midi, i_midi_legacy, i_net) a classi in IdTech1\EngineSystem. Riferimento: master cb5a45e3 (eseguibili di riferimento
 compilati da li').
 
 == Cosa e' cambiato nel motore (per decidere cosa guardare) ==

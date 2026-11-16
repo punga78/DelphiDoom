@@ -415,7 +415,7 @@ end;
 //==============================================================================
 //
 // R_ConfigureTextureLookup
-// The builder of the column tables of Libs\Renderer, given by the composition root
+// The builder of the column tables of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureTextureLookup(const ALookup: IRendererTextureLookup);
@@ -1313,7 +1313,7 @@ begin
   texturedefs_loader := ALoader;
 end;
 
-// The terrain of the flats is the compiled list of Libs\Definitions (TTerrainTables, without
+// The terrain of the flats is the compiled list of IdTech1\Definitions (TTerrainTables, without
 // state); the numbers of the floors are the FLOOR_* of p_local, different in every game.
 // Before, they were the four p_terrain.pas (P_TerrainTypeForName).
 const
@@ -1367,7 +1367,7 @@ end;
 //==============================================================================
 //
 // R_ConfigureFlatInfo
-// The parser of FLATINFO of Libs\TextureDefs and the catalog of the flats of
+// The parser of FLATINFO of IdTech1\TextureDefs and the catalog of the flats of
 // the engine, given by the composition root
 //
 //==============================================================================

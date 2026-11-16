@@ -25,7 +25,7 @@
         <Projects Include="Framework\Ddc\ddc.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Libs\Parity\ParityTool.dproj">
+        <Projects Include="IdTech1\Parity\ParityTool.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Strife\ddc_strife.dproj">
@@ -103,13 +103,13 @@
         <MSBuild Projects="Framework\Ddc\ddc.dproj" Targets="Make"/>
     </Target>
     <Target Name="ParityTool">
-        <MSBuild Projects="Libs\Parity\ParityTool.dproj"/>
+        <MSBuild Projects="IdTech1\Parity\ParityTool.dproj"/>
     </Target>
     <Target Name="ParityTool:Clean">
-        <MSBuild Projects="Libs\Parity\ParityTool.dproj" Targets="Clean"/>
+        <MSBuild Projects="IdTech1\Parity\ParityTool.dproj" Targets="Clean"/>
     </Target>
     <Target Name="ParityTool:Make">
-        <MSBuild Projects="Libs\Parity\ParityTool.dproj" Targets="Make"/>
+        <MSBuild Projects="IdTech1\Parity\ParityTool.dproj" Targets="Make"/>
     </Target>
     <Target Name="ddc_strife">
         <MSBuild Projects="Strife\ddc_strife.dproj"/>

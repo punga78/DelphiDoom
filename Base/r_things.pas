@@ -313,7 +313,7 @@ var
 //==============================================================================
 //
 // R_ConfigureSpriteDefs
-// The builder of the sprite definitions of Libs\Renderer, given by the composition root
+// The builder of the sprite definitions of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs);

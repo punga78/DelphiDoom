@@ -54,7 +54,7 @@ index a9873588..424c88de 100644
 -procedure T_VerticalDoor(door: Pvldoor_t);
 +procedure T_VerticalDoorNew(door: Pvldoor_t);
  begin
-   // the state machine of the door is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*)
+   // the state machine of the door is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*)
    if DoorTickClassic(door) then
 @@ -118,6 +119,11 @@ begin
    end;

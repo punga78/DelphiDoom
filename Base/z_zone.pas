@@ -25,7 +25,7 @@
 //  Remark: this was the only stuff that, according
 //   to John Carmack, might have been useful for
 //   Quake.
-//  The allocator is the class TZoneAllocator of Libs\Zone, given by
+//  The allocator is the class TZoneAllocator of IdTech1\Zone, given by
 //  the composition root (Z_ConfigureZone): the functions here are
 //  its facade for the rest of the engine.
 //

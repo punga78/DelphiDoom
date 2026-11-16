@@ -1,5 +1,5 @@
 // TEMPORARY HARNESS of issue #154 (not for the build of the game): runs the OLD code of the platform
-// thinkers (copied as it was before Libs\Thinkers) next to the NEW library on the live state of the
+// thinkers (copied as it was before IdTech1\Thinkers) next to the NEW library on the live state of the
 // game, for every tic of every platform and for every platform that is made. See docs\RUN-154.md.
 //
 // The engine side effects are replaced on both sides by the same deterministic stub (PP_World): a

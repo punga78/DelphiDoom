@@ -23,7 +23,7 @@ type
   ///   What the loading of a level does only in Hexen: MAPINFO, the animations of p_anim and
   ///   the lava, the arguments of the lines, the sound sequences of the sectors, the list of the
   ///   thing ids, the corpses, the starts of a deathmatch and its timer, the fade table of the
-  ///   map. Hexen has no polyobject reset, no ANIMDEFS of Libs\Definitions, no special 260
+  ///   map. Hexen has no polyobject reset, no ANIMDEFS of IdTech1\Definitions, no special 260
   /// </summary>
   THexenLevelRules = class(TInterfacedObject, ILevelGameRules, ILevelGeometryRules, ILevelThingRules)
   strict private

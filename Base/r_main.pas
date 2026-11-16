@@ -248,7 +248,7 @@ procedure R_ShutDown;
 //
 // R_ConfigureDynamicLights
 //
-// The lights of the level (Libs\DynLights): R_Init reads the lumps, R_ShutDown forgets them.
+// The lights of the level (IdTech1\DynLights): R_Init reads the lumps, R_ShutDown forgets them.
 // The composition root calls it; without it R_Init stops with I_Error
 //
 //==============================================================================
@@ -1463,7 +1463,7 @@ var
 //==============================================================================
 //
 // R_ConfigureViewTables
-// The tables of the size of the view of Libs\Renderer, given by the composition root
+// The tables of the size of the view of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureViewTables(const ATables: IRendererViewTables);
@@ -1474,7 +1474,7 @@ end;
 //==============================================================================
 //
 // R_ConfigureTextureMapping
-// The builder of the tables of the view angles of Libs\Renderer, given by the composition root
+// The builder of the tables of the view angles of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
 procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder);

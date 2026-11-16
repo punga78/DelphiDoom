@@ -26,8 +26,8 @@ Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` 
 - `MathCore` e' stata divisa (#225, prima fetta): la parte generica (CRC, SHA-1, `Float.*`, `Patch.*`) resta in `MathCore`, la matematica di id Tech 1 (virgola fissa, tabelle, generatore casuale di Doom, `X87Double`) e' in `GameMath`, **L0 e non modulo** perche' la usano anche `Greed`, `Racing` e `Keen` (modulo `Giochi`). Le unit hanno ancora il nome `DelphiDoom.MathCore.*`. `GameMath` usa `MathCore`, mai il contrario.
 - `Palette` e' in **L1** e non usa piu' `Video` (L2): `IPaletteConverter` e `TPaletteConverter` (gamma e impacchettamento in `$00RRGGBB`, nessuna dipendenza dal video) sono passati da `Video` a `Palette` come `DelphiDoom.Palette.Intf` e `DelphiDoom.Palette.Converter` (#225, seconda fetta); `Video` usa `Palette`. `Input` e `Video` non hanno altro da separare dal censimento: vedi `docs\FRAMEWORK_CENSIMENTO.md`.
 - `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
-- `Libs\OpenGl` e' stato diviso (#220): `Framework\OpenGlBinding` (L3: `dglOpenGL.pas` e il registratore di chiamate in `Recorder`, usati da `GameHost`) e `Libs\OpenGl\Legacy` (modulo `IdTech1`, il renderer di Doom).
-- `ScriptHost` e `Ddc` sono in L3 (scripting generico) e **non usano piu' il motore** (#221): il collegamento a id Tech 1 e' `Libs\ScriptEngine` (modulo `IdTech1`).
+- `IdTech1\OpenGl` e' stato diviso (#220): `Framework\OpenGlBinding` (L3: `dglOpenGL.pas` e il registratore di chiamate in `Recorder`, usati da `GameHost`) e `IdTech1\OpenGl\Legacy` (modulo `IdTech1`, il renderer di Doom).
+- `ScriptHost` e `Ddc` sono in L3 (scripting generico) e **non usano piu' il motore** (#221): il collegamento a id Tech 1 e' `IdTech1\ScriptEngine` (modulo `IdTech1`).
 
 ## Come si usa
 

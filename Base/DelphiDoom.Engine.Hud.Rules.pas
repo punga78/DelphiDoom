@@ -17,7 +17,7 @@ uses
 
 type
   /// <summary>
-  ///   The constants of hu_stuff.pas and doomdef.pas that Libs\Hud takes as rules: this is the one
+  ///   The constants of hu_stuff.pas and doomdef.pas that IdTech1\Hud takes as rules: this is the one
   ///   place where the game is chosen, by the define of the project
   /// </summary>
   TEngineHudRules = class

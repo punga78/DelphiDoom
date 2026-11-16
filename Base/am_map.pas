@@ -206,7 +206,7 @@ var
   amclock: integer;
 
 // The window on the map (where it is, the scale, the limits of the level, the pan and the zoom)
-// and the marks are in Libs\Automap: see AM_Configure().
+// and the marks are in IdTech1\Automap: see AM_Configure().
 
   plr: Pplayer_t; // the player represented by an arrow
 
@@ -294,7 +294,7 @@ procedure AM_ShutDown;
 //==============================================================================
 // AM_Configure
 //
-// Gives the automap the window on the map and the marks of Libs\Automap (done by
+// Gives the automap the window on the map and the marks of IdTech1\Automap (done by
 // ComposeEngine). Without it the automap stops with I_Error.
 //
 //==============================================================================
@@ -351,7 +351,7 @@ const
   PLAYERRADIUS = AUTOMAP_PLAYERRADIUS;
 
 var
-  // The window on the map and the marks (Libs\Automap), given by AM_Configure()
+  // The window on the map and the marks (IdTech1\Automap), given by AM_Configure()
   am_view: IAutomapView = nil;
   am_navigator: IAutomapNavigator = nil;
   am_marks: IAutomapMarks = nil;
@@ -1003,7 +1003,7 @@ end;
 //==============================================================================
 // AM_clipMline
 //
-// Automap clipping of lines (Cohen-Sutherland, in Libs\Automap).
+// Automap clipping of lines (Cohen-Sutherland, in IdTech1\Automap).
 //
 //==============================================================================
 function AM_clipMline(ml: Pmline_t; fl: Pfline_t): boolean;
@@ -1037,7 +1037,7 @@ begin
   end;
   {$ENDIF}
 
-  // The Bresenham is TAutomapLineRasterizer of Libs\Automap: here the
+  // The Bresenham is TAutomapLineRasterizer of IdTech1\Automap: here the
   // buffer and, in overlay mode, the window of the view that clips the line
   target.Width := f_w;
   // JVAL Clip line if in overlay mode
@@ -1547,7 +1547,7 @@ procedure AM_Init;
 begin
   AM_InitTextured;
 
-  // The line drawings are TAutomapShapes (Libs\Automap)
+  // The line drawings are TAutomapShapes (IdTech1\Automap)
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   TAutomapShapes.FillPlayerArrow(@player_arrow[0], assRaven);
 {$ELSE}

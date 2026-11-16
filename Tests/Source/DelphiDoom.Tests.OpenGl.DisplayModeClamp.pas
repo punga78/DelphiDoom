@@ -20,7 +20,7 @@ type
   TTestOpenGlDisplayModeClamp = class(TObject)
   strict private
     FLimits: TGlDisplayModeLimits;
-    // the text of the first part of GL_SetDisplayMode of gl_main.pas before Libs\GlContext
+    // the text of the first part of GL_SetDisplayMode of gl_main.pas before IdTech1\GlContext
     procedure OldClamp(const newwidth, newheight: Integer; out nwidth, nheight: Integer);
   public
     [Setup]

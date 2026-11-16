@@ -16,4 +16,4 @@ Il testo di riferimento (parità con il vecchio DD_VOXEL, difetti corretti e con
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
-- `Strumenti\ToolsCore` (annulla, file recenti, impostazioni), `Framework\Palette` (`TGamePalettes`), `Libs\Voxel` (lettura per il motore, non usata qui: l'editor ha il suo layout del cubo).
+- `Strumenti\ToolsCore` (annulla, file recenti, impostazioni), `Framework\Palette` (`TGamePalettes`), `IdTech1\Voxel` (lettura per il motore, non usata qui: l'editor ha il suo layout del cubo).

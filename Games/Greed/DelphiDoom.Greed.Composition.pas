@@ -71,7 +71,7 @@ type
     Joystick: Boolean;
     /// <summary>
     ///   With -play: a net game over UDP. NetPlayers is how many play (0: no net game), NetPlayer who this computer
-    ///   is (0 .. NetPlayers - 1), NetPort its UDP port (0: the default of Libs\Net), NetPeers the other computers
+    ///   is (0 .. NetPlayers - 1), NetPort its UDP port (0: the default of IdTech1\Net), NetPeers the other computers
     ///   ("name[:port]" or ".1.2.3.4[:port]"), NetName the name of the player
     /// </summary>
     NetPlayers: Integer;
@@ -629,7 +629,7 @@ begin
     end), TGreedJoystickOptions.Standard);
 end;
 
-// "-net": the UDP transport of Libs\Net to the other computers and the session of the game on it. The driver of
+// "-net": the UDP transport of IdTech1\Net to the other computers and the session of the game on it. The driver of
 // the DOS game is not there to say who plays: the command line does (-net <player> <players>)
 function AttachNet(AGame: TGreedGame; const AOptions: TGreedPlayOptions): IGreedNetStart;
 var
@@ -642,7 +642,7 @@ begin
   LPort := AOptions.NetPort;
   if LPort = 0 then
     LPort := NET_DEFAULT_PORT;
-  // the list of the hosts of Libs\Net has the port as an argument of its own (":port"): "host:port" is split
+  // the list of the hosts of IdTech1\Net has the port as an argument of its own (":port"): "host:port" is split
   LArguments := nil;
   for LPeer in AOptions.NetPeers do
   begin

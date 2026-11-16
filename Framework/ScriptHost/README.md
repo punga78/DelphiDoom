@@ -11,7 +11,7 @@ Il **collegamento di Pascal Script al motore** (issue #172, spostato qui da `SCR
 | `ps_dll` | DLL contenute in un PAK, copiate su file prima di `LoadLibrary` (facciata di `IScriptDllLoader`, senza motore) |
 | `uPSC_dll`, `uPSR_dll`, `uPSDisassembly` | importazione delle DLL e disassemblatore, **spostati da `Framework\PascalScript`** (#221) perche' usano `ps_dll` e `TDoomExec`: il nucleo non dipende piu' da questa libreria |
 
-**Il collegamento al motore di id Tech 1 (`ps_main`, `ps_import` come facciata, `psi_*`, il manager degli script, `dd_compiler`) sta in `Libs\ScriptEngine`** (issue #221): `Framework\ScriptHost` e' generica (nessun `uses` verso `Base` ne' verso le cartelle dei giochi) ed e' nello strato L3.
+**Il collegamento al motore di id Tech 1 (`ps_main`, `ps_import` come facciata, `psi_*`, il manager degli script, `dd_compiler`) sta in `IdTech1\ScriptEngine`** (issue #221): `Framework\ScriptHost` e' generica (nessun `uses` verso `Base` ne' verso le cartelle dei giochi) ed e' nello strato L3.
 
 ## Registro delle funzioni (issue #173, fetta 2a)
 

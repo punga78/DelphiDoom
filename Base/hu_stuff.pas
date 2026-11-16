@@ -108,7 +108,7 @@ const
 //
 // HU_Configure
 //
-// The heads-up display is Libs\Hud (the model) and DelphiDoom.Engine.Hud.* (the
+// The heads-up display is IdTech1\Hud (the model) and DelphiDoom.Engine.Hud.* (the
 // drawing): ComposeEngine gives them here. Without it HU_Init stops with I_Error.
 //
 //==============================================================================
@@ -330,7 +330,7 @@ uses
   DelphiDoom.Hud.Types,
   DelphiDoom.Hud.MapTitle;
 
-// The heads-up display (issue #185, slice 1a): the model is in Libs\Hud (THeadsUp) and
+// The heads-up display (issue #185, slice 1a): the model is in IdTech1\Hud (THeadsUp) and
 // the drawing in DelphiDoom.Engine.Hud.Drawer. What stays here is what is tied to the
 // globals that other units own: the fonts and their loading, the tables of names that the
 // Dehacked patches change, chat_on and message_dontfuckwithme (the menu writes them), the

@@ -11,7 +11,7 @@ unit DelphiDoom.Engine.System.ShutdownPlan;
 
 // The steps of I_Destroy of i_system.pas (issue #185) as the engine takes them: what each step calls
 // is a function of the engine, so this is the unit that knows the sound, the video, the network and
-// the files. The order and the text are the ones of the old procedure; the sequence (Libs\EngineSystem)
+// the files. The order and the text are the ones of the old procedure; the sequence (IdTech1\EngineSystem)
 // writes them and runs them.
 
 interface

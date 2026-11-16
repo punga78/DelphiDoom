@@ -9,7 +9,7 @@ byte; il repository e GPL v2 o successiva, le unit lo dichiarano nell'intestazio
 Portati: `idCompressor_None`, `_BitStream`, `_RunLength`, `_RunLength_ZeroBased`, `_Huffman`, `_Arithmetic`, `_LZSS`,
 `_LZSS_WordAligned`, `_LZW` e le `Alloc*` (`TCompressorFactory`). Non portato: nulla del file.
 Il deflate resta a `Framework\Zlib`. La rete di Quake III (#121) **non e** qui e non e stata toccata: la #121 prevede l'Huffman adattivo di `huffman.c`
-in questa libreria e i messaggi in `Libs\Net` accanto a `TBitMessage`; l'adattivo di idTech 4 (`TCompressorHuffman`) e della stessa
+in questa libreria e i messaggi in `IdTech1\Net` accanto a `TBitMessage`; l'adattivo di idTech 4 (`TCompressorHuffman`) e della stessa
 famiglia (Sayood) ma ha strutture e interfaccia diverse da `Huff_*` e non e stato confrontato con `huffman.c`: il riuso va
 valutato in quella issue (non verificato qui).
 

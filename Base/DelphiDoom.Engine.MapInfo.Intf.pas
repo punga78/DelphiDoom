@@ -14,7 +14,7 @@ type
   /// <summary>
   ///   Keeps the records mapentry_t of p_umapinfo (u_mapinfo, default_mapinfo: they are read
   ///   by the HUD, the finale, the level and the sound code) up to date with the catalog of
-  ///   Libs\MapInfo. The d_main of each game receives one from the composition root (it was
+  ///   IdTech1\MapInfo. The d_main of each game receives one from the composition root (it was
   ///   U_ParseMapInfo and U_FreeMapInfo of p_umapinfo.pas)
   /// </summary>
   IEngineMapInfoRecords = interface

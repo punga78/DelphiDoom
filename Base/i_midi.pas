@@ -127,7 +127,7 @@ procedure I_ConfigureMidi(const APlayer: IEngineMidiSongPlayer);
 //
 // I_ConfigureMidiOptions
 // Gives the unit the command line that chooses the MIDI player and the MIDI device
-// (TMidiPlayerSelection of Libs\EngineSystem). The composition root calls it
+// (TMidiPlayerSelection of IdTech1\EngineSystem). The composition root calls it
 //
 //==============================================================================
 procedure I_ConfigureMidiOptions(const ACommandLine: ICommandLine);

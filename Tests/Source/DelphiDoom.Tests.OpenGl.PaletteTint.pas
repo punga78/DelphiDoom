@@ -19,7 +19,7 @@ type
   [Category('opengl')]
   TTestOpenGlPaletteTint = class(TObject)
   strict private
-    // the text of the branch of gld_SetPalette of gl_render.pas (no shared palette) before Libs\GlScene
+    // the text of the branch of gld_SetPalette of gl_render.pas (no shared palette) before IdTech1\GlScene
     procedure OldTint(palette: Integer; const AHexen: Boolean; out ARed, AGreen, ABlue, AAlpha: Single);
   public
     [Test]

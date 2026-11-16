@@ -1,4 +1,4 @@
-# Dati di prova di Libs\Dehacked
+# Dati di prova di IdTech1\Dehacked
 
 Le patch `*.deh` sono scritte a mano per coprire ogni blocco, ogni campo, i formati dei numeri, i commenti e le righe sbagliate (issue #68). I valori sono scelti perche' siano diversi da quelli di partenza dei quattro giochi: una patch che scrive il valore che c'era gia' non cambia l'uscita e non si vede.
 

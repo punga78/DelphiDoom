@@ -17,7 +17,7 @@ uses
 type
   /// <summary>
   ///   The converter of Speed Haste: a file with the signature of SPEEDH.JCL is translated by the
-  ///   library Libs\Speed into the lumps of a WAD (SH_ConvertSpeedDataToWAD of the old fork)
+  ///   library IdTech1\Speed into the lumps of a WAD (SH_ConvertSpeedDataToWAD of the old fork)
   /// </summary>
   TEngineSpeedDataConverter = class(TInterfacedObject, IEngineWadConverter)
   strict private

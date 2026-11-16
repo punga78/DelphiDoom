@@ -27,7 +27,7 @@ uses
 
 type
   /// <summary>
-  ///   The nodes of a level with the services of Libs\Nodes: the GL nodes in the WAD, the GWA
+  ///   The nodes of a level with the services of IdTech1\Nodes: the GL nodes in the WAD, the GWA
   ///   that glBSP builds in DATA\BSP and the WAD built for a map without nodes (DATA\WADS),
   ///   converted in vertexes[], subsectors[], nodes[] and segs[]. It was the level part of
   ///   nd_main.pas (ND_NodesCheck, ND_GetNodes, ND_ReadGwa, ND_Load*)

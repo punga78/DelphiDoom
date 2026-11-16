@@ -16,7 +16,7 @@ type
   TFakeGreedNet = class;
 
   /// <summary>
-  ///   One computer of the fake net: the INetTransport of Libs\Net that a TGreedNetSession is given. Node 0 is
+  ///   One computer of the fake net: the INetTransport of IdTech1\Net that a TGreedNetSession is given. Node 0 is
   ///   this computer, the nodes 1 .. count - 1 are the others in the order of their numbers
   /// </summary>
   TFakeGreedNetEndpoint = class(TInterfacedObject, INetTransport)

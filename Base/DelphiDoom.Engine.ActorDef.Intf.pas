@@ -14,7 +14,7 @@ interface
 type
   /// <summary>
   ///   Reads the ACTORDEF and DECORATE lumps (and the files of the PAKs with those names) with
-  ///   the parser of Libs\ActorDef, and SNDINFO with the sound aliases. The composition root
+  ///   the parser of IdTech1\ActorDef, and SNDINFO with the sound aliases. The composition root
   ///   gives it to the main loop of each game (d_main). It was the facade sc_actordef.pas
   /// </summary>
   IEngineActorDefLumps = interface

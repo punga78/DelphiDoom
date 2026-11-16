@@ -1028,7 +1028,7 @@ end;
 //==============================================================================
 //
 // R_LoadVoxelColumns
-// The file is read by the loader of Libs\Voxel, the model is put in a cube and the cube
+// The file is read by the loader of IdTech1\Voxel, the model is put in a cube and the cube
 // in the buffer of the renderer
 //
 //==============================================================================

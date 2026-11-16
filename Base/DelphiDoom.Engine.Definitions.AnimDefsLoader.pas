@@ -19,7 +19,7 @@ uses
 
 type
   /// <summary>
-  ///   Reads the lump ANIMDEFS with the parser of Libs\Definitions and writes the animations in
+  ///   Reads the lump ANIMDEFS with the parser of IdTech1\Definitions and writes the animations in
   ///   the data of p_animdefs.pas (AnimDefs[], FrameDefs[] and the lists of the animated
   ///   pictures). It was P_InitFTAnims; a game without the lump keeps the animations it had
   /// </summary>

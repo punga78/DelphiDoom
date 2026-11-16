@@ -23,7 +23,7 @@ type
   TGreedNetFactory = class
   public
     /// <summary>
-    ///   A session for AGame over ATransport (an INetTransport of Libs\Net: the UDP one, or a fake one in the
+    ///   A session for AGame over ATransport (an INetTransport of IdTech1\Net: the UDP one, or a fake one in the
     ///   tests), with the parts of that game; the game becomes a net game (TGreedGame.AttachNet). To call before
     ///   TGreedGame.NewGame. What comes back is the wait for the other players: after NewGame the program calls
     ///   BeginWaitStart and then WaitStartStep, while the clock of the game goes on, until it says true.

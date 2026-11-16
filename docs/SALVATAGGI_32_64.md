@@ -3,7 +3,7 @@
 Issue #40, sotto-issue #43 (punto "record scritti su disco"). Un salvataggio fatto da `Doom32.exe`, `Heretic32.exe`,
 `Hexen32.exe` o `Strife32.exe` a 32 bit si carica con lo stesso programma a 64 bit e viceversa; il formato su disco e'
 quello che il programma a 32 bit ha sempre scritto. Librerie: `Framework\Serializer` (`Framework\Serializer\CLAUDE.md`) e
-`Libs\Parity` (le opzioni di prova); script: `Tools\Verifica\40`.
+`IdTech1\Parity` (le opzioni di prova); script: `Tools\Verifica\40`.
 
 ## 1. Che cosa c'era
 
@@ -66,7 +66,7 @@ powershell -NoProfile -File Tools\Verifica\40\Prova-Layout.ps1                  
 powershell -NoProfile -File Tools\Verifica\40\Prova-Salvataggi.ps1 -RefExe "Doom=C:\rif\Doom32.exe;Heretic=...;Hexen=...;Strife=..."
 ```
 
-Opzioni del motore (di `Libs\Parity`, inerti se non passate):
+Opzioni del motore (di `IdTech1\Parity`, inerti se non passate):
 
 | Opzione | Cosa fa |
 |---|---|

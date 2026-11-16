@@ -190,7 +190,7 @@ Il PNG dei font non e' nel `DATA.WAR`: il chiamante da' a `TWarImageBlitter` l'i
 | `wrvo_computeNewVelocity` (senza vicini) | `TWarStraightSteering` (il passo in linea retta); con i vicini `TWarRvo` (#195) |
 | `WarContext` e le parti di `WarMap` che servono (giocatori, tempo) | `TWarModelContext` (nessun globale); `TWarModelWorld` e' il modello intero (`AdvanceClock`, `Update`) |
 
-**Il registro degli stati** e' una tabella di descrittori (come `Libs\Specials`): per ogni tipo di stato una procedura di ingresso, una di uscita
+**Il registro degli stati** e' una tabella di descrittori (come `IdTech1\Specials`): per ogni tipo di stato una procedura di ingresso, una di uscita
 e una di aggiornamento **dell'intero tipo** (il ciclo sugli stati e' dentro la procedura): la tabella si attraversa una volta per tipo e per
 tic, mai per unita'. Le procedure sono `class procedure ... static` (procedure semplici, non metodi virtuali ne' interfacce). Il ciclo di
 `TWarMoveState` fa le sette passate del C. Gli stati non portati hanno il loro record e la maschera di interruzione del C, ma nessuna procedura:

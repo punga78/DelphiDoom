@@ -21,7 +21,7 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  UMAPINFO support: the text is read by Libs\MapInfo, here the records that the rest
+//  UMAPINFO support: the text is read by IdTech1\MapInfo, here the records that the rest
 //  of the engine reads are made from what the library found
 //
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ var
   u_mapinfo: umapinfo_t;
   default_mapinfo: umapinfo_t;
 
-// The records are made from the catalog of Libs\MapInfo by TEngineMapInfoRecords
+// The records are made from the catalog of IdTech1\MapInfo by TEngineMapInfoRecords
 // (DelphiDoom.Engine.MapInfo.Records)
 
 implementation

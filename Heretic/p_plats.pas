@@ -97,7 +97,7 @@ uses
 //
 // T_PlatRaise
 //
-// The tic of a platform: the calculation is TPlatMachine (Libs\Thinkers), the
+// The tic of a platform: the calculation is TPlatMachine (IdTech1\Thinkers), the
 // thinker stays the record that the savegames know
 //
 //==============================================================================

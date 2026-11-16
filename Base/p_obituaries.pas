@@ -137,7 +137,7 @@ begin
   else
     aname := attacker.info.name;
 
-  // the placeholders and the pronouns: TObituaryFormatter of Libs\Obituary, without state
+  // the placeholders and the pronouns: TObituaryFormatter of IdTech1\Obituary, without state
   messagefmt := TObituaryFormatter.ComposeMessage(messagefmt, vname, aname,
     TObituaryGender(victim.info.gender), TObituaryGender(attacker.info.gender));
 

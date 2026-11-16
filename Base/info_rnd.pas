@@ -27,7 +27,7 @@
 {$I Doom32.inc}
 
 // Facade (issue #185, slice 1b): the classes of monsters and the choice are
-// Libs\Info\DelphiDoom.Info.RandomMonsters; what changes from game to game is
+// IdTech1\Info\DelphiDoom.Info.RandomMonsters; what changes from game to game is
 // Base\DelphiDoom.Engine.Info.RandomRules
 
 // JVAL: Random items

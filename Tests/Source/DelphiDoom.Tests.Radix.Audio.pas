@@ -17,7 +17,7 @@ uses
 
 type
   /// <summary>
-  ///   The names of the sounds that the actors of Radix ask for (Radix\Data\RADIXDEF.txt) against
+  ///   The names of the sounds that the actors of Radix ask for (IdTech1\Radix\Data\RADIXDEF.txt) against
   ///   the table of the sounds of RADIX.DAT, and, on the real RADIX.DAT 2.0 shareware (skipped when
   ///   the file is not there), the sounds and the music that the translated WAD gives to the engine
   /// </summary>
@@ -68,7 +68,7 @@ var
   LName: string;
 begin
   LText := TFile.ReadAllText(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\..\..\Radix\Data\RADIXDEF.txt')));
+    '..\..\..\..\IdTech1\Radix\Data\RADIXDEF.txt')));
   LList := TList<string>.Create;
   try
     LPosition := Pos(SOUND_PREFIX, LowerCase(LText));

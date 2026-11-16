@@ -4,7 +4,7 @@
     </PropertyGroup>
     <ItemGroup/>
     <ItemGroup>
-        <Projects Include="Libs\Glbsp\DDGlbsp.dproj">
+        <Projects Include="IdTech1\Glbsp\DDGlbsp.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Framework\Jpeg\DDJpeg.dproj">
@@ -43,13 +43,13 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="DDGlbsp">
-        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj"/>
+        <MSBuild Projects="IdTech1\Glbsp\DDGlbsp.dproj"/>
     </Target>
     <Target Name="DDGlbsp:Clean">
-        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj" Targets="Clean"/>
+        <MSBuild Projects="IdTech1\Glbsp\DDGlbsp.dproj" Targets="Clean"/>
     </Target>
     <Target Name="DDGlbsp:Make">
-        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj" Targets="Make"/>
+        <MSBuild Projects="IdTech1\Glbsp\DDGlbsp.dproj" Targets="Make"/>
     </Target>
     <Target Name="DDJpeg">
         <MSBuild Projects="Framework\Jpeg\DDJpeg.dproj"/>

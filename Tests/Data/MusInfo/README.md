@@ -1,4 +1,4 @@
-# Dati di prova di Libs\MusInfo
+# Dati di prova di IdTech1\MusInfo
 
 `cases.txt` ha i testi del lump MUSINFO scritti a mano (issue #72): mappe `ExMy` e `MAPxx`, id nei vari formati (decimale, `0x`, `$`, `#`, `x`, `+`), id fuori intervallo (`-1`, `65`), ripetuti, nomi di musica tra virgolette, vuoti, di otto caratteri, con caratteri sopra 127, commenti, fine riga CR LF / LF / CR, testo senza fine riga finale, lump mancante, token che sembrano mappe, lump letto due volte.
 

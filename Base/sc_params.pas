@@ -30,7 +30,7 @@
 // JVAL
 // Dynamic Custom Parameter List for ACTORDEF LUMPS
 //
-// Facade (issue #185, slice 1b): the list is Libs\ActorDef\DelphiDoom.ActorDef.ParamList; this
+// Facade (issue #185, slice 1b): the list is IdTech1\ActorDef\DelphiDoom.ActorDef.ParamList; this
 // class keeps the properties that the actions and the DEHACKED applier use. The kinds of
 // parameter that read a map or world variable or a custom parameter (GLBF_MAP_*,
 // GLBF_WORLD_*, GLBF_MOBJ_*) were never stored by the old code (every one of them became an

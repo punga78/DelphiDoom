@@ -6,8 +6,8 @@
 #
 # The patch touches only:
 #   Doom\GLDoom32.dpr, Heretic\GLHeretic32.dpr, Hexen\GLHexen32.dpr, Strife\GLStrife32.dpr  (the harness units)
-#   Libs\OpenGl\Legacy\gl_main.pas     one call after ReadImplementationProperties (installs the thunks)
-#   Libs\OpenGl\Legacy\gl_render.pas   one call at the end of gld_Finish (end of a frame)
+#   IdTech1\OpenGl\Legacy\gl_main.pas     one call after ReadImplementationProperties (installs the thunks)
+#   IdTech1\OpenGl\Legacy\gl_render.pas   one call at the end of gld_Finish (end of a frame)
 #   Base\DelphiDoom.Engine.Level.Loader.pas   one call at the end of SetupLevel (the level is loaded)
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -62,19 +62,19 @@ $unitLines += "  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',$crlf"
 foreach ($dpr in @('Doom\GLDoom32.dpr', 'Heretic\GLHeretic32.dpr', 'Hexen\GLHexen32.dpr', 'Strife\GLStrife32.dpr')) {
   Edit-File $dpr {
     param($t)
-    Replace-Once $t "  gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',")
+    Replace-Once $t "  gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',")
   }
 }
 
 # the context of the window (it was in gl_main.pas before the fetta 7 of the issue 177): extensions read and frame shown
-Edit-File 'Libs\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas' {
+Edit-File 'IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   $t = Replace-Once $t "  ReadImplementationProperties;$crlf" "  ReadImplementationProperties;$crlf  HarnessGl_AfterExtensions;$crlf"
   Replace-Once $t "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf" "  Winapi.Windows.SwapBuffers(FDeviceContext);$crlf  HarnessGl_FrameEnd;$crlf"
 }
 
-Edit-File 'Libs\OpenGl\Legacy\gl_render.pas' {
+Edit-File 'IdTech1\OpenGl\Legacy\gl_render.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
@@ -94,5 +94,5 @@ Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
 
 $patch = Join-Path $PSScriptRoot 'hook-gl.patch'
 git -c core.safecrlf=false diff --output=$patch -- Doom Heretic Hexen Strife Libs Base
-git -c core.safecrlf=false checkout -- Doom Heretic Hexen Strife Libs\OpenGl\Legacy Base
+git -c core.safecrlf=false checkout -- Doom Heretic Hexen Strife IdTech1\OpenGl\Legacy Base
 Write-Host "Scritto $patch"

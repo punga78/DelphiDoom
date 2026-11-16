@@ -248,7 +248,7 @@ begin
       // Height of thing above ground
       z := thing.z - thing.floorz;
 
-      // The exit position and the rotation (TTeleportLineExit, Libs\Thinkers): the position of
+      // The exit position and the rotation (TTeleportLineExit, IdTech1\Thinkers): the position of
       // the thing along the source linedef, the angle between the two linedefs (180 degrees more,
       // or the position flipped across the exit linedef, if reversed), the interpolated position
       // across the exit linedef and the sine and cosine of the angle. The position is moved

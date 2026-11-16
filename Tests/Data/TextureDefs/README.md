@@ -23,6 +23,6 @@ Finti: `W_CheckNumForName` (l'indice del nome), `I_Error` (eccezione), `I_Warnin
 
 ## Differenze e difetti
 
-Vedi il punto 6 di `Libs\TextureDefs\WIRING.md`. I casi dei golden sono solo quelli che il vecchio codice gestiva
+Vedi il punto 6 di `IdTech1\TextureDefs\WIRING.md`. I casi dei golden sono solo quelli che il vecchio codice gestiva
 senza comportamento indefinito (il solo errore è `bad texture directory` con `offset > maxoff`); gli errori nuovi
 (texture che non entra nel lump, indice di patch fuori da PNAMES, conteggi negativi) sono provati nei test di classe.

@@ -18,7 +18,7 @@ uses
 
 type
   /// <summary>
-  ///   What Libs\Hud asks of the game, answered from the globals of the engine (the players, the
+  ///   What IdTech1\Hud asks of the game, answered from the globals of the engine (the players, the
   ///   network game, the settings, the strings that the Dehacked patches change, the sounds): one
   ///   object, six small contracts. The drawing of the heads-up display asks it for the player
   /// </summary>

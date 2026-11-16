@@ -157,7 +157,7 @@ end;
 // T_MoveCeiling
 //
 // The tic of a ceiling of Doom, Heretic and Strife: the step is T_MovePlane,
-// what follows it is TCeilingMachine (Libs\Thinkers); the thinker stays the
+// what follows it is TCeilingMachine (IdTech1\Thinkers); the thinker stays the
 // record that the savegames know
 //
 //==============================================================================

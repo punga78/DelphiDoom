@@ -26,7 +26,7 @@ uses
 type
   /// <summary>
   ///   A map in the UDMF text format for the loading of a level. Prepare converts the TEXTMAP
-  ///   with the converter of Libs\Udmf, writes the vanilla map and the extra lumps in a PWAD of
+  ///   with the converter of IdTech1\Udmf, writes the vanilla map and the extra lumps in a PWAD of
   ///   DATA\WADS and loads it at runtime; for a vanilla map it reads the extra lumps (THINGS2,
   ///   SECTORS2...) that are already there. The extra records go in the data of p_udmf.pas,
   ///   that the appliers write in sectors[], lines[], sides[] and segs[]. It was the facade

@@ -141,9 +141,9 @@ index ca3fb710..7324218c 100644
 --- a/Doom32.dpr
 +++ b/Doom32.dpr
 @@ -467,6 +467,7 @@ uses
-   DelphiDoom.Thinkers.Light.Sequence in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
-   DelphiDoom.Thinkers.Light.Games in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
-   DelphiDoom.Thinkers.Light.Factory in 'Libs\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
+   DelphiDoom.Thinkers.Light.Sequence in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Light.Sequence.pas',
+   DelphiDoom.Thinkers.Light.Games in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Light.Games.pas',
+   DelphiDoom.Thinkers.Light.Factory in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Light.Factory.pas',
 +  light_parity in 'Tools\Verifica\149\light_parity.pas',
    DelphiDoom.Engine.Light.Sector in 'Base\DelphiDoom.Engine.Light.Sector.pas',
    DelphiDoom.Engine.Light.Services in 'Base\DelphiDoom.Engine.Light.Services.pas',

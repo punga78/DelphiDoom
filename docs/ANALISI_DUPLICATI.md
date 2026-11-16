@@ -23,7 +23,7 @@ Conclusione: di duplicato vero c'è soprattutto l'infrastruttura intorno ai gioc
 
 - Decoder audio: XcomAudio usa `Framework\Sound`, `Mp3`, `Mikmod`, `Midi`, `Opl`.
 - Matematica: Greed usa `TFixedMath` di `LibsGameMath` (ex `MathCore`, #225).
-- WAD e patch: Speed e Radix usano `Libs\GameData` e `Framework\Wad`.
+- WAD e patch: Speed e Radix usano `IdTech1\GameData` e `Framework\Wad`.
 - PNG e palette: tutti passano da `TPngClient` e `IPaletteConverter`; è duplicato solo l'involucro.
 
 ## Da non unificare

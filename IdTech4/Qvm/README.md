@@ -1,6 +1,6 @@
 # IdTech4\Qvm
 
-Port a classi della **macchina virtuale QVM di Quake III Arena** (`code\qcommon\vm.c`, `vm_interpreted.c`, `vm_local.h`, `vmHeader_t` di `qfiles.h`; GPL v2 o successiva, id Software), issue #120 (parte di #115, indice id Tech 3). Legge e valida un file `.qvm`, prepara il codice, lo interpreta e passa le chiamate di sistema a un host iniettato (`IQvmHost`), come `Libs\Acs` fa con l'host degli script. Intestazione di ogni unit: "Based on the Quake III Arena GPL Source Code (id Software)". La libreria **non ha chiamanti nel motore**: manca il codice che risponde alle `trap_*` (server, client, renderer: fuori dalla #115).
+Port a classi della **macchina virtuale QVM di Quake III Arena** (`code\qcommon\vm.c`, `vm_interpreted.c`, `vm_local.h`, `vmHeader_t` di `qfiles.h`; GPL v2 o successiva, id Software), issue #120 (parte di #115, indice id Tech 3). Legge e valida un file `.qvm`, prepara il codice, lo interpreta e passa le chiamate di sistema a un host iniettato (`IQvmHost`), come `IdTech1\Acs` fa con l'host degli script. Intestazione di ogni unit: "Based on the Quake III Arena GPL Source Code (id Software)". La libreria **non ha chiamanti nel motore**: manca il codice che risponde alle `trap_*` (server, client, renderer: fuori dalla #115).
 
 Un `.qvm` e' **input non fidato**: nessun programma, per quanto malevolo, legge o scrive fuori dalla memoria della macchina o fa eseguire altro che le proprie istruzioni (vedi "Sicurezza").
 

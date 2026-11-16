@@ -1,17 +1,17 @@
 ﻿# Generates DelphiDoom.OpenGl.Recorder.Thunks.pas: one recording thunk for every gl*/glu* function that the
-# OpenGL renderer (Libs\OpenGl\Legacy) uses and that dglOpenGL.pas declares as a procedure variable.
+# OpenGL renderer (IdTech1\OpenGl\Legacy) uses and that dglOpenGL.pas declares as a procedure variable.
 #
 #   .\Framework\OpenGlBinding\Recorder\Genera-Thunks.ps1
 #
 # The list of functions is not written by hand: it is every identifier gl[A-Z]... / glu[A-Z]... found in the
-# unit of Libs\OpenGl\Legacy that has BOTH a type  TglXxx = procedure|function(...)  and a variable
+# unit of IdTech1\OpenGl\Legacy that has BOTH a type  TglXxx = procedure|function(...)  and a variable
 #   glXxx: TglXxx;   in Framework\OpenGlBinding\dglOpenGL.pas. wgl* (context) functions are not recorded.
 # Run it again after a function is added to (or taken away from) the renderer, and commit the result.
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\Libs\..')).Path
 $binding = Get-Content -Raw -Encoding UTF8 (Join-Path $root 'Framework\OpenGlBinding\dglOpenGL.pas')
 $legacy = ''
-Get-ChildItem (Join-Path $root 'Libs\OpenGl\Legacy') -Filter *.pas | ForEach-Object { $legacy += (Get-Content -Raw $_.FullName) + "`n" }
+Get-ChildItem (Join-Path $root 'IdTech1\OpenGl\Legacy') -Filter *.pas | ForEach-Object { $legacy += (Get-Content -Raw $_.FullName) + "`n" }
 
 $names = [regex]::Matches($legacy, '\b(glu?[A-Z][A-Za-z0-9]*)\b') | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique
 

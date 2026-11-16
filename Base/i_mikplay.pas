@@ -31,7 +31,7 @@
 
 unit i_mikplay;
 
-// The facade of the tracker music (issue #185): TModuleMusicPlayer of Libs\EngineSystem does the work,
+// The facade of the tracker music (issue #185): TModuleMusicPlayer of IdTech1\EngineSystem does the work,
 // ComposeEngine gives it (I_ConfigureMik). The engine calls these routines from TModuleMusicBackend.
 
 interface

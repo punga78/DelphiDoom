@@ -112,7 +112,7 @@ begin
   thing.floorz := floorz;
   thing.ceilingz := ceilingz;
 
-  // The height of the thing at the destination (TTeleportPlacement, Libs\Thinkers): on the
+  // The height of the thing at the destination (TTeleportPlacement, IdTech1\Thinkers): on the
   // floor, except a flying player (Heretic and Hexen) and a missile, which keep their
   // height above it
   player := thing.player;

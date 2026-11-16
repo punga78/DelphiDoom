@@ -21,7 +21,7 @@ type
   TTestOpenGlSceneLight = class(TObject)
   strict private
     FTable: TGlSceneLightTable;
-    // the text of gld_CalcLightLevel of gl_render.pas before Libs\GlScene
+    // the text of gld_CalcLightLevel of gl_render.pas before IdTech1\GlScene
     function OldCalcLightLevel(const AGamma: Byte; lightlevel: Integer): Single;
   public
     [Setup]

@@ -18,7 +18,7 @@ uses
 
 type
   /// <summary>
-  ///   The allocator of Libs\Zone as the classes of the engine use it: the same blocks, tags and
+  ///   The allocator of IdTech1\Zone as the classes of the engine use it: the same blocks, tags and
   ///   user pointers of the one that z_zone.pas holds (the composition root gives both the
   ///   same allocator), but a pointer that is not a block of the zone (a double free, a
   ///   pointer never allocated) is an I_Error with the message of the Z_* functions, not an

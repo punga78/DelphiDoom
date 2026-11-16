@@ -160,7 +160,7 @@ begin
   begin
     floor.sector.floordata := nil;
 
-    // what the kind of the floor changes in its sector (TFloorMachine, Libs\Thinkers)
+    // what the kind of the floor changes in its sector (TFloorMachine, IdTech1\Thinkers)
     actions := TFloorMachine.Arrival(FloorKindOf(floor._type), floor.direction);
     if actions <> [] then
     begin
@@ -330,7 +330,7 @@ begin
     floor.crush := false;
 
     // the values of the kind with the rules of the game (TFloorMachine,
-    // Libs\Thinkers); a kind that is not made here leaves the thinker as it is
+    // IdTech1\Thinkers); a kind that is not made here leaves the thinker as it is
     if TFloorMachine.Plan(kind, plan) then
     begin
       if plan.Crush then
@@ -508,7 +508,7 @@ begin
     sec.floordata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
     // speed, step, direction and crushing of the kind with the rules of the
-    // game and of the version of the engine (TFloorMachine, Libs\Thinkers)
+    // game and of the version of the engine (TFloorMachine, IdTech1\Thinkers)
     plan := TFloorMachine.StairPlan(StairKindOf(_type), FloorModernEngine, FloorProfile);
     speed := plan.Speed;
     stairsize := plan.StepSize;

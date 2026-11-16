@@ -10,7 +10,7 @@
 unit DelphiDoom.Engine.System.FatalErrorSteps;
 
 // What I_Error of i_system.pas did (issue #185), one step at a time. The handler of
-// Libs\EngineSystem gives the order; the state of "an error is being handled" stays the variable in_i_error
+// IdTech1\EngineSystem gives the order; the state of "an error is being handled" stays the variable in_i_error
 // of i_system, which r_data reads while the engine shuts down.
 
 interface

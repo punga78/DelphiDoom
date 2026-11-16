@@ -22,7 +22,7 @@ uses
 type
   /// <summary>
   ///   Finds the texts of ACTORDEF, DECORATE and SNDINFO in the WAD and in the PAKs and gives
-  ///   them to the parser of Libs\ActorDef and to the reader of SNDINFO. It reads the lumps
+  ///   them to the parser of IdTech1\ActorDef and to the reader of SNDINFO. It reads the lumps
   ///   of the engine (w_wad, w_pak) and the option decorate_as_actordef of sc_states
   /// </summary>
   TEngineActorDefLumps = class(TInterfacedObject, IEngineActorDefLumps)

@@ -83,7 +83,7 @@ uses
 // TH_VerticalDoor
 //
 // The state machine of the door (waiting, going down, going up, the sounds and
-// the sequences) is in Libs\Thinkers (DelphiDoom.Thinkers.Door.*); the thinker
+// the sequences) is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*); the thinker
 // stays the vldoor_t of the zone memory
 //
 //==============================================================================
@@ -136,7 +136,7 @@ begin
 
     door.thinker._function.acp1 := @TH_VerticalDoor;
     door.sector := sec;
-    // direction, top, wait and sound of the kind: Libs\Thinkers
+    // direction, top, wait and sound of the kind: IdTech1\Thinkers
     DoorInitTagged(door, _type, speed, args[2], true);
   end;
 end;
@@ -171,7 +171,7 @@ begin
   door.thinker._function.acp1 := @TH_VerticalDoor;
   door.sector := sec;
 
-  // kind, speed, wait, top and sound of the special of the line: Libs\Thinkers
+  // kind, speed, wait, top and sound of the special of the line: IdTech1\Thinkers
   if DoorInitManual(door, line.special, line.arg2 * (FRACUNIT div 8), line.arg3, true) then
     line.special := 0;
   result := true;

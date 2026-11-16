@@ -166,7 +166,7 @@ Il contratto verso lo script **non cambia**: stesse stringhe di dichiarazione, s
  * Le funzioni che cambiano il mondo (spawn, remove, sposta, speciali) si provano in una seconda esecuzione, per non dipendere dal ripristino dello stato.
  Fattibile con quello che c'e; richiede il generatore e un PWAD per gioco (stima nella fetta 2a-0). Limite: le build OpenGL si provano solo come "partono".
 
-**L3 - DUnitX con finti (solo la parte pura).** Come per l'ACS (`Libs\Acs` si prova, `TEngineAcsHost` no): cio che **non nomina tipi del motore** si prova in `Tests\DelphiDoom.Tests.ScriptHost`:
+**L3 - DUnitX con finti (solo la parte pura).** Come per l'ACS (`IdTech1\Acs` si prova, `TEngineAcsHost` no): cio che **non nomina tipi del motore** si prova in `Tests\DelphiDoom.Tests.ScriptHost`:
  * registro (`SYSTEM` sempre implicita, `ALL` salta `SYSTEM` ed e in ordine alfabetico, nome sconosciuto = errore, doppioni) con un `TPSPascalCompiler` vero (`Framework\PascalScript` si puo linkare da test, come fa DDScript);
  * `TScriptVariables`, con **golden dei byte di `SaveToBuffer`** del vecchio `TGlobalVariablesList` e `StructureSize` uguale ai byte scritti;
  * `TScriptStateSerializer` sul nucleo PS reale: compilare, scrivere lo stato, rileggerlo, confrontare con i byte del vecchio `TScriptSerializer`;
@@ -288,7 +288,7 @@ Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo 
 * Registrazioni in `PS_InitProcLists`: `SYSTEM` 56, `PS_GAME` 504, `PS_FIXED` 9, `PS_OVERLAY` 10 (= 579, di cui 5 `AddWithCustomResult`); 572 simboli `@...` distinti.
 * `PS_*` definite: `psi_game` 412, `psi_map` 77, `psi_system` 40, `ps_main` 25, `psi_globals` 16, `psi_overlay` 12, `ps_import` 5, `ps_dll` 4 = 591. Registrate come funzioni di script: `psi_game` 408, `psi_map` 77, `psi_system` 36, `psi_globals` 12, `psi_overlay` 10 (le altre sono interne: `PS_Init*`, `PS_Configure*`, `PS_ShutDown*`). Altre registrazioni puntano a routine di altre unit (`FixedMulEx`, `P_Random`, `G_ExitLevel`, `P_AproxDistance`, `R_PointToAngle`, `IsIntegerInRange`...).
 * Helper `TRTL*_R/_W` in `psi_game`: 289 distinti (`TRTLActor` 98, `TRTLMobj*` 71, `TRTLSector` 55, `TRTLLine` 31, `TRTLSide` 24, vertici, collezioni).
-* `RegisterDelphiMethod` nel repository fuori dal nucleo: 0 usi. `RegisterDelphiFunction`: solo `ps_proclist` e `Libs\OpenGl\Legacy\mdl_script_proclist`.
+* `RegisterDelphiMethod` nel repository fuori dal nucleo: 0 usi. `RegisterDelphiFunction`: solo `ps_proclist` e `IdTech1\OpenGl\Legacy\mdl_script_proclist`.
 * Chiamanti esterni: `d_main` x4, `g_game` x4, `p_saveg` x3 + `sv_save`, `p_inter` x4, `p_map` x4, `p_enemy` x4, `Strife\p_mobj`, `Base\p_tick`, `p_common`, `sc_params`, `v_video`, `v_displaymode`, `gl_main`, `ActorDef.Hooks`, `TLevelLoader`, `Composition`, `Scanner.ActorFunctions`, `dd_compiler`, `deh_main` x4, `mdl_script_proclist`, `mdl_dllmodel`.
 
 * **2h: fatta** (issue #172): servizi iniettati in TDoomCompiler/TDoomExec/importer (IScriptHostServices, TScriptDefines, IScriptSourceProvider), TPSExecManager e' TScriptManager e psmanager non esiste piu'. L1 identico, L2 uguale in 5 eseguibili, .ddout di ddc identici, 417 test; dettagli e non provato in Framework\ScriptHost\CLAUDE.md.

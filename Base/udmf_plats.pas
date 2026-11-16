@@ -92,7 +92,7 @@ uses
 // TH_PlatRaise
 //
 //      Move a plat up and down
-//      The calculation is TUdmfPlatMachine (Libs\Thinkers), the thinker stays
+//      The calculation is TUdmfPlatMachine (IdTech1\Thinkers), the thinker stays
 //      the record that the savegames know
 //
 //==============================================================================

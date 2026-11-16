@@ -23,7 +23,7 @@
 // DESCRIPTION:
 //  The lights of the scripted specials and the phased lights. The thinkers stay
 //  records in the zone memory (the savegames copy them as they are); what they
-//  compute is in Libs\Thinkers (see DelphiDoom.Thinkers.Light.*).
+//  compute is in IdTech1\Thinkers (see DelphiDoom.Thinkers.Light.*).
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/

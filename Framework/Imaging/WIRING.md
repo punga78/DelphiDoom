@@ -129,7 +129,7 @@ La libreria lavora su `TBytes` e `TArray<Cardinal>`, che **non possono avvolgere
 - `R_ShrinkFlatTo64x64` e `R_ConfigureFlatShrink` di `r_flatinfo.pas` sono `V_ShrinkFlatTo64x64` e
   `V_ConfigureFlatShrink` di `v_video.pas` (l'unico chiamante, `V_TileScreen8`). `r_flatinfo.pas` tiene solo
   i tipi delle misure dei flat (`dsscale_t`, `FS*`, `dsscalesize`, `ds_scale`) usati da 14 unit del renderer;
-  FLATINFO lo legge `R_InitFlats` di `r_data.pas` (`R_ConfigureFlatInfo`, con `Libs\TextureDefs`).
+  FLATINFO lo legge `R_InitFlats` di `r_data.pas` (`R_ConfigureFlatInfo`, con `IdTech1\TextureDefs`).
 - La miniatura dei salvataggi: `TImagingSaveThumbnail` (`DelphiDoom.Imaging.Types`, 4014 byte, `SizeOf`
   coperto da test) e `TImagingSaveThumbnailFormat` (`DelphiDoom.Imaging.SaveThumbnail`: `IsValid`, `Fill`)
   sostituiscono `MN_ValidScreenShot` e la scrittura del marcatore `MENUSCREENSHOT`; la fa `R_MakeMenuThumbnail`

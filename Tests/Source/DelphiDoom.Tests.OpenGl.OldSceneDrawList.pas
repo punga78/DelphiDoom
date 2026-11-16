@@ -4,8 +4,8 @@
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  The text of gld_drawinfo, gld_AddDrawItem, ADDWALL and of the tails of      }
-{  gld_AddFlat and gld_AddSprite of Libs\OpenGl\Legacy\gl_render.pas before    }
-{  Libs\GlScene, kept only to compare the new class with it. The global        }
+{  gld_AddFlat and gld_AddSprite of IdTech1\OpenGl\Legacy\gl_render.pas before }
+{  IdTech1\GlScene, kept only to compare the new class with it. The global     }
 {  variables are fields of a record and Z_Realloc is ReallocMem.               }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

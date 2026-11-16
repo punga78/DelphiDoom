@@ -23,9 +23,9 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta (#133)**: `I_ExecProgram` non aveva chiamanti; dalla #145 non c'e piu nemmeno `TProcessRunner` in `Framework\Platform`.
 
-### `Libs\OpenGl\Legacy\gl_frustum.pas` - cancellata
+### `IdTech1\OpenGl\Legacy\gl_frustum.pas` - cancellata
 
-**Tolta (#134)**: i piani del frustum non li leggeva nessuno; dalla #145 non c'e piu nemmeno `TGlFrustum` in `Libs\GlMath`.
+**Tolta (#134)**: i piani del frustum non li leggeva nessuno; dalla #145 non c'e piu nemmeno `TGlFrustum` in `IdTech1\GlMath`.
 
 ### `Base\vx_voxelsprite.pas` - cancellata
 
@@ -35,7 +35,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta (#135)**: `#CREATEPALETTE` (`TEnginePaletteGenerator`) usa `IPaletteBuilder` di `Framework\Palette`.
 
-### `Libs\OpenGl\Legacy\mdl_base.pas` - nessuna funzione pubblica
+### `IdTech1\OpenGl\Legacy\mdl_base.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#134)**: resta solo con i tipi dei modelli.
 
@@ -143,23 +143,23 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`, dalla #185 fetta 1c solo come dichiarazione delle voci: le righe sono `IConfigurationItem` di `Framework\Configuration`, costruite da `TEngineConfigurationTable`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
 
-### `Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `Libs\Hud`, #185 fetta 1a)
+### `Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `IdTech1\Hud`, #185 fetta 1a)
 
-**Facciata (#185)**: `HU_Init`, `HU_Start`, `HU_Responder`, `HU_Ticker`, `HU_Drawer`, `HU_Erase`, `HU_dequeueChatChar`, `HU_DoFPSStuff`, `HU_FPS` (e `HU_Height`, `HU_TITLE`, `HU_DrawYellowText` dove il gioco li ha) hanno le firme di prima e sono righe che chiamano `IHeadsUp` (modello: `Libs\Hud`, classe `THeadsUp`) o `IHudScreen` (disegno: `DelphiDoom.Engine.Hud.Drawer`); li dà `ComposeHud` con `HU_Configure`, senza la configurazione danno `I_Error`. Restano nell'unit, perche' legati a globali che altri possiedono o che le patch Dehacked cambiano: i font (`hu_font*`, `yfont`, `m_font3`) e il loro caricamento, le tabelle dei nomi delle mappe (`mapnames*`), `player_names`, `chat_macros`, `destination_keys`/`key_multi_msgplayer`, `shiftxform` (la riempie `HU_Init` dalla libreria), `chat_on` e `message_dontfuckwithme` (li scrive `m_menu`), `drawfps`, `drawcrosshair`, `amdrawstats`, la geometria dei widget (`HU_TITLEY`, `HU_LEVELTIMEY`) e la scelta del titolo con le tabelle. Tolti perche' senza chiamanti fuori dall'unit: `message_on`, `message_nottobefuckedwith`, `always_off`, `HU_Stop`.
+**Facciata (#185)**: `HU_Init`, `HU_Start`, `HU_Responder`, `HU_Ticker`, `HU_Drawer`, `HU_Erase`, `HU_dequeueChatChar`, `HU_DoFPSStuff`, `HU_FPS` (e `HU_Height`, `HU_TITLE`, `HU_DrawYellowText` dove il gioco li ha) hanno le firme di prima e sono righe che chiamano `IHeadsUp` (modello: `IdTech1\Hud`, classe `THeadsUp`) o `IHudScreen` (disegno: `DelphiDoom.Engine.Hud.Drawer`); li dà `ComposeHud` con `HU_Configure`, senza la configurazione danno `I_Error`. Restano nell'unit, perche' legati a globali che altri possiedono o che le patch Dehacked cambiano: i font (`hu_font*`, `yfont`, `m_font3`) e il loro caricamento, le tabelle dei nomi delle mappe (`mapnames*`), `player_names`, `chat_macros`, `destination_keys`/`key_multi_msgplayer`, `shiftxform` (la riempie `HU_Init` dalla libreria), `chat_on` e `message_dontfuckwithme` (li scrive `m_menu`), `drawfps`, `drawcrosshair`, `amdrawstats`, la geometria dei widget (`HU_TITLEY`, `HU_LEVELTIMEY`) e la scelta del titolo con le tabelle. Tolti perche' senza chiamanti fuori dall'unit: `message_on`, `message_nottobefuckedwith`, `always_off`, `HU_Stop`.
 
 ### `Base\hu_lib.pas` - 1 funzione pubblica (Strife)
 
-**Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `Libs\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
+**Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `IdTech1\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
 
-### `Base\sc_tokens.pas`, `Base\sc_consts.pas`, `Base\sc_params.pas`, `Base\sc_states.pas` (facciate sopra `Framework\Scanner`, `Libs\ActorDef` e `Libs\Info`, #185 fetta 1b)
+### `Base\sc_tokens.pas`, `Base\sc_consts.pas`, `Base\sc_params.pas`, `Base\sc_states.pas` (facciate sopra `Framework\Scanner`, `IdTech1\ActorDef` e `IdTech1\Info`, #185 fetta 1b)
 
-**Facciate (#185)**: `TTokenList` (resta una `TDStringList`; `IndexOfToken` e `AllTokensWithIndex` usano `TScannerTokenEntry`), `SC_EvalueateIntToken`, `SC_InitConsts`/`SC_ShutDownConsts`/`SC_AddConst`/`SC_GetConst` (`TScannerConstTable`; i dati di `SC_InitConsts` restano), `TCustomParamList` (stesse proprieta', sopra `TActorDefParamList`) e `SC_EvalString` (`TActorDefParamString`) hanno le firme di prima. `P_GetStateFromName` e `P_GetStateFromNameWithOffsetCheck` chiamano `IEngineStateNames` (`TInfoStateNames` di `Libs\Info`), dato da `ComposeInfoTables` con `SC_ConfigureStateNames`; senza configurazione `I_Error`. Restano nell'unit di `sc_states` la lettura del lump `STATEDEF` e `SC_DefaultStatedefLump`/`SC_FillStateNames` (riempiono la lista globale `statenames`). Righe: `sc_tokens` 161 -> 119, `sc_consts` 326 -> 290, `sc_params` 998 -> 224, `sc_states` 358 -> 238.
+**Facciate (#185)**: `TTokenList` (resta una `TDStringList`; `IndexOfToken` e `AllTokensWithIndex` usano `TScannerTokenEntry`), `SC_EvalueateIntToken`, `SC_InitConsts`/`SC_ShutDownConsts`/`SC_AddConst`/`SC_GetConst` (`TScannerConstTable`; i dati di `SC_InitConsts` restano), `TCustomParamList` (stesse proprieta', sopra `TActorDefParamList`) e `SC_EvalString` (`TActorDefParamString`) hanno le firme di prima. `P_GetStateFromName` e `P_GetStateFromNameWithOffsetCheck` chiamano `IEngineStateNames` (`TInfoStateNames` di `IdTech1\Info`), dato da `ComposeInfoTables` con `SC_ConfigureStateNames`; senza configurazione `I_Error`. Restano nell'unit di `sc_states` la lettura del lump `STATEDEF` e `SC_DefaultStatedefLump`/`SC_FillStateNames` (riempiono la lista globale `statenames`). Righe: `sc_tokens` 161 -> 119, `sc_consts` 326 -> 290, `sc_params` 998 -> 224, `sc_states` 358 -> 238.
 
-### `Base\info_common.pas`, `Base\info_fnd.pas`, `Base\info_rnd.pas`, `Base\info_export.pas` (facciate sopra `Libs\Info` e `Libs\TableExport`, #185 fetta 1b)
+### `Base\info_common.pas`, `Base\info_fnd.pas`, `Base\info_rnd.pas`, `Base\info_export.pas` (facciate sopra `IdTech1\Info` e `IdTech1\TableExport`, #185 fetta 1b)
 
 **Facciate (#185)**: le ricerche (`Info_GetMobjNumForDoomNum`, `Info_GetMobjNumForName`, `Info_AddMobjNameAlias`, `Info_GetInheritance`, `Info_GetStatesForMobjInfo`, `Info_CheckStates`, `Info_FindStatesFromSprite`), i nomi dei gruppi (`Info_*GroupToString/ToInt`), i mostri a caso (`Info_InitRandom`, `Info_SelectRandomMonster`, `Info_IsMonster`) e il salvataggio di `Info_SavePascal` chiamano i servizi dati da `ComposeInfoTables` (`Info_ConfigureThings`, `Info_ConfigureStates`, `Info_ConfigureGroups`, `Info_ConfigureRandom`) e da `ComposeTableExport` (`Info_ConfigureExport` ha un parametro in piu'); senza configurazione `I_Error`. Restano storiche, perche' scrivono le tabelle o leggono i loro array: `Info_GetNewState`, `Info_GetNewMobjInfo`, `Info_GetSpriteNumForName`, `Info_CheckSpriteNumForName`, `Info_SetMobjName`, `Info_GetMobjName`, `Info_ShutDown`, `Info_AddStateOwner`, `Info_InitStateOwners`, `Info_SaveActions`, `Info_RestoreActions`, `Info_CheckStatesArgs`. Righe: `info_common` 1160 -> 858, `info_fnd` 126 -> 66, `info_rnd` 243 -> 150, `info_export` 233 -> 220 (i comandi di console restano).
 
-### `Base\deh_base.pas` (facciata sopra `Libs\Dehacked` e `Libs\TableExport`, #185 fetta 1b)
+### `Base\deh_base.pas` (facciata sopra `IdTech1\Dehacked` e `IdTech1\TableExport`, #185 fetta 1b)
 
 **Facciata (#185)**: i sette `DEH_Save*` chiamano `ITableExportSaver` (dato da `DEH_ConfigureExport`, che ha un parametro in piu'), `DEH_ParseFile` prende i nomi da `TDehackedFileNames`, `DEH_AmmoType`/`DEH_WeaponType`/`DEH_PlayerClass` il prefisso da `TDehackedTokenName`, `DEH_CStringToString`/`DEH_StringValue` chiamano `TDehackedText`. Restano nell'unit i lump e i PAK (`DEH_ParseLumpName*`, `DEH_ParseLumpNum`, il flusso del file), la stampa a console e il registro delle azioni. Righe 1321 -> 1204 (le funzioni d'appoggio dei salvataggi ne aggiungono una cinquantina).
 
@@ -173,7 +173,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\am_map.pas`: `AM_drawFline` (#185 chiusura della fase 1)
 
-**Delegata (#185)**: nel renderer software `AM_drawFline` riempie un `TAutomapRasterTarget` (buffer a 8 o a 32 bit, larghezza, finestra della vista per l'overlay) e chiama `TAutomapLineRasterizer.Draw8/Draw32` di `Libs\Automap`; il ramo OpenGL (`gld_AddAutomapLine`) non cambia. Righe 2315 -> 2263.
+**Delegata (#185)**: nel renderer software `AM_drawFline` riempie un `TAutomapRasterTarget` (buffer a 8 o a 32 bit, larghezza, finestra della vista per l'overlay) e chiama `TAutomapLineRasterizer.Draw8/Draw32` di `IdTech1\Automap`; il ramo OpenGL (`gld_AddAutomapLine`) non cambia. Righe 2315 -> 2263.
 
 ### `Base\mt_utils.pas`, `Base\c_utils.pas`, `Base\d_notifications.pas` (#185, fetta 1e)
 
@@ -215,7 +215,7 @@ Per toglierla: savegame: il formato non puo cambiare, resta facciata.
 |---|---:|---|
 | `P_ConfigureSerializer` | 1 | DelphiDoom.Engine.Composition |
 
-### `Libs\OpenGl\Legacy\gl_voxels.pas` - 2 funzioni pubbliche, 2 chiamate
+### `IdTech1\OpenGl\Legacy\gl_voxels.pas` - 2 funzioni pubbliche, 2 chiamate
 
 **Non piu facciata (#134)**: resta il disegno dei voxel in OpenGL (`gld_InitVoxels`, `gld_VoxelsDone`), legato al contesto GL.
 
@@ -234,7 +234,7 @@ Per toglierla: savegame: il formato non puo cambiare, resta facciata.
 
 ### `Heretic\p_telept.pas` - 2 funzioni pubbliche, 4 chiamate
 
-Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `Libs\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
+Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `IdTech1\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -243,13 +243,13 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 
 ### `Base\p_obituaries.pas` - 1 funzioni pubbliche, 5 chiamate
 
-**Non piu facciata (#136)**: resta `P_Obituary`, logica del motore che chiama `Libs\Obituary`.
+**Non piu facciata (#136)**: resta `P_Obituary`, logica del motore che chiama `IdTech1\Obituary`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `P_Obituary` | 5 | Doom\p_inter, Heretic\p_inter, Hexen\p_inter (2), Strife\p_inter |
 
-### `Libs\OpenGl\Legacy\gl_clipper.pas` - 5 funzioni pubbliche, 7 chiamate
+### `IdTech1\OpenGl\Legacy\gl_clipper.pas` - 5 funzioni pubbliche, 7 chiamate
 
 Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
@@ -263,7 +263,7 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
 ### `Base\nd_main.pas` - 3 funzioni pubbliche, 7 chiamate
 
-**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `Libs\OpenGl\Legacy\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
+**Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `IdTech1\OpenGl\Legacy\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -271,7 +271,7 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 
 ### `Base\vx_base.pas` - 7 funzioni pubbliche, 9 chiamate
 
-**Resta storica (#185, fetta 1e)**: e' il registro (`voxelmanager`, `voxelstates`) che i renderer leggono per ogni voxel disegnato, piu' `VX_CheckVoxelSprite` che scrive in `voxelspritenames` una lista che nessuno legge (dato morto: vedi `docs\PENDING_ISSUES.md`). Il parser e il sink sono gia' a classi (`Libs\Voxel`).
+**Resta storica (#185, fetta 1e)**: e' il registro (`voxelmanager`, `voxelstates`) che i renderer leggono per ogni voxel disegnato, piu' `VX_CheckVoxelSprite` che scrive in `voxelspritenames` una lista che nessuno legge (dato morto: vedi `docs\PENDING_ISSUES.md`). Il parser e il sink sono gia' a classi (`IdTech1\Voxel`).
 
 Per toglierla: il registro dei voxel di VOXELDEF: voxel, poche chiamate, iniettare il servizio.
 
@@ -287,7 +287,7 @@ Per toglierla: il registro dei voxel di VOXELDEF: voxel, poche chiamate, inietta
 
 ### `Base\udmf_telept.pas` - 2 funzioni pubbliche, 9 chiamate
 
-Per toglierla: teletrasporto di Hexen e UDMF (#154): usa `TTeleportGeometry` e `TTeleportLineExit` di `Libs\Thinkers`; restano il giro dei thinker e le scritture sul mobj e sul giocatore.
+Per toglierla: teletrasporto di Hexen e UDMF (#154): usa `TTeleportGeometry` e `TTeleportLineExit` di `IdTech1\Thinkers`; restano il giro dei thinker e le scritture sul mobj e sul giocatore.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -426,7 +426,7 @@ Per toglierla: dalla #148 e una facciata sottile `TDThread` sopra `IWorkerThread
 
 ### `Heretic\p_plats.pas` - 6 funzioni pubbliche, 21 chiamate
 
-Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `Libs\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `IdTech1\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -439,7 +439,7 @@ Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i
 
 ### `Heretic\p_doors.pas` - 5 funzioni pubbliche, 21 chiamate
 
-Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `Libs\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `IdTech1\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -451,7 +451,7 @@ Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic
 
 ### `Doom\p_telept.pas` - 3 funzioni pubbliche, 21 chiamate
 
-Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `Libs\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
+Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `IdTech1\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -473,7 +473,7 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 
 ### `Strife\p_telept.pas` - 3 funzioni pubbliche, 24 chiamate
 
-Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `Libs\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
+Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `IdTech1\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -483,7 +483,7 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 
 ### `Base\udmf_doors.pas` - 3 funzioni pubbliche, 25 chiamate
 
-Per toglierla: facciata delle porte a script (#152, Hexen e UDMF): `TDoorRunner` e `TDoorSpawner` di `Libs\Thinkers` con il profilo della famiglia UDMF; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle porte a script (#152, Hexen e UDMF): `TDoorRunner` e `TDoorSpawner` di `IdTech1\Thinkers` con il profilo della famiglia UDMF; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -493,7 +493,7 @@ Per toglierla: facciata delle porte a script (#152, Hexen e UDMF): `TDoorRunner`
 
 ### `Heretic\p_lights.pas` - 11 funzioni pubbliche, 28 chiamate
 
-Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `Libs\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `IdTech1\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -523,7 +523,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 
 ### `Base\udmf_plats.pas` - 5 funzioni pubbliche, 33 chiamate
 
-Per toglierla: facciata delle piattaforme a script (#154, Hexen e UDMF): `TUdmfPlatMachine` di `Libs\Thinkers`; restano `hactiveplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle piattaforme a script (#154, Hexen e UDMF): `TUdmfPlatMachine` di `IdTech1\Thinkers`; restano `hactiveplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -633,7 +633,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 
 ### `Doom\p_plats.pas` - 6 funzioni pubbliche, 39 chiamate
 
-Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `Libs\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `IdTech1\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -646,7 +646,7 @@ Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i
 
 ### `Strife\p_lights.pas` - 11 funzioni pubbliche, 40 chiamate
 
-Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `Libs\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `IdTech1\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -697,7 +697,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 
 ### `Doom\p_lights.pas` - 11 funzioni pubbliche, 40 chiamate
 
-Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `Libs\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `IdTech1\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -715,7 +715,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 
 ### `Doom\p_doors.pas` - 6 funzioni pubbliche, 40 chiamate
 
-Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `Libs\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `IdTech1\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -728,7 +728,7 @@ Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic
 
 ### `Strife\p_plats.pas` - 6 funzioni pubbliche, 42 chiamate
 
-Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `Libs\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `IdTech1\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -741,7 +741,7 @@ Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i
 
 ### `Base\udmf_lights.pas` - 5 funzioni pubbliche, 44 chiamate
 
-Per toglierla: facciata degli special a script delle luci (#149, Hexen e UDMF): `TLightScripted`, `TLightPhase` e `TLightSequence` di `Libs\Thinkers`; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata degli special a script delle luci (#149, Hexen e UDMF): `TLightScripted`, `TLightPhase` e `TLightSequence` di `IdTech1\Thinkers`; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -788,7 +788,7 @@ Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `T
 
 ### `Heretic\p_floor.pas` - 4 funzioni pubbliche, 47 chiamate
 
-Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `Libs\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `IdTech1\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -886,7 +886,7 @@ Per toglierla: l'interprete ACS lavora sullo stato del gioco; servirebbe un `IAc
 
 ### `Strife\p_doors.pas` - 11 funzioni pubbliche, 76 chiamate
 
-Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `Libs\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `IdTech1\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -922,7 +922,7 @@ Per toglierla: `TH_MovePlane` e `TH_FloorWaggle` chiamano `TPlaneMover` e `TPlan
 
 ### `Doom\p_floor.pas` - 8 funzioni pubbliche, 104 chiamate
 
-Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `Libs\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `IdTech1\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -956,7 +956,7 @@ Per toglierla: gli esecutori `EVH_*` dei thinker non si possono astrarre (savega
 
 ### `Strife\p_floor.pas` - 8 funzioni pubbliche, 121 chiamate
 
-Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `Libs\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
+Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `IdTech1\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1238,7 +1238,7 @@ Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiam
 | `N_Random` | 118 | DelphiDoom.Engine.Scanner.ActorFunctions (10), Doom\p_extra (15), Doom\p_genlin, Doom\p_inter (2), Doom\p_map (2), Doom\p_mobj (9), Doom\p_spec, Heretic\p_extra (2), +16 altri |
 | `P_Random` | 924 | DelphiDoom.Engine.Scanner.ActorFunctions, Doom\g_game, Doom\p_enemy (44), Doom\p_extra (6), Doom\p_inter (3), Doom\p_map (9), Doom\p_mobj (31), Doom\p_pspr (17), +37 altri |
 
-### `Base\i_net.pas`, `i_mikplay.pas`, `i_midi_legacy.pas`, `i_crashlog.pas` - facciate sopra `Libs\EngineSystem` (#185 fetta 1d)
+### `Base\i_net.pas`, `i_mikplay.pas`, `i_midi_legacy.pas`, `i_crashlog.pas` - facciate sopra `IdTech1\EngineSystem` (#185 fetta 1d)
 
 **Facciate (#185)**: `I_InitNetwork` legge le opzioni con `INetCommandLineReader` (`I_ConfigureNetOptions`) e le scrive nelle variabili `net_*`, in `netgame` e in `R_SetViewAngleOffset` (la lettura della riga di comando e' `TNetCommandLineReader`). `I_InitMik` e le altre `I_*Mik` (`I_ConfigureMik`) chiamano `IModuleMusicPlayer` (chiamante: `TModuleMusicBackend`). Le `I_*Midi_Legacy`, `AddMidiFileToPlayList_Legacy` e `ClearMidiFilePlayList_Legacy` (`I_ConfigureLegacyMidi`) chiamano `ILegacyMidiPlayer` (chiamante: `i_midi`). `I_InstallCrashLogger` e' `TWindowsCrashLogger.Install` (chiamanti: i dieci `.dpr` dei giochi). Per toglierle: `Engine.Music.ModuleBackend` e `Engine.Music.MidiFileBackend` possono ricevere i player dal costruttore invece di passare dalle facciate; `i_net` si toglie quando `TEngineNetGame` riceve `INetCommandLineReader` e scrive lui le variabili `net_*`.
 
@@ -1303,7 +1303,7 @@ Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I
 
 ### `Base\deh_base.pas` - 43 funzioni pubbliche, 2053 chiamate
 
-Per toglierla: le liste dei flag e dei token servono ai dump; servirebbe un catalogo iniettato in `Libs\Dehacked` invece delle liste globali. Dalla #144 l'applicazione delle patch e `TEngineDehackedApplier` (`DEH_ConfigureApplier`).
+Per toglierla: le liste dei flag e dei token servono ai dump; servirebbe un catalogo iniettato in `IdTech1\Dehacked` invece delle liste globali. Dalla #144 l'applicazione delle patch e `TEngineDehackedApplier` (`DEH_ConfigureApplier`).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1378,12 +1378,12 @@ Nessun chiamante fuori dalla unit (riferimenti in `Tests\` e `Libs\` esclusi), n
 - `Doom\p_spec.pas`: P_FindMinSurroundingLight
 - `Heretic\p_enemy.pas`: A_Fall
 - `Heretic\p_spec.pas`: P_InitLava
-- `Libs\OpenGl\Legacy\gl_ambient.pas`: gld_AmbientExecute
-- `Libs\OpenGl\Legacy\gl_misc.pas`: gl_f_max
-- `Libs\OpenGl\Legacy\gl_render.pas`: gld_DrawLine
-- `Libs\OpenGl\Legacy\gl_tex.pas`: gld_LoadExternalTextureAlpha
-- `Libs\OpenGl\Legacy\gl_types.pas`: MakeGLVertex
-- `Libs\OpenGl\Legacy\mdl_script_proclist.pas`: MDL_Procs
+- `IdTech1\OpenGl\Legacy\gl_ambient.pas`: gld_AmbientExecute
+- `IdTech1\OpenGl\Legacy\gl_misc.pas`: gl_f_max
+- `IdTech1\OpenGl\Legacy\gl_render.pas`: gld_DrawLine
+- `IdTech1\OpenGl\Legacy\gl_tex.pas`: gld_LoadExternalTextureAlpha
+- `IdTech1\OpenGl\Legacy\gl_types.pas`: MakeGLVertex
+- `IdTech1\OpenGl\Legacy\mdl_script_proclist.pas`: MDL_Procs
 - `Strife\p_spec.pas`: P_FindMinSurroundingLight
 
 
@@ -1435,8 +1435,8 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Hexen\p_spec.pas`: EVH_LineSearchForPuzzleItem
 - `Hexen\p_user.pas`: P_PlayerNextArtifact
 - `Hexen\sv_save.pas`: P_ArchiveScreenShot, P_UnArchiveScreenShot
-- `Libs\OpenGl\Legacy\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
-- `Libs\OpenGl\Legacy\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
+- `IdTech1\OpenGl\Legacy\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
+- `IdTech1\OpenGl\Legacy\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
 - `Framework\ScriptHost\psi_game.pas`: PS_GetMobjInfoGravity
 - `Strife\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
 - `Strife\g_game.pas`: G_DoLoadGame
@@ -1448,6 +1448,6 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 
 **Nota (issue #177, fetta 3)**: `gld_ConfigureModelDefinitions` di `gl_models.pas` riceve preprocessore, parser (`IModelDefinitionParser`) e sink (`TEngineModelDefinitionSink`) da `ComposeModels`; `gld_AddModel`, `gld_AddModelState` e `gld_AddModelTexture` sono ora esposte dall'unit e chiamate solo da quel sink.
 
-**Nota (issue #177, fetta 4 parziale)**: `gld_FlatEdgeClipper`, `gld_FlatConvexCarver`, `gld_CarveFlats` e `gld_GetSubSectorVertices` di `gl_render.pas` non esistono piu: le sostituisce `IGlFlatCarver` (`gld_ConfigureFlatCarver`, dato da `ComposeLevelGeometry`) e `gld_AddFlatLoop`. Dalla fetta 5, le routine di buffer di `gl_tex.pas` (`gld_AddPatchToTexture*`, `gld_AddFlatToTexture`, `gld_RippleTransform`, `gld_CheckTextureTransparency`, `gld_InitPalettedTextures`, `gld_SetTexturePalette`) restano con la stessa firma e chiamano le classi di `Libs\GlTexture`.
+**Nota (issue #177, fetta 4 parziale)**: `gld_FlatEdgeClipper`, `gld_FlatConvexCarver`, `gld_CarveFlats` e `gld_GetSubSectorVertices` di `gl_render.pas` non esistono piu: le sostituisce `IGlFlatCarver` (`gld_ConfigureFlatCarver`, dato da `ComposeLevelGeometry`) e `gld_AddFlatLoop`. Dalla fetta 5, le routine di buffer di `gl_tex.pas` (`gld_AddPatchToTexture*`, `gld_AddFlatToTexture`, `gld_RippleTransform`, `gld_CheckTextureTransparency`, `gld_InitPalettedTextures`, `gld_SetTexturePalette`) restano con la stessa firma e chiamano le classi di `IdTech1\GlTexture`.
 
 **Nota (issue #177, fetta 9)**: `gld_AddWall`, `gld_AddPlane`, `gld_AddSprite` e `gld_PreprocessSegs` di `gl_render.pas` restano con la stessa firma e chiamano `TEngineGlSceneWallCollector`, `TEngineGlSceneFlatCollector` e `TEngineGlSceneSpriteCollector` (classi semplici date da `ComposeGlScene` e `ComposeDynLights` con `gld_ConfigureDrawList`, `gld_ConfigureFlatCollector`, `gld_ConfigureWallCollector`, `gld_ConfigureSpriteCollector`); `gld_drawinfo`, `gld_AddDrawItem`, `gld_AddFlat*`, `gld_AddMidWall`, `gld_MarkDLights`, `gld_MarkDShadow` e le `CALC_*` non esistono piu'.

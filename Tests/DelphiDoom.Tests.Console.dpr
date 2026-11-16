@@ -17,7 +17,7 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Logging.Types in '..\Framework\Logging\DelphiDoom.Logging.Types.pas',
   DelphiDoom.Logging.Intf in '..\Framework\Logging\DelphiDoom.Logging.Intf.pas',
-  DelphiDoom.GameState.Intf in '..\Libs\GameState\DelphiDoom.GameState.Intf.pas',
+  DelphiDoom.GameState.Intf in '..\IdTech1\GameState\DelphiDoom.GameState.Intf.pas',
   DelphiDoom.Console.Types in '..\Framework\Console\DelphiDoom.Console.Types.pas',
   DelphiDoom.Console.Intf in '..\Framework\Console\DelphiDoom.Console.Intf.pas',
   DelphiDoom.Console.Text in '..\Framework\Console\DelphiDoom.Console.Text.pas',

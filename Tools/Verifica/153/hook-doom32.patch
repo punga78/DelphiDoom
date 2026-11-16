@@ -1,7 +1,7 @@
 --- a/Doom32.dpr
 +++ b/Doom32.dpr
 @@ -501,6 +501,7 @@
-   DelphiDoom.Thinkers.Plane.Waggle in 'Libs\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
+   DelphiDoom.Thinkers.Plane.Waggle in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
    DelphiDoom.Engine.Plane.Services in 'Base\DelphiDoom.Engine.Plane.Services.pas',
    DelphiDoom.Engine.Plane.Host in 'Base\DelphiDoom.Engine.Plane.Host.pas',
 +  plane_parity in 'Tools\Verifica\153\plane_parity.pas',

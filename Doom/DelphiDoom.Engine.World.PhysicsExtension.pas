@@ -21,10 +21,10 @@ type
   /// <summary>
   ///   The places of the rules of Doom (TInterGameRules, TMapGameRules, TMobjGameRules) where a game
   ///   that is built on them can add its own physics (issue #169, the "Aggancio della fisica" of
-  ///   Libs\Radix\CLAUDE.md). This is the version of the games that add nothing: Enabled is a
+  ///   IdTech1\Radix\CLAUDE.md). This is the version of the games that add nothing: Enabled is a
   ///   constant False and every method is empty, so the code that tests Enabled is not compiled
   ///   and no call is left in the movement of Doom, GLDoom, Speed Haste and the compilers.
-  ///   The version of Radix has the same name and the same signatures and sits in Radix\: the
+  ///   The version of Radix has the same name and the same signatures and sits in IdTech1\Radix\: the
   ///   project chooses between the two, with no conditional compilation
   /// </summary>
   /// <remarks>

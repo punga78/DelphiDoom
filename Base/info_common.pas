@@ -41,7 +41,7 @@ uses
 // Info_ConfigureThings
 //
 // What finds the things by editor number and by name, and their ancestors: ComposeEngine
-// gives it (issue #185, the rules are in Libs\Info)
+// gives it (issue #185, the rules are in IdTech1\Info)
 //
 //==============================================================================
 procedure Info_ConfigureThings(const AThings: IEngineInfoThings);

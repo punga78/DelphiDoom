@@ -73,7 +73,7 @@ const
   ACTOR_DEFINITIONS_RESOURCE = 'RADIXDEF';
   END_SCREEN_RESOURCE = 'RADIXEND%d';
 
-// A resource linked into the program (Radix\Radix32_Data.rc); nothing for a program without the
+// A resource linked into the program (IdTech1\Radix\Radix32_Data.rc); nothing for a program without the
 // resource (a test, a tool)
 function LoadDataResource(const AName: string): TBytes;
 var

@@ -25,7 +25,7 @@ uses
 type
   /// <summary>
   ///   HU_Drawer, HU_Erase and the drawing of the widgets (HUlib_drawTextLine and the others): reads
-  ///   the model through IHudView, lets Libs\Hud say where each glyph goes and calls V_DrawPatch
+  ///   the model through IHudView, lets IdTech1\Hud say where each glyph goes and calls V_DrawPatch
   ///   for it. The class is sealed and has no virtual method: a frame crosses the contract of
   ///   the screen once and then only calls routines of the engine, so no glyph is drawn through an
   ///   interface

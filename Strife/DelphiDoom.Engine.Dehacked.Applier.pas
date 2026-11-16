@@ -18,7 +18,7 @@ uses
 
 type
   /// <summary>
-  ///   Reads a patch with the parser of Libs\Dehacked and applies its sections, in the order of
+  ///   Reads a patch with the parser of IdTech1\Dehacked and applies its sections, in the order of
   ///   the file, to the tables of the game (it was DEH_Parse and DEH_Apply of deh_main). The
   ///   parameters of the actions of the states are read with the evaluator of the expressions
   /// </summary>
@@ -101,7 +101,7 @@ end;
 //==============================================================================
 //
 // TEngineDehackedApplier.ApplyPatch
-// Applies a patch that the parser of Libs\Dehacked has read: the sections come
+// Applies a patch that the parser of IdTech1\Dehacked has read: the sections come
 // in the order of the file and are applied in that order (the old DEH_Apply,
 // in the style of the historic code)
 //

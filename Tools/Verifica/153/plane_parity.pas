@@ -1,5 +1,5 @@
 // TEMPORARY HARNESS of issue #153 (not for the build of the game): runs the OLD code of T_MovePlane
-// (copied as it was before Libs\Thinkers: the one of the game and the one of udmf_floor.pas) next
+// (copied as it was before IdTech1\Thinkers: the one of the game and the one of udmf_floor.pas) next
 // to the NEW one, the facades T_MovePlane (p_floor.pas, not Hexen) and TH_MovePlane (udmf_floor.pas),
 // on copies of engine sectors and the same cases. P_ChangeSector and P_DynamicSlope are replaced
 // by a fake host that blocks a sector when its gap is smaller than a given height and writes

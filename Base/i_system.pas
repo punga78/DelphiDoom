@@ -499,7 +499,7 @@ var
   // before ComposeEngine is done: I_Destroy then skips them, as the old code did
   i_netgame_ref: IEngineNetGame = nil;
   i_defaults_ref: IEngineDefaults = nil;
-  // the shutdown and the handler of the fatal errors (Libs\EngineSystem)
+  // the shutdown and the handler of the fatal errors (IdTech1\EngineSystem)
   system_shutdown: IShutdownSequence = nil;
   system_fatalerror: IFatalErrorHandler = nil;
 
@@ -767,7 +767,7 @@ end;
 //==============================================================================
 procedure I_Destroy(const code: integer);
 begin
-  // the sequence of Libs\EngineSystem writes what it does and ends the process; without it (an error
+  // the sequence of IdTech1\EngineSystem writes what it does and ends the process; without it (an error
   // before ComposeEngine) there is nothing to shut down
   finished := true;
   if system_shutdown <> nil then
@@ -815,7 +815,7 @@ begin
 
   sprintf(msg, error, Args);
 
-  // the order of the steps is TFatalErrorHandler of Libs\EngineSystem; without it (an error before
+  // the order of the steps is TFatalErrorHandler of IdTech1\EngineSystem; without it (an error before
   // ComposeEngine) the message goes to the output and the game stops
   if system_fatalerror <> nil then
     system_fatalerror.Handle(msg)

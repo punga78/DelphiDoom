@@ -13,7 +13,7 @@ interface
 
 type
   /// <summary>
-  ///   Reads a DEHACKED or BEX patch with the parser of Libs\Dehacked and applies it to the
+  ///   Reads a DEHACKED or BEX patch with the parser of IdTech1\Dehacked and applies it to the
   ///   tables of the game (mobjinfo, states, weapons, ammo, sounds, music, strings, pars).
   ///   One class for each game (TEngineDehackedApplier in the folder of the game); the
   ///   composition root gives it to deh_base. It was DEH_Parse and DEH_Apply of deh_main

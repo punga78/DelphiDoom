@@ -24,7 +24,7 @@
 //  Handle Sector base lighting effects.
 //  Muzzle flash?
 //  The thinkers stay records in the zone memory (the savegames copy them as
-//  they are); what they compute is in Libs\Thinkers (DelphiDoom.Thinkers.Light.*).
+//  they are); what they compute is in IdTech1\Thinkers (DelphiDoom.Thinkers.Light.*).
 //  One copy for Doom, Heretic and Strife: what differs (the sector special after
 //  the light is spawned, the check of a sector already busy) is in
 //  TSpecGameRules (DelphiDoom.Engine.World.SpecRules of each game).

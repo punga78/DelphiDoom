@@ -27,7 +27,7 @@ type
   ///   in memory (NETGREED.EXE for IPX, SERGREED.EXE for serial line and modem) through a software interrupt and
   ///   the record greedcom_t: command CMD_SEND or CMD_GET, the node (8 = everybody, -1 = nothing arrived) and 128
   ///   bytes of data. xGreed has no driver and its net.pas is empty routines (the code is a comment), so there is
-  ///   nothing to be compatible with on a wire: here the "interrupt" is an INetTransport of Libs\Net (datagrams
+  ///   nothing to be compatible with on a wire: here the "interrupt" is an INetTransport of IdTech1\Net (datagrams
   ///   to the other nodes of the game; every packet of Greed goes to all of them) and the packets are the same
   ///   bytes that the original put in greedcom.data.
   ///   What travels: where each player is and what it does (every 3 + players tics), every shot, mine and

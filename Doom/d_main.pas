@@ -2102,7 +2102,7 @@ begin
   else if customgame = cg_hacx then
     SUC_SetGameMode('HACX');
 {$IFDEF RADIX}
-  // the lumps of Radix come from RADIX.DAT (Libs\Radix): RADIXINF says so. The edition (shareware
+  // the lumps of Radix come from RADIX.DAT (IdTech1\Radix): RADIXINF says so. The edition (shareware
   // or registered) is told by the CRC of the file (radix_version); a file that the table does
   // not have is registered when it has the third episode, as Rad-X did
   if (gamemode = indetermined) and (W_CheckNumForName('RADIXINF') <> -1) then
@@ -2125,7 +2125,7 @@ begin
   end;
 {$ENDIF}
 {$IFDEF SPEED}
-  // the lumps of Speed Haste come from SPEEDH.JCL (Libs\Speed): SPEEDINF says so. The edition
+  // the lumps of Speed Haste come from SPEEDH.JCL (IdTech1\Speed): SPEEDINF says so. The edition
   // (shareware or registered) is told by the circuits: not done yet, the shareware rules are used
   if (gamemode = indetermined) and (W_CheckNumForName('SPEEDINF') <> -1) then
   begin

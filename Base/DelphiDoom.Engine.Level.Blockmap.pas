@@ -25,7 +25,7 @@ type
   ///   The blockmap of the level in blockmaplump, blockmap, blocklinks and the variables of
   ///   p_setup.pas: the lump BLOCKMAP if it can be used, otherwise built from the lines (a
   ///   missing, too small or too big lump, a large map or -blockmap). Also the removal of the
-  ///   slime trails (killough 10/98). The calculations are the ones of Libs\Blockmap
+  ///   slime trails (killough 10/98). The calculations are the ones of IdTech1\Blockmap
   /// </summary>
   TEngineLevelBlockmap = class(TInterfacedObject, ILevelBlockmap)
   strict private
