@@ -75,4 +75,17 @@
   R_DrawTranslatedColumnHi_Batch = @{ Expression = 'TRendererBatchColumnDrawers.R_DrawTranslatedColumnHi_Batch'; Unit = 'r_batchcolumn' }
   R_DrawFuzzColumnHi_Batch = @{ Expression = 'TRendererBatchColumnDrawers.R_DrawFuzzColumnHi_Batch'; Unit = 'r_batchcolumn' }
   R_DrawFuzzColumn32_Batch = @{ Expression = 'TRendererBatchColumnDrawers.R_DrawFuzzColumn32_Batch'; Unit = 'r_batchcolumn' }
+  R_DrawFuzzColumnHi = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnHi'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn32'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn'; Unit = 'r_col_fz' }
+  R_DrawNewFuzzColumnHi = @{ Expression = 'TRendererColFzDrawers.R_DrawNewFuzzColumnHi'; Unit = 'r_col_fz' }
+  R_DrawNewFuzzColumn = @{ Expression = 'TRendererColFzDrawers.R_DrawNewFuzzColumn'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn2Hi = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2Hi'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn1 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumnTL = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnTL'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn2Hi32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2Hi32'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn1Hi = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1Hi'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumnHiTL = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnHiTL'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn1Hi32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1Hi32'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn2 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2'; Unit = 'r_col_fz' }
 }

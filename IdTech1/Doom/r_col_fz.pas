@@ -43,21 +43,18 @@ procedure R_InitFuzzTable;
 // The Spectre/Invisibility effect.
 //
 //==============================================================================
-procedure R_DrawFuzzColumn;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn32;
 
 //==============================================================================
 //
 // R_DrawFuzzColumnHi
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHi;
 
 //
 // Spectre/Invisibility.
@@ -80,6 +77,18 @@ var
   sfuzzoffset: array[0..FUZZTABLE - 1] of integer;
   fuzzpos: integer = 0;
 
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColFzDrawers = class sealed
+  public
+    class procedure R_DrawFuzzColumn; static;
+    class procedure R_DrawFuzzColumn32; static;
+    class procedure R_DrawFuzzColumnHi; static;
+  end;
+
 implementation
 
 uses
@@ -101,7 +110,7 @@ uses
 //  i.e. spectres and invisible players.
 //
 //==============================================================================
-procedure R_DrawFuzzColumn;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn;
 var
   count: integer;
   i: integer;
@@ -150,7 +159,7 @@ end;
 // R_DrawFuzzColumn32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn32;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn32;
 var
   count: integer;
   i: integer;
@@ -199,7 +208,7 @@ end;
 // R_DrawFuzzColumnHi
 //
 //==============================================================================
-procedure R_DrawFuzzColumnHi;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumnHi;
 var
   count: integer;
   i: integer;

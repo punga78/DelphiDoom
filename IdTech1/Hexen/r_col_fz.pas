@@ -44,28 +44,24 @@ procedure R_InitFuzzTable;
 // The Spectre/Invisibility effect.
 //
 //==============================================================================
-procedure R_DrawFuzzColumn;
 
 //==============================================================================
 //
 // R_DrawFuzzColumn32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn32;
 
 //==============================================================================
 //
 // R_DrawNewFuzzColumn
 //
 //==============================================================================
-procedure R_DrawNewFuzzColumn;
 
 //==============================================================================
 //
 // R_DrawNewFuzzColumnHi
 //
 //==============================================================================
-procedure R_DrawNewFuzzColumnHi;
 
 const
   FUZZTABLE = 50;
@@ -86,6 +82,19 @@ var
 
 var
   fuzzpos: integer = 0;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColFzDrawers = class sealed
+  public
+    class procedure R_DrawFuzzColumn; static;
+    class procedure R_DrawFuzzColumn32; static;
+    class procedure R_DrawNewFuzzColumn; static;
+    class procedure R_DrawNewFuzzColumnHi; static;
+  end;
 
 implementation
 
@@ -112,7 +121,7 @@ uses
 //  i.e. spectres and invisible players.
 //
 //==============================================================================
-procedure R_DrawFuzzColumn;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn;
 var
   count: integer;
   i: integer;
@@ -161,7 +170,7 @@ end;
 // R_DrawFuzzColumn32
 //
 //==============================================================================
-procedure R_DrawFuzzColumn32;
+class procedure TRendererColFzDrawers.R_DrawFuzzColumn32;
 var
   count: integer;
   i: integer;
@@ -210,7 +219,7 @@ end;
 // R_DrawNewFuzzColumn
 //
 //==============================================================================
-procedure R_DrawNewFuzzColumn;
+class procedure TRendererColFzDrawers.R_DrawNewFuzzColumn;
 var
   count: integer;
   i: integer;
@@ -251,7 +260,7 @@ end;
 // R_DrawNewFuzzColumnHi
 //
 //==============================================================================
-procedure R_DrawNewFuzzColumnHi;
+class procedure TRendererColFzDrawers.R_DrawNewFuzzColumnHi;
 var
   count: integer;
   i: integer;

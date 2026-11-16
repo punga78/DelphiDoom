@@ -438,9 +438,9 @@ begin
     Exit('R_DrawColumnSubtractMedium_Batch');
   if AValue = @R_DrawSpanLow then
     Exit('R_DrawSpanLow');
-  if AValue = @R_DrawNewFuzzColumn then
+  if AValue = @TRendererColFzDrawers.R_DrawNewFuzzColumn then
     Exit('R_DrawNewFuzzColumn');
-  if AValue = @R_DrawFuzzColumn then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn then
     Exit('R_DrawFuzzColumn');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
@@ -572,7 +572,7 @@ begin
     Exit('R_DrawSpanNormal');
   if AValue = @R_DrawSpanNormal_Ripple then
     Exit('R_DrawSpanNormal_Ripple');
-  if AValue = @R_DrawNewFuzzColumnHi then
+  if AValue = @TRendererColFzDrawers.R_DrawNewFuzzColumnHi then
     Exit('R_DrawNewFuzzColumnHi');
   if AValue = @TRendererColLDrawers.R_DrawWhiteLightColumnHi then
     Exit('R_DrawWhiteLightColumnHi');
@@ -612,7 +612,7 @@ begin
     Exit('R_DrawSpanNormalMT');
   if AValue = @R_DrawSpanNormal_RippleMT then
     Exit('R_DrawSpanNormal_RippleMT');
-  if AValue = @R_DrawFuzzColumn32 then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn32 then
     Exit('R_DrawFuzzColumn32');
   if AValue = @R_DrawColumnHi_Fog then
     Exit('R_DrawColumnHi_Fog');
@@ -752,7 +752,7 @@ begin
     Exit('R_DrawFuzzColumn2_Batch');
   if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumn_Batch then
     Exit('R_DrawTranslatedColumn_Batch');
-  if AValue = @R_DrawFuzzColumnTL then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumnTL then
     Exit('R_DrawFuzzColumnTL');
   if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumnTL_Batch then
     Exit('R_DrawFuzzColumnTL_Batch');
@@ -780,9 +780,9 @@ begin
     Exit('R_DrawColumnSubtractMedium_Batch');
   if AValue = @R_DrawSpanLow then
     Exit('R_DrawSpanLow');
-  if AValue = @R_DrawFuzzColumn1 then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn1 then
     Exit('R_DrawFuzzColumn1');
-  if AValue = @R_DrawFuzzColumn2 then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn2 then
     Exit('R_DrawFuzzColumn2');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
@@ -894,7 +894,7 @@ begin
     Exit('R_DrawColumnAddHi_Batch');
   if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractHi_Batch then
     Exit('R_DrawColumnSubtractHi_Batch');
-  if AValue = @R_DrawFuzzColumnHiTL then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumnHiTL then
     Exit('R_DrawFuzzColumnHiTL');
   if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumnHiTL_Batch then
     Exit('R_DrawFuzzColumnHiTL_Batch');
@@ -922,9 +922,9 @@ begin
     Exit('R_DrawSpanNormal');
   if AValue = @R_DrawSpanNormal_Ripple then
     Exit('R_DrawSpanNormal_Ripple');
-  if AValue = @R_DrawFuzzColumn1Hi then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn1Hi then
     Exit('R_DrawFuzzColumn1Hi');
-  if AValue = @R_DrawFuzzColumn2Hi then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn2Hi then
     Exit('R_DrawFuzzColumn2Hi');
   if AValue = @TRendererColLDrawers.R_DrawWhiteLightColumnHi then
     Exit('R_DrawWhiteLightColumnHi');
@@ -1102,7 +1102,7 @@ begin
     Exit('R_DrawColumnSubtractMedium_Batch');
   if AValue = @R_DrawSpanLow then
     Exit('R_DrawSpanLow');
-  if AValue = @R_DrawFuzzColumn then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn then
     Exit('R_DrawFuzzColumn');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
@@ -1236,7 +1236,7 @@ begin
     Exit('R_DrawSpanNormal');
   if AValue = @R_DrawSpanNormal_Ripple then
     Exit('R_DrawSpanNormal_Ripple');
-  if AValue = @R_DrawFuzzColumnHi then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumnHi then
     Exit('R_DrawFuzzColumnHi');
   if AValue = @TRendererColLDrawers.R_DrawWhiteLightColumnHi then
     Exit('R_DrawWhiteLightColumnHi');
@@ -1278,7 +1278,7 @@ begin
     Exit('R_DrawSpanNormal_RippleMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn32_Batch then
     Exit('R_DrawFuzzColumn32_Batch');
-  if AValue = @R_DrawFuzzColumn32 then
+  if AValue = @TRendererColFzDrawers.R_DrawFuzzColumn32 then
     Exit('R_DrawFuzzColumn32');
   if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
