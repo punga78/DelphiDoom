@@ -11,12 +11,12 @@ OpenArena contiene solo dati di riferimento per Quake 3 (`MANIFESTO.md`): nessun
 |---|---|---|---|---|---|
 | Mars3D, Rad-X, Speed | tre fork di DelphiDoom (sparatutto, sparatutto spaziale, corse) | stesso motore id Tech 1, dati e regole diversi | stesso motore, una cartella di gioco ciascuno, profili iniettati | circa 36 giorni in tutto (comune 2, Mars 8, Speed 12, Radix 14) | dati originali assenti, layout di `mobj_t`/`player_t` diversi |
 | DD_FONT, DD_VOXEL, ENDEDIT | strumenti VCL dello stesso autore | strumenti, non giochi | una sola applicazione `DD_Tools` con tre moduli, come `Strumenti\Ide` | ENDEDIT circa 2 giorni, poi Font, voxel (XL) | Lanczos di Graphics32, macro PascalScript con classi |
-| xGreed | port Delphi di Greed (motore Raven) | giÃ  Delphi, 33 mila righe | eseguibile separato che riusa le `Libs\` | 13 fette, circa 10-12 giorni (fatte, #175: giocabile in `Greed32`, vedi sotto) | BASS, DirectDraw, `.obj`, licenza Raven |
+| xGreed | port Delphi di Greed (motore Raven) | giÃ  Delphi, 33 mila righe | eseguibile separato che riusa le `<Modulo>\` | 13 fette, circa 10-12 giorni (fatte, #175: giocabile in `Greed32`, vedi sotto) | BASS, DirectDraw, `.obj`, licenza Raven |
 | Keen Dreams | sorgenti C id Software 1991 (DOS 16 bit) | C con 4.194 righe di asm | eseguibile separato `Keen32` | 13 fette, circa 20-25 giorni | asm a 16 bit, wraparound, dati proprietari |
 | OpenXcom | clone di UFO/TFTD in C++ (152 mila righe, SDL, yaml-cpp) | C++ non id Tech | eseguibile separato `OpenXcom32` | molti mesi (Battlescape per ultimo) | licenza GPL v3, yaml-cpp, dati originali |
 
 Regola comune: **solo Mars3D, Rad-X e Speed sono id Tech 1** e stanno nel motore attuale. Tutti gli altri non vanno aggiunti a `TIdTechGeneration`
-nÃ© a `ComposeEngine`: hanno un composition root proprio e condividono le `Libs\` generiche.
+nÃ© a `ComposeEngine`: hanno un composition root proprio e condividono le `<Modulo>\` generiche.
 
 ## Cosa del sistema Ã¨ generico e cosa Ã¨ specifico di Doom
 
@@ -30,7 +30,7 @@ Specifico di Doom (non si riusa fuori dai fork): `Wad` (regole di lump e marcato
 ## 1. Mars3D, Rad-X, Speed (fork di DelphiDoom)
 
 **Fatti.** Fork di 2.05-2.06 (il repository Ã¨ 2.07), GPL v2+. Restano id Tech 1 e compilano con `DOOM`. Rad-X e Speed differiscono per meno di 3,5 mila righe
-su 251 mila: la differenza Ã¨ quasi solo la data del fork. Le librerie vecchie (AUDIOLIB, MIKWIN, JPEGLIB, MP3LIB, ZLIB, C_LIB) sono giÃ  sostituite da `Libs\*`.
+su 251 mila: la differenza Ã¨ quasi solo la data del fork. Le librerie vecchie (AUDIOLIB, MIKWIN, JPEGLIB, MP3LIB, ZLIB, C_LIB) sono giÃ  sostituite da `<Modulo>\*`.
 Il codice nuovo Ã¨ per gioco: Mars 27 unit (12 mila righe), Radix 36 (32 mila), Speed 30 (12 mila), piÃ¹ 4-8 unit in `IdTech1\Base\`, `IdTech1\OpenGl\Legacy\`, `Framework\ScriptHost\`.
 
 **Che cosa Ã¨ nuovo.**
@@ -45,7 +45,7 @@ Il codice nuovo Ã¨ per gioco: Mars 27 unit (12 mila righe), Radix 36 (32 mila)
    (Dehacked, Udmf, Iwad, ActorDef, TableExport, Definitions, Thinkersâ€¦) e un `*Rules` per gioco nel caricamento del livello. `IdTech1\IdTech` resta `IdTech1`; basta un costruttore con nome e versione.
 4. Soffitti, pavimenti, piattaforme, luci e teletrasporti sono quasi identici a Doom: riusano il profilo Doom di `IdTech1\Thinkers`.
 5. Da estendere: `Framework\Wad` (contenitori `NSRes:Radix` e JCL; il `.mad` di Mars si apre giÃ  come WAD), `Framework\Texture` (decoder `.RADIX32`), `Framework\Models` (I3D), `Framework\Serializer` (tabelle per gioco).
-6. Librerie nuove: `IdTech1\GameData` (comune; il costruttore di patch esiste in tre copie nei fork), `Libs\Mars`, `Libs\Animation`, `IdTech1\Radix`, `Libs\RadixLogic`, `IdTech1\Speed`, `Games\Racing`.
+6. Librerie nuove: `IdTech1\GameData` (comune; il costruttore di patch esiste in tre copie nei fork), `<Modulo>\Mars`, `<Modulo>\Animation`, `IdTech1\Radix`, `<Modulo>\RadixLogic`, `IdTech1\Speed`, `Games\Racing`.
 
 **Ordine.** Comune F0-F4 (circa 2 giorni), Mars M1-M7 (8), Speed S1-S6 (12, con `r_soft3d` opzionale perchÃ© Speed Ã¨ solo OpenGL), Radix R1-R7 (14).
 
@@ -93,7 +93,7 @@ Percorso minimo di valore: ToolsCore â†’ palette â†’ `PatchWriter` â�
 **Licenza.** Intestazioni GPL v2+, ma il codice Raven Ã¨ (c) Softdisk 1996 e non c'Ã¨ un LICENSE: **da chiarire con l'autore**. BASS Ã¨ incompatibile con una distribuzione GPL.
 
 **Riuso.** `Png`, `Zlib`, `Screenshot`, `MathCore`, `Input`, `Clock`, `Palette`/`Video`, `Configuration`/`CommandLine`; effetti con `Sndfile`+`Audio`, **musica con `Framework\Mikmod` al posto di BASS** (il loader S3M esiste; nessuna paritÃ  bit a bit, solo a orecchio).
-**Nuovo:** `IGreedArchive` per il BLO (`Framework\Wad` ha regole Doom e non va bene), `IFramePresenter` per il blit, `ITickScheduler`, `Games\Greed`, `Libs\GreedRender`, `Libs\Fli`.
+**Nuovo:** `IGreedArchive` per il BLO (`Framework\Wad` ha regole Doom e non va bene), `IFramePresenter` per il blit, `ITickScheduler`, `Games\Greed`, `<Modulo>\GreedRender`, `<Modulo>\Fli`.
 
 **Come integrarlo.** Eseguibile separato, giÃ  Delphi: portarlo a classi con DI e togliere BASS e DirectDraw. 13 fette G0-G12 (circa 10-12 giorni); le piÃ¹ grosse G10 (mondo e logica, XL) e G11 (renderer e FLI, L+M). Verifica con golden dal vecchio codice: lump, piani, `renderbuffer` per pose fisse, stato dopo N tic, byte del salvataggio.
 **Dati necessari (non nel repository):** `GREED.BLO`, `SONG*.S3M`, opzionalmente `MOVIES\*.FLI`. Da verificare: layout fine di walls, sprite e flat del BLO, uso del campo `compress`, formato dei lump sonori, multiplayer.
@@ -168,7 +168,7 @@ Esito: ogni progetto ha uno stato *compila/gira/prova registrata* oppure *blocca
 1. **ENDEDIT in `IdTech1\Endoom` + `DD_Tools`** (circa 2 giorni, valore immediato, quasi tutto giÃ  nelle librerie).
 2. **Mars3D** (8 giorni, dopo la fetta comune): Ã¨ il fork piÃ¹ vicino al motore attuale e dimostra il meccanismo dei profili.
 3. **Speed e Radix** (12 e 14 giorni) solo dopo aver visto Mars funzionare.
-4. **xGreed** (10-12 giorni): giÃ  Delphi, riuso alto, e produce `Libs\Fli` e l'archivio non-WAD.
+4. **xGreed** (10-12 giorni): giÃ  Delphi, riuso alto, e produce `<Modulo>\Fli` e l'archivio non-WAD.
 5. **Keen Dreams** (20-25 giorni) e **OpenXcom** (mesi): progetti a sÃ©, da affrontare solo con i dati originali sul PC.
 
 ## Decisioni da prendere prima di iniziare

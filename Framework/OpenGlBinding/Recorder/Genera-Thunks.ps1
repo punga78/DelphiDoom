@@ -8,7 +8,7 @@
 #   glXxx: TglXxx;   in Framework\OpenGlBinding\dglOpenGL.pas. wgl* (context) functions are not recorded.
 # Run it again after a function is added to (or taken away from) the renderer, and commit the result.
 $ErrorActionPreference = 'Stop'
-$root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\Libs\..')).Path
+$root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $binding = Get-Content -Raw -Encoding UTF8 (Join-Path $root 'Framework\OpenGlBinding\dglOpenGL.pas')
 $legacy = ''
 Get-ChildItem (Join-Path $root 'IdTech1\OpenGl\Legacy') -Filter *.pas | ForEach-Object { $legacy += (Get-Content -Raw $_.FullName) + "`n" }

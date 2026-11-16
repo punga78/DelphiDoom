@@ -13,7 +13,7 @@
     @{ Nome = 'L3'; Tipo = 'Strato'; Livello = 3; Titolo = 'Piattaforma e scripting' }
     @{ Nome = 'IdTech1'; Tipo = 'Modulo'; Ammessi = @(); Titolo = 'id Tech 1: Base, giochi id, librerie id' }
     @{ Nome = 'IdTech4'; Tipo = 'Modulo'; Ammessi = @(); Titolo = 'Porte di id Tech 3 e 4' }
-    @{ Nome = 'Giochi'; Tipo = 'Modulo'; Ammessi = @(); Titolo = 'Giochi non id: Xcom, Keen, Greed, War, Racing' }
+    @{ Nome = 'Games'; Tipo = 'Modulo'; Ammessi = @(); Titolo = 'Giochi non id: Xcom, Keen, Greed, War, Racing' }
     @{ Nome = 'Strumenti'; Tipo = 'Modulo'; Ammessi = @('IdTech1'); Titolo = 'Strumenti: IDE, editor, Launcher' }
   )
 
@@ -135,26 +135,26 @@
     'IdTech4\NetQ3' = 'IdTech4'
     'IdTech4\DoomScript' = 'IdTech4'
     # Giochi
-    'Games\Keen' = 'Giochi'
-    'Games\Greed' = 'Giochi'
-    'Games\War' = 'Giochi'
-    'Games\Racing' = 'Giochi'
-    'Games\XcomAudio' = 'Giochi'
-    'Games\XcomBasescape' = 'Giochi'
-    'Games\XcomBattle' = 'Giochi'
-    'Games\XcomBattleStates' = 'Giochi'
-    'Games\XcomBattlescape' = 'Giochi'
-    'Games\XcomDebriefing' = 'Giochi'
-    'Games\XcomEngine' = 'Giochi'
-    'Games\XcomFormats' = 'Giochi'
-    'Games\XcomGeoscape' = 'Giochi'
-    'Games\XcomMenu' = 'Giochi'
-    'Games\XcomMod' = 'Giochi'
-    'Games\XcomSave' = 'Giochi'
-    'Games\XcomStrategy' = 'Giochi'
-    'Games\XcomSurface' = 'Giochi'
-    'Games\XcomUfopaedia' = 'Giochi'
-    'Games\XcomUi' = 'Giochi'
+    'Games\Keen' = 'Games'
+    'Games\Greed' = 'Games'
+    'Games\War' = 'Games'
+    'Games\Racing' = 'Games'
+    'Games\XcomAudio' = 'Games'
+    'Games\XcomBasescape' = 'Games'
+    'Games\XcomBattle' = 'Games'
+    'Games\XcomBattleStates' = 'Games'
+    'Games\XcomBattlescape' = 'Games'
+    'Games\XcomDebriefing' = 'Games'
+    'Games\XcomEngine' = 'Games'
+    'Games\XcomFormats' = 'Games'
+    'Games\XcomGeoscape' = 'Games'
+    'Games\XcomMenu' = 'Games'
+    'Games\XcomMod' = 'Games'
+    'Games\XcomSave' = 'Games'
+    'Games\XcomStrategy' = 'Games'
+    'Games\XcomSurface' = 'Games'
+    'Games\XcomUfopaedia' = 'Games'
+    'Games\XcomUi' = 'Games'
     # Strumenti
     'Strumenti\Ide' = 'Strumenti'
     'Strumenti\ToolsCore' = 'Strumenti'
@@ -170,7 +170,7 @@
     'IdTech1\Heretic' = 'IdTech1'
     'IdTech1\Hexen' = 'IdTech1'
     'IdTech1\Strife' = 'IdTech1'
-    'Games\OpenXcom' = 'Giochi'
+    'Games\OpenXcom' = 'Games'
     'Strumenti\DD_IDE' = 'Strumenti'
     'Strumenti\DD_Tools' = 'Strumenti'
   }

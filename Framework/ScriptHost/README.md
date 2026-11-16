@@ -15,7 +15,7 @@ Il **collegamento di Pascal Script al motore** (issue #172, spostato qui da `SCR
 
 ## Registro delle funzioni (issue #173, fetta 2a)
 
-Le funzioni che gli script chiamano stanno in un **registro a gruppi** (schema di `Libs\`: interfaccia, classi, factory):
+Le funzioni che gli script chiamano stanno in un **registro a gruppi** (schema di `<Modulo>\`: interfaccia, classi, factory):
 
 | Unit | Ruolo |
 |---|---|

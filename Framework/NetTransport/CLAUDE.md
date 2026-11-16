@@ -1,6 +1,6 @@
 # Framework\NetTransport — note per Claude
 
-Quarta fetta della issue #225 (2026-11-15): il trasporto UDP e' stato separato da `IdTech1\Net` **senza cambiare un byte di comportamento**. Strato **L0** (riga `'Framework\NetTransport' = 'L0'` in `docs\Strati.psd1`): dipende solo da `System` e da Winsock; lo usano `IdTech1\Net`, `EngineSystem`, `Greed` (modulo `Giochi`) e il motore, e `NetTransport` non usa nessuna libreria.
+Quarta fetta della issue #225 (2026-11-15): il trasporto UDP e' stato separato da `IdTech1\Net` **senza cambiare un byte di comportamento**. Strato **L0** (riga `'Framework\NetTransport' = 'L0'` in `docs\Strati.psd1`): dipende solo da `System` e da Winsock; lo usano `IdTech1\Net`, `EngineSystem`, `Greed` (modulo `Games`) e il motore, e `NetTransport` non usa nessuna libreria.
 
 **Unit** (4): `DelphiDoom.Net.Transport.Intf` (`INetTransport`, stesso GUID), `DelphiDoom.Net.Transport.Types` (`ENetException`, `TNetNodeAddress`, `NET_DEFAULT_PORT`), `DelphiDoom.Net.WinsockTransport` (`TWinsockNetTransport`) e `DelphiDoom.Net.NodeListParser` (`TNetNodeListParser`). Le ultime due sono state spostate con `git mv` e conservano il nome; le prime due sono ricavate da `Net.Intf` e `Net.Types`, che mescolavano trasporto e protocollo di Doom (il testo e' identico, solo spostato). `ENetException` e' la base comune: `Net.Types` ne deriva `ENetVersionMismatchException` e `ENetConsistencyException`.
 

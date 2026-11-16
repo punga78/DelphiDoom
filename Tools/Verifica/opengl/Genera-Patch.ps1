@@ -16,7 +16,7 @@ $crlf = "`r`n"
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
 # the harness itself (ToolsVerifica) may be being edited: only the files the patch touches have to be clean
-$dirty = git -c core.safecrlf=false status --porcelain --untracked-files=no -- Doom Heretic Hexen Strife Libs Base
+$dirty = git -c core.safecrlf=false status --porcelain --untracked-files=no -- IdTech1 Framework\OpenGlBinding
 if ($dirty) { throw "L'albero non e' pulito: $dirty" }
 
 function Edit-File([string]$relative, [scriptblock]$edit) {
@@ -93,6 +93,6 @@ Edit-File 'IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
 }
 
 $patch = Join-Path $PSScriptRoot 'hook-gl.patch'
-git -c core.safecrlf=false diff --output=$patch -- Doom Heretic Hexen Strife Libs Base
-git -c core.safecrlf=false checkout -- Doom Heretic Hexen Strife IdTech1\OpenGl\Legacy Base
+git -c core.safecrlf=false diff --output=$patch -- IdTech1 Framework\OpenGlBinding
+git -c core.safecrlf=false checkout -- IdTech1
 Write-Host "Scritto $patch"

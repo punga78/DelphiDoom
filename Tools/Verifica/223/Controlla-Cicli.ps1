@@ -9,7 +9,7 @@ $root = Resolve-Path (Join-Path $PSScriptRoot '..\..\..')
 $libs = 'XcomBasescape', 'XcomGeoscape', 'XcomStrategy'
 $units = @{}
 foreach ($l in $libs) {
-  Get-ChildItem (Join-Path $root "Libs\$l") -Filter *.pas | ForEach-Object { $units[$_.BaseName.ToLower()] = @{ Lib = $l; File = $_.FullName } }
+  Get-ChildItem (Join-Path $root "Games\$l") -Filter *.pas | ForEach-Object { $units[$_.BaseName.ToLower()] = @{ Lib = $l; File = $_.FullName } }
 }
 $edges = @{}
 foreach ($u in $units.Keys) {

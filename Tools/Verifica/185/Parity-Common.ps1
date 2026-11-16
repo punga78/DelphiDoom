@@ -57,11 +57,11 @@ function Get-ParityDataRoot {
   if ($common) {
     $main = Split-Path -Parent ($common -replace '/', '\')
     $bin = Join-Path $main 'bin'
-    if (Test-Path (Join-Path $bin 'IdTech1\Doom\DOOM1.WAD')) { return $bin }
+    if (Test-Path (Join-Path $bin 'Doom\DOOM1.WAD')) { return $bin }
   }
   $bin = Join-Path $script:ParityRoot 'bin'
-  if (Test-Path (Join-Path $bin 'IdTech1\Doom\DOOM1.WAD')) { return $bin }
-  throw 'WAD non trovati: passare -DataRoot (la cartella bin che ha IdTech1\Doom\DOOM1.WAD, IdTech1\Heretic\HERETIC1.WAD...)'
+  if (Test-Path (Join-Path $bin 'Doom\DOOM1.WAD')) { return $bin }
+  throw 'WAD non trovati: passare -DataRoot (la cartella bin che ha Doom\DOOM1.WAD, Heretic\HERETIC1.WAD...)'
 }
 
 function Get-ParityCorpus {

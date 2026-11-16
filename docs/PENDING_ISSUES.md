@@ -4,7 +4,7 @@ Registro delle issue non completate. Si aggiorna quando una issue viene saltata,
 
 ## Limiti noti del decoder Pascal rispetto al C (non bloccanti)
 
-Il C è stato cancellato (ultimo commit che lo contiene: `a449cacd`). Queste differenze restano documentate nei `Libs\<Nome>\CLAUDE.md` (indice in `CLAUDE.md`):
+Il C è stato cancellato (ultimo commit che lo contiene: `a449cacd`). Queste differenze restano documentate nei `<Modulo>\<Nome>\CLAUDE.md` (indice in `CLAUDE.md`):
 
 - **Non portati**: ALAC dentro CAF (nessun file di prova nel repository e l'encoder del C andava in access violation), Vorbis con floor di tipo 0 (nessun encoder lo produce), FLAC/Speex/PCM dentro Ogg, scrittura di qualsiasi formato, PVF, NIST, DWD, TXW, REX2 (nel C falliscono sempre). Se serve uno di questi: portarlo da `a449cacd`, costruire i file di prova in memoria e aggiungere gli scenari a `Tests\Data\sound_golden.txt`.
 - Vorbis: un `Seek` oltre i dati decodificabili si ferma alla fine dei dati (come il C), ma non si emulano le letture a pezzi di un flusso in catena.
@@ -36,7 +36,7 @@ Fatta: DD_IDE usa `System.ZLib` (tolti `zlibpas.pas` e i `.obj`), cancellati `C_
 
 Tutte le fette sono collegate al motore e il vecchio codice è cancellato dove c'era un equivalente: Wad, argomenti, configurazione, log, clock, input, video (parte pura), audio, ACS, UDMF, special di linea, scanner, preprocessore e valutatore, MapInfo, MusInfo, ActorDef, Dehacked, definizioni (ANIMDEFS, interruttori di Doom, terreno), palette, texture, console, immagini (parti fredde), MathCore, DynLights, rete, JPEG, texture esterne, modelli 3D e geometria di OpenGL. `IdTech4\Collision`, `Framework\Geometry` e `Framework\IdLib` (porting da Doom 3) non hanno chiamanti nel motore di id Tech 1: hanno un `WIRING.md` per un uso futuro.
 
-Restano **codice storico, per scelta documentata** in `CLAUDE.md` e nei `Libs\<Nome>\CLAUDE.md`:
+Restano **codice storico, per scelta documentata** in `CLAUDE.md` e nei `<Modulo>\<Nome>\CLAUDE.md`:
 
 - il renderer software e quello OpenGL (`gl_render`, `gl_main`, `gl_tex`, `gl_sky`, `gl_automap`, `gl_setup`, `gl_slopes`, `gl_lights`, `gl_ambient`, `gl_shadows`, `gl_voxels`, `gl_lightmaps`, il parser MODELDEF di `gl_models`, `mdl_dllmodel`, `mdl_script*`): chiamate per fotogramma, contesto grafico, `screens[]` e zone memory; astrarli richiederebbe un `IRenderer` e non sarebbe verificabile senza contesto;
 - i thinker (`vldoor_t`, `floormove_t`…) e i savegame, il cui formato non può cambiare;

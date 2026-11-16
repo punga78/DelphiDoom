@@ -17,7 +17,8 @@ $vecchi = 'Libs', 'Base', 'Common', 'Doom', 'Heretic', 'Hexen', 'Strife', 'Radix
 # come Sposta-Fetta.ps1: Libs\ con qualunque separatore, gli altri nomi con \ oppure con / davanti a un nome di file
 $rx = New-Object Text.RegularExpressions.Regex(('(?:(?<![A-Za-z0-9_$)}\]][\\/])|(?<=(?:\$radice|\$Radice|\$root|\$Root|%R%)[\\/])|(?<=(?:^|\s)[ab]/))(?<![A-Za-z0-9_])(?:Libs[\\/]|(?:' + (($vecchi | Where-Object { $_ -ne 'Libs' }) -join '|') + ')(?:\\|/(?=[A-Za-z0-9_\-]+\.[A-Za-z0-9])))'), 'CultureInvariant')
 $estBinari = @('.gz', '.bmp', '.wad', '.lmp', '.sav', '.png', '.ico', '.exe', '.dll', '.res', '.zip', '.pk3', '.jpg', '.tga', '.pak', '.o', '.obj', '.bin', '.dat', '.lzh', '.mid', '.ogg', '.mp3', '.wav', '.scn', '.swd', '.dfm', '.ddp', '.cur', '.lib', '.a', '.dcu', '.map', '.drc', '.ttf', '.pcx', '.qvm', '.aas', '.bsp', '.roq', '.flc', '.fli', '.jcl', '.dcp', '.bpl')
-$escludi = @('docs\FRAMEWORK_CENSIMENTO.md', 'Tests\Data\Strati', 'Tools\Verifica\226', 'Tools\Verifica\opengl\hook-gl.pre226.patch')
+# Compila.ps1 riconosce un albero di prima della #226 dalla cartella Libs\; CLAUDE.md e docs\STRATI.md dicono che Libs\ non esiste piu'
+$escludi = @('docs\FRAMEWORK_CENSIMENTO.md', 'Tests\Data\Strati', 'Tools\Verifica\226', 'Tools\Verifica\opengl\hook-gl.pre226.patch', 'Tools\Verifica\opengl\Compila.ps1')
 # i percorsi relativi che ora portano a una cosa che esiste (..\Base\x.inc tra cartelle vicine) non sono vecchi
 $seg = '(?:\$\([A-Za-z0-9_]+\)|[A-Za-z0-9_\-]+(?:\.[A-Za-z0-9_\-]+)*)'
 $rxRel = New-Object Text.RegularExpressions.Regex(('(?<![A-Za-z0-9_.$)\]\\/%~])((?:\.\.[\\/])+)(' + $seg + '(?:[\\/]' + $seg + ')*)[\\/]?'), 'CultureInvariant')
@@ -46,7 +47,12 @@ foreach ($rel in (@(& git -c core.quotepath=off ls-files) | ForEach-Object { $_.
     # prima il filtro grossolano: senza un nome vecchio seguito da separatore la riga non interessa
     if ($r.IndexOf('\') -lt 0 -and $r.IndexOf('/') -lt 0) { continue }
     # i test caricano le DLL da ..\Libs\ (cartella bin\<Piattaforma>\<Configurazione>\Libs, che non cambia nome)
+    if ($r.Contains('non esiste pi') -or $r.Contains('`..\Libs\`')) { continue }
     $r2 = $r.Replace("'..\Libs\'", '').Replace('bin\Libs\', '').Replace('bin/Libs/', '')
+    # nomi che restano com'erano perche' non sono cartelle dei sorgenti: i dati dei giochi in bin\<Gioco> (WAD, exe),
+    # la cartella Reference\OpenXcom dei test e i golden di Tests\Data\<Gioco>
+    $r2 = [regex]::Replace($r2, "'?(?:Doom\\DOOM1\.WAD|Doom\\FREEDOOM2\.WAD|Heretic\\HERETIC1\.WAD|Hexen\\HEXEN\.WAD|Strife\\STRIFE0\.WAD|Doom\\Doom32\.exe|OpenXcom\\bin)", '')
+    $r2 = [regex]::Replace($r2, '(?:Keen|Greed|War)\\[A-Za-z0-9_.]+\.(?:golden\.txt|TXT)', '')
     $r2 = $rxRel.Replace($r2, {
       param($m)
       $ups = ([regex]::Matches($m.Groups[1].Value, '\.\.')).Count

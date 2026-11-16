@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: the animations of the DOS game, played by the scene of Libs\    }
+{  DelphiDoom: the animations of the DOS game, played by the scene of Framework\ }
 {  Cinematic through the director of Games\War                                 }
 {                                                                              }
 {  They need the files of the game (DELPHIDOOM_WAR_DATA or Reference\_dati\    }

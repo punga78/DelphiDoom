@@ -5,7 +5,7 @@
   si fa una volta sola sul ramo con tutti i passi uniti.
 
   Uso:
-    powershell -NoProfile -File Tools\Verifica\185\Verifica-Ridotta.ps1 [-ExeRoot <cartella con IdTech1\Doom\Doom32.exe ...>]
+    powershell -NoProfile -File Tools\Verifica\185\Verifica-Ridotta.ps1 [-ExeRoot <cartella con Doom\Doom32.exe ...>]
       [-Con32] [-Games Doom,Heretic] [-WorkRoot C:\ddparity_185]
   -ExeRoot: predefinita bin\Win32\Release del repository. Esce con 0 se tutto e' UGUALE.
 #>

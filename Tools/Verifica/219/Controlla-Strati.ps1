@@ -340,7 +340,7 @@ if ($Riepilogo) {
   foreach ($s in $manifest.Strati) {
     $areeS = @($aree.Keys | Where-Object { $aree[$_] -eq $s.Nome } | Sort-Object)
     $nf = @($files | Where-Object { $aree[$_.Area] -eq $s.Nome }).Count
-    Write-Host ("  {0,-10} {1,-7} {2,3} aree, {3,5} file: {4}" -f $s.Nome, $s.Tipo, $areeS.Count, $nf, (($areeS | ForEach-Object { if ($_ -like 'Libs\*') { $_.Substring(5) } else { $_ + '\' } }) -join ' '))
+    Write-Host ("  {0,-10} {1,-7} {2,3} aree, {3,5} file: {4}" -f $s.Nome, $s.Tipo, $areeS.Count, $nf, (($areeS | ForEach-Object { $_ + '\' }) -join ' '))
   }
   $nodiConArchi = @($usi | Where-Object { $_.Da -ne $_.A } | ForEach-Object { (Get-Nodo $_.Da) + '>' + $_.A } | Select-Object -Unique).Count
   Write-Host ("File letti: {0}; aree: {1}; uses verso unit del repository: {2} (di cui sotto IFDEF: {3}); archi tra aree: {4}" -f $files.Count, $aree.Count, $totaleUses, $usiCondizionali, $nodiConArchi)

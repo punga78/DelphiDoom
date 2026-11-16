@@ -138,7 +138,7 @@ end.
 "@
 
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$libs = 'Greed', 'Platform', 'MathCore', 'GameMath', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
+$libs = 'Games\Greed', 'Framework\Platform', 'Framework\MathCore', 'Framework\GameMath', 'Framework\Logging', 'Framework\Clock', 'Framework\Video', 'Framework\Png', 'Framework\Zlib' | ForEach-Object { "$radice\$_" }
 $u = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
 & $dcc -B -Q -CC -H- -W- "-U$u" "-I$Riferimento;$uscita\src" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\HudParity.dpr" | Select-String 'Error|Fatal'

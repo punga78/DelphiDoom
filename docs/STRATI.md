@@ -1,6 +1,6 @@
 # Strati delle librerie (issue #219)
 
-Ogni cartella di `Libs\` (e `Base`, `Common`, le cartelle dei giochi e dei programmi) sta in **uno strato** o in **un modulo**.
+Ogni cartella di `Framework\`, `IdTech1\`, `IdTech4\`, `Games\` e `Strumenti\` (le librerie e i programmi, issue #226: `Libs\` non esiste piu') sta in **uno strato** o in **un modulo**; la cartella di primo livello ha il nome del modulo, e `Framework\` contiene tutti gli strati.
 Il dato letto dallo script e' `docs\Strati.psd1`; questo file ne spiega le regole. Analisi di partenza: `docs\FRAMEWORK_CENSIMENTO.md`.
 
 ## Regola
@@ -9,21 +9,21 @@ Il dato letto dallo script e' `docs\Strati.psd1`; questo file ne spiega le regol
 - Un **modulo** puo' usare ogni strato, se stesso e i moduli che dichiara in `Ammessi` (oggi solo `Strumenti` -> `IdTech1`). I moduli non si usano tra loro.
 - Dentro uno stesso strato le librerie si usano liberamente, ma **non devono formare cicli**; dentro un modulo anche i cicli sono ammessi (`Base` e le sue librerie sono un solo corpo).
 
-| Strato | Titolo | Aree (`Libs\` salvo dove scritto) |
+| Strato | Titolo | Aree (dentro `Framework\` per gli strati, dentro la cartella omonima per i moduli) |
 |---|---|---|
 | `L0` | Fondazione | Bytes Clock CommandLine Configuration GameMath Geometry IdLib Logging MathCore NetTransport Platform Threading Yaml Zlib |
 | `L1` | Formati e codec | Cinematic Compression Flic Imaging Jpeg M2m Midi Mikmod Mp3 Ogg Opl Palette Png Sndfile Sound Texture Wad Xmi |
 | `L2` | Servizi di runtime | Audio AudioMix Console Input Models Scanner Screenshot Serializer Video |
 | `L3` | Piattaforma e scripting | GameHost OpenGlBinding OpenGlBinding\Recorder PascalScript Script ScriptHost Ddc |
-| `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (cartelle) e le librerie `Acs` ... `Zone` (49 aree, con `ScriptEngine`) |
+| `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (con il programma e la libreria nella stessa cartella) e le librerie `Acs` ... `Zone` (47 aree, con `ScriptEngine`) |
 | `IdTech4` (modulo) | Porte di id Tech 3 e 4 | Aas BotAi Collision Decl DoomScript Gui MapFile NetQ3 Pmove Qvm |
-| `Giochi` (modulo) | Giochi non id | Keen Greed War Racing, le 16 `Xcom*`, e le cartelle `Keen`, `Greed`, `OpenXcom` |
-| `Strumenti` (modulo) | Strumenti | Ide ToolsCore EndoomEditor Font FontEditor VoxelEditor Launcher e le cartelle `DD_IDE`, `DD_Tools`, `Launcher` |
+| `Games` (modulo) | Giochi non id | Keen Greed War Racing, le 16 `Xcom*` e `OpenXcom` (programma) |
+| `Strumenti` (modulo) | Strumenti | Ide ToolsCore EndoomEditor Font FontEditor VoxelEditor Launcher (con il programma), `DD_IDE`, `DD_Tools` |
 
 Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` di oggi:
 
 - `IdLib` e `Geometry` stanno in **L0**: non hanno nessuna dipendenza e li usano `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net` e `Models` (nel censimento erano porte senza chiamanti).
-- `MathCore` e' stata divisa (#225, prima fetta): la parte generica (CRC, SHA-1, `Float.*`, `Patch.*`) resta in `MathCore`, la matematica di id Tech 1 (virgola fissa, tabelle, generatore casuale di Doom, `X87Double`) e' in `GameMath`, **L0 e non modulo** perche' la usano anche `Greed`, `Racing` e `Keen` (modulo `Giochi`). Le unit hanno ancora il nome `DelphiDoom.MathCore.*`. `GameMath` usa `MathCore`, mai il contrario.
+- `MathCore` e' stata divisa (#225, prima fetta): la parte generica (CRC, SHA-1, `Float.*`, `Patch.*`) resta in `MathCore`, la matematica di id Tech 1 (virgola fissa, tabelle, generatore casuale di Doom, `X87Double`) e' in `GameMath`, **L0 e non modulo** perche' la usano anche `Greed`, `Racing` e `Keen` (modulo `Games`). Le unit hanno ancora il nome `DelphiDoom.MathCore.*`. `GameMath` usa `MathCore`, mai il contrario.
 - `Palette` e' in **L1** e non usa piu' `Video` (L2): `IPaletteConverter` e `TPaletteConverter` (gamma e impacchettamento in `$00RRGGBB`, nessuna dipendenza dal video) sono passati da `Video` a `Palette` come `DelphiDoom.Palette.Intf` e `DelphiDoom.Palette.Converter` (#225, seconda fetta); `Video` usa `Palette`. `Input` e `Video` non hanno altro da separare dal censimento: vedi `docs\FRAMEWORK_CENSIMENTO.md`.
 - `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
 - `IdTech1\OpenGl` e' stato diviso (#220): `Framework\OpenGlBinding` (L3: `dglOpenGL.pas` e il registratore di chiamate in `Recorder`, usati da `GameHost`) e `IdTech1\OpenGl\Legacy` (modulo `IdTech1`, il renderer di Doom).
@@ -41,14 +41,14 @@ Uscita **0**: nessuna violazione nuova e nessuna eccezione da aggiornare. **1**:
 
 ### Come si aggiunge una libreria
 
-1. Creare `Libs\<Nome>` con le sue unit (una cartella = una area; le sottocartelle appartengono alla cartella).
-2. Aggiungere una riga a `Aree` in `docs\Strati.psd1`: `'Libs\<Nome>' = '<strato o modulo>'`. Scegliere il **piu' basso** strato che contiene le sue dipendenze (si vede con `-Grafo`); una libreria di un gioco o di id Tech va nel modulo corrispondente. Senza la riga il controllo fallisce con `AREA NON ASSEGNATA`.
+1. Creare `<Cartella>\<Nome>` con le sue unit, dove `<Cartella>` e' `Framework` per uno strato (L0-L3) o il nome del modulo (`IdTech1`, `IdTech4`, `Games`, `Strumenti`); una cartella = una area, le sottocartelle appartengono alla cartella.
+2. Aggiungere una riga a `Aree` in `docs\Strati.psd1`: `'<Cartella>\<Nome>' = '<strato o modulo>'`. Scegliere il **piu' basso** strato che contiene le sue dipendenze (si vede con `-Grafo`); una libreria di un gioco o di id Tech va nel modulo corrispondente. Senza la riga il controllo fallisce con `AREA NON ASSEGNATA`.
 3. Eseguire `Tools\build.bat strati`. Se la libreria usa uno strato piu' alto non si aggiunge un'eccezione: si sposta la dipendenza (un'interfaccia piccola nello strato basso, iniettata) o si cambia strato.
-4. Una cartella di prodotto fuori da `Libs\` (un nuovo gioco) si aggiunge alla stessa tabella con il suo modulo.
+4. Il programma di un gioco o di uno strumento sta nella cartella della sua libreria (stessa area); un gioco senza libreria ha la sua cartella nel modulo, con la sua riga in `Aree`.
 
 ### Eccezioni
 
-Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 6 (tutte coppie, nessun ciclo; quelle di #224, `Palette` -> `Video` e `Console` -> `GameState` sono state tolte): #225 (nessuna: la quarta fetta ha tolto `Greed` -> `Net` con `Framework\NetTransport`, L0), #226 (`Speed` -> `Racing`), (la #229 `Opl` -> `XcomFormats` e' stata tolta: il contratto dell'archivio CAT sta in `Framework\Bytes`, L0).
+Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 1 (`IdTech1\Speed` -> `Games\Racing`, #226: `Speed32`, che usa `Racing`, e `SpeedHaste32`, il motore di id, stanno nella stessa area perche' `Speed32` usa anche le unit di `IdTech1\Speed`; spostarlo in `Games\` cambierebbe l'eccezione in una `Games` -> `IdTech1` senza toglierla). Tolte: quelle di #224, `Palette` -> `Video` e `Console` -> `GameState`, `Greed` -> `Net` (con `Framework\NetTransport`, L0) e `Opl` -> `XcomFormats` (#229: il contratto dell'archivio CAT sta in `Framework\Bytes`, L0).
 
 ## Metodo e limiti
 

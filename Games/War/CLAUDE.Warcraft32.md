@@ -9,7 +9,7 @@ operativo o conosce le classi concrete. Uso e tasti: [README.md](README.md). Mod
 
 - `Warcraft32.dpr` + `.dproj` (Base/Cfg_1/Cfg_2, Win32 e Win64, uscita `bin\<Piattaforma>\<Configurazione>\War`), icona
   `Warcraft32_Icon.rc` -> `war1.ico` (`BRCC_CompilerToUse=rc`). Il `.dpr` elenca solo le unit proprie e le due delle opzioni
-  (come `Greed32`): le altre si trovano dal `DCC_UnitSearchPath` del `.dproj` (le cartelle di `Libs\` che `Games\War` usa: War,
+  (come `Greed32`): le altre si trovano dal `DCC_UnitSearchPath` del `.dproj` (le cartelle di `<Modulo>\` che `Games\War` usa: War,
   AudioMix, GameHost, Audio, Xmi, M2m, Midi, Input, Clock, Logging, MathCore, Video, CommandLine, Configuration, Png, Zlib,
   Platform). **Una unit nuova di `Games\War` che usa un'altra libreria vuole la cartella nel percorso del `.dproj` e, per il
   progetto di test, le unit nel `.dpr` (F2613).** Voce in `Tools\build.bat` (lista `STRUMENTI`, accanto a Greed32), in

@@ -88,7 +88,7 @@ Punto critico: `RegisterDelphiFunction(codice, nome, cdRegister)` vuole un **pun
 * **B. `RegisterDelphiMethod(Slf, ProcPtr, Name, CC)`** (esiste in `ps_runtime.pas:614`): lega l'istanza e toglie i thunk. **Non e mai usata nel repository** (nessun chiamante fuori dal nucleo): da provare con una spike su un metodo con risultato `string`, uno con `array of const`, uno con risultato `TActorArray` (array dinamico) e uno con parametro `Extended`, a 32 bit e poi a 64 bit (`x64.inc`).
 * **Raccomandazione**: partire con A, tenere B come passo successivo se la spike passa.
 
-### 3.2 Interfacce proposte (schema `Libs\`)
+### 3.2 Interfacce proposte (schema `<Modulo>\`)
 
 ```
 DelphiDoom.ScriptHost.Intf.pas        IScriptFunctionGroup, IScriptFunctionRegistry, IScriptFunctionTable
@@ -140,7 +140,7 @@ Il contratto verso lo script **non cambia**: stesse stringhe di dichiarazione, s
 | `TScriptStateSerializer` | `ps_serializer` | `TStream` |
 | `TScriptDllLoader` | `ps_dll` | `IPakFileSystem`, `ITempFiles` |
 
-`IScriptWorld`/`IScriptActorContext` nominano tipi del motore (`Pmobj_t`, `Psector_t`): vanno in `IdTech1\Base\DelphiDoom.Engine.Script.*` (classi `TEngine*` create da `ComposeEngine`, come `TEngineAcsHost` per l'ACS), non in `Libs\`.
+`IScriptWorld`/`IScriptActorContext` nominano tipi del motore (`Pmobj_t`, `Psector_t`): vanno in `IdTech1\Base\DelphiDoom.Engine.Script.*` (classi `TEngine*` create da `ComposeEngine`, come `TEngineAcsHost` per l'ACS), non in `<Modulo>\`.
 
 ---
 
@@ -273,7 +273,7 @@ Totale: circa 8-12 giorni, consegnabile a fette indipendenti dopo 2a; ci si puo 
 1. **Non fare il ponte verso `DDScript`/`IScriptEngine`**: resta valida la decisione #10 (`Framework\Script\README.md`): `Actors`, `Lines`, `MapStrings` sono registrati con puntatori a metodi Delphi e non attraversano il confine di una DLL.
 2. **Non cambiare nomi, firme, ordine o unit di una funzione di script**: sono l'API di tutti gli script ACTORDEF/DECORATE esistenti, anche i nomi "brutti" (`_GAME`, `TActor` come procedura, `IsSingleInRange` che punta a `IsFloatInRange`, i `Polyobj_OR_*` doppi).
 3. **Non fare una classe per funzione** (557) ne una interfaccia unica con 557 metodi: gruppi coesi (una sezione di `psi_game`, una famiglia di `psi_map`), interfacce strette.
-4. **Non portare in `Libs\` codice che usa `mobj_t`, `sector_t`...**: va in `IdTech1\Base\DelphiDoom.Engine.Script.*`.
+4. **Non portare in `<Modulo>\` codice che usa `mobj_t`, `sector_t`...**: va in `IdTech1\Base\DelphiDoom.Engine.Script.*`.
 5. **Non toccare `Framework\PascalScript`** (codice di terzi): niente modifiche al nucleo se non per un bisogno dimostrato dalla spike.
 6. **Non convertire i thinker** che le funzioni di `psi_map` creano: restano record nella zone memory con il puntatore a funzione salvato grezzo (decisione di `FACCIATE.md`).
 7. **Non cambiare il formato dei salvataggi** (UTF-8, `Double` fisso a 64 bit): e un cambio di formato, da decidere nella #43 con un convertitore.
