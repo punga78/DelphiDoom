@@ -9,6 +9,7 @@
     -Record      registra i golden da -Exe (un eseguibile del codice di partenza): Tests\Data\Parity\Automap\<Gioco>.s<modo>.gz
                  e .f<modo>.gz
     (predefinito) rilancia -Exe e confronta con i golden
+    -Script      i copioni da usare: '' (il primo, <Gioco>.script) e '.2' (il secondo, <Gioco>.2.script); predefinito tutti e due
     -RefExe      rilancia anche l'eseguibile di riferimento e confronta nuovo e vecchio tra loro (stessa cartella di lavoro)
     -Noise       rilancia due volte -Exe e li confronta (rumore zero)
 
@@ -27,6 +28,7 @@ param(
   [string]$DataRoot = '',
   [object]$Exe = @{},
   [object]$RefExe = @{},
+  [string[]]$Script = @('', '.2'),
   [switch]$Record,
   [switch]$Noise
 )
@@ -45,6 +47,14 @@ $setup = @{
   Hexen   = @{ Iwad = 'HEXEN.WAD'; Args = '-warp 1 -skill 3 -class 0' }
   Strife  = @{ Iwad = 'STRIFE0.WAD'; Args = '-warp 32 -skill 3' }
 }
+# secondo copione (<Gioco>.2.script, terza tornata): un'altra mappa e le regole che il primo non raggiunge
+$setup2 = @{
+  Doom    = '-warp 25 -skill 3'
+  Heretic = '-warp 1 2 -skill 3'
+  Hexen   = '-warp 2 -skill 3 -class 0'
+  Strife  = '-warp 15 -skill 3'
+}
+$variants = @($Script | ForEach-Object { $_ -split ',' })
 if ($env:DD_GAME_PRIORITY -eq $null) { $env:DD_GAME_PRIORITY = 'Normal' }
 if (-not $env:DD_PARITY_TIMEOUT) { $env:DD_PARITY_TIMEOUT = '1800' }
 $different = 0
@@ -52,10 +62,10 @@ $equal = 0
 
 # Una esecuzione del copione: stessa riga di comando per ogni eseguibile (la lunghezza degli argomenti conta)
 function Invoke-AutomapRun {
-  param([string]$Dir, [string]$ExeName, [string]$GameName, [int]$Mode, [string]$StateFile, [string]$FrameFile)
+  param([string]$Dir, [string]$ExeName, [string]$GameName, [int]$Mode, [string]$StateFile, [string]$FrameFile, [string]$Variant = '')
   Remove-Item $StateFile, $FrameFile, (Join-Path $Dir 'ps.txt'), (Join-Path $Dir 'pf.txt') -ErrorAction SilentlyContinue
-  $arguments = "-iwad $($setup[$GameName].Iwad) -config p$Mode.ini -dontsavedefaults -nomusic -nosound -noblit " +
-    "$($setup[$GameName].Args) -autoscript am.script -statehash ps.txt -framehash pf.txt"
+  $arguments = "-iwad $(if ($Variant -eq '.2' -and $GameName -eq 'Doom') { 'FREEDOOM2.WAD' } else { $setup[$GameName].Iwad }) -config p$Mode$Variant.ini -dontsavedefaults -nomusic -nosound -noblit " +
+    "$(if ($Variant -eq '.2') { $setup2[$GameName] } else { $setup[$GameName].Args }) -autoscript am.script -statehash ps.txt -framehash pf.txt"
   $run = Invoke-ParityGame -Exe (Join-Path $Dir $ExeName) -Arguments $arguments -WorkDir $Dir -TimeoutSeconds ([int]$env:DD_PARITY_TIMEOUT)
   if (Test-Path (Join-Path $Dir 'ps.txt')) { Move-Item (Join-Path $Dir 'ps.txt') $StateFile -Force }
   if (Test-Path (Join-Path $Dir 'pf.txt')) { Move-Item (Join-Path $Dir 'pf.txt') $FrameFile -Force }
@@ -81,18 +91,25 @@ foreach ($gameName in $games.Keys) {
   $executables = @{ $exeName = $source }
   if ($RefExe[$gameName]) { $executables[$refName] = $RefExe[$gameName] }
   $dir = Initialize-ParityRunDir -Game $gameName -WorkRoot $WorkRoot -DataRoot $DataRoot -Executables $executables
-  Copy-Item (Join-Path $goldenDir "$gameName.script") (Join-Path $dir 'am.script') -Force
+  foreach ($variant in $variants) {
+  Copy-Item (Join-Path $goldenDir "$gameName$variant.script") (Join-Path $dir 'am.script') -Force
+  # la seconda mappa di Doom ha i cani amici (le partenze dei giocatori 2..4: il colore delle cose amiche)
+  foreach ($m in 8, 32) {
+    $text = [IO.File]::ReadAllText((Join-Path $dir "p$m.ini"))
+    if ($variant -eq '.2' -and $gameName -eq 'Doom') { $text += "`r`ndogs=2`r`n" }
+    [IO.File]::WriteAllText((Join-Path $dir "p$m$variant.ini"), $text)
+  }
   foreach ($mode in $Modes) {
     # Strife e Doom in 8 e 32 bit, Heretic e Hexen solo a 8 bit come il corpus
     if ($mode -eq 32 -and $gameName -notin 'Doom', 'Strife') { continue }
-    $label = "{0,-8} automap      modo {1,2}" -f $gameName, $mode
+    $label = "{0,-8} automap{2,-2}    modo {1,2}" -f $gameName, $mode, $variant
     $newState = Join-Path $dir "new$mode.state.txt"
     $newFrame = Join-Path $dir "new$mode.f.txt"
-    $run = Invoke-AutomapRun -Dir $dir -ExeName $exeName -GameName $gameName -Mode $mode -StateFile $newState -FrameFile $newFrame
+    $run = Invoke-AutomapRun -Dir $dir -ExeName $exeName -GameName $gameName -Mode $mode -StateFile $newState -FrameFile $newFrame -Variant $variant
     if (-not (Test-AutomapRun $run $newState $newFrame $label)) { $different++; continue }
     $stats = Get-ParityStateStats -Tool $tool -File $newState
-    $goldenState = Join-Path $goldenDir "$gameName.s$mode.gz"
-    $goldenFrame = Join-Path $goldenDir "$gameName.f$mode.gz"
+    $goldenState = Join-Path $goldenDir "$gameName$variant.s$mode.gz"
+    $goldenFrame = Join-Path $goldenDir "$gameName$variant.f$mode.gz"
     if ($Record) {
       & $tool pack $newState $goldenState | Out-Null
       & $tool pack $newFrame $goldenFrame | Out-Null
@@ -103,14 +120,14 @@ foreach ($gameName in $games.Keys) {
     if ($Noise) {
       $secondState = Join-Path $dir "second$mode.state.txt"
       $secondFrame = Join-Path $dir "second$mode.f.txt"
-      $run2 = Invoke-AutomapRun -Dir $dir -ExeName $exeName -GameName $gameName -Mode $mode -StateFile $secondState -FrameFile $secondFrame
+      $run2 = Invoke-AutomapRun -Dir $dir -ExeName $exeName -GameName $gameName -Mode $mode -StateFile $secondState -FrameFile $secondFrame -Variant $variant
       if (-not (Test-AutomapRun $run2 $secondState $secondFrame $label)) { $different++; continue }
       $refState = $secondState; $refFrame = $secondFrame
     }
     elseif ($RefExe[$gameName]) {
       $refState = Join-Path $dir "ref$mode.state.txt"
       $refFrame = Join-Path $dir "ref$mode.f.txt"
-      $run2 = Invoke-AutomapRun -Dir $dir -ExeName $refName -GameName $gameName -Mode $mode -StateFile $refState -FrameFile $refFrame
+      $run2 = Invoke-AutomapRun -Dir $dir -ExeName $refName -GameName $gameName -Mode $mode -StateFile $refState -FrameFile $refFrame -Variant $variant
       if (-not (Test-AutomapRun $run2 $refState $refFrame $label)) { $different++; continue }
     }
     else {
@@ -121,6 +138,7 @@ foreach ($gameName in $games.Keys) {
     $result = (& $tool compare $refFrame $newFrame) | Out-String
     if ($result -notmatch 'EQUAL') { $problem = $true; Write-Output "$label : FOTOGRAMMA $($result.Trim())" }
     if ($problem) { $different++ } else { $equal++; Write-Output "$label : UGUALE ($($stats.Tics) tic)" }
+  }
   }
 }
 Write-Output "Confronti uguali: $equal, diversi o falliti: $different"
