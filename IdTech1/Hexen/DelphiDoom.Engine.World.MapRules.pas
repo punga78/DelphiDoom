@@ -371,7 +371,7 @@ begin
     MT_AXEPUFF_GLOW:
       S_StartSound(t1, Ord(SFX_FIGHTER_HAMMER_MISS));
     MT_FLAMEPUFF:
-      P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
+      P_SpawnPuff(x2, y2, TMapAim.ShootZ + FixedMul(slope, distance));
   end;
 end;
 
@@ -1106,7 +1106,7 @@ class function TMapGameRules.ShotHitsThing(intr: Pintercept_t; th: Pmobj_t; x, y
 begin
   P_SpawnPuff(x, y, z);
 
-  if la_damage <> 0 then
+  if TMapAim.Damage <> 0 then
   begin
     if (intr.d.thing.flags and MF_NOBLOOD = 0) and
        (intr.d.thing.flags2 and MF2_INVULNERABLE = 0) and
@@ -1120,9 +1120,9 @@ begin
 
     if PuffType = MT_FLAMEPUFF2 then
     // Cleric FlameStrike does fire damage
-      P_DamageMobj(th, @LavaInflictor, shootthing, la_damage)
+      P_DamageMobj(th, @LavaInflictor, TMapAim.ShootThing, TMapAim.Damage)
     else
-      P_DamageMobj(th, shootthing, shootthing, la_damage);
+      P_DamageMobj(th, TMapAim.ShootThing, TMapAim.ShootThing, TMapAim.Damage);
   end;
 
   result := false; // don't go any farther

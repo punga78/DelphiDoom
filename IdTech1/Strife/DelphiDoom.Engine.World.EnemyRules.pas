@@ -1253,12 +1253,12 @@ begin
       begin
         // haleyjd 09/06/10: Note that this sets actor->target in Strife!
         P_BulletSlope(actor);
-        if linetarget <> nil then
-          actor.target := linetarget;
+        if TMapAim.LineTarget <> nil then
+          actor.target := TMapAim.LineTarget;
 
         // Clear target if nothing is visible, or if the target is a
         // friendly Rebel or the allied player.
-        if (linetarget = nil) or
+        if (TMapAim.LineTarget = nil) or
            ((actor.target._type = Ord(MT_REBEL1)) and
             (actor.target.miscdata = actor.miscdata)) or
            (actor.target = master) then
@@ -1281,11 +1281,11 @@ begin
 
       // haleyjd 09/06/10: Note that this sets actor->target in Strife!
       P_BulletSlope(actor);
-      if linetarget <> nil then
-        actor.target := linetarget;
+      if TMapAim.LineTarget <> nil then
+        actor.target := TMapAim.LineTarget;
 
       // Clear target if nothing is visible, or if the target is an ally.
-      if (linetarget = nil) or (actor.target.flags and MF_ALLY <> 0) or P_BothFriends(actor, actor.target) then
+      if (TMapAim.LineTarget = nil) or (actor.target.flags and MF_ALLY <> 0) or P_BothFriends(actor, actor.target) then
       begin
         actor.target := nil;
         result := false;

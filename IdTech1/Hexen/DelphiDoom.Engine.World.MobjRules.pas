@@ -1625,7 +1625,7 @@ var
 begin
   z := z + (P_Random - P_Random) * 1024;
   puff := P_SpawnMobj(x, y, z, Ord(PuffType));
-  if (linetarget <> nil) and (puff.info.seesound <> 0) then
+  if (TMapAim.LineTarget <> nil) and (puff.info.seesound <> 0) then
   begin // Hit thing sound
     A_SeeSound(puff, puff);
   end
@@ -2091,17 +2091,17 @@ begin
   an := source.angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-      if zaxisshift and (linetarget = nil) then
+      if zaxisshift and (TMapAim.LineTarget = nil) then
       begin
         an := source.angle;
         slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
@@ -2187,15 +2187,15 @@ begin
 //
   an := angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     slope := P_AimLineAttack (source, an, 16 * 64 * FRACUNIT);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       slope := P_AimLineAttack (source, an, 16 * 64 * FRACUNIT);
-      if zaxisshift and (linetarget = nil) then
+      if zaxisshift and (TMapAim.LineTarget = nil) then
       begin
         an := angle;
         slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
@@ -2247,15 +2247,15 @@ begin
 //
   an := angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-      if zaxisshift and (linetarget = nil) then
+      if zaxisshift and (TMapAim.LineTarget = nil) then
       begin
         an := angle;
         slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;

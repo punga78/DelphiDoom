@@ -770,10 +770,10 @@ end;
 class procedure TMapGameRules.SpawnWallPuff(x, y, z: fixed_t);
 begin
   // villsa [STRIFE]
-  if la_damage > 0 then
+  if TMapAim.Damage > 0 then
   begin
     // villsa [STRIFE] Test against Mauler attack range
-    if attackrange <> 2112 * FRACUNIT then
+    if TMapAim.AttackRange <> 2112 * FRACUNIT then
       P_SpawnPuff(x, y, z)  // Spawn bullet puffs.
     else
       P_SpawnMobj(x, y, z, Ord(MT_STRIFEPUFF3));
@@ -797,11 +797,11 @@ var
   th2: Pmobj_t;
 begin
   // villsa [STRIFE] Check for Mauler attack range
-  if attackrange = 2112 * FRACUNIT then
+  if TMapAim.AttackRange = 2112 * FRACUNIT then
   begin
     th2 := P_SpawnMobj(x, y, z, Ord(MT_STRIFEPUFF3));
     th2.momz := -FRACUNIT;
-    P_DamageMobj(th, th2, shootthing, la_damage);
+    P_DamageMobj(th, th2, TMapAim.ShootThing, TMapAim.Damage);
     result := false;
     exit;
   end;
@@ -814,14 +814,14 @@ begin
   begin
   // JVAL 18/09/2009 Added Blue and Green blood spawners
     if intr.d.thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-      P_SpawnBlueBlood(x, y, z, la_damage)
+      P_SpawnBlueBlood(x, y, z, TMapAim.Damage)
     else if intr.d.thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-      P_SpawnGreenBlood(x, y, z, la_damage)
+      P_SpawnGreenBlood(x, y, z, TMapAim.Damage)
     else
-      P_SpawnBlood(x, y, z, la_damage, intr.d.thing);
+      P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
   end;
 
-  P_DamageMobj(th, shootthing, shootthing, la_damage);
+  P_DamageMobj(th, TMapAim.ShootThing, TMapAim.ShootThing, TMapAim.Damage);
 
   // don't go any farther
   result := false;

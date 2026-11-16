@@ -499,22 +499,22 @@ begin
   P_LineAttack(player.mo, angle, mrange, slope, damage);
 
   // turn to face target
-  if linetarget <> nil then
+  if TMapAim.LineTarget <> nil then
   begin
     // villsa [STRIFE] check for non-flesh types
-    if linetarget.flags and MF_NOBLOOD <> 0 then
+    if TMapAim.LineTarget.flags and MF_NOBLOOD <> 0 then
       S_StartSound(player.mo, Ord(sfx_mtalht))
     else
       S_StartSound(player.mo, Ord(sfx_meatht));
 
     player.mo.angle :=
-      R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+      R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
 
     // villsa [STRIFE] apply flag
     player.mo.flags := player.mo.flags or MF_JUSTATTACKED;
 
     // villsa [STRIFE] do punch alert routine
-    P_DoPunchAlert(player.mo, linetarget);
+    P_DoPunchAlert(player.mo, TMapAim.LineTarget);
   end
   else
     S_StartSound (player.mo, Ord(sfx_swish));
@@ -718,8 +718,8 @@ begin
     P_SetMobjState(player.mo, S_PLAY_06); // 293
     dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)]);
     P_BulletSlope(player.mo);
-    if linetarget <> nil then
-      player.mo.target := linetarget;
+    if TMapAim.LineTarget <> nil then
+      player.mo.target := TMapAim.LineTarget;
     P_GunShot(player.mo, player.refire = 0);
   end;
 end;
@@ -742,8 +742,8 @@ begin
   begin
     dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)], 20);
     P_BulletSlope(player.mo);
-    if linetarget <> nil then
-      player.mo.target := linetarget;
+    if TMapAim.LineTarget <> nil then
+      player.mo.target := TMapAim.LineTarget;
     S_StartSound(player.mo, Ord(sfx_pgrdat));
 
     for i := 0 to 19 do
@@ -816,14 +816,14 @@ begin
     0:
       begin
         P_BulletSlope(player.mo);
-        if linetarget <> nil then
-          player.mo.target := linetarget;
-        if linetarget <> nil then
+        if TMapAim.LineTarget <> nil then
+          player.mo.target := TMapAim.LineTarget;
+        if TMapAim.LineTarget <> nil then
         begin
           // haleyjd 09/18/10: corrected z coordinate
-          mo := P_SpawnMobj(linetarget.x, linetarget.y, ONFLOORZ,
+          mo := P_SpawnMobj(TMapAim.LineTarget.x, TMapAim.LineTarget.y, ONFLOORZ,
                             Ord(MT_SIGIL_A_GROUND));
-          mo.tracer := linetarget;
+          mo.tracer := TMapAim.LineTarget;
         end
         else
         begin
@@ -860,12 +860,12 @@ begin
     3:
       begin
         P_BulletSlope(player.mo);
-        if linetarget <> nil then
-          player.mo.target := linetarget;
-        if linetarget <> nil then
+        if TMapAim.LineTarget <> nil then
+          player.mo.target := TMapAim.LineTarget;
+        if TMapAim.LineTarget <> nil then
         begin
           mo := P_SpawnPlayerMissile(player.mo, Ord(MT_SIGIL_D_SHOT));
-          mo.tracer := linetarget;
+          mo.tracer := TMapAim.LineTarget;
         end
         else
         begin
@@ -883,7 +883,7 @@ begin
       begin
         mo := P_SpawnPlayerMissile(player.mo, Ord(MT_SIGIL_E_SHOT));
         mo.health := -1;
-        if linetarget = nil then
+        if TMapAim.LineTarget = nil then
         begin
           if player.lookdir < 0 then
             mo.momz := mo.momz + FixedMul(finesine[8192], mo.info.speed)

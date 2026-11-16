@@ -795,7 +795,7 @@ var
   angle: angle_t;
   diff: angle_t;
 begin
-  angle := R_PointToAngle2(pmo.x, pmo.y, linetarget.x, linetarget.y);
+  angle := R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   diff := angle - pmo.angle;
   if (diff > MAX_ANGLE_ADJUST) and (diff <= ANGLE_MAX - MAX_ANGLE_ADJUST) then // JVAL SOS
   begin
@@ -828,7 +828,7 @@ begin
   PuffSpawned := nil;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
   S_StartSound(player.mo, Ord(SFX_PIG_ACTIVE1) + (P_Random and 1));
-  if linetarget <> nil then
+  if TMapAim.LineTarget <> nil then
   begin
     P_AdjustPlayerAngle(player.mo);
     if PuffSpawned <> nil then
@@ -885,13 +885,13 @@ begin
   begin
     angle := pmo.angle + d_an;
     slope := P_AimLineAttack(pmo, angle, HAMMER_RANGE(player));
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, HAMMER_RANGE(player), slope, damage);
       P_AdjustPlayerAngle(pmo);
-      if (linetarget.flags and MF_COUNTKILL <> 0) or (linetarget.player <> nil) then
+      if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
       begin
-        P_ThrustMobj(linetarget, angle, power);
+        P_ThrustMobj(TMapAim.LineTarget, angle, power);
       end;
       pmo.special1 := 0; // Don't throw a hammer
       hammerdone;
@@ -899,13 +899,13 @@ begin
     end;
     angle := pmo.angle - d_an;
     slope := P_AimLineAttack(pmo, angle, HAMMER_RANGE(player));
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, HAMMER_RANGE(player), slope, damage);
       P_AdjustPlayerAngle(pmo);
-      if (linetarget.flags and MF_COUNTKILL <> 0) or (linetarget.player <> nil) then
+      if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
       begin
-        P_ThrustMobj(linetarget, angle, power);
+        P_ThrustMobj(TMapAim.LineTarget, angle, power);
       end;
       pmo.special1 := 0; // Don't throw a hammer
       hammerdone;
@@ -1435,7 +1435,7 @@ begin
   begin
     angle := pmo.angle + d_an;
     slope := P_AimLineAttack(pmo, angle, 2 * mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       inc(player.mo.special1);
       if pmo.special1 = 3 then
@@ -1445,15 +1445,15 @@ begin
         PuffType := MT_HAMMERPUFF;
       end;
       P_LineAttack(pmo, angle, 2 * mrange, slope, damage);
-      if (linetarget.flags and MF_COUNTKILL <> 0) or (linetarget.player <> nil) then
-        P_ThrustMobj(linetarget, angle, power);
+      if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
+        P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       punchdone;
       exit;
     end;
     angle := pmo.angle - d_an;
     slope := P_AimLineAttack(pmo, angle, 2 * mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       inc(pmo.special1);
       if pmo.special1 = 3 then
@@ -1463,8 +1463,8 @@ begin
         PuffType := MT_HAMMERPUFF;
       end;
       P_LineAttack(pmo, angle, 2 * mrange, slope, damage);
-      if (linetarget.flags and MF_COUNTKILL <> 0) or (linetarget.player <> nil) then
-        P_ThrustMobj(linetarget, angle, power);
+      if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
+        P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       punchdone;
       exit;
@@ -1544,11 +1544,11 @@ begin
   begin
     angle := pmo.angle + d_an;
     slope := P_AimLineAttack(pmo, angle, AXERANGE(player));
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, AXERANGE(player), slope, damage);
-      if (linetarget.flags and MF_COUNTKILL <> 0) or (linetarget.player <> nil) then
-        P_ThrustMobj(linetarget, angle, power);
+      if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
+        P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       inc(useMana);
       axedone;
@@ -1556,11 +1556,11 @@ begin
     end;
     angle := pmo.angle - d_an;
     slope := P_AimLineAttack(pmo, angle, AXERANGE(player));
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, AXERANGE(player), slope, damage);
-      if linetarget.flags and MF_COUNTKILL <> 0 then
-        P_ThrustMobj(linetarget, angle, power);
+      if TMapAim.LineTarget.flags and MF_COUNTKILL <> 0 then
+        P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       inc(useMana);
       axedone;
@@ -1601,7 +1601,7 @@ begin
   begin
     angle := player.mo.angle + d_an;
     slope := P_AimLineAttack(player.mo, angle, 2 * mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(player.mo, angle, 2 * mrange, slope, damage);
       P_AdjustPlayerAngle(player.mo);
@@ -1609,7 +1609,7 @@ begin
     end;
     angle := player.mo.angle - d_an;
     slope := P_AimLineAttack(player.mo, angle, 2 * mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(player.mo, angle, 2 * mrange, slope, damage);
       P_AdjustPlayerAngle(player.mo);
@@ -1650,12 +1650,12 @@ begin
   begin
     angle := pmo.angle + d_an;
     slope := P_AimLineAttack(pmo, angle, mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, mrange, slope, damage);
-      pmo.angle := R_PointToAngle2(pmo.x, pmo.y, linetarget.x, linetarget.y);
-      if ((linetarget.player <> nil) or (linetarget.flags and MF_COUNTKILL <> 0)) and
-         (linetarget.flags2 and (MF2_DORMANT + MF2_INVULNERABLE) = 0) then
+      pmo.angle := R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+      if ((TMapAim.LineTarget.player <> nil) or (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0)) and
+         (TMapAim.LineTarget.flags2 and (MF2_DORMANT + MF2_INVULNERABLE) = 0) then
       begin
         newLife := player.health + _SHR3(damage);
         if newLife > 100 then
@@ -1669,11 +1669,11 @@ begin
     end;
     angle := pmo.angle - d_an;
     slope := P_AimLineAttack(player.mo, angle, mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, mrange, slope, damage);
-      pmo.angle := R_PointToAngle2(pmo.x, pmo.y, linetarget.x, linetarget.y);
-      if (linetarget.player <> nil) or (linetarget.flags and MF_COUNTKILL <> 0) then
+      pmo.angle := R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+      if (TMapAim.LineTarget.player <> nil) or (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) then
       begin
         newLife := player.health + _SHR4(damage);
         if newLife > 100 then
@@ -1910,9 +1910,9 @@ begin
       mo.health := 85;
     end;
 
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
-      mo.special1 := NativeInt(linetarget);
+      mo.special1 := NativeInt(TMapAim.LineTarget);
       mo.flags := mo.flags or MF_NOCLIP or MF_SKULLFLY;
       mo.flags := mo.flags and not MF_MISSILE;
     end;
@@ -2278,10 +2278,10 @@ begin
   for i := 0 to 15 do
   begin
     P_AimLineAttack(pmo, angle, mrange);
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
     begin
       pmo.flags2 := pmo.flags2 or MF2_ICEDAMAGE;
-      P_DamageMobj(linetarget, pmo, pmo, damage);
+      P_DamageMobj(TMapAim.LineTarget, pmo, pmo, damage);
       pmo.flags2 := pmo.flags2 and not MF2_ICEDAMAGE;
       conedone := true;
       break;

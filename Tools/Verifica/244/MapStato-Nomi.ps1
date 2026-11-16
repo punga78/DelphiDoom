@@ -1,7 +1,8 @@
 # Issue #244, ondata 5: tabella dei nomi storici dello scorrimento, del tiro e dell'uso di p_map e dei campi delle
 # classi che li sostituiscono (usata da Migra-MapStato.ps1 e da Prova-MapStato.ps1).
 # Ogni nome ha la classe e il campo; 'Solo' limita la sostituzione ai file indicati (nome del file senza percorso):
-# serve dove un'altra unit ha un nome omonimo suo (topslope e bottomslope di p_sight, parametri e locali).
+# 'Resta': file dove il nome storico resta come parametro di ShootSpecialLine (la sostituzione e' stata rifatta a mano).
+# 'Solo' serve dove un'altra unit ha un nome omonimo suo (topslope e bottomslope di p_sight, parametri e locali).
 $MapStatoGroups = @{
   Slide = @(
     @{ Old = 'bestslidefrac'; Class = 'TMapSlide'; Field = 'BestFrac' }
@@ -13,7 +14,7 @@ $MapStatoGroups = @{
   Aim   = @(
     @{ Old = 'linetarget'; Class = 'TMapAim'; Field = 'LineTarget' }
     @{ Old = 'attackrange'; Class = 'TMapAim'; Field = 'AttackRange' }
-    @{ Old = 'shootthing'; Class = 'TMapAim'; Field = 'ShootThing' }
+    @{ Old = 'shootthing'; Class = 'TMapAim'; Field = 'ShootThing'; Resta = @('DelphiDoom.Engine.World.MapRules.pas') }
     @{ Old = 'shootz'; Class = 'TMapAim'; Field = 'ShootZ' }
     @{ Old = 'la_damage'; Class = 'TMapAim'; Field = 'Damage' }
     @{ Old = 'topslope'; Class = 'TMapAim'; Field = 'TopSlope'; Solo = @('p_map.pas') }

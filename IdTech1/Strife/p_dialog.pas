@@ -1979,29 +1979,29 @@ begin
 
   // are we facing towards our NPC?
   P_AimLineAttack(player.mo, player.mo.angle, (128 * FRACUNIT));
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     P_AimLineAttack(player.mo, player.mo.angle + (ANG90 div 16), (128 * FRACUNIT));
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
       P_AimLineAttack(player.mo, player.mo.angle - (ANG90 div 16), (128 * FRACUNIT));
   end;
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
     exit;
 
   // already in combat, can't talk to it
-  if linetarget.flags and MF_NODIALOG <> 0 then
+  if TMapAim.LineTarget.flags and MF_NODIALOG <> 0 then
     exit;
 
   // set pointer to the character talking
-  dialogtalker := linetarget;
+  dialogtalker := TMapAim.LineTarget;
   player.lastdialogtalker := dialogtalker;
 
   // play a sound
   if player = @players[consoleplayer] then
     S_StartSound(nil, Ord(sfx_radio));
 
-  linetarget.target := player.mo;           // target the player
+  TMapAim.LineTarget.target := player.mo;           // target the player
   dialogtalker.reactiontime := 2;           // set reactiontime
   dialogtalkerangle := dialogtalker.angle;  // remember original angle
 
@@ -2018,12 +2018,12 @@ begin
   dialogplayer := player;
 
   // haleyjd 09/08/10: get any stored dialog state from this object
-  jumptoconv := linetarget.miscdata;
+  jumptoconv := TMapAim.LineTarget.miscdata;
 
   // check item requirements
   while true do
   begin
-    currentdialog := P_DialogFind(mobjtype_t(linetarget._type), jumptoconv);
+    currentdialog := P_DialogFind(mobjtype_t(TMapAim.LineTarget._type), jumptoconv);
 
     // dialog's jumptoconv equal to 0? There's nothing to jump to.
     if currentdialog.jumptoconv = 0 then
@@ -2052,7 +2052,7 @@ begin
   dialogtext := M_DialogDimMsg(20, 28, stmp, false);
 
   // get states
-  dialogtalkerstates := P_DialogGetStates(mobjtype_t(linetarget._type));
+  dialogtalkerstates := P_DialogGetStates(mobjtype_t(TMapAim.LineTarget._type));
 
   // have talker greet the player
   if dialogtalkerstates.greet <> S_NULL then
@@ -2064,8 +2064,8 @@ begin
   if dialogname = '' then
   begin
     // use a fallback:
-    if mobjinfo[linetarget._type].name2 <> '' then
-      dialogname := mobjinfo[linetarget._type].name2 // mobjtype name
+    if mobjinfo[TMapAim.LineTarget._type].name2 <> '' then
+      dialogname := mobjinfo[TMapAim.LineTarget._type].name2 // mobjtype name
     else
       dialogname := DEH_GetString('Person'); // default name - like Joe in Doom 3 :P
   end;

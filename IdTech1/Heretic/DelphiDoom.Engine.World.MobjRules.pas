@@ -1169,17 +1169,17 @@ begin
   an := source.angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-      if zaxisshift and (linetarget = nil) then
+      if zaxisshift and (TMapAim.LineTarget = nil) then
       begin
         an := source.angle;
         slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
@@ -1337,16 +1337,16 @@ begin
 //
   an := angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + (1 shl 26);
     slope := P_AimLineAttack (source, an, 16 * 64 * FRACUNIT);
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - (2 shl 26);
       slope := P_AimLineAttack (source, an, 16 * 64 * FRACUNIT);
     end;
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := angle;
       slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;

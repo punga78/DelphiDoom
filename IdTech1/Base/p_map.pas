@@ -96,6 +96,33 @@ type
   end;
 
   /// <summary>
+  /// The state of the shots and of the aim (P_AimLineAttack, P_LineAttack and their traverse
+  /// functions): the former globals linetarget, attackrange, shootthing, shootz, la_damage,
+  /// aimslope, topslope, bottomslope and aim_flags_mask2_ex (issue #244). Declared here as
+  /// class variables for the same reason as TMapCheck. Scratch space of one call, except
+  /// LineTarget, that the callers read after the call (who got hit, or nil). The topslope
+  /// and bottomslope of p_sight are another thing, and stay there.
+  /// </summary>
+  TMapAim = class sealed
+  public
+    /// <summary>Who got hit (or nil).</summary>
+    class var LineTarget: Pmobj_t;
+    /// <summary>The range of the attack, and where it starts from.</summary>
+    class var AttackRange: fixed_t;
+    class var ShootThing: Pmobj_t;
+    /// <summary>Height if not aiming up or down (???: use slope for monsters?).</summary>
+    class var ShootZ: fixed_t;
+    /// <summary>The damage of the shot of P_LineAttack.</summary>
+    class var Damage: integer;
+    /// <summary>The slope of the aim and the limits of the slopes (to the top and bottom of the target).</summary>
+    class var AimSlope: fixed_t;
+    class var TopSlope: fixed_t;
+    class var BottomSlope: fixed_t;
+    /// <summary>MBF21: the flags2_ex that friends do not aim at (killough 8/2/98).</summary>
+    class var AimFlagsMask2Ex: integer;
+  end;
+
+  /// <summary>
   /// The state of P_SlideMove, P_HitSlideLine and PTR_SlideTraverse: the former globals
   /// bestslidefrac, bestslideline, slidemo, tmxmove and tmymove (issue #244). Declared here
   /// as class variables for the same reason as TMapCheck. Scratch space of one call.
@@ -250,15 +277,10 @@ function P_ContactPickup(thing: Pmobj_t): boolean;
 //==============================================================================
 function PIT_CheckThing(thing: Pmobj_t): boolean;
 
-var
-  linetarget: Pmobj_t;  // who got hit (or NULL)
-
-// (floatok, spechit and ceilingline are in TMapCheck too)
-// If "floatok" true, move would be ok
+// (linetarget, attackrange, shootthing, shootz and la_damage are in TMapAim, and
+// floatok, spechit and ceilingline in TMapCheck)
+// If "TMapCheck.FloatOk" true, move would be ok
 // if within "TMapCheck.FloorZ - TMapCheck.CeilingZ".
-
-var
-  attackrange: fixed_t;
 
 //==============================================================================
 //
@@ -268,13 +290,6 @@ var
 function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
 
 var
-
-  shootthing: Pmobj_t;
-  // Height if not aiming up or down
-  // ???: use slope for monsters?
-  shootz: fixed_t;
-  la_damage: integer;
-
   crushchange: boolean;
   nofit: boolean;
 
@@ -1801,20 +1816,15 @@ end;
 
 //
 // P_LineAttack
+// (its state is in TMapAim)
 //
-var
-  aimslope: fixed_t;
-
-  aim_flags_mask2_ex: integer;  // JVAL: 20220111 - MBF21
 
 // JVAL: 3d floors : Moved from P_Sight
-  bottomslope: fixed_t; // slopes to top and bottom of target
-  topslope: fixed_t;
 
 //==============================================================================
 //
 // PTR_AimTraverse
-// Sets linetaget and aimslope when a target is aimed at.
+// Sets linetaget and TMapAim.AimSlope when a target is aimed at.
 //
 //==============================================================================
 function PTR_AimTraverse(intr: Pintercept_t): boolean;
@@ -1853,23 +1863,23 @@ begin
       exit;
     end;
 
-    dist := FixedMul(attackrange, intr.frac);
+    dist := FixedMul(TMapAim.AttackRange, intr.frac);
 
     if li.frontsector.floorheight <> li.backsector.floorheight then
     begin
-      slope := FixedDiv(openbottom - shootz, dist);
-      if slope > bottomslope then
-        bottomslope := slope;
+      slope := FixedDiv(openbottom - TMapAim.ShootZ, dist);
+      if slope > TMapAim.BottomSlope then
+        TMapAim.BottomSlope := slope;
     end;
 
     if li.frontsector.ceilingheight <> li.backsector.ceilingheight then
     begin
-      slope := FixedDiv(opentop - shootz, dist);
-      if slope < topslope then
-        topslope := slope;
+      slope := FixedDiv(opentop - TMapAim.ShootZ, dist);
+      if slope < TMapAim.TopSlope then
+        TMapAim.TopSlope := slope;
     end;
 
-    if topslope <= bottomslope then
+    if TMapAim.TopSlope <= TMapAim.BottomSlope then
     begin
       result := false; // stop
       exit;
@@ -1881,7 +1891,7 @@ begin
 
   // shoot a thing
   th := intr.d.thing;
-  if th = shootthing then
+  if th = TMapAim.ShootThing then
   begin
     result := true;  // can't shoot self
     exit;
@@ -1895,7 +1905,7 @@ begin
 
   // killough 7/19/98, 8/2/98:
   // friends don't aim at friends (except players), at least not first
-  if (th.flags2_ex and shootthing.flags2_ex and aim_flags_mask2_ex <> 0) and (th.player = nil) then
+  if (th.flags2_ex and TMapAim.ShootThing.flags2_ex and TMapAim.AimFlagsMask2Ex <> 0) and (th.player = nil) then
   begin
     result := true; // corpse or something
     exit;
@@ -1915,32 +1925,32 @@ begin
   end;
 
   // check angles to see if the thing can be aimed at
-  dist := FixedMul(attackrange, intr.frac);
-  thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
+  dist := FixedMul(TMapAim.AttackRange, intr.frac);
+  thingtopslope := FixedDiv(th.z + th.height - TMapAim.ShootZ, dist);
 
-  if thingtopslope < bottomslope then
+  if thingtopslope < TMapAim.BottomSlope then
   begin
     result := true; // shot over the thing
     exit;
   end;
 
-  thingbottomslope := FixedDiv(th.z - shootz, dist);
+  thingbottomslope := FixedDiv(th.z - TMapAim.ShootZ, dist);
 
-  if thingbottomslope > topslope then
+  if thingbottomslope > TMapAim.TopSlope then
   begin
     result := true; // shot under the thing
     exit;
   end;
 
   // this thing can be hit!
-  if thingtopslope > topslope then
-    thingtopslope := topslope;
+  if thingtopslope > TMapAim.TopSlope then
+    thingtopslope := TMapAim.TopSlope;
 
-  if thingbottomslope < bottomslope then
-    thingbottomslope := bottomslope;
+  if thingbottomslope < TMapAim.BottomSlope then
+    thingbottomslope := TMapAim.BottomSlope;
 
-  aimslope := (thingtopslope + thingbottomslope) div 2;
-  linetarget := th;
+  TMapAim.AimSlope := (thingtopslope + thingbottomslope) div 2;
+  TMapAim.LineTarget := th;
 
   result := false; // don't go any farther
 end;
@@ -1993,14 +2003,14 @@ var
           midback := nil;
         end;
         ok := true;
-        if (FixedDiv(midfront.ceilingheight - shootz, dist) <= aimslope) or
-           (FixedDiv(midfront.floorheight - shootz, dist) >= aimslope) then
+        if (FixedDiv(midfront.ceilingheight - TMapAim.ShootZ, dist) <= TMapAim.AimSlope) or
+           (FixedDiv(midfront.floorheight - TMapAim.ShootZ, dist) >= TMapAim.AimSlope) then
         else
           ok := false;
         if midback <> nil then
         begin
-          if (FixedDiv(midback.ceilingheight - shootz, dist) <= aimslope) or
-             (FixedDiv(midback.floorheight - shootz, dist) >= aimslope) then
+          if (FixedDiv(midback.ceilingheight - TMapAim.ShootZ, dist) <= TMapAim.AimSlope) or
+             (FixedDiv(midback.floorheight - TMapAim.ShootZ, dist) >= TMapAim.AimSlope) then
             ok := true
           else
             ok := false;
@@ -2015,10 +2025,10 @@ var
 
     // hit line
     // position a bit closer
-    frac := intr.frac - FixedDiv(4 * FRACUNIT, attackrange);
+    frac := intr.frac - FixedDiv(4 * FRACUNIT, TMapAim.AttackRange);
     x := trace.x + FixedMul(trace.dx, frac);
     y := trace.y + FixedMul(trace.dy, frac);
-    z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
+    z := TMapAim.ShootZ + FixedMul(TMapAim.AimSlope, FixedMul(frac, TMapAim.AttackRange));
 
     if li.frontsector.ceilingpic = skyflatnum then
     begin
@@ -2071,11 +2081,11 @@ begin
     li := intr.d.line;
 
     if li.flags and ML_TRIGGERSCRIPTS <> 0 then
-      if shootthing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-        PS_EventShootLine(shootthing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(shootthing.x, shootthing.y, li));
+      if TMapAim.ShootThing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+        PS_EventShootLine(TMapAim.ShootThing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(TMapAim.ShootThing.x, TMapAim.ShootThing.y, li));
 
     if li.special <> 0 then
-      TMapGameRules.ShootSpecialLine(shootthing, li);
+      TMapGameRules.ShootSpecialLine(TMapAim.ShootThing, li);
 
     if li.flags and ML_TWOSIDED = 0 then
     begin
@@ -2092,12 +2102,12 @@ begin
     // crosses a two sided line
     P_LineOpening(li, false);
 
-    dist := FixedMul(attackrange, intr.frac);
+    dist := FixedMul(TMapAim.AttackRange, intr.frac);
 
     if li.frontsector.floorheight <> li.backsector.floorheight then
     begin
-      slope := FixedDiv(openbottom - shootz, dist);
-      if slope > aimslope then
+      slope := FixedDiv(openbottom - TMapAim.ShootZ, dist);
+      if slope > TMapAim.AimSlope then
       begin
         result := hitline(true);
         exit;
@@ -2106,8 +2116,8 @@ begin
 
     if li.frontsector.ceilingheight <> li.backsector.ceilingheight then
     begin
-      slope := FixedDiv(opentop - shootz, dist);
-      if slope < aimslope then
+      slope := FixedDiv(opentop - TMapAim.ShootZ, dist);
+      if slope < TMapAim.AimSlope then
       begin
         result := hitline(true);
         exit;
@@ -2121,7 +2131,7 @@ begin
 
   // shoot a thing
   th := intr.d.thing;
-  if th = shootthing then
+  if th = TMapAim.ShootThing then
   begin
     result := true; // can't shoot self
     exit;
@@ -2140,18 +2150,18 @@ begin
   end;
 
   // check angles to see if the thing can be aimed at
-  dist := FixedMul(attackrange, intr.frac);
-  thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
+  dist := FixedMul(TMapAim.AttackRange, intr.frac);
+  thingtopslope := FixedDiv(th.z + th.height - TMapAim.ShootZ, dist);
 
-  if thingtopslope < aimslope then
+  if thingtopslope < TMapAim.AimSlope then
   begin
     result := true; // shot over the thing
     exit;
   end;
 
-  thingbottomslope := FixedDiv(th.z - shootz, dist);
+  thingbottomslope := FixedDiv(th.z - TMapAim.ShootZ, dist);
 
-  if thingbottomslope > aimslope then
+  if thingbottomslope > TMapAim.AimSlope then
   begin
     result := true; // shot under the thing
     exit;
@@ -2159,15 +2169,15 @@ begin
 
   // JVAL: 3d Floors
   // Can not shoot if in same subsector but different floor
-  if shootthing.subsector = th.subsector then
+  if TMapAim.ShootThing.subsector = th.subsector then
   begin
-    midn := Psubsector_t(shootthing.subsector).sector.midsec;
+    midn := Psubsector_t(TMapAim.ShootThing.subsector).sector.midsec;
 
     if midn > -1 then
     begin
       mid := @sectors[midn];
-      if ((shootz <= mid.floorheight) and (th.z >= mid.ceilingheight)) or
-         ((th.z + th.height <= mid.floorheight) and (shootz >= mid.ceilingheight)) then
+      if ((TMapAim.ShootZ <= mid.floorheight) and (th.z >= mid.ceilingheight)) or
+         ((th.z + th.height <= mid.floorheight) and (TMapAim.ShootZ >= mid.ceilingheight)) then
       begin
         result := false;
         exit;
@@ -2177,11 +2187,11 @@ begin
 
   // hit thing
   // position a bit closer
-  frac := intr.frac - FixedDiv(10 * FRACUNIT, attackrange);
+  frac := intr.frac - FixedDiv(10 * FRACUNIT, TMapAim.AttackRange);
 
   x := trace.x + FixedMul(trace.dx, frac);
   y := trace.y + FixedMul(trace.dy, frac);
-  z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
+  z := TMapAim.ShootZ + FixedMul(TMapAim.AimSlope, FixedMul(frac, TMapAim.AttackRange));
 
   // Puff or blood, and the damage: never goes any farther
   result := TMapGameRules.ShotHitsThing(intr, th, x, y, z);
@@ -2202,26 +2212,26 @@ begin
   {$ELSE}
   angle := angle shr ANGLETOFINESHIFT;
   {$ENDIF}
-  shootthing := t1;
+  TMapAim.ShootThing := t1;
 
   x2 := t1.x + FixedInt(distance) * finecosine[angle];
   y2 := t1.y + FixedInt(distance) * finesine[angle];
-  shootz := TMapGameRules.AimOriginZ(t1);
+  TMapAim.ShootZ := TMapGameRules.AimOriginZ(t1);
 
   // can't shoot outside view angles
-  topslope := (100 * FRACUNIT) div 160;
-  bottomslope := -topslope; // JVAL
+  TMapAim.TopSlope := (100 * FRACUNIT) div 160;
+  TMapAim.BottomSlope := -TMapAim.TopSlope; // JVAL
 
-  attackrange := distance;
-  linetarget := nil;
+  TMapAim.AttackRange := distance;
+  TMapAim.LineTarget := nil;
 
   // killough 8/2/98: prevent friends from aiming at friends
-  aim_flags_mask2_ex := mask2_ex;
+  TMapAim.AimFlagsMask2Ex := mask2_ex;
 
   P_PathTraverse(t1.x, t1.y, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_AimTraverse);
 
-  if linetarget <> nil then
-    result := aimslope
+  if TMapAim.LineTarget <> nil then
+    result := TMapAim.AimSlope
   else
     result := TMapGameRules.NoTargetSlope(t1);
 end;
@@ -2230,7 +2240,7 @@ end;
 //
 // P_LineAttack
 // If damage == 0, it is just a test trace
-// that will leave linetarget set.
+// that will leave TMapAim.LineTarget set.
 //
 //==============================================================================
 procedure P_LineAttack(t1: Pmobj_t; angle: angle_t;
@@ -2244,13 +2254,13 @@ begin
   {$ELSE}
   angle := angle shr ANGLETOFINESHIFT;
   {$ENDIF}
-  shootthing := t1;
-  la_damage := damage;
+  TMapAim.ShootThing := t1;
+  TMapAim.Damage := damage;
   x2 := t1.x + FixedInt(distance) * finecosine[angle];
   y2 := t1.y + FixedInt(distance) * finesine[angle];
-  shootz := TMapGameRules.AttackOriginZ(t1);
-  attackrange := distance;
-  aimslope := slope;
+  TMapAim.ShootZ := TMapGameRules.AttackOriginZ(t1);
+  TMapAim.AttackRange := distance;
+  TMapAim.AimSlope := slope;
 
   if P_PathTraverse(t1.x, t1.y, x2, y2, TMapGameRules.LineAttackFlags(damage), PTR_ShootTraverse) then
     TMapGameRules.LineAttackMissed(t1, x2, y2, slope, distance);

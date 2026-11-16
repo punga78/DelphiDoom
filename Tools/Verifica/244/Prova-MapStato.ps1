@@ -42,8 +42,8 @@ foreach ($rel in $files) {
     $oldName = $entry.Old
     $back = [regex]::Replace($back, "(?<![\w.])$field(?!\w)", { param($m) $oldName }.GetNewClosure(), 'IgnoreCase')
   }
-  $newLines = @($back -split "`r?`n" | Where-Object { $_ -notmatch 'issue #244|(is|are) in TMap\w+' })
-  $oldLines = @($oldText -split "`r?`n")
+  $newLines = @($back -split "`r?`n" | Where-Object { $_ -notmatch 'issue #244|(is|are) in TMap\w+|^\s*//.*TMap\w+' })
+  $oldLines = @($oldText -split "`r?`n" | Where-Object { $_ -notmatch '^\s*//.*TMap\w+' })
   $i = 0; $j = 0; $diffs = @()
   while ($i -lt $oldLines.Count) {
     if ($j -lt $newLines.Count -and $oldLines[$i] -eq $newLines[$j]) { $i++; $j++; continue }
@@ -59,6 +59,7 @@ foreach ($rel in $files) {
     $code = (($newText -split "`r?`n") | Where-Object { $_.TrimStart() -notmatch '^(//|{)' }) -join "`n"
     foreach ($entry in $entries) {
       if ($entry.Solo -and ($entry.Solo -notcontains $leaf)) { continue }
+      if ($entry.Resta -and ($entry.Resta -contains $leaf)) { continue }
       if ([regex]::IsMatch($code, "(?<![\w.])$([regex]::Escape($entry.Old))(?!\w)", 'IgnoreCase')) {
         $diffs += "il nome storico $($entry.Old) compare ancora nel testo nuovo"
       }

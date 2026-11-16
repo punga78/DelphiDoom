@@ -851,13 +851,13 @@ begin
   // depending on target type.
   case P_BloodType(intr.d.thing) of
     bt_puff: P_SpawnPuff(x, y, z);
-    bt_red: P_SpawnBlood(x, y, z, la_damage, intr.d.thing);
-    bt_blue: P_SpawnBlueBlood(x, y, z, la_damage);
-    bt_green: P_SpawnGreenBlood(x, y, z, la_damage);
+    bt_red: P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
+    bt_blue: P_SpawnBlueBlood(x, y, z, TMapAim.Damage);
+    bt_green: P_SpawnGreenBlood(x, y, z, TMapAim.Damage);
   end;
 
-  if la_damage <> 0 then
-    P_DamageMobj(th, shootthing, shootthing, la_damage);
+  if TMapAim.Damage <> 0 then
+    P_DamageMobj(th, TMapAim.ShootThing, TMapAim.ShootThing, TMapAim.Damage);
 
   // don't go any farther
   result := false;

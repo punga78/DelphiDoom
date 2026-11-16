@@ -380,17 +380,17 @@ begin
   an := source.angle;
   slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-  if linetarget = nil then
+  if TMapAim.LineTarget = nil then
   begin
     an := an + $4000000;
     slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       an := an - $8000000;
       slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
 
-      if linetarget = nil then
+      if TMapAim.LineTarget = nil then
       begin
         an := source.angle;
         slope := (Pplayer_t(source.player).lookdir16 * (FRACUNIT div 16)) div 173;
@@ -1094,22 +1094,22 @@ begin
   if rp.floorslidetics > 0 then
     dec(rp.floorslidetics);
 
-  // JVAL: 20200501 - Retrieve Linetarget
+  // JVAL: 20200501 - Retrieve TMapAim.LineTarget
   P_AimLineAttack(p.mo, p.mo.angle, 16 * 64 * FRACUNIT);
-  if (rp.plinetarget = nil) and (linetarget <> nil) then
+  if (rp.plinetarget = nil) and (TMapAim.LineTarget <> nil) then
     rp.pcrosstic := leveltime;
-  rp.plinetarget := linetarget;
+  rp.plinetarget := TMapAim.LineTarget;
 
   // JVAL: 20200503 - ALDS
   if (rp.radixpowers[Ord(rpu_alds)] > 0) and (leveltime and $3 = 0) then
   begin
-    if linetarget = nil then
+    if TMapAim.LineTarget = nil then
     begin
       P_AimLineAttack(p.mo, p.mo.angle + $4000000, 16 * 64 * FRACUNIT);
-      if linetarget = nil then
+      if TMapAim.LineTarget = nil then
         P_AimLineAttack(p.mo, p.mo.angle - $4000000, 16 * 64 * FRACUNIT);
     end;
-    if linetarget <> nil then
+    if TMapAim.LineTarget <> nil then
       A_FireALDS(p);
   end;
 end;
