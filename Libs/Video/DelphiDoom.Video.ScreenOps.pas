@@ -34,6 +34,11 @@ type
     class procedure ShadeOpaque32(Src: PByte; Count: Integer); static;
     /// <summary>Replaces the index 0 with Approx in Count pixels</summary>
     class procedure RemoveTransparency(Src: PByte; Approx: Byte; Count: Integer); static;
+    /// <summary>
+    ///   Fills AHeight rows of AWidth bytes (a screen of 8 bit pixels, the rows one after the other) with a flat of
+    ///   64x64 pixels repeated (ASource: 4096 bytes); row y takes the row y mod 64 of the flat
+    /// </summary>
+    class procedure TileFlat64(ASource, ADestination: PByte; AWidth, AHeight: Integer); static;
   end;
 
 implementation
@@ -177,6 +182,30 @@ begin
       Src^ := Approx;
     Inc(Src);
     Dec(Count);
+  end;
+end;
+
+class procedure TVideoScreenOps.TileFlat64(ASource, ADestination: PByte; AWidth, AHeight: Integer);
+var
+  LRow: Integer;
+  LRowSource: PByte;
+  LTiles: Integer;
+  LTile: Integer;
+begin
+  LTiles := AWidth div 64;
+  for LRow := 0 to AHeight - 1 do
+  begin
+    LRowSource := PByte(NativeInt(ASource) + (LRow and 63) * 64);
+    for LTile := 0 to LTiles - 1 do
+    begin
+      Move(LRowSource^, ADestination^, 64);
+      Inc(ADestination, 64);
+    end;
+    if AWidth and 63 <> 0 then
+    begin
+      Move(LRowSource^, ADestination^, AWidth and 63);
+      Inc(ADestination, AWidth and 63);
+    end;
   end;
 end;
 

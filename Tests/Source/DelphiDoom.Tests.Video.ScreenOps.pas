@@ -35,6 +35,8 @@ type
     procedure DovrebbeSostituireLIndiceZero;
     [Test]
     procedure DovrebbeNonScrivereOltreIlConteggio;
+    [Test]
+    procedure DovrebbeRipetereIlFlatSulloSchermo;
   end;
 
 implementation
@@ -190,6 +192,32 @@ begin
   TVideoScreenOps.RemoveTransparency(@LData[0], 5, 3);
   Assert.AreEqual<Integer>(5, LData[2]);
   Assert.AreEqual<Integer>(0, LData[3]);
+end;
+
+procedure TTestVideoScreenOps.DovrebbeRipetereIlFlatSulloSchermo;
+const
+  WIDTHS: array[0..3] of Integer = (320, 64, 130, 7);
+var
+  LFlat: TBytes8;
+  LScreen: TBytes8;
+  LIndex, LRow, LColumn, LWidth: Integer;
+begin
+  SetLength(LFlat, 4096);
+  for LIndex := 0 to 4095 do
+    LFlat[LIndex] := Byte(LIndex * 7 + (LIndex shr 6));
+  for LIndex := 0 to High(WIDTHS) do
+  begin
+    LWidth := WIDTHS[LIndex];
+    SetLength(LScreen, LWidth * 200 + 1);
+    FillChar(LScreen[0], Length(LScreen), 0);
+    TVideoScreenOps.TileFlat64(@LFlat[0], @LScreen[0], LWidth, 200);
+    // pixel (x, y) is the pixel (x mod 64, y mod 64) of the flat
+    for LRow := 0 to 199 do
+      for LColumn := 0 to LWidth - 1 do
+        Assert.AreEqual<Integer>(LFlat[(LRow and 63) * 64 + (LColumn and 63)], LScreen[LRow * LWidth + LColumn]);
+    // nothing after the last pixel
+    Assert.AreEqual<Integer>(0, LScreen[LWidth * 200]);
+  end;
 end;
 
 initialization

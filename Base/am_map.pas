@@ -65,7 +65,8 @@ uses
 {$ELSE}
   tables,
 {$ENDIF}
-  m_fixed;
+  m_fixed,
+  DelphiDoom.Engine.Automap.Rules;
 
 const
   AM_MSGHEADER = (Ord('a') shl 24) + (Ord('m') shl 16);
@@ -73,101 +74,7 @@ const
   AM_MSGEXITED = AM_MSGHEADER or (Ord('x') shl 8);
 
 const
-{$IF DEFINED(HERETIC)}
-  REDS = 12 * 8;
-  REDRANGE = 1;
-  BLUES = (256 - (4 * 16)) + 8;
-  BLUERANGE = 1;
-  GREENS = 216;
-  GREENRANGE = 8;
-  GRAYS = 5 * 8;
-  GRAYSRANGE = 1;
-  BROWNS = 14 * 8;
-  BROWNRANGE = 1;
-  YELLOWS = 10 * 8;
-  YELLOWRANGE = 1;
-  WHITE = 35;
-{$ELSEIF DEFINED(HEXEN)}
-  REDS = 12 * 8;
-  REDRANGE = 1;
-  BLUES = (256 - (4 * 16)) + 8;
-  BLUERANGE = 1;
-  GREENS = 215;
-  GREENRANGE = 2;
-  TRACEGREEN = 211;
-  GRAYS = 5 * 8;
-  GRAYSRANGE = 1;
-  BROWNS = 14 * 8;
-  BROWNRANGE = 1;
-  YELLOWS = 10 * 8;
-  YELLOWRANGE = 1;
-  WHITE = 255;
-{$ELSEIF DEFINED(STRIFE)}
-
-  GRAYS = 1;
-  GRAYSRANGE = 15;
-{$ELSE}
-  REDS = 256 - (5 * 16);
-  REDRANGE = 16;
-  BLUES = (256 - (4 * 16)) + 8;
-  BLUERANGE = 8;
-  GREENS = 7 * 16;
-  GREENRANGE = 16;
-  GRAYS = 6 * 16;
-  GRAYSRANGE = 16;
-  BROWNS = 4 * 16;
-  BROWNRANGE = 16;
-  YELLOWS = (256 - 32) + 7;
-  YELLOWRANGE = 1;
-  WHITE = 256 - 47;
-{$ENDIF}
-
-  { Automap colors }
-{$IF DEFINED(HEXEN)}
-  YOURCOLORS = WHITE;
-  WALLCOLORS = 83;
-  WALLRANGE = 8;
-  TSWALLCOLORS = 40;
-  TSWALLRANGE = 8;
-  FDWALLCOLORS = 96;
-  FDWALLRANGE = 8;
-  CDWALLCOLORS = 107;
-  CDWALLRANGE = 8;
-  THINGCOLORS = GREENS;
-  THINGRANGE = GREENRANGE;
-  SECRETWALLCOLORS = WALLCOLORS;
-  SECRETWALLRANGE = WALLRANGE;
-{$ELSEIF DEFINED(STRIFE)}
-  BACKGROUND = 240;         // haleyjd [STRIFE]
-  WALLCOLORS = 5;           // villsa [STRIFE]
-  WALLRANGE = 16;
-  TSWALLCOLORS = 16;
-  FDWALLCOLORS = 122;       // villsa [STRIFE]
-  CDWALLCOLORS = 116;
-  CTWALLCOLORS = 19;        // villsa [STRIFE]
-  SPWALLCOLORS = 243;       // villsa [STRIFE]
-  THINGCOLORS = 233;        // villsa [STRIFE]
-  MISSILECOLORS = 227;      // villsa [STRIFE]
-  SHOOTABLECOLORS = 235;    // villsa [STRIFE]
-
-// JVAL: We keep grid in DelphiStrife
-{$ELSE}
-  YOURCOLORS = WHITE;
-  WALLCOLORS = REDS;
-  WALLRANGE = REDRANGE;
-  TSWALLCOLORS = GRAYS;
-  TSWALLRANGE = GRAYSRANGE;
-  FDWALLCOLORS = BROWNS;
-  FDWALLRANGE = BROWNRANGE;
-  CDWALLCOLORS = YELLOWS;
-  CDWALLRANGE = YELLOWRANGE;
-  THINGCOLORS = GREENS;
-  THINGRANGE = GREENRANGE;
-  SECRETWALLCOLORS = WALLCOLORS;
-  SECRETWALLRANGE = WALLRANGE;
-{$ENDIF}
-  GRIDCOLORS = GRAYS + (GRAYSRANGE div 2);
-  XHAIRCOLORS = GRAYS;
+// The colors of the automap are in DelphiDoom.Engine.Automap.Rules (the unit of the game)
 
   AM_PANDOWNKEY = KEY_DOWNARROW;
   AM_PANUPKEY = KEY_UPARROW;
@@ -1262,13 +1169,6 @@ procedure AM_rotate_dbl(x: Pfixed_t; y: Pfixed_t; a: angle_t; xpos, ypos: fixed_
 begin
   TAutomapRotation.RotateExact(x^, y^, a, xpos, ypos);
 end;
-{$IFDEF HERETIC}
-const
-  BLUEKEYCOLOR = 197;
-  YELLOWKEYCOLOR = 144;
-  GREENKEYCOLOR = 220;
-
-{$ENDIF}
 //==============================================================================
 // AM_drawWalls
 //
@@ -1283,6 +1183,7 @@ var
   pl: Pline_t;
   plrx, plry: fixed_t;
   plra: angle_t;
+  color: integer;
 begin
   plrx := plr.mo.x div FRACTOMAPUNIT;
   plry := plr.mo.y div FRACTOMAPUNIT;
@@ -1308,99 +1209,14 @@ begin
         inc(pl);
         continue;
       end;
-{$IFDEF STRIFE}
-      if (pl.special = 145) or (pl.special = 186) then
-{$ELSE}
-      if pl.backsector = nil then
-{$ENDIF}
-      begin
-{$IFDEF STRIFE}
-        AM_drawMline(@l, SPWALLCOLORS);
-      end
-      else if pl.backsector = nil then
-      begin
-        AM_drawMline(@l, WALLCOLORS);
-{$ELSE}
-        AM_drawMline(@l, WALLCOLORS + lightlev);
-{$ENDIF}
-      end
-      else
-      begin
-{$IFDEF HEXEN}
-        if (pl.special = 13) or (pl.special = 83) then
-        begin // Locked door line -- all locked doors are greed
-          AM_drawMline(@l, 198);
-        end
-        else if (pl.special = 70) or (pl.special = 71) then
-        begin // intra-level teleports are blue
-          AM_drawMline(@l, 157);
-        end
-        else if (pl.special = 74) or (pl.special = 75) then
-        begin // intra-level teleports are blue
-          AM_drawMline(@l, 177);
-{$ELSE}
-        if pl.special = 39 then
-        begin // teleporters
-          AM_drawMline(@l, WALLCOLORS + WALLRANGE div 2);
-{$ENDIF}
-        end
-        else if pl.flags and ML_SECRET <> 0 then // secret door
-        begin
-{$IFDEF STRIFE}
-          AM_drawMline(@l, WALLCOLORS + lightlev);
-{$ELSE}
-          if am_cheating <> 0 then
-            AM_drawMline(@l, SECRETWALLCOLORS + lightlev)
-          else
-            AM_drawMline(@l, WALLCOLORS + lightlev);
-{$ENDIF}
-        end
-{$IFDEF HERETIC}
-        else if (pl.special = 26) or (pl.special = 32) then
-          AM_drawMline(@l, BLUEKEYCOLOR)
-        else if (pl.special = 27) or (pl.special = 34) then
-          AM_drawMline(@l, YELLOWKEYCOLOR)
-        else if (pl.special = 28) or (pl.special = 33) then
-          AM_drawMline(@l, GREENKEYCOLOR)
-{$ENDIF}
-        else if pl.backsector.floorheight <> pl.frontsector.floorheight then
-        begin
-{$IFDEF STRIFE}
-          AM_drawMline(@l, FDWALLCOLORS); // floor level change
-{$ELSE}
-          AM_drawMline(@l, FDWALLCOLORS + lightlev); // floor level change
-{$ENDIF}
-        end
-        else if pl.backsector.ceilingheight <> pl.frontsector.ceilingheight then
-        begin
-{$IFDEF STRIFE}
-          AM_drawMline(@l, CDWALLCOLORS); // ceiling level change
-{$ELSE}
-          AM_drawMline(@l, CDWALLCOLORS + lightlev); // ceiling level change
-{$ENDIF}
-        end
-        else if am_cheating <> 0 then
-        begin
-{$IFDEF STRIFE}
-          AM_drawMline(@l, TSWALLCOLORS);
-{$ELSE}
-          AM_drawMline(@l, TSWALLCOLORS + lightlev);
-{$ENDIF}
-        end;
-      end;
+      // the color of a wall is a rule of the game (DelphiDoom.Engine.Automap.Rules)
+      if TAutomapGameRules.MappedWallColor(pl, am_cheating, lightlev, color) then
+        AM_drawMline(@l, color);
     end
-{$IFDEF STRIFE}
-    else if (plr.powers[Ord(pw_allmap)] <> 0) or (gamemap = 15) then
-{$ELSE}
-    else if plr.powers[Ord(pw_allmap)] <> 0 then
-{$ENDIF}
+    else if TAutomapGameRules.ShowsAllMapLines(plr.powers[Ord(pw_allmap)] <> 0, gamemap) then
     begin
       if pl.flags and LINE_NEVERSEE = 0 then
-{$IFDEF STRIFE}
-        AM_drawMline(@l, CTWALLCOLORS);
-{$ELSE}
-        AM_drawMline(@l, GRAYS + 3);
-{$ENDIF}
+        AM_drawMline(@l, TAutomapGameRules.AllMapWallColor);
     end;
     inc(pl);
   end;
@@ -1467,11 +1283,7 @@ end;
 //==============================================================================
 procedure AM_drawPlayerTrace(const p: Pplayer_t; const color1: Integer);
 const
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  PTRACECOLORRANGE = 4;
-{$ELSE}
-  PTRACECOLORRANGE = 8;
-{$ENDIF}
+  PTRACECOLORRANGE = AM_TRACE_COLOR_RANGE;
 var
   i: integer;
   x, y, x2, y2: fixed_t;
@@ -1526,67 +1338,16 @@ begin
   end;
 end;
 
-{$IFDEF HEXEN}
-const
-  AM_PLR1_COLOR = 157; // Blue
-  AM_PLR2_COLOR = 177; // Red
-  AM_PLR3_COLOR = 137; // Yellow
-  AM_PLR4_COLOR = 198; // Green
-  AM_PLR5_COLOR = 215; // Jade
-  AM_PLR6_COLOR =  32; // White
-  AM_PLR7_COLOR = 106; // Hazel
-  AM_PLR8_COLOR = 234; // Purple
-  AM_TR1_COLOR = 154; // Blue
-  AM_TR2_COLOR = 176; // Red
-  AM_TR3_COLOR = 136; // Yellow
-  AM_TR4_COLOR = 197; // Green
-  AM_TR5_COLOR = 211; // Jade
-  AM_TR6_COLOR =  25; // White
-  AM_TR7_COLOR = 106; // Hazel
-  AM_TR8_COLOR = 233; // Purple
-
-{$ENDIF}
 //==============================================================================
 //
 // AM_drawPlayers
 //
 //==============================================================================
 procedure AM_drawPlayers;
-const
-{$IF DEFINED(HEXEN)}
-  their_colors: array[0..MAXPLAYERS - 1] of integer = (
-    AM_PLR1_COLOR,
-    AM_PLR2_COLOR,
-    AM_PLR3_COLOR,
-    AM_PLR4_COLOR,
-    AM_PLR5_COLOR,
-    AM_PLR6_COLOR,
-    AM_PLR7_COLOR,
-    AM_PLR8_COLOR
-  );
-  trace_colors: array[0..MAXPLAYERS - 1] of integer = (
-    AM_TR1_COLOR,
-    AM_TR2_COLOR,
-    AM_TR3_COLOR,
-    AM_TR4_COLOR,
-    AM_TR5_COLOR,
-    AM_TR6_COLOR,
-    AM_TR7_COLOR,
-    AM_TR8_COLOR
-  );
-{$ELSEIF DEFINED(STRIFE)}
-  their_colors: array[0..MAXPLAYERS] of integer = ($80, $40, $B0, $10, $30, $50, $A0, $60, $90);
-{$ELSE}
-  their_colors: array[0..MAXPLAYERS - 1] of integer = (GREENS, GRAYS, BROWNS, REDS);
-{$ENDIF}
 var
   i: integer;
   p: Pplayer_t;
-{$IFDEF HEXEN}
   their_color, color, trcolor: integer;
-{$ELSE}
-  their_color, color: integer;
-{$ENDIF}
   x, y: fixed_t;
 begin
   if not netgame then
@@ -1594,24 +1355,12 @@ begin
     if am_cheating <> 0 then
       AM_drawLineCharacter
         (@cheat_player_arrow, NUMCHEATPLYRLINES, 0,
-{$IFDEF STRIFE}
-        plr.mo.angle, 224, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT)
-{$ELSE}
-        plr.mo.angle, WHITE, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT)
-{$ENDIF}
+        plr.mo.angle, AM_OWN_CHEAT_ARROW_COLOR, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT)
     else
       AM_drawLineCharacter
         (@player_arrow, NUMPLYRLINES, 0, plr.mo.angle,
-{$IF DEFINED(HEXEN)}
-        WHITE, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
-    AM_drawPlayerTrace(plr, TRACEGREEN);
-{$ELSEIF DEFINED(STRIFE)}
-        224, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
-    AM_drawPlayerTrace(plr, 224);
-{$ELSE}
-        WHITE, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
-    AM_drawPlayerTrace(plr, GREENS);
-{$ENDIF}
+        AM_OWN_ARROW_COLOR, plr.mo.x div FRACTOMAPUNIT, plr.mo.y div FRACTOMAPUNIT);
+    AM_drawPlayerTrace(plr, AM_OWN_TRACE_COLOR);
     exit;
   end;
 
@@ -1627,31 +1376,8 @@ begin
     if not playeringame[i] then
       continue;
 
-{$IF DEFINED(HERETIC)}
-    if p.powers[Ord(pw_invisibility)] <> 0 then
-      color := 99 // *close* to background
-    else
-      color := their_colors[their_color];
-{$ELSEIF DEFINED(HEXEN)}
-    color := their_colors[their_color];
-    trcolor := trace_colors[their_color];
-    if p.mo <> nil then
-      if p.mo.flags and (MF_SHADOW or MF_ALTSHADOW) <> 0 then
-      begin
-        color := 111; // *close* to background
-        trcolor := 111;
-      end;
-{$ELSEIF DEFINED(STRIFE)}
-    if p.powers[Ord(pw_invisibility)] <> 0 then
-      color := 27 // *close* to black
-    else
-      color := their_colors[their_color];
-{$ELSE}
-    if p.powers[Ord(pw_invisibility)] <> 0 then
-      color := 246 // *close* to black
-    else
-      color := their_colors[their_color];
-{$ENDIF}
+    // the colors of the other players are a rule of the game (DelphiDoom.Engine.Automap.Rules)
+    TAutomapGameRules.OtherPlayerColors(their_color, p, color, trcolor);
 
     x := p.mo.x;
     y := p.mo.y;
@@ -1663,11 +1389,7 @@ begin
       (@player_arrow, NUMPLYRLINES, 0, p.mo.angle,
        color, x div FRACTOMAPUNIT, y div FRACTOMAPUNIT);
 
-{$IFDEF HEXEN}
     AM_drawPlayerTrace(p, trcolor);
-{$ELSE}
-    AM_drawPlayerTrace(p, color);
-{$ENDIF}
   end;
 end;
 
@@ -1676,24 +1398,14 @@ end;
 // AM_drawThings
 //
 //==============================================================================
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-procedure AM_drawThings(colors: integer; colorrange: integer);
-{$ELSE}
 procedure AM_drawThings;
-{$ENDIF}
 var
   i: integer;
   t: Pmobj_t;
   x, y: fixed_t;
-{$IFDEF STRIFE}
-  colors: integer;
-  radius: fixed_t;
-{$ENDIF}
   plrx, plry: fixed_t;
   plra: angle_t;
-{$IFDEF DOOM}
-  color: integer;
-{$ENDIF}
+  style: TAutomapThingStyle;
 begin
   plrx := plr.mo.x div FRACTOMAPUNIT;
   plry := plr.mo.y div FRACTOMAPUNIT;
@@ -1703,85 +1415,30 @@ begin
     t := sectors[i].thinglist;
     while t <> nil do
     begin
-{$IFDEF STRIFE}
-      radius := t.radius;
-{$ENDIF}
       x := t.x div FRACTOMAPUNIT;
       y := t.y div FRACTOMAPUNIT;
 
       if allowautomaprotate then
         TAutomapRotation.Rotate(x, y, plra, plrx, plry);
 
-{$IF DEFINED(HERETIC)}
-      if t._type = Ord(MT_CKEY) then
-        AM_drawLineCharacter(
-          @keysquare, NUMKEYSQUARELINES,
-          0, ANGLE_MAX - plra, YELLOWKEYCOLOR, x, y)
-      else if t._type = Ord(MT_AKYY) then
-        AM_drawLineCharacter(
-          @keysquare, NUMKEYSQUARELINES,
-          0, ANGLE_MAX - plra, GREENKEYCOLOR, x, y)
-      else if t._type = Ord(MT_BKYY) then
-        AM_drawLineCharacter(
-          @keysquare, NUMKEYSQUARELINES,
-          0, ANGLE_MAX - plra, BLUEKEYCOLOR, x, y)
-      else if (t.flags2_ex and MF2_EX_FRIEND <> 0) or (t.player <> nil) then
-        AM_drawLineCharacter
-          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-          16 * FRACUNIT, t.angle, WHITE, x, y)
-      else
-        AM_drawLineCharacter
-          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-          16 * FRACUNIT, t.angle, colors + lightlev, x, y);
-{$ELSEIF DEFINED(HEXEN)}
-      if (t.sprite >= Ord(SPR_KEY1)) and (t.sprite <= Ord(SPR_KEYB)) then
-        AM_drawLineCharacter(
-          @keysquare, NUMKEYSQUARELINES,
-          0, ANGLE_MAX - plra, colors + lightlev, x, y)
-      else if (t.flags2_ex and MF2_EX_FRIEND <> 0) or (t.player <> nil) then
-        AM_drawLineCharacter
-          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-          16 * FRACUNIT, t.angle, WHITE, x, y)
-      else
-        AM_drawLineCharacter
-          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-          16 * FRACUNIT, t.angle, colors + lightlev, x, y);
-{$ELSEIF DEFINED(STRIFE)}
-      if t.flags and (MF_MISSILE or MF_SPECIAL) <> 0 then
-        colors := MISSILECOLORS
-      else if t.flags and MF_COUNTKILL <> 0 then
-        colors := SHOOTABLECOLORS
-      else
-      begin
-        colors := THINGCOLORS;
-        radius := 16 * FRACUNIT;
-      end;
-
-      if t.flags2_ex and MF2_EX_FRIEND <> 0 then
-        colors := GRAYS;
-
-      AM_drawLineCharacter
-        (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-        radius, t.angle, colors, x, y);
-{$ELSE}
-      if t.flags2_ex and MF2_EX_FRIEND <> 0 then
-        color := WHITE
-      else if t.flags and MF_SHOOTABLE <> 0 then
-        color := THINGCOLORS + lightlev
-      else if t.flags and MF_SPECIAL <> 0 then
-        color := BLUES
-      else
-        color := GRAYS;
-
-      if t.radius >= 40 * FRACUNIT then
-        AM_drawLineCharacter
-          (@triangle_guy, NUMTRIANGLEGUYLINES,
-          16 * FRACUNIT, t.angle, color, x, y)
-      else
-        AM_drawLineCharacter
-          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-          16 * FRACUNIT, t.angle, color, x, y);
+      // the figure and the color of a thing are a rule of the game (DelphiDoom.Engine.Automap.Rules)
+      TAutomapGameRules.DescribeThing(t, lightlev, style);
+      case style.Shape of
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+        atsKeySquare:
+          AM_drawLineCharacter(
+            @keysquare, NUMKEYSQUARELINES,
+            style.Scale, ANGLE_MAX - plra, style.Color, x, y);
 {$ENDIF}
+        atsTriangle:
+          AM_drawLineCharacter
+            (@triangle_guy, NUMTRIANGLEGUYLINES,
+            style.Scale, t.angle, style.Color, x, y);
+      else
+        AM_drawLineCharacter
+          (@thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+          style.Scale, t.angle, style.Color, x, y);
+      end;
       t := t.snext;
     end;
   end;
@@ -1855,25 +1512,9 @@ begin
   if amstate = am_only then
   begin
     {$IFDEF OPENGL}
-{$IF DEFINED(HERETIC)}
-    gld_ClearAMBuffer(f_w, f_h, videopal[104]);
-{$ELSEIF DEFINED(HEXEN)}
-    gld_ClearAMBuffer(f_w, f_h, videopal[90]);
-{$ELSEIF DEFINED(STRIFE)}
-    gld_ClearAMBuffer(f_w, f_h, videopal[BACKGROUND]);
-{$ELSE}
-    gld_ClearAMBuffer(f_w, f_h, $080808);
-{$ENDIF}
+    gld_ClearAMBuffer(f_w, f_h, TAutomapGameRules.GlBackgroundColor);
     {$ELSE}
-{$IF DEFINED(HERETIC)}
-    AM_clearFB(104);
-{$ELSEIF DEFINED(HEXEN)}
-    AM_clearFB(90);
-{$ELSEIF DEFINED(STRIFE)}
-    AM_clearFB(BACKGROUND);
-{$ELSE}
-    AM_clearFB(aprox_black);
-{$ENDIF}
+    AM_clearFB(TAutomapGameRules.BackgroundIndex);
     {$ENDIF}
     if texturedautomap then
     begin
@@ -1888,16 +1529,8 @@ begin
   AM_drawMarks;
 
   AM_drawPlayers;
-{$IF DEFINED(DOOM)}
-  if am_cheating = 2 then
+  if TAutomapGameRules.ShowsThings(am_cheating, plr.powers[Ord(pw_allmap)] <> 0) then
     AM_drawThings;
-{$ELSEIF DEFINED(STRIFE)}
-  if (am_cheating = 2) or (plr.powers[Ord(pw_allmap)] <> 0) then
-    AM_drawThings;
-{$ELSE}
-  if am_cheating = 2 then
-    AM_drawThings(THINGCOLORS, THINGRANGE);
-{$ENDIF}
   AM_drawCrosshair(XHAIRCOLORS);
 
   {$IFDEF OPENGL}
@@ -1928,7 +1561,8 @@ begin
 {$ENDIF}
   TAutomapShapes.FillTracePlayerGuy(@traceplayer_guy[0]);
 
-////////////////////////////////////////////////////////////////////////////////  cheat_amap.sequence := get_cheatseq_string(cheat_amap_seq);
+////////////////////////////////////////////////////////////////////////////////
+  cheat_amap.sequence := get_cheatseq_string(cheat_amap_seq);
   cheat_amap.p := get_cheatseq_string(0);
 
 ////////////////////////////////////////////////////////////////////////////////
