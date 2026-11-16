@@ -107,6 +107,10 @@ procedure R_ClearVisPlanes3d;
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   doomtype,
   doomdef,
   p_setup,
@@ -292,7 +296,11 @@ begin
 
   dc_llindex := lightnum;
 
+{$IFDEF CPUX86}
   spryscale_dbl := ds.scale_dbl + (x1 - ds.x1) * ds.scalestep_dbl;
+{$ELSE}
+  spryscale_dbl := TX87Double.MultiplyAdd(ds.scale_dbl, x1 - ds.x1, ds.scalestep_dbl);
+{$ENDIF}
   mfloorclip := ds.sprbottomclip;
   mceilingclip := ds.sprtopclip;
   maskedtexturecol := ds.thicksidecol;
@@ -312,14 +320,35 @@ begin
       dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
   end;
 
+{$IFDEF CPUX86}
   texscale_dbl := dc_texturemid / FRACUNIT * ds.scale_dbl;
+{$ELSE}
+  texscale_dbl := TX87Double.Multiply(dc_texturemid / FRACUNIT, ds.scale_dbl);
+{$ENDIF}
 
   // draw the columns
   roverscale_dbl := (mid.ceilingheight - mid.floorheight) / FRACUNIT;
+{$IFDEF CPUX86}
   roverstep_dbl := roverscale_dbl * ds.scalestep_dbl;
+{$ELSE}
+  roverstep_dbl := TX87Double.Multiply(roverscale_dbl, ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   roverscale_dbl := roverscale_dbl * ds.scale_dbl + (x1 - ds.x1) * roverstep_dbl;
+{$ELSE}
+  roverscale_dbl := TX87Double.ProductPlusCount(roverscale_dbl, ds.scale_dbl, x1 - ds.x1,
+      roverstep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   texstep_dbl := dc_texturemid / FRACUNIT * ds.scalestep_dbl;
+{$ELSE}
+  texstep_dbl := TX87Double.Multiply(dc_texturemid / FRACUNIT, ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   texscale_dbl := texscale_dbl + (x1 - ds.x1) * texstep_dbl;
+{$ELSE}
+  texscale_dbl := TX87Double.MultiplyAdd(texscale_dbl, x1 - ds.x1, texstep_dbl);
+{$ENDIF}
   // Thick side gets row offset from control line
   dc_texturemid := dc_texturemid + midside.rowoffset + midside.midrowoffset;
   for i := x1 to x2 do
@@ -354,7 +383,11 @@ begin
           dc_colormap32 := R_GetColormap32(dc_colormap);
       end;
 
+{$IFDEF CPUX86}
       sprtopscreen_dbl := centeryfrac - texscale_dbl;
+{$ELSE}
+      sprtopscreen_dbl := TX87Double.Add(centeryfrac, -texscale_dbl);
+{$ENDIF}
 
       if (spryscale_dbl < 4) and (spryscale_dbl > -4) then
       begin
@@ -365,7 +398,11 @@ begin
       end
       else
       begin
+{$IFDEF CPUX86}
         dc_iscale := trunc($100000000 / spryscale_dbl);
+{$ELSE}
+        dc_iscale := TX87Double.TruncQuotient($100000000, spryscale_dbl);
+{$ENDIF}
         if dc_iscale > MAXINT div 2 then
           dc_iscale := MAXINT div 2
         else if dc_iscale < -MAXINT div 2 then
@@ -380,8 +417,16 @@ begin
       end;
 
       texturecolumn := maskedtexturecol[dc_x] shr DC_HIRESBITS;
+{$IFDEF CPUX86}
       dc_yl := trunc((sprtopscreen_dbl + FRACUNIT) / FRACUNIT);
+{$ELSE}
+      dc_yl := TX87Double.TruncOffsetDivide(sprtopscreen_dbl, FRACUNIT, 0, FRACUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
       dc_yh := trunc((sprtopscreen_dbl + roverscale_dbl) / FRACUNIT);
+{$ELSE}
+      dc_yh := TX87Double.TruncSumDivide(sprtopscreen_dbl, roverscale_dbl, FRACUNIT);
+{$ENDIF}
       if dc_yh >= mfloorclip[dc_x] then
         dc_yh := mfloorclip[dc_x] - 1;
       if dc_yl <= mceilingclip[dc_x] then
@@ -412,9 +457,21 @@ begin
 
       maskedtexturecol[dc_x] := MAXSHORT;
     end;
+{$IFDEF CPUX86}
     spryscale_dbl := spryscale_dbl + ds.scalestep_dbl;
+{$ELSE}
+    spryscale_dbl := TX87Double.Add(spryscale_dbl, ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
     roverscale_dbl := roverscale_dbl + roverstep_dbl;
+{$ELSE}
+    roverscale_dbl := TX87Double.Add(roverscale_dbl, roverstep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
     texscale_dbl := texscale_dbl + texstep_dbl;
+{$ELSE}
+    texscale_dbl := TX87Double.Add(texscale_dbl, texstep_dbl);
+{$ENDIF}
   end;
 end;
 
@@ -480,7 +537,11 @@ begin
   dc_llindex := lightnum[0];
   dc_llindex2 := lightnum[1];
 
+{$IFDEF CPUX86}
   spryscale_dbl := ds.scale_dbl + (x1 - ds.x1) * ds.scalestep_dbl;
+{$ELSE}
+  spryscale_dbl := TX87Double.MultiplyAdd(ds.scale_dbl, x1 - ds.x1, ds.scalestep_dbl);
+{$ENDIF}
   mfloorclip := ds.sprbottomclip;
   mceilingclip := ds.sprtopclip;
   maskedtexturecol := ds.thicksidecol;
@@ -501,20 +562,62 @@ begin
       dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
   end;
 
+{$IFDEF CPUX86}
   texscale_dbl[0] := texturemid[0] / FRACUNIT * ds.scale_dbl;
+{$ELSE}
+  texscale_dbl[0] := TX87Double.Multiply(texturemid[0] / FRACUNIT, ds.scale_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   texscale_dbl[1] := texturemid[1] / FRACUNIT * ds.scale_dbl;
+{$ELSE}
+  texscale_dbl[1] := TX87Double.Multiply(texturemid[1] / FRACUNIT, ds.scale_dbl);
+{$ENDIF}
 
   // draw the columns
   roverscale_dbl[0] := (ds.midsiderange.ceilingheight[0] - ds.midsiderange.floorheight[0]) / FRACUNIT;
   roverscale_dbl[1] := (ds.midsiderange.ceilingheight[1] - ds.midsiderange.floorheight[1]) / FRACUNIT;
+{$IFDEF CPUX86}
   roverstep_dbl[0] := roverscale_dbl[0] * ds.scalestep_dbl;
+{$ELSE}
+  roverstep_dbl[0] := TX87Double.Multiply(roverscale_dbl[0], ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   roverstep_dbl[1] := roverscale_dbl[1] * ds.scalestep_dbl;
+{$ELSE}
+  roverstep_dbl[1] := TX87Double.Multiply(roverscale_dbl[1], ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   roverscale_dbl[0] := roverscale_dbl[0] * ds.scale_dbl + (x1 - ds.x1) * roverstep_dbl[0];
+{$ELSE}
+  roverscale_dbl[0] := TX87Double.ProductPlusCount(roverscale_dbl[0], ds.scale_dbl, x1 - ds.x1,
+      roverstep_dbl[0]);
+{$ENDIF}
+{$IFDEF CPUX86}
   roverscale_dbl[1] := roverscale_dbl[1] * ds.scale_dbl + (x1 - ds.x1) * roverstep_dbl[1];
+{$ELSE}
+  roverscale_dbl[1] := TX87Double.ProductPlusCount(roverscale_dbl[1], ds.scale_dbl, x1 - ds.x1,
+      roverstep_dbl[1]);
+{$ENDIF}
+{$IFDEF CPUX86}
   texstep_dbl[0] := texturemid[0] / FRACUNIT * ds.scalestep_dbl;
+{$ELSE}
+  texstep_dbl[0] := TX87Double.Multiply(texturemid[0] / FRACUNIT, ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   texstep_dbl[1] := texturemid[1] / FRACUNIT * ds.scalestep_dbl;
+{$ELSE}
+  texstep_dbl[1] := TX87Double.Multiply(texturemid[1] / FRACUNIT, ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
   texscale_dbl[0] := texscale_dbl[0] + (x1 - ds.x1) * texstep_dbl[0];
+{$ELSE}
+  texscale_dbl[0] := TX87Double.MultiplyAdd(texscale_dbl[0], x1 - ds.x1, texstep_dbl[0]);
+{$ENDIF}
+{$IFDEF CPUX86}
   texscale_dbl[1] := texscale_dbl[1] + (x1 - ds.x1) * texstep_dbl[1];
+{$ELSE}
+  texscale_dbl[1] := TX87Double.MultiplyAdd(texscale_dbl[1], x1 - ds.x1, texstep_dbl[1]);
+{$ENDIF}
   // Thick side gets row offset from control line
   texturemid[0] := texturemid[0] + midside.rowoffset + midside.midrowoffset;
   texturemid[1] := texturemid[1] + midside.rowoffset + midside.midrowoffset;
@@ -555,7 +658,11 @@ begin
         end;
       end;
 
+{$IFDEF CPUX86}
       sprtopscreen_dbl := centeryfrac - texscale_dbl[0];
+{$ELSE}
+      sprtopscreen_dbl := TX87Double.Add(centeryfrac, -texscale_dbl[0]);
+{$ENDIF}
 
       if (spryscale_dbl < 4) and (spryscale_dbl > -4) then
       begin
@@ -566,7 +673,11 @@ begin
       end
       else
       begin
+{$IFDEF CPUX86}
         dc_iscale := trunc($100000000 / spryscale_dbl);
+{$ELSE}
+        dc_iscale := TX87Double.TruncQuotient($100000000, spryscale_dbl);
+{$ENDIF}
         if dc_iscale > MAXINT div 2 then
           dc_iscale := MAXINT div 2
         else if dc_iscale < -MAXINT div 2 then
@@ -581,8 +692,16 @@ begin
       end;
 
       texturecolumn := maskedtexturecol[dc_x] shr DC_HIRESBITS;
+{$IFDEF CPUX86}
       dc_yl := trunc((sprtopscreen_dbl + FRACUNIT) / FRACUNIT);
+{$ELSE}
+      dc_yl := TX87Double.TruncOffsetDivide(sprtopscreen_dbl, FRACUNIT, 0, FRACUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
       dc_yh := trunc((sprtopscreen_dbl + roverscale_dbl[0]) / FRACUNIT);
+{$ELSE}
+      dc_yh := TX87Double.TruncSumDivide(sprtopscreen_dbl, roverscale_dbl[0], FRACUNIT);
+{$ENDIF}
       if dc_yh >= mfloorclip[dc_x] then
         dc_yh := mfloorclip[dc_x] - 1;
       if dc_yl <= mceilingclip[dc_x] then
@@ -620,9 +739,21 @@ begin
         dc_colormap := dc_colormap2;
         dc_colormap32 := dc_colormap322;
       end;
+{$IFDEF CPUX86}
       sprtopscreen_dbl := centeryfrac - texscale_dbl[1];
+{$ELSE}
+      sprtopscreen_dbl := TX87Double.Add(centeryfrac, -texscale_dbl[1]);
+{$ENDIF}
+{$IFDEF CPUX86}
       dc_yl := trunc((sprtopscreen_dbl + FRACUNIT) / FRACUNIT);
+{$ELSE}
+      dc_yl := TX87Double.TruncOffsetDivide(sprtopscreen_dbl, FRACUNIT, 0, FRACUNIT);
+{$ENDIF}
+{$IFDEF CPUX86}
       dc_yh := trunc((sprtopscreen_dbl + roverscale_dbl[1]) / FRACUNIT);
+{$ELSE}
+      dc_yh := TX87Double.TruncSumDivide(sprtopscreen_dbl, roverscale_dbl[1], FRACUNIT);
+{$ENDIF}
       if dc_yh >= mfloorclip[dc_x] then
         dc_yh := mfloorclip[dc_x] - 1;
       if dc_yl <= mceilingclip[dc_x] then
@@ -645,11 +776,31 @@ begin
 
       maskedtexturecol[dc_x] := MAXSHORT;
     end;
+{$IFDEF CPUX86}
     spryscale_dbl := spryscale_dbl + ds.scalestep_dbl;
+{$ELSE}
+    spryscale_dbl := TX87Double.Add(spryscale_dbl, ds.scalestep_dbl);
+{$ENDIF}
+{$IFDEF CPUX86}
     roverscale_dbl[0] := roverscale_dbl[0] + roverstep_dbl[0];
+{$ELSE}
+    roverscale_dbl[0] := TX87Double.Add(roverscale_dbl[0], roverstep_dbl[0]);
+{$ENDIF}
+{$IFDEF CPUX86}
     roverscale_dbl[1] := roverscale_dbl[1] + roverstep_dbl[1];
+{$ELSE}
+    roverscale_dbl[1] := TX87Double.Add(roverscale_dbl[1], roverstep_dbl[1]);
+{$ENDIF}
+{$IFDEF CPUX86}
     texscale_dbl[0] := texscale_dbl[0] + texstep_dbl[0];
+{$ELSE}
+    texscale_dbl[0] := TX87Double.Add(texscale_dbl[0], texstep_dbl[0]);
+{$ENDIF}
+{$IFDEF CPUX86}
     texscale_dbl[1] := texscale_dbl[1] + texstep_dbl[1];
+{$ELSE}
+    texscale_dbl[1] := TX87Double.Add(texscale_dbl[1], texstep_dbl[1]);
+{$ENDIF}
   end;
 end;
 
@@ -1185,6 +1336,7 @@ begin
   // MOVE THIS TO R_RenderPlayerView ?
   SetLength(clipI, 1);
   SetLength(clipI[0], 4);
+{$IFDEF CPUX86}
   clipI[0][0] := R_MakeClipperPoint(
     viewx + trunc(cos((viewangle + fovhangle + ANG1) * ANGLE_T_TO_RAD) * MINZ),
     viewy + trunc(sin((viewangle + fovhangle + ANG1) * ANGLE_T_TO_RAD) * MINZ));
@@ -1197,6 +1349,22 @@ begin
   clipI[0][3] := R_MakeClipperPoint(
     viewx + trunc(cos((viewangle + fovhangle) * ANGLE_T_TO_RAD) * MAXZ),
     viewy + trunc(sin((viewangle + fovhangle) * ANGLE_T_TO_RAD) * MAXZ));
+
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40)
+  clipI[0][0] := R_MakeClipperPoint(
+    viewx + TRendererX87.TruncAngleProduct(angle_t(viewangle + fovhangle + ANG1), MINZ, true),
+    viewy + TRendererX87.TruncAngleProduct(angle_t(viewangle + fovhangle + ANG1), MINZ, false));
+  clipI[0][1] := R_MakeClipperPoint(
+    viewx + TRendererX87.TruncAngleProduct(angle_t(viewangle - fovhangle - ANG1), MINZ, true),
+    viewy + TRendererX87.TruncAngleProduct(angle_t(viewangle - fovhangle - ANG1), MINZ, false));
+  clipI[0][2] := R_MakeClipperPoint(
+    viewx + TRendererX87.TruncAngleProduct(angle_t(viewangle - fovhangle), MAXZ, true),
+    viewy + TRendererX87.TruncAngleProduct(angle_t(viewangle - fovhangle), MAXZ, false));
+  clipI[0][3] := R_MakeClipperPoint(
+    viewx + TRendererX87.TruncAngleProduct(angle_t(viewangle + fovhangle), MAXZ, true),
+    viewy + TRendererX87.TruncAngleProduct(angle_t(viewangle + fovhangle), MAXZ, false));
+{$ENDIF}
 
   with TClipper.Create do
   try

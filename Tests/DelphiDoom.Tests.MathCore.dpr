@@ -49,6 +49,7 @@ uses
   DelphiDoom.Tests.MathCore.SoftExtended in 'Source\DelphiDoom.Tests.MathCore.SoftExtended.pas',
   DelphiDoom.Tests.MathCore.FixedMul64Wide in 'Source\DelphiDoom.Tests.MathCore.FixedMul64Wide.pas',
   DelphiDoom.Tests.MathCore.X87Double in 'Source\DelphiDoom.Tests.MathCore.X87Double.pas',
+  DelphiDoom.Tests.MathCore.X87DoubleSteps in 'Source\DelphiDoom.Tests.MathCore.X87DoubleSteps.pas',
   DelphiDoom.Tests.MathCore.MemoryFill in 'Source\DelphiDoom.Tests.MathCore.MemoryFill.pas',
   DelphiDoom.Tests.MathCore.PixelBatch in 'Source\DelphiDoom.Tests.MathCore.PixelBatch.pas',
   DelphiDoom.Tests.MathCore.Trigonometry in 'Source\DelphiDoom.Tests.MathCore.Trigonometry.pas',

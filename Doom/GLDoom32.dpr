@@ -1074,6 +1074,7 @@ uses
   DelphiDoom.MathCore.SoftExtended in '..\Libs\MathCore\DelphiDoom.MathCore.SoftExtended.pas',
   DelphiDoom.MathCore.X87Double in '..\Libs\GameMath\DelphiDoom.MathCore.X87Double.pas',
   DelphiDoom.Renderer.LightIndex in '..\Libs\Renderer\DelphiDoom.Renderer.LightIndex.pas',
+  DelphiDoom.Renderer.SlopesX87 in '..\Libs\Renderer\DelphiDoom.Renderer.SlopesX87.pas',
   DelphiDoom.Renderer.X87 in '..\Libs\Renderer\DelphiDoom.Renderer.X87.pas',
   DelphiDoom.MathCore.MemoryFill in '..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
   DelphiDoom.MathCore.PixelBatch in '..\Libs\GameMath\DelphiDoom.MathCore.PixelBatch.pas',
