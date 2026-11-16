@@ -110,6 +110,7 @@
     'Libs\Udmf' = 'IdTech1'
     'Libs\Voxel' = 'IdTech1'
     'Libs\GlAutomap' = 'IdTech1'
+    'Libs\GlContext' = 'IdTech1'
     'Libs\GlLevel' = 'IdTech1'
     'Libs\GlMath' = 'IdTech1'
     'Libs\GlScene' = 'IdTech1'

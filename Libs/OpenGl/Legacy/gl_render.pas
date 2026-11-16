@@ -54,7 +54,9 @@ uses
   DelphiDoom.Engine.GlScene.LightSorter,
   DelphiDoom.Engine.GlScene.LightPainter,
   DelphiDoom.Engine.GlScene.SceneDrawer,
-  DelphiDoom.Engine.GlScene.SpriteCollector;
+  DelphiDoom.Engine.GlScene.SpriteCollector,
+  DelphiDoom.Engine.GlInitializer,
+  DelphiDoom.Engine.GlScene.Frame;
 
 //==============================================================================
 //
@@ -166,6 +168,20 @@ procedure gld_ConfigureLightSorter(const ASorter: TEngineGlSceneLightSorter);
 //
 //==============================================================================
 procedure gld_ConfigureLightPainter(const APainter: TEngineGlSceneLightPainter);
+
+//==============================================================================
+//
+// gld_ConfigureInitializer
+//
+//==============================================================================
+procedure gld_ConfigureInitializer(const AInitializer: TEngineGlInitializer);
+
+//==============================================================================
+//
+// gld_ConfigureSceneFrame
+//
+//==============================================================================
+procedure gld_ConfigureSceneFrame(const AFrame: TEngineGlSceneFrame);
 
 //==============================================================================
 //
@@ -458,12 +474,17 @@ uses
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
   DelphiDoom.GlScene.Light,
+  DelphiDoom.GlScene.PaletteTint,
+  DelphiDoom.Engine.Gl2dMode,
+  DelphiDoom.Engine.GlHudPainter,
   w_wad,
   z_zone;
 
 var
   // given by the composition root (gld_ConfigureDynamicLights)
   gl_dynlights: IDynLightRenderCache = nil;
+  // given by the composition root (gld_ConfigureInitializer)
+  gld_initializer: TEngineGlInitializer = nil;
 
 //==============================================================================
 //
@@ -695,271 +716,14 @@ end;
 
 //==============================================================================
 //
-// gld_InitExtensions
-//
-//==============================================================================
-procedure gld_InitExtensions(ext_list: TDStringList);
-begin
-  gl_texture_filter_anisotropic := ext_list.IndexOf('GL_EXT_TEXTURE_FILTER_ANISOTROPIC') > -1;
-  if gl_texture_filter_anisotropic then
-    printf('enabled anisotropic texture filtering'#13#10);
-  if gl_use_paletted_texture <> 0 then
-  begin
-    gl_paletted_texture := ext_list.IndexOf('GL_EXT_PALETTED_TEXTURE') > -1;
-    gld_ColorTableEXT := lp3DFXFUNC(wglGetProcAddress('glColorTableEXT'));
-    if not Assigned(gld_ColorTableEXT) then
-      gl_paletted_texture := false
-    else
-      printf('using GL_EXT_paletted_texture'#13#10);
-  end;
-  if gl_use_shared_texture_palette <> 0 then
-  begin
-    gl_shared_texture_palette := ext_list.IndexOf('GL_EXT_SHARED_TEXTURE_PALETTE') > -1;
-    gld_ColorTableEXT := lp3DFXFUNC(wglGetProcAddress('glColorTableEXT'));
-    if not Assigned(gld_ColorTableEXT) then
-      gl_shared_texture_palette := false
-    else
-      printf('using GL_EXT_shared_texture_palette'#13#10);
-  end;
-
-  canuselightmaps := ext_list.IndexOf('GL_ARB_MULTITEXTURE') > -1;
-  if not canuselightmaps then
-  begin
-    I_Warning('gld_InitExtensions(): GL_ARB_MULTITEXTURE extension not supported, lightmap will be disabled'#13#10);
-    gl_uselightmaps := false;
-  end
-  else
-  begin
-    canuselightmaps := ext_list.IndexOf('GL_EXT_TEXTURE3D') > -1;
-    if not canuselightmaps then
-    begin
-      I_Warning('gld_InitExtensions(): GL_EXT_TEXTURE3D extension not supported, lightmap will be disabled'#13#10);
-      gl_uselightmaps := false;
-    end;
-  end;
-  gld_InitAutomap;
-end;
-
-{-------------------------------------------------------------------}
-{ V-Sync
-{ Ok for all system windows 32                                      }
-{-------------------------------------------------------------------}
-type
-  TVSyncMode = (vsmSync, vsmNoSync);
-
-var
-  gld_VSync_Warning: boolean = false;
-
-//==============================================================================
-//
-// gld_VSync
-//
-//==============================================================================
-function gld_VSync(vsync: TVSyncMode): boolean;
-var
-  i: Integer;
-begin
-  if WGL_EXT_swap_control then
-  begin
-    result := True;
-    i := wglGetSwapIntervalEXT;
-    case VSync of
-      vsmSync    : if i <> 1 then wglSwapIntervalEXT(1);
-      vsmNoSync  : if i <> 0 then wglSwapIntervalEXT(0);
-    else
-      Assert(False);
-    end;
-  end
-  else
-  begin
-    result := False;
-    if not gld_VSync_Warning then
-    begin
-      I_Warning('gld_VSync(): wglSwapIntervalEXT() not assigned'#13#10);
-      gld_VSync_Warning := true;
-    end;
-  end;
-end;
-
-var
-  gld_InitLightTable_initialized: Boolean = false;
-
-//==============================================================================
-//
-// gld_InitLightTable
-//
-//==============================================================================
-procedure gld_InitLightTable;
-var
-  sc: TScriptScanner;
-  lump: integer;
-  i, j: integer;
-begin
-  if gld_InitLightTable_initialized then
-    Exit;
-
-  lump := W_CheckNumForName('GLGAMMA');
-  if lump > 0 then
-  begin
-
-    sc := TScriptScanner.Create(W_TextLumpNum(lump), TEngineScannerLog.Create);
-    for i := 0 to GAMMASIZE - 1 do
-      for j := 0 to 255 do
-      begin
-        sc.MustGetFloat;
-        gl_lighttable[i, j] := sc.AsFloat;
-      end;
-    sc.Free;
-  end;
-
-  for i := 0 to GAMMASIZE - 1 do
-    for j := 0 to 255 do
-      gl_lighttable[i, j] := Sqrt(gl_lighttable[i, j]);
-
-  gld_InitLightTable_initialized := true;
-end;
-
-var
-  last_screensync: boolean;
-
-//==============================================================================
-//
 // gld_Init
 //
 //==============================================================================
 procedure gld_Init(width, height: integer);
-var
-  params: array[0..3] of TGLfloat;
-  BlackFogColor: array[0..3] of TGLfloat;
-  ext_lst: TDStringList;
-  i, tf_id: integer;
-  extensions,
-  extensions_l: string;
 begin
-  params[0] := 0.0;
-  params[1] := 0.0;
-  params[2] := 1.0;
-  params[3] := 0.0;
-  BlackFogColor[0] := 0.0;
-  BlackFogColor[1] := 0.0;
-  BlackFogColor[2] := 0.0;
-  BlackFogColor[3] := 0.0;
-
-  printf('GL_VENDOR: %s'#13#10 , [glGetString(GL_VENDOR)]);
-  printf('GL_RENDERER: %s'#13#10, [glGetString(GL_RENDERER)]);
-  printf('GL_VERSION: %s'#13#10, [glGetString(GL_VERSION)]);
-
-  if devparm then
-    printf('GL_EXTENSIONS:'#13#10);
-
-  extensions := StringVal(glGetString(GL_EXTENSIONS));
-  extensions_l := '';
-  for i := 1 to Length(extensions) do
-  begin
-    if extensions[i] = ' ' then
-      extensions_l := extensions_l + #13#10
-    else
-      extensions_l := extensions_l + toupper(extensions[i]);
-  end;
-
-  ext_lst := TDStringList.Create;
-  try
-    ext_lst.Text := extensions_l;
-    if devparm then
-      for i := 0 to ext_lst.count - 1 do
-        printf('  %s'#13#10, [ext_lst.strings[i]]);
-    gld_InitExtensions(ext_lst);
-  finally
-    ext_lst.Free;
-  end;
-
-  gld_InitPalettedTextures;
-
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-
-  {$IFDEF DEBUG}
-  glClearColor(0.0, 0.5, 0.5, 1.0);
-  glClearDepth(1.0);
-  {$ELSE}
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glClearDepth(1.0);
-  {$ENDIF}
-
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @gld_max_texturesize);
-  printf('GL_MAX_TEXTURE_SIZE=%d'#13#10, [gld_max_texturesize]);
-  glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, @gld_max_texturesize3d);
-  printf('GL_MAX_3D_TEXTURE_SIZE=%d'#13#10, [gld_max_texturesize3d]);
-
-  if canuselightmaps then
-    canuselightmaps := (gld_max_texturesize3d >= LIGHTMAPSIZEX) and
-                       (gld_max_texturesize3d >= LIGHTMAPSIZEY) and
-                       (gld_max_texturesize3d >= LIGHTMAPSIZEZ);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  glShadeModel(GL_FLAT);
-  glEnable(GL_TEXTURE_2D);
-  glDepthFunc(GL_LEQUAL);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_GEQUAL, 0.5);
-  glDisable(GL_CULL_FACE);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-  glTexGenfv(GL_Q, GL_EYE_PLANE, @params);
-  glTexGenf(GL_S,GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  glTexGenf(GL_T,GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  glTexGenf(GL_Q,GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  glFogi(GL_FOG_MODE, GL_EXP);
-  glFogfv(GL_FOG_COLOR, @BlackFogColor);
-  glFogf(GL_FOG_DENSITY, fog_density / 1000.0);
-  glHint(GL_FOG_HINT, GL_NICEST);
-  glFogf(GL_FOG_START, 0.0);
-  glFogf(GL_FOG_END, 1.0);
-
-  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-// Texture filtering and mipmaping
-  gld_SetCurrTexFiltering(gld_GetCurrTexFiltering);
-
-// Texture format
-  gl_tex_format := DEF_TEX_FORMAT;
-  gl_tex_format_string := strupper(gl_tex_format_string);
-  tf_id := -1;
-  for i := 0 to NUM_GL_TEX_FORMATS - 1 do
-    if gl_tex_format_string = gl_tex_formats[i].desc then
-    begin
-      gl_tex_format := gl_tex_formats[i].tex_format;
-      tf_id := i;
-      break;
-    end;
-
-  if tf_id < 0 then
-    printf('Using default texture format.'#13#10)
-  else
-    printf('Using texture format %s.'#13#10, [gl_tex_format_string]);
-
-  if gl_screensync then
-    gld_VSync(vsmSync)
-  else
-    gld_VSync(vsmNoSync);
-  last_screensync := gl_screensync;
-
-  gld_InitLightTable;
-  gld_CalculateSky(100000.0);
-  if gl_dynlights = nil then
-    I_Error('R_InitDynamicLights(): the dynamic lights are not configured (ComposeEngine was not called)');
-  printf('SC_ParceDynamicLights: Parsing LIGHTDEF lumps.'#13#10);
-  if gl_dynlights.Load(gldefs_as_lightdef) then
-    lightdeflumppresent := true;
-  gld_InitDynamicShadows;
-  gld_InitModels;
-  gld_InitVoxels;
-  gld_InitLightmap;
-  gld_InitAmbient;
+  if gld_initializer = nil then
+    I_Error('gld_Init(): the initializer is not configured (ComposeEngine was not called)');
+  gld_initializer.Initialize(width, height, gl_dynlights);
 end;
 
 //==============================================================================
@@ -969,78 +733,8 @@ end;
 //==============================================================================
 procedure gld_DrawNumPatch(x, y: integer; lump: integer; cm: integer; flags: integer;
   const zoomx: float = 1.0; const zoomy: float = 1.0);
-
-  function SCALE_X(const xx: integer): float;
-  begin
-    if flags and VPT_STRETCH <> 0 then
-      result := xx * SCREENWIDTH / 320.0
-    else
-      result := xx;
-  end;
-
-  function SCALE_Y(const yy: integer): float;
-  begin
-    if flags and VPT_STRETCH <> 0 then
-      result := yy * SCREENHEIGHT / 200.0
-    else
-      result := yy;
-  end;
-
-var
-  gltexture: PGLTexture;
-  fU1, fU2, fV1, fV2: float;
-  width, height: float;
-  xpos, ypos: float;
-  dx, dy: float;
 begin
-  if flags and VPT_TRANS <> 0 then
-  begin
-    gltexture := gld_RegisterPatch(lump, cm, flags and VPT_NOUNLOAD = 0);
-    gld_BindPatch(gltexture, cm);
-  end
-  else
-  begin
-    gltexture := gld_RegisterPatch(lump, Ord(CR_DEFAULT), flags and VPT_NOUNLOAD = 0);
-    gld_BindPatch(gltexture, Ord(CR_DEFAULT));
-  end;
-  if gltexture = nil then
-    exit;
-  fV1 := 0.0;
-  fV2 := gltexture.height / gltexture.tex_height;
-  if flags and VPT_FLIP <> 0 then
-  begin
-    fU1 := gltexture.width / gltexture.tex_width;
-    fU2 := 0.0;
-  end
-  else
-  begin
-    fU1 := 0.0;
-    fU2 := gltexture.width / gltexture.tex_width;
-  end;
-  xpos := SCALE_X(x - gltexture.leftoffset);
-  ypos := SCALE_Y(y - gltexture.topoffset);
-  width := SCALE_X(gltexture.realtexwidth);
-  height := SCALE_Y(gltexture.realtexheight);
-  if (zoomx <> 1.0) or (zoomy <> 1.0) then
-  begin
-    dx := width * zoomx - width;
-    dy := height * zoomy - height;
-    xpos := xpos - dx / 2;
-    ypos := ypos - dy / 2;
-    width := width + dx;
-    height := height + dy;
-  end;
-
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1);
-    glVertex2f(xpos, ypos);
-    glTexCoord2f(fU1, fV2);
-    glVertex2f(xpos, ypos + height);
-    glTexCoord2f(fU2, fV1);
-    glVertex2f(xpos + width, ypos);
-    glTexCoord2f(fU2, fV2);
-    glVertex2f(xpos + width, ypos + height);
-  glEnd;
+  TEngineGlHudPainter.DrawNumPatch(x, y, lump, cm, flags, zoomx, zoomy);
 end;
 
 //==============================================================================
@@ -1049,45 +743,9 @@ end;
 //
 //==============================================================================
 procedure gld_DrawBackground(const name: string);
-var
-  gltexture: PGLTexture;
-  fU1, fU2, fV1, fV2: float;
-  width, height: float;
-{$IFDEF DOOM}
-  sbar: Integer;
-{$ENDIF}
 begin
-  gltexture := gld_RegisterFlat(W_GetNumForName(name), false, -1);
-  gld_BindFlat(gltexture, -1);
-  if gltexture = nil then
-    exit;
-  fU1 := 0;
-  fV1 := 0;
-  fU2 := 320 / gltexture.realtexwidth;
-  {$IFDEF DOOM}
-  if statusbarstretch then
-    sbar := 0
-  else
-    sbar := ST_HEIGHT;
-  {$ENDIF}
-  fV2 := (200{$IFDEF DOOM} - sbar{$ENDIF}) / gltexture.realtexheight;
-  width := SCREENWIDTH;
-  height := SCREENHEIGHT{$IFDEF DOOM} - sbar * SCREENHEIGHT / 200{$ENDIF};
-
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1);
-    glVertex2f(0.0, 0.0);
-    glTexCoord2f(fU1, fV2);
-    glVertex2f(0.0, height);
-    glTexCoord2f(fU2, fV1);
-    glVertex2f(width, 0);
-    glTexCoord2f(fU2, fV2);
-    glVertex2f(width, height);
-  glEnd;
+  TEngineGlHudPainter.DrawBackground(name);
 end;
-
-var
-  scissoron: boolean = false;
 
 //==============================================================================
 //
@@ -1095,29 +753,8 @@ var
 //
 //==============================================================================
 procedure gld_DrawBackgroundFrame;
-var
-  x1, x2, y1, y2: integer;
 begin
-  if (viewwindowx <= 0) and (viewwindowy <= 0) then
-    Exit;
-
-  x1 := viewwindowx - 1;
-  x2 := x1 + viewwidth + 2;
-  y1 := viewwindowy - 1;
-  y2 := y1 + viewheight + 2;
-
-  glDisable(GL_TEXTURE_2D);
-
-  glColor4f(0.5, 0.5, 0.5, 1.0);
-  glBegin(GL_LINE_STRIP);
-    glVertex2i(x1, y1);
-    glVertex2i(x2, y1);
-    glVertex2i(x2, y2);
-    glVertex2i(x1, y2);
-    glVertex2i(x1, y1);
-  glEnd;
-
-  glEnable(GL_TEXTURE_2D);
+  TEngineGlHudPainter.DrawBackgroundFrame;
 end;
 
 //==============================================================================
@@ -1126,69 +763,9 @@ end;
 //
 //==============================================================================
 procedure gld_DrawWeapon(weaponlump: integer; vis: Pvissprite_t; lightlevel: integer);
-var
-  gltexture: PGLTexture;
-  fU1, fU2, fV1, fV2: float;
-  x1, y1, x2, y2: integer;
-  scale: float;
-  light: float;
-  restoreblend: boolean;
 begin
-  gltexture := gld_RegisterPatch(firstspritelump + weaponlump, Ord(CR_DEFAULT));
-  if gltexture = nil then
-    exit;
-  gld_BindPatch(gltexture, Ord(CR_DEFAULT));
-  fU1 := 0.0;
-  fV1 := 0.0;
-  fU2 := gltexture.width / gltexture.tex_width;
-  fV2 := gltexture.height / gltexture.tex_height;
-  x1 := viewwindowx + vis.x1;
-  x2 := viewwindowx + vis.x2;
-  scale := vis.scale / FRACUNIT;
-  y1 := viewwindowy + centery - round((vis.texturemid / FRACUNIT) * scale);
-  y2 := y1 + round(gltexture.realtexheight * scale) + 1;
-  light := gld_CalcLightLevel(lightlevel);
-
-// JVAL??  viewplayer.mo.renderstyle = mrs_translucent
-  if viewplayer.mo.flags and MF_SHADOW <> 0 then
-  begin
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.1);
-    glColor4f(0.2, 0.2, 0.2, 0.33);
-    restoreblend := true;
-  end
-  else
-  begin
-    if (viewplayer.mo.flags_ex and MF_EX_TRANSPARENT <> 0) or
-       (viewplayer.mo.renderstyle = mrs_translucent) then
-    begin
-      gld_StaticLightAlpha(light, tran_filter_pct / 100.0);
-      restoreblend := true;
-    end
-    else
-    begin
-      gld_StaticLight(light);
-      restoreblend := false;
-    end;
-  end;
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1);
-    glVertex2f(x1, y1);
-    glTexCoord2f(fU1, fV2);
-    glVertex2f(x1, y2);
-    glTexCoord2f(fU2, fV1);
-    glVertex2f(x2, y1);
-    glTexCoord2f(fU2, fV2);
-    glVertex2f(x2, y2);
-  glEnd;
-  if restoreblend then
-  begin
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.5);
-  end;
-  glColor3f(1.0, 1.0, 1.0);
+  TEngineGlHudPainter.DrawWeapon(weaponlump, vis, lightlevel);
 end;
-
 var
   last_palette: integer = 0;
 
@@ -1204,6 +781,7 @@ var
   pal: array[0..1023] of byte;
   i: integer;
   col, pcol: integer;
+  tint: TGlScenePaletteTint;
 begin
   extra_red := 0.0;
   extra_green := 0.0;
@@ -1252,57 +830,11 @@ begin
   end
   else
   begin
-    if palette > 0 then
-    begin
-      if palette <= 8 then
-      begin
-        extra_red := palette / 2.0;
-        extra_green := 0.0;
-        extra_blue := 0.0;
-        extra_alpha := palette / 10.0;
-      end
-      else if palette <= 12 then
-      begin
-        palette := palette - 8;
-        extra_red := palette * 1.0;
-        extra_green := palette * 0.8;
-        extra_blue := palette * 0.1;
-        extra_alpha := palette / 11.0;
-      end
-      else if palette = 13 then
-      begin
-        extra_red := 0.4;
-        extra_green := 1.0;
-        extra_blue := 0.0;
-        extra_alpha := 0.2;
-      end
-      {$IFDEF  HEXEN}
-      else if palette < 21 then
-      begin
-        palette := palette - 13;
-        extra_red := 0.0;
-        extra_green := palette / 2.0;
-        extra_blue := 0.0;
-        extra_alpha := palette / 10.0;
-      end
-      else if palette = 21 then
-      begin
-        extra_red := 0.0;
-        extra_green := 0.0;
-        extra_blue := 1.0;
-        extra_alpha := 0.8;
-      end
-      {$ENDIF}
-      ;
-    end;
-    if extra_red > 1.0 then
-      extra_red := 1.0;
-    if extra_green > 1.0 then
-      extra_green := 1.0;
-    if extra_blue > 1.0 then
-      extra_blue := 1.0;
-    if extra_alpha > 1.0 then
-      extra_alpha := 1.0;
+    tint := TGlScenePaletteTints.Compute(palette, {$IFDEF HEXEN}True{$ELSE}False{$ENDIF});
+    extra_red := tint.Red;
+    extra_green := tint.Green;
+    extra_blue := tint.Blue;
+    extra_alpha := tint.Alpha;
   end;
 end;
 
@@ -1312,23 +844,8 @@ end;
 //
 //==============================================================================
 procedure gld_Enable2D;
-var
-  vPort: array[0..3] of GLInt;
 begin
-  glGetIntegerv(GL_VIEWPORT, @vPort);
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix;
-  glLoadIdentity;
-
-  glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glLoadIdentity;
-
-  glMatrixMode(GL_TEXTURE);
-  glPushMatrix;
-  glLoadIdentity;
+  TEngineGl2dMode.Enable;
 end;
 
 //==============================================================================
@@ -1338,12 +855,7 @@ end;
 //==============================================================================
 procedure gld_Disable2D;
 begin
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
-  glMatrixMode(GL_TEXTURE);
-  glPopMatrix;
+  TEngineGl2dMode.Disable;
 end;
 
 //==============================================================================
@@ -1353,19 +865,7 @@ end;
 //==============================================================================
 procedure gld_Set2DMode;
 begin
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity;
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity;
-  glOrtho(
-    0,
-    SCREENWIDTH,
-    SCREENHEIGHT,
-    0,
-    -1.0,
-    1.0
-  );
-  glDisable(GL_DEPTH_TEST);
+  TEngineGl2dMode.SetMode;
 end;
 
 //==============================================================================
@@ -1375,14 +875,7 @@ end;
 //==============================================================================
 procedure gld_Finish;
 begin
-  gld_Set2DMode;
-  // JVAL:
-  //  Hack to avoid Intel HD4000 problem with Win10
-  //  https://communities.intel.com/thread/117626
-  if not gl_no_glfinish_hack then
-    glFinish;
-  glFlush;
-  SwapBuffers(h_DC);
+  TEngineGl2dMode.Finish;
 end;
 
 {*****************
@@ -1432,7 +925,6 @@ var
   // collects the sprites of the frame, given by the composition root (gld_ConfigureSpriteCollector)
   gld_sprites: TEngineGlSceneSpriteCollector = nil;
 
-  rendermarker: byte = 0;
 
 {*****************************
  *
@@ -1623,6 +1115,18 @@ end;
 
 //==============================================================================
 //
+// gld_ConfigureInitializer
+//
+//==============================================================================
+procedure gld_ConfigureInitializer(const AInitializer: TEngineGlInitializer);
+begin
+  if gld_initializer <> AInitializer then
+    gld_initializer.Free;
+  gld_initializer := AInitializer;
+end;
+
+//==============================================================================
+//
 // gld_ConfigureSpriteCollector
 //
 //==============================================================================
@@ -1749,56 +1253,20 @@ begin
 end;
 
 var
-  roll: float = 0.0;
-  yaw: float = 0.0;
-  inv_yaw: float = 0.0;
-  pitch: float = 0.0;
+  // given by the composition root (gld_ConfigureSceneFrame)
+  gld_sceneframe: TEngineGlSceneFrame = nil;
 
 //==============================================================================
 //
-// infinitePerspective
+// gld_ConfigureSceneFrame
 //
 //==============================================================================
-procedure infinitePerspective(fovy: GLdouble; aspect: GLdouble; znear: GLdouble);
-var
-  left, right, bottom, top: GLdouble;
-  m: array[0..15] of GLdouble;
+procedure gld_ConfigureSceneFrame(const AFrame: TEngineGlSceneFrame);
 begin
-  top := znear * tan(fovy * __glPi / 360.0);
-  bottom := -top;
-  left := bottom * aspect;
-  right := top * aspect;
-
-  m[ 0] := (2 * znear) / (right - left);
-  m[ 4] := 0;
-  m[ 8] := (right + left) / (right - left);
-  m[12] := 0;
-
-  m[ 1] := 0;
-  m[ 5] := (2 * znear) / (top - bottom);
-  m[ 9] := (top + bottom) / (top - bottom);
-  m[13] := 0;
-
-  m[ 2] := 0;
-  m[ 6] := 0;
-//  m[10] := - (zfar + znear) / (zfar - znear);
-//  m[14] := - (2 * zfar * znear) / (zfar - znear);
-  m[10] := -1;
-  m[14] := -2 * znear;
-
-  m[ 3] := 0;
-  m[ 7] := 0;
-  m[11] := -1;
-  m[15] := 0;
-
-  glMultMatrixd(@m);
+  if gld_sceneframe <> AFrame then
+    gld_sceneframe.Free;
+  gld_sceneframe := AFrame;
 end;
-
-var
-  didfirstscreensync: boolean = false;
-
-var
-  xCamera, yCamera, zCamera: float;
 
 //==============================================================================
 //
@@ -1806,117 +1274,8 @@ var
 //
 //==============================================================================
 procedure gld_StartDrawScene;
-var
-  height: integer;
-  syncret: boolean;
 begin
-  if gl_shared_texture_palette then
-    glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
-  gld_SetPalette(-1);
-
-  if (last_screensync <> gl_screensync) or not didfirstscreensync then
-  begin
-    if gl_screensync then
-    begin
-      syncret := gld_VSync(vsmSync);
-      if not didfirstscreensync then
-      begin
-        gld_VSync(vsmNoSync);
-        gld_VSync(vsmSync);
-      end;
-    end
-    else
-    begin
-      syncret := gld_VSync(vsmNoSync);
-      if not didfirstscreensync then
-      begin
-        gld_VSync(vsmSync);
-        gld_VSync(vsmNoSync);
-      end;
-    end;
-    last_screensync := gl_screensync;
-    didfirstscreensync := syncret;
-  end;
-
-  if screenblocks > 10 then
-    height := SCREENHEIGHT
-  else if screenblocks = 10 then
-    height := SCREENHEIGHT
-  else
-    height := (screenblocks * SCREENHEIGHT div 10) and not 7;
-
-  glViewport(viewwindowx, SCREENHEIGHT - (height + viewwindowy - ((height - viewheight) div 2)), viewwidth, height);
-  if screenblocks > 10 then
-  begin
-    glDisable(GL_SCISSOR_TEST);
-    scissoron := false;
-  end
-  else
-  begin
-    glScissor(viewwindowx, SCREENHEIGHT - (viewheight + viewwindowy), viewwidth, viewheight);
-    glEnable(GL_SCISSOR_TEST);
-    scissoron := true;
-  end;
-
-  // Player coordinates
-  xCamera := -viewx / MAP_SCALE;
-  yCamera := viewy / MAP_SCALE;
-  zCamera := viewz / MAP_SCALE;
-
-  yaw := 270.0 - (viewangle shr ANGLETOFINESHIFT) * 360.0 / FINEANGLES;
-  inv_yaw := -90.0 + (viewangle shr ANGLETOFINESHIFT) * 360.0 / FINEANGLES;
-
-  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
-
-  glShadeModel(GL_SMOOTH);
-
-  glEnable(GL_DEPTH_TEST);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity;
-
-  infinitePerspective(64.0, 320.0 / 200.0 * monitor_relative_aspect, gl_nearclip / 100.0);
-
-  if zaxisshift then
-    pitch := -players[displayplayer].lookdir16 / 32 // JVAL Smooth Look Up/Down
-  else
-    pitch := 0;
-  // JVAL: Correct 2d bsp limitation
-  if pitch > 45 then
-    pitch := 45;
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity;
-
-  glRotatef(roll,  0.0, 0.0, 1.0);
-  glRotatef(pitch, 1.0, 0.0, 0.0);
-  glRotatef(yaw,   0.0, 1.0, 0.0);
-  glTranslatef(-xCamera, -zCamera, -yCamera);
-  camera.rotation[0] := pitch;
-  camera.rotation[1] := yaw;
-  camera.rotation[2] := roll;
-  camera.position[0] := xCamera;
-  camera.position[1] := zCamera;
-  camera.position[2] := yCamera;
-
-  inc(rendermarker);
-  gld_drawlist.BeginFrame(rendermarker);
-  gld_flats.BeginFrame(rendermarker);
-  gld_walls.BeginFrame(rendermarker, yaw, zCamera);
-  gld_wallpainter.BeginFrame(xCamera, yCamera, zCamera);
-  gld_spritepainter.BeginFrame(inv_yaw);
-  gld_lightpainter.BeginFrame(inv_yaw);
-  numdlitems := 0;
-
-  if gl_renderwireframe then
-  begin
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClearDepth(1.0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  end
-  else
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  gld_sceneframe.Start;
 end;
 
 //==============================================================================
@@ -1925,108 +1284,8 @@ end;
 //
 //==============================================================================
 procedure gld_EndDrawScene;
-var
-  player: Pplayer_t;
 begin
-  player := @players[displayplayer];
-
-  glDisable(GL_POLYGON_SMOOTH);
-
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-  gld_Set2DMode;
-
- // gld_AmbientExecute;
-
-  R_DrawPlayer;
-
-  if scissoron then
-    glDisable(GL_SCISSOR_TEST);
-
-  gld_DrawBackgroundFrame;
-
-  if scissoron then
-    glEnable(GL_SCISSOR_TEST);
-
-  if player.fixedcolormap = 32 then
-  begin
-    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    last_gltexture := nil;
-    last_cm := -1;
-    glBegin(GL_TRIANGLE_STRIP);
-      glVertex2f(0.0, 0.0);
-      glVertex2f(0.0, SCREENHEIGHT);
-      glVertex2f(SCREENWIDTH, 0.0);
-      glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glEnd;
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glDisable(GL_ALPHA_TEST);
-    glColor4f(0.3, 0.3, 0.3, 0.3);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    last_gltexture := nil;
-    last_cm := -1;
-    glBegin(GL_TRIANGLE_STRIP);
-      glVertex2f(0.0, 0.0);
-      glVertex2f(0.0, SCREENHEIGHT);
-      glVertex2f(SCREENWIDTH, 0.0);
-      glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glEnd;
-    glEnable(GL_ALPHA_TEST);
-  end;
-
-  if gl_renderwireframe then
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-  {$IFDEF DOOM_OR_STRIFE}
-  if customcolormap <> nil then
-  begin
-    extra_red := extra_red + customcolormap.fog_r;
-    if extra_red > 1.0 then
-      extra_red := 1.0;
-    extra_green := extra_green + customcolormap.fog_g;
-    if extra_green > 1.0 then
-      extra_green := 1.0;
-    extra_blue := extra_blue + customcolormap.fog_b;
-    if extra_blue > 1.0 then
-      extra_blue := 1.0;
-    extra_alpha := extra_alpha + 0.8;
-    if extra_alpha > 1.0 then
-      extra_alpha := 1.0;
-  end;
-  {$ENDIF}
-
-  if extra_alpha > 0.0 then
-  begin
-    glDepthMask(False);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_ALPHA_TEST);
-    glBlendFunc(GL_ONE, GL_ONE);
-
-    glColor4f(extra_red * 0.25, extra_green * 0.25, extra_blue * 0.25, extra_alpha);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    last_gltexture := nil;
-    last_cm := -1;
-    glBegin(GL_TRIANGLE_STRIP);
-      glVertex2f(0.0, 0.0);
-      glVertex2f(0.0, SCREENHEIGHT);
-      glVertex2f(SCREENWIDTH, 0.0);
-      glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glEnd;
-
-    glDepthMask(True);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_ALPHA_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  end;
-
-  glColor3f(1.0, 1.0, 1.0);
-  glDisable(GL_SCISSOR_TEST);
-  scissoron := false;
-  if gl_shared_texture_palette then
-    glDisable(GL_SHARED_TEXTURE_PALETTE_EXT);
+  gld_sceneframe.Finish;
 end;
 
 //==============================================================================
@@ -2204,7 +1463,7 @@ end;
 //==============================================================================
 procedure gld_DrawScene(player: Pplayer_t);
 begin
-  gld_scenedrawer.Draw(pitch);
+  gld_scenedrawer.Draw(gld_sceneframe.Pitch);
 end;
 
 {$IFDEF DOOM}
@@ -2265,6 +1524,8 @@ begin
     I_Error('gld_PreprocessLevel(): the light painter is not configured (ComposeEngine was not called)');
   if gld_scenedrawer = nil then
     I_Error('gld_PreprocessLevel(): the scene drawer is not configured (ComposeEngine was not called)');
+  if gld_sceneframe = nil then
+    I_Error('gld_PreprocessLevel(): the scene frame is not configured (ComposeEngine was not called)');
 
   // preload graphics
   // JVAL
@@ -2315,7 +1576,7 @@ end;
 //==============================================================================
 procedure R_ShutDownOpenGL;
 begin
-  if gl_initialized then
+  if GL_Initialized then
   begin
     gld_SkyDone;
     if gl_dynlights <> nil then
@@ -2334,6 +1595,8 @@ end;
 initialization
 
 finalization
+  gld_ConfigureSceneFrame(nil);
+  gld_ConfigureInitializer(nil);
   // the collectors use the draw list: they go first
   gld_ConfigureSpriteCollector(nil);
   gld_ConfigureSceneDrawer(nil);

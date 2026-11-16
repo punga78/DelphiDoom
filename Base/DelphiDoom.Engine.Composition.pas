@@ -357,6 +357,9 @@ uses
   DelphiDoom.Engine.GlScene.LightSorter,
   DelphiDoom.Engine.GlScene.LightPainter,
   DelphiDoom.Engine.GlScene.SceneDrawer,
+  DelphiDoom.Engine.GlVSync,
+  DelphiDoom.Engine.GlInitializer,
+  DelphiDoom.Engine.GlScene.Frame,
   DelphiDoom.Engine.GlScene.LightMarker,
   DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
@@ -1455,6 +1458,7 @@ var
   LSpritePainter: TEngineGlSceneSpritePainter;
   LLightSorter: TEngineGlSceneLightSorter;
   LLightPainter: TEngineGlSceneLightPainter;
+  LInitializer: TEngineGlInitializer;
 begin
   // classes and not interfaces: gl_render calls them for every wall, flat and sprite of a frame, and owns them
   gld_ConfigureDrawList(TGlSceneFactory.CreateDrawList(gld_SceneItemSizes));
@@ -1475,6 +1479,12 @@ begin
   gld_ConfigureLightPainter(LLightPainter);
   gld_ConfigureSceneDrawer(TEngineGlSceneDrawer.Create(gld_SceneDrawList, LWalls, LWallPainter,
     LFlatPainter, LSpritePainter, LLightSorter, LLightPainter));
+  // the start of the renderer (gld_Init) owns the vertical sync object and fills the light table of gl_render
+  LInitializer := TEngineGlInitializer.Create(TEngineGlVSync.Create, gld_LightTable);
+  gld_ConfigureInitializer(LInitializer);
+  // the frame follows the vertical sync the initializer started
+  gld_ConfigureSceneFrame(TEngineGlSceneFrame.Create(gld_SceneDrawList, gld_FlatCollector, LWalls, LWallPainter,
+    LSpritePainter, LLightPainter, LInitializer.VSync));
 end;
 
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);
