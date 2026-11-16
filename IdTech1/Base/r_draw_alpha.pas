@@ -39,35 +39,44 @@ interface
 // R_DrawColumnAlphaLowest
 //
 //==============================================================================
-procedure R_DrawColumnAlphaLowest;
 
 //==============================================================================
 //
 // R_DrawColumnAlphaLow
 //
 //==============================================================================
-procedure R_DrawColumnAlphaLow;
 
 //==============================================================================
 //
 // R_DrawColumnAlphaMedium
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMedium;
 
 //==============================================================================
 //
 // R_DrawColumnAlphaMediumDiher
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMediumDiher;
 
 //==============================================================================
 //
 // R_DrawColumnAlphaHi
 //
 //==============================================================================
-procedure R_DrawColumnAlphaHi;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererAlphaDrawers = class sealed
+  public
+    class procedure R_DrawColumnAlphaLowest; static;
+    class procedure R_DrawColumnAlphaLow; static;
+    class procedure R_DrawColumnAlphaMedium; static;
+    class procedure R_DrawColumnAlphaMediumDiher; static;
+    class procedure R_DrawColumnAlphaHi; static;
+  end;
 
 implementation
 
@@ -85,7 +94,7 @@ uses
 // R_DrawColumnAlphaLowest
 //
 //==============================================================================
-procedure R_DrawColumnAlphaLowest;
+class procedure TRendererAlphaDrawers.R_DrawColumnAlphaLowest;
 var
   count: integer;
   i: integer;
@@ -143,7 +152,7 @@ end;
 // R_DrawColumnAlphaLow
 //
 //==============================================================================
-procedure R_DrawColumnAlphaLow;
+class procedure TRendererAlphaDrawers.R_DrawColumnAlphaLow;
 var
   count: integer;
   i: integer;
@@ -195,7 +204,7 @@ end;
 // R_DrawColumnAlphaMedium
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMedium;
+class procedure TRendererAlphaDrawers.R_DrawColumnAlphaMedium;
 var
   count: integer;
   dest: PByte;
@@ -242,7 +251,7 @@ end;
 // 8 bit mode diher drawing, regardless of dc_alpha value
 //
 //==============================================================================
-procedure R_DrawColumnAlphaMediumDiher;
+class procedure TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher;
 var
   count: integer;
   dest: PByte;
@@ -295,7 +304,7 @@ end;
 // R_DrawColumnAlphaHi
 //
 //==============================================================================
-procedure R_DrawColumnAlphaHi;
+class procedure TRendererAlphaDrawers.R_DrawColumnAlphaHi;
 var
   count: integer;
   destl: PLongWord;

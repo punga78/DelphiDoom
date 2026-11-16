@@ -36,28 +36,37 @@ interface
 // Masked column drawing functions
 //
 //==============================================================================
-procedure R_DrawMaskedColumnNormal;
 
 //==============================================================================
 //
 // R_DrawMaskedColumnHi
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi;
 
 //==============================================================================
 //
 // R_DrawMaskedColumnHi32
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi32;
 
 //==============================================================================
 //
 // R_DrawMaskedColumnUltra32
 //
 //==============================================================================
-procedure R_DrawMaskedColumnUltra32;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColMsDrawers = class sealed
+  public
+    class procedure R_DrawMaskedColumnNormal; static;
+    class procedure R_DrawMaskedColumnHi; static;
+    class procedure R_DrawMaskedColumnHi32; static;
+    class procedure R_DrawMaskedColumnUltra32; static;
+  end;
 
 implementation
 {$IFDEF HEXEN}
@@ -83,7 +92,7 @@ uses
 // R_DrawMaskedColumnNormal
 //
 //==============================================================================
-procedure R_DrawMaskedColumnNormal;
+class procedure TRendererColMsDrawers.R_DrawMaskedColumnNormal;
 var
   count: integer;
   destl: PLongWord;
@@ -165,7 +174,7 @@ end;
 // R_DrawMaskedColumnHi
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi;
+class procedure TRendererColMsDrawers.R_DrawMaskedColumnHi;
 var
   count: integer;
   destl: PLongWord;
@@ -217,7 +226,7 @@ end;
 // R_DrawMaskedColumnHi32
 //
 //==============================================================================
-procedure R_DrawMaskedColumnHi32;
+class procedure TRendererColMsDrawers.R_DrawMaskedColumnHi32;
 var
   count: integer;
   destl: PLongWord;
@@ -272,7 +281,7 @@ end;
 // R_DrawMaskedColumnUltra32
 //
 //==============================================================================
-procedure R_DrawMaskedColumnUltra32;
+class procedure TRendererColMsDrawers.R_DrawMaskedColumnUltra32;
 var
   count: integer;
   destl: PLongWord;

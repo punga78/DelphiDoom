@@ -41,35 +41,30 @@ uses
 // Column drawers
 //
 //==============================================================================
-procedure R_DrawTallColumnLowest;
 
 //==============================================================================
 //
 // R_DrawTallColumnLow
 //
 //==============================================================================
-procedure R_DrawTallColumnLow;
 
 //==============================================================================
 //
 // R_DrawTallColumnMedium
 //
 //==============================================================================
-procedure R_DrawTallColumnMedium;
 
 //==============================================================================
 //
 // R_DrawTallColumnHi
 //
 //==============================================================================
-procedure R_DrawTallColumnHi;
 
 //==============================================================================
 //
 // R_DrawTallColumnUltra
 //
 //==============================================================================
-procedure R_DrawTallColumnUltra;
 {$IFDEF HEXEN}
 
 //==============================================================================
@@ -77,14 +72,12 @@ procedure R_DrawTallColumnUltra;
 // R_DrawTallColumnHi_Fog
 //
 //==============================================================================
-procedure R_DrawTallColumnHi_Fog;
 
 //==============================================================================
 //
 // R_DrawTallColumnUltra_Fog
 //
 //==============================================================================
-procedure R_DrawTallColumnUltra_Fog;
 {$ENDIF}
 
 //==============================================================================
@@ -100,6 +93,24 @@ var
 //
   dc_height: LongWord;
 
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererTallColumnDrawers = class sealed
+  public
+    class procedure R_DrawTallColumnLowest; static;
+    class procedure R_DrawTallColumnLow; static;
+    class procedure R_DrawTallColumnMedium; static;
+    class procedure R_DrawTallColumnHi; static;
+    class procedure R_DrawTallColumnUltra; static;
+{$IFDEF HEXEN}
+    class procedure R_DrawTallColumnHi_Fog; static;
+    class procedure R_DrawTallColumnUltra_Fog; static;
+{$ENDIF}
+  end;
+
 implementation
 
 uses
@@ -114,7 +125,7 @@ uses
 // R_DrawTallColumnLowest
 //
 //==============================================================================
-procedure R_DrawTallColumnLowest;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnLowest;
 var
   count: integer;
   i: integer;
@@ -172,7 +183,7 @@ end;
 // R_DrawTallColumnLow
 //
 //==============================================================================
-procedure R_DrawTallColumnLow;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnLow;
 var
   count: integer;
   i: integer;
@@ -224,7 +235,7 @@ end;
 // R_DrawTallColumnMedium
 //
 //==============================================================================
-procedure R_DrawTallColumnMedium;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnMedium;
 var
   count: integer;
   dest: PByte;
@@ -343,7 +354,7 @@ end;
 // R_DrawTallColumnHi
 //
 //==============================================================================
-procedure R_DrawTallColumnHi;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnHi;
 var
   count: integer;
   destl: PLongWord;
@@ -434,7 +445,7 @@ end;
 // R_DrawTallColumnUltra
 //
 //==============================================================================
-procedure R_DrawTallColumnUltra;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnUltra;
 var
   count: integer;
   destl: PLongWord;
@@ -503,7 +514,7 @@ end;
 // R_DrawTallColumnHi_Fog
 //
 //==============================================================================
-procedure R_DrawTallColumnHi_Fog;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnHi_Fog;
 var
   count: integer;
   destl: PLongWord;
@@ -593,7 +604,7 @@ end;
 // R_DrawTallColumnUltra_Fog
 //
 //==============================================================================
-procedure R_DrawTallColumnUltra_Fog;
+class procedure TRendererTallColumnDrawers.R_DrawTallColumnUltra_Fog;
 var
   count: integer;
   destl: PLongWord;

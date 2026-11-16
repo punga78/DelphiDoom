@@ -53,6 +53,10 @@ type
     FPilotDone: Boolean;
     FSaved: Boolean;
     FLayoutsWritten: Boolean;
+{$IFNDEF OPENGL}
+    FRenderFunctionsFile: string;
+    FRenderFunctionsDone: Boolean;
+{$ENDIF}
     procedure WriteSaveLayouts;
     procedure Resolve;
     procedure Activate;
@@ -85,6 +89,9 @@ uses
   DelphiDoom.Parity.BitmapWriter,
   DelphiDoom.Parity.Factory,
   DelphiDoom.Parity.OptionsParser,
+{$IFNDEF OPENGL}
+  DelphiDoom.Engine.Renderer.FunctionDump,
+{$ENDIF}
   doomdef,
 {$IFDEF HEXEN}
   g_demo,
@@ -162,6 +169,12 @@ begin
       FOptions.FrameDumpTic := StrToIntDef(Copy(LEnvironment, 1, Pos(';', LEnvironment) - 1), -1);
       FOptions.FrameDumpFile := Copy(LEnvironment, Pos(';', LEnvironment) + 1, MaxInt);
     end;
+    // DDPARITY_RENDERFUNCTIONS = file: after the first tic the drawing functions that every detail level gives are
+    // written to the file and the program ends (Tools\Verifica\247\Confronta-Funzioni.ps1); inert without it
+{$IFNDEF OPENGL}
+    if FOptions.IsActive then
+      FRenderFunctionsFile := GetEnvironmentVariable('DDPARITY_RENDERFUNCTIONS');
+{$ENDIF}
     if FOptions.IsActive then
       Activate;
   except
@@ -220,6 +233,15 @@ procedure TEngineParity.AfterTick;
 begin
   if (FOptions.SaveLayoutsFile <> '') and not FLayoutsWritten then
     WriteSaveLayouts;
+{$IFNDEF OPENGL}
+  if (FRenderFunctionsFile <> '') and not FRenderFunctionsDone then
+  begin
+    FRenderFunctionsDone := True;
+    TEngineRendererFunctionDump.Write(FRenderFunctionsFile);
+    Flush;
+    I_Quit;
+  end;
+{$ENDIF}
   if FStateSource <> nil then
     FStateSource.Publish(g_game.gametic);
   // -autosave: the save is done at the start of the next tic, with the state of the end of this one

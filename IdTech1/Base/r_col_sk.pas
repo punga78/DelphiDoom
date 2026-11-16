@@ -37,28 +37,37 @@ interface
 // Sky column drawers
 //
 //==============================================================================
-procedure R_DrawSkyColumnLow;
 
 //==============================================================================
 //
 // R_DrawSkyColumn
 //
 //==============================================================================
-procedure R_DrawSkyColumn;
 
 //==============================================================================
 //
 // R_DrawSkyColumnHi
 //
 //==============================================================================
-procedure R_DrawSkyColumnHi;
 
 //==============================================================================
 //
 // R_DrawSkyColumnUltra
 //
 //==============================================================================
-procedure R_DrawSkyColumnUltra;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColSkDrawers = class sealed
+  public
+    class procedure R_DrawSkyColumnLow; static;
+    class procedure R_DrawSkyColumn; static;
+    class procedure R_DrawSkyColumnHi; static;
+    class procedure R_DrawSkyColumnUltra; static;
+  end;
 
 implementation
 
@@ -76,7 +85,7 @@ uses
 // Sky Column
 //
 //==============================================================================
-procedure R_DrawSkyColumnLow;
+class procedure TRendererColSkDrawers.R_DrawSkyColumnLow;
 var
   count: integer;
   i: integer;
@@ -161,7 +170,7 @@ end;
 // R_DrawSkyColumn
 //
 //==============================================================================
-procedure R_DrawSkyColumn;
+class procedure TRendererColSkDrawers.R_DrawSkyColumn;
 var
   count: integer;
   i: integer;
@@ -194,7 +203,7 @@ end;
 // R_DrawSkyColumnHi
 //
 //==============================================================================
-procedure R_DrawSkyColumnHi;
+class procedure TRendererColSkDrawers.R_DrawSkyColumnHi;
 var
   count: integer;
   destl: PLongWord;
@@ -256,7 +265,7 @@ end;
 // R_DrawSkyColumnUltra
 //
 //==============================================================================
-procedure R_DrawSkyColumnUltra;
+class procedure TRendererColSkDrawers.R_DrawSkyColumnUltra;
 var
   count: integer;
   destl: PLongWord;
