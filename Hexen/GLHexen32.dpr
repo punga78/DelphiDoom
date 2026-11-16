@@ -69,6 +69,7 @@ uses
   doomdef in '..\Hexen\doomdef.pas',
   xn_strings in '..\Hexen\xn_strings.pas',
   a_action in '..\Hexen\a_action.pas',
+  DelphiDoom.Engine.Automap.Rules in '..\Hexen\DelphiDoom.Engine.Automap.Rules.pas',
   am_map in '..\Base\am_map.pas',
   DelphiDoom.Automap.Types in '..\Libs\Automap\DelphiDoom.Automap.Types.pas',
   DelphiDoom.Automap.Intf in '..\Libs\Automap\DelphiDoom.Automap.Intf.pas',

@@ -138,6 +138,7 @@ uses
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Client in '..\Libs\Zlib\DelphiDoom.Zlib.Client.pas',
   DelphiDoom.Zlib.Provider in '..\Libs\Zlib\DelphiDoom.Zlib.Provider.pas',
+  DelphiDoom.Engine.Automap.Rules in '..\Doom\DelphiDoom.Engine.Automap.Rules.pas',
   am_map in '..\Base\am_map.pas',
   DelphiDoom.Automap.Types in '..\Libs\Automap\DelphiDoom.Automap.Types.pas',
   DelphiDoom.Automap.Intf in '..\Libs\Automap\DelphiDoom.Automap.Intf.pas',

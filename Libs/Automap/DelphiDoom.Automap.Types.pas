@@ -94,6 +94,25 @@ type
     ScaleFrameToMap: TFixed;
   end;
 
+  /// <summary>The figure that the automap draws for a thing (what the rules of a game choose)</summary>
+  TAutomapThingShape = (
+    /// <summary>The triangle of the big things</summary>
+    atsTriangle,
+    /// <summary>The thin triangle</summary>
+    atsThinTriangle,
+    /// <summary>The key square (Heretic and Hexen), kept upright when the map rotates</summary>
+    atsKeySquare);
+
+  /// <summary>
+  ///   How a thing is drawn: the figure, the color (an index of the palette) and the scale of the figure
+  ///   (16.16 fixed point, 0 for the size the figure has)
+  /// </summary>
+  TAutomapThingStyle = record
+    Shape: TAutomapThingShape;
+    Color: Integer;
+    Scale: Integer;
+  end;
+
   /// <summary>Raised when a call of the library is wrong (for instance a mark that does not exist)</summary>
   EAutomapException = class(Exception);
 

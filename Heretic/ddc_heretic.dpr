@@ -136,6 +136,7 @@ uses
   DelphiDoom.Png.Provider in '..\Libs\Png\DelphiDoom.Png.Provider.pas',
   DelphiDoom.Texture.PngFileWriter in '..\Libs\Texture\DelphiDoom.Texture.PngFileWriter.pas',
   d_delphi in '..\Common\d_delphi.pas',
+  DelphiDoom.Engine.Automap.Rules in '..\Heretic\DelphiDoom.Engine.Automap.Rules.pas',
   am_map in '..\Base\am_map.pas',
   DelphiDoom.Automap.Types in '..\Libs\Automap\DelphiDoom.Automap.Types.pas',
   DelphiDoom.Automap.Intf in '..\Libs\Automap\DelphiDoom.Automap.Intf.pas',
