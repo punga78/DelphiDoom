@@ -1872,7 +1872,7 @@ begin
       begin
         // HELLSLIME DAMAGE
         if player.powers[Ord(pw_ironfeet)] = 0 then
-          if leveltime and $1f = 0 then
+          if TTickState.LevelTime and $1f = 0 then
             P_DamageMobj(player.mo, nil, nil, 10);
       end;
 
@@ -1880,7 +1880,7 @@ begin
       begin
         // NUKAGE DAMAGE
         if player.powers[Ord(pw_ironfeet)] = 0 then
-          if leveltime and $1f = 0 then
+          if TTickState.LevelTime and $1f = 0 then
             P_DamageMobj(player.mo, nil, nil, 5);
       end;
 
@@ -1889,7 +1889,7 @@ begin
       begin
         if (player.powers[Ord(pw_ironfeet)] = 0) or
            (P_Random < 5) then
-          if leveltime and $1f = 0 then
+          if TTickState.LevelTime and $1f = 0 then
             P_DamageMobj(player.mo, nil, nil, 20);
       end;
 
@@ -1906,7 +1906,7 @@ begin
         // EXIT SUPER DAMAGE! (for E1M8 finale)
         player.cheats := player.cheats and not CF_GODMODE;
 
-        if leveltime and $1f = 0 then
+        if TTickState.LevelTime and $1f = 0 then
           P_DamageMobj(player.mo, nil, nil, 20);
 
         if player.health <= 10 then
@@ -1962,14 +1962,14 @@ begin
         1: // 2/5 damage per 31 ticks
           begin
             if player.powers[Ord(pw_ironfeet)] = 0 then
-              if leveltime and $1f = 0 then
+              if TTickState.LevelTime and $1f = 0 then
                 P_DamageMobj(player.mo, nil, nil, 5);
           end;
 
         2: // 5/10 damage per 31 ticks
           begin
             if player.powers[Ord(pw_ironfeet)] = 0 then
-              if leveltime and $1f = 0 then
+              if TTickState.LevelTime and $1f = 0 then
                 P_DamageMobj(player.mo, nil, nil, 10);
           end;
 
@@ -1978,7 +1978,7 @@ begin
             if (player.powers[Ord(pw_ironfeet)] = 0) or
                (N_Random < 5) then  // take damage even with suit
             begin
-              if leveltime and $1f = 0 then
+              if TTickState.LevelTime and $1f = 0 then
                 P_DamageMobj(player.mo, nil, nil, 20);
             end;
           end;
@@ -2072,7 +2072,7 @@ begin
     anim := @anims[j];
     for i := anim.basepic to anim.basepic + anim.numpics - 1 do
     begin
-      pic := anim.basepic + ((leveltime div anim.speed + i) mod anim.numpics);
+      pic := anim.basepic + ((TTickState.LevelTime div anim.speed + i) mod anim.numpics);
       if anim.istexture then
         texturetranslation[i] := pic
       else
@@ -2080,7 +2080,7 @@ begin
     end;
   end;
 
-  curripple := @r_defripple[leveltime and 31];
+  curripple := @r_defripple[TTickState.LevelTime and 31];
 
   // ANIMATE LINE SPECIALS
   for i := 0 to numlinespecials - 1 do

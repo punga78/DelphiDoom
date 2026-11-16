@@ -788,8 +788,8 @@ begin
   // scan the remaining thinkers
   // to see if all Keens are dead
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -814,7 +814,7 @@ function P_DogFollowPlayerHandler(actor: Pmobj_t): boolean;
 begin
   // JVAL: 20200512 - Drones follow player 's trace
   if actor.info.doomednum = 888 then
-    if leveltime > actor.playerfollowtime then
+    if TTickState.LevelTime > actor.playerfollowtime then
       if actor.flags2_ex and MF2_EX_FRIEND <> 0 then
       begin
         if P_FollowPlayer(actor, P_NearestPlayer(actor)) then
@@ -2012,8 +2012,8 @@ begin
   // count total number of skull currently on the level
   count := 0;
 
-  currentthinker := thinkercap.next;
-  while currentthinker <> @thinkercap do
+  currentthinker := TTickState.ThinkerCap.next;
+  while currentthinker <> @TTickState.ThinkerCap do
   begin
     if (@currentthinker._function.acp1 = @P_MobjThinker) and
        (Pmobj_t(currentthinker)._type = Ord(MT_SKULL)) then
@@ -2221,8 +2221,8 @@ begin
 
     // scan the remaining thinkers to see
     // if all bosses are dead
-    th := thinkercap.next;
-    while th <> @thinkercap do
+    th := TTickState.ThinkerCap.next;
+    while th <> @TTickState.ThinkerCap do
     begin
       if @th._function.acp1 = @P_MobjThinker then
       begin
@@ -2318,8 +2318,8 @@ begin
 
   // scan the remaining thinkers to see
   // if all bosses are dead
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -2467,8 +2467,8 @@ begin
   numbraintargets := 0;
   braintargeton := 0;
 
-  thinker := thinkercap.next;
-  while Pointer(thinker) <> Pointer(@thinkercap) do
+  thinker := TTickState.ThinkerCap.next;
+  while Pointer(thinker) <> Pointer(@TTickState.ThinkerCap) do
   begin
     if @thinker._function.acp1 = @P_MobjThinker then // is a mobj
     begin
@@ -2513,8 +2513,8 @@ begin
   fnumbraintargets := 0;
   mapvars.IntVal[S_BRAINTARGETON] := 0;
 
-  thinker := thinkercap.next;
-  while Pointer(thinker) <> Pointer(@thinkercap) do
+  thinker := TTickState.ThinkerCap.next;
+  while Pointer(thinker) <> Pointer(@TTickState.ThinkerCap) do
   begin
     if @thinker._function.acp1 = @P_MobjThinker then // is a mobj
     begin
@@ -2839,8 +2839,8 @@ var
   mo: Pmobj_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin

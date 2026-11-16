@@ -895,7 +895,7 @@ var
   delta: integer;
   curHealth: integer;
 begin
-  if leveltime and 1 <> 0 then
+  if TTickState.LevelTime and 1 <> 0 then
     ChainWiggle := P_Random and 1;
 
   curHealth := players[TGameSession.ConsolePlayer].mo.health;
@@ -1198,7 +1198,7 @@ var
   txt: string;
   x, y: integer;
 begin
-  if leveltime and 16 <> 0 then
+  if TTickState.LevelTime and 16 <> 0 then
     SB_WriteText(si_xPos[0], 20, '*** SOUND DEBUG INFO ***');
 
   S_GetChannelInfo(@s);
@@ -1326,14 +1326,14 @@ begin
     SB_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
     if x <> 0 then
     begin
-      if leveltime and 4 = 0 then
+      if TTickState.LevelTime and 4 = 0 then
         SB_DrawPatch(38, 167, PatchINVLFGEM1)
       else
         SB_DrawPatch(38, 167, PatchINVLFGEM2);
     end;
     if CPlayer.inventorySlotNum - x > 7 then
     begin
-      if leveltime and 4 = 0 then
+      if TTickState.LevelTime and 4 = 0 then
         SB_DrawPatch(269, 167, PatchINVRTGEM1)
       else
         SB_DrawPatch(269, 167, PatchINVRTGEM2);
@@ -1473,14 +1473,14 @@ begin
   SB_DrawPatch(50 + curpos * 31, 189, PatchSELECTBOX);
   if x <> 0 then
   begin
-    if leveltime and 4 = 0 then
+    if TTickState.LevelTime and 4 = 0 then
       SB_DrawPatch(38, 159, PatchINVLFGEM1)
     else
       SB_DrawPatch(38, 159, PatchINVLFGEM2);
   end;
   if CPlayer.inventorySlotNum - x > 7 then
   begin
-    if leveltime and 4 = 0 then
+    if TTickState.LevelTime and 4 = 0 then
       SB_DrawPatch(269, 159, PatchINVRTGEM1)
     else
       SB_DrawPatch(269, 159, PatchINVRTGEM2);
@@ -1602,7 +1602,7 @@ begin
     begin
       if (CPlayer.powers[Ord(pw_flight)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_flight)] and 16 = 0) then
       begin
-        frame := (leveltime div 3) and 15;
+        frame := (TTickState.LevelTime div 3) and 15;
         if CPlayer.mo.flags2 and MF2_FLY <> 0 then
         begin
           if hitCenterFrame and (frame <> 15) and (frame <> 0) then
@@ -1635,7 +1635,7 @@ begin
     begin
       if (CPlayer.powers[Ord(pw_weaponlevel2)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_weaponlevel2)] and 16 = 0) then
       begin
-        frame := (leveltime div 3) and 15;
+        frame := (TTickState.LevelTime div 3) and 15;
         SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
       end;
     end;

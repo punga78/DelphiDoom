@@ -273,7 +273,7 @@ begin
   if not TGameSession.NetGame then
   begin
     gametype := gt_single;
-    time := leveltime div TICRATE;
+    time := TTickState.LevelTime div TICRATE;
     hours := time div 3600;
     time := time - hours * 3600;
     minutes := time div 60;

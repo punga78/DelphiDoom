@@ -643,8 +643,8 @@ begin
         if sectors[LSector].tag = AArgument then
           AddSector(LSector);
   else
-    LThinker := thinkercap.next;
-    while Pointer(LThinker) <> Pointer(@thinkercap) do
+    LThinker := TTickState.ThinkerCap.next;
+    while Pointer(LThinker) <> Pointer(@TTickState.ThinkerCap) do
     begin
       if @LThinker._function.acp1 = @P_MobjThinker then
       begin

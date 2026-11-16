@@ -1234,9 +1234,9 @@ var
   mo: Pmobj_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
+  think := TTickState.ThinkerCap.next;
   result := 0;
-  while think <> @thinkercap do
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -2021,8 +2021,8 @@ begin
 
   if actor.target = nil then        // Normal monster search
   begin
-    think := thinkercap.next;
-    while think <> @thinkercap do
+    think := TTickState.ThinkerCap.next;
+    while think <> @TTickState.ThinkerCap do
     begin
       if @think._function.acp1 <> @P_MobjThinker then
       begin
@@ -2084,7 +2084,7 @@ begin
   actor.flags := actor.flags and not MF_SHADOW;      // In pain caused him to
   actor.flags := actor.flags and not MF_ALTSHADOW;    // skip his fade in.
 
-  if leveltime - starttime^ >= MAULATORTICS then
+  if TTickState.LevelTime - starttime^ >= MAULATORTICS then
   begin
     P_DamageMobj(actor, nil, nil, 10000);
     exit;
@@ -2124,7 +2124,7 @@ begin
   actor.flags := actor.flags and not MF_SHADOW;      // In pain caused him to
   actor.flags := actor.flags and not MF_ALTSHADOW;    // skip his fade in.
 
-  if leveltime - starttime^ >= MAULATORTICS then
+  if TTickState.LevelTime - starttime^ >= MAULATORTICS then
   begin
     P_DamageMobj(actor, nil, nil, 10000);
     exit;
@@ -2699,8 +2699,8 @@ begin
     exit;
 
   // Search mobj list for corpses and place them in this queue
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 <> @P_MobjThinker then
     begin
@@ -6076,7 +6076,7 @@ begin
   actor.momx := FixedMul(actor.info.speed, finecosine[angle]);
   actor.momy := FixedMul(actor.info.speed, finesine[angle]);
 
-  if (leveltime and 15 = 0) or
+  if (TTickState.LevelTime and 15 = 0) or
      (actor.z > target.z + target.info.height) or
      (actor.z + actor.height < target.z) then
   begin

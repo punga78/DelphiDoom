@@ -894,20 +894,20 @@ begin
      5:
       begin
         // Damage_LavaWimpy
-        if leveltime and 15 = 0 then
+        if TTickState.LevelTime and 15 = 0 then
           P_DamageMobj(player.mo, @LavaInflictor, nil, 5);
       end;
 
      7:
       begin
         // Damage_Sludge
-        if leveltime and 31 = 0 then
+        if TTickState.LevelTime and 31 = 0 then
           P_DamageMobj(player.mo, nil, nil, 4);
       end;
 
     16: // Damage_LavaHefty
       begin
-        if leveltime and 15 = 0 then
+        if TTickState.LevelTime and 15 = 0 then
         begin
           P_DamageMobj(player.mo, @LavaInflictor, nil, 8);
           P_HitFloor(player.mo);
@@ -916,7 +916,7 @@ begin
      4: // Scroll_EastLavaDamage
       begin
         P_Thrust(player, 0, 2048 * 28);
-        if leveltime and 15 = 0 then
+        if TTickState.LevelTime and 15 = 0 then
         begin
           P_DamageMobj(player.mo, @LavaInflictor, nil, 5);
           P_HitFloor(player.mo);
@@ -1004,7 +1004,7 @@ begin
     anim := @anims[j];
     for i := anim.basepic to anim.basepic + anim.numpics - 1 do
     begin
-      pic := anim.basepic + ((leveltime div anim.speed + i) mod anim.numpics);
+      pic := anim.basepic + ((TTickState.LevelTime div anim.speed + i) mod anim.numpics);
       if anim.istexture then
         texturetranslation[i] := pic
       else
@@ -1012,7 +1012,7 @@ begin
     end;
   end;
 
-  curripple := @r_defripple[leveltime and 31];
+  curripple := @r_defripple[TTickState.LevelTime and 31];
 
   // ANIMATE LINE SPECIALS
   for i := 0 to numlinespecials - 1 do

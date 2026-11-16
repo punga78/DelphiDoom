@@ -470,8 +470,8 @@ function P_FindMobjFromKey(const key: LongWord): Pmobj_t;
 var
   currentthinker: Pthinker_t;
 begin
-  currentthinker := thinkercap.next;
-  while Pointer(currentthinker) <> Pointer(@thinkercap) do
+  currentthinker := TTickState.ThinkerCap.next;
+  while Pointer(currentthinker) <> Pointer(@TTickState.ThinkerCap) do
   begin
     if (@currentthinker._function.acp1 = @P_MobjThinker) and
        (Pmobj_t(currentthinker).key = key) then
@@ -863,7 +863,7 @@ begin
     if mobj.movecount < TMobjGameRules.RespawnTime then
       exit;
 
-    if leveltime and 31 <> 0 then
+    if TTickState.LevelTime and 31 <> 0 then
       exit;
 
     if P_Random > 4 then

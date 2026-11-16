@@ -415,8 +415,8 @@ var
   tmp: idlemissile_tArray;
 begin
   numidlemissiles := 0;
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin

@@ -309,10 +309,10 @@ var
   LShadowFactor: float;
   LSector: Psector_t;
 begin
-  if FDefined and (FValidCount = leveltime) then
+  if FDefined and (FValidCount = TTickState.LevelTime) then
     exit;
 
-  FValidCount := leveltime;
+  FValidCount := TTickState.LevelTime;
 
 // -----------------------------------------------------------------------------
 // Calculate the starting point of lightmap

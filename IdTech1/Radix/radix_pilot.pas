@@ -114,7 +114,7 @@ var
 begin
   last := @pilotlastmoves[pnum];
   // a saved game that is loaded has a new body too, later in the level
-  if (last.mo <> p.mo) and (leveltime <= STARTUPMESSAGETICS) then
+  if (last.mo <> p.mo) and (TTickState.LevelTime <= STARTUPMESSAGETICS) then
     p._message := ShortString(TRadixMessages.StartUp(TGameSession.GameEpisode, TGameSession.GameMap));
   last.mo := p.mo;
 end;
@@ -213,7 +213,7 @@ begin
     rp.energy, p.cmd.forwardmove, p.cmd.sidemove);
   if rp.afterburner then
   begin
-    TRadixControlRules.DrainAfterburner(leveltime, rp.energy_reserve, rp.energy);
+    TRadixControlRules.DrainAfterburner(TTickState.LevelTime, rp.energy_reserve, rp.energy);
     // a wall in the way: no slide, the move of the engine has already found it
     P_TryMove(pmo,
       pmo.x + TRadixControlRules.AfterburnerSlide(pmo.momx),
@@ -299,8 +299,8 @@ var
 begin
   // one for a level: a saved game that is loaded asks again (the engine frees the thinkers it
   // does not know when it loads its own)
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @T_RadixPilot then
       exit;

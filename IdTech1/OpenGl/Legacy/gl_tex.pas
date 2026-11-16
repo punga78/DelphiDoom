@@ -1512,8 +1512,8 @@ begin
   // Precache sprites.
   ZeroMemory(hitlist, numsprites);
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
       hitlist[Ord(Pmobj_t(th).sprite)] := true;

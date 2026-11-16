@@ -493,8 +493,8 @@ var
   think: Pthinker_t;
   starttime: PInteger;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 <> @P_MobjThinker then
     begin
@@ -528,7 +528,7 @@ begin
     end;
 
     starttime := PInteger(@mo.args[0]);
-    if leveltime - starttime^ >= MAULATORTICS then
+    if TTickState.LevelTime - starttime^ >= MAULATORTICS then
     begin
       think := think.next;
       continue;
@@ -2355,7 +2355,7 @@ begin
     P_Obituary(target, inflictor, source);
     exit;
   end;
-  if (leveltime and 63 = 0) and playPainSound then
+  if (TTickState.LevelTime and 63 = 0) and playPainSound then
     P_SetMobjState(target, statenum_t(target.info.painstate));
 end;
 

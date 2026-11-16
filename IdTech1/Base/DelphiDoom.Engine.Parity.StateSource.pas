@@ -427,8 +427,8 @@ begin
   FKeys.Clear;
   LThinkerCount := 0;
   LMobjCount := 0;
-  LThinker := thinkercap.next;
-  while LThinker <> @thinkercap do
+  LThinker := TTickState.ThinkerCap.next;
+  while LThinker <> @TTickState.ThinkerCap do
   begin
     if not P_ThinkerIsRemoved(LThinker) then
     begin
@@ -445,8 +445,8 @@ begin
 
   FFieldIndex := 0;
   LIndex := 0;
-  LThinker := thinkercap.next;
-  while LThinker <> @thinkercap do
+  LThinker := TTickState.ThinkerCap.next;
+  while LThinker <> @TTickState.ThinkerCap do
   begin
     if not P_ThinkerIsRemoved(LThinker) and (@LThinker._function.acp1 = @P_MobjThinker) then
     begin
@@ -505,7 +505,7 @@ begin
     FSink.Scalar('py', 0);
     FSink.Scalar('hp', 0);
   end;
-  FSink.Scalar('lt', leveltime);
+  FSink.Scalar('lt', TTickState.LevelTime);
   FSink.Scalar('th', LThinkerCount);
   FSink.Scalar('mo', LMobjCount);
   FSink.Scalar('rnd', FRandom.MenuIndex);

@@ -121,7 +121,7 @@ begin
   res := T_MovePlane(floor.sector, floor.speed, floor.floordestheight,
             floor.crush, 0, floor.direction);
 
-  if leveltime and 7 = 0 then
+  if TTickState.LevelTime and 7 = 0 then
     S_StartSound(@floor.sector.soundorg, Ord(sfx_stnmov));
 
   if res = pastdest then

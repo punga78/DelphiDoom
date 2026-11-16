@@ -277,7 +277,7 @@ begin
   for i := 0 to dlights.Count - 1 do
     if (dlights.Numbers[i].num1 = mo._type) or (dlights.Numbers[i].num1 = -1) then
     begin
-      l := soft_dynlights.GetLight(dlights.Numbers[i].num2, leveltime);
+      l := soft_dynlights.GetLight(dlights.Numbers[i].num2, TTickState.LevelTime);
       if numdlitems >= realdlitems then
       begin
         realloc(pointer(dlbuffer), realdlitems * SizeOf(dlsortitem_t), (realdlitems + 32) * SizeOf(dlsortitem_t));

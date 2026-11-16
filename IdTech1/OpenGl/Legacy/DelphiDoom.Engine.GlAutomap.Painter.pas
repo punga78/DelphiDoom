@@ -111,7 +111,7 @@ begin
 
   LTexture := gld_RegisterFlat(AItem.Lump, True, AItem.Flat);
   if AItem.Ripples then
-    gld_BindFlat(LTexture, leveltime and 31)
+    gld_BindFlat(LTexture, TTickState.LevelTime and 31)
   else
     gld_BindFlat(LTexture, -1);
 

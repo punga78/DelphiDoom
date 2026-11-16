@@ -432,8 +432,8 @@ begin
     end;
   end;
 
-  if (player <> nil) and (mo.flags2 and MF2_FLY <> 0) and (mo.z > mo.floorz) and (leveltime and 2 <> 0) then
-    mo.z := mo.z + finesine[(FINEANGLES div 20 * leveltime div 4) and FINEMASK];
+  if (player <> nil) and (mo.flags2 and MF2_FLY <> 0) and (mo.z > mo.floorz) and (TTickState.LevelTime and 2 <> 0) then
+    mo.z := mo.z + finesine[(FINEANGLES div 20 * TTickState.LevelTime div 4) and FINEMASK];
 end;
 
 //==============================================================================
@@ -522,10 +522,10 @@ begin
         if G_PlayingEngineVersion >= VERSION207 then
           player.deltaviewheight := FixedMul(player.deltaviewheight, FixedDiv(mo.height, mo.info.height));
 
-        if leveltime > player.nextoof then
+        if TTickState.LevelTime > player.nextoof then
         begin
           S_StartSound(mo, Ord(sfx_plroof));
-          player.nextoof := leveltime + 4 * TICRATE;
+          player.nextoof := TTickState.LevelTime + 4 * TICRATE;
         end;
       end;
       mo.momz := 0;
@@ -1410,7 +1410,7 @@ begin
   if ((mobj.flags and MF_SPECIAL) <> 0) and
      ((mobj.flags and MF_DROPPED) = 0) then
   begin
-    P_World.ItemRespawn.Add(mobj.spawnpoint, leveltime);
+    P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
   end;
 end;
 
@@ -1420,7 +1420,7 @@ end;
 
 class function TMobjGameRules.ItemRespawnWaits(const AQueuedTime: integer): boolean;
 begin
-  result := leveltime - AQueuedTime < 30 * TICRATE;
+  result := TTickState.LevelTime - AQueuedTime < 30 * TICRATE;
 end;
 
 class procedure TMobjGameRules.SpawnItemFog(x, y, z: fixed_t; mthing: Pmapthing_t);

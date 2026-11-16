@@ -367,7 +367,7 @@ end;
 //==============================================================================
 class function TEngineActorExpressionFunctions.PF_leveltime(AContext: Pointer; const p: TArray<string>): string;
 begin
-  result := itoa(leveltime);
+  result := itoa(TTickState.LevelTime);
 end;
 
 {$IFDEF DOOM_OR_HERETIC}

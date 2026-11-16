@@ -557,9 +557,9 @@ begin
   if (mo.player <> nil) and
      (mo.flags2 and MF2_FLY <> 0) and
      (mo.z > mo.floorz) and
-     (leveltime and 2 <> 0) then
+     (TTickState.LevelTime and 2 <> 0) then
   begin
-    mo.z := mo.z + finesine[(FINEANGLES div 20 * _SHR2(leveltime)) and FINEMASK];
+    mo.z := mo.z + finesine[(FINEANGLES div 20 * _SHR2(TTickState.LevelTime)) and FINEMASK];
   end;
 end;
 
@@ -1080,7 +1080,7 @@ begin
   p.lastautocrouchtime := 0;
   p.crouchheight := 0;
   p.plinetarget := nil;
-  p.pcrosstic := leveltime;
+  p.pcrosstic := TTickState.LevelTime;
   // JVAL: 20211224 - Clear player history
   P_ClearPlayerHistory(p);
   p.nextfire := 0;
@@ -1491,8 +1491,8 @@ var
   t: Pthinker_t;
 begin
   i := 0;
-  t := thinkercap.next;
-  while t <> @thinkercap do
+  t := TTickState.ThinkerCap.next;
+  while t <> @TTickState.ThinkerCap do
   begin // Search all current thinkers
     if @t._function.acp1 <> @P_MobjThinker then
     begin // Not a mobj thinker
@@ -1796,7 +1796,7 @@ begin
             P_NoiseAlert(thing, thing);
         end;
         S_StartSound(mo, Ord(SFX_LAVA_SIZZLE));
-        if (thing.player <> nil) and (leveltime and 31 <> 0) then
+        if (thing.player <> nil) and (TTickState.LevelTime and 31 <> 0) then
           P_DamageMobj(thing, @LavaInflictor, nil, 5);
         result := FLOOR_LAVA;
         exit;

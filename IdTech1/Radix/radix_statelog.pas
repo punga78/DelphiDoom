@@ -140,7 +140,7 @@ var
 begin
   if not statelog_checked then
     RX_StateLogOpen;
-  if (endlevel_tic > 0) and (leveltime = endlevel_tic) then
+  if (endlevel_tic > 0) and (TTickState.LevelTime = endlevel_tic) then
     RX_ExitLevel(endlevel_next);
   if not statelog_open then
     exit;
@@ -162,7 +162,7 @@ begin
   if s = statelog_last then
     exit;
   statelog_last := s;
-  writeln(statelog_file, Format('tic=%d x=%d y=%d %s', [leveltime, p.mo.x div FRACUNIT, p.mo.y div FRACUNIT, s]));
+  writeln(statelog_file, Format('tic=%d x=%d y=%d %s', [TTickState.LevelTime, p.mo.x div FRACUNIT, p.mo.y div FRACUNIT, s]));
   // a game that is closed from outside must leave what it wrote so far
   Flush(statelog_file);
 end;

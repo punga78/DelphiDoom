@@ -889,7 +889,7 @@ begin
         mo.flags2 := mo.flags2 or MF2_DROPPED;
     end;
 
-    memcpy(@mo.args, @leveltime, SizeOf(leveltime));
+    memcpy(@mo.args, @TTickState.LevelTime, SizeOf(TTickState.LevelTime));
     if actor.special1 <> 0 then // JVAL
     begin
       master := Pmobj_t(actor.special1);

@@ -238,14 +238,14 @@ begin
     exit;
   end;
 
-  if not TRadixWeaponRules.CanRefire(leveltime, rp.lastfire[w],
+  if not TRadixWeaponRules.CanRefire(TTickState.LevelTime, rp.lastfire[w],
     TRadixWeaponRules.RefireTics(w, g_fastweaponrefire)) then
   begin
     result := false;
     exit;
   end;
 
-  rp.lastfire[w] := leveltime;
+  rp.lastfire[w] := TTickState.LevelTime;
   result := true;
 end;
 
@@ -1083,7 +1083,7 @@ begin
 
   // a new level starts its time again (Rad-X cleared lastfire when the player was spawned)
   for i := 0 to NUMRADIXWEAPONS - 1 do
-    if rp.lastfire[i] > leveltime then
+    if rp.lastfire[i] > TTickState.LevelTime then
       rp.lastfire[i] := 0;
 
   // JVAL: 20200504 - Plasma bomb count down
@@ -1097,11 +1097,11 @@ begin
   // JVAL: 20200501 - Retrieve TMapAim.LineTarget
   P_AimLineAttack(p.mo, p.mo.angle, 16 * 64 * FRACUNIT);
   if (rp.plinetarget = nil) and (TMapAim.LineTarget <> nil) then
-    rp.pcrosstic := leveltime;
+    rp.pcrosstic := TTickState.LevelTime;
   rp.plinetarget := TMapAim.LineTarget;
 
   // JVAL: 20200503 - ALDS
-  if (rp.radixpowers[Ord(rpu_alds)] > 0) and (leveltime and $3 = 0) then
+  if (rp.radixpowers[Ord(rpu_alds)] > 0) and (TTickState.LevelTime and $3 = 0) then
   begin
     if TMapAim.LineTarget = nil then
     begin

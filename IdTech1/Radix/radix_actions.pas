@@ -243,8 +243,8 @@ begin
   if not any then
     exit;
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -1718,9 +1718,9 @@ begin
   if not parms.initialized then
     RA_InitMissileWall(parms, li);
 
-  if leveltime < parms.nextticfire then
+  if TTickState.LevelTime < parms.nextticfire then
     exit;
-  parms.nextticfire := leveltime + TICRATE;
+  parms.nextticfire := TTickState.LevelTime + TICRATE;
 
   zlen := (li.frontsector.ceilingheight div FRACUNIT - li.frontsector.floorheight div FRACUNIT + 32) div 64;
   RA_FireWallMissile(parms, li, li.frontsector.ceilingheight, li.frontsector.floorheight, zlen, seeker);
@@ -1791,9 +1791,9 @@ begin
       li.backsector.floorheight := parms.destheight;
   end;
 
-  if leveltime < parms.nextticfire then
+  if TTickState.LevelTime < parms.nextticfire then
     exit;
-  parms.nextticfire := leveltime + TICRATE;
+  parms.nextticfire := TTickState.LevelTime + TICRATE;
 
   if li.frontsector.floorheight > li.backsector.floorheight then
     zlen := (li.frontsector.floorheight div FRACUNIT - li.backsector.floorheight div FRACUNIT + 32) div 64  // back side
@@ -1848,9 +1848,9 @@ begin
       li.backsector.ceilingheight := parms.destheight;
   end;
 
-  if leveltime < parms.nextticfire then
+  if TTickState.LevelTime < parms.nextticfire then
     exit;
-  parms.nextticfire := leveltime + TICRATE;
+  parms.nextticfire := TTickState.LevelTime + TICRATE;
 
   if li.frontsector.ceilingheight > li.backsector.ceilingheight then
     zlen := (li.frontsector.ceilingheight div FRACUNIT - li.backsector.ceilingheight div FRACUNIT + 32) div 64  // front side
@@ -1895,7 +1895,7 @@ var
   snd: integer;
   name: string;
 begin
-  if leveltime < nextsoundtime then
+  if TTickState.LevelTime < nextsoundtime then
     exit;
 
   snd := TRadixMessages.Get(msgid).Sound;
@@ -1905,7 +1905,7 @@ begin
     if (name <> '') and (players[radixplayer].mo <> nil) then
       S_StartSound(RX_PilotMessageOrigin(radixplayer, @players[radixplayer]), name);
   end;
-  nextsoundtime := leveltime + RX_SoundDuration(snd) + 1;
+  nextsoundtime := TTickState.LevelTime + RX_SoundDuration(snd) + 1;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2304,12 +2304,12 @@ begin
   runtrigger := TRadixActionRules.KillRatioReached(totalradixkills, P_World.Totals.Kills,
     players[radixplayer].killcount, parms.percentage);
 
-  if not runtrigger and (leveltime and 31 = 0) then
+  if not runtrigger and (TTickState.LevelTime and 31 = 0) then
   begin
     // JVAL: 20200429 - To compensate for dead enemies that the player didn't kill (count living radix map enemies)
     living := 0;
-    think := thinkercap.next;
-    while think <> @thinkercap do
+    think := TTickState.ThinkerCap.next;
+    while think <> @TTickState.ThinkerCap do
     begin
       if @think._function.acp1 = @P_MobjThinker then
       begin
@@ -2525,7 +2525,7 @@ var
 begin
   parms := radixsurfacepowerup_p(@action.params);
 
-  if leveltime and 7 <> 0 then
+  if TTickState.LevelTime and 7 <> 0 then
     exit;
 
   limits := TRadixPilotLimits.Default;

@@ -1125,8 +1125,8 @@ begin
     end;
   end;
   if TMapGameRules.FlightBobs(mo) then
-    if (mo.player <> nil) and (mo.z > mo.floorz) and (leveltime and 2 <> 0) then
-      mo.z := mo.z + finesine[(FINEANGLES div 20 * leveltime div 4) and FINEMASK];
+    if (mo.player <> nil) and (mo.z > mo.floorz) and (TTickState.LevelTime and 2 <> 0) then
+      mo.z := mo.z + finesine[(FINEANGLES div 20 * TTickState.LevelTime div 4) and FINEMASK];
 
 //
 // clip movement
@@ -2387,7 +2387,7 @@ begin
   p := TMapUse.Thing.player;
   if p <> nil then
     if G_PlayingEngineVersion >= VERSION207 then
-      p.nextfire := leveltime + TICRATE div 2;
+      p.nextfire := TTickState.LevelTime + TICRATE div 2;
   result := false;
 end;
 
@@ -2830,7 +2830,7 @@ begin
 
   TMapCheck.NoFit := true;
 
-  if TMapCheck.CrushChange and (leveltime and 3 = 0) then
+  if TMapCheck.CrushChange and (TTickState.LevelTime and 3 = 0) then
   begin
     P_DamageMobj(thing, nil, nil, TMapGameRules.CrushDamage);
 

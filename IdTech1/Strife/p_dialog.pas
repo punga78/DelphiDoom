@@ -2012,7 +2012,7 @@ begin
   // JVAL: use DelphiDoom's P_PlayerFaceMobj function, turn towards dialogtalker in half second
   P_PlayerFaceMobj(player, dialogtalker, TICRATE div 2);
 
-  player.nextfire := leveltime + TICRATE div 2;
+  player.nextfire := TTickState.LevelTime + TICRATE div 2;
 
   // set pointer to player talking
   dialogplayer := player;

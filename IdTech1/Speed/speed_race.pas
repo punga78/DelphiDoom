@@ -412,7 +412,7 @@ begin
     exit;
 
   // a test of the report of the exceptions of the loop (-speedcrash tic): a real access violation
-  if (race_crashtic >= 0) and (leveltime = race_crashtic) then
+  if (race_crashtic >= 0) and (TTickState.LevelTime = race_crashtic) then
     PInteger(race_crashpointer)^ := 1;
 
   for i := 0 to race_controller.Count - 1 do
@@ -426,7 +426,7 @@ begin
     car.Z := mo.z;
   end;
 
-  race_controller.Tick(leveltime, SH_ControllerPlayerInput);
+  race_controller.Tick(TTickState.LevelTime, SH_ControllerPlayerInput);
 
   for i := 0 to race_controller.Count - 1 do
   begin
@@ -453,8 +453,8 @@ var
   race: Pspeedrace_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @T_SpeedRace then
       exit;
@@ -467,10 +467,10 @@ begin
   // out of the tail, in after the head
   race.thinker.prev.next := race.thinker.next;
   race.thinker.next.prev := race.thinker.prev;
-  race.thinker.next := thinkercap.next;
-  race.thinker.prev := @thinkercap;
-  thinkercap.next.prev := @race.thinker;
-  thinkercap.next := @race.thinker;
+  race.thinker.next := TTickState.ThinkerCap.next;
+  race.thinker.prev := @TTickState.ThinkerCap;
+  TTickState.ThinkerCap.next.prev := @race.thinker;
+  TTickState.ThinkerCap.next := @race.thinker;
 end;
 
 //==============================================================================
@@ -518,8 +518,8 @@ begin
   if race_controller = nil then
     exit;
   aicount := 0;
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -662,8 +662,8 @@ begin
 
   // the places of the grid: the objects that the actors of the map made for the things 241
   aicount := 0;
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin

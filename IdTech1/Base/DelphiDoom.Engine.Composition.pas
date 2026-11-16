@@ -1413,7 +1413,7 @@ end;
 // the time of the level where the engine keeps it and the random of the game
 procedure ComposeWorld(const ARandom: IGameRandom);
 begin
-  P_ConfigureWorld(TEngineWorld.Create(@thinkercap, P_WorldTime, ARandom));
+  P_ConfigureWorld(TEngineWorld.Create(@TTickState.ThinkerCap, P_WorldTime, ARandom));
 end;
 
 procedure ComposeSerializer;

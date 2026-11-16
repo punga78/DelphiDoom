@@ -354,8 +354,8 @@ var
   LThinker: Pthinker_t;
 begin
   LCount := 0;
-  LThinker := thinkercap.next;
-  while LThinker <> @thinkercap do
+  LThinker := TTickState.ThinkerCap.next;
+  while LThinker <> @TTickState.ThinkerCap do
   begin
     if @LThinker._function.acp1 = @P_MobjThinker then
       if Pmobj_t(LThinker)._type = AType then
@@ -368,8 +368,8 @@ begin
 
   LMobjs := Z_Malloc(LCount * SizeOf(Pmobj_t), PU_STATIC, nil);
   LIndex := 0;
-  LThinker := thinkercap.next;
-  while LThinker <> @thinkercap do
+  LThinker := TTickState.ThinkerCap.next;
+  while LThinker <> @TTickState.ThinkerCap do
   begin
     if @LThinker._function.acp1 = @P_MobjThinker then
       if Pmobj_t(LThinker)._type = AType then

@@ -751,7 +751,7 @@ begin
     player.attackdown := false;
 
   // bob the weapon based on movement speed
-  angle := (128 * leveltime) and FINEMASK;
+  angle := (128 * TTickState.LevelTime) and FINEMASK;
   psp.sx := FRACUNIT + FixedMul(player.bob, finecosine[angle]);
   angle := angle and (FINEANGLES div 2 - 1);
   psp.sy := WEAPONTOP + FixedMul(player.bob, finesine[angle]);
@@ -1655,7 +1655,7 @@ begin
   mo.momx := pmo.momx + FixedMul(mo.info.speed, finecosine[angle shr ANGLETOFINESHIFT]);
   mo.momy := pmo.momy + FixedMul(mo.info.speed, finesine[angle shr ANGLETOFINESHIFT]);
   mo.momz := FixedMul(mo.info.speed, slope);
-  if(player.refire = 0) or (leveltime mod 38 = 0) then
+  if(player.refire = 0) or (TTickState.LevelTime mod 38 = 0) then
     S_StartSound(player.mo, Ord(sfx_phopow));
 
   P_CheckMissileSpawn(mo);

@@ -38,7 +38,7 @@ uses
 function TEngineScriptEnvironment.LevelTime: Integer;
 begin
   // qualified: inside the class "leveltime" must not be read as this very method
-  Result := p_tick.leveltime;
+  Result := TTickState.LevelTime;
 end;
 
 function TEngineScriptEnvironment.FineSine(const AAngle: LongWord): Integer;

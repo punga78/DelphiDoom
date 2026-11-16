@@ -665,7 +665,7 @@ end;
 //==============================================================================
 procedure R_RecalcLineIgnorePassFlag(const l: Pline_t; const bsec, fsec: Psector_t);
 begin
-  l.rendervalidcount := leveltime;
+  l.rendervalidcount := TTickState.LevelTime;
   if (bsec.ceilingpic = fsec.ceilingpic) and
      (bsec.floorpic = fsec.floorpic) and
      (bsec.lightlevel = fsec.lightlevel) and
@@ -868,7 +868,7 @@ begin
   if sd.midtexture = 0 then
   begin
     ln := line.linedef;
-    if ln.rendervalidcount <> leveltime then
+    if ln.rendervalidcount <> TTickState.LevelTime then
       R_RecalcLineIgnorePassFlag(ln, backsector, frontsector);
     if ln.renderflags and LRF_IGNOREPASS <> 0 then
       exit;

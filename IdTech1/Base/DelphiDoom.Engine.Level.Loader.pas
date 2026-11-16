@@ -256,7 +256,7 @@ begin
   end;
 {$ENDIF}
 
-  leveltime := 0;
+  TTickState.LevelTime := 0;
 
   Result := nil;
   if not LGlNodesLoaded then

@@ -238,7 +238,7 @@ begin
       begin
         lookDelta := (60 - player.lookdir) div 8;
 
-        if (lookDelta < 1) and (leveltime and 1 <> 0) then
+        if (lookDelta < 1) and (TTickState.LevelTime and 1 <> 0) then
           lookDelta := 1
         else if lookDelta > 6 then
           lookDelta := 6;
@@ -540,7 +540,7 @@ begin
   // JVAL: MARS - Retrieve TMapAim.LineTarget
   P_AimLineAttack(player.mo, player.mo.angle, 16 * 64 * FRACUNIT);
   if (player.plinetarget = nil) and (TMapAim.LineTarget <> nil) then
-    player.pcrosstic := leveltime;
+    player.pcrosstic := TTickState.LevelTime;
   player.plinetarget := TMapAim.LineTarget;
 
   if player.playerstate = PST_DEAD then
@@ -568,7 +568,7 @@ begin
     P_MovePlayer(player);
     pmo := player.mo;
     if (player.powers[Ord(pw_speed)] > 0) and
-       (leveltime and 1 = 0) and
+       (TTickState.LevelTime and 1 = 0) and
        (P_AproxDistance(pmo.momx, pmo.momy) > 12 * FRACUNIT) then
     begin
 
@@ -723,7 +723,7 @@ begin
   begin
     if player._class = PCLASS_CLERIC then
     begin
-      if (leveltime and 7 = 0) and
+      if (TTickState.LevelTime and 7 = 0) and
          (player.mo.flags and MF_SHADOW <> 0) and
          (player.mo.flags2 and MF2_DONTDRAW = 0) then
       begin
@@ -733,7 +733,7 @@ begin
           player.mo.flags2 := player.mo.flags2 or MF2_DONTDRAW or MF2_NONSHOOTABLE;
         end;
       end;
-      if leveltime and 31 = 0 then
+      if TTickState.LevelTime and 31 = 0 then
       begin
         if player.mo.flags2 and MF2_DONTDRAW <> 0 then
         begin
@@ -800,7 +800,7 @@ begin
     dec(player.bonuscount);
   end;
 
-  if (player.poisoncount > 0) and (leveltime and 15 = 0) then
+  if (player.poisoncount > 0) and (TTickState.LevelTime and 15 = 0) then
   begin
     player.poisoncount := player.poisoncount - 5;
     if player.poisoncount < 0 then
@@ -838,7 +838,7 @@ begin
       else
         player.fixedcolormap := 1;
     end
-    else if (leveltime and 16 = 0) and (player = @players[TGameSession.ConsolePlayer]) then
+    else if (TTickState.LevelTime and 16 = 0) and (player = @players[TGameSession.ConsolePlayer]) then
     begin
       if newtorch <> 0 then
       begin
@@ -1129,8 +1129,8 @@ begin
   S_StartSound(pmo, Ord(SFX_ARTIFACT_BLAST));
   P_NoiseAlert(player.mo, player.mo);
 
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 <> @P_MobjThinker then
     begin // Not a mobj thinker
@@ -1218,8 +1218,8 @@ var
 begin
   pmo := player.mo;
   result := false;
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 <> @P_MobjThinker then
     begin // Not a mobj thinker

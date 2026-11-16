@@ -148,7 +148,7 @@ begin
   item.y := pmo.y;
   item.z := pmo.z;
   item.angle := pmo.angle;
-  item.leveltime := leveltime;
+  item.leveltime := TTickState.LevelTime;
   history.rover := nrover;
   if history.numitems < NUMPLAYERTRACEHISTORY then
     inc(history.numitems);
@@ -213,7 +213,7 @@ var
     tics := (dist - PLAYERFOLLOWDISTANCE) div (speed * FRACUNIT);
     if tics < TICRATE div 5 then
       tics := TICRATE div 5;
-    mo.playerfollowtime := leveltime + tics;
+    mo.playerfollowtime := TTickState.LevelTime + tics;
     mo.tracefollowtimestamp := item.leveltime;
     mo.flags4_ex := mo.flags4_ex or MF4_EX_TRACEDEFINED;
     mo.tracex := item.x;

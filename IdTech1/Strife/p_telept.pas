@@ -124,8 +124,8 @@ begin
   begin
     if sectors[i].tag = tag then
     begin
-      thinker := thinkercap.next;
-      while thinker <> @thinkercap do
+      thinker := TTickState.ThinkerCap.next;
+      while thinker <> @TTickState.ThinkerCap do
       begin
         // not a mobj
         if @thinker._function.acp1 <> @P_MobjThinker then

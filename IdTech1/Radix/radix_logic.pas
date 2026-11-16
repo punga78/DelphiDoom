@@ -283,10 +283,10 @@ begin
   if not TRadixMessages.IsMessage(msgid) then
     exit;
   lp := @radixlevelplayers[pDiff(p, @players[0], SizeOf(player_t))];
-  if not TRadixActionRules.CanShowMessage(lp.messagetime[msgid], leveltime) then
+  if not TRadixActionRules.CanShowMessage(lp.messagetime[msgid], TTickState.LevelTime) then
     exit;
   p._message := ShortString(TRadixMessages.Get(msgid).Text);
-  lp.messagetime[msgid] := leveltime;
+  lp.messagetime[msgid] := TTickState.LevelTime;
   result := true;
 end;
 
@@ -501,8 +501,8 @@ var
   logic: Pradixlevellogic_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @T_RadixLevelLogic then
       exit;

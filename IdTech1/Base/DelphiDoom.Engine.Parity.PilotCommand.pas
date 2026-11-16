@@ -111,8 +111,8 @@ var
   LBest: Int64;
 begin
   LBest := Int64(ARange) * ARange;
-  LThinker := thinkercap.next;
-  while LThinker <> @thinkercap do
+  LThinker := TTickState.ThinkerCap.next;
+  while LThinker <> @TTickState.ThinkerCap do
   begin
     if @LThinker._function.acp1 = @P_MobjThinker then
     begin

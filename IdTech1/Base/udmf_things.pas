@@ -689,7 +689,7 @@ var
   searcher: Pthinker_t;
 begin
   result := false;
-  searcher := @thinkercap;
+  searcher := @TTickState.ThinkerCap;
   tid := args[0];
   moType := TranslateThingType[args[1]];
   if TGameSession.NoMonsters and (mobjinfo[Ord(moType)].flags and MF_COUNTKILL <> 0) then
@@ -735,7 +735,7 @@ var
   z: fixed_t;
 begin
   result := false;
-  searcher := @thinkercap;
+  searcher := @TTickState.ThinkerCap;
   tid := args[0];
   moType := TranslateThingType[args[1]];
   if TGameSession.NoMonsters and (mobjinfo[Ord(moType)].flags and MF_COUNTKILL <> 0) then
@@ -803,7 +803,7 @@ var
   searcher: Pthinker_t;
 begin
   result := false;
-  searcher := @thinkercap;
+  searcher := @TTickState.ThinkerCap;
   while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
     if P_ActivateThing(mobj) then
       result := true;
@@ -843,7 +843,7 @@ var
   searcher: Pthinker_t;
 begin
   result := false;
-  searcher := @thinkercap;
+  searcher := @TTickState.ThinkerCap;
   while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
     if P_DeactivateThing(mobj) then
       result := true;
@@ -860,7 +860,7 @@ var
   searcher: Pthinker_t;
 begin
   result := false;
-  searcher := @thinkercap;
+  searcher := @TTickState.ThinkerCap;
   while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
   begin
     result := true;
@@ -879,7 +879,7 @@ var
   searcher: Pthinker_t;
 begin
   result := false;
-  searcher := @thinkercap;
+  searcher := @TTickState.ThinkerCap;
   while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
   begin
     if mobj.flags and MF_SHOOTABLE <> 0 then

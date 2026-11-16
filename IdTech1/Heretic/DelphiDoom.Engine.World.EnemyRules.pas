@@ -2653,8 +2653,8 @@ var
   mo: Pmobj_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin
@@ -2725,8 +2725,8 @@ begin
 
     // scan the remaining thinkers to see
     // if all bosses are dead
-    think := thinkercap.next;
-    while think <> @thinkercap do
+    think := TTickState.ThinkerCap.next;
+    while think <> @TTickState.ThinkerCap do
     begin
       if @think._function.acp1 = @P_MobjThinker then
       begin
@@ -2778,8 +2778,8 @@ begin
     exit;
 
   // Make sure all bosses are dead
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin

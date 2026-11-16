@@ -1070,7 +1070,7 @@ begin
     cmd.buttons := cmd.buttons or BT_ATTACK;
 
   if G_PlayingEngineVersion >= VERSION207 then
-    if players[TGameSession.ConsolePlayer].nextfire > leveltime then
+    if players[TGameSession.ConsolePlayer].nextfire > TTickState.LevelTime then
       cmd.buttons := cmd.buttons and not BT_ATTACK;
 
   if gamekeydown[key_use] or (usejoystick and joybuttons[joybuse]) then
@@ -1994,7 +1994,7 @@ var
   temp_leveltime: integer;
   temp_shadow, temp_mvis: boolean;
 begin
-  temp_leveltime := leveltime;
+  temp_leveltime := TTickState.LevelTime;
   temp_shadow := false;
   temp_mvis := false;
 
@@ -2015,7 +2015,7 @@ begin
   G_DoLoadGame(false);
 
   // [STRIFE] leveltime carries over between maps
-  leveltime := temp_leveltime;
+  TTickState.LevelTime := temp_leveltime;
 
   if TGameSession.DeathMatch = 0 then
   begin

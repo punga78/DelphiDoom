@@ -1001,7 +1001,7 @@ begin
     cmd.buttons := cmd.buttons or BT_ATTACK;
 
   if G_PlayingEngineVersion >= VERSION207 then
-    if players[TGameSession.ConsolePlayer].nextfire > leveltime then
+    if players[TGameSession.ConsolePlayer].nextfire > TTickState.LevelTime then
       cmd.buttons := cmd.buttons and not BT_ATTACK;
 
   if gamekeydown[key_use] or (usejoystick and joybuttons[joybuse]) then
@@ -2120,7 +2120,7 @@ begin
     wminfo.plyr[i].skills := players[i].killcount;
     wminfo.plyr[i].sitems := players[i].itemcount;
     wminfo.plyr[i].ssecret := players[i].secretcount;
-    wminfo.plyr[i].stime := leveltime;
+    wminfo.plyr[i].stime := TTickState.LevelTime;
     memcpy(@wminfo.plyr[i].frags, @players[i].frags, SizeOf(wminfo.plyr[i].frags));
   end;
 

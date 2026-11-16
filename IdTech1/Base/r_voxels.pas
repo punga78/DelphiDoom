@@ -1253,9 +1253,9 @@ begin
     if spinang <> 0 then
     begin
       if not isgamesuspended then
-        spinang := Round(((leveltime + ticfrac / FRACUNIT) / TICRATE * spinang) * (ANGLE_MAX / 360))
+        spinang := Round(((TTickState.LevelTime + ticfrac / FRACUNIT) / TICRATE * spinang) * (ANGLE_MAX / 360))
       else
-        spinang := Round((leveltime / TICRATE * spinang) * (ANGLE_MAX / 360));
+        spinang := Round((TTickState.LevelTime / TICRATE * spinang) * (ANGLE_MAX / 360));
     end;
     angleadd := spinang - angleadd;
 

@@ -336,7 +336,7 @@ var
   res: TRadixPickupResult;
   special: Pmobj_t;
 begin
-  if rp.lastbonustime = leveltime then
+  if rp.lastbonustime = TTickState.LevelTime then
     exit;
 
   pickuptoucher := p.mo;
@@ -367,7 +367,7 @@ begin
     exit;
   RX_WriteInventory(p, rp, inv);
 
-  rp.lastbonustime := leveltime;
+  rp.lastbonustime := TTickState.LevelTime;
   case res.Message of
     TRadixPickupMessage.NeutronCannons:
       p._message := ShortString(Format(neutronlevelmessages[rp.neutroncannonlevel], [S_NEUTRONCANNONS]));
@@ -408,7 +408,7 @@ begin
 
   RX_ReadInventory(p, rp, inv);
   TRadixPilotRules.TickPowers(inv);
-  TRadixPilotRules.Regenerate(leveltime, p.damagecount <> 0, rp.energyweaponfiretics > 0, limits, inv);
+  TRadixPilotRules.Regenerate(TTickState.LevelTime, p.damagecount <> 0, rp.energyweaponfiretics > 0, limits, inv);
   RX_WriteInventory(p, rp, inv);
   rp.threat := TRadixPilotRules.Threat(p.health, limits);
 

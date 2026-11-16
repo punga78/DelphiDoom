@@ -1157,49 +1157,49 @@ begin
     case pl.special of
       201, 202, 203: // Scroll_North_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := 0;
           ds_yoffset := ((scrollOffset * _SHL(1, pl.special - 201)) and 63) * FRACUNIT;
         end;
       204, 205, 206: // Scroll_East_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 204)) and 63) * FRACUNIT;
           ds_yoffset := 0;
         end;
       207, 208, 209: // Scroll_South_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := 0;
           ds_yoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 207)) and 63) * FRACUNIT;
         end;
       210, 211, 212: // Scroll_West_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := ((scrollOffset * _SHL(1, pl.special - 210)) and 63) * FRACUNIT;
           ds_yoffset := 0;
         end;
       213, 214, 215: // Scroll_NorthWest_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := ((scrollOffset * _SHL(1, pl.special - 213)) and 63) * FRACUNIT;
           ds_yoffset := ds_xoffset;
         end;
       216, 217, 218: // Scroll_NorthEast_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 216)) and 63) * FRACUNIT;
           ds_yoffset := ((scrollOffset * _SHL(1, pl.special - 216)) and 63) * FRACUNIT;
         end;
       219, 220, 221: // Scroll_SouthEast_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 219)) and 63) * FRACUNIT;
           ds_yoffset := ds_xoffset;
         end;
       222, 223, 224: // Scroll_SouthWest_xxx
         begin
-          scrollOffset := (leveltime div 2) and 63;
+          scrollOffset := (TTickState.LevelTime div 2) and 63;
           ds_xoffset := ((scrollOffset * _SHL(1, pl.special - 222)) and 63) * FRACUNIT;
           ds_yoffset := (((63 - scrollOffset) * _SHL(1, pl.special - 222)) and 63) * FRACUNIT;
         end;

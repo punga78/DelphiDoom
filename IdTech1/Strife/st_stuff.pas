@@ -1673,7 +1673,7 @@ begin
     V_DrawPatch(0, 56, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, invpop2, {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
     mission_objective := M_DialogDimMsg(24, 74, mission_objective, true);
     HUlib_drawYellowText(24, 74, mission_objective, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
-    ST_drawTime(210, 64, leveltime div TICRATE);
+    ST_drawTime(210, 64, TTickState.LevelTime div TICRATE);
   end
   else
   begin

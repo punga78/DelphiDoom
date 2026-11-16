@@ -138,7 +138,7 @@ begin
   p.lastautocrouchtime := 0;
   p.crouchheight := 0;
   p.plinetarget := nil;
-  p.pcrosstic := leveltime;
+  p.pcrosstic := TTickState.LevelTime;
   // JVAL: 20211224 - Clear player history
   P_ClearPlayerHistory(p);
   p.nextfire := 0;

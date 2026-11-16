@@ -2248,7 +2248,7 @@ end;
 //==============================================================================
 procedure A_InqFly(actor: Pmobj_t);
 begin
-  if leveltime and 7 = 0 then
+  if TTickState.LevelTime and 7 = 0 then
     S_StartSound(actor, Ord(sfx_inqjmp));
 
   dec(actor.reactiontime);
@@ -2421,8 +2421,8 @@ var
   th: Pthinker_t;
   mo: Pmobj_t;
 begin
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -3584,8 +3584,8 @@ begin
     exit; // everybody's dead.
 
   // check for a still living boss
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -3628,8 +3628,8 @@ begin
         // causes a bug sometimes! The Oracle, in its death state, sets the
         // Spectre C back to its seestate. If the Spectre C is already dead,
         // it becomes an undead ghost monster. Then it's a REAL spectre ;)
-        th := thinkercap.next;
-        while th <> @thinkercap do
+        th := TTickState.ThinkerCap.next;
+        while th <> @TTickState.ThinkerCap do
         begin
           if @th._function.acp1 = @P_MobjThinker then
           begin
@@ -3733,8 +3733,8 @@ begin
   if i = 8 then
     exit;
 
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := TTickState.ThinkerCap.next;
+  while th <> @TTickState.ThinkerCap do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -3950,7 +3950,7 @@ end;
 procedure A_ActiveSoundSTRF(actor: Pmobj_t);
 begin
   if actor.info.activesound <> 0 then
-    if leveltime and 7 = 0 then // haleyjd: added parens
+    if TTickState.LevelTime and 7 = 0 then // haleyjd: added parens
     begin
       if (actor.flags2_ex and MF2_EX_FULLVOLACTIVE <> 0) then
         S_StartSound(actor, actor.info.activesound)
@@ -4063,8 +4063,8 @@ var
   mo: Pmobj_t;
   think: Pthinker_t;
 begin
-  think := thinkercap.next;
-  while think <> @thinkercap do
+  think := TTickState.ThinkerCap.next;
+  while think <> @TTickState.ThinkerCap do
   begin
     if @think._function.acp1 = @P_MobjThinker then
     begin

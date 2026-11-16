@@ -97,7 +97,7 @@ end;
 procedure TEngineSpeedRaceEvents.Countdown(AStep: TRacingCountdownStep);
 begin
   FCountdownStep := Ord(AStep);
-  FCountdownTic := leveltime;
+  FCountdownTic := TTickState.LevelTime;
   case AStep of
     TRacingCountdownStep.Engines: begin Say(SSpeedStartEngines); S_StartSound(nil, 'speedhaste/STARTECH.RAW'); end;
     TRacingCountdownStep.Three: begin Say('3'); S_StartSound(nil, 'speedhaste/THREE.RAW'); end;
@@ -109,15 +109,15 @@ end;
 
 procedure TEngineSpeedRaceEvents.RaceStarted;
 begin
-  FLog.Info(Format('Speed Haste: the race starts at tic %d'#13#10, [leveltime]));
+  FLog.Info(Format('Speed Haste: the race starts at tic %d'#13#10, [TTickState.LevelTime]));
 end;
 
 procedure TEngineSpeedRaceEvents.LapCompleted(const AScore: TRacingScore; AIsRecord: Boolean);
 begin
-  FLapCompletedTic := leveltime;
+  FLapCompletedTic := TTickState.LevelTime;
   if AIsRecord then
   begin
-    FLapRecordTic := leveltime;
+    FLapRecordTic := TTickState.LevelTime;
     Say(SSpeedLapRecord);
     S_StartSound(nil, 'speedhaste/LAPREC.RAW');
   end;
@@ -125,7 +125,7 @@ end;
 
 procedure TEngineSpeedRaceEvents.RaceFinished(const AScore: TRacingScore; AWon: Boolean);
 begin
-  FOutcomeTic := leveltime;
+  FOutcomeTic := TTickState.LevelTime;
   if AWon then
   begin
     FOutcome := soWon;
@@ -139,7 +139,7 @@ begin
     S_StartSound(nil, 'speedhaste/GAMEOVER.RAW');
   end;
   FLog.Info(Format('Speed Haste: race over at tic %d, position %d, total time %d tics'#13#10,
-    [leveltime, AScore.RacePosition, AScore.TotalTime]));
+    [TTickState.LevelTime, AScore.RacePosition, AScore.TotalTime]));
 end;
 
 procedure TEngineSpeedRaceEvents.Collision(AKeyA, AKeyB: Cardinal);

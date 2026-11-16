@@ -1019,7 +1019,7 @@ begin
 
   if floorType = FLOOR_LAVA then
   begin
-    if leveltime and 31 = 0 then
+    if TTickState.LevelTime and 31 = 0 then
     begin
       P_DamageMobj(player.mo, @LavaInflictor, nil, 10);
       S_StartSound(player.mo, Ord(SFX_LAVA_SIZZLE));
@@ -1064,7 +1064,7 @@ begin
     end;
   end;
 
-  curripple := @r_defripple[leveltime and 31];
+  curripple := @r_defripple[TTickState.LevelTime and 31];
 
 end;
 

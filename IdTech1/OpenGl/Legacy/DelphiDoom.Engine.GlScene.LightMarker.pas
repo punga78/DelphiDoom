@@ -121,7 +121,7 @@ begin
   for LIndex := 0 to ASprite.dlights.Count - 1 do
     if ASprite.dlights[LIndex].num1 = ASprite.mo._type then
     begin
-      LLight := FDynLights.GetLight(ASprite.dlights[LIndex].num2, leveltime);
+      LLight := FDynLights.GetLight(ASprite.dlights[LIndex].num2, TTickState.LevelTime);
       LItem := NewItem;
       LItem.l := LLight;
       dx := xdist - LLight.x;
