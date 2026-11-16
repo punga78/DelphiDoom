@@ -1,0 +1,10 @@
+p_enemy.P_RecursiveSound                         196
+p_enemy.P_NoiseAlert                              28
+p_enemy.P_MeleeRange                              32
+p_enemy.P_TryWalk                                 36
+p_enemy.P_LookForTargets                          64
+p_enemy.P_MoveDefault                            336
+p_enemy.P_Move                                     8
+p_enemy.A_FaceTarget                              60
+p_enemy._DoNewChaseDir                           544
+p_enemy.P_NewChaseDir                            368

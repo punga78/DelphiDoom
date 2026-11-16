@@ -1,0 +1,8 @@
+DelphiDoom.Engine.World.FrictionPushers.T_Friction    104
+DelphiDoom.Engine.World.FrictionPushers.Add_Friction     52
+DelphiDoom.Engine.World.FrictionPushers.P_SpawnFriction    220
+DelphiDoom.Engine.World.FrictionPushers.PIT_PushThing    208
+DelphiDoom.Engine.World.FrictionPushers.T_Pusher    760
+DelphiDoom.Engine.World.FrictionPushers.Add_Pusher    160
+DelphiDoom.Engine.World.FrictionPushers.P_GetPushThing     48
+DelphiDoom.Engine.World.FrictionPushers.P_SpawnPushers    232

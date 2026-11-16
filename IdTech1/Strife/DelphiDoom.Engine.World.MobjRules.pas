@@ -1395,10 +1395,10 @@ begin
     P_SlideMove(mo); // try to slide along it
   end
   // JVAL: 20211121 - New bounch on walls mechanics
-  else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (tmbounceline <> nil) and
+  else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (TMapCheck.BounceLine <> nil) and
     (mo.flags and MF_BOUNCE = 0) then
   begin
-    P_WallBounceMobj(mo, tmbounceline);
+    P_WallBounceMobj(mo, TMapCheck.BounceLine);
     xmove := 0;
     ymove := 0;
   end
@@ -1421,8 +1421,8 @@ begin
     // haley 20110203: [STRIFE]
     // This modification allows missiles to activate shoot specials.
     // *** BUG: In vanilla Strife the second condition is simply
-    // if(numspechit). However, numspechit can be negative, and
-    // when it is, this accesses spechit[-2]. This always causes the
+    // if(TMapCheck.NumSpecHit). However, TMapCheck.NumSpecHit can be negative, and
+    // when it is, this accesses TMapCheck.SpecHit[-2]. This always causes the
     // DOS exe to read from NULL, and the 'special' value there (in
     // DOS 6.22 at least) is 0x70, which does nothing.
     if blockingline <> nil then
@@ -1435,19 +1435,19 @@ begin
         P_ShootSpecialLine(mo, blockingline);
     end;
 
-    if numspechit > 0 then
+    if TMapCheck.NumSpecHit > 0 then
     begin
-      if spechit[numspechit - 1].flags and ML_TRIGGERSCRIPTS <> 0 then
+      if TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1].flags and ML_TRIGGERSCRIPTS <> 0 then
         if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-          PS_EventShootLine(mo, pDiff(spechit[numspechit - 1], lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, spechit[numspechit - 1]));
+          PS_EventShootLine(mo, pDiff(TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1], lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]));
 
-      P_ShootSpecialLine(mo, spechit[numspechit - 1]);
+      P_ShootSpecialLine(mo, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]);
     end;
 
     // explode a missile
-    if (ceilingline <> nil) and
-       (ceilingline.backsector <> nil) and
-       (ceilingline.backsector.ceilingpic = skyflatnum) then
+    if (TMapCheck.CeilingLine <> nil) and
+       (TMapCheck.CeilingLine.backsector <> nil) and
+       (TMapCheck.CeilingLine.backsector.ceilingpic = skyflatnum) then
     begin
       // Hack to prevent missiles exploding
       // against the sky.

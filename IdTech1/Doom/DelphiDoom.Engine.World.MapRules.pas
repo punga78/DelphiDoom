@@ -64,7 +64,7 @@ type
 
     /// <summary>The sector of a point (Doom follows the original nodes while an old demo plays)</summary>
     class function PointInSector(const x, y: fixed_t): Psector_t; static; inline;
-    /// <summary>The thing being teleported (tmthing) may kill the thing in its way</summary>
+    /// <summary>The thing being teleported (TMapCheck.Thing) may kill the thing in its way</summary>
     class function CanStomp(thing: Pmobj_t): boolean; static;
     /// <summary>Marks a thing that has just been teleported (the renderer does not interpolate it)</summary>
     class procedure MarkJustAppeared(thing: Pmobj_t); static; inline;
@@ -127,7 +127,7 @@ type
     class procedure BlastedHitsWall(mo: Pmobj_t); static; inline;
     /// <summary>
     ///   The part of PIT_CheckLine for the things that are not missiles: false when the line
-    ///   blocks tmthing (tmbounceline is set and the push specials are run)
+    ///   blocks TMapCheck.Thing (TMapCheck.BounceLine is set and the push specials are run)
     /// </summary>
     class function CheckLineBlocking(ld: Pline_t): boolean; static;
     /// <summary>The same for PIT_CheckLineTM (the check that knows the slopes)</summary>
@@ -154,7 +154,7 @@ type
     class procedure CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t); static;
     /// <summary>
     ///   The second half of PIT_CheckThing, after the checks that are the same in every game:
-    ///   what happens when tmthing touches the thing; false when tmthing is blocked
+    ///   what happens when TMapCheck.Thing touches the thing; false when TMapCheck.Thing is blocked
     /// </summary>
     class function CheckThingContact(thing: Pmobj_t): boolean; static;
     /// <summary>PIT_CheckThing: a thing that the moving thing pushes when it touches it</summary>
@@ -261,7 +261,7 @@ end;
 class function TMapGameRules.CanStomp(thing: Pmobj_t): boolean;
 begin
   // monsters don't stomp things except on boss level
-  result := not ((tmthing.player = nil) and (gamemap <> 30));
+  result := not ((TMapCheck.Thing.player = nil) and (gamemap <> 30));
 end;
 
 class procedure TMapGameRules.MarkJustAppeared(thing: Pmobj_t);
@@ -425,20 +425,20 @@ begin
   begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, tmthing);
+        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
-        tmbounceline := ld;
+        TMapCheck.BounceLine := ld;
         exit;
       end;
     end;
 
     // killough 8/9/98: monster-blockers don't affect friends
-    if (tmthing.player = nil) and (tmthing.flags2_ex and MF2_EX_FRIEND = 0) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
+    if (TMapCheck.Thing.player = nil) and (TMapCheck.Thing.flags2_ex and MF2_EX_FRIEND = 0) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
     begin
       result := false;  // block monsters only
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
   end
@@ -446,33 +446,33 @@ begin
   begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
-      P_CheckForPushSpecial(ld, 0, tmthing);
+      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
 
-    if (tmthing.player <> nil) and (ld.flags and ML_BLOCKPLAYERS <> 0) then
+    if (TMapCheck.Thing.player <> nil) and (ld.flags and ML_BLOCKPLAYERS <> 0) then
     begin
       result := false;  // blocking players
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
 
     // killough 8/9/98: monster-blockers don't affect friends
-    if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-      if (tmthing.player = nil) and (tmthing.flags2_ex and MF2_EX_FRIEND = 0) then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if (TMapCheck.Thing.player = nil) and (TMapCheck.Thing.flags2_ex and MF2_EX_FRIEND = 0) then
       begin
         if ld.flags and ML_BLOCKMONSTERS <> 0 then
         begin
           result := false;  // block monsters only
-          tmbounceline := ld;
+          TMapCheck.BounceLine := ld;
           exit;
         end;
-        if (ld.flags and ML_BLOCKLANDMONSTERS <> 0) and (tmthing.flags and MF_INFLOAT = 0) then
+        if (ld.flags and ML_BLOCKLANDMONSTERS <> 0) and (TMapCheck.Thing.flags and MF_INFLOAT = 0) then
         begin
           result := false;  // block land monsters only
-          tmbounceline := ld;
+          TMapCheck.BounceLine := ld;
           exit;
         end;
       end;
@@ -487,20 +487,20 @@ begin
   begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, tmthing);
+        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
-        tmbounceline := ld;
+        TMapCheck.BounceLine := ld;
         exit;
       end;
     end;
 
     // killough 8/9/98: monster-blockers don't affect friends
-    if (tmthing.player = nil) and (tmthing.flags2_ex and MF2_EX_FRIEND = 0) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
+    if (TMapCheck.Thing.player = nil) and (TMapCheck.Thing.flags2_ex and MF2_EX_FRIEND = 0) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
     begin
       result := false;  // block monsters only
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
   end
@@ -509,31 +509,31 @@ begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
       result := false;  // explicitly blocking everything
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
 
-    if (tmthing.player <> nil) and (ld.flags and ML_BLOCKPLAYERS <> 0) then
+    if (TMapCheck.Thing.player <> nil) and (ld.flags and ML_BLOCKPLAYERS <> 0) then
     begin
       result := false;  // blocking players
-      tmbounceline := ld;
+      TMapCheck.BounceLine := ld;
       exit;
     end;
 
     // killough 8/9/98: monster-blockers don't affect friends
-    if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-      if (tmthing.player = nil) and (tmthing.flags2_ex and MF2_EX_FRIEND = 0) then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if (TMapCheck.Thing.player = nil) and (TMapCheck.Thing.flags2_ex and MF2_EX_FRIEND = 0) then
       begin
         if ld.flags and ML_BLOCKMONSTERS <> 0 then
         begin
           result := false;  // block monsters only
-          tmbounceline := ld;
+          TMapCheck.BounceLine := ld;
           exit;
         end;
-        if (ld.flags and ML_BLOCKLANDMONSTERS <> 0) and (tmthing.flags and MF_INFLOAT = 0) then
+        if (ld.flags and ML_BLOCKLANDMONSTERS <> 0) and (TMapCheck.Thing.flags and MF_INFLOAT = 0) then
         begin
           result := false;  // block land monsters only
-          tmbounceline := ld;
+          TMapCheck.BounceLine := ld;
           exit;
         end;
       end;
@@ -618,24 +618,24 @@ var
   doslam: boolean;
 begin
   if G_PlayingEngineVersion > VERSION120 then
-    if tmthing.flags2_ex and MF2_EX_PASSMOBJ <> 0 then
+    if TMapCheck.Thing.flags2_ex and MF2_EX_PASSMOBJ <> 0 then
     begin // check if a mobj passed over/under another object
 
-      if ((tmthing._type = Ord(MT_HEAD)) or (tmthing._type = Ord(MT_SKULL)) or (tmthing._type = Ord(MT_PAIN))) and
+      if ((TMapCheck.Thing._type = Ord(MT_HEAD)) or (TMapCheck.Thing._type = Ord(MT_SKULL)) or (TMapCheck.Thing._type = Ord(MT_PAIN))) and
          ((thing._type = Ord(MT_HEAD)) or (thing._type = Ord(MT_SKULL)) or (thing._type = Ord(MT_PAIN))) then
       begin // don't let cacodemons / skull / pain elementals fly over other imps/wizards
         result := false;
         exit;
       end;
 
-      if (tmthing.z > thing.z + thing.height) and
+      if (TMapCheck.Thing.z > thing.z + thing.height) and
          (thing.flags and MF_SPECIAL = 0) then
       begin
         result := true;
         exit;
       end;
 
-      if (tmthing.z + tmthing.height < thing.z) and
+      if (TMapCheck.Thing.z + TMapCheck.Thing.height < thing.z) and
          (thing.flags and MF_SPECIAL = 0) then
       begin // under thing
         result := true;
@@ -644,27 +644,27 @@ begin
     end;
 
   // check for skulls slamming into things
-  if tmthing.flags and MF_SKULLFLY <> 0 then
+  if TMapCheck.Thing.flags and MF_SKULLFLY <> 0 then
   begin
-    if (tmthing.flags2_ex and MF2_EX_PASSMOBJ <> 0) and (G_PlayingEngineVersion >=  VERSION205) then
+    if (TMapCheck.Thing.flags2_ex and MF2_EX_PASSMOBJ <> 0) and (G_PlayingEngineVersion >=  VERSION205) then
     // If the MF2_EX_PASSMOBJ flag is set:
     //  -Skulls do no slam to pickable objects if the
     //  -Skulls must be in same "Z"
-      doslam := (thing.flags and MF_SPECIAL = 0) and P_ThingsInSameZ(tmthing, thing)
+      doslam := (thing.flags and MF_SPECIAL = 0) and P_ThingsInSameZ(TMapCheck.Thing, thing)
     else
       doslam := true;
 
     if doslam then
     begin
-      damage := ((P_Random mod 8) + 1) * tmthing.info.damage;
-      P_DamageMobj(thing, tmthing, tmthing, damage);
+      damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
+      P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing, damage);
 
-      tmthing.flags := tmthing.flags and not MF_SKULLFLY;
-      tmthing.momx := 0;
-      tmthing.momy := 0;
-      tmthing.momz := 0;
+      TMapCheck.Thing.flags := TMapCheck.Thing.flags and not MF_SKULLFLY;
+      TMapCheck.Thing.momx := 0;
+      TMapCheck.Thing.momy := 0;
+      TMapCheck.Thing.momz := 0;
 
-      P_SetMobjState(tmthing, statenum_t(tmthing.info.spawnstate));
+      P_SetMobjState(TMapCheck.Thing, statenum_t(TMapCheck.Thing.info.spawnstate));
 
       result := false;  // stop moving
       exit;
@@ -672,22 +672,22 @@ begin
   end;
 
   // missiles can hit other things
-  if tmthing.flags and MF_MISSILE <> 0 then
+  if TMapCheck.Thing.flags and MF_MISSILE <> 0 then
   begin
-    if (thing.flags_ex and MF_EX_GHOST <> 0) and (tmthing.flags_ex and MF_EX_THRUGHOST <> 0) then
+    if (thing.flags_ex and MF_EX_GHOST <> 0) and (TMapCheck.Thing.flags_ex and MF_EX_THRUGHOST <> 0) then
     begin
       result := true;
       exit;
     end;
 
     // see if it went over / under
-    if tmthing.z > thing.z + thing.height then
+    if TMapCheck.Thing.z > thing.z + thing.height then
     begin
       result := true; // overhead
       exit;
     end;
 
-    if tmthing.z + tmthing.height < thing.z then
+    if TMapCheck.Thing.z + TMapCheck.Thing.height < thing.z then
     begin
       result := true; // underneath
       exit;
@@ -695,15 +695,15 @@ begin
 
     if G_PlayingEngineVersion <= VERSION206 then
     begin
-      if (tmthing.target <> nil) and (
-          (tmthing.target._type = thing._type) or
-          ((tmthing.target._type = Ord(MT_KNIGHT)) and (thing._type = Ord(MT_BRUISER))) or
-          ((tmthing.target._type = Ord(MT_BRUISER)) and (thing._type = Ord(MT_KNIGHT))) or
+      if (TMapCheck.Thing.target <> nil) and (
+          (TMapCheck.Thing.target._type = thing._type) or
+          ((TMapCheck.Thing.target._type = Ord(MT_KNIGHT)) and (thing._type = Ord(MT_BRUISER))) or
+          ((TMapCheck.Thing.target._type = Ord(MT_BRUISER)) and (thing._type = Ord(MT_KNIGHT))) or
           // JVAL: 20211126 - Inherited actors do not hurt each other
-      (Info_GetInheritance(tmthing.target.info) = Info_GetInheritance(thing.info))) then
+      (Info_GetInheritance(TMapCheck.Thing.target.info) = Info_GetInheritance(thing.info))) then
       begin
         // Don't hit same species as originator.
-        if thing = tmthing.target then
+        if thing = TMapCheck.Thing.target then
         begin
           result := true;
           exit;
@@ -720,12 +720,12 @@ begin
     end
     else
     begin
-      if (tmthing.target <> nil) and
-        (P_ProjectileImmune(thing, tmthing.target) or
-         (Info_GetInheritance(tmthing.target.info) = Info_GetInheritance(thing.info))) then
+      if (TMapCheck.Thing.target <> nil) and
+        (P_ProjectileImmune(thing, TMapCheck.Thing.target) or
+         (Info_GetInheritance(TMapCheck.Thing.target.info) = Info_GetInheritance(thing.info))) then
       begin
         // Don't hit same species as originator.
-        if thing = tmthing.target then
+        if thing = TMapCheck.Thing.target then
         begin
           result := true;
           exit;
@@ -748,14 +748,14 @@ begin
       exit;
     end;
 
-    if tmthing.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
       begin
         result := true;
         exit;
       end;
 
-    if tmthing.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+    if TMapCheck.Thing.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
       if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
       begin
         result := true;
@@ -763,40 +763,40 @@ begin
       end;
 
     // mbf21: ripper projectile
-    if tmthing.flags4_ex and MF4_EX_RIP <> 0 then
+    if TMapCheck.Thing.flags4_ex and MF4_EX_RIP <> 0 then
     begin
-      damage := ((P_Random and 3) + 2) * tmthing.info.damage;
+      damage := ((P_Random and 3) + 2) * TMapCheck.Thing.info.damage;
       if (thing.flags and MF_NOBLOOD = 0) and
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin
         case P_BloodType(thing) of
-          bt_red: P_SpawnBlood(tmthing.x, tmthing.y, tmthing.z, damage, thing);
-          bt_blue: P_SpawnBlueBlood(tmthing.x, tmthing.y, tmthing.z, damage);
-          bt_green: P_SpawnGreenBlood(tmthing.x, tmthing.y, tmthing.z, damage);
+          bt_red: P_SpawnBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
+          bt_blue: P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
+          bt_green: P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
         end;
       end;
 
-      A_RipSound1(tmthing);
+      A_RipSound1(TMapCheck.Thing);
 
-      P_DamageMobj(thing, tmthing, tmthing.target, damage);
+      P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
 
       // JVAL: Pushable things
       P_PushByContact(thing);
 
-      numspechit := 0;
+      TMapCheck.NumSpecHit := 0;
 
       result := true;
       exit;
     end;
 
     // damage / explode
-    if tmthing.flags3_ex and MF3_EX_ABSOLUTEDAMAGE <> 0 then
-      damage := tmthing.info.damage
-    else if tmthing.flags3_ex and MF3_EX_STRIFEDAMAGE <> 0 then
-      damage := ((P_Random mod 4) + 1) * tmthing.info.damage
+    if TMapCheck.Thing.flags3_ex and MF3_EX_ABSOLUTEDAMAGE <> 0 then
+      damage := TMapCheck.Thing.info.damage
+    else if TMapCheck.Thing.flags3_ex and MF3_EX_STRIFEDAMAGE <> 0 then
+      damage := ((P_Random mod 4) + 1) * TMapCheck.Thing.info.damage
     else
-      damage := ((P_Random mod 8) + 1) * tmthing.info.damage;
-    P_DamageMobj(thing, tmthing, tmthing.target, damage);
+      damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
+    P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
 
     // don't traverse any more
     result := false;
@@ -808,7 +808,7 @@ begin
 
   // a game with the physics of its own (Radix: touch damage)
   if TPhysicsExtension.Enabled then
-    TPhysicsExtension.ThingContact(thing, tmthing);
+    TPhysicsExtension.ThingContact(thing, TMapCheck.Thing);
 
   // check for special pickup
   result := P_ContactPickup(thing);
@@ -816,7 +816,7 @@ end;
 
 class function TMapGameRules.CanBePushed(thing: Pmobj_t): boolean;
 begin
-  result := (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0);
+  result := (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (TMapCheck.Thing.flags2_ex and MF2_EX_CANNOTPUSH = 0);
 end;
 
 class function TMapGameRules.QuarterMomentum(const momentum: fixed_t): fixed_t;
@@ -826,7 +826,7 @@ end;
 
 class function TMapGameRules.PicksUpOnContact: boolean;
 begin
-  result := tmflags and MF_PICKUP <> 0;
+  result := TMapCheck.Flags and MF_PICKUP <> 0;
 end;
 
 class procedure TMapGameRules.SpawnWallPuff(x, y, z: fixed_t);
