@@ -39,7 +39,7 @@ L'originale (DOS) non ha sorgente pubblico: il suo comportamento si vede solo in
 - Nostro codice: per il dungeon usiamo le tegole della palude (differenza voluta, `Games\War\CLAUDE.md`, parte B). Non provato su dati: la
   mappa dungeon con muri/rovine non e' mai stata disegnata. Livelli dungeon del `DATA.WAR` (tileset 2): 123 124 131 132 161..167 182..188
   (gli ultimi sono mappe del menu di una partita personalizzata).
-- Proposta: tegole dungeon vere dal tileset
+- Proposta: usare le tegole dungeon vere del tileset (War1gus elenca gli indici 66, 81, 83, ...: da verificare sul tileset del DATA.WAR), dopo aver visto in DOSBox come sono i muri del dungeon.
 
 ## 3. Cosa fa War1gus rispetto al remake
 
