@@ -53,8 +53,10 @@ type
     FPilotDone: Boolean;
     FSaved: Boolean;
     FLayoutsWritten: Boolean;
+{$IFNDEF OPENGL}
     FRenderFunctionsFile: string;
     FRenderFunctionsDone: Boolean;
+{$ENDIF}
     procedure WriteSaveLayouts;
     procedure Resolve;
     procedure Activate;
@@ -169,8 +171,10 @@ begin
     end;
     // DDPARITY_RENDERFUNCTIONS = file: after the first tic the drawing functions that every detail level gives are
     // written to the file and the program ends (Tools\Verifica\247\Confronta-Funzioni.ps1); inert without it
+{$IFNDEF OPENGL}
     if FOptions.IsActive then
       FRenderFunctionsFile := GetEnvironmentVariable('DDPARITY_RENDERFUNCTIONS');
+{$ENDIF}
     if FOptions.IsActive then
       Activate;
   except
