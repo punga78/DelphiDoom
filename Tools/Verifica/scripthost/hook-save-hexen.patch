@@ -1,20 +1,20 @@
-diff --git a/Hexen/Hexen32.dpr b/Hexen/Hexen32.dpr
+diff --git a/IdTech1\Hexen/Hexen32.dpr b/IdTech1\Hexen/Hexen32.dpr
 index ef572351..cb837766 100644
---- a/Hexen/Hexen32.dpr
-+++ b/Hexen/Hexen32.dpr
+--- a/IdTech1\Hexen/Hexen32.dpr
++++ b/IdTech1\Hexen/Hexen32.dpr
 @@ -88,6 +88,8 @@ uses
-   DelphiDoom.Engine.Midi.SongPlayer in '..\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
-   i_net in '..\Base\i_net.pas',
-   i_system in '..\Base\i_system.pas',
+   DelphiDoom.Engine.Midi.SongPlayer in '..\IdTech1\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
+   i_net in '..\IdTech1\Base\i_net.pas',
+   i_system in '..\IdTech1\Base\i_system.pas',
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
 +  harness_sweep in '..\Tools\Verifica\harness\harness_sweep.pas',
-   i_video in '..\Base\i_video.pas',
+   i_video in '..\IdTech1\Base\i_video.pas',
    DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
    DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
-diff --git a/Hexen/g_game.pas b/Hexen/g_game.pas
+diff --git a/IdTech1\Hexen/g_game.pas b/IdTech1\Hexen/g_game.pas
 index b3cd6d0b..16b2a433 100644
---- a/Hexen/g_game.pas
-+++ b/Hexen/g_game.pas
+--- a/IdTech1\Hexen/g_game.pas
++++ b/IdTech1\Hexen/g_game.pas
 @@ -384,6 +384,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  

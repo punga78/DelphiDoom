@@ -53,7 +53,7 @@ Decoder.*   Bmp, Tga, Pcx (+ PcxLegacy), Flat, Patch, Material, Png (PngBase, Pn
 PatchInspector, Formats, Factory
 ```
 
-Nel motore (`Base\DelphiDoom.Engine.Texture.*`): `PaletteSource` (`default_palette`), `PngReader` (libreria PNG),
+Nel motore (`IdTech1\Base\DelphiDoom.Engine.Texture.*`): `PaletteSource` (`default_palette`), `PngReader` (libreria PNG),
 `PngSettings` (opzioni in `TEngineTextureSettings`, ex variabili di `t_png`), `JpegConverter` (libreria JPEG; un JPEG rotto ferma il gioco, come prima),
 `Resolver` (le texture che un `.material` nomina; tiene un riferimento debole ai file, che a loro volta hanno i decoder),
 `Item` (`PTexture`/`TTexture`, gli stessi metodi di prima sopra `TTextureImage`) e `Files` (`TEngineTextureFiles`:

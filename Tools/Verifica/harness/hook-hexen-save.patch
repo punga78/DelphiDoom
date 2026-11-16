@@ -1,7 +1,7 @@
-diff --git a/Hexen/g_game.pas b/Hexen/g_game.pas
+diff --git a/IdTech1\Hexen/g_game.pas b/IdTech1\Hexen/g_game.pas
 index 2c49c4a7..0d79eca7 100644
---- a/Hexen/g_game.pas
-+++ b/Hexen/g_game.pas
+--- a/IdTech1\Hexen/g_game.pas
++++ b/IdTech1\Hexen/g_game.pas
 @@ -384,6 +384,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -41,10 +41,10 @@ index 0a8f0210..df810b47 100644
 --- a/Hexen32.dpr
 +++ b/Hexen32.dpr
 @@ -111,6 +111,7 @@ uses
-   i_midi_new in 'Base\i_midi_new.pas',
-   i_net in 'Base\i_net.pas',
-   i_system in 'Base\i_system.pas',
+   i_midi_new in 'IdTech1\Base\i_midi_new.pas',
+   i_net in 'IdTech1\Base\i_net.pas',
+   i_system in 'IdTech1\Base\i_system.pas',
 +  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',
-   i_video in 'Base\i_video.pas',
+   i_video in 'IdTech1\Base\i_video.pas',
    DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
    DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',

@@ -1,0 +1,984 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Doom for the weapon sprites (p_pspr)      }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+{$I Doom32.inc}
+
+unit DelphiDoom.Engine.World.PspriteRules;
+
+interface
+
+uses
+// Basic data types.
+// Needs fixed point, and BAM angles.
+  m_fixed,
+  tables,
+  info_h,
+  p_pspr_h,
+  p_mobj_h,
+  d_player;
+
+const
+//
+// Frame flags:
+// handles maximum brightness (torches, muzzle flare, light sources)
+//
+  FF_FULLBRIGHT = $8000; // flag in thing->frame
+  FF_FRAMEMASK = $7fff;
+
+//==============================================================================
+//
+// A_WeaponReady
+//
+//==============================================================================
+procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_CheckReload
+//
+//==============================================================================
+procedure A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_GunFlash
+//
+//==============================================================================
+procedure A_GunFlash(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_Punch
+//
+//==============================================================================
+procedure A_Punch(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_Saw
+//
+//==============================================================================
+procedure A_Saw(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FireMissile
+//
+//==============================================================================
+procedure A_FireMissile(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FireBFG
+//
+//==============================================================================
+procedure A_FireBFG(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FirePlasma
+//
+//==============================================================================
+procedure A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FirePistol
+//
+//==============================================================================
+procedure A_FirePistol(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FireShotgun
+//
+//==============================================================================
+procedure A_FireShotgun(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FireShotgun2
+//
+//==============================================================================
+procedure A_FireShotgun2(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_FireCGun
+//
+//==============================================================================
+procedure A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_Light1
+//
+//==============================================================================
+procedure A_Light1(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_Light2
+//
+//==============================================================================
+procedure A_Light2(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_BFGSpray
+//
+//==============================================================================
+procedure A_BFGSpray(mo: Pmobj_t);
+
+//==============================================================================
+//
+// A_BFGsound
+//
+//==============================================================================
+procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// P_CheckAmmo
+//
+//==============================================================================
+function P_CheckAmmo(player: Pplayer_t): boolean;
+
+var
+// plasma cells for a bfg attack
+  p_bfgcells: integer = 40;
+
+//==============================================================================
+//
+// P_BringUpWeapon
+// Starts bringing the pending weapon up from the bottom of the screen
+//
+//==============================================================================
+procedure P_BringUpWeapon(player: Pplayer_t);
+
+//==============================================================================
+//
+// P_FireWeapon
+//
+//==============================================================================
+procedure P_FireWeapon(player: Pplayer_t);
+
+type
+  /// <summary>
+  ///   What Doom does in the weapon sprite code of p_pspr (issue #185, step 2f-3). The routines that
+  ///   are the same in the games are in IdTech1\Base\p_pspr.pas; the weapons and what depends on the record of the player stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TPspriteGameRules = class sealed
+  public
+    /// <summary>What comes after the weapon sprites moved (Strife: the targeter)</summary>
+    class procedure AfterMovePsprites(const player: Pplayer_t); static;
+    /// <summary>The state the weapon of the player goes down to (P_DropWeapon)</summary>
+    class function DropWeaponState(const player: Pplayer_t): statenum_t; static;
+    /// <summary>The state the weapon goes to when it is raised all the way (A_Raise)</summary>
+    class function RaisedState(const player: Pplayer_t): statenum_t; static;
+    /// <summary>The weapon goes down at once, not by steps (the player is a chicken or a pig)</summary>
+    class function StaysLowered(const player: Pplayer_t): boolean; static;
+    /// <summary>What A_Lower does when the weapon is down and before the new one comes up (Doom: the choice of the weapon of mbf21)</summary>
+    class procedure AfterLowered(const player: Pplayer_t); static;
+    /// <summary>What A_ReFire does when the player does not fire again: the check of the ammo, or of the mana</summary>
+    class procedure CheckSupplies(const player: Pplayer_t); static;
+  end;
+
+implementation
+
+uses
+  p_pspr,
+  d_delphi,
+  g_game,
+  i_system,
+  info,
+//
+// Needs to include the precompiled
+//  sprite animation tables.
+// Header generated by multigen utility.
+// This includes all the data for thing animation,
+// i.e. the Thing Atrributes table
+// and the Frame Sequence table.
+  doomdef,
+  d_event,
+  d_items,
+  m_rnd,
+  p_common,
+  p_local,
+  p_tick,
+  p_mobj,
+  p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
+  p_map,
+  p_inter,
+  p_user,
+  r_main,
+  s_sound,
+// State.
+  doomstat,
+// Data.
+  sounddata;
+
+//
+// P_CalcSwing
+//
+var
+  swingx: fixed_t;
+  swingy: fixed_t;
+
+// The first set is where the weapon preferences from             // killough,
+// default.cfg are stored. These values represent the keys used   // phares
+// in DOOM2 to bring up the weapon, i.e. 6 = plasma gun. These    //    |
+// are NOT the wp_* constants.                                    //    V
+var
+  weapon_preferences: array[0..1] of array [0..Ord(NUMWEAPONS)] of integer = (
+    (6, 9, 4, 3, 2, 8, 5, 7, 1, 0),  // !compatibility preferences
+    (6, 9, 4, 3, 2, 8, 5, 7, 1, 0)   //  compatibility preferences
+  );
+
+//==============================================================================
+// P_SwitchWeaponMBF21
+//
+// mbf21: [XA] fixed version of P_SwitchWeapon that correctly
+// takes each weapon's ammotype and ammopershot into account,
+// instead of blindly assuming both.
+//
+//==============================================================================
+function P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t;
+var
+  currentweapon, newweapon: weapontype_t;
+  i: integer;
+  checkweapon: weapontype_t;
+  ammotype: ammotype_t;
+begin
+  currentweapon := player.readyweapon;
+  newweapon := currentweapon;
+
+  for i := 0 to Ord(NUMWEAPONS) do
+  begin
+    checkweapon := wp_nochange;
+    case weapon_preferences[0][i] of
+      1:
+        if player.powers[Ord(pw_strength)] <> 0 then // allow chainsaw override
+          checkweapon := wp_fist;
+      0:
+        checkweapon := wp_fist;
+      2:
+        checkweapon := wp_pistol;
+      3:
+        checkweapon := wp_shotgun;
+      4:
+        checkweapon := wp_chaingun;
+      5:
+        checkweapon := wp_missile;
+      6:
+        if gamemode <> shareware then
+          checkweapon := wp_plasma;
+      7:
+        if gamemode <> shareware then
+          checkweapon := wp_bfg;
+      8:
+        checkweapon := wp_chainsaw;
+      9:
+        if gamemode = commercial then
+          checkweapon := wp_supershotgun;
+    end;
+
+    if (checkweapon <> wp_nochange) and (player.weaponowned[Ord(checkweapon)] <> 0) then
+    begin
+      ammotype := weaponinfo[Ord(checkweapon)].ammo;
+      if (ammotype = am_noammo) or (player.ammo[Ord(ammotype)] >= weaponinfo[Ord(checkweapon)].ammopershot) then
+      begin
+        newweapon := checkweapon;
+        break;
+      end;
+    end;
+  end;
+  result := newweapon;
+end;
+
+//==============================================================================
+//
+// P_BringUpWeapon
+// Starts bringing the pending weapon up
+// from the bottom of the screen.
+// Uses player
+//
+//==============================================================================
+procedure P_BringUpWeapon(player: Pplayer_t);
+var
+  newstate: statenum_t;
+begin
+  if player.pendingweapon = wp_nochange then
+    player.pendingweapon := player.readyweapon;
+
+  if player.pendingweapon = wp_chainsaw then
+    S_StartSound(player.mo, Ord(sfx_sawup));
+
+  if G_PlayingEngineVersion >= VERSION207 then
+    if player.pendingweapon = wp_nochange then
+      player.pendingweapon := P_SwitchWeaponMBF21(player);
+
+  newstate := statenum_t(weaponinfo[Ord(player.pendingweapon)].upstate);
+
+  player.pendingweapon := wp_nochange;
+  player.psprites[Ord(ps_weapon)].sy := WEAPONBOTTOM;
+
+  P_SetPsprite(player, Ord(ps_weapon), newstate);
+end;
+
+//==============================================================================
+//
+// P_CheckAmmo
+// Returns true if there is enough ammo to shoot.
+// If not, selects the next weapon to use.
+//
+//==============================================================================
+function P_CheckAmmo(player: Pplayer_t): boolean;
+var
+  ammo: ammotype_t;
+  count: integer;
+begin
+  ammo := weaponinfo[Ord(player.readyweapon)].ammo;
+
+  // Minimal amount for one shot varies.
+  if weaponinfo[Ord(player.readyweapon)].intflags and WIF_ENABLEAPS <> 0 then
+    count := weaponinfo[Ord(player.readyweapon)].ammopershot
+  else if player.readyweapon = wp_bfg then
+    count := p_bfgcells
+  else if player.readyweapon = wp_supershotgun then
+    count := 2 // Double barrel.
+  else
+    count := 1; // Regular.
+
+  // Some do not need ammunition anyway.
+  // Return if current ammunition sufficient.
+  if (ammo = am_noammo) or (player.ammo[Ord(ammo)] >= count) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // Out of ammo, pick a weapon to change to.
+  // Preferences are set here.
+  if G_PlayingEngineVersion >= VERSION207 then
+    player.pendingweapon := P_SwitchWeaponMBF21(player)
+  else
+  begin
+    repeat
+      if (player.weaponowned[Ord(wp_plasma)] <> 0) and
+         (player.ammo[Ord(am_cell)] <> 0) and
+        (gamemode <> shareware) then
+        player.pendingweapon := wp_plasma
+      else if (player.weaponowned[Ord(wp_supershotgun)] <> 0) and
+              (player.ammo[Ord(am_shell)] > 2) and
+              (gamemode = commercial) then
+        player.pendingweapon := wp_supershotgun
+      else if (player.weaponowned[Ord(wp_chaingun)] <> 0) and
+              (player.ammo[Ord(am_clip)] <> 0) then
+        player.pendingweapon := wp_chaingun
+      else if (player.weaponowned[Ord(wp_shotgun)] <> 0) and
+              (player.ammo[Ord(am_shell)] <> 0) then
+        player.pendingweapon := wp_shotgun
+      else if (player.ammo[Ord(am_clip)] <> 0) then
+        player.pendingweapon := wp_pistol
+      else if (player.weaponowned[Ord(wp_chainsaw)] <> 0) then
+        player.pendingweapon := wp_chainsaw
+      else if (player.weaponowned[Ord(wp_missile)] <> 0) and
+              (player.ammo[Ord(am_misl)] <> 0) then
+        player.pendingweapon := wp_missile
+      else if (player.weaponowned[Ord(wp_bfg)] <> 0) and
+              (player.ammo[Ord(am_cell)] > p_bfgcells) and
+              (gamemode <> shareware) then
+        player.pendingweapon := wp_bfg
+      else
+        // If everything fails.
+        player.pendingweapon := wp_fist;
+
+    until not (player.pendingweapon = wp_nochange);
+  end;
+
+  // Now set appropriate weapon overlay.
+  P_SetPsprite(player, Ord(ps_weapon), statenum_t(weaponinfo[Ord(player.readyweapon)].downstate));
+
+  result := false;
+end;
+
+//==============================================================================
+//
+// P_SubtractAmmo
+// Subtracts ammo, w/compat handling. In mbf21, use
+// readyweapon's "ammopershot" field if it's explicitly
+// defined in dehacked; otherwise use the amount specified
+// by the codepointer instead (Doom behavior)
+//
+// [XA] NOTE: this function is for handling Doom's native
+// attack pointers; of note, the new A_ConsumeAmmo mbf21
+// codepointer does NOT call this function, since it doesn't
+// have to worry about any compatibility shenanigans.
+//
+//==============================================================================
+procedure P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer);
+var
+  amount: integer;
+  ammotype: ammotype_t;
+begin
+  ammotype := weaponinfo[Ord(player.readyweapon)].ammo;
+  if G_PlayingEngineVersion < VERSION207 then
+  begin
+    if Ord(ammotype) < Ord(NUMAMMO) then
+      Dec(player.ammo[Ord(ammotype)], vanilla_amount);
+    exit;
+  end;
+
+  if ammotype = am_noammo then
+    exit; // [XA] hmm... I guess vanilla/boom will go out of bounds then?
+
+  if weaponinfo[Ord(player.readyweapon)].intflags and WIF_ENABLEAPS <> 0 then
+    amount := weaponinfo[Ord(player.readyweapon)].ammopershot
+  else
+    amount := vanilla_amount;
+
+  Dec(player.ammo[Ord(ammotype)], amount);
+
+  if player.ammo[Ord(ammotype)] < 0 then
+    player.ammo[Ord(ammotype)] := 0;
+end;
+
+//==============================================================================
+//
+// P_FireWeapon.
+//
+//==============================================================================
+procedure P_FireWeapon(player: Pplayer_t);
+var
+  newstate: statenum_t;
+begin
+  if P_CheckAmmo(player) then
+  begin
+    P_SetMobjState(player.mo, S_PLAY_ATK1);
+    if (player.refire > 0) and (weaponinfo[Ord(player.readyweapon)].holdatkstate > 0) then
+      newstate := statenum_t(weaponinfo[Ord(player.readyweapon)].holdatkstate)
+    else
+      newstate := statenum_t(weaponinfo[Ord(player.readyweapon)].atkstate);
+    P_SetPsprite(player, Ord(ps_weapon), newstate);
+    if weaponinfo[Ord(player.readyweapon)].mbf21bits and WPF_SILENT = 0 then
+      P_NoiseAlert(player.mo, player.mo);
+  end;
+end;
+
+//==============================================================================
+//
+// A_WeaponReady
+// The player can fire the weapon
+// or change to another weapon at this time.
+// Follows after getting weapon up,
+// or after previous attack/fire sequence.
+//
+//==============================================================================
+procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
+var
+  newstate: statenum_t;
+  angle: integer;
+begin
+  // get out of attack state
+  if (player.mo.state = @states[Ord(S_PLAY_ATK1)]) or
+     (player.mo.state = @states[Ord(S_PLAY_ATK2)]) then
+    P_SetMobjState(player.mo, S_PLAY);
+
+  if (player.readyweapon = wp_chainsaw) and
+     (psp.state = @states[Ord(S_SAW)]) then
+    S_StartSound(player.mo, Ord(sfx_sawidl));
+
+  // check for change
+  //  if player is dead, put the weapon away
+  if (player.pendingweapon <> wp_nochange) or (player.health = 0) then
+  begin
+    // change weapon
+    //  (pending weapon should allready be validated)
+    newstate := statenum_t(weaponinfo[Ord(player.readyweapon)].downstate);
+    P_SetPsprite(player, Ord(ps_weapon), newstate);
+    exit;
+  end;
+
+  // check for fire
+  //  the missile launcher and bfg do not auto fire
+  if player.cmd.buttons and BT_ATTACK <> 0 then
+  begin
+    if not player.attackdown or (weaponinfo[Ord(player.readyweapon)].mbf21bits and WPF_NOAUTOFIRE = 0) then
+    begin
+      player.attackdown := true;
+      P_FireWeapon(player);
+      exit;
+    end;
+  end
+  else
+    player.attackdown := false;
+
+  // bob the weapon based on movement speed
+  angle := (128 * leveltime) and FINEMASK;
+  psp.sx := FRACUNIT + FixedMul(player.bob, finecosine[angle]);
+  angle := angle and (FINEANGLES div 2 - 1);
+  psp.sy := WEAPONTOP + FixedMul(player.bob, finesine[angle]);
+end;
+
+//==============================================================================
+//
+// A_CheckReload
+//
+//==============================================================================
+procedure A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  P_CheckAmmo(player);
+{
+#if 0
+    if (player->ammo[am_shell]<2)
+  P_SetPsprite (player, ps_weapon, S_DSNR1);
+#endif
+}
+end;
+
+// Weapons now recoil, amount depending on the weapon.              // phares
+//                                                                  //   |
+// The P_SetPsprite call in each of the weapon firing routines      //   V
+// was moved here so the recoil could be synched with the
+// muzzle flash, rather than the pressing of the trigger.
+// The BFG delay caused this to be necessary.
+
+var
+  recoil_values: array[0..Ord(NUMWEAPONS) - 1] of integer = ( // phares
+    10, // wp_fist
+    10, // wp_pistol
+    30, // wp_shotgun
+    10, // wp_chaingun
+    100,// wp_missile
+    20, // wp_plasma
+    100,// wp_bfg
+    0,  // wp_chainsaw
+    80  // wp_supershotgun
+  );
+
+//==============================================================================
+//
+// A_FireSomething
+//
+//==============================================================================
+procedure A_FireSomething(player: Pplayer_t; adder: integer);
+begin
+  P_SetPsprite(player, Ord(ps_flash),
+    statenum_t(weaponinfo[Ord(player.readyweapon)].flashstate + adder));
+
+  // killough 3/27/98: prevent recoil in no-clipping mode
+  if player.mo.flags and MF_NOCLIP = 0 then
+    if player.mo.flags4_ex and MF4_EX_RECOIL <> 0 then
+      P_Thrust(player, ANG180 + player.mo.angle,
+               2048 * recoil_values[Ord(player.readyweapon)]);  // phares
+end;
+
+//==============================================================================
+//
+// A_GunFlash
+//
+//==============================================================================
+procedure A_GunFlash(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  P_SetMobjState(player.mo, S_PLAY_ATK2);
+  A_FireSomething(player, 0);
+end;
+
+//==============================================================================
+//
+// WEAPON ATTACKS
+//
+// A_Punch
+//
+//==============================================================================
+procedure A_Punch(player: Pplayer_t; psp: Ppspdef_t);
+var
+  angle: angle_t;
+  damage: integer;
+  slope: integer;
+  mrange: integer;
+begin
+  damage := (P_Random mod 10 + 1) * 2;
+
+  if player.powers[Ord(pw_strength)] <> 0 then
+    damage := damage * 10;
+
+  angle := player.mo.angle;
+  angle := angle + _SHLW(P_Random - P_Random, 18);
+  mrange := P_GetPlayerMeleeRange(player);
+  if G_PlayingEngineVersion >= VERSION207 then
+  begin
+    slope := P_AimLineAttack(player.mo, angle, mrange, MF2_EX_FRIEND);
+    if linetarget = nil then
+      slope := P_AimLineAttack(player.mo, angle, mrange);
+  end
+  else
+    slope := P_AimLineAttack(player.mo, angle, mrange);
+
+  P_LineAttack(player.mo, angle, mrange, slope, damage);
+
+  // turn to face target
+  if linetarget <> nil then
+  begin
+    S_StartSound(player.mo, Ord(sfx_punch));
+    player.mo.angle :=
+      R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+  end;
+end;
+
+//==============================================================================
+//
+// A_Saw
+//
+//==============================================================================
+procedure A_Saw(player: Pplayer_t; psp: Ppspdef_t);
+var
+  angle: angle_t;
+  damage: integer;
+  slope: integer;
+  mrange: integer;
+begin
+  damage := 2 * (P_Random mod 10 + 1);
+  angle := player.mo.angle;
+  angle := angle + _SHLW(P_Random - P_Random, 18);
+
+  // use meleerange + 1 so that the puff doesn't skip the flash
+  mrange := P_GetPlayerMeleeRange(player);
+  if G_PlayingEngineVersion >= VERSION207 then
+  begin
+    slope := P_AimLineAttack(player.mo, angle, mrange + 1, MF2_EX_FRIEND);
+    if linetarget = nil then
+      slope := P_AimLineAttack(player.mo, angle, mrange + 1);
+  end
+  else
+    slope := P_AimLineAttack(player.mo, angle, mrange + 1);
+
+  P_LineAttack(player.mo, angle, mrange + 1, slope, damage);
+
+  if linetarget = nil then
+  begin
+    S_StartSound(player.mo, Ord(sfx_sawful));
+    exit;
+  end;
+
+  S_StartSound(player.mo, Ord(sfx_sawhit));
+
+  // turn to face target
+  angle :=
+    R_PointToAngle2(player.mo.x, player.mo.y, linetarget.x, linetarget.y);
+  if angle - player.mo.angle > ANG180 then
+  begin
+    if integer(angle - player.mo.angle) < - integer(ANG90 div 20) then
+      player.mo.angle := angle + ANG90 div 21
+    else
+      player.mo.angle := player.mo.angle - ANG90 div 20;
+  end
+  else
+  begin
+    if angle - player.mo.angle > ANG90 div 20 then
+      player.mo.angle := angle - ANG90 div 21
+    else
+      player.mo.angle := player.mo.angle + ANG90 div 20;
+  end;
+
+  player.mo.flags := player.mo.flags or MF_JUSTATTACKED;
+end;
+
+//==============================================================================
+//
+// A_FireMissile
+//
+//==============================================================================
+procedure A_FireMissile(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  P_SubtractAmmo(player, 1);
+  P_SpawnPlayerMissile(player.mo, Ord(MT_ROCKET));
+end;
+
+//==============================================================================
+//
+// A_FireBFG
+//
+//==============================================================================
+procedure A_FireBFG(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  P_SubtractAmmo(player, p_bfgcells);
+  P_SpawnPlayerMissile(player.mo, Ord(MT_BFG));
+end;
+
+//==============================================================================
+//
+// A_FirePlasma
+//
+//==============================================================================
+procedure A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  P_SubtractAmmo(player, 1);
+  A_FireSomething(player, P_Random and 1);
+
+  P_SetPsprite(player,
+    Ord(ps_flash), statenum_t(weaponinfo[Ord(player.readyweapon)].flashstate + (P_Random and 1)));
+
+  P_SpawnPlayerMissile(player.mo, Ord(MT_PLASMA));
+end;
+
+//==============================================================================
+//
+// P_GunShot
+//
+//==============================================================================
+procedure P_GunShot(mo: Pmobj_t; accurate: boolean);
+var
+  angle: angle_t;
+  damage: integer;
+begin
+  damage := 5 * ((P_Random mod 3) + 1);
+  angle := mo.angle;
+
+  if not accurate then
+    angle := angle + _SHLW(P_Random - P_Random, 18);
+
+  P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
+end;
+
+//==============================================================================
+//
+// A_FirePistol
+//
+//==============================================================================
+procedure A_FirePistol(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  S_StartSound(player.mo, Ord(sfx_pistol));
+
+  P_SetMobjState(player.mo, S_PLAY_ATK2);
+
+  P_SubtractAmmo(player, 1);
+
+  A_FireSomething(player,0);  // phares
+
+  P_BulletSlope(player.mo);
+  P_GunShot(player.mo, player.refire = 0);
+end;
+
+//==============================================================================
+//
+// A_FireShotgun
+//
+//==============================================================================
+procedure A_FireShotgun(player: Pplayer_t; psp: Ppspdef_t);
+var
+  i: integer;
+begin
+  S_StartSound(player.mo, Ord(sfx_shotgn));
+  P_SetMobjState(player.mo, S_PLAY_ATK2);
+
+  P_SubtractAmmo(player, 1);
+
+  A_FireSomething(player, 0); // phares
+
+  P_BulletSlope(player.mo);
+
+  for i := 0 to 6 do
+    P_GunShot(player.mo, false);
+end;
+
+//==============================================================================
+//
+// A_FireShotgun2
+//
+//==============================================================================
+procedure A_FireShotgun2(player: Pplayer_t; psp: Ppspdef_t);
+var
+  i: integer;
+  angle: angle_t;
+  damage: integer;
+begin
+  S_StartSound(player.mo, Ord(sfx_dshtgn));
+  P_SetMobjState(player.mo, S_PLAY_ATK2);
+
+  P_SubtractAmmo(player, 2);
+
+  A_FireSomething(player, 0); // phares
+
+  P_BulletSlope(player.mo);
+
+  for i := 0 to 19 do
+  begin
+    damage := 5 * ((P_Random mod 3) + 1);
+    angle := player.mo.angle;
+    angle := angle + _SHLW(P_Random - P_Random, 19);
+    P_LineAttack(player.mo, angle, MISSILERANGE,
+      bulletslope + _SHL(P_Random - P_Random, 5), damage);
+  end;
+end;
+
+//==============================================================================
+//
+// A_FireCGun
+//
+//==============================================================================
+procedure A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  S_StartSound(player.mo, Ord(sfx_pistol));
+
+  if player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)] = 0 then
+    exit;
+
+  P_SetMobjState(player.mo, S_PLAY_ATK2);
+
+  P_SubtractAmmo(player, 1);
+
+  A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
+
+  P_BulletSlope(player.mo);
+
+  P_GunShot(player.mo, player.refire = 0);
+end;
+
+//==============================================================================
+//
+// A_Light1
+//
+//==============================================================================
+procedure A_Light1(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  player.extralight := 1;
+end;
+
+//==============================================================================
+//
+// A_Light2
+//
+//==============================================================================
+procedure A_Light2(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  player.extralight := 2;
+end;
+
+//==============================================================================
+//
+// A_BFGSpray
+// Spawn a BFG explosion on every monster in view
+//
+//==============================================================================
+procedure A_BFGSpray(mo: Pmobj_t);
+var
+  i: integer;
+  j: integer;
+  damage: integer;
+  an: angle_t;
+  dan: angle_t;
+begin
+  // offset angles from its attack angle
+{ JVAL -> original code was: ---------------
+  for i := 0 to 39 do
+  begin
+    an := mo.angle - ANG90 div 2 + (ANG90 div 40) * i;
+-----------------}
+  an := mo.angle - ANG90 div 2;
+  dan := ANG90 div 40;
+  for i := 0 to 39 do
+  begin
+    an := an + dan;
+
+    // mo->target is the originator (player)
+    //  of the missile
+    P_AimLineAttack(mo.target, an, 16 * 64 * FRACUNIT);
+
+    if linetarget = nil then
+      continue;
+
+    P_SpawnMobj(
+      linetarget.x, linetarget.y, linetarget.z + _SHR(linetarget.height, 2), Ord(MT_EXTRABFG));
+
+    damage := 0;
+    for j := 0 to 14 do
+      damage := damage + (P_Random and 7) + 1;
+
+    P_DamageMobj(linetarget, mo.target, mo.target, damage);
+  end;
+end;
+
+//==============================================================================
+//
+// A_BFGsound
+//
+//==============================================================================
+procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  S_StartSound(player.mo, Ord(sfx_bfg));
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.AfterMovePsprites
+//
+//==============================================================================
+class procedure TPspriteGameRules.AfterMovePsprites(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.DropWeaponState
+//
+//==============================================================================
+class function TPspriteGameRules.DropWeaponState(const player: Pplayer_t): statenum_t;
+begin
+  result := statenum_t(weaponinfo[Ord(player.readyweapon)].downstate);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.RaisedState
+//
+//==============================================================================
+class function TPspriteGameRules.RaisedState(const player: Pplayer_t): statenum_t;
+begin
+  result := statenum_t(weaponinfo[Ord(player.readyweapon)].readystate);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.StaysLowered
+//
+//==============================================================================
+class function TPspriteGameRules.StaysLowered(const player: Pplayer_t): boolean;
+begin
+  result := false;
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.AfterLowered
+//
+//==============================================================================
+class procedure TPspriteGameRules.AfterLowered(const player: Pplayer_t);
+begin
+  if G_PlayingEngineVersion >= VERSION207 then
+    if player.pendingweapon = wp_nochange then
+      player.pendingweapon := P_SwitchWeaponMBF21(player);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.CheckSupplies
+//
+//==============================================================================
+class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
+begin
+  P_CheckAmmo(player);
+end;
+
+end.

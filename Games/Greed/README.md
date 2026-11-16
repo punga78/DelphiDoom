@@ -11,9 +11,9 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Games\Greed\Greed32.dpr`
 Cosa dice il sorgente che abbiamo (`Reference\xGreed`, 45 file `.pas`, verificato file per file):
 
 - **Non c'e' un file di licenza** (`LICENSE`, `COPYING`) e il `README.md` di xGreed non nomina nessuna licenza.
-- **10 unit hanno il testo della GPL v2 o successiva** ("License applies to this source file", copyright 2020-2022 Jim Valavanis): `Base\g_delphi`, `g_fixlump`, `i_main`, `i_video`, `i_windows`, `m_crc32`, `m_screenshot`, `scriptengine`, `Games\Greed\m_defs`, `Games\Greed\r_interpolate`. Sono il codice scritto da Valavanis per il port (finestra, video, configurazione, interpolazione, correzione dei lump).
+- **10 unit hanno il testo della GPL v2 o successiva** ("License applies to this source file", copyright 2020-2022 Jim Valavanis): `IdTech1\Base\g_delphi`, `g_fixlump`, `i_main`, `i_video`, `i_windows`, `m_crc32`, `m_screenshot`, `scriptengine`, `Games\Greed\m_defs`, `Games\Greed\r_interpolate`. Sono il codice scritto da Valavanis per il port (finestra, video, configurazione, interpolazione, correzione dei lump).
 - **Le 28 unit del gioco in `Games\Greed\`, `LaunchXG\main` e `xGreed.dpr` non hanno nessun testo di licenza**: `Games\Greed\raven`, `utils`, `spawn`, `sprites`, `event`, `display`, `menu`, `intro`, `net`, `modplay`, `playfli`, `constant`, `protos_h`, `timer`, `d_disk`, `d_font`, `d_ints`, `d_ints_h`, `d_misc`, `d_video`, `r_conten`, `r_plane`, `r_public`, `r_public_h`, `r_refdef`, `r_render`, `r_spans`, `r_walls`. Hanno solo l'intestazione "xGreed (C) 2020-2022 by Jim Valavanis / Raven 3D Engine (C) 1996 by Softdisk Publishing / Original Design: John Carmack of id Software / Enhancements by: Robert Morgan of Channel 7, Todd Lewis e John Bianca of Softdisk Publishing, Carlos Hasan". E' un avviso di copyright, non una licenza.
-- Di terzi: `Base\bass.pas` (BASS di Un4seen, licenza proprietaria: non usato, sostituito da `Framework\Mikmod` e dal mixer), `Base\DirectX.pas` (JEDI), `Base\pngimage.pas`, `FASTMM4`, `zlib` (nessuno e' portato).
+- Di terzi: `IdTech1\Base\bass.pas` (BASS di Un4seen, licenza proprietaria: non usato, sostituito da `Framework\Mikmod` e dal mixer), `IdTech1\Base\DirectX.pas` (JEDI), `IdTech1\Base\pngimage.pas`, `FASTMM4`, `zlib` (nessuno e' portato).
 
 Cosa ne segue per questa libreria:
 

@@ -22,13 +22,13 @@ DelphiDoom.Net.Factory              in 'IdTech1\Net\DelphiDoom.Net.Factory.pas'
 ```
 
 Più, per le unit del motore nuove (vedi sotto), le implementazioni delle interfacce:
-`DelphiDoom.Engine.Net.LocalInput`, `.Players`, `.Trace`, `.AbortCheck` (nomi suggeriti, in `Base\`).
+`DelphiDoom.Engine.Net.LocalInput`, `.Players`, `.Trace`, `.AbortCheck` (nomi suggeriti, in `IdTech1\Base\`).
 
 Riga per `Tools\build.bat` (lista `TESTS`, in coda): `Tests\DelphiDoom.Tests.Net`
 
 ## 2. Funzione per funzione
 
-### `Base\i_net.pas`
+### `IdTech1\Base\i_net.pas`
 
 | Vecchio | Dopo |
 |---|---|
@@ -40,7 +40,7 @@ Riga per `Tools\build.bat` (lista `TESTS`, in coda): `Tests\DelphiDoom.Tests.Net
 | `I_ShutDownNetwork` | il motore rilascia l'`INetTransport` (il distruttore chiude i socket e chiama `WSACleanup`) |
 | `WSAStartup` | dentro il costruttore di `TWinsockNetTransport` |
 
-### `Base\d_net.pas`
+### `IdTech1\Base\d_net.pas`
 
 | Vecchio | Dopo |
 |---|---|
@@ -59,7 +59,7 @@ Riga per `Tools\build.bat` (lista `TESTS`, in coda): `Tests\DelphiDoom.Tests.Net
 
 ### Altre unit
 
-- `Base\d_net_h.pas`, `Base\d_ticcmd.pas`: `ticcmd_t` e `Tcmds` restano (il motore usa `ticcmd_t`); `doomdata_t`/`netbuffer` si cancellano. La libreria tratta il comando come `CommandSize` byte (`SizeOf(ticcmd_t)` = 14 Doom, 16 Heretic/Hexen, 19 Strife).
+- `IdTech1\Base\d_net_h.pas`, `IdTech1\Base\d_ticcmd.pas`: `ticcmd_t` e `Tcmds` restano (il motore usa `ticcmd_t`); `doomdata_t`/`netbuffer` si cancellano. La libreria tratta il comando come `CommandSize` byte (`SizeOf(ticcmd_t)` = 14 Doom, 16 Heretic/Hexen, 19 Strife).
 - `g_game.pas` (×4): `G_Ticker` legge `memcpy(cmd, @netcmds[i][buf], SizeOf(ticcmd_t))` → `Move(NetCommand(i, buf)[0], cmd^, SizeOf(ticcmd_t))`. Il controllo di coerenza (`consistency[][]`, righe 1695-1706) → `INetConsistency.Verify(i, gametic, cmd.consistency, valore)` con `valore = pl.mo.x` oppure `rndindex`; la condizione `netgame and not netdemo and (gametic mod ticdup = 0)` resta nel motore. `G_BuildTiccmd`: `cmd.consistency := INetConsistency.Expected(consoleplayer, maketic)`. Il `consistency` globale si cancella.
 - `ticdup` (usato da `g_game` per `turnheld` ecc.) resta una variabile del motore, impostata da `doomcom`/`-dup` in `D_CheckNetGame`.
 
@@ -99,7 +99,7 @@ Vanno catturati in un solo punto gli `ENetException` (e derivate: `ENetVersionMi
 
 ## 4. Cosa si cancella dopo il collegamento
 
-`Base\i_net.pas` (tutto, salvo la lettura degli argomenti che passa nel motore), `Base\d_net_h.pas` (`doomdata_t`, `netbuffer`, `Tcmds`), da `Base\d_net.pas`: `doomcom_t`, `doomcom`, `NetbufferSize/Checksum`, `ExpandTics`, `HSendPacket`, `HGetPacket`, `GetPackets`, `NetUpdate` (diventa facciata), `D_ArbitrateNetStart`, `D_QuitNetGame` (facciata), le variabili `localcmds nettics nodeingame remoteresend resendto resendcount nodeforplayer skiptics maxsend reboundpacket reboundstore gametime frameon frameskip oldnettics oldentertics netcmds`, le costanti `NCMD_*`, `CRESENDCOUNT`, `PL_DRONE`, `DOOMCOM_ID`, `MAXNETNODES`; `consistency[][]` da `g_game`.
+`IdTech1\Base\i_net.pas` (tutto, salvo la lettura degli argomenti che passa nel motore), `IdTech1\Base\d_net_h.pas` (`doomdata_t`, `netbuffer`, `Tcmds`), da `IdTech1\Base\d_net.pas`: `doomcom_t`, `doomcom`, `NetbufferSize/Checksum`, `ExpandTics`, `HSendPacket`, `HGetPacket`, `GetPackets`, `NetUpdate` (diventa facciata), `D_ArbitrateNetStart`, `D_QuitNetGame` (facciata), le variabili `localcmds nettics nodeingame remoteresend resendto resendcount nodeforplayer skiptics maxsend reboundpacket reboundstore gametime frameon frameskip oldnettics oldentertics netcmds`, le costanti `NCMD_*`, `CRESENDCOUNT`, `PL_DRONE`, `DOOMCOM_ID`, `MAXNETNODES`; `consistency[][]` da `g_game`.
 
 ## 5. Differenze dal vecchio codice
 
@@ -132,7 +132,7 @@ Vanno catturati in un solo punto gli `ENetException` (e derivate: `ENetVersionMi
 ## 8. Stato dopo la #145 (fase 2, ondata 2)
 
 `d_net.pas` non è più una facciata: `NetUpdate`, `D_CheckNetGame`, `D_RunMultipleTicks`, `D_RunSingleTick`, `D_QuitNetGame`,
-`D_ShutDownNetGame` e la consistenza sono i metodi di `TEngineNetGame` (`Base\DelphiDoom.Engine.Net.Game.pas`, contratto
+`D_ShutDownNetGame` e la consistenza sono i metodi di `TEngineNetGame` (`IdTech1\Base\DelphiDoom.Engine.Net.Game.pas`, contratto
 `IEngineNetGame` in `DelphiDoom.Engine.Net.Intf`), che riceve dal costruttore clock, log, `IGameContext`, la console e il tic
 della schermata di fine. `ComposeNetGame` la dà a `d_main` (`D_ConfigureNetGame`), `g_game` (consistenza e comandi degli
 altri giocatori), `r_main` (gli 11 `NetUpdate` durante il disegno) e `i_system` (uscita e chiusura). `d_net.pas` tiene solo i

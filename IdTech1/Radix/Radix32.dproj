@@ -60,10 +60,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>DOOM;RADIX;OPTIMIZE_FOR_SPEED;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>.;.;..\GameData;..\..\Framework\Palette;..\..\Framework\Wad;..\..\Framework\Video;..\..\Framework\CommandLine;..\..\Framework\Scanner;..\..\Framework\Logging;..\..\Framework\MathCore;..\..\Framework\GameMath;..\..\Doom;..\..\Base;..\..\Common;..\..\Framework\PascalScript;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\..\Doom;..\..\Base;..\..\Common;..\..\Framework\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
-        <DCC_ResourcePath>..\..\Doom;..\..\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>..\..\Doom;..\..\Base;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_UnitSearchPath>.;.;..\GameData;..\..\Framework\Palette;..\..\Framework\Wad;..\..\Framework\Video;..\..\Framework\CommandLine;..\..\Framework\Scanner;..\..\Framework\Logging;..\..\Framework\MathCore;..\..\Framework\GameMath;..\Doom;..\Base;..\Common;..\..\Framework\PascalScript;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\Doom;..\Base;..\Common;..\..\Framework\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_ResourcePath>..\Doom;..\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_ObjPath>..\Doom;..\Base;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\..\bin\$(Platform)\$(Config)\Radix</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\dcu\$(Platform)\$(Config)\Radix\soft</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

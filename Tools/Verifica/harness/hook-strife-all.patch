@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_doors.pas b/Base/udmf_doors.pas
+diff --git a/IdTech1\Base/udmf_doors.pas b/IdTech1\Base/udmf_doors.pas
 index f1b79d91..6369043b 100644
---- a/Base/udmf_doors.pas
-+++ b/Base/udmf_doors.pas
+--- a/IdTech1\Base/udmf_doors.pas
++++ b/IdTech1\Base/udmf_doors.pas
 @@ -72,7 +72,8 @@ uses
    udmf_spec,
    {$ENDIF}
@@ -33,10 +33,10 @@ index f1b79d91..6369043b 100644
  //==============================================================================
  //
  // EVH_DoDoor
-diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+diff --git a/IdTech1\Base/udmf_lights.pas b/IdTech1\Base/udmf_lights.pas
 index bbcd9b72..978272b5 100644
---- a/Base/udmf_lights.pas
-+++ b/Base/udmf_lights.pas
+--- a/IdTech1\Base/udmf_lights.pas
++++ b/IdTech1\Base/udmf_lights.pas
 @@ -144,20 +144,26 @@ uses
    DelphiDoom.Thinkers.Light.Phase,
    DelphiDoom.Thinkers.Light.Sequence,
@@ -84,10 +84,10 @@ index bbcd9b72..978272b5 100644
  //==============================================================================
  //
  // P_SpawnPhasedLight
-diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+diff --git a/IdTech1\Base/udmf_plats.pas b/IdTech1\Base/udmf_plats.pas
 index 4b759843..53cd20ac 100644
---- a/Base/udmf_plats.pas
-+++ b/Base/udmf_plats.pas
+--- a/IdTech1\Base/udmf_plats.pas
++++ b/IdTech1\Base/udmf_plats.pas
 @@ -84,6 +84,7 @@ uses
    udmf_spec,
  {$ENDIF}
@@ -129,10 +129,10 @@ index 4b759843..53cd20ac 100644
  
      PH_AddActivePlat(plat);
      UdmfPlatMachine.AnnounceStart(sec);
-diff --git a/Strife/g_game.pas b/Strife/g_game.pas
+diff --git a/IdTech1\Strife/g_game.pas b/IdTech1\Strife/g_game.pas
 index 01360927..aa50a41b 100644
---- a/Strife/g_game.pas
-+++ b/Strife/g_game.pas
+--- a/IdTech1\Strife/g_game.pas
++++ b/IdTech1\Strife/g_game.pas
 @@ -492,6 +492,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -149,10 +149,10 @@ index 01360927..aa50a41b 100644
    // do player reborns if needed
    for i := 0 to MAXPLAYERS - 1 do
      if playeringame[i] and (players[i].playerstate = PST_REBORN) then
-diff --git a/Strife/p_doors.pas b/Strife/p_doors.pas
+diff --git a/IdTech1\Strife/p_doors.pas b/IdTech1\Strife/p_doors.pas
 index 06c2fd75..8e60ef12 100644
---- a/Strife/p_doors.pas
-+++ b/Strife/p_doors.pas
+--- a/IdTech1\Strife/p_doors.pas
++++ b/IdTech1\Strife/p_doors.pas
 @@ -128,6 +128,7 @@ procedure T_SlidingDoor(door: Pslidedoor_t);
  implementation
  
@@ -182,10 +182,10 @@ index 06c2fd75..8e60ef12 100644
  //==============================================================================
  //
  // EV_DoLockedDoor
-diff --git a/Strife/p_lights.pas b/Strife/p_lights.pas
+diff --git a/IdTech1\Strife/p_lights.pas b/IdTech1\Strife/p_lights.pas
 index bb6b20f8..dac7596f 100644
---- a/Strife/p_lights.pas
-+++ b/Strife/p_lights.pas
+--- a/IdTech1\Strife/p_lights.pas
++++ b/IdTech1\Strife/p_lights.pas
 @@ -130,6 +130,7 @@ procedure T_FireFlicker(flick: Pfireflicker_t);
  implementation
  
@@ -269,10 +269,10 @@ index bb6b20f8..dac7596f 100644
  //==============================================================================
  //
  // P_SpawnGlowingLight
-diff --git a/Strife/p_plats.pas b/Strife/p_plats.pas
+diff --git a/IdTech1\Strife/p_plats.pas b/IdTech1\Strife/p_plats.pas
 index 7ddaa968..af829621 100644
---- a/Strife/p_plats.pas
-+++ b/Strife/p_plats.pas
+--- a/IdTech1\Strife/p_plats.pas
++++ b/IdTech1\Strife/p_plats.pas
 @@ -96,6 +96,7 @@ uses
    p_tick,
    p_setup,

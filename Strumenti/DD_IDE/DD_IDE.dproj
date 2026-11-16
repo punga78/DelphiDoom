@@ -60,8 +60,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>SynEdit;.;..\..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>SynEdit;.;..\..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>SynEdit;.;..\..\IdTech1\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>SynEdit;.;..\..\IdTech1\Common;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>SynEdit;.;$(DCC_ResourcePath)</DCC_ResourcePath>
         <DCC_ExeOutput>..\..\bin\$(Platform)\$(Config)\Tools</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\dcu\$(Platform)\$(Config)\DD_IDE</DCC_DcuOutput>

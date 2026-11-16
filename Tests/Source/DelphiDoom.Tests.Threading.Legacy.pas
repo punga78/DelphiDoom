@@ -7,7 +7,7 @@
 {******************************************************************************}
 unit DelphiDoom.Tests.Threading.Legacy;
 
-// A faithful copy of the bodies of Base\mt_utils.pas of master cb5a45e3 (MT_ZeroMemory,
+// A faithful copy of the bodies of IdTech1\Base\mt_utils.pas of master cb5a45e3 (MT_ZeroMemory,
 // MT_memset, MT_memseti, MT_memcpy, some of the MT_Execute overloads, MT_Execute4/6,
 // MT_Iterate and the tasks): the globals are fields, the pools and the primitives are given,
 // and I_Error is a call that raises. Only what the parity tests compare is copied.

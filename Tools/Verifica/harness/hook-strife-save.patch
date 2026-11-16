@@ -1,7 +1,7 @@
-diff --git a/Strife/g_game.pas b/Strife/g_game.pas
+diff --git a/IdTech1\Strife/g_game.pas b/IdTech1\Strife/g_game.pas
 index 01360927..f25953b9 100644
---- a/Strife/g_game.pas
-+++ b/Strife/g_game.pas
+--- a/IdTech1\Strife/g_game.pas
++++ b/IdTech1\Strife/g_game.pas
 @@ -492,6 +492,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -41,10 +41,10 @@ index 6a9f396b..8722d7d0 100644
 --- a/Strife32.dpr
 +++ b/Strife32.dpr
 @@ -207,6 +207,7 @@ uses
-   i_midi_new in 'Base\i_midi_new.pas',
-   i_net in 'Base\i_net.pas',
-   i_system in 'Base\i_system.pas',
+   i_midi_new in 'IdTech1\Base\i_midi_new.pas',
+   i_net in 'IdTech1\Base\i_net.pas',
+   i_system in 'IdTech1\Base\i_system.pas',
 +  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',
-   i_video in 'Base\i_video.pas',
+   i_video in 'IdTech1\Base\i_video.pas',
    DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
    DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',

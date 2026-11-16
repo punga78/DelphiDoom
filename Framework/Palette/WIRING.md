@@ -94,7 +94,7 @@ La libreria **dà solo byte e indici**; chi possiede la memoria resta il motore 
   builder := TPaletteFactory.CreatePaletteBuilder(matcher, TPaletteProfiles.<Doom|Hexen>);
   unpack  := TPaletteFactory.CreatePaletteUnpacker(TVideoFactory.CreatePaletteConverter);
   ```
-  Come `TEngineWadServices`, conviene una `TEnginePaletteServices` (unit `Base\DelphiDoom.Engine.Palette.Services.pas`) in `ComposeEngine`, che le unit
+  Come `TEngineWadServices`, conviene una `TEnginePaletteServices` (unit `IdTech1\Base\DelphiDoom.Engine.Palette.Services.pas`) in `ComposeEngine`, che le unit
   storiche (`v_palettes`, `r_translations`, `r_data`) ricevono con un `P_Configure...` (senza di essa `I_Error`, come le altre fette).
 
 ## 4. Differenze volute e difetti conservati
@@ -123,13 +123,13 @@ del byte di Strife, le regole strane di `CR_`/`CR` nei nomi.
 
 ## 7. Fase 2 (issue #135)
 
-* `Base\v_palettes.pas` è cancellata: `V_CreateDoomPalette`, `V_CreateTranslation` e `V_FixBufferPalette` non avevano
-  chiamanti; `V_AutoGeneratePalettes` è `TEnginePaletteGenerator.Generate` (`Base\DelphiDoom.Engine.Scanner.PaletteGenerator.pas`,
+* `IdTech1\Base\v_palettes.pas` è cancellata: `V_CreateDoomPalette`, `V_CreateTranslation` e `V_FixBufferPalette` non avevano
+  chiamanti; `V_AutoGeneratePalettes` è `TEnginePaletteGenerator.Generate` (`IdTech1\Base\DelphiDoom.Engine.Scanner.PaletteGenerator.pas`,
   la direttiva `#CREATEPALETTE`), che riceve `IPaletteBuilder` dal costruttore. Finché `sc_utils.pas` assembla da sé le
   direttive del preprocessore resta anche un costruttore senza argomenti che crea il costruttore del profilo del gioco.
   Verifica nello stesso eseguibile: PLAYPAL, COLORMAP e FOGMAP del WAD generato identici al vecchio codice negli otto giochi.
 * `r_palette.pas` è cancellata (#145): la palette di base (letta una volta) è `TEngineDefaultPalette`
-  (`Base\DelphiDoom.Engine.Palette.DefaultPalette.pas`, `IEngineDefaultPalette`, sopra `IPaletteUnpacker`), che `ComposePalette`
+  (`IdTech1\Base\DelphiDoom.Engine.Palette.DefaultPalette.pas`, `IEngineDefaultPalette`, sopra `IPaletteUnpacker`), che `ComposePalette`
   dà a `R_ConfigureColormaps` (`r_data`), `R_ConfigureCustomColormaps` (`r_colormaps`) e `R_ConfigureVoxelPalette` (`r_voxels`).
 * **Resta** `r_colormaps.pas` (le colormap personalizzate in zone memory, lette dal renderer e da
   `p_saveg`: sono dati del motore).

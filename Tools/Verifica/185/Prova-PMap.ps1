@@ -4,7 +4,7 @@
   Il confronto e' in Prova-Common.ps1 (comune a Prova-PMobj.ps1).
 
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_map.pas (presa dal commit di partenza con git show) prende
-  il testo della routine unificata (Base\p_map.pas, Base\p_secnodes.pas o la unit delle regole del gioco), sostituisce
+  il testo della routine unificata (IdTech1\Base\p_map.pas, IdTech1\Base\p_secnodes.pas o la unit delle regole del gioco), sostituisce
   ogni chiamata a TMapGameRules con il corpo della regola di quel gioco (le sostituzioni sono la tabella $Expansions
   qui sotto, scritta a mano; i corpi lunghi si leggono dalla unit del gioco con <<B:Metodo>>) e confronta il risultato
   con la routine vecchia, tolti commenti, spazi e maiuscole.
@@ -198,7 +198,7 @@ $Expansions = @(
   # --- P_ThingsInSameZ (Doom; gli altri giochi sono in $NotTextual) ---
   @{ F = 'TMapGameRules.KeepsOldSameZ(A, B)'; Doom = '((A.flags2_ex and MF2_EX_ONMOBJ = 0) and (B.flags2_ex and MF2_EX_ONMOBJ = 0))'; All = $true }
 
-  # --- PIT_ChangeSector (Base\p_map.pas: lo scheletro; il corpo che schiaccia e il sangue sono regole del gioco) ---
+  # --- PIT_ChangeSector (IdTech1\Base\p_map.pas: lo scheletro; il corpo che schiaccia e il sangue sono regole del gioco) ---
   $csHead = 'function PIT_ChangeSector(thing: Pmobj_t): boolean; var'
   $csNote = 'le variabili locali sono passate dalla vecchia routine alle regole (CrunchBody, CrushBlood) che le usano'
   @{ R = 'PIT_ChangeSector'; F = 'function PIT_ChangeSector(thing: Pmobj_t): boolean; begin'
@@ -240,6 +240,6 @@ $NotTextual = @{
   'Strife|P_ThingHeightOffsZ' = 'assorbita da P_ThingsInSameZ (_getheightoffs dalla 2.07)'
 }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_map' -BaseFiles 'Base\p_map.pas', 'Base\p_secnodes.pas' `
-  -Extra @{ S = 'Base\p_secnodes.pas'; M = 'Base\p_map.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual -Maps @{ exitr = @(,@('exit;', 'result := true; exit;')); cvA = @(,@('damage: integer;', 'solid: boolean; damage: integer; pushfactor: fixed_t;')); cvHexen = @(@('damage: integer;', 'solid: boolean; damage: integer;'), @('lmo: Pmobj_t;', 'lmo: Pmobj_t; pushfactor: fixed_t;')) }
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_map' -BaseFiles 'IdTech1\Base\p_map.pas', 'IdTech1\Base\p_secnodes.pas' `
+  -Extra @{ S = 'IdTech1\Base\p_secnodes.pas'; M = 'IdTech1\Base\p_map.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual -Maps @{ exitr = @(,@('exit;', 'result := true; exit;')); cvA = @(,@('damage: integer;', 'solid: boolean; damage: integer; pushfactor: fixed_t;')); cvHexen = @(@('damage: integer;', 'solid: boolean; damage: integer;'), @('lmo: Pmobj_t;', 'lmo: Pmobj_t; pushfactor: fixed_t;')) }
 exit $bad

@@ -9,7 +9,7 @@ Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md); come si usano gli strumen
 - Unit nella cartella: 16 (nome a punti `DelphiDoom.Parity.*`) e `ParityTool.dpr` (confronto e compressione dei log).
 - Interfacce dichiarate: `IParityLog`, `IParityStateSink`, `IParitySwitch`, `IParityPilot`.
 - Punto di creazione delle classi: `DelphiDoom.Parity.Factory`.
-- Collegamento al motore: `Base\DelphiDoom.Engine.Parity.*` (adattatore sottile, un solo aggancio per hook).
+- Collegamento al motore: `IdTech1\Base\DelphiDoom.Engine.Parity.*` (adattatore sottile, un solo aggancio per hook).
 
 ## Prova
 

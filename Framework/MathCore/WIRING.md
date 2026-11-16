@@ -2,7 +2,7 @@
 
 > Dal 2026-11-15 (issue #225) le unit di id Tech 1 citate qui (virgola fissa, tabelle, generatore casuale, hash dei nomi, vettori, bbox, `X87Double`, `PixelBatch`, `Intf`, `Factory`) stanno in `Framework\GameMath`, con gli stessi nomi `DelphiDoom.MathCore.*`.
 
-La libreria dà in classi le parti pure e senza stato di `Base\m_fixed.pas`, `tables.pas` (tabelle trigonometriche e
+La libreria dà in classi le parti pure e senza stato di `IdTech1\Base\m_fixed.pas`, `tables.pas` (tabelle trigonometriche e
 funzioni degli angoli), `m_vectors.pas`, `m_bbox.pas`, `m_rnd.pas`, `m_stack.pas`, `m_hash.pas`, `m_crc32.pas` e `m_sha1.pas`.
 Non conosce il motore: dipende solo da `System.*`. La parità con il vecchio codice è provata da 101 test
 (`Tests\DelphiDoom.Tests.MathCore`, golden in `Tests\Data\MathCore`, vedi il suo `README.md`).
@@ -69,7 +69,7 @@ begin
 end;
 ```
 
-Gli indici che oggi si leggono e scrivono direttamente (8 file: `info_rnd`, `p_setup`, `Doom|Heretic|Strife|Hexen\g_game`, `Hexen\g_demo`: savegame, demo e rete) passano alle proprietà `PlayIndex`, `MenuIndex`,
+Gli indici che oggi si leggono e scrivono direttamente (8 file: `info_rnd`, `p_setup`, `Doom|Heretic|Strife|IdTech1\Hexen\g_game`, `IdTech1\Hexen\g_demo`: savegame, demo e rete) passano alle proprietà `PlayIndex`, `MenuIndex`,
 `NonCompatibleIndex`, `SystemIndex`, `SystemSeed`. Controllare che nessun codice dipenda dal fatto che `P_Random` sia una funzione libera
 con indirizzo fisso (es. puntatori a funzione).
 La serie dei numeri è la stessa del vecchio: **le demo e i savegame esistenti restano compatibili** (provato dai golden su 600 numeri per serie,

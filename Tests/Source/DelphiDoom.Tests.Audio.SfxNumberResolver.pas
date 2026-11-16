@@ -55,7 +55,7 @@ type
     function CompareCall(const AName: string): Integer;
     procedure RunNames(AGame: TOldSoundGame; ACapacity, AUsed: Integer;
       const ANames: array of string);
-    // the glue of S_GetRandomSoundList of Base\sounds.pas on the table of the test
+    // the glue of S_GetRandomSoundList of IdTech1\Base\sounds.pas on the table of the test
     function NewRandomList(ASfxNumber: Integer): TList<Integer>;
     procedure CompareRandom(ASfxNumber: Integer);
   public

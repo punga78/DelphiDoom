@@ -41,7 +41,7 @@ record su disco e quello in memoria sono gli stessi byte (il record si copia int
 - Un campo con un tipo senza nome (`psprites: array[0..NUMPSPRITES - 1] of pspdef_t`) non ha informazioni di tipo: se
   e' certo che sono byte semplici il costruttore lo copia com'e'; se contiene puntatori o precede un puntatore va
   descritto (`DescribeArray`). Le descrizioni e l'elenco dei record di ogni gioco sono in `P_DeclareSaveRecords`
-  (`Doom\p_saveg.pas`, `Heretic\p_saveg.pas`, `Strife\p_saveg.pas`, `Hexen\sv_save.pas`), chiamata da
+  (`IdTech1\Doom\p_saveg.pas`, `IdTech1\Heretic\p_saveg.pas`, `IdTech1\Strife\p_saveg.pas`, `IdTech1\Hexen\sv_save.pas`), chiamata da
   `SV_InitializeSerializers`. Un campo incerto non descritto e' un errore che dice quale campo descrivere, mai un
   layout sbagliato in silenzio.
 - Un valore largo come un puntatore va su disco coi 32 bit bassi e torna in memoria col segno (-1 resta -1, un

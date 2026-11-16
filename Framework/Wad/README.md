@@ -36,7 +36,7 @@ Il resto di `FileSystem.cpp` che non e' il riavvio pure e il download, sempre se
 - **Server pure**: `IGamePureServer` (`CreatePureServer`): stato dei pak (`TGamePackStatus`), blocco, `SetPureServerChecksums` con la risposta `Ok`/`Restart`/`Missing`; senza il pak del codice di gioco.
 - **`TGameFsSettings.PakExtension`**: `.pk3` per i pak di Quake III (stesso ZIP).
 
-Prova: `Tests\DelphiDoom.Tests.Wad` (363 test a 32 e a 64 bit, copertura 94%), parita' col C++ compilato con `bcc32c` in `Tests\Data\Wad\GameFs\pureparity.cpp`. `Base\w_pak.pas` e `TPakPathResolver` **non** sono unificati con questo file system (regole diverse, cambierebbero cosa trova il motore): motivo in [CLAUDE.md](CLAUDE.md).
+Prova: `Tests\DelphiDoom.Tests.Wad` (363 test a 32 e a 64 bit, copertura 94%), parita' col C++ compilato con `bcc32c` in `Tests\Data\Wad\GameFs\pureparity.cpp`. `IdTech1\Base\w_pak.pas` e `TPakPathResolver` **non** sono unificati con questo file system (regole diverse, cambierebbero cosa trova il motore): motivo in [CLAUDE.md](CLAUDE.md).
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).

@@ -7,7 +7,7 @@
 #                              with the state of the scripts in them (-vsh save)
 #
 # The patches work on the layout of the repository after the reorganisation of the root (issue #170: the .dpr are
-# in Doom\, Heretic\, ...). Files are read and written as ISO-8859-1 so that every byte (and every CRLF) stays.
+# in IdTech1\Doom\, IdTech1\Heretic\, ...). Files are read and written as ISO-8859-1 so that every byte (and every CRLF) stays.
 #
 #   .\Tools\Verifica\scripthost\Genera-Patch.ps1
 param([switch]$New)  # -New: for the tree after fetta 2h (PS_Manager instead of psmanager): writes hook-*.new.patch
@@ -21,7 +21,7 @@ function Write-Source([string]$Path, [string]$Text) { [System.IO.File]::WriteAll
 
 function Add-ProjectUnit([string]$Path, [string[]]$Lines) {
   $text = Read-Source $Path
-  $m = [regex]::Match($text, "(?m)^  i_system in '\.\.\\Base\\i_system\.pas',\r?\n")
+  $m = [regex]::Match($text, "(?m)^  i_system in '\.\.\\IdTech1\Base\\i_system\.pas',\r?\n")
   if (-not $m.Success) { throw "i_system non trovata in $Path" }
   $nl = if ($m.Value.EndsWith("`r`n")) { "`r`n" } else { "`n" }
   $insert = ($Lines | ForEach-Object { "  $_,$nl" }) -join ''
@@ -79,10 +79,10 @@ function Hook-PsMain {
 }
 
 # ---- L2 ----
-$dprs = 'Doom\Doom32.dpr', 'Heretic\Heretic32.dpr', 'Hexen\Hexen32.dpr', 'Strife\Strife32.dpr', 'Doom\GLDoom32.dpr'
+$dprs = 'IdTech1\Doom\Doom32.dpr', 'IdTech1\Heretic\Heretic32.dpr', 'IdTech1\Hexen\Hexen32.dpr', 'IdTech1\Strife\Strife32.dpr', 'IdTech1\Doom\GLDoom32.dpr'
 foreach ($dpr in $dprs) { Add-ProjectUnit $dpr @("HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas'") }
 Hook-PsMain
-$loader = 'Base\DelphiDoom.Engine.Level.Loader.pas'
+$loader = 'IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas'
 Add-ImplementationUses $loader 'HarnessScriptHost'
 Edit-Once $loader '(\r?\n  FinishLevel;(\r?\n))(end;)' '$1  VSH_AfterLevel(LMapName);$2$3'
 Save-Patch ($dprs + @('IdTech1\ScriptEngine\ps_main.pas', $loader)) 'hook-scripthost.patch'

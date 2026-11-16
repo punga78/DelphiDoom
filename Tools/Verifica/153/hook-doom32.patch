@@ -2,10 +2,10 @@
 +++ b/Doom32.dpr
 @@ -501,6 +501,7 @@
    DelphiDoom.Thinkers.Plane.Waggle in 'IdTech1\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
-   DelphiDoom.Engine.Plane.Services in 'Base\DelphiDoom.Engine.Plane.Services.pas',
-   DelphiDoom.Engine.Plane.Host in 'Base\DelphiDoom.Engine.Plane.Host.pas',
+   DelphiDoom.Engine.Plane.Services in 'IdTech1\Base\DelphiDoom.Engine.Plane.Services.pas',
+   DelphiDoom.Engine.Plane.Host in 'IdTech1\Base\DelphiDoom.Engine.Plane.Host.pas',
 +  plane_parity in 'Tools\Verifica\153\plane_parity.pas',
-   DelphiDoom.Engine.Log.Sink in 'Base\DelphiDoom.Engine.Log.Sink.pas',
+   DelphiDoom.Engine.Log.Sink in 'IdTech1\Base\DelphiDoom.Engine.Log.Sink.pas',
    DelphiDoom.Configuration.Types in 'Framework\Configuration\DelphiDoom.Configuration.Types.pas',
    DelphiDoom.Configuration.Intf in 'Framework\Configuration\DelphiDoom.Configuration.Intf.pas',
 @@ -1194,6 +1195,7 @@

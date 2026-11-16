@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_doors.pas b/Base/udmf_doors.pas
+diff --git a/IdTech1\Base/udmf_doors.pas b/IdTech1\Base/udmf_doors.pas
 index f1b79d91..6369043b 100644
---- a/Base/udmf_doors.pas
-+++ b/Base/udmf_doors.pas
+--- a/IdTech1\Base/udmf_doors.pas
++++ b/IdTech1\Base/udmf_doors.pas
 @@ -72,7 +72,8 @@ uses
    udmf_spec,
    {$ENDIF}
@@ -33,10 +33,10 @@ index f1b79d91..6369043b 100644
  //==============================================================================
  //
  // EVH_DoDoor
-diff --git a/Base/udmf_lights.pas b/Base/udmf_lights.pas
+diff --git a/IdTech1\Base/udmf_lights.pas b/IdTech1\Base/udmf_lights.pas
 index bbcd9b72..978272b5 100644
---- a/Base/udmf_lights.pas
-+++ b/Base/udmf_lights.pas
+--- a/IdTech1\Base/udmf_lights.pas
++++ b/IdTech1\Base/udmf_lights.pas
 @@ -144,20 +144,26 @@ uses
    DelphiDoom.Thinkers.Light.Phase,
    DelphiDoom.Thinkers.Light.Sequence,
@@ -84,10 +84,10 @@ index bbcd9b72..978272b5 100644
  //==============================================================================
  //
  // P_SpawnPhasedLight
-diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+diff --git a/IdTech1\Base/udmf_plats.pas b/IdTech1\Base/udmf_plats.pas
 index 4b759843..53cd20ac 100644
---- a/Base/udmf_plats.pas
-+++ b/Base/udmf_plats.pas
+--- a/IdTech1\Base/udmf_plats.pas
++++ b/IdTech1\Base/udmf_plats.pas
 @@ -84,6 +84,7 @@ uses
    udmf_spec,
  {$ENDIF}
@@ -129,10 +129,10 @@ index 4b759843..53cd20ac 100644
  
      PH_AddActivePlat(plat);
      UdmfPlatMachine.AnnounceStart(sec);
-diff --git a/Hexen/g_game.pas b/Hexen/g_game.pas
+diff --git a/IdTech1\Hexen/g_game.pas b/IdTech1\Hexen/g_game.pas
 index 2c49c4a7..d8897a4f 100644
---- a/Hexen/g_game.pas
-+++ b/Hexen/g_game.pas
+--- a/IdTech1\Hexen/g_game.pas
++++ b/IdTech1\Hexen/g_game.pas
 @@ -384,6 +384,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  

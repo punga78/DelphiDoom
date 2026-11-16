@@ -20,7 +20,7 @@ uses
   DelphiDoom.MathCore.FixedMath in '..\Framework\GameMath\DelphiDoom.MathCore.FixedMath.pas',
   DelphiDoom.MathCore.MemoryFill in '..\Framework\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
 {$ENDIF}
-  d_delphi in '..\Common\d_delphi.pas',
+  d_delphi in '..\IdTech1\Common\d_delphi.pas',
   DelphiDoom.Tests.Common.Pos1 in 'Source\DelphiDoom.Tests.Common.Pos1.pas';
 
 var

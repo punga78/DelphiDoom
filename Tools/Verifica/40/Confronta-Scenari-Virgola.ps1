@@ -15,7 +15,7 @@
   Uso:
     powershell -NoProfile -File Tools\Verifica\40\Confronta-Scenari-Virgola.ps1 -Exe <Win64\Doom32.exe> `
       -RefExe <Win32\Doom32.exe> [-Scenario 'slopes*'] [-Modes 8,32] [-WorkRoot C:\ddparity_40] [-DataRoot <bin>]
-  Il file freedoom2.wad si prende da -DataRoot (la cartella bin con Doom\FREEDOOM2.WAD).
+  Il file freedoom2.wad si prende da -DataRoot (la cartella bin con IdTech1\Doom\FREEDOOM2.WAD).
 #>
 param(
   [Parameter(Mandatory = $true)][string]$Exe,

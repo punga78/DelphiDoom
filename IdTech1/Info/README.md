@@ -1,6 +1,6 @@
 # IdTech1\Info
 
-Logica delle tabelle `info` del motore (cose, stati, sprite) a classi: ricerca per numero dell'editor e per nome, alias, ereditarieta', catene di stati, stati di uno sprite, nomi dei gruppi MBF21, mostri a caso e nomi degli stati che gli script danno alle azioni. Seconda fetta della fase 1 del piano "tutto a classi" (issue #185, `docs\PIANO_TUTTO_A_CLASSI.md`): `Base\info_common.pas`, `info_fnd.pas`, `info_rnd.pas` e `sc_states.pas` sono facciate sopra questa libreria. Le tabelle `mobjinfo`, `states` e `sprnames` restano dati nelle cartelle dei giochi.
+Logica delle tabelle `info` del motore (cose, stati, sprite) a classi: ricerca per numero dell'editor e per nome, alias, ereditarieta', catene di stati, stati di uno sprite, nomi dei gruppi MBF21, mostri a caso e nomi degli stati che gli script danno alle azioni. Seconda fetta della fase 1 del piano "tutto a classi" (issue #185, `docs\PIANO_TUTTO_A_CLASSI.md`): `IdTech1\Base\info_common.pas`, `info_fnd.pas`, `info_rnd.pas` e `sc_states.pas` sono facciate sopra questa libreria. Le tabelle `mobjinfo`, `states` e `sprnames` restano dati nelle cartelle dei giochi.
 
 Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md).
 
@@ -8,7 +8,7 @@ Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md).
 
 - Unit nella cartella: 12 (nome a punti `DelphiDoom.Info.*`), 8 classi di servizio piu' `TInfoSpriteNames`, `TInfoRange`.
 - Interfacce dichiarate: `IInfoMobjSource`, `IInfoStateSource`, `IInfoSpriteSource`, `IInfoStateTokens`, `IInfoStateText`, `IInfoThingNames`, `IInfoNameList`, `IInfoConstSink`, `IInfoRandom`, `IInfoRandomRules`.
-- Il collegamento ai globali del motore sta fuori dalla libreria, in `Base\DelphiDoom.Engine.Info.*`.
+- Il collegamento ai globali del motore sta fuori dalla libreria, in `IdTech1\Base\DelphiDoom.Engine.Info.*`.
 
 ## Prova
 

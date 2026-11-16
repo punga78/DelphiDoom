@@ -23,10 +23,10 @@ type
   strict private
     function KindOf(AType: floor_e): TFloorKind;
     function StairOf(AType: stair_e): TStairKind;
-    /// <summary>The body of the loop of EV_DoFloor as Base\p_floor.pas writes it now</summary>
+    /// <summary>The body of the loop of EV_DoFloor as IdTech1\Base\p_floor.pas writes it now</summary>
     procedure NewSpawnFloor(AFloor: Pfloormove_t; ASector: Psector_t; ALine: Pline_t;
       AType: floor_e; const AProfile: TFloorProfile; AModern: Boolean);
-    /// <summary>The changes of T_MoveFloor at the destination as Base\p_floor.pas writes them now</summary>
+    /// <summary>The changes of T_MoveFloor at the destination as IdTech1\Base\p_floor.pas writes them now</summary>
     procedure NewFloorArrival(AFloor: Pfloormove_t);
     procedure CheckSpawnParity(AGame: TPlatGame; AVersion: Integer; ASeed: Cardinal);
     procedure CheckStairParity(AGame: TPlatGame; AVersion: Integer);
@@ -598,7 +598,7 @@ begin
     else
       OldDoomStairs(LType, @LOldFirst, @LOldNext, LOldSpeed, LOldSize);
 
-    // EV_BuildStairs as Base\p_floor.pas writes it now
+    // EV_BuildStairs as IdTech1\Base\p_floor.pas writes it now
     LPlan := TFloorMachine.StairPlan(StairOf(LType), AVersion > VERSION115,
       TFloorGames.ProfileOf(AGame));
     LNewFirst.direction := LPlan.Direction;

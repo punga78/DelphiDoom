@@ -12,4 +12,4 @@ Il **collegamento di Pascal Script al motore di id Tech 1** (issue #221): cio' c
 | `psi_game`, `psi_globals`, `psi_map`, `psi_overlay`, `psi_system` | le facciate `PS_*` storiche che il motore chiama (attori, variabili di mappa e di mondo, speciali, overlay, sistema) |
 | `dd_compiler` | l'implementazione delle DLL `ddc_<gioco>` (compila, elenca unit, funzioni, costanti, classi, ACTORDEF, CSV delle tabelle) |
 
-Gli adattatori che leggono i globali (`Base\DelphiDoom.Engine.Script.*`) e `ComposeScriptHost` (in `DelphiDoom.Engine.Composition`) restano in `Base`. Nomi delle unit invariati, tranne il manager (`DelphiDoom.ScriptHost.Manager` -> `DelphiDoom.ScriptEngine.Manager`).
+Gli adattatori che leggono i globali (`IdTech1\Base\DelphiDoom.Engine.Script.*`) e `ComposeScriptHost` (in `DelphiDoom.Engine.Composition`) restano in `Base`. Nomi delle unit invariati, tranne il manager (`DelphiDoom.ScriptHost.Manager` -> `DelphiDoom.ScriptEngine.Manager`).

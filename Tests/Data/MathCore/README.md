@@ -1,6 +1,6 @@
 # Dati di prova di Framework\MathCore (issue #75)
 
-I file `*.golden.txt` sono l'uscita del **vecchio codice del motore** (`Base\m_fixed.pas`, `tables.pas`,
+I file `*.golden.txt` sono l'uscita del **vecchio codice del motore** (`IdTech1\Base\m_fixed.pas`, `tables.pas`,
 `m_vectors.pas`, `m_bbox.pas`, `m_rnd.pas`, `m_stack.pas`, `m_hash.pas`, `m_crc32.pas`, `m_sha1.pas`),
 compilato con Delphi 11 Win32, con ottimizzazioni spente, in un programma di prova **fuori dal repository**
 (l'harness non si committa). Ogni riga è `chiave=impronta/conteggio`: l'impronta è un FNV-1a a 64 bit dei risultati
@@ -24,7 +24,7 @@ serie, in entrambe le parti.
 | `stack.golden.txt` | sequenze di push/pop e add/remove di `TIntegerStack` e `TIntegerQueue` |
 | `checksums.golden.txt` | `GetCRC32` su file, `SHA1_CalcSHA1Buf` (esadecimale). Verificati anche con i valori noti degli standard (`123456789` = CBF43926, `abc` = A9993E36...) |
 
-Le tabelle sono copiate dal vecchio codice con un `awk` sulle righe di `Base\tables.pas`, `m_rnd.pas` e `m_crc32.pas`
+Le tabelle sono copiate dal vecchio codice con un `awk` sulle righe di `IdTech1\Base\tables.pas`, `m_rnd.pas` e `m_crc32.pas`
 (non a mano) e il test confronta le impronte con quelle delle tabelle vecchie.
 
 ## Differenze volute dal vecchio codice

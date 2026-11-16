@@ -9,7 +9,7 @@
 unit mp3_Source;
 {$I Mp3Codegen.inc}
 
-// Replaces the use of TDStream of Common\d_delphi.pas (issue #224): the decoder
+// Replaces the use of TDStream of IdTech1\Common\d_delphi.pas (issue #224): the decoder
 // needs only Read, Seek, Size, Position and IOResult of its input.
 
 interface

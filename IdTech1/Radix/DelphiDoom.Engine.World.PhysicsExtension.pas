@@ -21,7 +21,7 @@ type
   /// <summary>
   ///   The physics of Rad-X where the rules of Doom (TInterGameRules, TMapGameRules, TMobjGameRules)
   ///   ask for it (issue #169, the "Aggancio della fisica" of IdTech1\Radix\CLAUDE.md). The unit has the
-  ///   name and the signatures of the one of Doom\ (which adds nothing and compiles to nothing); the
+  ///   name and the signatures of the one of IdTech1\Doom\ (which adds nothing and compiles to nothing); the
   ///   project of Radix lists this one, so the engine of the other games has no call at all. The
   ///   numbers are in the classes DelphiDoom.Radix.Physics.* of IdTech1\Radix, the state of the craft
   ///   and of the walls in radix_physics and radix_walls

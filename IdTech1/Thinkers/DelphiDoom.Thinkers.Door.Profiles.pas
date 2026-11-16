@@ -171,7 +171,7 @@ begin
 end;
 
 //==============================================================================
-// Doom (T_VerticalDoor, EV_DoDoor, EV_VerticalDoor of Doom\p_doors.pas)
+// Doom (T_VerticalDoor, EV_DoDoor, EV_VerticalDoor of IdTech1\Doom\p_doors.pas)
 //==============================================================================
 function DoomProfile: TDoorProfile;
 begin
@@ -231,7 +231,7 @@ begin
 end;
 
 //==============================================================================
-// Heretic (Heretic\p_doors.pas): no blazing doors, no lights, and the sounds are not the
+// Heretic (IdTech1\Heretic\p_doors.pas): no blazing doors, no lights, and the sounds are not the
 // ones of Doom (the door that goes down because of the wait still says "open")
 //==============================================================================
 function HereticProfile: TDoorProfile;
@@ -269,7 +269,7 @@ begin
 end;
 
 //==============================================================================
-// Strife (Strife\p_doors.pas): split doors, shop doors, and the sounds that the door keeps
+// Strife (IdTech1\Strife\p_doors.pas): split doors, shop doors, and the sounds that the door keeps
 //==============================================================================
 function StrifeProfile: TDoorProfile;
 begin

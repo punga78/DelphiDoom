@@ -124,7 +124,7 @@ La libreria lavora su `TBytes` e `TArray<Cardinal>`, che **non possono avvolgere
 
 ## 7. Fase 2 (issue #135): i chiamanti usano la libreria senza facciate
 
-- `Base\r_grow.pas` è cancellata: `R_GrowSpan` sta in `r_cache_flats.pas` (l'unico chiamante), che riceve
+- `IdTech1\Base\r_grow.pas` è cancellata: `R_GrowSpan` sta in `r_cache_flats.pas` (l'unico chiamante), che riceve
   `IImagingSpanGrower` da `ComposeImaging` con `R_ConfigureFlatCache` (solo software).
 - `R_ShrinkFlatTo64x64` e `R_ConfigureFlatShrink` di `r_flatinfo.pas` sono `V_ShrinkFlatTo64x64` e
   `V_ConfigureFlatShrink` di `v_video.pas` (l'unico chiamante, `V_TileScreen8`). `r_flatinfo.pas` tiene solo
@@ -142,4 +142,4 @@ La libreria lavora su `TBytes` e `TArray<Cardinal>`, che **non possono avvolgere
 
 ## 8. Melt del wipe collegato (issue #185)
 
-Il "secondo passo" del paragrafo 3 e' fatto per il melt: `IImagingMeltWipe.StartOnBuffers` prende puntatori ai buffer del motore (nessuna copia per fotogramma) e `Base\f_wipe.pas` e' la facciata (`wipe_Configure` da `ComposeImaging`, numeri casuali da `TEngineImagingRandom`). Le righe dei paragrafi 2, 3 e 4 che lo danno come non collegato valgono per com'era prima. Dettagli: `CLAUDE.md` di questa cartella.
+Il "secondo passo" del paragrafo 3 e' fatto per il melt: `IImagingMeltWipe.StartOnBuffers` prende puntatori ai buffer del motore (nessuna copia per fotogramma) e `IdTech1\Base\f_wipe.pas` e' la facciata (`wipe_Configure` da `ComposeImaging`, numeri casuali da `TEngineImagingRandom`). Le righe dei paragrafi 2, 3 e 4 che lo danno come non collegato valgono per com'era prima. Dettagli: `CLAUDE.md` di questa cartella.

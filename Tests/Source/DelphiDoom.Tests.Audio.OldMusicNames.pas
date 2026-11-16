@@ -16,7 +16,7 @@ uses
 
 type
   /// <summary>
-  ///   Copy of S_GetListFromAlias and of the list of S_DoChangeMusic of Base\s_sound.pas at
+  ///   Copy of S_GetListFromAlias and of the list of S_DoChangeMusic of IdTech1\Base\s_sound.pas at
   ///   54262e7a (issue #185). The TDStringList of d_delphi is a TStringList filled with the
   ///   copy of TDStrings.SetTextStr; the {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)} is the
   ///   AHereticOrHexen argument

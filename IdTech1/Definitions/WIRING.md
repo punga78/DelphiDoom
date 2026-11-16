@@ -1,6 +1,6 @@
 # IdTech1\Definitions - come collegarla al motore (issue #71, parte della #45)
 
-La libreria legge ANIMDEFS, la tabella degli interruttori (lump SWITCHES di BOOM e tabelle compilate dei quattro giochi) e la tabella del terreno dei flat, e ne fa dei modelli neutri. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner` (`Strings`, `Scanner`, `Text`). **Il collegamento non e' stato fatto**: `Base\p_animdefs.pas`, `<Gioco>\p_switch.pas` e `<Gioco>\p_terrain.pas` sono com'erano. Qui sotto cosa serve.
+La libreria legge ANIMDEFS, la tabella degli interruttori (lump SWITCHES di BOOM e tabelle compilate dei quattro giochi) e la tabella del terreno dei flat, e ne fa dei modelli neutri. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner` (`Strings`, `Scanner`, `Text`). **Il collegamento non e' stato fatto**: `IdTech1\Base\p_animdefs.pas`, `<Gioco>\p_switch.pas` e `<Gioco>\p_terrain.pas` sono com'erano. Qui sotto cosa serve.
 
 ## 1. Unit da aggiungere ai `.dpr`
 
@@ -24,7 +24,7 @@ Riga per `Tools\build.bat` (lista `TESTS`): ` Tests\DelphiDoom.Tests.Definitions
 
 | Vecchio | Nuovo |
 |---|---|
-| `P_InitFTAnims` (lettura del testo, `Base\p_animdefs.pas`) | `TDefinitionsFactory.CreateAnimDefsParser(catalogo, log).Parse(testo)` -> `TArray<TDefAnimation>` |
+| `P_InitFTAnims` (lettura del testo, `IdTech1\Base\p_animdefs.pas`) | `TDefinitionsFactory.CreateAnimDefsParser(catalogo, log).Parse(testo)` -> `TArray<TDefAnimation>` |
 | `AnimDefs[]`, `FrameDefs[]` (con `index` e `tics` gia' risolti) | il motore le riempie dal modello (sotto) |
 | lettura di `SWITCHES` in `P_InitSwitchList` di Doom e Strife (record `wad_switchlist_t`, `Z_Malloc`) | `CreateSwitchLumpReader(AHasSound)` (`False` Doom, `True` Strife) -> `TArray<TDefSwitchPair>` |
 | tabelle `fixedalphSwitchList` (Doom, Strife) e `alphSwitchList` (Heretic, Hexen) | `CreateSwitchTable(TDefGame)` |
@@ -66,7 +66,7 @@ Le due liste restano nell'ordine di prima (base, poi ogni riga `pic`, animazione
 
 `P_TerrainTypeForName(flatname)` diventa `TerrainKindToFloor(table.KindForName(flatname))` dove la traduzione e' una tabella del motore dai nomi neutri ai suoi `FLOOR_*` (**i numeri cambiano per gioco**: Doom e Strife `Solid 0, Water 1, Lava 2, Sludge 3, Nukage 4`; Heretic `0..3` senza Nukage; Hexen `Solid 0, Ice 1, (Liquid 2 non usato), Water 3, Lava 4, Sludge 5`). La tabella (`IDefTerrainTable`) si crea una volta nel composition root. `P_GetTerrainType` di Strife e i commenti di `r_data.pas` (`flat.terraintype := P_TerrainTypeForName(...)`) restano chiamanti.
 
-**Stato attuale (issue #136)**: i quattro `p_terrain.pas` sono stati cancellati. La tabella non ha stato e non passa piu' dal composition root: `R_FlatTerrainType` di `Base\r_data.pas` chiama `TTerrainTables.KindForName(gioco, nome)` (statica, scorre la lista del gioco senza crearla) e traduce con `TERRAIN_FLOORS`; i `FLOOR_*` di Doom e Strife e `allowterrainsplashes` sono in `Base\p_local.pas`, `P_GetTerrainType` di Strife in `Strife\p_mobj.pas` (legge `flats[].terraintype`).
+**Stato attuale (issue #136)**: i quattro `p_terrain.pas` sono stati cancellati. La tabella non ha stato e non passa piu' dal composition root: `R_FlatTerrainType` di `IdTech1\Base\r_data.pas` chiama `TTerrainTables.KindForName(gioco, nome)` (statica, scorre la lista del gioco senza crearla) e traduce con `TERRAIN_FLOORS`; i `FLOOR_*` di Doom e Strife e `allowterrainsplashes` sono in `IdTech1\Base\p_local.pas`, `P_GetTerrainType` di Strife in `IdTech1\Strife\p_mobj.pas` (legge `flats[].terraintype`).
 
 ## 3. Composition root (`DelphiDoom.Engine.Composition`)
 
@@ -79,9 +79,9 @@ Adattatori sottili nel motore (una unit per classe, `DelphiDoom.Engine.Definitio
 
 ## 4. Dopo il collegamento si cancella
 
-- da `Base\p_animdefs.pas`: il corpo di `P_InitFTAnims` oltre il riempimento delle tabelle, le costanti `SCI_*`, `ANIM_SCRIPT_NAME` resta;
-- da `Doom\p_switch.pas`, `Strife\p_switch.pas`: `wad_switchlist_t` e relativi array, `fixedalphSwitchList`, `alphSwitchList`, la lettura e il ciclo di scelta;
-- da `Heretic\p_switch.pas`, `Hexen\p_switch.pas`: `alphSwitchList` (la tabella passa alla libreria);
+- da `IdTech1\Base\p_animdefs.pas`: il corpo di `P_InitFTAnims` oltre il riempimento delle tabelle, le costanti `SCI_*`, `ANIM_SCRIPT_NAME` resta;
+- da `IdTech1\Doom\p_switch.pas`, `IdTech1\Strife\p_switch.pas`: `wad_switchlist_t` e relativi array, `fixedalphSwitchList`, `alphSwitchList`, la lettura e il ciclo di scelta;
+- da `IdTech1\Heretic\p_switch.pas`, `IdTech1\Hexen\p_switch.pas`: `alphSwitchList` (la tabella passa alla libreria);
 - da tutti i `p_terrain.pas`: `terraintypedefs` e il ciclo (resta la traduzione `TDefTerrainKind` -> `FLOOR_*`; da Heretic anche i commenti `P_TerrainTypeForNum`).
 
 ## 5. Differenze dal vecchio codice

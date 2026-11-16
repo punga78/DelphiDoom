@@ -8,7 +8,7 @@ Il testo di riferimento (contratto, confronto riga per riga dei tre mixer, cosa 
 
 - Unit nella cartella: 11 (nome a punti `DelphiDoom.AudioMix.*`): `Types`, `Intf`, `Saturation`, `VoiceList`, `LevelMeter`, `MidiSynth`, `FixedPointResampler`, `FramePositionResampler`, `UnsignedMonoVoice`, `StereoChannelVoice`, `NearestRateVoice`.
 - Interfacce dichiarate: `IPcmVoice`, `IPcmResampler`, `IPcmMidiSynth`.
-- Nessuna dipendenza da `Base\`, dai giochi o da altre librerie: solo la RTL.
+- Nessuna dipendenza da `IdTech1\Base\`, dai giochi o da altre librerie: solo la RTL.
 
 ## Prova
 

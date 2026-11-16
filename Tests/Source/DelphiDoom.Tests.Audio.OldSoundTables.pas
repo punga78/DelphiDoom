@@ -41,8 +41,8 @@ type
   end;
 
   /// <summary>
-  ///   Copy of S_GetMusicNumForName of Base\sounds.pas and of S_AddFileName of
-  ///   Base\s_pk3sounds.pas at 107c7c4b4 (issue #243), on tables and lumps that the test
+  ///   Copy of S_GetMusicNumForName of IdTech1\Base\sounds.pas and of S_AddFileName of
+  ///   IdTech1\Base\s_pk3sounds.pas at 107c7c4b4 (issue #243), on tables and lumps that the test
   ///   fills (the globals and W_CheckNumForName of the engine), with the helpers of d_delphi
   ///   that they used (atoi, itoa, strupper, Pos1, CharPos, firstword_ch, fext, fname) copied
   ///   as they were

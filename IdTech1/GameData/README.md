@@ -85,11 +85,11 @@ eseguibili non sono stati avviati: la scelta dei profili è la stessa per i quat
 2. **Iwad**: un profilo `Speed` in `TIwadGames` (il file dei dati è `SPEEDH.JCL`; `DelphiDoom.Iwad.Games` oggi ha solo i quattro giochi con
    IWAD di Doom). L'identificazione del `.JCL` la può fare `TSpeedContainer` (la firma `$DF73B489` in fondo al file).
 3. **Livello** (`ComposeLevelRules`): una classe `TSpeedLevelRules` (`ILevelGameRules`, `ILevelGeometryRules`, `ILevelThingRules`) come
-   `Doom\DelphiDoom.Engine.Level.DoomRules.pas`, perché Speed ha cose, tag e statistiche suoi (i livelli sono corse). Oggi la scelta è
+   `IdTech1\Doom\DelphiDoom.Engine.Level.DoomRules.pas`, perché Speed ha cose, tag e statistiche suoi (i livelli sono corse). Oggi la scelta è
    per `{$IFDEF}` dentro `ComposeLevelRules`: anche lì un `case` sul nome del gioco, preso da `TGameAliases`, sostituirebbe gli `{$IFDEF}`.
 4. **Mobj e giocatore**: `mobj_t` e `player_t` di Speed hanno altri campi (`carid`, `tiredistance[0..3]: double`, ...): serve la tabella dei
    campi di `Framework\Serializer` per il gioco e, finché i thinker restano record nella zone memory, una cartella `IdTech1\Speed\` con le unit
-   diverse da `Doom\` (fetta S5).
+   diverse da `IdTech1\Doom\` (fetta S5).
 5. **Definitions** (`TERRAIN_GAME`): Speed ha il terreno di Doom, quindi `TDefGame.Doom`.
 
 Il resto (`IdTech1\Speed`) è nel suo `README.md`.

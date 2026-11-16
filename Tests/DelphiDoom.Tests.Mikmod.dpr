@@ -62,7 +62,7 @@ uses
   DelphiDoom.Mikmod.TrackerPlayer in '..\Framework\Mikmod\DelphiDoom.Mikmod.TrackerPlayer.pas',
   DelphiDoom.Mikmod.TrackerEngine in '..\Framework\Mikmod\DelphiDoom.Mikmod.TrackerEngine.pas',
   DelphiDoom.Tests.Mikmod.TrackerEngine in 'Source\DelphiDoom.Tests.Mikmod.TrackerEngine.pas',
-  DelphiDoom.Audio.ModuleDetector in '..\Base\DelphiDoom.Audio.ModuleDetector.pas',
+  DelphiDoom.Audio.ModuleDetector in '..\IdTech1\Base\DelphiDoom.Audio.ModuleDetector.pas',
   DelphiDoom.Tests.Audio.ModuleDetector in 'Source\DelphiDoom.Tests.Audio.ModuleDetector.pas',
   DelphiDoom.Tests.Mikmod.Client in 'Source\DelphiDoom.Tests.Mikmod.Client.pas',
   DelphiDoom.Tests.Mikmod.Loader in 'Source\DelphiDoom.Tests.Mikmod.Loader.pas',

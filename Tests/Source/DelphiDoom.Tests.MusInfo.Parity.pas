@@ -15,7 +15,7 @@ uses
 type
   /// <summary>
   ///   Tests\Data\MusInfo\musinfo.golden.txt was written by the old P_InitMusInfo,
-  ///   P_AddMusInfo and P_FindMusinfoMusic (Base\p_musinfo.pas), compiled with stubs of the
+  ///   P_AddMusInfo and P_FindMusinfoMusic (IdTech1\Base\p_musinfo.pas), compiled with stubs of the
   ///   engine units, on the texts of cases.txt: for each case the warnings, every entry and
   ///   the answers to the questions. The library has to write the same dump
   /// </summary>

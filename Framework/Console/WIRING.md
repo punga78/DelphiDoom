@@ -72,7 +72,7 @@ Il progetto di test usa `Tests\Data\Console` (corpus, golden e `scripts\*.con`):
    ```
    `C_AddCmd`, `C_ExecuteCmd`, `C_GetCmd` restano come facciate sottili sopra questi due oggetti (circa 700 chiamanti:
    non si migrano uno a uno), come per le `W_*`.
-2. Adattatori nel motore (nuove unit `Base\DelphiDoom.Engine.Console.*`, una classe per unit):
+2. Adattatori nel motore (nuove unit `IdTech1\Base\DelphiDoom.Engine.Console.*`, una classe per unit):
    - `IConsoleOutput`: `Write` = `printf(AText)` (come per `TEngineLogSink`: la catena `outproc` arriva a `C_AddText`);
    - `IConsoleVariable` + `IConsoleVariableSource`: sopra la tabella `defaults` di `m_defs.pas` (`pd.name`, `_type`,
      `location`, `setable`); `setable` e' `DFS_NEVER=[]`, `DFS_SINGLEPLAYER=[camSinglePlayer]`, `DFS_NETWORK=[camNetwork]`,
@@ -119,7 +119,7 @@ tasti oltre 255, completamento TAB nuovo, `Param` senza la tabella dei caratteri
 
 `c_con.pas` non è più una facciata: la console sullo schermo (testo, scorrimento, tasti, disegno, comandi `closeconsole`,
 `openconsole`, `consolecolormap`, `cls`, `pause_console`, `use`, `freeze`) è la classe `TEngineConsoleScreen`
-(`Base\DelphiDoom.Engine.Console.Screen.pas`, contratto `IEngineConsole` in `DelphiDoom.Engine.Console.Intf`). Riceve dal
+(`IdTech1\Base\DelphiDoom.Engine.Console.Screen.pas`, contratto `IEngineConsole` in `DelphiDoom.Engine.Console.Intf`). Riceve dal
 costruttore registro, interprete e gli oggetti della libreria (comandi standard, autoexec, variabili, coda, riga di input), che
 possiede e libera in `Shutdown`; `ComposeConsole` la crea e la dà a `d_main` (quattro giochi), `gl_main`/`v_displaymode`,
 `p_tick`, `p_common`, `psi_system` e al ciclo della rete (`TEngineNetGame`). `outproc` di `d_delphi` resta una procedura

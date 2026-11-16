@@ -6,7 +6,7 @@ del registratore delle chiamate OpenGL (`Tools\Verifica\opengl\Confronta.ps1 -Vo
 
 | File | Contenuto |
 |---|---|
-| `zvox_d.pk3` | Doom: `voxels/ZVOXAA.DDVOX` (piramide a gradini 8x8x8, testo DDVOX) e un `VOXELDEF` che lega **ogni stato** di `Doom\info_h.pas` (1076) al voxel con `state <S_xxx> voxel "zvoxaa.ddvox"` |
+| `zvox_d.pk3` | Doom: `voxels/ZVOXAA.DDVOX` (piramide a gradini 8x8x8, testo DDVOX) e un `VOXELDEF` che lega **ogni stato** di `IdTech1\Doom\info_h.pas` (1076) al voxel con `state <S_xxx> voxel "zvoxaa.ddvox"` |
 | `zvox_h.pk3`, `zvox_x.pk3`, `zvox_s.pk3` | lo stesso per Heretic (1205 stati), Hexen (2845) e Strife (1566) |
 | `zvox_p.pk3` | Doom con `AngleOffset 45`, `DroppedSpin 60` e `PlacedSpin 90` sul voxel (il ramo della rotazione di `gld_DrawVoxel`) |
 

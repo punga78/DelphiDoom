@@ -38,7 +38,7 @@ Servono a tutti i progetti che compilano `r_data` e `r_flatinfo`: `Doom32`, `GLD
 
 Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.TextureDefs`
 
-## 2. Adattatori del motore (da scrivere, in `Base\`)
+## 2. Adattatori del motore (da scrivere, in `IdTech1\Base\`)
 
 - `TEngineTextureLumpSource` (`ITextureDefsLumpSource`): `TryReadLump(nome)` = `W_CheckNumForName(nome)`; se `-1` dà
   `False`, altrimenti copia i byte del lump (`W_LumpLength` + `W_ReadLump` in un `TBytes`; niente zone memory: il
@@ -48,7 +48,7 @@ Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\
 - Il formato (`Standard`/`Strife`) lo sceglie `ComposeEngine` (o il punto che crea il loader) con un `{$IFDEF STRIFE}`
   solo lì.
 
-## 3. `R_InitTextures` (`Base\r_data.pas`): cosa sostituisce cosa
+## 3. `R_InitTextures` (`IdTech1\Base\r_data.pas`): cosa sostituisce cosa
 
 Il modello è **separato dalla sua applicazione**: la libreria dà il modello, il motore costruisce gli array globali.
 
@@ -73,7 +73,7 @@ Il modello è **separato dalla sua applicazione**: la libreria dà il modello, i
 Resta nel motore, non portato: `R_GenerateLookup`, `R_GenerateComposite`, `R_DrawColumnInCache*`, `R_GetColumn` e ogni
 cache; `R_NameForSideTexture`, `R_TextureNumForName` e simili (ricerche sugli array globali).
 
-## 4. `R_ParseFlatInfoLumps` (`Base\r_flatinfo.pas`)
+## 4. `R_ParseFlatInfoLumps` (`IdTech1\Base\r_flatinfo.pas`)
 
 `R_RetrieveFlatInfo` e la raccolta dei testi (lump `FLATINFO`, `PAK_StringIterator`) restano. `R_ParseFlatInfoText(text)`
 diventa:
@@ -88,7 +88,7 @@ sono gli stessi testi di `I_Warning`, con CR LF finale). `R_FlatSizeFromSize` re
 `TTextureDefsFlatSizes.CodeFromSize`; le costanti `FS64x64..FS4096x4096` hanno gli stessi valori di `FLAT_SIZE_*`.
 Non portati: `R_ShrinkFlatTo64x64` e i tipi `flatNxN_t` (lavorano sui pixel), `dsscale_t`/`ds_scale`.
 
-## 5. `Base\r_pk3textures.pas`: nota importante
+## 5. `IdTech1\Base\r_pk3textures.pas`: nota importante
 
 Nonostante l'issue, **il motore non legge un lump `TEXTURES` testuale** (formato ZDoom): le "texture del PK3" sono le
 immagini sciolte in `textures/` che `R_InitPK3Textures` converte in patch (`R_TextureAsPatch`) e flat

@@ -93,7 +93,7 @@ nessun `I_Error` in `DATA\LOGS\*_stderr.txt`.
   compilati solo quando `CPUX86` non è definito, quindi **non sono mai stati compilati**: sono corpi di
   una riga che chiamano le classi di `Framework\MathCore` testate contro l'`asm` (vedi sopra). Per controllarne
   almeno la sintassi a 32 bit, in una copia di lavoro (da non committare) mettere `{$UNDEF CPUX86}`
-  come prima riga di `Base\m_fixed.pas`, `Base\p_local.pas`, `Base\r_softlights.pas`, `Base\r_mmx.pas`
-  e `Common\d_delphi.pas` (subito dopo `{$I Doom32.inc}` dove c'è) e fare `Tools\build.bat Doom32 Release`: se
+  come prima riga di `IdTech1\Base\m_fixed.pas`, `IdTech1\Base\p_local.pas`, `IdTech1\Base\r_softlights.pas`, `IdTech1\Base\r_mmx.pas`
+  e `IdTech1\Common\d_delphi.pas` (subito dopo `{$I Doom32.inc}` dove c'è) e fare `Tools\build.bat Doom32 Release`: se
   compila, i rami Pascal sono corretti per la sintassi (le prestazioni e la parità si provano come sopra).
 - `Framework\PascalScript\ps_runtime.pas` (`x86.inc`, `x64.inc`): lasciato com'è; vedi `PENDING_ISSUES.md`.

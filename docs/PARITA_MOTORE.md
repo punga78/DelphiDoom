@@ -103,7 +103,7 @@ Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 1738 (tic 1695): full,vie
 
 La prima differenza e' al tic 272 (il numero casuale "di presentazione" cambia perche' il suono della porta parte un tic dopo) e poi nel fotogramma del tic 1695 (la porta si vede). L'impronta dei settori cambia quando la porta si muove.
 
-**2. Un'unita' di differenza nella gravita' dei mostri** (`Doom\p_mobj.pas`: `grav := grav + 1` se `MF_COUNTKILL`):
+**2. Un'unita' di differenza nella gravita' dei mostri** (`IdTech1\Doom\p_mobj.pas`: `grav := grav + 1` se `MF_COUNTKILL`):
 
 ```
 Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 3562 (tic 3560): total,mobj | ...
@@ -114,7 +114,7 @@ Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 3605 (tic 3562): full,vie
 
 Al tic giusto, sul mobj giusto (il decimo della lista dei thinker), nel campo giusto (`momz`).
 
-**3. Un `P_Random()` in piu' in `A_Chase`** (`Doom\p_enemy.pas`):
+**3. Un `P_Random()` in piu' in `A_Chase`** (`IdTech1\Doom\p_enemy.pas`):
 
 ```
 Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 49 (tic 47): total,prnd | ... prnd=137 | ...
@@ -125,7 +125,7 @@ Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 115 (tic 72): full,view .
 
 L'indice del generatore del gioco (`prnd`) cambia al primo mostro che insegue: tic 47.
 
-**4. Un pixel diverso nella colonna di un muro** (`Base\r_batchcolumn.pas`: un pixel in (150,100) con `xor 1` dopo `R_DrawColumnMedium_Batch`):
+**4. Un pixel diverso nella colonna di un muro** (`IdTech1\Base\r_batchcolumn.pas`: un pixel in (150,100) con `xor 1` dopo `R_DrawColumnMedium_Batch`):
 
 ```
 Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 1021 (tic 978): full,view | ...

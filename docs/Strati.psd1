@@ -22,10 +22,10 @@
 
   # Aree che per il grafo contano come una sola (stessi nomi di unit in piu' cartelle).
   Gruppi = @{
-    'Doom' = 'GiochiId'
-    'Heretic' = 'GiochiId'
-    'Hexen' = 'GiochiId'
-    'Strife' = 'GiochiId'
+    'IdTech1\Doom' = 'GiochiId'
+    'IdTech1\Heretic' = 'GiochiId'
+    'IdTech1\Hexen' = 'GiochiId'
+    'IdTech1\Strife' = 'GiochiId'
   }
 
   Aree = @{
@@ -164,12 +164,12 @@
     'Strumenti\VoxelEditor' = 'Strumenti'
     'Strumenti\Launcher' = 'Strumenti'
     # Cartelle dei prodotti
-    'Base' = 'IdTech1'
-    'Common' = 'IdTech1'
-    'Doom' = 'IdTech1'
-    'Heretic' = 'IdTech1'
-    'Hexen' = 'IdTech1'
-    'Strife' = 'IdTech1'
+    'IdTech1\Base' = 'IdTech1'
+    'IdTech1\Common' = 'IdTech1'
+    'IdTech1\Doom' = 'IdTech1'
+    'IdTech1\Heretic' = 'IdTech1'
+    'IdTech1\Hexen' = 'IdTech1'
+    'IdTech1\Strife' = 'IdTech1'
     'Games\OpenXcom' = 'Giochi'
     'Strumenti\DD_IDE' = 'Strumenti'
     'Strumenti\DD_Tools' = 'Strumenti'

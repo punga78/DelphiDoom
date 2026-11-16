@@ -5,10 +5,10 @@
 #   .\Tools\Verifica\opengl\Genera-Patch.ps1
 #
 # The patch touches only:
-#   Doom\GLDoom32.dpr, Heretic\GLHeretic32.dpr, Hexen\GLHexen32.dpr, Strife\GLStrife32.dpr  (the harness units)
+#   IdTech1\Doom\GLDoom32.dpr, IdTech1\Heretic\GLHeretic32.dpr, IdTech1\Hexen\GLHexen32.dpr, IdTech1\Strife\GLStrife32.dpr  (the harness units)
 #   IdTech1\OpenGl\Legacy\gl_main.pas     one call after ReadImplementationProperties (installs the thunks)
 #   IdTech1\OpenGl\Legacy\gl_render.pas   one call at the end of gld_Finish (end of a frame)
-#   Base\DelphiDoom.Engine.Level.Loader.pas   one call at the end of SetupLevel (the level is loaded)
+#   IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas   one call at the end of SetupLevel (the level is loaded)
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 Set-Location $root
@@ -59,7 +59,7 @@ foreach ($u in $units) {
 }
 $unitLines += "  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',$crlf"
 
-foreach ($dpr in @('Doom\GLDoom32.dpr', 'Heretic\GLHeretic32.dpr', 'Hexen\GLHexen32.dpr', 'Strife\GLStrife32.dpr')) {
+foreach ($dpr in @('IdTech1\Doom\GLDoom32.dpr', 'IdTech1\Heretic\GLHeretic32.dpr', 'IdTech1\Hexen\GLHexen32.dpr', 'IdTech1\Strife\GLStrife32.dpr')) {
   Edit-File $dpr {
     param($t)
     Replace-Once $t "  gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',")
@@ -80,14 +80,14 @@ Edit-File 'IdTech1\OpenGl\Legacy\gl_render.pas' {
   Replace-Once $t "  gld_PreprocessSegs;$crlf" "  gld_PreprocessSegs;$crlf  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);$crlf"
 }
 
-Edit-File 'Base\DelphiDoom.Engine.Composition.pas' {
+Edit-File 'IdTech1\Base\DelphiDoom.Engine.Composition.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   $t = Replace-Once $t "  I_ConfigureClock(LClock);$crlf" "  LClock := HarnessGl_Clock(LClock);$crlf  I_ConfigureClock(LClock);$crlf"
   Replace-Once $t "    TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineParityInputGate.Create(TEngineInputGate.Create, AParity)), TEngineScreenSize.Create,"
 }
 
-Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
+Edit-File 'IdTech1\Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   Replace-Once $t "  FinishLevel;$crlf" "  FinishLevel;$crlf  HarnessGl_AfterLevel(LMapName, Self, AEpisode, AMap, APlayerMask, Ord(ASkill));$crlf"
 }

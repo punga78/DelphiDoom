@@ -4,7 +4,7 @@
   Il confronto e' in Prova-Common.ps1 (comune a Prova-PMap.ps1 e Prova-PMobj.ps1).
 
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_user.pas (presa dal commit di partenza con git show)
-  prende il testo della routine unificata (Base\p_user.pas, le unit di Base per piu' giochi o la unit delle regole
+  prende il testo della routine unificata (IdTech1\Base\p_user.pas, le unit di Base per piu' giochi o la unit delle regole
   del gioco), sostituisce ogni chiamata a TUserGameRules con il corpo della regola di quel gioco e confronta il
   risultato con la routine vecchia, tolti commenti, spazi e maiuscole.
 
@@ -94,7 +94,7 @@ $Expansions = @(
      Note = 'il colore di Doom e Heretic e'' un metodo di TPlayerColormap (stesso testo)' }
   @{ R = 'P_PlayerThink'; F = 'TUserGameRules.AtEnd(player);'; D = '<<B:AtEnd>>' }
 
-  # --- gli artefatti di Heretic e Hexen (Base\DelphiDoom.Engine.World.PlayerArtifacts.pas) ---
+  # --- gli artefatti di Heretic e Hexen (IdTech1\Base\DelphiDoom.Engine.World.PlayerArtifacts.pas) ---
   @{ R = 'P_GetPlayerNum'; F = 'for i := 0 to MAXPLAYERS - 1 do if player = @players[i] then begin result := i; exit; end;'; D = $null
      Hexen = 'for i := 0 to MAXPLAYERS - 1 do begin if player = @players[i] then begin result := i; exit; end; end;'
      Note = 'Hexen scriveva un "begin ... end" attorno al solo if del for: stesso significato' }
@@ -116,7 +116,7 @@ $Methods = @{
 
 $Alias = @{ 'Doom|P_PlayerThink' = 'TPlayerThinker.Think'; 'Heretic|P_PlayerThink' = 'TPlayerThinker.Think'; 'Strife|P_PlayerThink' = 'TPlayerThinker.Think' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas', 'Base\DelphiDoom.Engine.World.PlayerThinker.pas', 'Base\DelphiDoom.Engine.World.PlayerArtifacts.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'IdTech1\Base\p_user.pas', 'IdTech1\Base\DelphiDoom.Engine.World.PlayerExtras.pas', 'IdTech1\Base\DelphiDoom.Engine.World.PlayerThinker.pas', 'IdTech1\Base\DelphiDoom.Engine.World.PlayerArtifacts.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.UserRules.pas' -Class 'TUserGameRules' -Expansions $Expansions `
-  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Extra @{ S = 'Base\p_user.pas'; C = 'Base\DelphiDoom.Engine.World.PlayerColormap.pas' }
+  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Extra @{ S = 'IdTech1\Base\p_user.pas'; C = 'IdTech1\Base\DelphiDoom.Engine.World.PlayerColormap.pas' }
 exit $bad

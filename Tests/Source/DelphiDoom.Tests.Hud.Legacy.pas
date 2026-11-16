@@ -7,7 +7,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-// The code of Base\hu_lib.pas and Base\hu_stuff.pas as it was before issue #185 (commit
+// The code of IdTech1\Base\hu_lib.pas and IdTech1\Base\hu_stuff.pas as it was before issue #185 (commit
 // 138347fd), copied line by line: the widgets as records, the message and chat logic, the
 // frame counter and the keyboard tables. Only the world around it is replaced by the variables
 // below (the players, the keys, the strings, the drawing that writes a log), so that the old and

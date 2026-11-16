@@ -3,7 +3,7 @@
 #
 #   .\Tools\Verifica\scripthost\Dump-L1.ps1 -Game Doom|Heretic|Hexen|Strife [-Update] [-Config Release|Debug]
 #
-# From Doom\ddc_doom.dpr (or the one of the game) it makes a CONSOLE program VshDump_<Game> (same units, same
+# From IdTech1\Doom\ddc_doom.dpr (or the one of the game) it makes a CONSOLE program VshDump_<Game> (same units, same
 # defines, ComposeEngine + DD_InitDoomEngine as the DLL does, then ScriptHostDump writes the file), builds it
 # with Tools\build.bat, runs it (no game is started: it is a tool, it needs no WAD) and compares the file with
 # Tests\Data\ScriptHost\<Game>.registration.golden.txt. With -Update the golden is overwritten (to be done only on
@@ -36,7 +36,7 @@ try {
   $dpr = Read-Source $dprSource
   $dpr = $dpr -replace "(?m)^library ddc_$lower;", "program $name;`r`n`r`n{`$APPTYPE CONSOLE}"
   $dpr = [regex]::Replace($dpr, '(?s)\r?\nexports\s+[^;]*;\r?\n', "`r`n")
-  $dpr = [regex]::Replace($dpr, "(  i_system in '\.\.\\Base\\i_system\.pas',\r?\n)",
+  $dpr = [regex]::Replace($dpr, "(  i_system in '\.\.\\IdTech1\Base\\i_system\.pas',\r?\n)",
     "`$1  ScriptHostDump in '..\Tools\Verifica\scripthost\ScriptHostDump.pas',`r`n")
   $body = "begin`r`n  ComposeEngine;`r`n  DD_InitDoomEngine;`r`n  VSH_WriteRegistrationDump(ParamStr(1));`r`nend.`r`n"
   $dpr = [regex]::Replace($dpr, '(?s)begin\s+ComposeEngine;\s+DD_InitDoomEngine;\s+end\.\s*$', $body)

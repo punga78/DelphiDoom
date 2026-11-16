@@ -1,20 +1,20 @@
-diff --git a/Heretic/Heretic32.dpr b/Heretic/Heretic32.dpr
+diff --git a/IdTech1\Heretic/Heretic32.dpr b/IdTech1\Heretic/Heretic32.dpr
 index b72497d1..b458ab68 100644
---- a/Heretic/Heretic32.dpr
-+++ b/Heretic/Heretic32.dpr
+--- a/IdTech1\Heretic/Heretic32.dpr
++++ b/IdTech1\Heretic/Heretic32.dpr
 @@ -174,6 +174,8 @@ uses
-   DelphiDoom.Engine.Midi.SongPlayer in '..\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
-   i_net in '..\Base\i_net.pas',
-   i_system in '..\Base\i_system.pas',
+   DelphiDoom.Engine.Midi.SongPlayer in '..\IdTech1\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
+   i_net in '..\IdTech1\Base\i_net.pas',
+   i_system in '..\IdTech1\Base\i_system.pas',
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
 +  harness_sweep in '..\Tools\Verifica\harness\harness_sweep.pas',
-   i_video in '..\Base\i_video.pas',
+   i_video in '..\IdTech1\Base\i_video.pas',
    DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
    DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
-diff --git a/Heretic/g_game.pas b/Heretic/g_game.pas
+diff --git a/IdTech1\Heretic/g_game.pas b/IdTech1\Heretic/g_game.pas
 index fcf125c3..f8708add 100644
---- a/Heretic/g_game.pas
-+++ b/Heretic/g_game.pas
+--- a/IdTech1\Heretic/g_game.pas
++++ b/IdTech1\Heretic/g_game.pas
 @@ -473,6 +473,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  

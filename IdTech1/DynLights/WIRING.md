@@ -1,6 +1,6 @@
 # IdTech1\DynLights - come collegarla al motore (issue #69)
 
-**Stato attuale (issue #137): collegata.** `ComposeDynLights` (in `DelphiDoom.Engine.Composition`) crea registro, parser, loader, animatore e il `IDynLightRenderCache` (`TDynLightRenderCache`: un record stabile per luce, calcolato al più una volta per tic) e lo dà a `r_main` (`R_ConfigureDynamicLights`) e `r_softlights` (`R_ConfigureSoftLights`) nel software, a `gl_render` (`gld_ConfigureDynamicLights`) in OpenGL. `Base\r_dynlights.pas` non ha più funzioni della libreria: tiene i buffer da ordinare dei renderer (`dlbuffer`, `dlsortitem_t`, `R_FreeDynamicLightItems`), `lightdeflumppresent`, `gldefs_as_lightdef`, `DLIGHTSDRAWRANGE` e `GLDRenderLight = TDynLightRender` (stesso layout del vecchio record). Il resto di questo file è il piano di collegamento originale.
+**Stato attuale (issue #137): collegata.** `ComposeDynLights` (in `DelphiDoom.Engine.Composition`) crea registro, parser, loader, animatore e il `IDynLightRenderCache` (`TDynLightRenderCache`: un record stabile per luce, calcolato al più una volta per tic) e lo dà a `r_main` (`R_ConfigureDynamicLights`) e `r_softlights` (`R_ConfigureSoftLights`) nel software, a `gl_render` (`gld_ConfigureDynamicLights`) in OpenGL. `IdTech1\Base\r_dynlights.pas` non ha più funzioni della libreria: tiene i buffer da ordinare dei renderer (`dlbuffer`, `dlsortitem_t`, `R_FreeDynamicLightItems`), `lightdeflumppresent`, `gldefs_as_lightdef`, `DLIGHTSDRAWRANGE` e `GLDRenderLight = TDynLightRender` (stesso layout del vecchio record). Il resto di questo file è il piano di collegamento originale.
 
 ## 1. Unit da aggiungere ai `.dpr` (tutti gli eseguibili che linkano `r_dynlights`: Doom, Heretic, Hexen, Strife, software e OpenGL)
 
@@ -23,7 +23,7 @@ Riga per `Tools\build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.DynLights`
 
 ## 2. Cosa sostituisce cosa
 
-| Vecchio (`Base\r_dynlights.pas`) | Nuovo |
+| Vecchio (`IdTech1\Base\r_dynlights.pas`) | Nuovo |
 |---|---|
 | `GLDLight` (`name`, `lighttype`, `r1..b2`, `colorinterval`, `colorchance`, `size1/2`, `interval`, `chance`, `offsetx1..z2`, `randomoffset`, `randomseed`) | `TDynLightDefinition` (`Name`, `Kind`, `R1..B2`, `ColorInterval`, `ColorChance`, `Size1/2`, `Interval`, `Chance`, `OffsetX1..Z2`, `RandomOffset`, `RandomSeed`) |
 | `GLDlightType` (`GLDL_POINT/FLICKER/PULSE`) | `TDynLightKind` (`Point`, `Flicker`, `Pulse`) |
@@ -67,11 +67,11 @@ Il messaggio `printf('SC_ParceDynamicLights: Parsing LIGHTDEF lumps.')` di `R_In
 
 ## 4. Cosa si può cancellare dopo il collegamento
 
-`Base\r_dynlights.pas` quasi per intero (resta la parte del renderer: `dlsortitem_t`, `dlbuffer`...). Consumatori da riscrivere (cercare `GLDLight`, `PGLDRenderLight`, `R_GetDynamicLight`, `R_FindDynamicLight`, `R_AddDynamicLight`, `lightdeflumppresent`): `Base\r_softlights.pas`, `Base\r_things.pas`, `Base\r_main.pas`, `IdTech1\OpenGl\Legacy\gl_lightmaps.pas`, `gl_render.pas`, `gl_shadows.pas`, `Doom|Heretic\*` che inizializzano le luci.
+`IdTech1\Base\r_dynlights.pas` quasi per intero (resta la parte del renderer: `dlsortitem_t`, `dlbuffer`...). Consumatori da riscrivere (cercare `GLDLight`, `PGLDRenderLight`, `R_GetDynamicLight`, `R_FindDynamicLight`, `R_AddDynamicLight`, `lightdeflumppresent`): `IdTech1\Base\r_softlights.pas`, `IdTech1\Base\r_things.pas`, `IdTech1\Base\r_main.pas`, `IdTech1\OpenGl\Legacy\gl_lightmaps.pas`, `gl_render.pas`, `gl_shadows.pas`, `Doom|IdTech1\Heretic\*` che inizializzano le luci.
 
 ## 5. Come sono stati ottenuti i golden
 
-`Tests\Data\DynLights\{opengl,software}.golden.txt` sono stati scritti dal **vero** `Base\r_dynlights.pas`, compilato fuori dal motore con `dcc32` (`-DOPENGL` e senza), insieme ai veri `Common\d_delphi.pas`, `Base\m_fixed.pas` (con il suo `FixedDiv` in assembler), `m_stack`, `sc_engine` e `sc_tokens`. Due differenze rispetto al sorgente del repository, entrambe additive e documentate:
+`Tests\Data\DynLights\{opengl,software}.golden.txt` sono stati scritti dal **vero** `IdTech1\Base\r_dynlights.pas`, compilato fuori dal motore con `dcc32` (`-DOPENGL` e senza), insieme ai veri `IdTech1\Common\d_delphi.pas`, `IdTech1\Base\m_fixed.pas` (con il suo `FixedDiv` in assembler), `m_stack`, `sc_engine` e `sc_tokens`. Due differenze rispetto al sorgente del repository, entrambe additive e documentate:
 
 - la copia compilata ha **due funzioni aggiunte in fondo** (`HarnessCount`, `HarnessLight`) per leggere `dlightslist`/`numdlights`, che sono privati; nient'altro è cambiato
 - le unit del motore da cui dipende sono *stub* (fuori dal repository): `m_rnd.C_Random` (`(n * 37 + 11) and 255`, con `n` che riparte da 0 a ogni caso), `p_tick.leveltime`, `d_main.devparm`, `gl_defs.MAP_COEFF = 128.0`, `i_system` (scrive gli avvisi su una stringa), `w_wad`/`w_pak` finti, `info` con **12 stati** finti e `info_common` con 4 mostri e 5 sprite (`Info_GetStatesForMobjInfo` dà gli stati di ogni mostro).

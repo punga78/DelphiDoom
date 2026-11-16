@@ -1,6 +1,6 @@
 # IdTech1\MapInfo - come collegarla al motore (issue #69)
 
-La libreria non è collegata: `Base\p_umapinfo.pas` è com'era. Questo file dice cosa fare per collegarla.
+La libreria non è collegata: `IdTech1\Base\p_umapinfo.pas` è com'era. Questo file dice cosa fare per collegarla.
 
 ## 1. Unit da aggiungere ai `.dpr` (Doom32, GLDoom32, Heretic32, GLHeretic32, Strife32, GLStrife32 e `ddc_*` se linkano `p_umapinfo`)
 
@@ -22,7 +22,7 @@ Riga per `Tools\build.bat` (lista `TESTS`): `Tests\DelphiDoom.Tests.MapInfo`
 
 ## 2. Cosa sostituisce cosa
 
-| Vecchio (`Base\p_umapinfo.pas`) | Nuovo |
+| Vecchio (`IdTech1\Base\p_umapinfo.pas`) | Nuovo |
 |---|---|
 | `U_ParseMapInfo(is_default, lumpname)` | `IMapInfoLoader.Load(lumpname, is_default)` |
 | `U_FreeMapInfo` | `IMapInfoCatalog.ClearMaps` (come prima, i default restano) |
@@ -62,12 +62,12 @@ loader  := TMapInfoFactory.CreateLoader(textSource, textFilter, parser, catalog)
 
 ## 4. Cosa si può cancellare dopo il collegamento
 
-Tutto `Base\p_umapinfo.pas` (905 righe) tranne le due costanti dei nomi dei lump, che si spostano nel composition root. Anche `p_uactornames` resta, serve all'adattatore degli attori.
-I consumatori da riscrivere (cercare `u_mapinfo`, `default_mapinfo`, `Pmapentry_t`, `ubigstringtostring`): `Doom|Heretic|Strife\g_game.pas` (`G_LookupMapinfo` ritorna un puntatore), `Doom\wi_stuff.pas`, e i moduli che leggono `gamemapinfo`. Proposta: tenere un `TMapInfoEntry` (per valore) più un flag di validità, oppure un puntatore a una copia sul heap.
+Tutto `IdTech1\Base\p_umapinfo.pas` (905 righe) tranne le due costanti dei nomi dei lump, che si spostano nel composition root. Anche `p_uactornames` resta, serve all'adattatore degli attori.
+I consumatori da riscrivere (cercare `u_mapinfo`, `default_mapinfo`, `Pmapentry_t`, `ubigstringtostring`): `Doom|Heretic|IdTech1\Strife\g_game.pas` (`G_LookupMapinfo` ritorna un puntatore), `IdTech1\Doom\wi_stuff.pas`, e i moduli che leggono `gamemapinfo`. Proposta: tenere un `TMapInfoEntry` (per valore) più un flag di validità, oppure un puntatore a una copia sul heap.
 
 ## 5. Come sono stati ottenuti i golden
 
-`Tests\Data\MapInfo\{doom,heretic,strife}.golden.txt` sono stati scritti dal **vero** `Base\p_umapinfo.pas`, compilato fuori dal motore con `dcc32` per i tre giochi (`-DDOOM`, `-DHERETIC`, `-DSTRIFE`), insieme ai veri `Common\d_delphi.pas` e `Base\sc_engine.pas` (la facciata sopra `Framework\Scanner`, già verificata contro il vecchio `TScriptEngine`). Le unit del motore da cui `p_umapinfo` dipende sono sostituite da *stub* in una cartella messa prima nel percorso di ricerca (fuori dal repository, harness temporaneo):
+`Tests\Data\MapInfo\{doom,heretic,strife}.golden.txt` sono stati scritti dal **vero** `IdTech1\Base\p_umapinfo.pas`, compilato fuori dal motore con `dcc32` per i tre giochi (`-DDOOM`, `-DHERETIC`, `-DSTRIFE`), insieme ai veri `IdTech1\Common\d_delphi.pas` e `IdTech1\Base\sc_engine.pas` (la facciata sopra `Framework\Scanner`, già verificata contro il vecchio `TScriptEngine`). Le unit del motore da cui `p_umapinfo` dipende sono sostituite da *stub* in una cartella messa prima nel percorso di ricerca (fuori dal repository, harness temporaneo):
 
 - `g_game.G_ValidateMapName`: stessa regola della libreria di prova (MAPxx 01..99, ExMy 1..8/1..9), `sounds.S_GetMusicNumForName`: numero calcolato dal nome, `w_wad.W_CheckNumForName`: esiste se inizia con `D_`, `info_common.Info_GetMobjNumForName` e `p_uactornames.ActorNames`: tre nomi piccoli, `sc_utils.SC_Preprocess`: identità, `m_menu`: scrive su una stringa le chiamate a `M_ClearEpisodes`/`M_AddEpisode`, `i_system.I_Warning`: scrive su una stringa, `z_zone` su `ReallocMem`, `w_wad`/`w_pak`: lump e voci PAK finti.
 - il programma legge `Tests\Data\MapInfo\cases.txt` (65 casi), esegue ogni caso con `U_ParseMapInfo` e scarica `u_mapinfo`, `default_mapinfo`, gli avvisi e le chiamate sugli episodi.

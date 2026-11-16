@@ -9,7 +9,7 @@
 {                                                                              }
 {******************************************************************************}
 // DEH_CStringToString, DEH_StringValue and the name rules of DEH_AmmoType, DEH_WeaponType and
-// DEH_PlayerClass of Base\deh_base.pas as they were before issue #185 (commit 63a151cc), copied
+// DEH_PlayerClass of IdTech1\Base\deh_base.pas as they were before issue #185 (commit 63a151cc), copied
 // line by line; the three type functions take the token list as a parameter instead of a global
 unit DelphiDoom.Tests.InfoTables.LegacyDeh;
 

@@ -170,7 +170,7 @@ uses
   DelphiDoom.Audio.Mixer.Voice in '..\Framework\Audio\DelphiDoom.Audio.Mixer.Voice.pas',
   DelphiDoom.Audio.Mixer in '..\Framework\Audio\DelphiDoom.Audio.Mixer.pas',
   DelphiDoom.GameHost.Audio.Intf in '..\Framework\GameHost\DelphiDoom.GameHost.Audio.Intf.pas',
-  DelphiDoom.Engine.Audio.WaveOutDevice in '..\Base\DelphiDoom.Engine.Audio.WaveOutDevice.pas',
+  DelphiDoom.Engine.Audio.WaveOutDevice in '..\IdTech1\Base\DelphiDoom.Engine.Audio.WaveOutDevice.pas',
   DelphiDoom.Tests.Audio.Mixer.Gains in 'Source\DelphiDoom.Tests.Audio.Mixer.Gains.pas',
   DelphiDoom.Tests.Audio.Mixer in 'Source\DelphiDoom.Tests.Audio.Mixer.pas',
   DelphiDoom.Tests.Audio.WaveOutDevice in 'Source\DelphiDoom.Tests.Audio.WaveOutDevice.pas',

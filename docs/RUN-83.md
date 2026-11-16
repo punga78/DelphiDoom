@@ -20,7 +20,7 @@ Tools\Verifica\83\Build.bat
 bin\Win32\Release\Tools\Verifica\DumpOldMidi.exe Tests\Data\Midi\stream.golden.txt <cartella bin con Doom, Heretic, Hexen, Strife> bin\Win32\Release\Tools\Verifica\midi83
 ```
 Il secondo argomento (la `bin\` del repository principale, dove stanno i WAD) e il terzo (dove scrivere i `.bin` dei blocchi, uno per canzone e protocollo) sono facoltativi. Log di compilazione: `logs\DumpOldMidi.log`.
-Il programma contiene il testo del vecchio `TMidi` (`OldMidiNew.pas`, fatto da `old_i_midi_new.txt` = `Base\i_midi_new.pas` del commit precedente con fuori solo il dispositivo) e la logica MUS del vecchio `TMusMusicBackend`. **Rimandare a me** `Tests\Data\Midi\stream.golden.txt` e il log.
+Il programma contiene il testo del vecchio `TMidi` (`OldMidiNew.pas`, fatto da `old_i_midi_new.txt` = `IdTech1\Base\i_midi_new.pas` del commit precedente con fuori solo il dispositivo) e la logica MUS del vecchio `TMusMusicBackend`. **Rimandare a me** `Tests\Data\Midi\stream.golden.txt` e il log.
 Righe per ogni canzone: `<nome>/looped`, `/tempo`, `/once` (protocolli di `TMidiProtocol`), `<nome>/legacy-tempo` (informativa: i byte che il vecchio dava davvero col puntatore sbagliato; i test non la leggono), e per i WAD anche `wad:<file>:<lump>#n/mus`.
 
 Cosa deve risultare: `looped` e `once` **identici byte per byte** al nuovo (impronta `fnv`); `tempo` identica al nuovo (il vecchio con il puntatore corretto); `legacy-tempo` diversa da `tempo` (se uguale il difetto del puntatore non c'è, e la nota in `CLAUDE.md` va tolta). Righe `ERROR` per `bad_header` e `no_end_of_track` (nuovo: `Load` dà false). Nella riga `short_loop/looped` e simili si vede il delta che avvolge dopo il giro (`$FFFFFFxx` nel primo evento del blocco dopo la fine): è il difetto conservato.
@@ -53,7 +53,7 @@ L'altro difetto (evento scritto 192 byte oltre il posto giusto dopo il tempo ins
 ## Rischi di compilazione previsti
 
 - `Framework\Midi\DelphiDoom.Midi.StreamSequencer.pas`: aritmetica `Cardinal` (cast espliciti messi dove Delphi promuove a `Int64`); `case ... else` con solo un commento.
-- `Base\DelphiDoom.Engine.Midi.StreamPlayer.pas`: `MidiProc` stdcall con `DWORD_PTR`; `midiStreamOpen(@FStream, @FDeviceID, ...)`; `MIDIPROPTIMEDIV` passato come `@LTimeDivision` a `PBYTE` (come faceva il vecchio); uso di `I_DevWarning` con `Args`.
-- `Base\i_midi_new.pas`: `FreeAndNil` è quello di `d_delphi` (`var Obj`); `TFile.Read`.
+- `IdTech1\Base\DelphiDoom.Engine.Midi.StreamPlayer.pas`: `MidiProc` stdcall con `DWORD_PTR`; `midiStreamOpen(@FStream, @FDeviceID, ...)`; `MIDIPROPTIMEDIV` passato come `@LTimeDivision` a `PBYTE` (come faceva il vecchio); uso di `I_DevWarning` con `Args`.
+- `IdTech1\Base\i_midi_new.pas`: `FreeAndNil` è quello di `d_delphi` (`var Obj`); `TFile.Read`.
 - `Tests\Source\DelphiDoom.Tests.Midi.*`: `Assert.WillRaise` con metodi anonimi, array dinamici concatenati con `+` (`Parity`), tipi `UInt64` letterali (`Scenarios`).
 - `Tools\Verifica\83\OldMidiNew.pas`: `Inc(PByte(pmeEvent), ...)` (cast di variabile come lvalue); il vecchio codice usa `Windows`/`MMSystem` senza prefisso ma qui sono qualificati solo nella `uses`.

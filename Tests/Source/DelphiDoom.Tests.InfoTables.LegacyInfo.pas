@@ -8,7 +8,7 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-// The routines of Base\info_common.pas, info_fnd.pas, info_rnd.pas and of the names of the states
+// The routines of IdTech1\Base\info_common.pas, info_fnd.pas, info_rnd.pas and of the names of the states
 // of sc_states.pas as they were before issue #185 (commit 63a151cc), cut out by the script that
 // made this file and renamed with the prefix Legacy_ (the Doom branch of info_rnd). The tables of
 // the game (mobjinfo, states, sprnames) are the variables below, filled by the test; the

@@ -22,7 +22,7 @@
 //
 // DESCRIPTION:
 //  Radix: the menus (what m_menu.pas of Rad-X has that the one of Doom has
-//  not). The menu is the one of the engine (Doom\m_menu.pas); this unit is
+//  not). The menu is the one of the engine (IdTech1\Doom\m_menu.pas); this unit is
 //  its extension (M_ConfigureExtension, given by ComposeRadix):
 //   - the look: head lines with the big fonts in place of the title patches,
 //     items as words (orange under the cursor), sliders and frames drawn,

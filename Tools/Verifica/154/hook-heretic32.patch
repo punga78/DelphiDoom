@@ -1,7 +1,7 @@
-diff --git a/Base/udmf_plats.pas b/Base/udmf_plats.pas
+diff --git a/IdTech1\Base/udmf_plats.pas b/IdTech1\Base/udmf_plats.pas
 index 4b759843..53cd20ac 100644
---- a/Base/udmf_plats.pas
-+++ b/Base/udmf_plats.pas
+--- a/IdTech1\Base/udmf_plats.pas
++++ b/IdTech1\Base/udmf_plats.pas
 @@ -84,6 +84,7 @@ uses
    udmf_spec,
  {$ENDIF}
@@ -43,10 +43,10 @@ index 4b759843..53cd20ac 100644
  
      PH_AddActivePlat(plat);
      UdmfPlatMachine.AnnounceStart(sec);
-diff --git a/Heretic/p_plats.pas b/Heretic/p_plats.pas
+diff --git a/IdTech1\Heretic/p_plats.pas b/IdTech1\Heretic/p_plats.pas
 index b41250ab..0cf8d56a 100644
---- a/Heretic/p_plats.pas
-+++ b/Heretic/p_plats.pas
+--- a/IdTech1\Heretic/p_plats.pas
++++ b/IdTech1\Heretic/p_plats.pas
 @@ -90,6 +90,7 @@ uses
    p_tick,
    p_setup,

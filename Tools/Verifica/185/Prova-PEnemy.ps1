@@ -5,7 +5,7 @@
   Prova-PPspr.ps1).
 
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_enemy.pas (presa dal commit di partenza con git show)
-  prende il testo della routine unificata (Base\p_enemy.pas, Base\DelphiDoom.Engine.World.EnemyMoveSpecials.pas) o della
+  prende il testo della routine unificata (IdTech1\Base\p_enemy.pas, IdTech1\Base\DelphiDoom.Engine.World.EnemyMoveSpecials.pas) o della
   unit delle regole del gioco, sostituisce ogni chiamata a TEnemyGameRules con il corpo della regola di quel gioco e
   confronta il risultato con la routine vecchia, tolti commenti, spazi e maiuscole.
 
@@ -74,10 +74,10 @@ $NotTextual = @{
 }
 $Methods = @{ 'Hexen|P_Move' = 'Move' }
 $Alias = @{ 'P_Move' = 'P_MoveDefault' }
-$Extra = @{ S = 'Base\DelphiDoom.Engine.World.EnemyMoveSpecials.pas' }
+$Extra = @{ S = 'IdTech1\Base\DelphiDoom.Engine.World.EnemyMoveSpecials.pas' }
 
 $bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_enemy' `
-  -BaseFiles 'Base\p_enemy.pas' -Extra $Extra `
+  -BaseFiles 'IdTech1\Base\p_enemy.pas' -Extra $Extra `
   -RulesUnit 'DelphiDoom.Engine.World.EnemyRules.pas' -Class 'TEnemyGameRules' -Expansions $Expansions `
   -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Maps $Maps
 exit $bad

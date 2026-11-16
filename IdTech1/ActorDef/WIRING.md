@@ -38,7 +38,7 @@ Servono in tutti i progetti che oggi compilano `sc_actordef`: `Doom32`, `GLDoom3
 Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`:
 ` Tests\DelphiDoom.Tests.ActorDef`
 
-## 2. Cosa sostituisce cosa in `Base\sc_actordef.pas`
+## 2. Cosa sostituisce cosa in `IdTech1\Base\sc_actordef.pas`
 
 | Funzione storica | Sostituita da |
 |---|---|
@@ -73,7 +73,7 @@ parser  := TActorDefFactory.CreateParser(profile, log, catalog, catalog, catalog
              TEngineActorDefPreprocessor.Create);
 ```
 
-Classi del motore da scrivere (una per unit, `Base\DelphiDoom.Engine.ActorDef.*.pas`):
+Classi del motore da scrivere (una per unit, `IdTech1\Base\DelphiDoom.Engine.ActorDef.*.pas`):
 
 * `TEngineActorDefCatalog` implementa 4 interfacce:
   * `IActorDefFlagCatalog.Flags(c)`: `mobj_flags`, `mobj_flags2` (solo Heretic e Hexen), `mobj_flags_ex`,
@@ -104,16 +104,16 @@ quello (e da `statenames`). Per questo il parser non produce una lista ma chiama
 * In `sc_actordef.pas`: `TActordefScriptEngine`, le `MatchFlag*`, `SC_DoParseActordefLump`, `SC_ParseActordefLump`,
   `SC_DoRetrieveSndInfo`/`SC_RetrieveSndInfo`, il corpo di `SC_ParseSndInfoLumps` (resta la raccolta dei testi),
   `SC_SoundAlias`, `fixsndaliasstr`, `MAXSTATES`, `ORIGINALSTATEMARKER`.
-* `Base\rtl_types.pas`: `rtl_mobjinfo_t`, `rtl_weaponinfo_t`, `rtl_state_t` e le costanti `RTL_ST_*`/`RTL_WT_*` (le usa solo `sc_actordef`; va tolta anche la
+* `IdTech1\Base\rtl_types.pas`: `rtl_mobjinfo_t`, `rtl_weaponinfo_t`, `rtl_state_t` e le costanti `RTL_ST_*`/`RTL_WT_*` (le usa solo `sc_actordef`; va tolta anche la
   `uses` di `rtl_types` nei `.dpr`); se non resta altro, l'unit.
 * `rtl_thinker_t` di `sc_thinker.pas` si può sostituire con `TActorDefThinker`.
 * Nessun `{$IFDEF}` di gioco resta nel parser: stanno nei profili (`TActorDefProfiles`).
 
 ## 5. Come sono stati ottenuti i golden
 
-Il vecchio `Base\sc_actordef.pas` non si compila fuori dal motore (scrive in `mobjinfo`, `statenames`, `DEH_ParseText`).
+Il vecchio `IdTech1\Base\sc_actordef.pas` non si compila fuori dal motore (scrive in `mobjinfo`, `statenames`, `DEH_ParseText`).
 Si è fatto un **harness temporaneo** (fuori dal repository, non committato) che compila il motore intero di ogni gioco
-(un `.dpr` generato da `Doom\Doom32.dpr`, `Heretic\Heretic32.dpr`, `Hexen\Hexen32.dpr`, `Strife\Strife32.dpr`, con gli stessi define) ma con una copia
+(un `.dpr` generato da `IdTech1\Doom\Doom32.dpr`, `IdTech1\Heretic\Heretic32.dpr`, `IdTech1\Hexen\Hexen32.dpr`, `IdTech1\Strife\Strife32.dpr`, con gli stessi define) ma con una copia
 patchata di `sc_actordef.pas` e con un `main` che fa `ComposeEngine`, `Z_Init`, `PAK_InitFileSystem`, `Info_Init(true)`,
 `Info_InitStateOwners`, `SC_DefaultStatedefLump`, `DEH_Init` e poi legge un testo. La copia patchata fa solo questo:
 

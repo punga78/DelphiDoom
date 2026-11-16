@@ -1,7 +1,7 @@
 # Framework\IdLib - come usarla (issue #45)
 
 idLib **non e collegata al motore** di Doom, Heretic, Hexen e Strife: e una base per codice ispirato a idTech 4 (il modello
-di collisione di `cm`, un lettore di mappe `.map`, un parser dei file `.def`...). Nessun file di `Base\`, `Doom\` ecc. e
+di collisione di `cm`, un lettore di mappe `.map`, un parser dei file `.def`...). Nessun file di `IdTech1\Base\`, `IdTech1\Doom\` ecc. e
 stato toccato. Le dipendenze iniettate sostituiscono i singleton di idLib.
 
 ## 1. Servizi da dare alle classi

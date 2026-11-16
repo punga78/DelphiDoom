@@ -2,9 +2,9 @@
 
 Aggiornato dalla #163: tolte le routine senza alcun riferimento (13 righe delle tabelle e le voci corrispondenti delle sezioni in fondo); il resto e invariato.
 
-Aggiornato dalla #185 (passo 2c-1): `p_map` e in copia unica in `Base\p_map.pas`; cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.MapRules.pas` (`TMapGameRules` e le routine proprie) e le liste dei settori toccati in `Base\p_secnodes.pas`. Dove le tabelle dicono `Doom\p_map`, `Heretic\p_map`, `Hexen\p_map` o `Strife\p_map` si legga una di queste unit: i conteggi non sono stati rigenerati.
+Aggiornato dalla #185 (passo 2c-1): `p_map` e in copia unica in `IdTech1\Base\p_map.pas`; cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.MapRules.pas` (`TMapGameRules` e le routine proprie) e le liste dei settori toccati in `IdTech1\Base\p_secnodes.pas`. Dove le tabelle dicono `IdTech1\Doom\p_map`, `IdTech1\Heretic\p_map`, `IdTech1\Hexen\p_map` o `IdTech1\Strife\p_map` si legga una di queste unit: i conteggi non sono stati rigenerati.
 
-Aggiornato dalla #185 (passo 2f-3): `p_pspr` e in copia unica in `Base\p_pspr.pas` (`P_SetPsprite`, `P_SetupPsprites`, `P_MovePsprites`, `A_Light0`, `P_DropWeapon`, `A_ReFire`, `A_Lower`, `A_Raise`); armi e `A_*` di ogni gioco stanno in `<Gioco>\DelphiDoom.Engine.World.PspriteRules.pas` (`TPspriteGameRules`): dove le tabelle dicono `Doom\p_pspr`, `Heretic\p_pspr`, `Hexen\p_pspr` o `Strife\p_pspr` si legga una di queste unit. Passo 2f-2: `p_inter` e in copia unica in `Base\p_inter.pas` (`P_TouchSpecialThing`, `P_DamageMobj`, `P_CmdSuicide`, `P_GiveBody`); cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.InterRules.pas` (`TInterGameRules` e le routine proprie), `P_GiveArmor` e `P_SpawnDroppedMobj` in `Base\DelphiDoom.Engine.World.PickupGivers.pas`, le routine di Heretic e Hexen in `SpecialRespawn`, `MinotaurSlam` e `PlayerArtifacts`. Dove le tabelle dicono `Doom\p_inter`, `Heretic\p_inter`, `Hexen\p_inter` o `Strife\p_inter` si legga una di queste unit: i conteggi non sono stati rigenerati.
+Aggiornato dalla #185 (passo 2f-3): `p_pspr` e in copia unica in `IdTech1\Base\p_pspr.pas` (`P_SetPsprite`, `P_SetupPsprites`, `P_MovePsprites`, `A_Light0`, `P_DropWeapon`, `A_ReFire`, `A_Lower`, `A_Raise`); armi e `A_*` di ogni gioco stanno in `<Gioco>\DelphiDoom.Engine.World.PspriteRules.pas` (`TPspriteGameRules`): dove le tabelle dicono `IdTech1\Doom\p_pspr`, `IdTech1\Heretic\p_pspr`, `IdTech1\Hexen\p_pspr` o `IdTech1\Strife\p_pspr` si legga una di queste unit. Passo 2f-2: `p_inter` e in copia unica in `IdTech1\Base\p_inter.pas` (`P_TouchSpecialThing`, `P_DamageMobj`, `P_CmdSuicide`, `P_GiveBody`); cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.InterRules.pas` (`TInterGameRules` e le routine proprie), `P_GiveArmor` e `P_SpawnDroppedMobj` in `IdTech1\Base\DelphiDoom.Engine.World.PickupGivers.pas`, le routine di Heretic e Hexen in `SpecialRespawn`, `MinotaurSlam` e `PlayerArtifacts`. Dove le tabelle dicono `IdTech1\Doom\p_inter`, `IdTech1\Heretic\p_inter`, `IdTech1\Hexen\p_inter` o `IdTech1\Strife\p_inter` si legga una di queste unit: i conteggi non sono stati rigenerati.
 
 Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono citate nei `Libs\<Nome>\CLAUDE.md` (indice in `CLAUDE.md`) come facciata sopra una libreria di `Libs\`), con le funzioni pubbliche e i loro chiamanti. Serve a decidere quali migrare a mano. Rigenerato dal sorgente (master 0f6ff81c) dopo le ondate 1 (#132-#137), 2 (#145) e 3-4 (#142-#144, #146, #148-#156, #41, #48, #83) della fase 2: le unit tolte restano nell'elenco con la nota di chi ne ha preso il posto; dalle ondate 3 e 4 sono entrate le facciate dei thinker (luci, porte, pavimenti, soffitti, piattaforme, teletrasporti), dei thread (`i_threads`, `mt_utils`) e del midi stream (`i_midi_new`). Il conteggio e stato rifatto con uno script che, applicato al commit 094a89bd, riproduce le tabelle del file precedente (572 righe su 573 uguali: `I_Warning` dava una chiamata in meno).
 
@@ -15,11 +15,11 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 - Le unit `w_wadreader.pas` e `w_wadwriter.pas` hanno solo classi (`TWadReader`, `TWadWriter`), nessuna funzione: per toglierle i chiamanti (`w_pak`, `r_data`, `vx_*`, `s_pk3sounds`) dovrebbero usare `IWadDirectory` e `IWadBuilder`.
 - Il conteggio e statico, non sostituisce una lettura del chiamante.
 
-### `Base\sc_evaluate.pas` - cancellata
+### `IdTech1\Base\sc_evaluate.pas` - cancellata
 
 **Tolta (#132)**: nessun chiamante (DD_IDE non la usava); `TEvaluator` non esiste piu.
 
-### `Base\i_exec.pas` - cancellata
+### `IdTech1\Base\i_exec.pas` - cancellata
 
 **Tolta (#133)**: `I_ExecProgram` non aveva chiamanti; dalla #145 non c'e piu nemmeno `TProcessRunner` in `Framework\Platform`.
 
@@ -27,11 +27,11 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta (#134)**: i piani del frustum non li leggeva nessuno; dalla #145 non c'e piu nemmeno `TGlFrustum` in `IdTech1\GlMath`.
 
-### `Base\vx_voxelsprite.pas` - cancellata
+### `IdTech1\Base\vx_voxelsprite.pas` - cancellata
 
 **Tolta (#134)**: gli sprite dei voxel li scrive `TEngineVoxelSpriteGenerator` (`IEngineVoxelSprites`), dato da `ComposeEngine` a `r_data`.
 
-### `Base\v_palettes.pas` - cancellata
+### `IdTech1\Base\v_palettes.pas` - cancellata
 
 **Tolta (#135)**: `#CREATEPALETTE` (`TEnginePaletteGenerator`) usa `IPaletteBuilder` di `Framework\Palette`.
 
@@ -39,175 +39,175 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Non piu facciata (#134)**: resta solo con i tipi dei modelli.
 
-### `Base\m_sha1.pas` - cancellata
+### `IdTech1\Base\m_sha1.pas` - cancellata
 
 **Tolta (#145)**: codice morto, l'ultimo chiamante (`vx_voxelsprite`) era stato cancellato dalla #134; chi calcola uno SHA-1 usa `TSha1` di `Framework\MathCore`.
 
-### `Base\m_bbox.pas` - cancellata
+### `IdTech1\Base\m_bbox.pas` - cancellata
 
 **Tolta (#133)**: i chiamanti usano `TBoundingBoxMath` di `Framework\MathCore`.
 
-### `Base\r_flatinfo.pas` - nessuna funzione pubblica
+### `IdTech1\Base\r_flatinfo.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#135)**: restano i tipi e i dati del motore.
 
-### `Base\s_externalmusic.pas` - cancellata
+### `IdTech1\Base\s_externalmusic.pas` - cancellata
 
 **Tolta (issue #137)**: `s_sound` riceve `IExternalMusicCache` (`S_ConfigureExternalMusic`).
 
-### `Base\r_palette.pas` - cancellata
+### `IdTech1\Base\r_palette.pas` - cancellata
 
 **Tolta (#145)**: non era codice morto (`r_colormaps`, `r_data` e `r_voxels` la chiamavano): la palette di base e `TEngineDefaultPalette` (`IEngineDefaultPalette`), data da `ComposeEngine` a `R_ConfigureColormaps`, `R_ConfigureCustomColormaps` e `R_ConfigureVoxelPalette`.
 
-### `Heretic\p_terrain.pas` - cancellata
+### `IdTech1\Heretic\p_terrain.pas` - cancellata
 
 **Tolta (#136)**: `r_data` chiama `TTerrainTables.KindForName` (statica).
 
-### `Doom\p_terrain.pas` - cancellata
+### `IdTech1\Doom\p_terrain.pas` - cancellata
 
 **Tolta (#136)**: `r_data` chiama `TTerrainTables.KindForName` (statica).
 
-### `Base\p_blockmap.pas` - cancellata
+### `IdTech1\Base\p_blockmap.pas` - cancellata
 
 **Tolta (#136)**: `p_setup` usa `TBlockmapFactory`.
 
-### `Hexen\p_terrain.pas` - cancellata
+### `IdTech1\Hexen\p_terrain.pas` - cancellata
 
 **Tolta (#136)**: `r_data` chiama `TTerrainTables.KindForName` (statica).
 
-### `Base\mn_screenshot.pas` - nessuna funzione pubblica
+### `IdTech1\Base\mn_screenshot.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#135)**: resta il record `menuscreenbuffer_t` del savegame; la miniatura e di `Framework\Imaging`.
 
-### `Base\r_grow.pas` - cancellata
+### `IdTech1\Base\r_grow.pas` - cancellata
 
 **Tolta (#135)**: `r_cache_flats` riceve `IImagingSpanGrower` (`R_ConfigureFlatCache`).
 
-### `Base\i_mp3.pas` - cancellata
+### `IdTech1\Base\i_mp3.pas` - cancellata
 
 **Tolta (issue #137)**: `TMp3MusicBackend` riceve `IMp3` dal costruttore e tiene il proprio `TMp3Player`.
 
-### `Base\sc_evaluate_actor.pas` - cancellata
+### `IdTech1\Base\sc_evaluate_actor.pas` - cancellata
 
 **Tolta (#132)**: `TContextExpressionEvaluator` (`Framework\Scanner`) con `TEngineActorExpressionFunctions` e `TEngineActorExpressionVariables`, dato da `ComposeEngine` a `SC_ConfigureParams` di `sc_params`.
 
-### `Base\w_autoload.pas` - cancellata
+### `IdTech1\Base\w_autoload.pas` - cancellata
 
 **Tolta (issue #137)**: i quattro `d_main` ricevono `IAutoLoadReader` (`D_ConfigureAutoLoad`).
 
-### `Base\sc_engine.pas` - cancellata
+### `IdTech1\Base\sc_engine.pas` - cancellata
 
 **Tolta (#132)**: i chiamanti usano `TScriptScanner` e `TScannerText` di `Framework\Scanner`.
 
-### `Strife\p_terrain.pas` - cancellata
+### `IdTech1\Strife\p_terrain.pas` - cancellata
 
 **Tolta (#136)**: `r_data` chiama `TTerrainTables.KindForName` (statica).
 
-### `Base\m_hash.pas` - cancellata
+### `IdTech1\Base\m_hash.pas` - cancellata
 
 **Tolta (#133)**: `r_data` riceve `IStringHashTable` (`R_ConfigureNameHash`).
 
-### `Base\m_vectors.pas` - cancellata
+### `IdTech1\Base\m_vectors.pas` - cancellata
 
 **Tolta (#133)**: i chiamanti usano `TVectorMath` di `Framework\MathCore`.
 
-### `Base\p_gender.pas` - nessuna funzione pubblica
+### `IdTech1\Base\p_gender.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#136)**: resta solo il tipo `gender_t`.
 
-### `Base\i_displaymodes.pas` - cancellata
+### `IdTech1\Base\i_displaymodes.pas` - cancellata
 
 **Tolta (issue #137)**: `i_video`, `gl_main` e i quattro `m_menu` ricevono `IDisplayModeCatalog`.
 
-### `Base\m_crc32.pas` - cancellata
+### `IdTech1\Base\m_crc32.pas` - cancellata
 
 **Tolta (#145)**: l'ultimo chiamante, `p_udmf`, chiama `W_LumpCRC32` (stessa funzione: `GetLumpCRC32` la richiamava e basta).
 
-### `Base\i_input.pas` - cancellata
+### `IdTech1\Base\i_input.pas` - cancellata
 
 **Tolta (issue #137)**: un solo `IInputPoller` dato a `i_system`, `i_main`/`gl_main` e ai quattro `g_game`.
 
-### `Base\e_endoom.pas` - cancellata
+### `IdTech1\Base\e_endoom.pas` - cancellata
 
 **Tolta (issue #137)**: `IEngineEndoomScreen` (`TEngineEndoomScreen`) dato a `d_main`, `g_game` e `gl_main`; dalla #145 il suo tic lo fa `TEngineNetGame`.
 
-### `Base\c_con.pas` - nessuna funzione pubblica
+### `IdTech1\Base\c_con.pas` - nessuna funzione pubblica
 
 **Tolta come facciata (#145)**: la console e `TEngineConsoleScreen` (`IEngineConsole`), data da `ComposeEngine` a `d_main`, `gl_main`, `v_displaymode`, `p_tick`, `p_common`, `psi_system` e al ciclo della rete; l'unit resta con le sole opzioni (`ConsoleColormap`, `mirror_stdout`, `autoexecfile`, `DEFAUTOEXEC`), lette dalla tabella dei default.
 
-### `Base\d_net.pas` - nessuna funzione pubblica
+### `IdTech1\Base\d_net.pas` - nessuna funzione pubblica
 
 **Tolta come facciata (#145)**: il ciclo della rete e `TEngineNetGame` (`IEngineNetGame`), dato da `ComposeEngine` a `d_main`, `g_game`, `r_main` e `i_system`; l'unit resta con i dati letti dal gioco (`ticdup`, `firstinterpolation`, `S_ERR_DIF_NET`).
 
-### `Base\m_misc.pas` - nessuna funzione pubblica
+### `IdTech1\Base\m_misc.pas` - nessuna funzione pubblica
 
 **Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`, dalla #185 fetta 1c solo come dichiarazione delle voci: le righe sono `IConfigurationItem` di `Framework\Configuration`, costruite da `TEngineConfigurationTable`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
 
-### `Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `IdTech1\Hud`, #185 fetta 1a)
+### `IdTech1\Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `IdTech1\Hud`, #185 fetta 1a)
 
 **Facciata (#185)**: `HU_Init`, `HU_Start`, `HU_Responder`, `HU_Ticker`, `HU_Drawer`, `HU_Erase`, `HU_dequeueChatChar`, `HU_DoFPSStuff`, `HU_FPS` (e `HU_Height`, `HU_TITLE`, `HU_DrawYellowText` dove il gioco li ha) hanno le firme di prima e sono righe che chiamano `IHeadsUp` (modello: `IdTech1\Hud`, classe `THeadsUp`) o `IHudScreen` (disegno: `DelphiDoom.Engine.Hud.Drawer`); li dà `ComposeHud` con `HU_Configure`, senza la configurazione danno `I_Error`. Restano nell'unit, perche' legati a globali che altri possiedono o che le patch Dehacked cambiano: i font (`hu_font*`, `yfont`, `m_font3`) e il loro caricamento, le tabelle dei nomi delle mappe (`mapnames*`), `player_names`, `chat_macros`, `destination_keys`/`key_multi_msgplayer`, `shiftxform` (la riempie `HU_Init` dalla libreria), `chat_on` e `message_dontfuckwithme` (li scrive `m_menu`), `drawfps`, `drawcrosshair`, `amdrawstats`, la geometria dei widget (`HU_TITLEY`, `HU_LEVELTIMEY`) e la scelta del titolo con le tabelle. Tolti perche' senza chiamanti fuori dall'unit: `message_on`, `message_nottobefuckedwith`, `always_off`, `HU_Stop`.
 
-### `Base\hu_lib.pas` - 1 funzione pubblica (Strife)
+### `IdTech1\Base\hu_lib.pas` - 1 funzione pubblica (Strife)
 
 **Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `IdTech1\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
 
-### `Base\sc_tokens.pas`, `Base\sc_consts.pas`, `Base\sc_params.pas`, `Base\sc_states.pas` (facciate sopra `Framework\Scanner`, `IdTech1\ActorDef` e `IdTech1\Info`, #185 fetta 1b)
+### `IdTech1\Base\sc_tokens.pas`, `IdTech1\Base\sc_consts.pas`, `IdTech1\Base\sc_params.pas`, `IdTech1\Base\sc_states.pas` (facciate sopra `Framework\Scanner`, `IdTech1\ActorDef` e `IdTech1\Info`, #185 fetta 1b)
 
 **Facciate (#185)**: `TTokenList` (resta una `TDStringList`; `IndexOfToken` e `AllTokensWithIndex` usano `TScannerTokenEntry`), `SC_EvalueateIntToken`, `SC_InitConsts`/`SC_ShutDownConsts`/`SC_AddConst`/`SC_GetConst` (`TScannerConstTable`; i dati di `SC_InitConsts` restano), `TCustomParamList` (stesse proprieta', sopra `TActorDefParamList`) e `SC_EvalString` (`TActorDefParamString`) hanno le firme di prima. `P_GetStateFromName` e `P_GetStateFromNameWithOffsetCheck` chiamano `IEngineStateNames` (`TInfoStateNames` di `IdTech1\Info`), dato da `ComposeInfoTables` con `SC_ConfigureStateNames`; senza configurazione `I_Error`. Restano nell'unit di `sc_states` la lettura del lump `STATEDEF` e `SC_DefaultStatedefLump`/`SC_FillStateNames` (riempiono la lista globale `statenames`). Righe: `sc_tokens` 161 -> 119, `sc_consts` 326 -> 290, `sc_params` 998 -> 224, `sc_states` 358 -> 238.
 
-### `Base\info_common.pas`, `Base\info_fnd.pas`, `Base\info_rnd.pas`, `Base\info_export.pas` (facciate sopra `IdTech1\Info` e `IdTech1\TableExport`, #185 fetta 1b)
+### `IdTech1\Base\info_common.pas`, `IdTech1\Base\info_fnd.pas`, `IdTech1\Base\info_rnd.pas`, `IdTech1\Base\info_export.pas` (facciate sopra `IdTech1\Info` e `IdTech1\TableExport`, #185 fetta 1b)
 
 **Facciate (#185)**: le ricerche (`Info_GetMobjNumForDoomNum`, `Info_GetMobjNumForName`, `Info_AddMobjNameAlias`, `Info_GetInheritance`, `Info_GetStatesForMobjInfo`, `Info_CheckStates`, `Info_FindStatesFromSprite`), i nomi dei gruppi (`Info_*GroupToString/ToInt`), i mostri a caso (`Info_InitRandom`, `Info_SelectRandomMonster`, `Info_IsMonster`) e il salvataggio di `Info_SavePascal` chiamano i servizi dati da `ComposeInfoTables` (`Info_ConfigureThings`, `Info_ConfigureStates`, `Info_ConfigureGroups`, `Info_ConfigureRandom`) e da `ComposeTableExport` (`Info_ConfigureExport` ha un parametro in piu'); senza configurazione `I_Error`. Restano storiche, perche' scrivono le tabelle o leggono i loro array: `Info_GetNewState`, `Info_GetNewMobjInfo`, `Info_GetSpriteNumForName`, `Info_CheckSpriteNumForName`, `Info_SetMobjName`, `Info_GetMobjName`, `Info_ShutDown`, `Info_AddStateOwner`, `Info_InitStateOwners`, `Info_SaveActions`, `Info_RestoreActions`, `Info_CheckStatesArgs`. Righe: `info_common` 1160 -> 858, `info_fnd` 126 -> 66, `info_rnd` 243 -> 150, `info_export` 233 -> 220 (i comandi di console restano).
 
-### `Base\deh_base.pas` (facciata sopra `IdTech1\Dehacked` e `IdTech1\TableExport`, #185 fetta 1b)
+### `IdTech1\Base\deh_base.pas` (facciata sopra `IdTech1\Dehacked` e `IdTech1\TableExport`, #185 fetta 1b)
 
 **Facciata (#185)**: i sette `DEH_Save*` chiamano `ITableExportSaver` (dato da `DEH_ConfigureExport`, che ha un parametro in piu'), `DEH_ParseFile` prende i nomi da `TDehackedFileNames`, `DEH_AmmoType`/`DEH_WeaponType`/`DEH_PlayerClass` il prefisso da `TDehackedTokenName`, `DEH_CStringToString`/`DEH_StringValue` chiamano `TDehackedText`. Restano nell'unit i lump e i PAK (`DEH_ParseLumpName*`, `DEH_ParseLumpNum`, il flusso del file), la stampa a console e il registro delle azioni. Righe 1321 -> 1204 (le funzioni d'appoggio dei salvataggi ne aggiungono una cinquantina).
 
-### `Base\f_wipe.pas` (facciata sopra `Framework\Imaging`, #185 chiusura della fase 1)
+### `IdTech1\Base\f_wipe.pas` (facciata sopra `Framework\Imaging`, #185 chiusura della fase 1)
 
-**Facciata (#185)**: `wipe_StartScreen`, `wipe_EndScreen`, `wipe_Ticker` (e `wipe_ClearMemory`, `w_screen32`, `WIPESCREENWIDTH/HEIGHT` negli eseguibili OpenGL) hanno le firme di prima. Il melt (`wipe_initMelt`, `wipe_doMelt`) e' `TImagingMeltWipe` di `Framework\Imaging`, che lavora sui buffer del motore con `StartOnBuffers`; lo da' `ComposeImaging` con `wipe_Configure` (senza configurazione `I_Error` al primo wipe). Restano nell'unit la lettura dello schermo (`I_ReadScreen32`, `I_ReverseScreen`), i due buffer e lo stato "wipe in corso". Strife non usa l'unit (`Strife\f_fade.pas`). Righe 354 -> 260.
+**Facciata (#185)**: `wipe_StartScreen`, `wipe_EndScreen`, `wipe_Ticker` (e `wipe_ClearMemory`, `w_screen32`, `WIPESCREENWIDTH/HEIGHT` negli eseguibili OpenGL) hanno le firme di prima. Il melt (`wipe_initMelt`, `wipe_doMelt`) e' `TImagingMeltWipe` di `Framework\Imaging`, che lavora sui buffer del motore con `StartOnBuffers`; lo da' `ComposeImaging` con `wipe_Configure` (senza configurazione `I_Error` al primo wipe). Restano nell'unit la lettura dello schermo (`I_ReadScreen32`, `I_ReverseScreen`), i due buffer e lo stato "wipe in corso". Strife non usa l'unit (`IdTech1\Strife\f_fade.pas`). Righe 354 -> 260.
 
-### `Base\s_sound.pas` (regole in `Framework\Audio`, #185 chiusura della fase 1)
+### `IdTech1\Base\s_sound.pas` (regole in `Framework\Audio`, #185 chiusura della fase 1)
 
 **In parte facciata (#185)**: `S_AdjustSoundParams` chiama `TSfxAttenuation.Adjust` (la regola per gioco del livello 8 resta qui, e' un booleano passato alla classe), `S_GetChannel` chiama `TSfxChannelPicker.Pick` e poi ferma e riempie il canale, i ritocchi del pitch di `S_StartSoundAtVolume` chiamano `TSfxAttenuation.PerturbPitch`, la lista dei nomi mp3 di `S_DoChangeMusic` e' `TExternalMusicNames.Candidates` (`S_GetListFromAlias` non c'e' piu'). Sono classi di funzioni statiche: non c'e' una `S_Configure*` nuova, le costanti e le due tabelle (`R_PointToAngle2`, `finesine`) le riempie `S_Init` in `sound_attenuation`. Restano nell'unit, perche' legati ai record del motore e diversi per gioco: `S_StartSoundAtVolume`, `S_StartVoiceAtVolume`, `S_UpdateSounds`, `S_StopChannel`, la ricerca del lump della musica, `S_DefaultMusicForMap`, `S_Init`, `S_PrecacheSounds`, i comandi di console. Righe 2297 -> 2135.
 
-### `Base\am_map.pas`: `AM_drawFline` (#185 chiusura della fase 1)
+### `IdTech1\Base\am_map.pas`: `AM_drawFline` (#185 chiusura della fase 1)
 
 **Delegata (#185)**: nel renderer software `AM_drawFline` riempie un `TAutomapRasterTarget` (buffer a 8 o a 32 bit, larghezza, finestra della vista per l'overlay) e chiama `TAutomapLineRasterizer.Draw8/Draw32` di `IdTech1\Automap`; il ramo OpenGL (`gld_AddAutomapLine`) non cambia. Righe 2315 -> 2263.
 
-### `Base\mt_utils.pas`, `Base\c_utils.pas`, `Base\d_notifications.pas` (#185, fetta 1e)
+### `IdTech1\Base\mt_utils.pas`, `IdTech1\Base\c_utils.pas`, `IdTech1\Base\d_notifications.pas` (#185, fetta 1e)
 
 `c_utils`: `C_RegisterUtilityCommands` chiama il gruppo `IConsoleCommandGroup` (`TConsoleUtilityCommands` di `Framework\Console`: `dir`, `cd`, `cat`, le pagine web; file e browser dietro `IConsoleFileLister` e `IConsoleBrowser`, adattatori `DelphiDoom.Engine.Console.FileLister` e `.Browser`) che `ComposeConsole` da' con `C_ConfigureUtilityCommands`. `d_notifications`: `D_NotifyVideoModeChange`, `D_NotifyGLDisplayMode` (solo GL) e `D_RunNotifications` chiamano `IDeferredNotifications` (`TDeferredNotifications` di `Framework\Video`, applicatore `DelphiDoom.Engine.Video.DisplayModeApplier` con gli `{$IFDEF OPENGL}`), dato da `ComposeDisplayModes` con `D_ConfigureNotifications`. Senza configurazione `I_Error`.
 
-### `Base\sc_utils.pas` - cancellata
+### `IdTech1\Base\sc_utils.pas` - cancellata
 
 **Tolta (#144)**: il preprocessore dei testi e `IScriptTextPreprocessor` (`TScriptTextPreprocessor`, `ComposeScanner`), dato ai costruttori di chi legge script; `SC_Preprocess` non esiste piu.
 
-### `Base\p_udmf.pas` - nessuna funzione pubblica
+### `IdTech1\Base\p_udmf.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#142)**: il caricamento delle mappe UDMF e `TEngineUdmfMapLoader` (`ILevelUdmf`, dato a `TLevelLoader`); restano solo i dati (record `extra*_t`, variabili `udmf*`, costanti alias della libreria).
 
-### `Base\i_sound.pas` - cancellata
+### `IdTech1\Base\i_sound.pas` - cancellata
 
 **Tolta (#143)**: `s_sound` riceve la fabbrica del player degli effetti da `ComposeEngine` (`S_ConfigureSound`); la cache dei campioni (il vecchio `I_CacheSFX`) e `TEngineSfxSampleSource`.
 
-### `Base\i_music.pas` - cancellata
+### `IdTech1\Base\i_music.pas` - cancellata
 
-**Tolta (#143)**: `s_sound` riceve `IMusicPlayer` (`S_ConfigureMusic`) e chiama i backend (`Base\DelphiDoom.Engine.Music.*`); `I_SelectDefaultMidiDevice` sta in `i_midi`.
+**Tolta (#143)**: `s_sound` riceve `IMusicPlayer` (`S_ConfigureMusic`) e chiama i backend (`IdTech1\Base\DelphiDoom.Engine.Music.*`); `I_SelectDefaultMidiDevice` sta in `i_midi`.
 
 ### `TEXLIB\t_main.pas` - cancellata (e con lei `t_draw.pas`, `t_png.pas`: classi `TEngineDrawTextures` e `TEngineTextureSettings`, issue #171; `TEXLIB` non esiste più)
 
-**Tolta (#146)**, con `TEXLIB\t_detect.pas`: `T_LoadHiResImage` e i caricatori sono `TEngineTextureFiles` (`IEngineTextureFiles`, dato da `ComposeTexture`); la classe `TTexture` e in `Base\DelphiDoom.Engine.Texture.Item.pas`; il riconoscimento di patch, PCX e flat lo fanno `TTexturePatchInspector`, `TTexturePcxDecoder` e `TTextureFlatDecoder` di `Framework\Texture`.
+**Tolta (#146)**, con `TEXLIB\t_detect.pas`: `T_LoadHiResImage` e i caricatori sono `TEngineTextureFiles` (`IEngineTextureFiles`, dato da `ComposeTexture`); la classe `TTexture` e in `IdTech1\Base\DelphiDoom.Engine.Texture.Item.pas`; il riconoscimento di patch, PCX e flat lo fanno `TTexturePatchInspector`, `TTexturePcxDecoder` e `TTextureFlatDecoder` di `Framework\Texture`.
 
-### `Base\sc_actordef.pas` - cancellata
+### `IdTech1\Base\sc_actordef.pas` - cancellata
 
 **Tolta (#144)**: i lump ACTORDEF/DECORATE/SNDINFO e le costanti sono `TEngineActorDefLumps` (`IEngineActorDefLumps`, dato ai `d_main` da `D_ConfigureActorDef`); `SC_GetActordefDeclaration` sta in `deh_base`.
 
-### `Base\sc_defines.pas` - cancellata
+### `IdTech1\Base\sc_defines.pas` - cancellata
 
 **Tolta (#144)**: i define di gioco sono `TScriptGameDefines` (`IScriptGameDefines`), dati ai `d_main` con `D_ConfigureGameDefines` e al preprocessore da `ComposeScanner`.
 
-### `Base\p_serializer.pas` - 1 funzioni pubbliche, 1 chiamate
+### `IdTech1\Base\p_serializer.pas` - 1 funzioni pubbliche, 1 chiamate
 
 Per toglierla: savegame: il formato non puo cambiare, resta facciata.
 
@@ -224,7 +224,7 @@ Per toglierla: savegame: il formato non puo cambiare, resta facciata.
 | `gld_InitVoxels` | 1 | gl_render |
 | `gld_VoxelsDone` | 1 | gl_render |
 
-### `Base\r_dynlights.pas` - 1 funzioni pubbliche, 2 chiamate
+### `IdTech1\Base\r_dynlights.pas` - 1 funzioni pubbliche, 2 chiamate
 
 **Non più facciata (issue #137)**: le funzioni sono di `IDynLightRenderCache` (ricevuto da `r_main`, `r_softlights`, `gl_render`); l'unit resta con i buffer dei renderer.
 
@@ -232,7 +232,7 @@ Per toglierla: savegame: il formato non puo cambiare, resta facciata.
 |---|---:|---|
 | `R_FreeDynamicLightItems` | 2 | gl_render, r_main |
 
-### `Heretic\p_telept.pas` - 2 funzioni pubbliche, 4 chiamate
+### `IdTech1\Heretic\p_telept.pas` - 2 funzioni pubbliche, 4 chiamate
 
 Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `IdTech1\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
 
@@ -241,13 +241,13 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 | `P_Teleport` | 1 | p_user |
 | `EV_Teleport` | 3 | p_spec (2), udmf_telept |
 
-### `Base\p_obituaries.pas` - 1 funzioni pubbliche, 5 chiamate
+### `IdTech1\Base\p_obituaries.pas` - 1 funzioni pubbliche, 5 chiamate
 
 **Non piu facciata (#136)**: resta `P_Obituary`, logica del motore che chiama `IdTech1\Obituary`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `P_Obituary` | 5 | Doom\p_inter, Heretic\p_inter, Hexen\p_inter (2), Strife\p_inter |
+| `P_Obituary` | 5 | IdTech1\Doom\p_inter, IdTech1\Heretic\p_inter, IdTech1\Hexen\p_inter (2), IdTech1\Strife\p_inter |
 
 ### `IdTech1\OpenGl\Legacy\gl_clipper.pas` - 5 funzioni pubbliche, 7 chiamate
 
@@ -261,7 +261,7 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 | `gld_clipper_SafeCheckRange` | 2 | r_bsp (2) |
 | `gld_clipper_SafeAddClipRange` | 2 | r_bsp (2) |
 
-### `Base\nd_main.pas` - 3 funzioni pubbliche, 7 chiamate
+### `IdTech1\Base\nd_main.pas` - 3 funzioni pubbliche, 7 chiamate
 
 **Non piu facciata (#142)**: i nodi del livello sono `TEngineLevelNodes`; restano i record GL letti da `IdTech1\OpenGl\Legacy\gl_setup.pas` e `gld_GetGLVertexes`. **#158**: `gld_BuildNodes` e `ND_RunGlbsp` sono `TEngineGlbspRunner` (`IEngineGlbspRunner`), data a `TEngineLevelNodes` e, in OpenGL, ai `d_main` con `D_ConfigureGlbsp`.
 
@@ -269,7 +269,7 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 |---|---:|---|
 | `gld_GetGLVertexes` | 1 | gl_setup |
 
-### `Base\vx_base.pas` - 7 funzioni pubbliche, 9 chiamate
+### `IdTech1\Base\vx_base.pas` - 7 funzioni pubbliche, 9 chiamate
 
 **Resta storica (#185, fetta 1e)**: e' il registro (`voxelmanager`, `voxelstates`) che i renderer leggono per ogni voxel disegnato, piu' `VX_CheckVoxelSprite` che scrive in `voxelspritenames` una lista che nessuno legge (dato morto: vedi `docs\PENDING_ISSUES.md`). Il parser e il sink sono gia' a classi (`IdTech1\Voxel`).
 
@@ -285,16 +285,16 @@ Per toglierla: il registro dei voxel di VOXELDEF: voxel, poche chiamate, inietta
 | `VX_InitVoxels` | 2 | gl_voxels, r_voxels |
 | `VX_VoxelsDone` | 2 | gl_voxels, r_voxels |
 
-### `Base\udmf_telept.pas` - 2 funzioni pubbliche, 9 chiamate
+### `IdTech1\Base\udmf_telept.pas` - 2 funzioni pubbliche, 9 chiamate
 
 Per toglierla: teletrasporto di Hexen e UDMF (#154): usa `TTeleportGeometry` e `TTeleportLineExit` di `IdTech1\Thinkers`; restano il giro dei thinker e le scritture sul mobj e sul giocatore.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `EVH_Teleport` | 4 | Hexen\p_spec (2), udmf_spec (2) |
-| `PH_Teleport` | 5 | Hexen\p_enemy (2), Hexen\p_user (3) |
+| `EVH_Teleport` | 4 | IdTech1\Hexen\p_spec (2), udmf_spec (2) |
+| `PH_Teleport` | 5 | IdTech1\Hexen\p_enemy (2), IdTech1\Hexen\p_user (3) |
 
-### `Base\r_voxels.pas` - 4 funzioni pubbliche, 9 chiamate
+### `IdTech1\Base\r_voxels.pas` - 4 funzioni pubbliche, 9 chiamate
 
 **Non piu facciata (#134, #145)**: e il disegno dei voxel del renderer software; riceve la palette di base (`R_ConfigureVoxelPalette`).
 
@@ -305,7 +305,7 @@ Per toglierla: teletrasporto di Hexen e UDMF (#154): usa `TTeleportGeometry` e `
 | `R_VoxelsDone` | 2 | r_main (2) |
 | `R_DrawVoxel` | 4 | r_things (4) |
 
-### `Base\p_musinfo.pas` - 3 funzioni pubbliche, 9 chiamate
+### `IdTech1\Base\p_musinfo.pas` - 3 funzioni pubbliche, 9 chiamate
 
 Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` carica con `IMusInfoLoader`); resta `A_MusicChanger` (azione di stato); `P_FindMusinfoMusic`, che nessuno chiamava da fuori, dalla #158 non e piu pubblica.
 
@@ -313,9 +313,9 @@ Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` c
 |---|---:|---|
 | `P_FindMusinfoMusic` | 0 | - |
 | `P_ConfigureMusInfo` | 1 | DelphiDoom.Engine.Composition |
-| `A_MusicChanger` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
+| `A_MusicChanger` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
 
-### `Base\i_midi_new.pas` - cancellata
+### `IdTech1\Base\i_midi_new.pas` - cancellata
 
 **Tolta (#158)**: il corpo e `TEngineMidiSongPlayer` (`IEngineMidiSongPlayer`), creata da `ComposeMusic` e data a `i_midi` con `I_ConfigureMidi`. Storia: dalla #83 il sequencer dei buffer di stream e `Framework\Midi` (`IMidiStreamSequencer`) e il dispositivo e `TEngineMidiStreamPlayer` (`I_ConfigureMidiStream`, dato da `ComposeMusic`); resta la vecchia API `I_*Midi_New` che `i_midi` chiama. Scritta senza compilatore, vedi `RUN-83.md`.
 
@@ -331,7 +331,7 @@ Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` c
 | `I_SetMusicVolumeMidi_New` | 1 | i_midi |
 | `I_ProcessMidi_New` | 1 | i_midi |
 
-### `Hexen\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
+### `IdTech1\Hexen\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
 
 **Valutata nella #159, lasciata** (vale per i quattro `deh_main`): non e una facciata ma i dati del gioco. `DEH_Init` costruisce le liste dei nomi (`mobj_tokens`, `state_tokens`, i flag...) e registra le circa 1900 azioni, e le liste sono variabili di unit che leggono `ActorDef.Catalog`, `TableExport.Names/Settings`, `info_common`, `p_common`, `r_renderstyle` e, in Strife, 12 moduli del gioco per `DEH_GetString`. Spostare il corpo in una classe cambierebbe solo il nome dell'unit e le liste restano globali; servirebbe prima dare le liste a quei lettori (un `IDehackedTables`) e a `deh_base`, e portare a dati le registrazioni (stima L, come in `PENDING_ISSUES.md`). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
@@ -340,25 +340,25 @@ Per toglierla: `P_InitMusInfo` non esiste piu (#142: `TLevelLoader.Initialize` c
 | `DEH_ShutDown` | 3 | dd_compiler, d_main (2) |
 | `DEH_Init` | 7 | dd_compiler, deh_base (3), DelphiDoom.Engine.Dehacked.Applier, d_main (2) |
 
-### `Heretic\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
+### `IdTech1\Heretic\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
 
-Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
-
-| Funzione | Chiamate | Moduli chiamanti |
-|---|---:|---|
-| `DEH_ShutDown` | 3 | dd_compiler, d_main (2) |
-| `DEH_Init` | 7 | dd_compiler, deh_base (3), DelphiDoom.Engine.Dehacked.Applier, d_main (2) |
-
-### `Doom\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
-
-Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+Vedi `IdTech1\Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `DEH_ShutDown` | 3 | dd_compiler, d_main (2) |
 | `DEH_Init` | 7 | dd_compiler, deh_base (3), DelphiDoom.Engine.Dehacked.Applier, d_main (2) |
 
-### `Doom\p_switch.pas` - 2 funzioni pubbliche, 12 chiamate
+### `IdTech1\Doom\deh_main.pas` - 2 funzioni pubbliche, 10 chiamate
+
+Vedi `IdTech1\Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+
+| Funzione | Chiamate | Moduli chiamanti |
+|---|---:|---|
+| `DEH_ShutDown` | 3 | dd_compiler, d_main (2) |
+| `DEH_Init` | 7 | dd_compiler, deh_base (3), DelphiDoom.Engine.Dehacked.Applier, d_main (2) |
+
+### `IdTech1\Doom\p_switch.pas` - 2 funzioni pubbliche, 12 chiamate
 
 **Valutata nella #159, lasciata**: non e una facciata ma codice dei bottoni di Doom (`P_UseSpecialLine`, `P_ChangeSwitchTexture`, il thinker `button_t`), legato ai thinker. `P_InitSwitchList` e `P_ConfigureSwitches` non esistono piu (#142: `TEngineSwitchListLoader` e le regole di livello di Doom); `P_UseSpecialLine` e `P_ChangeSwitchTexture` sono legati ai thinker dei bottoni: restano.
 
@@ -367,7 +367,7 @@ Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch l
 | `P_UseSpecialLine` | 4 | p_common, p_enemy (2), p_map |
 | `P_ChangeSwitchTexture` | 8 | p_spec (7), udmf_spec |
 
-### `Base\r_patch.pas` - 5 funzioni pubbliche, 13 chiamate
+### `IdTech1\Base\r_patch.pas` - 5 funzioni pubbliche, 13 chiamate
 
 **Non piu facciata (#135)**: e la cache delle colonne fisse del motore (`fixedcolumns[]`), che chiama gia la libreria. **Valutata nella #159, lasciata**: `R_EnableFixedColumn`/`R_DisableFixedColumn` sono chiamate dal percorso caldo (`r_plane`, `r_segs`) e `R_GetFixedColumn` da `r_data`; non c'e un oggetto a cui darle senza una chiamata a interfaccia per colonna.
 
@@ -379,18 +379,18 @@ Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch l
 | `R_EnableFixedColumn` | 3 | r_plane (2), r_segs |
 | `R_DisableFixedColumn` | 4 | r_plane (3), r_segs |
 
-### `Base\i_tmp.pas` - 4 funzioni pubbliche, 12 chiamate
+### `IdTech1\Base\i_tmp.pas` - 4 funzioni pubbliche, 12 chiamate
 
-**Ridotta (#159)**: `TEnginePaletteGenerator` e `TEngineVoxelSpriteGenerator` ricevono `ITempFiles` dal costruttore (`ComposeEngine`). Restano i salvataggi (`p_saveg` di Doom, Heretic, Strife e `Hexen\sv_save`: lo stato PascalScript della mappa passa da un file) (`ps_dll` dalla #172 fetta 2e riceve `ITempFiles` da `TEngineScriptDllSource`), procedure storiche senza un oggetto a cui darlo, e `i_system` per la chiusura.
+**Ridotta (#159)**: `TEnginePaletteGenerator` e `TEngineVoxelSpriteGenerator` ricevono `ITempFiles` dal costruttore (`ComposeEngine`). Restano i salvataggi (`p_saveg` di Doom, Heretic, Strife e `IdTech1\Hexen\sv_save`: lo stato PascalScript della mappa passa da un file) (`ps_dll` dalla #172 fetta 2e riceve `ITempFiles` da `TEngineScriptDllSource`), procedure storiche senza un oggetto a cui darlo, e `i_system` per la chiusura.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `I_ConfigureTempFiles` | 1 | DelphiDoom.Engine.Composition |
 | `I_DeclareTempFile` | 0 | - |
 | `I_ShutDownTempFiles` | 2 | i_system (2) |
-| `I_NewTempFile` | 8 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), Strife\p_saveg (2) |
+| `I_NewTempFile` | 8 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save (2), IdTech1\Strife\p_saveg (2) |
 
-### `Heretic\p_ceilng.pas` - 4 funzioni pubbliche, 15 chiamate
+### `IdTech1\Heretic\p_ceilng.pas` - 4 funzioni pubbliche, 15 chiamate
 
 Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `TPlaneMover`): `T_MoveCeiling` e `EV_DoCeiling` intrecciano suoni, special ed enum per gioco e chiamano `T_MovePlane`; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -401,19 +401,19 @@ Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `T
 | `EV_CeilingCrushStop` | 2 | p_spec (2) |
 | `EV_DoCeiling` | 10 | p_spec (7), p_switch (3) |
 
-### `Base\p_animdefs.pas` - 1 funzioni pubbliche, 3 chiamate
+### `IdTech1\Base\p_animdefs.pas` - 1 funzioni pubbliche, 3 chiamate
 
-**Ridotta (#159)**: `P_InitAnimations` e `P_ShutDownAnimations` non esistono piu: le liste delle immagini animate le crea `TEngineAnimDefsLoader.Load` e le libera `IEngineAnimDefsLoader.Release` (le regole di livello di Doom, Heretic e Strife). Resta `P_AnimateSurfaces` (chiamata a ogni tic da `p_tick`) con i dati delle animazioni (`AnimDefs[]`, `FrameDefs[]`, le due liste), che il renderer legge; `Hexen\p_anim` ha una copia propria.
+**Ridotta (#159)**: `P_InitAnimations` e `P_ShutDownAnimations` non esistono piu: le liste delle immagini animate le crea `TEngineAnimDefsLoader.Load` e le libera `IEngineAnimDefsLoader.Release` (le regole di livello di Doom, Heretic e Strife). Resta `P_AnimateSurfaces` (chiamata a ogni tic da `p_tick`) con i dati delle animazioni (`AnimDefs[]`, `FrameDefs[]`, le due liste), che il renderer legge; `IdTech1\Hexen\p_anim` ha una copia propria.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `P_AnimateSurfaces` | 3 | Hexen\p_anim (2), p_tick |
+| `P_AnimateSurfaces` | 3 | IdTech1\Hexen\p_anim (2), p_tick |
 
-### `Base\p_umapinfo.pas` - nessuna funzione pubblica
+### `IdTech1\Base\p_umapinfo.pas` - nessuna funzione pubblica
 
 **Non piu facciata (#159)**: `U_ParseMapInfo`, `U_FreeMapInfo`, `U_ConfigureMapInfo` e `ubigstringtostring` non esistono piu: li fa `TEngineMapInfoRecords` (`DelphiDoom.Engine.MapInfo.Records`, `IEngineMapInfoRecords`), dato da `ComposeEngine` ai tre `d_main` (`D_ConfigureMapInfo`); `f_finale` chiama `TEngineMapInfoRecords.BigStringToString` (statica). L'unit resta con i record `mapentry_t` e le variabili `u_mapinfo` e `default_mapinfo`, letti da circa 20 moduli (vedi `PENDING_ISSUES.md`).
 
-### `Base\i_threads.pas` - 4 funzioni pubbliche, 19 chiamate
+### `IdTech1\Base\i_threads.pas` - 4 funzioni pubbliche, 19 chiamate
 
 Per toglierla: dalla #148 e una facciata sottile `TDThread` sopra `IWorkerThread` di `Framework\Threading` (`I_ConfigureThreads`) per chi si crea i propri thread (muri software, `r_fake3d`, `r_depthbuffer`, `am_textured`, `m_menu`): passare un `IWorkerThreadFactory` a quei moduli. `TestActiveThreads` non fa piu nulla.
 
@@ -424,7 +424,7 @@ Per toglierla: dalla #148 e una facciata sottile `TDThread` sopra `IWorkerThread
 | `ThreadSet` | 4 | r_flat32, r_flat8, r_wall32, r_wall8 |
 | `TestActiveThreads` | 10 | r_main (10) |
 
-### `Heretic\p_plats.pas` - 6 funzioni pubbliche, 21 chiamate
+### `IdTech1\Heretic\p_plats.pas` - 6 funzioni pubbliche, 21 chiamate
 
 Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `IdTech1\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -437,7 +437,7 @@ Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i
 | `EV_StopPlat` | 2 | p_spec (2) |
 | `EV_DoPlat` | 15 | p_spec (7), p_switch (8) |
 
-### `Heretic\p_doors.pas` - 5 funzioni pubbliche, 21 chiamate
+### `IdTech1\Heretic\p_doors.pas` - 5 funzioni pubbliche, 21 chiamate
 
 Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `IdTech1\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -449,7 +449,7 @@ Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic
 | `T_VerticalDoor` | 2 | p_saveg (2) |
 | `EV_DoDoor` | 16 | p_spec (10), p_switch (6) |
 
-### `Doom\p_telept.pas` - 3 funzioni pubbliche, 21 chiamate
+### `IdTech1\Doom\p_telept.pas` - 3 funzioni pubbliche, 21 chiamate
 
 Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `IdTech1\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
 
@@ -459,7 +459,7 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 | `EV_Teleport` | 7 | p_spec (4), p_switch (2), udmf_telept |
 | `EV_SilentLineTeleport` | 8 | p_spec (8) |
 
-### `Base\r_colormaps.pas` - 6 funzioni pubbliche, 23 chiamate
+### `IdTech1\Base\r_colormaps.pas` - 6 funzioni pubbliche, 23 chiamate
 
 **Non piu facciata (#135)**: e la cache delle colormap personalizzate del motore (lette dal renderer e da `p_saveg`); riceve preparatore e palette di base da `ComposeEngine`. **Valutata nella #159, lasciata**: `R_CustomColorMapForName` e chiamata da `p_saveg` di Doom e Strife (12 volte) e dalle linee colormap; sono le cache in zone memory del motore e i salvataggi, senza un oggetto a cui darle.
 
@@ -469,9 +469,9 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 | `R_InitCustomColormaps` | 2 | r_main (2) |
 | `R_ShutDownCustomColormaps` | 2 | r_main (2) |
 | `R_RecalcColormaps` | 2 | r_main (2) |
-| `R_CustomColorMapForName` | 16 | DelphiDoom.Engine.Level.ColormapLines (3), Doom\p_saveg (6), r_data, Strife\p_saveg (6) |
+| `R_CustomColorMapForName` | 16 | DelphiDoom.Engine.Level.ColormapLines (3), IdTech1\Doom\p_saveg (6), r_data, IdTech1\Strife\p_saveg (6) |
 
-### `Strife\p_telept.pas` - 3 funzioni pubbliche, 24 chiamate
+### `IdTech1\Strife\p_telept.pas` - 3 funzioni pubbliche, 24 chiamate
 
 Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): la geometria e le uscite sono di `IdTech1\Thinkers` (`TTeleportGeometry`, `TTeleportLineExit`, `TTeleportPlacement`); restano qui il giro dei thinker per trovare l'arrivo, `P_TeleportMove` e le scritture sul mobj e sul giocatore (campi diversi per gioco).
 
@@ -481,17 +481,17 @@ Per toglierla: i teletrasporti non sono thinker (#154, `P_ConfigureTeleport`): l
 | `EV_SilentLineTeleport` | 8 | p_spec (8) |
 | `EV_Teleport` | 10 | p_spec (7), p_switch (2), udmf_telept |
 
-### `Base\udmf_doors.pas` - 3 funzioni pubbliche, 25 chiamate
+### `IdTech1\Base\udmf_doors.pas` - 3 funzioni pubbliche, 25 chiamate
 
 Per toglierla: facciata delle porte a script (#152, Hexen e UDMF): `TDoorRunner` e `TDoorSpawner` di `IdTech1\Thinkers` con il profilo della famiglia UDMF; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `EVH_VerticalDoor` | 6 | Hexen\p_spec (3), udmf_spec (3) |
-| `TH_VerticalDoor` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `EVH_DoDoor` | 12 | Hexen\p_spec (4), DelphiDoom.Engine.Script.SectorSpecials (4), udmf_spec (4) |
+| `EVH_VerticalDoor` | 6 | IdTech1\Hexen\p_spec (3), udmf_spec (3) |
+| `TH_VerticalDoor` | 7 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `EVH_DoDoor` | 12 | IdTech1\Hexen\p_spec (4), DelphiDoom.Engine.Script.SectorSpecials (4), udmf_spec (4) |
 
-### `Heretic\p_lights.pas` - 11 funzioni pubbliche, 28 chiamate
+### `IdTech1\Heretic\p_lights.pas` - 11 funzioni pubbliche, 28 chiamate
 
 Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `IdTech1\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -509,7 +509,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 | `P_SpawnStrobeFlash` | 5 | p_spec (5) |
 | `EV_LightTurnOn` | 8 | DelphiDoom.Engine.Door.Thinker (2), p_spec (6) |
 
-### `Base\r_translations.pas` - 5 funzioni pubbliche, 28 chiamate
+### `IdTech1\Base\r_translations.pas` - 5 funzioni pubbliche, 28 chiamate
 
 **Valutata nella #159, lasciata**: `R_InitMobjTranslation` e `R_SetMobjBloodTranslation` sono chiamate dai `p_mobj`, `p_map`, `p_saveg`/`sv_save` dei giochi, da `p_common` e da `psi_game` (thinker, salvataggi, PascalScript): vanno con la fase dei thinker. Per toglierla: dalla #146 `R_GetTranslationTable` e le funzioni del sangue non esistono piu (il sangue e `TTranslationBlood`, statica; le tabelle dei PK3 passano dal file system PAK); restano `R_InitMobjTranslation` e `R_SetMobjBloodTranslation`: passare `ITranslationNames` a chi chiede le tabelle degli sprite.
 
@@ -518,22 +518,22 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 | `R_ConfigureTranslations` | 1 | DelphiDoom.Engine.Composition |
 | `R_InitTranslations` | 2 | r_main (2) |
 | `R_ShutDownTranslations` | 2 | r_main (2) |
-| `R_InitMobjTranslation` | 10 | Doom\p_mobj, Doom\p_saveg, Heretic\p_mobj, Heretic\p_saveg, Hexen\p_mobj, Hexen\sv_save, psi_game, p_common, +2 altri |
-| `R_SetMobjBloodTranslation` | 13 | Doom\p_map (3), Doom\p_mobj, Heretic\p_map, Heretic\p_mobj (2), Hexen\p_map, Hexen\p_mobj (2), Strife\p_enemy, Strife\p_map, +1 altri |
+| `R_InitMobjTranslation` | 10 | IdTech1\Doom\p_mobj, IdTech1\Doom\p_saveg, IdTech1\Heretic\p_mobj, IdTech1\Heretic\p_saveg, IdTech1\Hexen\p_mobj, IdTech1\Hexen\sv_save, psi_game, p_common, +2 altri |
+| `R_SetMobjBloodTranslation` | 13 | IdTech1\Doom\p_map (3), IdTech1\Doom\p_mobj, IdTech1\Heretic\p_map, IdTech1\Heretic\p_mobj (2), IdTech1\Hexen\p_map, IdTech1\Hexen\p_mobj (2), IdTech1\Strife\p_enemy, IdTech1\Strife\p_map, +1 altri |
 
-### `Base\udmf_plats.pas` - 5 funzioni pubbliche, 33 chiamate
+### `IdTech1\Base\udmf_plats.pas` - 5 funzioni pubbliche, 33 chiamate
 
 Per toglierla: facciata delle piattaforme a script (#154, Hexen e UDMF): `TUdmfPlatMachine` di `IdTech1\Thinkers`; restano `hactiveplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `PH_RemoveActivePlat` | 1 | DelphiDoom.Engine.Plat.UdmfHost |
-| `EVH_StopPlat` | 2 | Hexen\p_spec, udmf_spec |
-| `PH_AddActivePlat` | 4 | Doom\p_saveg, Heretic\p_saveg, Hexen\sv_save, Strife\p_saveg |
-| `TH_PlatRaise` | 8 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), Strife\p_saveg (2) |
-| `EVH_DoPlat` | 18 | Hexen\p_spec (5), DelphiDoom.Engine.Script.SectorSpecials (8), udmf_spec (5) |
+| `EVH_StopPlat` | 2 | IdTech1\Hexen\p_spec, udmf_spec |
+| `PH_AddActivePlat` | 4 | IdTech1\Doom\p_saveg, IdTech1\Heretic\p_saveg, IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg |
+| `TH_PlatRaise` | 8 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save (2), IdTech1\Strife\p_saveg (2) |
+| `EVH_DoPlat` | 18 | IdTech1\Hexen\p_spec (5), DelphiDoom.Engine.Script.SectorSpecials (8), udmf_spec (5) |
 
-### `Hexen\d_main.pas` - 25 funzioni pubbliche, 37 chiamate
+### `IdTech1\Hexen\d_main.pas` - 25 funzioni pubbliche, 37 chiamate
 
 Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
@@ -565,7 +565,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 | `D_Version` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 | `D_VersionBuilt` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 
-### `Heretic\d_main.pas` - 26 funzioni pubbliche, 38 chiamate
+### `IdTech1\Heretic\d_main.pas` - 26 funzioni pubbliche, 38 chiamate
 
 Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
@@ -598,7 +598,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 | `D_Version` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 | `D_VersionBuilt` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 
-### `Doom\d_main.pas` - 26 funzioni pubbliche, 38 chiamate
+### `IdTech1\Doom\d_main.pas` - 26 funzioni pubbliche, 38 chiamate
 
 Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
@@ -631,7 +631,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 | `D_Version` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 | `D_VersionBuilt` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 
-### `Doom\p_plats.pas` - 6 funzioni pubbliche, 39 chiamate
+### `IdTech1\Doom\p_plats.pas` - 6 funzioni pubbliche, 39 chiamate
 
 Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `IdTech1\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -644,7 +644,7 @@ Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i
 | `EV_StopPlat` | 4 | p_spec (2), p_switch (2) |
 | `EV_DoPlat` | 27 | p_spec (14), p_switch (13) |
 
-### `Strife\p_lights.pas` - 11 funzioni pubbliche, 40 chiamate
+### `IdTech1\Strife\p_lights.pas` - 11 funzioni pubbliche, 40 chiamate
 
 Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `IdTech1\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -662,7 +662,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 | `EV_TurnTagLightsOff` | 6 | DelphiDoom.Engine.Door.Thinker (2), p_spec (2), p_switch (2) |
 | `EV_LightTurnOn` | 14 | DelphiDoom.Engine.Door.Thinker (2), p_spec (6), p_switch (6) |
 
-### `Strife\d_main.pas` - 26 funzioni pubbliche, 40 chiamate
+### `IdTech1\Strife\d_main.pas` - 26 funzioni pubbliche, 40 chiamate
 
 Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete, default e screenshot (`D_Configure*`); dalle #142-#144 anche livello, ACTORDEF e define di gioco (`D_ConfigureLevel`, `D_ConfigureActorDef`, `D_ConfigureGameDefines`). **#160**: i file di risposta (`@file`), le liste `wads_autoload`/`paks_autoload`, la parte dimensioni di `D_CheckCommonParams` e il ciclo delle cartelle di `D_IdentifyGameDirectories` sono classi (`IResponseFileExpander`, `TCommandLineFileList`, `IScreenSizeResolver`, `TPakGameDirectories`, date da `D_ConfigureStartup`); restano `D_AddFile` (una per gioco, con il GWA in OpenGL), `D_AddWADFiles/PAKFiles/DEHFiles`, `D_CmdAddPakFile`, `D_CheckCommonParams` (opzioni che scrivono i globali del gioco) e `D_DoomMain`.
 
@@ -695,7 +695,7 @@ Per toglierla: ciclo principale di gioco: resta. Dalla #145 riceve console, rete
 | `D_Version` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 | `D_VersionBuilt` | 4 | DelphiDoom.Engine.TableExport.Settings, gl_main, i_main, i_startup |
 
-### `Doom\p_lights.pas` - 11 funzioni pubbliche, 40 chiamate
+### `IdTech1\Doom\p_lights.pas` - 11 funzioni pubbliche, 40 chiamate
 
 Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il calcolo e di `IdTech1\Thinkers` (`TLightFireFlicker`, `TLightFlash`, `TLightStrobe`, `TLightGlow`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -713,7 +713,7 @@ Per toglierla: facciata dei thinker delle luci (#149, P_ConfigureLights): il cal
 | `EV_TurnTagLightsOff` | 6 | DelphiDoom.Engine.Door.Thinker (2), p_spec (2), p_switch (2) |
 | `EV_LightTurnOn` | 14 | DelphiDoom.Engine.Door.Thinker (2), p_spec (6), p_switch (6) |
 
-### `Doom\p_doors.pas` - 6 funzioni pubbliche, 40 chiamate
+### `IdTech1\Doom\p_doors.pas` - 6 funzioni pubbliche, 40 chiamate
 
 Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `IdTech1\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -726,7 +726,7 @@ Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic
 | `T_VerticalDoor` | 4 | p_genlin (2), p_saveg (2) |
 | `EV_DoDoor` | 31 | p_enemy (2), p_spec (15), p_switch (14) |
 
-### `Strife\p_plats.pas` - 6 funzioni pubbliche, 42 chiamate
+### `IdTech1\Strife\p_plats.pas` - 6 funzioni pubbliche, 42 chiamate
 
 Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i tipi sono di `IdTech1\Thinkers` (`TPlatMachine`); restano le liste `activeplats` e la ricerca dei settori; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -739,30 +739,30 @@ Per toglierla: facciata delle piattaforme (#154, `P_ConfigurePlats`): il tic e i
 | `EV_StopPlat` | 4 | p_spec (2), p_switch (2) |
 | `EV_DoPlat` | 31 | p_spec (14), p_switch (17) |
 
-### `Base\udmf_lights.pas` - 5 funzioni pubbliche, 44 chiamate
+### `IdTech1\Base\udmf_lights.pas` - 5 funzioni pubbliche, 44 chiamate
 
 Per toglierla: facciata degli special a script delle luci (#149, Hexen e UDMF): `TLightScripted`, `TLightPhase` e `TLightSequence` di `IdTech1\Thinkers`; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `P_SpawnPhasedLight` | 2 | DelphiDoom.Engine.Light.PhaseSpawner, Hexen\p_spec |
-| `P_SpawnLightSequence` | 4 | Doom\p_spec, Heretic\p_spec, Hexen\p_spec, Strife\p_spec |
-| `TH_Light` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `TH_Phase` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `EVH_SpawnLight` | 24 | Hexen\p_spec (7), DelphiDoom.Engine.Script.SectorSpecials (10), udmf_spec (7) |
+| `P_SpawnPhasedLight` | 2 | DelphiDoom.Engine.Light.PhaseSpawner, IdTech1\Hexen\p_spec |
+| `P_SpawnLightSequence` | 4 | IdTech1\Doom\p_spec, IdTech1\Heretic\p_spec, IdTech1\Hexen\p_spec, IdTech1\Strife\p_spec |
+| `TH_Light` | 7 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `TH_Phase` | 7 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `EVH_SpawnLight` | 24 | IdTech1\Hexen\p_spec (7), DelphiDoom.Engine.Script.SectorSpecials (10), udmf_spec (7) |
 
-### `Base\udmf_ceilng.pas` - 4 funzioni pubbliche, 44 chiamate
+### `IdTech1\Base\udmf_ceilng.pas` - 4 funzioni pubbliche, 44 chiamate
 
 Per toglierla: soffitti a script: non migrati (#153 ha portato a classi solo il passo); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `EVH_CeilingCrushStop` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
-| `PH_AddActiveCeiling` | 4 | Doom\p_saveg, Heretic\p_saveg, Hexen\sv_save, Strife\p_saveg |
-| `TH_MoveCeiling` | 8 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save (2), Strife\p_saveg (2) |
-| `EVH_DoCeiling` | 29 | Hexen\p_spec (6), DelphiDoom.Engine.Script.SectorSpecials (15), udmf_floor (2), udmf_spec (6) |
+| `EVH_CeilingCrushStop` | 3 | IdTech1\Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
+| `PH_AddActiveCeiling` | 4 | IdTech1\Doom\p_saveg, IdTech1\Heretic\p_saveg, IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg |
+| `TH_MoveCeiling` | 8 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save (2), IdTech1\Strife\p_saveg (2) |
+| `EVH_DoCeiling` | 29 | IdTech1\Hexen\p_spec (6), DelphiDoom.Engine.Script.SectorSpecials (15), udmf_floor (2), udmf_spec (6) |
 
-### `Strife\p_ceilng.pas` - 5 funzioni pubbliche, 45 chiamate
+### `IdTech1\Strife\p_ceilng.pas` - 5 funzioni pubbliche, 45 chiamate
 
 Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `TPlaneMover`): `T_MoveCeiling` e `EV_DoCeiling` intrecciano suoni, special ed enum per gioco e chiamano `T_MovePlane`; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -774,7 +774,7 @@ Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `T
 | `EV_CeilingCrushStop` | 4 | p_spec (2), p_switch (2) |
 | `EV_DoCeiling` | 33 | p_spec (16), p_switch (17) |
 
-### `Doom\p_ceilng.pas` - 5 funzioni pubbliche, 45 chiamate
+### `IdTech1\Doom\p_ceilng.pas` - 5 funzioni pubbliche, 45 chiamate
 
 Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `TPlaneMover`): `T_MoveCeiling` e `EV_DoCeiling` intrecciano suoni, special ed enum per gioco e chiamano `T_MovePlane`; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -786,7 +786,7 @@ Per toglierla: soffitti: non migrati (#153 ha portato a classi solo il passo, `T
 | `EV_CeilingCrushStop` | 4 | p_spec (2), p_switch (2) |
 | `EV_DoCeiling` | 33 | p_spec (17), p_switch (16) |
 
-### `Heretic\p_floor.pas` - 4 funzioni pubbliche, 47 chiamate
+### `IdTech1\Heretic\p_floor.pas` - 4 funzioni pubbliche, 47 chiamate
 
 Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `IdTech1\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -797,7 +797,7 @@ Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane`
 | `EV_BuildStairs` | 4 | p_spec (2), p_switch (2) |
 | `EV_DoFloor` | 35 | p_enemy (3), p_spec (20), p_switch (12) |
 
-### `Base\am_map.pas` - 8 funzioni pubbliche, 51 chiamate
+### `IdTech1\Base\am_map.pas` - 8 funzioni pubbliche, 51 chiamate
 
 **Non piu facciata (#145)**: le funzioni che passavano il modello (`FTOM`, `CXMTOF`, `CYMTOF`, `M_ZOOMIN`, `M_ZOOMOUT`, `AM_rotate`, `AM_GetWindow`) non esistono piu: `am_map` e `am_textured` chiamano `IAutomapView`, `TAutomapTransform` e `TAutomapRotation`. Resta il disegno dell'automap (per fotogramma) con i suoi tasti, che riceve il modello da `AM_Configure`.
 
@@ -805,14 +805,14 @@ Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane`
 |---|---:|---|
 | `AM_Configure` | 1 | DelphiDoom.Engine.Composition |
 | `AM_Start` | 2 | gl_main, v_displaymode |
-| `AM_Responder` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `AM_Ticker` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `AM_Init` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `AM_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `AM_Drawer` | 12 | Doom\d_main (3), Heretic\d_main (3), Hexen\d_main (3), Strife\d_main (3) |
-| `AM_Stop` | 12 | Doom\g_game, Doom\p_inter, gl_main, Heretic\g_game, Heretic\in_stuff, Heretic\p_inter, Hexen\g_game, Hexen\in_stuff, +4 altri |
+| `AM_Responder` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `AM_Ticker` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `AM_Init` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `AM_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `AM_Drawer` | 12 | IdTech1\Doom\d_main (3), IdTech1\Heretic\d_main (3), IdTech1\Hexen\d_main (3), IdTech1\Strife\d_main (3) |
+| `AM_Stop` | 12 | IdTech1\Doom\g_game, IdTech1\Doom\p_inter, gl_main, IdTech1\Heretic\g_game, IdTech1\Heretic\in_stuff, IdTech1\Heretic\p_inter, IdTech1\Hexen\g_game, IdTech1\Hexen\in_stuff, +4 altri |
 
-### `Base\r_draw.pas` - 10 funzioni pubbliche, 60 chiamate
+### `IdTech1\Base\r_draw.pas` - 10 funzioni pubbliche, 60 chiamate
 
 Per toglierla: renderer software: resta.
 
@@ -822,14 +822,14 @@ Per toglierla: renderer software: resta.
 | `R_InitTranslationTables` | 1 | r_main |
 | `R_FillBackStatusbar` | 1 | v_video |
 | `R_ConfigurePlayerTranslations` | 3 | DelphiDoom.Engine.Composition (3) |
-| `R_DrawDiskBusy` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `R_VideoBlanc` | 5 | Doom\st_stuff (2), Strife\st_stuff (3) |
+| `R_DrawDiskBusy` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `R_VideoBlanc` | 5 | IdTech1\Doom\st_stuff (2), IdTech1\Strife\st_stuff (3) |
 | `R_VideoErase` | 6 | hu_lib (6) |
-| `R_DrawViewBorder` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `R_FillBackScreen` | 14 | Doom\d_main (2), Doom\g_game (2), Heretic\d_main (2), Heretic\g_game (2), Hexen\d_main (2), Strife\d_main (2), Strife\g_game (2) |
-| `R_PlayerViewBlanc` | 17 | Doom\d_main (4), Heretic\d_main (4), Hexen\d_main (4), r_camera, Strife\d_main (4) |
+| `R_DrawViewBorder` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `R_FillBackScreen` | 14 | IdTech1\Doom\d_main (2), IdTech1\Doom\g_game (2), IdTech1\Heretic\d_main (2), IdTech1\Heretic\g_game (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2), IdTech1\Strife\g_game (2) |
+| `R_PlayerViewBlanc` | 17 | IdTech1\Doom\d_main (4), IdTech1\Heretic\d_main (4), IdTech1\Hexen\d_main (4), r_camera, IdTech1\Strife\d_main (4) |
 
-### `Base\w_pak.pas` - 11 funzioni pubbliche, 67 chiamate
+### `IdTech1\Base\w_pak.pas` - 11 funzioni pubbliche, 67 chiamate
 
 Per toglierla: dalla #146 e la vecchia API procedurale sopra `TPakFileSystem` (`IPakFileSystem`, creata da `ComposePak`); `PAK_AddDirectory` e `PAK_GetMatchingEntries` non esistono piu e `PAK_GetGlobalHash` non ha piu chiamanti. Restano i chiamanti `PAK_*` di `d_main`, degli script e dei lettori di testi: passare `IPakFileSystem` ai moduli.
 
@@ -838,15 +838,15 @@ Per toglierla: dalla #146 e la vecchia API procedurale sopra `TPakFileSystem` (`
 | `PAK_Configure` | 1 | DelphiDoom.Engine.Composition |
 | `PAK_FileNameIterator` | 1 | s_pk3sounds |
 | `PAK_ReadAllFilesAsString` | 2 | DelphiDoom.Engine.ActorDef.Hooks, DelphiDoom.Engine.Scanner.IncludeSource |
-| `PAK_GetDirectoryListFromString` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `PAK_LoadPendingPaks` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
+| `PAK_GetDirectoryListFromString` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `PAK_LoadPendingPaks` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
 | `PAK_ReadFileAsString` | 6 | DelphiDoom.Engine.ActorDef.Hooks (2), DelphiDoom.Engine.Scanner.IncludeSource, ps_import, ps_main (2) |
-| `PAK_InitFileSystem` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `PAK_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
+| `PAK_InitFileSystem` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `PAK_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
 | `PAK_StringIterator` | 9 | deh_base (3), DelphiDoom.Engine.ActorDef.Lumps, DelphiDoom.Engine.MapInfo.TextSource, gl_models (2), vx_base (2) |
-| `PAK_AddFile` | 24 | Doom\d_main (6), Heretic\d_main (6), Hexen\d_main (6), Strife\d_main (6) |
+| `PAK_AddFile` | 24 | IdTech1\Doom\d_main (6), IdTech1\Heretic\d_main (6), IdTech1\Hexen\d_main (6), IdTech1\Strife\d_main (6) |
 
-### `Base\i_video.pas` - 10 funzioni pubbliche, 73 chiamate
+### `IdTech1\Base\i_video.pas` - 10 funzioni pubbliche, 73 chiamate
 
 Per toglierla: DirectDraw/blit legati a `screens[]` e al renderer (#41, #42); resta finche non c'e una superficie astratta.
 
@@ -855,36 +855,36 @@ Per toglierla: DirectDraw/blit legati a `screens[]` e al renderer (#41, #42); re
 | `I_ConfigureDisplayModes` | 1 | DelphiDoom.Engine.Composition |
 | `I_BlitBuffer` | 1 | r_main |
 | `I_SetPalette64` | 1 | r_main |
-| `I_InitGraphics` | 5 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main, v_displaymode |
+| `I_InitGraphics` | 5 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main, v_displaymode |
 | `I_ShutDownGraphics` | 5 | gl_main (2), i_system (2), v_displaymode |
-| `I_FinishUpdate` | 6 | Doom\d_main, gl_main (2), Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `IV_SetPalette` | 7 | Doom\d_main, Doom\m_menu, Doom\st_stuff (2), Strife\d_main, Strife\st_stuff (2) |
-| `I_ReadScreen32` | 8 | DelphiDoom.Engine.Screenshot.Service, f_wipe (2), gl_main (2), r_main, Strife\f_fade (2) |
-| `I_ChangeFullScreen` | 10 | c_utils, Doom\m_menu (2), Heretic\m_menu (2), Hexen\m_menu (2), r_hires, Strife\m_menu (2) |
-| `I_SetPalette` | 29 | DelphiDoom.Engine.Video.Screens, Doom\d_main, Doom\m_menu, Doom\st_stuff (2), gl_main (2), Heretic\d_main, Heretic\f_finale (2), Heretic\in_stuff, +12 altri |
+| `I_FinishUpdate` | 6 | IdTech1\Doom\d_main, gl_main (2), IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `IV_SetPalette` | 7 | IdTech1\Doom\d_main, IdTech1\Doom\m_menu, IdTech1\Doom\st_stuff (2), IdTech1\Strife\d_main, IdTech1\Strife\st_stuff (2) |
+| `I_ReadScreen32` | 8 | DelphiDoom.Engine.Screenshot.Service, f_wipe (2), gl_main (2), r_main, IdTech1\Strife\f_fade (2) |
+| `I_ChangeFullScreen` | 10 | c_utils, IdTech1\Doom\m_menu (2), IdTech1\Heretic\m_menu (2), IdTech1\Hexen\m_menu (2), r_hires, IdTech1\Strife\m_menu (2) |
+| `I_SetPalette` | 29 | DelphiDoom.Engine.Video.Screens, IdTech1\Doom\d_main, IdTech1\Doom\m_menu, IdTech1\Doom\st_stuff (2), gl_main (2), IdTech1\Heretic\d_main, IdTech1\Heretic\f_finale (2), IdTech1\Heretic\in_stuff, +12 altri |
 
-### `Base\p_acs.pas` - 14 funzioni pubbliche, 75 chiamate
+### `IdTech1\Base\p_acs.pas` - 14 funzioni pubbliche, 75 chiamate
 
 Per toglierla: l'interprete ACS lavora sullo stato del gioco; servirebbe un `IAcsHost` completo (gia in parte) e togliere i globali `ACS*`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `P_CheckACSStore` | 1 | Hexen\sv_save |
+| `P_CheckACSStore` | 1 | IdTech1\Hexen\sv_save |
 | `P_ConfigureAcs` | 1 | DelphiDoom.Engine.Composition |
-| `P_SuspendACS` | 2 | Hexen\p_spec, udmf_spec |
-| `P_TerminateACS` | 2 | Hexen\p_spec, udmf_spec |
-| `P_StartLockedACS` | 2 | Hexen\p_spec, udmf_spec |
+| `P_SuspendACS` | 2 | IdTech1\Hexen\p_spec, udmf_spec |
+| `P_TerminateACS` | 2 | IdTech1\Hexen\p_spec, udmf_spec |
+| `P_StartLockedACS` | 2 | IdTech1\Hexen\p_spec, udmf_spec |
 | `P_LoadACScripts` | 2 | DelphiDoom.Engine.Level.Loader (2) |
 | `P_PolyobjFinished` | 4 | po_man (4) |
-| `P_ACSInitNewGame` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `TH_InterpretACS` | 8 | DelphiDoom.Engine.Acs.Host, Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `P_ACSInit` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `P_ACSShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
+| `P_ACSInitNewGame` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `TH_InterpretACS` | 8 | DelphiDoom.Engine.Acs.Host, IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `P_ACSInit` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `P_ACSShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
 | `P_TagFinished` | 9 | udmf_ceilng (2), udmf_doors, udmf_floor (4), udmf_plats (2) |
-| `P_StartACS` | 12 | Hexen\p_enemy (7), Hexen\p_inter, Hexen\p_map (2), Hexen\p_spec, udmf_spec [test: 1] |
-| `P_ACSMachine` | 12 | Hexen\sv_save (12) |
+| `P_StartACS` | 12 | IdTech1\Hexen\p_enemy (7), IdTech1\Hexen\p_inter, IdTech1\Hexen\p_map (2), IdTech1\Hexen\p_spec, udmf_spec [test: 1] |
+| `P_ACSMachine` | 12 | IdTech1\Hexen\sv_save (12) |
 
-### `Strife\p_doors.pas` - 11 funzioni pubbliche, 76 chiamate
+### `IdTech1\Strife\p_doors.pas` - 11 funzioni pubbliche, 76 chiamate
 
 Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic e i valori delle porte nuove sono di `IdTech1\Thinkers` (`TDoorRunner`, `TDoorSpawner`); restano qui la ricerca dei settori, le chiavi e i messaggi (dipendono da `player_t`); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -902,25 +902,25 @@ Per toglierla: facciata delle porte verticali (#152, `P_ConfigureDoors`): il tic
 | `EV_DoLockedDoor` | 8 | p_switch (8) |
 | `EV_DoDoor` | 53 | p_dialog (4), p_enemy (3), p_inter (4), p_spec (23), p_switch (19) |
 
-### `Base\udmf_floor.pas` - 11 funzioni pubbliche, 101 chiamate
+### `IdTech1\Base\udmf_floor.pas` - 11 funzioni pubbliche, 101 chiamate
 
 Per toglierla: `TH_MovePlane` e `TH_FloorWaggle` chiamano `TPlaneMover` e `TPlaneWaggle` (#153); `EVH_DoFloor`, scale, pilastri e `TH_MoveFloor` non sono migrati; i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `EVH_OpenPillar` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
-| `EVH_FloorCrushStop` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
-| `EVH_StartFloorWaggle` | 3 | Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
+| `EVH_OpenPillar` | 3 | IdTech1\Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
+| `EVH_FloorCrushStop` | 3 | IdTech1\Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
+| `EVH_StartFloorWaggle` | 3 | IdTech1\Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials, udmf_spec |
 | `TH_MovePlane` | 4 | DelphiDoom.Engine.Door.Host, DelphiDoom.Engine.Plat.UdmfHost, udmf_ceilng (2) |
-| `EVH_BuildPillar` | 6 | Hexen\p_spec (2), DelphiDoom.Engine.Script.SectorSpecials (2), udmf_spec (2) |
-| `EVH_DoFloorAndCeiling` | 6 | Hexen\p_spec (2), DelphiDoom.Engine.Script.SectorSpecials (2), udmf_spec (2) |
-| `TH_MoveFloor` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `TH_BuildPillar` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `TH_FloorWaggle` | 7 | Doom\p_saveg (2), Heretic\p_saveg (2), Hexen\sv_save, Strife\p_saveg (2) |
-| `EVH_BuildStairs` | 8 | Hexen\p_spec (4), udmf_spec (4) |
-| `EVH_DoFloor` | 47 | Hexen\p_enemy (2), Hexen\p_spec (12), DelphiDoom.Engine.Script.SectorSpecials (21), udmf_spec (12) |
+| `EVH_BuildPillar` | 6 | IdTech1\Hexen\p_spec (2), DelphiDoom.Engine.Script.SectorSpecials (2), udmf_spec (2) |
+| `EVH_DoFloorAndCeiling` | 6 | IdTech1\Hexen\p_spec (2), DelphiDoom.Engine.Script.SectorSpecials (2), udmf_spec (2) |
+| `TH_MoveFloor` | 7 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `TH_BuildPillar` | 7 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `TH_FloorWaggle` | 7 | IdTech1\Doom\p_saveg (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\sv_save, IdTech1\Strife\p_saveg (2) |
+| `EVH_BuildStairs` | 8 | IdTech1\Hexen\p_spec (4), udmf_spec (4) |
+| `EVH_DoFloor` | 47 | IdTech1\Hexen\p_enemy (2), IdTech1\Hexen\p_spec (12), DelphiDoom.Engine.Script.SectorSpecials (21), udmf_spec (12) |
 
-### `Doom\p_floor.pas` - 8 funzioni pubbliche, 104 chiamate
+### `IdTech1\Doom\p_floor.pas` - 8 funzioni pubbliche, 104 chiamate
 
 Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `IdTech1\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -935,7 +935,7 @@ Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane`
 | `EV_DoElevator` | 12 | p_spec (6), p_switch (6) |
 | `EV_DoFloor` | 61 | p_enemy (4), p_spec (29), p_switch (28) |
 
-### `Base\udmf_spec.pas` - 12 funzioni pubbliche, 117 chiamate
+### `IdTech1\Base\udmf_spec.pas` - 12 funzioni pubbliche, 117 chiamate
 
 Per toglierla: gli esecutori `EVH_*` dei thinker non si possono astrarre (savegame): resta.
 
@@ -944,17 +944,17 @@ Per toglierla: gli esecutori `EVH_*` dei thinker non si possono astrarre (savega
 | `P_LineToArgs` | 0 | - |
 | `P_ArgsToLine` | 0 | - |
 | `P_ConfigureLineSpecials` | 1 | DelphiDoom.Engine.Composition |
-| `P_ForceLightning` | 5 | Hexen\p_anim (2), Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials (2) |
-| `P_LightningFlash` | 5 | Doom\p_spec, Heretic\p_spec, Hexen\p_anim (2), Strife\p_spec |
-| `P_InitLightning` | 6 | Doom\DelphiDoom.Engine.Level.DoomRules, Heretic\DelphiDoom.Engine.Level.HereticRules, Hexen\DelphiDoom.Engine.Level.HexenRules, Hexen\p_anim (2), Strife\DelphiDoom.Engine.Level.StrifeRules |
-| `P_FindSectorFromTag2` | 7 | DelphiDoom.Engine.Acs.Host (2), Hexen\p_spec (3), udmf_lights, udmf_plats |
-| `P_FindLine` | 8 | DelphiDoom.Engine.Acs.Host (6), Hexen\p_spec (2) |
-| `P_FindSectorFromTag` | 12 | Hexen\p_spec (3), udmf_ceilng, udmf_doors, udmf_floor (7) |
-| `P_ExecuteLineSpecial` | 12 | DelphiDoom.Engine.Acs.Host, Hexen\p_enemy, Hexen\p_inter (6), Hexen\p_spec (3), Hexen\p_user |
-| `P_ExecuteActorSpecial` | 27 | Doom\p_inter (8), Heretic\p_inter (15), Strife\p_inter (4) |
-| `P_ActivateLine` | 34 | Doom\p_enemy, Doom\p_map (7), Heretic\p_enemy, Heretic\p_map (7), Hexen\p_enemy, Hexen\p_map (7), Hexen\p_spec (2), Strife\p_enemy, +1 altri |
+| `P_ForceLightning` | 5 | IdTech1\Hexen\p_anim (2), IdTech1\Hexen\p_spec, DelphiDoom.Engine.Script.SectorSpecials (2) |
+| `P_LightningFlash` | 5 | IdTech1\Doom\p_spec, IdTech1\Heretic\p_spec, IdTech1\Hexen\p_anim (2), IdTech1\Strife\p_spec |
+| `P_InitLightning` | 6 | IdTech1\Doom\DelphiDoom.Engine.Level.DoomRules, IdTech1\Heretic\DelphiDoom.Engine.Level.HereticRules, IdTech1\Hexen\DelphiDoom.Engine.Level.HexenRules, IdTech1\Hexen\p_anim (2), IdTech1\Strife\DelphiDoom.Engine.Level.StrifeRules |
+| `P_FindSectorFromTag2` | 7 | DelphiDoom.Engine.Acs.Host (2), IdTech1\Hexen\p_spec (3), udmf_lights, udmf_plats |
+| `P_FindLine` | 8 | DelphiDoom.Engine.Acs.Host (6), IdTech1\Hexen\p_spec (2) |
+| `P_FindSectorFromTag` | 12 | IdTech1\Hexen\p_spec (3), udmf_ceilng, udmf_doors, udmf_floor (7) |
+| `P_ExecuteLineSpecial` | 12 | DelphiDoom.Engine.Acs.Host, IdTech1\Hexen\p_enemy, IdTech1\Hexen\p_inter (6), IdTech1\Hexen\p_spec (3), IdTech1\Hexen\p_user |
+| `P_ExecuteActorSpecial` | 27 | IdTech1\Doom\p_inter (8), IdTech1\Heretic\p_inter (15), IdTech1\Strife\p_inter (4) |
+| `P_ActivateLine` | 34 | IdTech1\Doom\p_enemy, IdTech1\Doom\p_map (7), IdTech1\Heretic\p_enemy, IdTech1\Heretic\p_map (7), IdTech1\Hexen\p_enemy, IdTech1\Hexen\p_map (7), IdTech1\Hexen\p_spec (2), IdTech1\Strife\p_enemy, +1 altri |
 
-### `Strife\p_floor.pas` - 8 funzioni pubbliche, 121 chiamate
+### `IdTech1\Strife\p_floor.pas` - 8 funzioni pubbliche, 121 chiamate
 
 Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane` chiama `TPlaneMover` di `IdTech1\Thinkers`; `T_MoveFloor`, `EV_DoFloor`, scale, donut e ascensori intrecciano suoni, special ed enum per gioco e restano qui (non migrati); i thinker restano record nella zone memory con il puntatore a funzione salvato grezzo da `p_saveg`/`sv_save` (il formato dei salvataggi non puo cambiare): non si portano a classi.
 
@@ -969,9 +969,9 @@ Per toglierla: facciata dei pavimenti (#153, `P_ConfigurePlanes`): `T_MovePlane`
 | `EV_DoElevator` | 12 | p_spec (6), p_switch (6) |
 | `EV_DoFloor` | 71 | p_enemy (5), p_inter, p_spec (33), p_switch (32) |
 
-### `Strife\deh_main.pas` - 3 funzioni pubbliche, 164 chiamate
+### `IdTech1\Strife\deh_main.pas` - 3 funzioni pubbliche, 164 chiamate
 
-Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
+Vedi `IdTech1\Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch la applica `TEngineDehackedApplier` (una classe per gioco, `DelphiDoom.Engine.Dehacked.Applier`) e `DEH_Parse` e `DEH_Configure` non esistono piu; restano le tabelle dei nomi (`DEH_Init`/`DEH_ShutDown`) e le azioni.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -979,7 +979,7 @@ Vedi `Hexen\deh_main.pas` (#159, lasciata). Per toglierla: dalla #144 la patch l
 | `DEH_Init` | 7 | dd_compiler, deh_base (3), DelphiDoom.Engine.Dehacked.Applier, d_main (2) |
 | `DEH_GetString` | 154 | d_check (4), d_main (19), f_finale (42), g_game, m_menu (5), p_dialog (11), p_doors (41), p_enemy (3), +5 altri |
 
-### `Base\r_precalc.pas` - 5 funzioni pubbliche, 182 chiamate
+### `IdTech1\Base\r_precalc.pas` - 5 funzioni pubbliche, 182 chiamate
 
 Per toglierla: tabelle del renderer: resta.
 
@@ -988,20 +988,20 @@ Per toglierla: tabelle del renderer: resta.
 | `R_ConfigurePrecalc` | 1 | DelphiDoom.Engine.Composition |
 | `R_InitPrecalc` | 2 | r_main (2) |
 | `R_ShutDownPrecalc` | 2 | r_main (2) |
-| `R_GetFogPrecalc32Tables` | 48 | Hexen\r_col_fog (3), Hexen\r_col_ms_fog (4), Hexen\r_span32_fog, Hexen\r_span32_fog_ripple, r_tallcolumn (3), R_Wall32_BatchFuncs (36) |
+| `R_GetFogPrecalc32Tables` | 48 | IdTech1\Hexen\r_col_fog (3), IdTech1\Hexen\r_col_ms_fog (4), IdTech1\Hexen\r_span32_fog, IdTech1\Hexen\r_span32_fog_ripple, r_tallcolumn (3), R_Wall32_BatchFuncs (36) |
 | `R_GetPrecalc32Tables` | 129 | r_batchcolumn (2), r_colorcolumn (9), r_column (4), r_col_ms (6), R_DrawColorColumnHi_bc (60), r_flat32, r_flat32_ripple, r_span32, +5 altri |
 
-### `Base\m_cheat.pas` - 3 funzioni pubbliche, 185 chiamate
+### `IdTech1\Base\m_cheat.pas` - 3 funzioni pubbliche, 185 chiamate
 
 Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la `TCheatTable` della libreria e una tabella per gioco. **#185 fetta 1c**: `get_cheatseq_string` chiama `TCheatSequenceReader.FromChars`/`FromString` di `Framework\Console` (una sequenza senza `$FF` ora e' `I_Error`: prima si leggeva oltre la fine); `cht_CheckCheat`/`cht_GetParam` erano gia' sopra `TCheatSequence`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `cht_CheckCheat` | 4 | Doom\st_stuff, Heretic\sb_bar, Hexen\sb_bar, Strife\st_stuff |
-| `cht_GetParam` | 9 | Doom\st_stuff (2), Heretic\sb_bar (2), Hexen\sb_bar (2), Strife\st_stuff (3) |
-| `get_cheatseq_string` | 172 | am_map (2), Doom\st_stuff (34), Heretic\sb_bar (44), Hexen\sb_bar (50), Strife\st_stuff (42) |
+| `cht_CheckCheat` | 4 | IdTech1\Doom\st_stuff, IdTech1\Heretic\sb_bar, IdTech1\Hexen\sb_bar, IdTech1\Strife\st_stuff |
+| `cht_GetParam` | 9 | IdTech1\Doom\st_stuff (2), IdTech1\Heretic\sb_bar (2), IdTech1\Hexen\sb_bar (2), IdTech1\Strife\st_stuff (3) |
+| `get_cheatseq_string` | 172 | am_map (2), IdTech1\Doom\st_stuff (34), IdTech1\Heretic\sb_bar (44), IdTech1\Hexen\sb_bar (50), IdTech1\Strife\st_stuff (42) |
 
-### `Base\mt_utils.pas` - 18 funzioni pubbliche, 207 chiamate
+### `IdTech1\Base\mt_utils.pas` - 18 funzioni pubbliche, 207 chiamate
 
 **Facciata (#185, fetta 1e)**: dalla #148 i tre gruppi di thread sono `IWorkerPool` creati da `MT_Init`; ora il lavoro e' di `TWorkerJobRunner` (`MT_Execute*`, `MT_Iterate`), `TWorkerMemoryRunner` (`MT_ZeroMemory`, `MT_memset`, `MT_memseti`, `MT_memcpy`) e `TWorkerTaskScheduler` (i task) di `Framework\Threading`, che `MT_Init` crea (`MT_ConfigureThreads(fabbrica, messaggi, primitive di memoria)`; adattatore `DelphiDoom.Engine.Threading.Services`). Le routine pubbliche hanno le firme di prima (anche i 6 overload di `MT_Execute` e `MT_Execute4/6/8/12/16`): ognuna e' una chiamata al runner. Restano i tipi `iterator_t`, `mt_range_t` e `NUMEXECTHREADS`. Chiamate per fotogramma o per blocco, mai per elemento.
 
@@ -1012,21 +1012,21 @@ Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la 
 | `MT_memseti` | 3 | am_map, psi_overlay (2) |
 | `MT_WaitTask` | 4 | r_main (4) |
 | `MT_WaitTasks` | 4 | DelphiDoom.Engine.Level.Loader (2), gl_main, v_displaymode |
-| `MT_memcpy` | 6 | f_wipe, i_video, psi_overlay (2), r_cache_flats, Strife\f_fade |
+| `MT_memcpy` | 6 | f_wipe, i_video, psi_overlay (2), r_cache_flats, IdTech1\Strife\f_fade |
 | `MT_ScheduleTask` | 6 | r_main (6) |
 | `MT_ExecutePendingTask` | 6 | r_main (6) |
 | `MT_Execute12` | 7 | psi_overlay (2), r_flat32 (2), r_flat8 (2), r_sprite |
 | `MT_Execute16` | 7 | psi_overlay (2), r_flat32 (2), r_flat8 (2), r_sprite |
-| `MT_Init` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `MT_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
+| `MT_Init` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `MT_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
 | `MT_Execute8` | 8 | psi_overlay (2), r_flat32 (2), r_flat8 (2), r_hires, r_sprite |
 | `MT_Execute6` | 9 | psi_overlay (2), r_flat32 (2), r_flat8 (2), r_intrpl (2), r_sprite |
 | `MT_Iterate` | 10 | r_pk3textures, r_softlights, v_video (8) |
 | `MT_Execute4` | 12 | psi_overlay (2), r_flat32 (2), r_flat8 (2), r_hires, r_intrpl (2), r_sprite, r_voxels (2) |
-| `MT_ZeroMemory` | 25 | Doom\d_main, Doom\m_menu (2), gl_main, gl_tex (3), Heretic\d_main, Heretic\in_stuff, Heretic\m_menu (2), Heretic\sb_bar, +9 altri |
-| `MT_Execute` | 81 | i_video (5), psi_overlay (22), r_depthbuffer (2), r_flat32 (20), r_flat8 (20), r_sprite (10), r_trans8, Strife\f_fade |
+| `MT_ZeroMemory` | 25 | IdTech1\Doom\d_main, IdTech1\Doom\m_menu (2), gl_main, gl_tex (3), IdTech1\Heretic\d_main, IdTech1\Heretic\in_stuff, IdTech1\Heretic\m_menu (2), IdTech1\Heretic\sb_bar, +9 altri |
+| `MT_Execute` | 81 | i_video (5), psi_overlay (22), r_depthbuffer (2), r_flat32 (20), r_flat8 (20), r_sprite (10), r_trans8, IdTech1\Strife\f_fade |
 
-### `Base\r_data.pas` - 24 funzioni pubbliche, 215 chiamate
+### `IdTech1\Base\r_data.pas` - 24 funzioni pubbliche, 215 chiamate
 
 Per toglierla: renderer: texture e lookup, percorso caldo; resta come facciata. `R_GenerateLookup` usa `IRendererTextureLookup` (#156, `R_ConfigureTextureLookup`); FLATINFO e le texture PK3 passano dal file system PAK (#146).
 
@@ -1039,31 +1039,31 @@ Per toglierla: renderer: texture e lookup, percorso caldo; resta come facciata. 
 | `R_ConfigureVoxelSprites` | 1 | DelphiDoom.Engine.Composition |
 | `R_ConfigureNameHash` | 1 | DelphiDoom.Engine.Composition |
 | `R_ConfigureTextureLookup` | 1 | DelphiDoom.Engine.Composition |
-| `R_ChangeColormap` | 1 | Hexen\DelphiDoom.Engine.Level.HexenRules |
+| `R_ChangeColormap` | 1 | IdTech1\Hexen\DelphiDoom.Engine.Level.HexenRules |
 | `R_GetDSs` | 2 | r_plane, r_slopes |
 | `R_InitData` | 2 | r_main (2) |
 | `R_FreeMemory` | 2 | r_main (2) |
 | `R_SafeFlatNumForName` | 2 | psi_game (2) |
-| `R_NewFlatNumForLump` | 2 | Doom\p_spec, Strife\p_spec |
+| `R_NewFlatNumForLump` | 2 | IdTech1\Doom\p_spec, IdTech1\Strife\p_spec |
 | `R_SetupLevel` | 2 | DelphiDoom.Engine.Level.Loader (2) |
 | `R_PrecacheLevel` | 3 | DelphiDoom.Engine.Level.Loader (3) |
-| `R_NameForSideTexture` | 13 | Doom\p_saveg (3), Heretic\p_saveg (3), Hexen\sv_save (3), psi_game, Strife\p_saveg (3) |
-| `R_GetLumpForFlat` | 15 | am_textured (3), Doom\m_menu, gl_render (6), Heretic\m_menu, Hexen\m_menu, r_cache_flats, Strife\m_menu, v_video |
+| `R_NameForSideTexture` | 13 | IdTech1\Doom\p_saveg (3), IdTech1\Heretic\p_saveg (3), IdTech1\Hexen\sv_save (3), psi_game, IdTech1\Strife\p_saveg (3) |
+| `R_GetLumpForFlat` | 15 | am_textured (3), IdTech1\Doom\m_menu, gl_render (6), IdTech1\Heretic\m_menu, IdTech1\Hexen\m_menu, r_cache_flats, IdTech1\Strife\m_menu, v_video |
 | `R_GetDCs` | 16 | r_3dfloors (8), r_plane (6), r_segs (2) |
-| `R_CheckTextureNumForName` | 19 | DelphiDoom.Engine.Definitions.AnimCatalog, DelphiDoom.Engine.Definitions.TextureLookup, Doom\g_game (4), Doom\p_spec, Heretic\g_game, Heretic\p_spec, Hexen\p_anim, Hexen\p_mapinfo, +6 altri |
-| `R_GetColumn` | 21 | Hexen\r_cache_sky1, Hexen\r_cache_sky1_dbl, Hexen\r_cache_sky2 (2), r_3dfloors (4), r_cache_walls (4), r_plane (3), R_RenderSegLoop8 (5), r_segs |
-| `R_SafeTextureNumForName` | 27 | DelphiDoom.Engine.Level.ColormapLines (3), Doom\p_saveg (6), Heretic\p_saveg (6), Hexen\sv_save (6), Strife\p_saveg (6) |
-| `R_TextureNumForName` | 40 | DelphiDoom.Engine.Acs.Host, DelphiDoom.Engine.Definitions.AnimDefsLoader, Doom\g_game (5), Doom\p_spec (2), Heretic\DelphiDoom.Engine.Level.HereticRules (3), Heretic\g_game (5), Heretic\p_spec (2), Heretic\p_switch (2), +6 altri |
-| `R_FlatNumForName` | 41 | DelphiDoom.Engine.Acs.Host, DelphiDoom.Engine.Definitions.AnimDefsLoader, DelphiDoom.Engine.Level.MapReader (2), Doom\g_game, Doom\m_menu (2), Doom\p_saveg (4), Doom\p_spec (2), Heretic\g_game, +12 altri |
+| `R_CheckTextureNumForName` | 19 | DelphiDoom.Engine.Definitions.AnimCatalog, DelphiDoom.Engine.Definitions.TextureLookup, IdTech1\Doom\g_game (4), IdTech1\Doom\p_spec, IdTech1\Heretic\g_game, IdTech1\Heretic\p_spec, IdTech1\Hexen\p_anim, IdTech1\Hexen\p_mapinfo, +6 altri |
+| `R_GetColumn` | 21 | IdTech1\Hexen\r_cache_sky1, IdTech1\Hexen\r_cache_sky1_dbl, IdTech1\Hexen\r_cache_sky2 (2), r_3dfloors (4), r_cache_walls (4), r_plane (3), R_RenderSegLoop8 (5), r_segs |
+| `R_SafeTextureNumForName` | 27 | DelphiDoom.Engine.Level.ColormapLines (3), IdTech1\Doom\p_saveg (6), IdTech1\Heretic\p_saveg (6), IdTech1\Hexen\sv_save (6), IdTech1\Strife\p_saveg (6) |
+| `R_TextureNumForName` | 40 | DelphiDoom.Engine.Acs.Host, DelphiDoom.Engine.Definitions.AnimDefsLoader, IdTech1\Doom\g_game (5), IdTech1\Doom\p_spec (2), IdTech1\Heretic\DelphiDoom.Engine.Level.HereticRules (3), IdTech1\Heretic\g_game (5), IdTech1\Heretic\p_spec (2), IdTech1\Heretic\p_switch (2), +6 altri |
+| `R_FlatNumForName` | 41 | DelphiDoom.Engine.Acs.Host, DelphiDoom.Engine.Definitions.AnimDefsLoader, DelphiDoom.Engine.Level.MapReader (2), IdTech1\Doom\g_game, IdTech1\Doom\m_menu (2), IdTech1\Doom\p_saveg (4), IdTech1\Doom\p_spec (2), IdTech1\Heretic\g_game, +12 altri |
 
-### `Base\r_main.pas` - 29 funzioni pubbliche, 282 chiamate
+### `IdTech1\Base\r_main.pas` - 29 funzioni pubbliche, 282 chiamate
 
 Per toglierla: renderer: resta. Dalla #145 riceve la rete (`R_ConfigureNetGame`) per i `NetUpdate` durante il disegno.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `R_ApplyColormap` | 1 | DelphiDoom.Engine.Console.Screen |
-| `R_PointOnSideVanilla` | 1 | Doom\p_map |
+| `R_PointOnSideVanilla` | 1 | IdTech1\Doom\p_map |
 | `R_PointInSubsectorClassic` | 1 | r_subsectors |
 | `R_ConfigureLightTables` | 1 | DelphiDoom.Engine.Composition |
 | `R_ConfigureMenuThumbnail` | 1 | DelphiDoom.Engine.Composition |
@@ -1073,47 +1073,47 @@ Per toglierla: renderer: resta. Dalla #145 riceve la rete (`R_ConfigureNetGame`)
 | `R_PointOnSide` | 2 | r_bsp (2) |
 | `R_PointOnLineSide` | 2 | p_bouncing (2) |
 | `R_PointToDist` | 2 | ps_import (2) |
-| `R_StOff` | 2 | Heretic\sb_bar, Hexen\sb_bar |
+| `R_StOff` | 2 | IdTech1\Heretic\sb_bar, IdTech1\Hexen\sb_bar |
 | `R_Ticker` | 2 | DelphiDoom.Engine.Net.Game (2) |
 | `R_SetViewAngleOffset` | 3 | i_net (3) |
-| `R_RenderPlayerView` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `R_FullStOn` | 4 | Doom\d_main, Heretic\d_main, Hexen\sb_bar, Strife\d_main |
-| `R_SetRenderingFunctions` | 5 | Doom\d_main, Heretic\d_main, Hexen\d_main, r_data, Strife\d_main |
+| `R_RenderPlayerView` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `R_FullStOn` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\sb_bar, IdTech1\Strife\d_main |
+| `R_SetRenderingFunctions` | 5 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, r_data, IdTech1\Strife\d_main |
 | `R_PointToAngleEx` | 7 | r_bsp (6), r_voxels |
 | `R_PointToAngle` | 8 | ps_import (2), r_bsp (2), r_softlights, r_things (3) |
-| `R_Init` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `R_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `R_ExecuteSetViewSize` | 8 | Doom\d_main, Doom\g_game, gl_main, Heretic\d_main, Heretic\g_game, Hexen\d_main, Strife\d_main, Strife\g_game |
+| `R_Init` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `R_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `R_ExecuteSetViewSize` | 8 | IdTech1\Doom\d_main, IdTech1\Doom\g_game, gl_main, IdTech1\Heretic\d_main, IdTech1\Heretic\g_game, IdTech1\Hexen\d_main, IdTech1\Strife\d_main, IdTech1\Strife\g_game |
 | `R_PointOnSegSide` | 11 | R_DrawColumnLightmap32FF_Main, R_DrawColumnLightmap32Masked_Main, R_DrawColumnLightmap32_Main, R_DrawColumnLightmap8FF_Main, R_DrawColumnLightmap8Masked_Main, R_DrawColumnLightmap8_Main, r_subsectors, r_things (3), +1 altri |
-| `R_SetViewSize` | 15 | Doom\m_menu (2), Heretic\m_menu (2), Hexen\m_menu (2), r_hires (7), Strife\m_menu (2) |
+| `R_SetViewSize` | 15 | IdTech1\Doom\m_menu (2), IdTech1\Heretic\m_menu (2), IdTech1\Hexen\m_menu (2), r_hires (7), IdTech1\Strife\m_menu (2) |
 | `R_GetColormap32` | 16 | r_3dfloors (10), R_RenderSegLoop32 (2), r_segs (2), r_things, r_voxels |
 | `R_GetColormapLightLevel` | 19 | r_3dfloors (4), r_plane (4), R_RenderSegLoop32 (2), r_segs, r_slopes (6), r_things, r_voxels |
-| `R_PointInSubsector` | 45 | Doom\p_map, gl_lightmaps, Heretic\g_game, Heretic\p_map (3), Heretic\p_mobj (4), Heretic\p_pspr, Hexen\g_game, Hexen\p_map (3), +15 altri |
-| `R_PointToAngle2` | 103 | DelphiDoom.Engine.Level.Nodes, Doom\p_enemy (4), Doom\p_inter, Doom\p_map (2), Doom\p_mobj (2), Doom\p_pspr (2), Doom\p_spec (3), Doom\p_telept (3), +34 altri |
+| `R_PointInSubsector` | 45 | IdTech1\Doom\p_map, gl_lightmaps, IdTech1\Heretic\g_game, IdTech1\Heretic\p_map (3), IdTech1\Heretic\p_mobj (4), IdTech1\Heretic\p_pspr, IdTech1\Hexen\g_game, IdTech1\Hexen\p_map (3), +15 altri |
+| `R_PointToAngle2` | 103 | DelphiDoom.Engine.Level.Nodes, IdTech1\Doom\p_enemy (4), IdTech1\Doom\p_inter, IdTech1\Doom\p_map (2), IdTech1\Doom\p_mobj (2), IdTech1\Doom\p_pspr (2), IdTech1\Doom\p_spec (3), IdTech1\Doom\p_telept (3), +34 altri |
 
-### `Base\c_cmds.pas` - 3 funzioni pubbliche, 307 chiamate
+### `IdTech1\Base\c_cmds.pas` - 3 funzioni pubbliche, 307 chiamate
 
 Per toglierla: migrare le circa 270 chiamate `C_AddCmd` a un registratore per area (ogni modulo riceve `ICommandRegistry` dal composition root); poi `C_ExecuteCmd` diventa un metodo dell'interprete. `C_BoolEval` e `C_GetMachingList` non esistono piu (#150: `TConsoleNumbers.EvaluateBoolean`).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `C_ConfigureCommands` | 1 | DelphiDoom.Engine.Composition |
-| `C_ExecuteCmd` | 34 | c_utils, Doom\g_game (3), Doom\m_menu (4), Doom\p_inter, Doom\st_stuff, Heretic\g_game (2), Heretic\m_menu (4), Heretic\p_inter, +10 altri |
-| `C_AddCmd` | 272 | am_map, c_utils (8), DelphiDoom.Engine.Console.Screen (6), Doom\deh_main (8), Doom\d_main (5), Doom\m_menu (21), Doom\p_mobj (2), Doom\st_stuff (9), +33 altri |
+| `C_ExecuteCmd` | 34 | c_utils, IdTech1\Doom\g_game (3), IdTech1\Doom\m_menu (4), IdTech1\Doom\p_inter, IdTech1\Doom\st_stuff, IdTech1\Heretic\g_game (2), IdTech1\Heretic\m_menu (4), IdTech1\Heretic\p_inter, +10 altri |
+| `C_AddCmd` | 272 | am_map, c_utils (8), DelphiDoom.Engine.Console.Screen (6), IdTech1\Doom\deh_main (8), IdTech1\Doom\d_main (5), IdTech1\Doom\m_menu (21), IdTech1\Doom\p_mobj (2), IdTech1\Doom\st_stuff (9), +33 altri |
 
-### `Base\m_argv.pas` - 5 funzioni pubbliche, 459 chiamate
+### `IdTech1\Base\m_argv.pas` - 5 funzioni pubbliche, 459 chiamate
 
 Per toglierla: `M_CheckParm` ha ~380 chiamanti e `myargv`/`myargc` sono letti direttamente: servirebbe passare `ICommandLine` ai moduli. Dalla #150 `M_CheckParm` chiede all'`ICommandLine` (`M_ConfigureArgv`), le classi del motore ricevono `ICommandLine`/`IQueriedCommandLine`/`ISaveFileNames` e `M_CmdShowCmdline`/`M_CmdShowCommandLineParams` non esistono piu (sono comandi di `TEngineConsoleScreen`). **#185 fetta 1c**: `M_InitArgv` chiede la riga di comando a `ICommandLineStartup` (`TCommandLineStartup` di `Framework\CommandLine`: argomenti del processo, `Doom32.cmd`, CD-ROM, sopra `IProgramEnvironment` = `TEngineProgramEnvironment`), data da `ComposeEngine` con `M_ConfigureArgv`; nell'unit restano la copia `myargv`/`myargc`, la stampa e `ChDir`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
 | `M_ConfigureArgv` | 1 | DelphiDoom.Engine.Composition |
-| `M_InitArgv` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `M_CheckParmCDROM` | 10 | Doom\d_main, Doom\g_game, Heretic\d_main, Heretic\g_game, Hexen\d_main, Hexen\g_demo, i_io, r_draw, +2 altri |
-| `M_SaveFileName` | 61 | deh_base (9), Doom\d_check (3), Doom\d_main (2), Doom\g_game, Doom\m_menu (2), Heretic\d_check (3), Heretic\d_main (2), Heretic\g_game, +12 altri |
-| `M_CheckParm` | 379 | Doom\d_main (95), Doom\g_game, Doom\info (2), Doom\p_spec (2), Heretic\d_main (86), Heretic\g_game, Heretic\p_spec (2), Hexen\d_main (85), +9 altri |
+| `M_InitArgv` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `M_CheckParmCDROM` | 10 | IdTech1\Doom\d_main, IdTech1\Doom\g_game, IdTech1\Heretic\d_main, IdTech1\Heretic\g_game, IdTech1\Hexen\d_main, IdTech1\Hexen\g_demo, i_io, r_draw, +2 altri |
+| `M_SaveFileName` | 61 | deh_base (9), IdTech1\Doom\d_check (3), IdTech1\Doom\d_main (2), IdTech1\Doom\g_game, IdTech1\Doom\m_menu (2), IdTech1\Heretic\d_check (3), IdTech1\Heretic\d_main (2), IdTech1\Heretic\g_game, +12 altri |
+| `M_CheckParm` | 379 | IdTech1\Doom\d_main (95), IdTech1\Doom\g_game, IdTech1\Doom\info (2), IdTech1\Doom\p_spec (2), IdTech1\Heretic\d_main (86), IdTech1\Heretic\g_game, IdTech1\Heretic\p_spec (2), IdTech1\Hexen\d_main (85), +9 altri |
 
-### `Base\v_video.pas` - 44 funzioni pubbliche, 579 chiamate
+### `IdTech1\Base\v_video.pas` - 44 funzioni pubbliche, 579 chiamate
 
 Per toglierla: disegno sullo schermo (`screens[]`): resta.
 
@@ -1128,40 +1128,40 @@ Per toglierla: disegno sullo schermo (`screens[]`): resta.
 | `V_CopyAddRect` | 1 | DelphiDoom.Engine.Console.Screen |
 | `V_CopyScreenTransparent` | 1 | r_draw |
 | `V_CopyRawDataToScreen` | 1 | DelphiDoom.Engine.Console.Screen |
-| `V_DrawPatchFullScreenTMP426x200` | 1 | Doom\wi_stuff |
+| `V_DrawPatchFullScreenTMP426x200` | 1 | IdTech1\Doom\wi_stuff |
 | `V_ConfigureGamma` | 1 | DelphiDoom.Engine.Composition |
 | `V_ConfigureFlatShrink` | 1 | DelphiDoom.Engine.Composition |
-| `V_StatusBarStretch` | 1 | Doom\st_stuff |
+| `V_StatusBarStretch` | 1 | IdTech1\Doom\st_stuff |
 | `V_CalcColorMapPalette` | 2 | r_main (2) |
 | `V_RemoveTransparency` | 2 | r_draw (2) |
-| `V_DrawPatchTransparentMT` | 2 | Strife\st_stuff (2) |
-| `V_DrawPatchFlipped` | 2 | Doom\f_finale, Strife\f_finale |
+| `V_DrawPatchTransparentMT` | 2 | IdTech1\Strife\st_stuff (2) |
+| `V_DrawPatchFlipped` | 2 | IdTech1\Doom\f_finale, IdTech1\Strife\f_finale |
 | `V_PreserveGLX` | 2 | hu_lib (2) |
 | `V_FindAproxColorIndexExcluding` | 2 | r_trans8 (2) |
 | `V_PreserveGLY` | 3 | hu_lib (3) |
 | `V_ReInit` | 4 | gl_main, i_video (2), v_displaymode |
-| `V_ScreensSize` | 6 | Doom\d_main, Doom\f_finale, Heretic\d_main, Heretic\f_finale, Hexen\d_main, Strife\d_main |
-| `V_DrawPatchTransparent` | 6 | hu_stuff (2), p_simpledialog, Strife\st_stuff (3) |
-| `V_TileScreen8` | 6 | Doom\f_finale, Heretic\f_finale, Heretic\in_stuff (4) |
-| `V_Init` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `V_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `V_CopyRectTransparentEx` | 8 | Doom\m_menu (2), Heretic\m_menu (2), Hexen\m_menu (2), Strife\m_menu (2) |
-| `V_DrawPatchZoomed` | 10 | am_map, Heretic\m_menu (2), Hexen\m_menu (3), Strife\m_menu (4) |
-| `V_ShadeBackground` | 12 | Doom\m_menu (3), Heretic\m_menu (3), Hexen\m_menu (3), Strife\m_menu (3) |
-| `V_ShadeScreen` | 12 | Doom\m_menu (3), Heretic\m_menu (3), Hexen\m_menu (3), Strife\m_menu (3) |
-| `V_DrawPatchFullScreenTMP320x200` | 12 | DelphiDoom.Engine.Console.Screen (2), Doom\f_finale, Doom\wi_stuff, Heretic\in_stuff (3), Strife\f_finale (5) |
-| `V_FullScreenStretch` | 15 | Doom\f_finale (3), Doom\wi_stuff, Heretic\f_finale (3), Heretic\in_stuff, Hexen\f_finale, Hexen\in_stuff, Strife\f_finale (5) |
+| `V_ScreensSize` | 6 | IdTech1\Doom\d_main, IdTech1\Doom\f_finale, IdTech1\Heretic\d_main, IdTech1\Heretic\f_finale, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `V_DrawPatchTransparent` | 6 | hu_stuff (2), p_simpledialog, IdTech1\Strife\st_stuff (3) |
+| `V_TileScreen8` | 6 | IdTech1\Doom\f_finale, IdTech1\Heretic\f_finale, IdTech1\Heretic\in_stuff (4) |
+| `V_Init` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `V_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `V_CopyRectTransparentEx` | 8 | IdTech1\Doom\m_menu (2), IdTech1\Heretic\m_menu (2), IdTech1\Hexen\m_menu (2), IdTech1\Strife\m_menu (2) |
+| `V_DrawPatchZoomed` | 10 | am_map, IdTech1\Heretic\m_menu (2), IdTech1\Hexen\m_menu (3), IdTech1\Strife\m_menu (4) |
+| `V_ShadeBackground` | 12 | IdTech1\Doom\m_menu (3), IdTech1\Heretic\m_menu (3), IdTech1\Hexen\m_menu (3), IdTech1\Strife\m_menu (3) |
+| `V_ShadeScreen` | 12 | IdTech1\Doom\m_menu (3), IdTech1\Heretic\m_menu (3), IdTech1\Hexen\m_menu (3), IdTech1\Strife\m_menu (3) |
+| `V_DrawPatchFullScreenTMP320x200` | 12 | DelphiDoom.Engine.Console.Screen (2), IdTech1\Doom\f_finale, IdTech1\Doom\wi_stuff, IdTech1\Heretic\in_stuff (3), IdTech1\Strife\f_finale (5) |
+| `V_FullScreenStretch` | 15 | IdTech1\Doom\f_finale (3), IdTech1\Doom\wi_stuff, IdTech1\Heretic\f_finale (3), IdTech1\Heretic\in_stuff, IdTech1\Hexen\f_finale, IdTech1\Hexen\in_stuff, IdTech1\Strife\f_finale (5) |
 | `V_PreserveY` | 18 | gl_main (4), hu_lib (3), r_draw (6), r_main (5) |
-| `V_FindAproxColorIndex` | 19 | DelphiDoom.Engine.Video.Screens (2), Doom\r_diher (2), Hexen\in_stuff, psi_overlay (3), r_pk3textures (2), r_trans8 (5), r_voxels, Strife\r_diher (2), +1 altri |
-| `V_CopyRect` | 23 | am_map (2), DelphiDoom.Engine.Console.Screen, Doom\f_finale (3), Doom\st_stuff (2), Doom\wi_stuff (2), Heretic\f_finale (3), Heretic\in_stuff, Hexen\f_finale, +4 altri |
-| `V_CopyRectTransparent` | 25 | Doom\m_menu (2), Doom\st_stuff (2), Heretic\m_menu (2), Heretic\sb_bar, Hexen\m_menu (2), Hexen\sb_bar, Strife\m_menu (2), Strife\p_dialog, +1 altri |
-| `V_SetPalette` | 26 | DelphiDoom.Engine.Video.Screens, Doom\d_main, Doom\m_menu, Doom\st_stuff (2), Heretic\d_main, Heretic\f_finale (2), Heretic\in_stuff, Heretic\m_menu, +11 altri |
-| `V_PageDrawer` | 30 | Doom\d_main, Doom\f_finale (5), Doom\m_menu (5), Heretic\d_main, Heretic\f_finale (6), Heretic\m_menu (3), Hexen\d_main, Hexen\m_menu (3), +2 altri |
-| `V_GetScreenWidth` | 38 | DelphiDoom.Engine.Console.Screen (2), Doom\d_main, Doom\m_menu (4), gl_main, Heretic\d_main, Heretic\m_menu (4), Hexen\d_main, Hexen\m_menu (4), +7 altri |
-| `V_GetScreenHeight` | 41 | DelphiDoom.Engine.Console.Screen (4), Doom\d_main, Doom\m_menu (4), gl_main, Heretic\d_main, Heretic\m_menu (4), Hexen\d_main, Hexen\m_menu (4), +6 altri |
-| `V_DrawPatch` | 229 | DelphiDoom.Engine.Console.Screen (7), Doom\d_main (2), Doom\f_finale (5), Doom\m_menu (41), Doom\st_lib (3), Doom\st_stuff (3), Doom\wi_stuff (2), Heretic\d_main (3), +18 altri |
+| `V_FindAproxColorIndex` | 19 | DelphiDoom.Engine.Video.Screens (2), IdTech1\Doom\r_diher (2), IdTech1\Hexen\in_stuff, psi_overlay (3), r_pk3textures (2), r_trans8 (5), r_voxels, IdTech1\Strife\r_diher (2), +1 altri |
+| `V_CopyRect` | 23 | am_map (2), DelphiDoom.Engine.Console.Screen, IdTech1\Doom\f_finale (3), IdTech1\Doom\st_stuff (2), IdTech1\Doom\wi_stuff (2), IdTech1\Heretic\f_finale (3), IdTech1\Heretic\in_stuff, IdTech1\Hexen\f_finale, +4 altri |
+| `V_CopyRectTransparent` | 25 | IdTech1\Doom\m_menu (2), IdTech1\Doom\st_stuff (2), IdTech1\Heretic\m_menu (2), IdTech1\Heretic\sb_bar, IdTech1\Hexen\m_menu (2), IdTech1\Hexen\sb_bar, IdTech1\Strife\m_menu (2), IdTech1\Strife\p_dialog, +1 altri |
+| `V_SetPalette` | 26 | DelphiDoom.Engine.Video.Screens, IdTech1\Doom\d_main, IdTech1\Doom\m_menu, IdTech1\Doom\st_stuff (2), IdTech1\Heretic\d_main, IdTech1\Heretic\f_finale (2), IdTech1\Heretic\in_stuff, IdTech1\Heretic\m_menu, +11 altri |
+| `V_PageDrawer` | 30 | IdTech1\Doom\d_main, IdTech1\Doom\f_finale (5), IdTech1\Doom\m_menu (5), IdTech1\Heretic\d_main, IdTech1\Heretic\f_finale (6), IdTech1\Heretic\m_menu (3), IdTech1\Hexen\d_main, IdTech1\Hexen\m_menu (3), +2 altri |
+| `V_GetScreenWidth` | 38 | DelphiDoom.Engine.Console.Screen (2), IdTech1\Doom\d_main, IdTech1\Doom\m_menu (4), gl_main, IdTech1\Heretic\d_main, IdTech1\Heretic\m_menu (4), IdTech1\Hexen\d_main, IdTech1\Hexen\m_menu (4), +7 altri |
+| `V_GetScreenHeight` | 41 | DelphiDoom.Engine.Console.Screen (4), IdTech1\Doom\d_main, IdTech1\Doom\m_menu (4), gl_main, IdTech1\Heretic\d_main, IdTech1\Heretic\m_menu (4), IdTech1\Hexen\d_main, IdTech1\Hexen\m_menu (4), +6 altri |
+| `V_DrawPatch` | 229 | DelphiDoom.Engine.Console.Screen (7), IdTech1\Doom\d_main (2), IdTech1\Doom\f_finale (5), IdTech1\Doom\m_menu (41), IdTech1\Doom\st_lib (3), IdTech1\Doom\st_stuff (3), IdTech1\Doom\wi_stuff (2), IdTech1\Heretic\d_main (3), +18 altri |
 
-### `Base\z_zone.pas` - 16 funzioni pubbliche, 644 chiamate
+### `IdTech1\Base\z_zone.pas` - 16 funzioni pubbliche, 644 chiamate
 
 Per toglierla: zone memory: `Z_Malloc` e il cuore del motore (migliaia di chiamanti), resta. Dalla #151 le classi del motore ricevono `IZoneAllocator` (`TEngineZoneAllocator`: un puntatore che non e della zone e un `I_Error`, non un'eccezione) e non chiamano piu `Z_*`.
 
@@ -1173,18 +1173,18 @@ Per toglierla: zone memory: `Z_Malloc` e il cuore del motore (migliaia di chiama
 | `Z_ConfigureZone` | 1 | DelphiDoom.Engine.Composition |
 | `Z_MoveUsers` | 1 | w_wad |
 | `Z_Size` | 2 | DelphiDoom.Engine.Zone.Allocator, w_sprite |
-| `Z_CheckMemory` | 2 | Doom\g_game, Strife\g_game |
+| `Z_CheckMemory` | 2 | IdTech1\Doom\g_game, IdTech1\Strife\g_game |
 | `Z_FreeTags` | 3 | DelphiDoom.Engine.Level.Loader, r_main (2) |
-| `Z_CheckHeap` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `Z_Init` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `Z_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `Z_Malloc2` | 18 | Doom\g_game (3), gl_render (7), Heretic\g_game (3), Hexen\g_demo (2), Strife\g_game (3) |
-| `Z_Realloc` | 34 | DelphiDoom.Engine.Zone.Allocator, Doom\p_map (2), Doom\p_saveg (2), gl_render (11), Heretic\p_map (2), Heretic\p_saveg (2), Hexen\p_map (2), Hexen\sv_save (2), +7 altri |
-| `Z_Free` | 100 | DelphiDoom.Engine.Audio.SfxSampleSource (2), DelphiDoom.Engine.Zone.Allocator, Doom\DelphiDoom.Engine.Level.DoomRules, Doom\g_game (7), Doom\p_map, Doom\p_saveg (6), Doom\p_spec (2), Doom\wi_stuff, +31 altri |
-| `Z_ChangeTag` | 168 | am_map, DelphiDoom.Engine.Console.Screen, DelphiDoom.Engine.Renderer.PatchSource, Doom\d_main (2), Doom\f_finale, Doom\m_menu (3), Doom\st_lib, Doom\st_stuff (12), +30 altri |
-| `Z_Malloc` | 295 | DelphiDoom.Audio.SoundLibrary, DelphiDoom.Engine.Audio.SfxSampleSource, Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, Doom\DelphiDoom.Engine.Level.DoomRules (2), Doom\DelphiDoom.Engine.Level.VanillaNodes (3), Doom\p_ceilng, Doom\p_doors (4), Doom\p_floor (8), +71 altri |
+| `Z_CheckHeap` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `Z_Init` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `Z_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `Z_Malloc2` | 18 | IdTech1\Doom\g_game (3), gl_render (7), IdTech1\Heretic\g_game (3), IdTech1\Hexen\g_demo (2), IdTech1\Strife\g_game (3) |
+| `Z_Realloc` | 34 | DelphiDoom.Engine.Zone.Allocator, IdTech1\Doom\p_map (2), IdTech1\Doom\p_saveg (2), gl_render (11), IdTech1\Heretic\p_map (2), IdTech1\Heretic\p_saveg (2), IdTech1\Hexen\p_map (2), IdTech1\Hexen\sv_save (2), +7 altri |
+| `Z_Free` | 100 | DelphiDoom.Engine.Audio.SfxSampleSource (2), DelphiDoom.Engine.Zone.Allocator, IdTech1\Doom\DelphiDoom.Engine.Level.DoomRules, IdTech1\Doom\g_game (7), IdTech1\Doom\p_map, IdTech1\Doom\p_saveg (6), IdTech1\Doom\p_spec (2), IdTech1\Doom\wi_stuff, +31 altri |
+| `Z_ChangeTag` | 168 | am_map, DelphiDoom.Engine.Console.Screen, DelphiDoom.Engine.Renderer.PatchSource, IdTech1\Doom\d_main (2), IdTech1\Doom\f_finale, IdTech1\Doom\m_menu (3), IdTech1\Doom\st_lib, IdTech1\Doom\st_stuff (12), +30 altri |
+| `Z_Malloc` | 295 | DelphiDoom.Audio.SoundLibrary, DelphiDoom.Engine.Audio.SfxSampleSource, IdTech1\Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, IdTech1\Doom\DelphiDoom.Engine.Level.DoomRules (2), IdTech1\Doom\DelphiDoom.Engine.Level.VanillaNodes (3), IdTech1\Doom\p_ceilng, IdTech1\Doom\p_doors (4), IdTech1\Doom\p_floor (8), +71 altri |
 
-### `Base\w_wad.pas` - 26 funzioni pubbliche, 834 chiamate
+### `IdTech1\Base\w_wad.pas` - 26 funzioni pubbliche, 834 chiamate
 
 Per toglierla: circa mille chiamanti `W_*`: facciata voluta, non si migrano una per una. Dalla #151 le classi del motore ricevono `IEngineLumps` (`TEngineLumps`, `DelphiDoom.Engine.Wad.Lumps`) invece di chiamare `W_*`: per questo le chiamate sono scese.
 
@@ -1197,25 +1197,25 @@ Per toglierla: circa mille chiamanti `W_*`: facciata voluta, non si migrano una 
 | `W_Reload` | 2 | DelphiDoom.Engine.Level.Loader, DelphiDoom.Engine.Wad.Lumps |
 | `W_CheckNumForName2` | 2 | r_data (2) |
 | `W_LumpFlags` | 2 | DelphiDoom.Engine.Renderer.PatchSource, r_data |
-| `ExtractFileBase8` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_demo, Strife\g_game |
+| `ExtractFileBase8` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_demo, IdTech1\Strife\g_game |
 | `W_RuntimeLoad` | 6 | DelphiDoom.Engine.Wad.Lumps, r_pk3textures (4), s_pk3sounds |
-| `W_TextLumpName` | 7 | Hexen\f_finale, Hexen\in_stuff, Hexen\p_anim, Hexen\p_mapinfo, Hexen\s_sndseq, Strife\f_finale, Strife\p_dialog |
-| `W_ShutDown` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `W_LumpCRC32` | 8 | DelphiDoom.Engine.Wad.Lumps, Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_check (3), Strife\d_main |
-| `W_InitMultipleFiles` | 13 | Doom\d_main (4), Heretic\d_main (3), Hexen\d_main (3), Strife\d_main (3) |
+| `W_TextLumpName` | 7 | IdTech1\Hexen\f_finale, IdTech1\Hexen\in_stuff, IdTech1\Hexen\p_anim, IdTech1\Hexen\p_mapinfo, IdTech1\Hexen\s_sndseq, IdTech1\Strife\f_finale, IdTech1\Strife\p_dialog |
+| `W_ShutDown` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `W_LumpCRC32` | 8 | DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_check (3), IdTech1\Strife\d_main |
+| `W_InitMultipleFiles` | 13 | IdTech1\Doom\d_main (4), IdTech1\Heretic\d_main (3), IdTech1\Hexen\d_main (3), IdTech1\Strife\d_main (3) |
 | `W_TextLumpNum` | 13 | deh_base (2), DelphiDoom.Engine.Wad.Lumps, gl_models, gl_render, p_acs, p_obituaries, p_simpledialog, r_data, +3 altri |
-| `W_ReadLump` | 14 | DelphiDoom.Engine.Wad.Lumps, Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, nd_main, r_colormaps, r_data (4), r_draw (2), r_translations, Strife\p_dialog (2), +1 altri |
+| `W_ReadLump` | 14 | DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, nd_main, r_colormaps, r_data (4), r_draw (2), r_translations, IdTech1\Strife\p_dialog (2), +1 altri |
 | `W_NumLumps` | 17 | acs, deh_base, DelphiDoom.Engine.Wad.Lumps, gl_models, gl_tex (3), p_acs, r_colormaps, r_data (4), +4 altri |
-| `stringtochar8` | 24 | Doom\g_game (2), Heretic\g_game (2), Hexen\g_game (2), p_levelinfo, p_musinfo, r_data (3), r_pk3textures, r_translations, +2 altri |
-| `W_GetNameForNum` | 37 | acs (2), deh_base, DelphiDoom.Engine.Console.Screen, DelphiDoom.Engine.Wad.Lumps, Doom\DelphiDoom.Engine.Level.VanillaNodes (3), Doom\m_menu, gl_models, gl_tex (2), +16 altri |
-| `char8tostring` | 41 | deh_base, DelphiDoom.Engine.Console.Screen, DelphiDoom.Engine.TextureDefs.FlatCatalog, DelphiDoom.Engine.Wad.Lumps, Doom\DelphiDoom.Engine.Level.VanillaNodes (3), Doom\g_game, Doom\m_menu, gl_models, +18 altri |
-| `W_LumpLength` | 53 | acs, am_map, DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Wad.Lumps, Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, Doom\g_game, Doom\p_spec, gl_setup (9), +21 altri |
-| `W_GetNumForName` | 89 | am_map (4), DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Level.Loader, DelphiDoom.Engine.Wad.Lumps, Doom\g_game, Doom\st_stuff (5), gl_render, Heretic\g_game, +21 altri |
-| `W_CacheLumpNum` | 144 | am_map (5), am_textured (2), DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Renderer.PatchSource, DelphiDoom.Engine.Wad.Lumps, Doom\d_main, Doom\f_finale, Doom\g_game, +37 altri |
-| `W_CheckNumForName` | 163 | am_map (2), deh_base, DelphiDoom.Engine.Audio.SfxSampleSource (2), DelphiDoom.Engine.Wad.Lumps, Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, Doom\d_main (15), Doom\g_game (5), Doom\m_menu (7), +39 altri |
-| `W_CacheLumpName` | 183 | DelphiDoom.Engine.Console.Screen, Doom\f_finale (2), Doom\m_menu, Doom\st_lib, Doom\st_stuff (15), Doom\wi_stuff (33), Heretic\d_main, Heretic\f_finale (4), +17 altri |
+| `stringtochar8` | 24 | IdTech1\Doom\g_game (2), IdTech1\Heretic\g_game (2), IdTech1\Hexen\g_game (2), p_levelinfo, p_musinfo, r_data (3), r_pk3textures, r_translations, +2 altri |
+| `W_GetNameForNum` | 37 | acs (2), deh_base, DelphiDoom.Engine.Console.Screen, DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\DelphiDoom.Engine.Level.VanillaNodes (3), IdTech1\Doom\m_menu, gl_models, gl_tex (2), +16 altri |
+| `char8tostring` | 41 | deh_base, DelphiDoom.Engine.Console.Screen, DelphiDoom.Engine.TextureDefs.FlatCatalog, DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\DelphiDoom.Engine.Level.VanillaNodes (3), IdTech1\Doom\g_game, IdTech1\Doom\m_menu, gl_models, +18 altri |
+| `W_LumpLength` | 53 | acs, am_map, DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, IdTech1\Doom\g_game, IdTech1\Doom\p_spec, gl_setup (9), +21 altri |
+| `W_GetNumForName` | 89 | am_map (4), DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Level.Loader, DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\g_game, IdTech1\Doom\st_stuff (5), gl_render, IdTech1\Heretic\g_game, +21 altri |
+| `W_CacheLumpNum` | 144 | am_map (5), am_textured (2), DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Renderer.PatchSource, DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\d_main, IdTech1\Doom\f_finale, IdTech1\Doom\g_game, +37 altri |
+| `W_CheckNumForName` | 163 | am_map (2), deh_base, DelphiDoom.Engine.Audio.SfxSampleSource (2), DelphiDoom.Engine.Wad.Lumps, IdTech1\Doom\DelphiDoom.Engine.Definitions.SwitchListLoader, IdTech1\Doom\d_main (15), IdTech1\Doom\g_game (5), IdTech1\Doom\m_menu (7), +39 altri |
+| `W_CacheLumpName` | 183 | DelphiDoom.Engine.Console.Screen, IdTech1\Doom\f_finale (2), IdTech1\Doom\m_menu, IdTech1\Doom\st_lib, IdTech1\Doom\st_stuff (15), IdTech1\Doom\wi_stuff (33), IdTech1\Heretic\d_main, IdTech1\Heretic\f_finale (4), +17 altri |
 
-### `Base\m_rnd.pas` - 16 funzioni pubbliche, 1112 chiamate
+### `IdTech1\Base\m_rnd.pas` - 16 funzioni pubbliche, 1112 chiamate
 
 Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiamanti): chiamata indiretta gia presente; resta come facciata. Dalla #150 le classi (`TEngineAcsHost`, `TLevelLoader`, regole di livello, luci, porte, piattaforme) ricevono `IGameRandom` e non chiamano piu le funzioni `*_Random`. **#185 fetta 1c**: resta cosi' (la classe c'e' gia'; senza una misura valida non si tocca), parita' su 10 milioni di chiamate in `DelphiDoom.Tests.MathCore.RandomParity`; vedi `docs\PIANO_TUTTO_A_CLASSI.md` par. 9. Lo stesso per `m_fixed` (`asm` a 32 bit: la versione Pascal misurata una volta, misura rifiutata per dispersione).
 
@@ -1227,31 +1227,31 @@ Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiam
 | `P_RandomHitscanAngle` | 2 | p_common (2) |
 | `P_RandomHitscanSlope` | 2 | p_common (2) |
 | `Sys_Random` | 3 | DelphiDoom.Engine.Scanner.ActorFunctions (3) |
-| `M_ClearRandom` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `M_GetMenuRandomIndex` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `M_GetSystemRandomSeed` | 5 | Doom\g_game, Heretic\g_game, Hexen\g_demo, info_rnd, Strife\g_game |
-| `C_Random` | 6 | Doom\p_user, r_earthquake (4), Strife\p_user |
-| `M_SetSystemRandomSeed` | 6 | Doom\g_game (2), Heretic\g_game, Hexen\g_demo (2), Strife\g_game |
-| `P_SaveRandom` | 10 | Doom\p_map, Doom\p_mobj (2), Heretic\p_map, Heretic\p_mobj (2), Hexen\p_map, Strife\p_map, Strife\p_mobj (2) |
-| `P_RestoreRandom` | 10 | Doom\p_map, Doom\p_mobj (2), Heretic\p_map, Heretic\p_mobj (2), Hexen\p_map, Strife\p_map, Strife\p_mobj (2) |
-| `M_Random` | 14 | Doom\st_stuff, Doom\wi_stuff (3), Hexen\m_menu, Hexen\p_user, Hexen\s_sndseq, Strife\p_dialog (2), s_sound (5) |
-| `N_Random` | 118 | DelphiDoom.Engine.Scanner.ActorFunctions (10), Doom\p_extra (15), Doom\p_genlin, Doom\p_inter (2), Doom\p_map (2), Doom\p_mobj (9), Doom\p_spec, Heretic\p_extra (2), +16 altri |
-| `P_Random` | 924 | DelphiDoom.Engine.Scanner.ActorFunctions, Doom\g_game, Doom\p_enemy (44), Doom\p_extra (6), Doom\p_inter (3), Doom\p_map (9), Doom\p_mobj (31), Doom\p_pspr (17), +37 altri |
+| `M_ClearRandom` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `M_GetMenuRandomIndex` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `M_GetSystemRandomSeed` | 5 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_demo, info_rnd, IdTech1\Strife\g_game |
+| `C_Random` | 6 | IdTech1\Doom\p_user, r_earthquake (4), IdTech1\Strife\p_user |
+| `M_SetSystemRandomSeed` | 6 | IdTech1\Doom\g_game (2), IdTech1\Heretic\g_game, IdTech1\Hexen\g_demo (2), IdTech1\Strife\g_game |
+| `P_SaveRandom` | 10 | IdTech1\Doom\p_map, IdTech1\Doom\p_mobj (2), IdTech1\Heretic\p_map, IdTech1\Heretic\p_mobj (2), IdTech1\Hexen\p_map, IdTech1\Strife\p_map, IdTech1\Strife\p_mobj (2) |
+| `P_RestoreRandom` | 10 | IdTech1\Doom\p_map, IdTech1\Doom\p_mobj (2), IdTech1\Heretic\p_map, IdTech1\Heretic\p_mobj (2), IdTech1\Hexen\p_map, IdTech1\Strife\p_map, IdTech1\Strife\p_mobj (2) |
+| `M_Random` | 14 | IdTech1\Doom\st_stuff, IdTech1\Doom\wi_stuff (3), IdTech1\Hexen\m_menu, IdTech1\Hexen\p_user, IdTech1\Hexen\s_sndseq, IdTech1\Strife\p_dialog (2), s_sound (5) |
+| `N_Random` | 118 | DelphiDoom.Engine.Scanner.ActorFunctions (10), IdTech1\Doom\p_extra (15), IdTech1\Doom\p_genlin, IdTech1\Doom\p_inter (2), IdTech1\Doom\p_map (2), IdTech1\Doom\p_mobj (9), IdTech1\Doom\p_spec, IdTech1\Heretic\p_extra (2), +16 altri |
+| `P_Random` | 924 | DelphiDoom.Engine.Scanner.ActorFunctions, IdTech1\Doom\g_game, IdTech1\Doom\p_enemy (44), IdTech1\Doom\p_extra (6), IdTech1\Doom\p_inter (3), IdTech1\Doom\p_map (9), IdTech1\Doom\p_mobj (31), IdTech1\Doom\p_pspr (17), +37 altri |
 
-### `Base\i_net.pas`, `i_mikplay.pas`, `i_midi_legacy.pas`, `i_crashlog.pas` - facciate sopra `IdTech1\EngineSystem` (#185 fetta 1d)
+### `IdTech1\Base\i_net.pas`, `i_mikplay.pas`, `i_midi_legacy.pas`, `i_crashlog.pas` - facciate sopra `IdTech1\EngineSystem` (#185 fetta 1d)
 
 **Facciate (#185)**: `I_InitNetwork` legge le opzioni con `INetCommandLineReader` (`I_ConfigureNetOptions`) e le scrive nelle variabili `net_*`, in `netgame` e in `R_SetViewAngleOffset` (la lettura della riga di comando e' `TNetCommandLineReader`). `I_InitMik` e le altre `I_*Mik` (`I_ConfigureMik`) chiamano `IModuleMusicPlayer` (chiamante: `TModuleMusicBackend`). Le `I_*Midi_Legacy`, `AddMidiFileToPlayList_Legacy` e `ClearMidiFilePlayList_Legacy` (`I_ConfigureLegacyMidi`) chiamano `ILegacyMidiPlayer` (chiamante: `i_midi`). `I_InstallCrashLogger` e' `TWindowsCrashLogger.Install` (chiamanti: i dieci `.dpr` dei giochi). Per toglierle: `Engine.Music.ModuleBackend` e `Engine.Music.MidiFileBackend` possono ricevere i player dal costruttore invece di passare dalle facciate; `i_net` si toglie quando `TEngineNetGame` riceve `INetCommandLineReader` e scrive lui le variabili `net_*`.
 
-### `Base\i_io.pas` - ridotta (#185 fetta 1d)
+### `IdTech1\Base\i_io.pas` - ridotta (#185 fetta 1d)
 
 **Ridotta (#185)**: `stdoutbuffer` e' un `TStdoutBuffer` (stesse proprieta' `Text`, `Count` e `[i]` di prima, quindi `i_startup` e la console di gioco non cambiano) e `I_IOprintf` e' una riga; `I_InitializeIO` prende i nomi dei tre file da `TLogFileNames`. Restano le finestre di messaggio, i `TFile` dei log e `I_IOSetWindowHandle`.
 
-### `Base\i_midi.pas` - ridotta (#185 fetta 1d)
+### `IdTech1\Base\i_midi.pas` - ridotta (#185 fetta 1d)
 
 **Ridotta (#185)**: la scelta del player (`-uselegacymidiplayer`, `-nouselegacymidiplayer`, `-internalmidiplayer`) e della periferica (`-mididevice`) e' `TMidiPlayerSelection` (`I_ConfigureMidiOptions`); resta lo smistamento tra il player legacy e quello interno (`I_ConfigureMidi`) e le costanti `MThd`, `MTrk` e `midivolumecontrol`.
-### `Base\i_system.pas` - 46 funzioni pubbliche, 1121 chiamate
+### `IdTech1\Base\i_system.pas` - 46 funzioni pubbliche, 1121 chiamate
 
-**Ridotta (#185 fetta 1d)**: `I_Destroy` esegue la `IShutdownSequence` (`I_ConfigureShutdown`; i passi sono in `Base\DelphiDoom.Engine.System.ShutdownPlan`), `I_Error` chiama l'`IFatalErrorHandler` (`I_ConfigureFatalError`; i passi sono in `...FatalErrorSteps`; `in_i_error` resta qui perche' la legge `r_data`) e `I_DetectCPU` usa `TMachineProfileBuilder`. Le altre routine erano gia' una riga su una libreria o una chiamata a Windows e restano.
+**Ridotta (#185 fetta 1d)**: `I_Destroy` esegue la `IShutdownSequence` (`I_ConfigureShutdown`; i passi sono in `IdTech1\Base\DelphiDoom.Engine.System.ShutdownPlan`), `I_Error` chiama l'`IFatalErrorHandler` (`I_ConfigureFatalError`; i passi sono in `...FatalErrorSteps`; `in_i_error` resta qui perche' la legge `r_data`) e `I_DetectCPU` usa `TMachineProfileBuilder`. Le altre routine erano gia' una riga su una libreria o una chiamata a Windows e restano.
 
 Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I_Warning`, `I_GetTime`, ~700 chiamanti): migrare a mano i chiamanti ai servizi iniettati, o tenerla come facciata definitiva. Dalla #155 le classi del motore ricevono `ILog`, `IClock` e `IEngineShutdown` (le chiamate di classe sono scese); `I_CreateProcess`, `I_WaitForProcess` e `I_Sleep` non hanno piu chiamanti.
 
@@ -1271,37 +1271,37 @@ Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I
 | `I_Destroy` | 2 | gl_main, i_main |
 | `I_DirectoryExists` | 2 | DelphiDoom.Pak.FileSystem (2) |
 | `I_StartTic` | 3 | DelphiDoom.Engine.Net.Services (3) |
-| `I_GetSysTime` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `I_StartFrame` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `I_BaseTiccmd` | 4 | Doom\g_game, Heretic\g_game, Hexen\g_game, Strife\g_game |
-| `I_SetCriticalCPUPriority` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `I_SetNormalCPUPriority` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
+| `I_GetSysTime` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `I_StartFrame` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `I_BaseTiccmd` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
+| `I_SetCriticalCPUPriority` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `I_SetNormalCPUPriority` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
 | `I_ClearInterface` | 4 | i_video (4) |
 | `I_GoToWebPage` | 4 | c_utils, Launcher_main, Launcher_utils (2) |
 | `I_SetDPIAwareness` | 4 | gl_main, i_main, Launcher_utils (2) |
 | `I_GetWindowDPI` | 4 | i_video (2), Launcher_utils (2) |
 | `I_GetFracTime` | 5 | hu_stuff, r_intrpl (4) |
-| `I_WaitVBL` | 5 | Doom\m_menu, gl_main, Heretic\m_menu, Hexen\m_menu, Strife\m_menu |
+| `I_WaitVBL` | 5 | IdTech1\Doom\m_menu, gl_main, IdTech1\Heretic\m_menu, IdTech1\Hexen\m_menu, IdTech1\Strife\m_menu |
 | `I_VideoServices` | 6 | gl_main (2), i_video (4) |
 | `I_IsCDRomDrive` | 7 | DelphiDoom.Engine.Composition, Launcher_main, Launcher_utils (2), m_argv (3) |
-| `I_Init` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
+| `I_Init` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
 | `I_FlashCachedOutput` | 8 | 8 .dpr |
-| `I_DetectCPU` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `I_ScreenWidth` | 8 | Doom\d_main, gl_main, Heretic\d_main, Hexen\d_main, i_main, Launcher_utils (2), Strife\d_main |
-| `I_ScreenHeight` | 8 | Doom\d_main, gl_main, Heretic\d_main, Hexen\d_main, i_main, Launcher_utils (2), Strife\d_main |
-| `I_GetTickCount` | 8 | Doom\d_main (2), Heretic\d_main (2), Hexen\d_main (2), Strife\d_main (2) |
-| `I_VersionBuilt` | 9 | DelphiDoom.Ide.Composition, Doom\d_main, Heretic\d_main, Hexen\d_main, ide_version (2), Launcher_about (2), Strife\d_main |
+| `I_DetectCPU` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `I_ScreenWidth` | 8 | IdTech1\Doom\d_main, gl_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, i_main, Launcher_utils (2), IdTech1\Strife\d_main |
+| `I_ScreenHeight` | 8 | IdTech1\Doom\d_main, gl_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, i_main, Launcher_utils (2), IdTech1\Strife\d_main |
+| `I_GetTickCount` | 8 | IdTech1\Doom\d_main (2), IdTech1\Heretic\d_main (2), IdTech1\Hexen\d_main (2), IdTech1\Strife\d_main (2) |
+| `I_VersionBuilt` | 9 | DelphiDoom.Ide.Composition, IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, ide_version (2), Launcher_about (2), IdTech1\Strife\d_main |
 | `I_BeginDiskBusy` | 11 | deh_base, DelphiDoom.Audio.SoundLibrary (2), DelphiDoom.Engine.Audio.SfxSampleSource, DelphiDoom.Engine.Texture.Files, DelphiDoom.Wad.ReloadableSource, r_translations, s_sound, w_wad (3) |
-| `I_Quit` | 13 | DelphiDoom.Engine.Shutdown, Doom\g_game (2), Doom\m_menu, Heretic\g_game (2), Heretic\m_menu, Hexen\g_demo, Hexen\m_menu (2), Strife\g_game (2), +1 altri |
-| `I_GameFinished` | 17 | DelphiDoom.Engine.Input.Gate, DelphiDoom.Engine.Net.Game, DelphiDoom.Engine.Net.Services, Doom\d_main (2), Doom\m_menu, gl_main, Heretic\d_main (2), Heretic\m_menu, +5 altri |
-| `I_DevWarning` | 22 | DelphiDoom.Engine.Midi.StreamPlayer (2), DelphiDoom.Engine.Scanner.Log, Doom\p_inter (2), gl_render, Heretic\p_inter (2), r_data (2), r_intrpl (3), r_things (4), +2 altri |
-| `I_DevError` | 23 | Doom\d_main (7), gl_render, Heretic\d_main (2), Heretic\p_ambient, Hexen\d_main, m_rnd, r_things (2), Strife\d_main (2), +3 altri |
+| `I_Quit` | 13 | DelphiDoom.Engine.Shutdown, IdTech1\Doom\g_game (2), IdTech1\Doom\m_menu, IdTech1\Heretic\g_game (2), IdTech1\Heretic\m_menu, IdTech1\Hexen\g_demo, IdTech1\Hexen\m_menu (2), IdTech1\Strife\g_game (2), +1 altri |
+| `I_GameFinished` | 17 | DelphiDoom.Engine.Input.Gate, DelphiDoom.Engine.Net.Game, DelphiDoom.Engine.Net.Services, IdTech1\Doom\d_main (2), IdTech1\Doom\m_menu, gl_main, IdTech1\Heretic\d_main (2), IdTech1\Heretic\m_menu, +5 altri |
+| `I_DevWarning` | 22 | DelphiDoom.Engine.Midi.StreamPlayer (2), DelphiDoom.Engine.Scanner.Log, IdTech1\Doom\p_inter (2), gl_render, IdTech1\Heretic\p_inter (2), r_data (2), r_intrpl (3), r_things (4), +2 altri |
+| `I_DevError` | 23 | IdTech1\Doom\d_main (7), gl_render, IdTech1\Heretic\d_main (2), IdTech1\Heretic\p_ambient, IdTech1\Hexen\d_main, m_rnd, r_things (2), IdTech1\Strife\d_main (2), +3 altri |
 | `I_GetNumCPUs` | 24 | am_textured, i_video (3), Launcher_main, Launcher_utils (2), mt_utils (2), psi_overlay (2), r_depthbuffer, r_flat32 (2), +6 altri |
-| `I_GetTime` | 83 | Doom\d_main (4), Doom\g_game (2), Doom\m_menu (14), gl_main (2), Heretic\d_main (4), Heretic\g_game (2), Heretic\m_menu (14), Hexen\d_main (4), +7 altri |
-| `I_Warning` | 375 | am_map, deh_base (2), DelphiDoom.Engine.Scanner.Log (3), DelphiDoom.Pak.FileSystem (6), DelphiDoom.Pak.Stream, Doom\DelphiDoom.Engine.Dehacked.Applier (17), Doom\d_main (12), Doom\g_game (12), +73 altri [test: 26] |
+| `I_GetTime` | 83 | IdTech1\Doom\d_main (4), IdTech1\Doom\g_game (2), IdTech1\Doom\m_menu (14), gl_main (2), IdTech1\Heretic\d_main (4), IdTech1\Heretic\g_game (2), IdTech1\Heretic\m_menu (14), IdTech1\Hexen\d_main (4), +7 altri |
+| `I_Warning` | 375 | am_map, deh_base (2), DelphiDoom.Engine.Scanner.Log (3), DelphiDoom.Pak.FileSystem (6), DelphiDoom.Pak.Stream, IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier (17), IdTech1\Doom\d_main (12), IdTech1\Doom\g_game (12), +73 altri [test: 26] |
 | `I_Error` | 418 | am_map (2), c_cmds, deh_base (10), DelphiDoom.Engine.Composition (7), DelphiDoom.Engine.Door.Services, DelphiDoom.Engine.Light.Services, DelphiDoom.Engine.Midi.StreamPlayer (5), DelphiDoom.Engine.Plane.Services, +120 altri [test: 2] |
 
-### `Base\deh_base.pas` - 43 funzioni pubbliche, 2053 chiamate
+### `IdTech1\Base\deh_base.pas` - 43 funzioni pubbliche, 2053 chiamate
 
 Per toglierla: le liste dei flag e dei token servono ai dump; servirebbe un catalogo iniettato in `IdTech1\Dehacked` invece delle liste globali. Dalla #144 l'applicazione delle patch e `TEngineDehackedApplier` (`DEH_ConfigureApplier`).
 
@@ -1327,124 +1327,124 @@ Per toglierla: le liste dei flag e dei token servono ai dump; servirebbe un cata
 | `DEH_SaveWeapondef` | 2 | DelphiDoom.Engine.ActorDef.Lumps (2) |
 | `DEH_PrintStateOwners` | 2 | DelphiDoom.Engine.ActorDef.Lumps (2) |
 | `DEH_SaveStateOwners` | 2 | DelphiDoom.Engine.ActorDef.Lumps (2) |
-| `DEH_PlayerClass` | 2 | DelphiDoom.Engine.ActorDef.Catalog, Hexen\DelphiDoom.Engine.Dehacked.Applier |
+| `DEH_PlayerClass` | 2 | DelphiDoom.Engine.ActorDef.Catalog, IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier |
 | `DEH_ParseText` | 3 | DelphiDoom.Engine.ActorDef.Hooks (3) |
-| `DEH_ParseLumpNames` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `DEH_ParseLumpNum` | 4 | Doom\d_main, Heretic\d_main, Hexen\d_main, Strife\d_main |
-| `DEH_AddNullAction` | 4 | Doom\deh_main, Heretic\deh_main, Hexen\deh_main, Strife\deh_main |
-| `DEH_SearchActionFromHash` | 4 | Doom\DelphiDoom.Engine.Dehacked.Applier, Heretic\DelphiDoom.Engine.Dehacked.Applier, Hexen\DelphiDoom.Engine.Dehacked.Applier, Strife\DelphiDoom.Engine.Dehacked.Applier |
-| `DEH_FindActionByName` | 4 | Doom\DelphiDoom.Engine.Dehacked.Applier, Heretic\DelphiDoom.Engine.Dehacked.Applier, Hexen\DelphiDoom.Engine.Dehacked.Applier, Strife\DelphiDoom.Engine.Dehacked.Applier |
-| `DEH_AmmoType` | 5 | DelphiDoom.Engine.ActorDef.Catalog, Doom\DelphiDoom.Engine.Dehacked.Applier, Heretic\DelphiDoom.Engine.Dehacked.Applier, Hexen\DelphiDoom.Engine.Dehacked.Applier, Strife\DelphiDoom.Engine.Dehacked.Applier |
-| `DEH_WeaponType` | 5 | DelphiDoom.Engine.ActorDef.Catalog, Doom\DelphiDoom.Engine.Dehacked.Applier, Heretic\DelphiDoom.Engine.Dehacked.Applier, Hexen\DelphiDoom.Engine.Dehacked.Applier, Strife\DelphiDoom.Engine.Dehacked.Applier |
-| `DEH_CStringToString` | 8 | Doom\DelphiDoom.Engine.Dehacked.Applier (2), Heretic\DelphiDoom.Engine.Dehacked.Applier (2), Hexen\DelphiDoom.Engine.Dehacked.Applier (2), Strife\DelphiDoom.Engine.Dehacked.Applier (2) |
-| `DEH_PrintCurrentSettings` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
-| `DEH_SaveCurrentSettings` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
-| `DEH_PrintActions` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
-| `DEH_SaveMobjInfoCSV` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
-| `DEH_SaveStatesCSV` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
-| `DEH_SaveSpritesCSV` | 8 | Doom\deh_main (2), Heretic\deh_main (2), Hexen\deh_main (2), Strife\deh_main (2) |
-| `DEH_StringValue` | 9 | Doom\DelphiDoom.Engine.Dehacked.Applier (3), Heretic\DelphiDoom.Engine.Dehacked.Applier (2), Hexen\DelphiDoom.Engine.Dehacked.Applier (2), Strife\DelphiDoom.Engine.Dehacked.Applier (2) |
-| `DEH_ParseFile` | 12 | Doom\deh_main (2), Doom\d_main, Heretic\deh_main (2), Heretic\d_main, Hexen\deh_main (2), Hexen\d_main, Strife\deh_main (2), Strife\d_main |
-| `DEH_ActionCount` | 13 | dd_compiler, Doom\DelphiDoom.Engine.Dehacked.Applier (3), Heretic\DelphiDoom.Engine.Dehacked.Applier (3), Hexen\DelphiDoom.Engine.Dehacked.Applier (3), Strife\DelphiDoom.Engine.Dehacked.Applier (3) |
-| `DEH_ActionProc` | 16 | Doom\DelphiDoom.Engine.Dehacked.Applier (4), Heretic\DelphiDoom.Engine.Dehacked.Applier (4), Hexen\DelphiDoom.Engine.Dehacked.Applier (4), Strife\DelphiDoom.Engine.Dehacked.Applier (4) |
-| `DEH_ParseLumpName` | 18 | Doom\deh_main, Doom\d_main (6), Heretic\deh_main, Heretic\d_main (4), Hexen\deh_main, Hexen\d_main (2), Strife\deh_main, Strife\d_main (2) |
-| `DEH_AddAction` | 1872 | Doom\deh_main (420), Heretic\deh_main (448), Hexen\deh_main (549), Strife\deh_main (455) |
+| `DEH_ParseLumpNames` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `DEH_ParseLumpNum` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
+| `DEH_AddNullAction` | 4 | IdTech1\Doom\deh_main, IdTech1\Heretic\deh_main, IdTech1\Hexen\deh_main, IdTech1\Strife\deh_main |
+| `DEH_SearchActionFromHash` | 4 | IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier |
+| `DEH_FindActionByName` | 4 | IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier |
+| `DEH_AmmoType` | 5 | DelphiDoom.Engine.ActorDef.Catalog, IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier |
+| `DEH_WeaponType` | 5 | DelphiDoom.Engine.ActorDef.Catalog, IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier, IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier |
+| `DEH_CStringToString` | 8 | IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier (2), IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier (2), IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier (2), IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier (2) |
+| `DEH_PrintCurrentSettings` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
+| `DEH_SaveCurrentSettings` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
+| `DEH_PrintActions` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
+| `DEH_SaveMobjInfoCSV` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
+| `DEH_SaveStatesCSV` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
+| `DEH_SaveSpritesCSV` | 8 | IdTech1\Doom\deh_main (2), IdTech1\Heretic\deh_main (2), IdTech1\Hexen\deh_main (2), IdTech1\Strife\deh_main (2) |
+| `DEH_StringValue` | 9 | IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier (3), IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier (2), IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier (2), IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier (2) |
+| `DEH_ParseFile` | 12 | IdTech1\Doom\deh_main (2), IdTech1\Doom\d_main, IdTech1\Heretic\deh_main (2), IdTech1\Heretic\d_main, IdTech1\Hexen\deh_main (2), IdTech1\Hexen\d_main, IdTech1\Strife\deh_main (2), IdTech1\Strife\d_main |
+| `DEH_ActionCount` | 13 | dd_compiler, IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier (3), IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier (3), IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier (3), IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier (3) |
+| `DEH_ActionProc` | 16 | IdTech1\Doom\DelphiDoom.Engine.Dehacked.Applier (4), IdTech1\Heretic\DelphiDoom.Engine.Dehacked.Applier (4), IdTech1\Hexen\DelphiDoom.Engine.Dehacked.Applier (4), IdTech1\Strife\DelphiDoom.Engine.Dehacked.Applier (4) |
+| `DEH_ParseLumpName` | 18 | IdTech1\Doom\deh_main, IdTech1\Doom\d_main (6), IdTech1\Heretic\deh_main, IdTech1\Heretic\d_main (4), IdTech1\Hexen\deh_main, IdTech1\Hexen\d_main (2), IdTech1\Strife\deh_main, IdTech1\Strife\d_main (2) |
+| `DEH_AddAction` | 1872 | IdTech1\Doom\deh_main (420), IdTech1\Heretic\deh_main (448), IdTech1\Hexen\deh_main (549), IdTech1\Strife\deh_main (455) |
 
 ## Funzioni pubbliche senza chiamanti lasciate di proposito
 
 Nessun chiamante fuori dalla unit (riferimenti in `Tests\` e `Libs\` esclusi), non cancellate perche sono renderer, FixedMul/angoli, API storiche (W_*) o libreria di terzi (_clipper). BoolToStr, IsZeroes, parsefirstword, A_Fall, AngleToFixed, FloatMul, DEG2RAD hanno solo riferimenti omonimi in test o librerie: da verificare a mano.
 
-- `Base\deh_base.pas`: DEH_StringToCString
-- `Base\i_system.pas`: I_Sleep, I_WaitForProcess
-- `Base\m_fixed.pas`: FixedDivLW, FixedDiv_fast, FixedMulDiv16, FixedMulDiv8, FixedMulShl10, FixedMulShl14, FixedMulShl3, FixedMulShl4, FixedMulShl5, FixedMulShl8, FloatMul
-- `Base\r_bsp.pas`: R_UnderWater
-- `Base\r_clipper.pas`: CleanPolygons, ClosedPathsFromPolyTree, DoublePoint, MinkowskiDiff, MinkowskiSum, OpenPathsFromPolyTree, PolyTreeToPaths, ReversePaths, SimplifyPolygon, SimplifyPolygons
-- `Base\r_colorcolumn.pas`: R_DrawColorColumnAverageMedium_Batch
-- `Base\r_colormaps.pas`: R_CustomColorMapColor32
-- `Base\r_column.pas`: R_DrawColumnBase32
-- `Base\r_data.pas`: R_CacheFlat
-- `Base\r_hires.pas`: R_ColorBoost, R_FuzzLight, R_InverseLightAverage
-- `Base\r_main.pas`: R_AddPointToBox
-- `Base\r_tallcolumn.pas`: R_DrawTallColumnBase32
-- `Base\r_trans8.pas`: R_FastApproxColorIndex
-- `Base\r_utils.pas`: R_PointToScreenBufferEx2
-- `Base\r_zbuffer.pas`: R_StartZBuffer
-- `Base\tables.pas`: AngleToFixed
-- `Base\v_video.pas`: V_GetBlock
-- `Base\w_pak.pas`: PAK_GetGlobalHash
-- `Base\w_sprite.pas`: W_CacheSpriteName
-- `Base\w_wad.pas`: W_LumpIsNamed
-- `Common\d_delphi.pas`: IsZeroes, lastword, parsefirstword, RightStr, secondword
-- `Doom\p_spec.pas`: P_FindMinSurroundingLight
-- `Heretic\p_enemy.pas`: A_Fall
-- `Heretic\p_spec.pas`: P_InitLava
+- `IdTech1\Base\deh_base.pas`: DEH_StringToCString
+- `IdTech1\Base\i_system.pas`: I_Sleep, I_WaitForProcess
+- `IdTech1\Base\m_fixed.pas`: FixedDivLW, FixedDiv_fast, FixedMulDiv16, FixedMulDiv8, FixedMulShl10, FixedMulShl14, FixedMulShl3, FixedMulShl4, FixedMulShl5, FixedMulShl8, FloatMul
+- `IdTech1\Base\r_bsp.pas`: R_UnderWater
+- `IdTech1\Base\r_clipper.pas`: CleanPolygons, ClosedPathsFromPolyTree, DoublePoint, MinkowskiDiff, MinkowskiSum, OpenPathsFromPolyTree, PolyTreeToPaths, ReversePaths, SimplifyPolygon, SimplifyPolygons
+- `IdTech1\Base\r_colorcolumn.pas`: R_DrawColorColumnAverageMedium_Batch
+- `IdTech1\Base\r_colormaps.pas`: R_CustomColorMapColor32
+- `IdTech1\Base\r_column.pas`: R_DrawColumnBase32
+- `IdTech1\Base\r_data.pas`: R_CacheFlat
+- `IdTech1\Base\r_hires.pas`: R_ColorBoost, R_FuzzLight, R_InverseLightAverage
+- `IdTech1\Base\r_main.pas`: R_AddPointToBox
+- `IdTech1\Base\r_tallcolumn.pas`: R_DrawTallColumnBase32
+- `IdTech1\Base\r_trans8.pas`: R_FastApproxColorIndex
+- `IdTech1\Base\r_utils.pas`: R_PointToScreenBufferEx2
+- `IdTech1\Base\r_zbuffer.pas`: R_StartZBuffer
+- `IdTech1\Base\tables.pas`: AngleToFixed
+- `IdTech1\Base\v_video.pas`: V_GetBlock
+- `IdTech1\Base\w_pak.pas`: PAK_GetGlobalHash
+- `IdTech1\Base\w_sprite.pas`: W_CacheSpriteName
+- `IdTech1\Base\w_wad.pas`: W_LumpIsNamed
+- `IdTech1\Common\d_delphi.pas`: IsZeroes, lastword, parsefirstword, RightStr, secondword
+- `IdTech1\Doom\p_spec.pas`: P_FindMinSurroundingLight
+- `IdTech1\Heretic\p_enemy.pas`: A_Fall
+- `IdTech1\Heretic\p_spec.pas`: P_InitLava
 - `IdTech1\OpenGl\Legacy\gl_ambient.pas`: gld_AmbientExecute
 - `IdTech1\OpenGl\Legacy\gl_misc.pas`: gl_f_max
 - `IdTech1\OpenGl\Legacy\gl_render.pas`: gld_DrawLine
 - `IdTech1\OpenGl\Legacy\gl_tex.pas`: gld_LoadExternalTextureAlpha
 - `IdTech1\OpenGl\Legacy\gl_types.pas`: MakeGLVertex
 - `IdTech1\OpenGl\Legacy\mdl_script_proclist.pas`: MDL_Procs
-- `Strife\p_spec.pas`: P_FindMinSurroundingLight
+- `IdTech1\Strife\p_spec.pas`: P_FindMinSurroundingLight
 
 
 ## Funzioni pubbliche usate solo dentro la propria unit
 
 Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezione interface (diventano locali). Non fatto in questo lavoro: e una modifica di visibilita, non una cancellazione.
 
-- `Base\deh_base.pas`: DEH_CurrentActordef, DEH_CurrentSettings, DEH_CurrentStateOwners, DEH_CurrentWeapondef
-- `Base\hu_lib.pas`: HUlib_addLineToSText, HUlib_clearTextLine, HUlib_delCharFromIText
-- `Base\hu_stuff.pas`: HU_FPS, HU_TITLE
-- `Base\info_common.pas`: Info_ShutDownDnLookUp
-- `Base\info_export.pas`: Info_GetMobjinfoPascal, Info_GetMobjinfoPascalConst, Info_GetStatesPascal
-- `Base\i_system.pas`: I_DetectOS
-- `Base\p_common.pas`: P_CheckCustomMeleeRange, P_CheckFov, P_CopyFriendliness, P_HealCorpse, P_LocalEarthQuake, P_NoiseAlertEx, P_RaiseActor, P_RoughTargetSearch, P_SeekerMissileEx
-- `Base\p_musinfo.pas`: P_FindMusinfoMusic
-- `Base\p_sight.pas`: P_CheckVisibility, P_SightPathTraverse
-- `Base\r_cache_flats.pas`: R_Get_ds32
-- `Base\r_clipper.pas`: CleanPolygon, GetBounds, IntPoint, PointInPolygon, ReversePath
-- `Base\r_depthbuffer.pas`: R_DrawSpanToDepthBuffer, R_StoreSpanToDepthBufferMT
-- `Base\r_plane.pas`: R_MapPlane, R_MapPlaneAngle
-- `Base\r_things.pas`: R_NewVisSprite
-- `Base\r_zbuffer.pas`: R_ClearZBuffer, R_DrawVoxelColumnToZBuffer
-- `Base\s_sound.pas`: S_ShutDownSound, S_StartVoiceAtVolume, S_StopMusic
-- `Base\udmf_spec.pas`: P_ArgsToLine, P_LineToArgs
-- `Base\v_displaymode.pas`: V_DoSetDisplayMode
-- `Base\v_video.pas`: V_CalcPreserveTables, V_NeedsPreserve, V_PreserveH, V_PreserveW, V_PreserveX
-- `Base\z_zone.pas`: Z_DumpHeap, Z_FileDumpHeap, Z_FileDumpHeapf
-- `Common\d_delphi.pas`: direxists, QSortFloats, QSortIntegers
-- `Doom\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
-- `Doom\g_game.pas`: G_DoLoadGame
-- `Doom\p_mobj.pas`: P_SpawnMissileAngleZSpeed
-- `Doom\p_spec.pas`: P_SpawnFriction, P_SpawnPushers, twoSidedS
-- `Heretic\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
-- `Heretic\g_game.pas`: G_DoLoadGame
-- `Heretic\m_menu.pas`: M_WriteText2
-- `Heretic\p_mobj.pas`: P_SpawnMissileAngleZSpeed
-- `Heretic\p_plats.pas`: P_ActivateInStasis
-- `Heretic\p_pspr.pas`: A_FireMacePL1B
-- `Heretic\p_user.pas`: P_PlayerNextArtifact, P_UndoPlayerChicken, P_UseArtifact
-- `Hexen\a_action.pas`: A_TeloSpawn
-- `Hexen\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
-- `Hexen\g_game.pas`: G_DoLoadGame
-- `Hexen\m_menu.pas`: M_StringWidth2, M_WriteText2
-- `Hexen\p_enemy.pas`: A_AccelBalls, A_CastSorcererSpell, A_DecelBalls, A_FiredSpawnRock, A_KSpiritSeeker, A_KSpiritWeave, A_SlowBalls, A_SorcOffense1, A_SorcOffense2, A_SorcUpdateBallAngle, A_StopBalls, A_WraithFX4, DragonSeek, FaceMovementDirection, KoraxFire1, KoraxFire2, KoraxFire3, KoraxFire4, KoraxFire5, KoraxFire6, KSpiritInit, P_CheckMeleeRange2, P_CheckMissileRange, P_NewChaseDir, P_UpdateMorphedMonster
-- `Hexen\p_inter.pas`: P_ActiveMinotaur, P_AutoUseHealth, P_GiveKey, P_HideSpecialThing, P_MinotaurSlam, P_MorphMonster, P_PoisonPlayer, P_SetDormantArtifact, P_SpawnDroppedMobj, P_TryPickupArtifact, P_TryPickupWeapon, P_TryPickupWeaponPiece
-- `Base\p_map.pas` (copia unica dalla #185, passo 2c-1; prima `Hexen\p_map.pas`): PIT_CheckLine, PIT_CheckOnmobjZ, PIT_RadiusAttack, PTR_ShootTraverse, PTR_SlideTraverse, PTR_UseTraverse, P_FakeZMovement, P_HitSlideLine; `Hexen\DelphiDoom.Engine.World.MapRules.pas`: PIT_ThrustStompThing, PTR_BounceTraverse, PTR_PuzzleItemTraverse (PIT_ChangeSector e P_ThingHeightClip ora hanno chiamanti fuori dalla unit)
-- `Hexen\p_mobj.pas`: P_FloorBounceMissile, P_PlayerLandedOnThing, P_SpawnMissileAngleZSpeed, P_ZMovement
-- `Hexen\p_pspr.pas`: A_CHolyWeave, A_MLightningAttack2, P_AdjustPlayerAngle, P_CheckMana, P_CHolyFindTarget, P_CHolySeekerMissile, P_CHolyTailFollow, P_CHolyTailRemove, P_FireWeapon, P_MStaffSpawn, P_MStaffSpawn2
-- `Hexen\p_spec.pas`: EVH_LineSearchForPuzzleItem
-- `Hexen\p_user.pas`: P_PlayerNextArtifact
-- `Hexen\sv_save.pas`: P_ArchiveScreenShot, P_UnArchiveScreenShot
+- `IdTech1\Base\deh_base.pas`: DEH_CurrentActordef, DEH_CurrentSettings, DEH_CurrentStateOwners, DEH_CurrentWeapondef
+- `IdTech1\Base\hu_lib.pas`: HUlib_addLineToSText, HUlib_clearTextLine, HUlib_delCharFromIText
+- `IdTech1\Base\hu_stuff.pas`: HU_FPS, HU_TITLE
+- `IdTech1\Base\info_common.pas`: Info_ShutDownDnLookUp
+- `IdTech1\Base\info_export.pas`: Info_GetMobjinfoPascal, Info_GetMobjinfoPascalConst, Info_GetStatesPascal
+- `IdTech1\Base\i_system.pas`: I_DetectOS
+- `IdTech1\Base\p_common.pas`: P_CheckCustomMeleeRange, P_CheckFov, P_CopyFriendliness, P_HealCorpse, P_LocalEarthQuake, P_NoiseAlertEx, P_RaiseActor, P_RoughTargetSearch, P_SeekerMissileEx
+- `IdTech1\Base\p_musinfo.pas`: P_FindMusinfoMusic
+- `IdTech1\Base\p_sight.pas`: P_CheckVisibility, P_SightPathTraverse
+- `IdTech1\Base\r_cache_flats.pas`: R_Get_ds32
+- `IdTech1\Base\r_clipper.pas`: CleanPolygon, GetBounds, IntPoint, PointInPolygon, ReversePath
+- `IdTech1\Base\r_depthbuffer.pas`: R_DrawSpanToDepthBuffer, R_StoreSpanToDepthBufferMT
+- `IdTech1\Base\r_plane.pas`: R_MapPlane, R_MapPlaneAngle
+- `IdTech1\Base\r_things.pas`: R_NewVisSprite
+- `IdTech1\Base\r_zbuffer.pas`: R_ClearZBuffer, R_DrawVoxelColumnToZBuffer
+- `IdTech1\Base\s_sound.pas`: S_ShutDownSound, S_StartVoiceAtVolume, S_StopMusic
+- `IdTech1\Base\udmf_spec.pas`: P_ArgsToLine, P_LineToArgs
+- `IdTech1\Base\v_displaymode.pas`: V_DoSetDisplayMode
+- `IdTech1\Base\v_video.pas`: V_CalcPreserveTables, V_NeedsPreserve, V_PreserveH, V_PreserveW, V_PreserveX
+- `IdTech1\Base\z_zone.pas`: Z_DumpHeap, Z_FileDumpHeap, Z_FileDumpHeapf
+- `IdTech1\Common\d_delphi.pas`: direxists, QSortFloats, QSortIntegers
+- `IdTech1\Doom\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
+- `IdTech1\Doom\g_game.pas`: G_DoLoadGame
+- `IdTech1\Doom\p_mobj.pas`: P_SpawnMissileAngleZSpeed
+- `IdTech1\Doom\p_spec.pas`: P_SpawnFriction, P_SpawnPushers, twoSidedS
+- `IdTech1\Heretic\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
+- `IdTech1\Heretic\g_game.pas`: G_DoLoadGame
+- `IdTech1\Heretic\m_menu.pas`: M_WriteText2
+- `IdTech1\Heretic\p_mobj.pas`: P_SpawnMissileAngleZSpeed
+- `IdTech1\Heretic\p_plats.pas`: P_ActivateInStasis
+- `IdTech1\Heretic\p_pspr.pas`: A_FireMacePL1B
+- `IdTech1\Heretic\p_user.pas`: P_PlayerNextArtifact, P_UndoPlayerChicken, P_UseArtifact
+- `IdTech1\Hexen\a_action.pas`: A_TeloSpawn
+- `IdTech1\Hexen\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
+- `IdTech1\Hexen\g_game.pas`: G_DoLoadGame
+- `IdTech1\Hexen\m_menu.pas`: M_StringWidth2, M_WriteText2
+- `IdTech1\Hexen\p_enemy.pas`: A_AccelBalls, A_CastSorcererSpell, A_DecelBalls, A_FiredSpawnRock, A_KSpiritSeeker, A_KSpiritWeave, A_SlowBalls, A_SorcOffense1, A_SorcOffense2, A_SorcUpdateBallAngle, A_StopBalls, A_WraithFX4, DragonSeek, FaceMovementDirection, KoraxFire1, KoraxFire2, KoraxFire3, KoraxFire4, KoraxFire5, KoraxFire6, KSpiritInit, P_CheckMeleeRange2, P_CheckMissileRange, P_NewChaseDir, P_UpdateMorphedMonster
+- `IdTech1\Hexen\p_inter.pas`: P_ActiveMinotaur, P_AutoUseHealth, P_GiveKey, P_HideSpecialThing, P_MinotaurSlam, P_MorphMonster, P_PoisonPlayer, P_SetDormantArtifact, P_SpawnDroppedMobj, P_TryPickupArtifact, P_TryPickupWeapon, P_TryPickupWeaponPiece
+- `IdTech1\Base\p_map.pas` (copia unica dalla #185, passo 2c-1; prima `IdTech1\Hexen\p_map.pas`): PIT_CheckLine, PIT_CheckOnmobjZ, PIT_RadiusAttack, PTR_ShootTraverse, PTR_SlideTraverse, PTR_UseTraverse, P_FakeZMovement, P_HitSlideLine; `IdTech1\Hexen\DelphiDoom.Engine.World.MapRules.pas`: PIT_ThrustStompThing, PTR_BounceTraverse, PTR_PuzzleItemTraverse (PIT_ChangeSector e P_ThingHeightClip ora hanno chiamanti fuori dalla unit)
+- `IdTech1\Hexen\p_mobj.pas`: P_FloorBounceMissile, P_PlayerLandedOnThing, P_SpawnMissileAngleZSpeed, P_ZMovement
+- `IdTech1\Hexen\p_pspr.pas`: A_CHolyWeave, A_MLightningAttack2, P_AdjustPlayerAngle, P_CheckMana, P_CHolyFindTarget, P_CHolySeekerMissile, P_CHolyTailFollow, P_CHolyTailRemove, P_FireWeapon, P_MStaffSpawn, P_MStaffSpawn2
+- `IdTech1\Hexen\p_spec.pas`: EVH_LineSearchForPuzzleItem
+- `IdTech1\Hexen\p_user.pas`: P_PlayerNextArtifact
+- `IdTech1\Hexen\sv_save.pas`: P_ArchiveScreenShot, P_UnArchiveScreenShot
 - `IdTech1\OpenGl\Legacy\gl_render.pas`: gld_DrawBackgroundFrame, gld_StaticLight
 - `IdTech1\OpenGl\Legacy\gl_tex.pas`: gld_AddFlatToTexture, gld_AddNewGLPatchTexture, gld_AddNewGLTexture, gld_AddPatchToTexture, gld_AddPatchToTexture_UnTranslated, gld_GetTexDimension, gld_SetTexturePalette
 - `Framework\ScriptHost\psi_game.pas`: PS_GetMobjInfoGravity
-- `Strife\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
-- `Strife\g_game.pas`: G_DoLoadGame
-- `Strife\m_menu.pas`: M_StringWidth2, M_StringWidth3, M_WriteText2, M_WriteText3
-- `Strife\m_saves.pas`: M_ClearSlotNum
-- `Strife\p_mobj.pas`: P_SpawnMissileAngleZSpeed
-- `Strife\p_spec.pas`: P_SpawnFriction, P_SpawnPushers, twoSidedS
-- `Strife\p_user.pas`: P_DropInventoryItem, P_ItemBehavior
+- `IdTech1\Strife\d_main.pas`: D_AddFile, D_FileInDoomPath, D_PageDrawer
+- `IdTech1\Strife\g_game.pas`: G_DoLoadGame
+- `IdTech1\Strife\m_menu.pas`: M_StringWidth2, M_StringWidth3, M_WriteText2, M_WriteText3
+- `IdTech1\Strife\m_saves.pas`: M_ClearSlotNum
+- `IdTech1\Strife\p_mobj.pas`: P_SpawnMissileAngleZSpeed
+- `IdTech1\Strife\p_spec.pas`: P_SpawnFriction, P_SpawnPushers, twoSidedS
+- `IdTech1\Strife\p_user.pas`: P_DropInventoryItem, P_ItemBehavior
 
 **Nota (issue #177, fetta 3)**: `gld_ConfigureModelDefinitions` di `gl_models.pas` riceve preprocessore, parser (`IModelDefinitionParser`) e sink (`TEngineModelDefinitionSink`) da `ComposeModels`; `gld_AddModel`, `gld_AddModelState` e `gld_AddModelTexture` sono ora esposte dall'unit e chiamate solo da quel sink.
 

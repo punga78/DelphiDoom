@@ -1,6 +1,6 @@
 # IdTech1\Hud
 
-HUD del motore (messaggi in alto, chat in rete, widget di testo, contatore dei fotogrammi al secondo, tempo del livello, mirino, layout dei glifi) a classi. Prima fetta della fase 1 del piano "tutto a classi" (issue #185, `docs\PIANO_TUTTO_A_CLASSI.md`): `Base\hu_stuff.pas` e `Base\hu_lib.pas` sono facciate sopra questa libreria.
+HUD del motore (messaggi in alto, chat in rete, widget di testo, contatore dei fotogrammi al secondo, tempo del livello, mirino, layout dei glifi) a classi. Prima fetta della fase 1 del piano "tutto a classi" (issue #185, `docs\PIANO_TUTTO_A_CLASSI.md`): `IdTech1\Base\hu_stuff.pas` e `IdTech1\Base\hu_lib.pas` sono facciate sopra questa libreria.
 
 Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md).
 
@@ -9,7 +9,7 @@ Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md).
 - Unit nella cartella: 18 (nome a punti `DelphiDoom.Hud.*`), 15 classi.
 - Interfacce dichiarate: `IHeadsUp`, `IHudView`, `IHudFlags`, `IHudPlayers`, `IHudPlayerMessage`, `IHudSettings`, `IHudChatSound`, `IHudEcho`, `IHudMessageTarget`.
 - Punto di creazione delle classi: `DelphiDoom.Hud.Factory`.
-- Il disegno (V_DrawPatch) e il collegamento ai globali del motore stanno fuori dalla libreria, in `Base\DelphiDoom.Engine.Hud.*`.
+- Il disegno (V_DrawPatch) e il collegamento ai globali del motore stanno fuori dalla libreria, in `IdTech1\Base\DelphiDoom.Engine.Hud.*`.
 
 ## Prova
 

@@ -1,6 +1,6 @@
 # Framework\Flic — note per Claude
 
-`Framework\Flic` (issue #229, fetta 1 del framework, indice #227) e' il **decoder dei fotogrammi FLI/FLC** in uno strato "Formati": nessuna dipendenza da `Xcom*`, da `Greed`, da `Base\` ne' da altre librerie (solo la RTL). Era `TXcomFlcDecoder` di `Games\XcomFormats` (port del decoder di `FlcPlayer` di OpenXcom, GPL v3 o successiva, vedi `Games\XcomFormats\README.md` per la licenza): **spostato alla lettera**, solo i nomi cambiano. Nome scelto: `Flic` (come i `Cinematic.Flic.*` che lo usano) e non una libreria `Formats` generica: un lettore di una sola famiglia di file non giustifica un contenitore di formati diversi; se un giorno arrivano altri formati di immagine/animazione a 8 bit si decide allora.
+`Framework\Flic` (issue #229, fetta 1 del framework, indice #227) e' il **decoder dei fotogrammi FLI/FLC** in uno strato "Formati": nessuna dipendenza da `Xcom*`, da `Greed`, da `IdTech1\Base\` ne' da altre librerie (solo la RTL). Era `TXcomFlcDecoder` di `Games\XcomFormats` (port del decoder di `FlcPlayer` di OpenXcom, GPL v3 o successiva, vedi `Games\XcomFormats\README.md` per la licenza): **spostato alla lettera**, solo i nomi cambiano. Nome scelto: `Flic` (come i `Cinematic.Flic.*` che lo usano) e non una libreria `Formats` generica: un lettore di una sola famiglia di file non giustifica un contenitore di formati diversi; se un giorno arrivano altri formati di immagine/animazione a 8 bit si decide allora.
 
 | Unit | Contenuto |
 |---|---|

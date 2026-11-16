@@ -4,7 +4,7 @@
   Il confronto e' in Prova-Common.ps1 (comune a Prova-PMap.ps1, Prova-PMobj.ps1, Prova-PUser.ps1 e Prova-PInter.ps1).
 
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_pspr.pas (presa dal commit di partenza con git show)
-  prende il testo della routine unificata (Base\p_pspr.pas) o della unit delle regole del gioco, sostituisce ogni
+  prende il testo della routine unificata (IdTech1\Base\p_pspr.pas) o della unit delle regole del gioco, sostituisce ogni
   chiamata a TPspriteGameRules con il corpo della regola di quel gioco e confronta il risultato con la routine
   vecchia, tolti commenti, spazi e maiuscole.
 
@@ -84,7 +84,7 @@ $NotTextual = @{}
 $Methods = @{}
 $Alias = @{}
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_pspr' -BaseFiles 'Base\p_pspr.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_pspr' -BaseFiles 'IdTech1\Base\p_pspr.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.PspriteRules.pas' -Class 'TPspriteGameRules' -Expansions $Expansions `
   -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Maps $Maps
 exit $bad

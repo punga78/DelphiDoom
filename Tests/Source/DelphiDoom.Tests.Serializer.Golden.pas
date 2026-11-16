@@ -3,7 +3,7 @@
 {  DelphiDoom: tests of the serializer library - parity with the old code      }
 {                                                                              }
 {  The file Tests\Data\Serializer\serializer.golden.txt is the answer of the   }
-{  OLD TSerializer of the engine (Base\p_serializer.pas before issue #85) on   }
+{  OLD TSerializer of the engine (IdTech1\Base\p_serializer.pas before issue #85) on }
 {  60 records of TGoldenRecord: IN is the record, SAVE the bytes that the old  }
 {  code wrote, LOAD what it read back (only where the old reader worked: it    }
 {  read the texts at two bytes per character, so a record with a text has no   }

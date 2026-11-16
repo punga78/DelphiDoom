@@ -44,7 +44,7 @@ La vecchia `SCRIPT\` aveva circa 72.000 righe, ma il 52% è nel nucleo e il 20% 
 
 `ps_defs`, `ps_keywords`, `ps_utils`, `ps_compiler`, `ps_runtime` non nominano il motore (nessun `I_Error`, `devparm`, `doomdef`, `printf`…) e **non hanno define di gioco** (`DOOM`, `HERETIC`, `OPENGL` compaiono solo nella tabella dei modelli di `ps_keywords`, sotto `{$IFDEF OPENGL}`).
 
-Le sole uscite dal nucleo, ricavate confrontando ogni identificatore con le dichiarazioni di `Common\d_delphi.pas`:
+Le sole uscite dal nucleo, ricavate confrontando ogni identificatore con le dichiarazioni di `IdTech1\Common\d_delphi.pas`:
 
 | Unit | `uses` che escono | Che cosa serve davvero | Isolamento |
 |---|---|---|---|
@@ -59,7 +59,7 @@ Le sole uscite dal nucleo, ricavate confrontando ogni identificatore con le dich
 | `uPSPreProcessor` | nessuna (RTL + nucleo) | — | può entrare così com'è (non in questa fetta) |
 | `uPSC_dateutils`, `uPSR_dateutils` | nessuna | — | possono entrare così come sono |
 
-Lo shim `d_delphi` ha **una sola funzione**, `CharPos`, in versione `AnsiChar`/`AnsiString` (l'originale è `Char`/`string`: passerebbe per UnicodeString e, con una code page a più byte, sposterebbe le posizioni). Ha lo stesso nome dell'unit del motore: il progetto che lo usa non deve avere `Common\` nel search path, e le due unit non possono stare nello stesso eseguibile (stessa regola di `Framework\Xmi\Shim`).
+Lo shim `d_delphi` ha **una sola funzione**, `CharPos`, in versione `AnsiChar`/`AnsiString` (l'originale è `Char`/`string`: passerebbe per UnicodeString e, con una code page a più byte, sposterebbe le posizioni). Ha lo stesso nome dell'unit del motore: il progetto che lo usa non deve avere `IdTech1\Common\` nel search path, e le due unit non possono stare nello stesso eseguibile (stessa regola di `Framework\Xmi\Shim`).
 
 `TbtString` è `AnsiString` (`ps_defs`, `DELPHI2009UP`): i byte del bytecode e dei sorgenti non passano mai da UnicodeString nel nucleo.
 

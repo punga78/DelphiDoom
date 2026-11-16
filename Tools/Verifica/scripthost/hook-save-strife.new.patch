@@ -27,23 +27,23 @@ index ac569421..f727f2aa 100644
  end;
  
  //==============================================================================
-diff --git a/Strife/Strife32.dpr b/Strife/Strife32.dpr
+diff --git a/IdTech1\Strife/Strife32.dpr b/IdTech1\Strife/Strife32.dpr
 index 24ce67e4..4584e388 100644
---- a/Strife/Strife32.dpr
-+++ b/Strife/Strife32.dpr
+--- a/IdTech1\Strife/Strife32.dpr
++++ b/IdTech1\Strife/Strife32.dpr
 @@ -184,6 +184,8 @@ uses
-   DelphiDoom.Engine.Midi.SongPlayer in '..\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
-   i_net in '..\Base\i_net.pas',
-   i_system in '..\Base\i_system.pas',
+   DelphiDoom.Engine.Midi.SongPlayer in '..\IdTech1\Base\DelphiDoom.Engine.Midi.SongPlayer.pas',
+   i_net in '..\IdTech1\Base\i_net.pas',
+   i_system in '..\IdTech1\Base\i_system.pas',
 +  HarnessScriptHost in '..\Tools\Verifica\scripthost\HarnessScriptHost.pas',
 +  harness_sweep in '..\Tools\Verifica\harness\harness_sweep.pas',
-   i_video in '..\Base\i_video.pas',
+   i_video in '..\IdTech1\Base\i_video.pas',
    DelphiDoom.Video.Types in '..\Framework\Video\DelphiDoom.Video.Types.pas',
    DelphiDoom.Video.DisplayModeCatalog in '..\Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',
-diff --git a/Strife/g_game.pas b/Strife/g_game.pas
+diff --git a/IdTech1\Strife/g_game.pas b/IdTech1\Strife/g_game.pas
 index 1c752c4d..82a49da3 100644
---- a/Strife/g_game.pas
-+++ b/Strife/g_game.pas
+--- a/IdTech1\Strife/g_game.pas
++++ b/IdTech1\Strife/g_game.pas
 @@ -492,6 +492,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  

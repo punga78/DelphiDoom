@@ -1,7 +1,7 @@
-diff --git a/Doom/g_game.pas b/Doom/g_game.pas
+diff --git a/IdTech1\Doom/g_game.pas b/IdTech1\Doom/g_game.pas
 index 295e453d..a5be3aa0 100644
---- a/Doom/g_game.pas
-+++ b/Doom/g_game.pas
+--- a/IdTech1\Doom/g_game.pas
++++ b/IdTech1\Doom/g_game.pas
 @@ -504,6 +504,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -41,10 +41,10 @@ index 468d08d5..21876602 100644
 --- a/Doom32.dpr
 +++ b/Doom32.dpr
 @@ -204,6 +204,7 @@ uses
-   i_midi_new in 'Base\i_midi_new.pas',
-   i_net in 'Base\i_net.pas',
-   i_system in 'Base\i_system.pas',
+   i_midi_new in 'IdTech1\Base\i_midi_new.pas',
+   i_net in 'IdTech1\Base\i_net.pas',
+   i_system in 'IdTech1\Base\i_system.pas',
 +  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',
-   i_video in 'Base\i_video.pas',
-   info in 'Doom\info.pas',
-   info_h in 'Doom\info_h.pas',
+   i_video in 'IdTech1\Base\i_video.pas',
+   info in 'IdTech1\Doom\info.pas',
+   info_h in 'IdTech1\Doom\info_h.pas',

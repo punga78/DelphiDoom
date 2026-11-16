@@ -27,9 +27,9 @@ type
     FHostIntf: IPlaneSectorHost;
     FNewLog: string;
     function State(ADirection, ASpeed, AOldSpeed: Integer): TCeilingState;
-    /// <summary>T_MoveCeiling as Base\p_ceilng.pas writes it now, on the records of the test</summary>
+    /// <summary>T_MoveCeiling as IdTech1\Base\p_ceilng.pas writes it now, on the records of the test</summary>
     procedure NewMoveCeiling(ACeiling: Pceiling_t; AKind: TCeilingKind; AMoveSound: Integer);
-    /// <summary>The body of the loop of EV_DoCeiling as Base\p_ceilng.pas writes it now</summary>
+    /// <summary>The body of the loop of EV_DoCeiling as IdTech1\Base\p_ceilng.pas writes it now</summary>
     procedure NewSpawnCeiling(ACeiling: Pceiling_t; ASector: Psector_t; AKind: TCeilingKind;
       const AProfile: TCeilingProfile);
     procedure RandomCeiling(var AState: Cardinal; out ASector: sector_t; out ACeiling: ceiling_t);

@@ -1,7 +1,7 @@
-diff --git a/Heretic/g_game.pas b/Heretic/g_game.pas
+diff --git a/IdTech1\Heretic/g_game.pas b/IdTech1\Heretic/g_game.pas
 index 50691c8a..c783cbe2 100644
---- a/Heretic/g_game.pas
-+++ b/Heretic/g_game.pas
+--- a/IdTech1\Heretic/g_game.pas
++++ b/IdTech1\Heretic/g_game.pas
 @@ -473,6 +473,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
  implementation
  
@@ -41,10 +41,10 @@ index 5dac3b80..a4f5eb3c 100644
 --- a/Heretic32.dpr
 +++ b/Heretic32.dpr
 @@ -197,6 +197,7 @@ uses
-   i_midi_new in 'Base\i_midi_new.pas',
-   i_net in 'Base\i_net.pas',
-   i_system in 'Base\i_system.pas',
+   i_midi_new in 'IdTech1\Base\i_midi_new.pas',
+   i_net in 'IdTech1\Base\i_net.pas',
+   i_system in 'IdTech1\Base\i_system.pas',
 +  harness_sweep in 'Tools\Verifica\harness\harness_sweep.pas',
-   i_video in 'Base\i_video.pas',
+   i_video in 'IdTech1\Base\i_video.pas',
    DelphiDoom.Video.Types in 'Framework\Video\DelphiDoom.Video.Types.pas',
    DelphiDoom.Video.DisplayModeCatalog in 'Framework\Video\DelphiDoom.Video.DisplayModeCatalog.pas',

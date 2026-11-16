@@ -7,7 +7,7 @@
 {******************************************************************************}
 unit DelphiDoom.Tests.EngineSystem.LegacyCrash;
 
-// CrashFilter of i_crashlog.pas as it was at cb5a45e3 (git show cb5a45e3:Base\i_crashlog.pas). The body is
+// CrashFilter of i_crashlog.pas as it was at cb5a45e3 (git show cb5a45e3:IdTech1\Base\i_crashlog.pas). The body is
 // the old one; what changed is the file name (a parameter instead of crash.txt next to the executable)
 // and the types of the exception, which are the ones of Winapi.Windows. A 32 bit unit: on Win64 it is empty.
 

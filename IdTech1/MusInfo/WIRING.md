@@ -1,11 +1,11 @@
 # IdTech1\MusInfo - come collegarla al motore (issue #72, parte della #45)
 
-La libreria legge il testo del lump MUSINFO e ne fa un catalogo neutro: per ogni coppia (mappa, id del music changer) il nome e il numero della musica. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner`. Il collegamento non e' stato fatto: `Base\p_musinfo.pas` e' com'era. Qui sotto cosa serve.
+La libreria legge il testo del lump MUSINFO e ne fa un catalogo neutro: per ogni coppia (mappa, id del music changer) il nome e il numero della musica. Non conosce il motore: dipende solo da `Framework\Logging` e `Framework\Scanner`. Il collegamento non e' stato fatto: `IdTech1\Base\p_musinfo.pas` e' com'era. Qui sotto cosa serve.
 
 ## 0. Cosa c'e' (e cosa no) in `p_musinfo.pas` e `p_sounds.pas`
 
-- `Base\p_musinfo.pas`: **portata** la sola parte di lettura (`musinfo_t`, `P_AddMusInfo`, `P_InitMusInfo`, `P_FindMusinfoMusic`, righe 170-311). **Non portata** `A_MusicChanger`: e' un'azione di gioco (usa `mobj`, settore, giocatore della console, parametri custom dell'attore, `S_ChangeMusic`, `P_GetLevelInfo`) e resta com'e'; chiama solo `P_FindMusinfoMusic` e `S_DefaultMusicForMap`.
-- `Base\p_sounds.pas`: **non portata, non c'e' nulla da portare**. Non contiene sequenze (SNDSEQ) ne' tabelle di suoni dei livelli ne' parsing: sono le azioni `A_SeeSound`, `A_PainSound`, `A_AttackSound`, `A_MeleeSound`, `A_DeathSound`, `A_ActiveSound`, `A_RipSound` (e le varianti `*1`) che leggono i campi di `actor.info` e i flag `MF_EX_*` e chiamano `S_StartSound`/`P_RandomSound`/`S_UnlinkSound`. E' logica di gioco sullo stato dei mobj, senza testi da leggere. Il parsing dei suoni (SNDINFO, alias) e' gia' in `IdTech1\ActorDef` (`TActorDefSoundInfoParser`). SNDSEQ, nel motore, non c'e'.
+- `IdTech1\Base\p_musinfo.pas`: **portata** la sola parte di lettura (`musinfo_t`, `P_AddMusInfo`, `P_InitMusInfo`, `P_FindMusinfoMusic`, righe 170-311). **Non portata** `A_MusicChanger`: e' un'azione di gioco (usa `mobj`, settore, giocatore della console, parametri custom dell'attore, `S_ChangeMusic`, `P_GetLevelInfo`) e resta com'e'; chiama solo `P_FindMusinfoMusic` e `S_DefaultMusicForMap`.
+- `IdTech1\Base\p_sounds.pas`: **non portata, non c'e' nulla da portare**. Non contiene sequenze (SNDSEQ) ne' tabelle di suoni dei livelli ne' parsing: sono le azioni `A_SeeSound`, `A_PainSound`, `A_AttackSound`, `A_MeleeSound`, `A_DeathSound`, `A_ActiveSound`, `A_RipSound` (e le varianti `*1`) che leggono i campi di `actor.info` e i flag `MF_EX_*` e chiamano `S_StartSound`/`P_RandomSound`/`S_UnlinkSound`. E' logica di gioco sullo stato dei mobj, senza testi da leggere. Il parsing dei suoni (SNDINFO, alias) e' gia' in `IdTech1\ActorDef` (`TActorDefSoundInfoParser`). SNDSEQ, nel motore, non c'e'.
 
 ## 1. Unit da aggiungere ai `.dpr`
 
@@ -22,7 +22,7 @@ Servono in ogni progetto che compila `p_musinfo`: `Doom32`, `GLDoom32`, `Heretic
 
 Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.MusInfo`
 
-## 2. Cosa sostituisce cosa in `Base\p_musinfo.pas`
+## 2. Cosa sostituisce cosa in `IdTech1\Base\p_musinfo.pas`
 
 | Vecchio | Nuovo |
 |---|---|
@@ -40,7 +40,7 @@ Restano nel motore: `S_MUSINFO_PARAM`, `S_MUSINFO_LUMP`, `MUSICCHANGER_LO/HI/MUS
 
 Adattatori nel motore, tutti sottili (una unit per classe, `DelphiDoom.Engine.MusInfo.*`):
 
-- `IMusInfoMusicResolver.MusicNumberFor(AUpperName)` = `S_GetMusicNumForName(AUpperName)`. **Ha la stessa firma di `IMapMusicResolver`**: `TEngineMapInfoServices` (`Base\DelphiDoom.Engine.MapInfo.Services.pas`) puo' implementare anche `IMusInfoMusicResolver` senza un metodo nuovo; per Hexen, che non ha UMAPINFO, serve una classe a parte (e' una funzione di una riga).
+- `IMusInfoMusicResolver.MusicNumberFor(AUpperName)` = `S_GetMusicNumForName(AUpperName)`. **Ha la stessa firma di `IMapMusicResolver`**: `TEngineMapInfoServices` (`IdTech1\Base\DelphiDoom.Engine.MapInfo.Services.pas`) puo' implementare anche `IMusInfoMusicResolver` senza un metodo nuovo; per Hexen, che non ha UMAPINFO, serve una classe a parte (e' una funzione di una riga).
 - `IMusInfoTextSource.TryGetText(AUpperName, out AText)`: `lump := W_CheckNumForName(AUpperName); Result := lump >= 0; if Result then AText := W_TextLumpNum(lump)`. Il testo e' quello grezzo, **senza** `SC_Preprocess` (come prima).
 - `ILog`: lo stesso gia' dato agli altri script (`TEngineScannerLog`).
 
@@ -55,7 +55,7 @@ loader  := TMusInfoFactory.CreateLoader(textSource, parser, catalog);
 
 ## 4. Cosa si cancella dopo il collegamento
 
-Da `Base\p_musinfo.pas`: `MAXMUSINFO`, `musinfo_t`, `Pmusinfo_t`, `musinfo_tArray`, `nummusinfo`, `musinfo`, `P_AddMusInfo` e il corpo di `P_InitMusInfo` (circa 130 righe); e dall'`uses` `sc_engine` e `w_wad` se non servono ad altro (`A_MusicChanger` usa `stringtochar8` di `w_wad`).
+Da `IdTech1\Base\p_musinfo.pas`: `MAXMUSINFO`, `musinfo_t`, `Pmusinfo_t`, `musinfo_tArray`, `nummusinfo`, `musinfo`, `P_AddMusInfo` e il corpo di `P_InitMusInfo` (circa 130 righe); e dall'`uses` `sc_engine` e `w_wad` se non servono ad altro (`A_MusicChanger` usa `stringtochar8` di `w_wad`).
 
 ## 5. Differenze dal vecchio codice
 
