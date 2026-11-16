@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the player of the music of Libs\War                    }
+{  DelphiDoom: tests of the player of the music of Games\War                   }
 {                                                                              }
 {  A fake synth writes down its calls, a fake timeline gives the events: no    }
 {  MIDI file, no SoundFont. A block of 64 samples at 44100 Hz is 1.4512 ms:    }

@@ -1,11 +1,11 @@
 # Framework\Opl - emulatore OPL2 (YM3812) e player Adlib di X-COM
 
-Issue #176 (OpenXcom), fetta "Opl". Port a classi in Delphi 11 di tre file di OpenXcom (`Reference\OpenXcom\src\Engine\Adlib\fmopl.cpp`, `adlplayer.cpp` e `Engine\AdlibMusic.cpp`), senza SDL e senza dispositivo audio: la produzione dei campioni è pura (si riempie un buffer). Il chip si può usare anche da altri progetti che hanno la musica AdLib (**Keen Dreams**: vedi "Uso da Libs\Keen").
+Issue #176 (OpenXcom), fetta "Opl". Port a classi in Delphi 11 di tre file di OpenXcom (`Reference\OpenXcom\src\Engine\Adlib\fmopl.cpp`, `adlplayer.cpp` e `Engine\AdlibMusic.cpp`), senza SDL e senza dispositivo audio: la produzione dei campioni è pura (si riempie un buffer). Il chip si può usare anche da altri progetti che hanno la musica AdLib (**Keen Dreams**: vedi "Uso da Games\Keen").
 
 ## Licenza
 
 - `DelphiDoom.Opl.*` è derivato da `fmopl.c` (MAME 0.37a, Tatsuyuki Satoh; versione modificata per X-COM da Volutar e **rilicenziata LGPL 2.1 o successiva**): nell'intestazione di ogni unit c'è la riga "Port of fmopl.c (MAME 0.37a fork for OpenXcom, LGPL 2.1 or later)". LGPL 2.1+ è compatibile con la GPL v2+ del repository.
-- `DelphiDoom.XcomAdlib.*` è derivato da `adlplayer.cpp` ("X-COM Adlib Player by Volutar") e da `AdlibMusic.cpp`, **GPL v3 o successiva** come tutto OpenXcom (le unit lo dichiarano). La licenza dell'opera la decide l'utente (stessa questione di `Libs\XcomFormats`): il repository non è stato cambiato. Chi vuole solo il chip (LGPL) può usare `DelphiDoom.Opl.*` senza il player.
+- `DelphiDoom.XcomAdlib.*` è derivato da `adlplayer.cpp` ("X-COM Adlib Player by Volutar") e da `AdlibMusic.cpp`, **GPL v3 o successiva** come tutto OpenXcom (le unit lo dichiarano). La licenza dell'opera la decide l'utente (stessa questione di `Games\XcomFormats`): il repository non è stato cambiato. Chi vuole solo il chip (LGPL) può usare `DelphiDoom.Opl.*` senza il player.
 
 ## Contenuto
 
@@ -22,7 +22,7 @@ Issue #176 (OpenXcom), fetta "Opl". Port a classi in Delphi 11 di tre file di Op
 | `DelphiDoom.XcomAdlib.RegisterWriter` | `TXcomAdlibRegisterWriter`: `adlib_reg` e `Transpose` (il secondo chip ha la copia trasposta) |
 | `DelphiDoom.XcomAdlib.Sequencer` | `TXcomAdlibSequencer`: il resto di `adlplayer.cpp` (`func_*`, `decode_op`, `adlib_play_note`...) |
 | `DelphiDoom.XcomAdlib.Player` | `TXcomAdlibPlayer`: `AdlibMusic::load/play/player` (due chip, sinistro e destro, un buffer a 16 bit) |
-| `DelphiDoom.XcomAdlib.CatSource` | `TXcomCatAdlibSource`: i brani di `ADLIB.CAT`/`GM.CAT` (sopra `IXcomCatArchive` di `Libs\XcomFormats`) |
+| `DelphiDoom.XcomAdlib.CatSource` | `TXcomCatAdlibSource`: i brani di `ADLIB.CAT`/`GM.CAT` (sopra `IXcomCatArchive` di `Games\XcomFormats`) |
 | `DelphiDoom.XcomAdlib.Factory` | `TXcomAdlibFactory`: crea il player (due chip, scrittore, sequencer) e la sorgente dei brani |
 
 Non c'è alcun globale: le tabelle statiche del C (`TL_TABLE`, `SIN_TABLE`...) stanno in un `IOplTables` che i chip ricevono dal costruttore (la fabbrica ne tiene uno per processo, come il C le costruisce con il primo chip); lo stato di `adlplayer.cpp` (30 variabili globali) è nei campi del sequencer e dello scrittore.
@@ -95,9 +95,9 @@ I brani di prova sono sintetici (nessun dato originale di X-COM). Il test `Tests
 
 **Non verificato**: il suono con dati veri di UFO/TFTD (`ADLIB.CAT` non è sul PC) e l'ascolto (nessun dispositivo audio è aperto qui); la riproduzione di `Options::musicAlwaysLoop` e il fade del volume di SDL_mixer (sono di `AdlibMusic::player`, dipendono da `Options` e da SDL); il Y8950 e la parte ADPCM (`BUILD_Y8950`, non compilata in OpenXcom); le frequenze di campionamento diverse da quelle delle sette tabelle non hanno un tick (errore).
 
-## Uso da Libs\Keen (non collegato)
+## Uso da Games\Keen (non collegato)
 
-Keen Dreams usa l'AdLib per la musica e gli effetti. `Libs\Keen` non ha ancora l'audio (fetta K10): per collegarlo basta creare il chip con la fabbrica e scrivergli i registri che il gioco scrive alle porte `0x388`/`0x389`:
+Keen Dreams usa l'AdLib per la musica e gli effetti. `Games\Keen` non ha ancora l'audio (fetta K10): per collegarlo basta creare il chip con la fabbrica e scrivergli i registri che il gioco scrive alle porte `0x388`/`0x389`:
 
 ```pascal
 Chip := TOplFactory.CreateChip(3579545, 49716);   // clock della scheda, frequenza nativa

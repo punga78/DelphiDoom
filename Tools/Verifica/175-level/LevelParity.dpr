@@ -5,7 +5,7 @@ program LevelParity;
 {$J+}
 // Harness fuori dalla suite: fa girare sugli stessi scenari (Tests\Source\DelphiDoom.Tests.Greed.LevelScenarios)
 // le routine ORIGINALI di raven.pas di xGreed (ritagliate dal file originale da Compila.ps1, non modificate) e
-// TGreedItemRules, TGreedSwitchRules e TGreedLevelRules di Libs\Greed, li confronta fotogramma per fotogramma e
+// TGreedItemRules, TGreedSwitchRules e TGreedLevelRules di Games\Greed, li confronta fotogramma per fotogramma e
 // scrive il golden (le impronte dell'originale). Il resto del gioco e' negli stub di stubs\.
 // Uso: LevelParity <golden.txt | nessuno> [primo scenario] [ultimo scenario]
 uses

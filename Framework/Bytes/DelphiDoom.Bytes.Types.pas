@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: bytes library - shared types (issue #229)                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of the CAT entry                  }
+{  Games\XcomFormats\README.md for the license of the CAT entry                 }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

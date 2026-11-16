@@ -4,7 +4,7 @@
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {  (the library itself is derived from OpenXcom, GPL v3 or later: see           }
-{  Libs\XcomFormats\README.md)                                                  }
+{  Games\XcomFormats\README.md)                                                  }
 {                                                                              }
 {******************************************************************************}
 program DelphiDoom.Tests.XcomEngine;
@@ -47,11 +47,11 @@ uses
   DelphiDoom.Tests.XcomEngine.LegacyMixer in 'Source\DelphiDoom.Tests.XcomEngine.LegacyMixer.pas',
   DelphiDoom.Tests.XcomEngine.MixerParity in 'Source\DelphiDoom.Tests.XcomEngine.MixerParity.pas',
   DelphiDoom.Tests.XcomEngine.Mods in 'Source\DelphiDoom.Tests.XcomEngine.Mods.pas',
-  DelphiDoom.Xcom.HostVideoDevice in '..\OpenXcom\DelphiDoom.Xcom.HostVideoDevice.pas',
-  DelphiDoom.Xcom.HostEventSink in '..\OpenXcom\DelphiDoom.Xcom.HostEventSink.pas',
-  DelphiDoom.Xcom.HostLog in '..\OpenXcom\DelphiDoom.Xcom.HostLog.pas',
-  DelphiDoom.Xcom.HostPcmOutput in '..\OpenXcom\DelphiDoom.Xcom.HostPcmOutput.pas',
-  DelphiDoom.Xcom.HostShaderLoader in '..\OpenXcom\DelphiDoom.Xcom.HostShaderLoader.pas',
+  DelphiDoom.Xcom.HostVideoDevice in '..\Games\OpenXcom\DelphiDoom.Xcom.HostVideoDevice.pas',
+  DelphiDoom.Xcom.HostEventSink in '..\Games\OpenXcom\DelphiDoom.Xcom.HostEventSink.pas',
+  DelphiDoom.Xcom.HostLog in '..\Games\OpenXcom\DelphiDoom.Xcom.HostLog.pas',
+  DelphiDoom.Xcom.HostPcmOutput in '..\Games\OpenXcom\DelphiDoom.Xcom.HostPcmOutput.pas',
+  DelphiDoom.Xcom.HostShaderLoader in '..\Games\OpenXcom\DelphiDoom.Xcom.HostShaderLoader.pas',
   DelphiDoom.Tests.XcomEngine.HostAdapters in 'Source\DelphiDoom.Tests.XcomEngine.HostAdapters.pas',
   DelphiDoom.Tests.XcomEngine.VideoDeviceSelector in 'Source\DelphiDoom.Tests.XcomEngine.VideoDeviceSelector.pas',
   DelphiDoom.Tests.XcomEngine.ShaderFileReader in 'Source\DelphiDoom.Tests.XcomEngine.ShaderFileReader.pas',
@@ -64,7 +64,7 @@ uses
   DelphiDoom.Tests.XcomEngine.WindowPlacement in 'Source\DelphiDoom.Tests.XcomEngine.WindowPlacement.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorComposer in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorComposer.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorDisplay in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorDisplay.pas',
-  DelphiDoom.Xcom.TrueColorOption in '..\OpenXcom\DelphiDoom.Xcom.TrueColorOption.pas',
+  DelphiDoom.Xcom.TrueColorOption in '..\Games\OpenXcom\DelphiDoom.Xcom.TrueColorOption.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorOption in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorOption.pas',
   DelphiDoom.Tests.XcomEngine.LineWidget in 'Source\DelphiDoom.Tests.XcomEngine.LineWidget.pas',
   DelphiDoom.Tests.XcomSurface.FakeRasterizer in 'Source\DelphiDoom.Tests.XcomSurface.FakeRasterizer.pas',

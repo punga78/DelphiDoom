@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: the animations of the DOS game, played by the scene of Libs\    }
-{  Cinematic through the director of Libs\War                                  }
+{  Cinematic through the director of Games\War                                 }
 {                                                                              }
 {  They need the files of the game (DELPHIDOOM_WAR_DATA or Reference\_dati\    }
 {  warcraft): without them the tests are ignored. HMAP01-12, OMAP01-12, LOSE1  }

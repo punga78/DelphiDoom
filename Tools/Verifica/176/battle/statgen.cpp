@@ -1,4 +1,4 @@
-// Harness for Libs\XcomBasescape (TXcomGameStatistics): the REAL StatisticsState of OpenXcom (constructor: listStats) on
+// Harness for Games\XcomBasescape (TXcomGameStatistics): the REAL StatisticsState of OpenXcom (constructor: listStats) on
 // every saved game of a folder, with a REAL Game (SDL dummy drivers) and no texts loaded (tr(key) gives the key).
 // Writes NAME.stat.txt: the title and the rows of the list (key, value). Contains no OpenXcom code.
 // usage: statgen <data> <user> <folder of the .sav> <out folder>

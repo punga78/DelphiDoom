@@ -4,7 +4,7 @@
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {  (the library itself is derived from OpenXcom, GPL v3 or later: see           }
-{  Libs\XcomFormats\README.md)                                                  }
+{  Games\XcomFormats\README.md)                                                  }
 {                                                                              }
 {******************************************************************************}
 program DelphiDoom.Tests.XcomDebriefing;
@@ -21,8 +21,8 @@ uses
   DelphiDoom.Tests.XcomMod.RealData in 'Source\DelphiDoom.Tests.XcomMod.RealData.pas',
   DelphiDoom.Tests.XcomBattle.RealBattle in 'Source\DelphiDoom.Tests.XcomBattle.RealBattle.pas',
   DelphiDoom.Tests.XcomEngine.World in 'Source\DelphiDoom.Tests.XcomEngine.World.pas',
-  DelphiDoom.XcomBasescape.SoldierMemorialState in '..\Libs\XcomBasescape\DelphiDoom.XcomBasescape.SoldierMemorialState.pas',
-  DelphiDoom.XcomDebriefing.Debriefer in'..\Libs\XcomDebriefing\DelphiDoom.XcomDebriefing.Debriefer.pas',
+  DelphiDoom.XcomBasescape.SoldierMemorialState in '..\Games\XcomBasescape\DelphiDoom.XcomBasescape.SoldierMemorialState.pas',
+  DelphiDoom.XcomDebriefing.Debriefer in'..\Games\XcomDebriefing\DelphiDoom.XcomDebriefing.Debriefer.pas',
   DelphiDoom.Tests.XcomDebriefing.States in 'Source\DelphiDoom.Tests.XcomDebriefing.States.pas',
   DelphiDoom.Tests.XcomDebriefing.Statistics in 'Source\DelphiDoom.Tests.XcomDebriefing.Statistics.pas',
   DelphiDoom.Tests.XcomDebriefing.Real in 'Source\DelphiDoom.Tests.XcomDebriefing.Real.pas',

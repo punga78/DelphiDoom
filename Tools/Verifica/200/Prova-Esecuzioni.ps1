@@ -37,7 +37,7 @@ function Esegui([string]$Nome, [string[]]$Argomenti, [string]$ErroreAtteso = '')
   $script:eseguite++
   $errore = (Get-Content $err -Raw)
   if ($ErroreAtteso -ne '') {
-    # un difetto del C che il port conserva (Libs\War\CLAUDE.md): deve fallire cosi' e non in un altro modo
+    # un difetto del C che il port conserva (Games\War\CLAUDE.md): deve fallire cosi' e non in un altro modo
     if ($p.ExitCode -ne 1 -or $errore -notmatch $ErroreAtteso) { $script:fallite += "$Nome (atteso: $ErroreAtteso; codice $($p.ExitCode)): $errore" }
     return
   }

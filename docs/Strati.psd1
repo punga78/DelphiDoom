@@ -135,26 +135,26 @@
     'IdTech4\NetQ3' = 'IdTech4'
     'IdTech4\DoomScript' = 'IdTech4'
     # Giochi
-    'Libs\Keen' = 'Giochi'
-    'Libs\Greed' = 'Giochi'
-    'Libs\War' = 'Giochi'
-    'Libs\Racing' = 'Giochi'
-    'Libs\XcomAudio' = 'Giochi'
-    'Libs\XcomBasescape' = 'Giochi'
-    'Libs\XcomBattle' = 'Giochi'
-    'Libs\XcomBattleStates' = 'Giochi'
-    'Libs\XcomBattlescape' = 'Giochi'
-    'Libs\XcomDebriefing' = 'Giochi'
-    'Libs\XcomEngine' = 'Giochi'
-    'Libs\XcomFormats' = 'Giochi'
-    'Libs\XcomGeoscape' = 'Giochi'
-    'Libs\XcomMenu' = 'Giochi'
-    'Libs\XcomMod' = 'Giochi'
-    'Libs\XcomSave' = 'Giochi'
-    'Libs\XcomStrategy' = 'Giochi'
-    'Libs\XcomSurface' = 'Giochi'
-    'Libs\XcomUfopaedia' = 'Giochi'
-    'Libs\XcomUi' = 'Giochi'
+    'Games\Keen' = 'Giochi'
+    'Games\Greed' = 'Giochi'
+    'Games\War' = 'Giochi'
+    'Games\Racing' = 'Giochi'
+    'Games\XcomAudio' = 'Giochi'
+    'Games\XcomBasescape' = 'Giochi'
+    'Games\XcomBattle' = 'Giochi'
+    'Games\XcomBattleStates' = 'Giochi'
+    'Games\XcomBattlescape' = 'Giochi'
+    'Games\XcomDebriefing' = 'Giochi'
+    'Games\XcomEngine' = 'Giochi'
+    'Games\XcomFormats' = 'Giochi'
+    'Games\XcomGeoscape' = 'Giochi'
+    'Games\XcomMenu' = 'Giochi'
+    'Games\XcomMod' = 'Giochi'
+    'Games\XcomSave' = 'Giochi'
+    'Games\XcomStrategy' = 'Giochi'
+    'Games\XcomSurface' = 'Giochi'
+    'Games\XcomUfopaedia' = 'Giochi'
+    'Games\XcomUi' = 'Giochi'
     # Strumenti
     'Libs\Ide' = 'Strumenti'
     'Libs\ToolsCore' = 'Strumenti'
@@ -172,10 +172,7 @@
     'Strife' = 'IdTech1'
     'Radix' = 'IdTech1'
     'Speed' = 'IdTech1'
-    'Keen' = 'Giochi'
-    'Greed' = 'Giochi'
-    'War' = 'Giochi'
-    'OpenXcom' = 'Giochi'
+    'Games\OpenXcom' = 'Giochi'
     'DD_IDE' = 'Strumenti'
     'DD_Tools' = 'Strumenti'
     'Launcher' = 'Strumenti'
@@ -186,10 +183,10 @@
   # meno unit e' una eccezione da ridurre. Ciclo = insieme di aree che si usano a vicenda.
   Eccezioni = @(
     # --- #225: librerie miste (la parte generica va separata da quella di Doom) ---
-    @{ Da = 'Libs\Speed'; A = 'Libs\Racing'; Massimo = 2; Issue = 226
+    @{ Da = 'Libs\Speed'; A = 'Games\Racing'; Massimo = 2; Issue = 226
        Motivo = 'ActorDefinitions, CarSpriteBuilder e SkyTextures di SpeedHaste32 (motore id Tech 1) usano Racing.Types e Racing.CarData (auto e piste, strato Giochi): Speed32 e SpeedHaste32 stanno nella stessa area, da separare quando si spostano le cartelle' }
     # --- #226: cartella di prodotto mista ---
-    @{ Da = 'Speed'; A = 'Libs\Racing'; Massimo = 9; Issue = 226
+    @{ Da = 'Speed'; A = 'Games\Racing'; Massimo = 9; Issue = 226
        Motivo = 'la cartella Speed ha Speed32 (corse, usa Racing) e SpeedHaste32 (motore id): da separare quando si spostano le cartelle' }
   )
 }

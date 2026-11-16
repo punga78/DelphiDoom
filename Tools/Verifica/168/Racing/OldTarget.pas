@@ -1,4 +1,4 @@
-// Issue #168 (S4, Libs\Racing): the scenarios of the parity on the OLD code (OldRacing.pas)
+// Issue #168 (S4, Games\Racing): the scenarios of the parity on the OLD code (OldRacing.pas)
 unit OldTarget;
 
 {$Q-}

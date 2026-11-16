@@ -4,7 +4,7 @@
 {  What SDL_Flip did without OpenGL: the picture of 8 bit pixels goes to the    }
 {  window with its palette (no conversion to colors)                            }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.GdiVideoDevice;

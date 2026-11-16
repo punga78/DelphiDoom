@@ -8,7 +8,7 @@
 {  numbers in the same order, so the tests give the library the same files      }
 {                                                                              }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.Xcom.Cases;

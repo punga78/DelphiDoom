@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: game host library - what the displays in the window share       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.WindowDevice;

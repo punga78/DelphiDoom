@@ -1,5 +1,5 @@
 <#
-  Issue #193 (seconda fetta): genera Libs\War\DelphiDoom.War.Map.UnitData.pas dalle tabelle delle unita' (unitsData,
+  Issue #193 (seconda fetta): genera Games\War\DelphiDoom.War.Map.UnitData.pas dalle tabelle delle unita' (unitsData,
   unitStats, buildingStats di war_units.c) che il C ORIGINALE ha scritto in Tests\Data\War\map.tables.golden.txt
   (Registra-GoldenMap.ps1). Non si modifica a mano il risultato.
 
@@ -34,7 +34,7 @@ $text += '{  DelphiDoom: war library - tables of the units (GENERATED)          
 $text += '{                                                                              }'
 $text += '{  Port of war1 (acoto87/war1), unitsData, unitStats and buildingStats of      }'
 $text += '{  war_units.c, (c) 2019 Alejandro Coto Gutierrez, zlib License (see            }'
-$text += '{  Libs\War\LICENSE-war1.txt). This is an altered version, not the original.   }'
+$text += '{  Games\War\LICENSE-war1.txt). This is an altered version, not the original.   }'
 $text += '{                                                                              }'
 $text += '{  Written by Tools\Verifica\193\Make-WarMapTables.ps1 from the output of the  }'
 $text += '{  original C code (Tests\Data\War\map.tables.golden.txt): do not edit by hand }'
@@ -68,5 +68,5 @@ $text += ''
 $text += 'implementation'
 $text += ''
 $text += 'end.'
-[IO.File]::WriteAllText((Join-Path $root 'Libs\War\DelphiDoom.War.Map.UnitData.pas'), (($text -join "`r`n") + "`r`n"), [Text.Encoding]::ASCII)
+[IO.File]::WriteAllText((Join-Path $root 'Games\War\DelphiDoom.War.Map.UnitData.pas'), (($text -join "`r`n") + "`r`n"), [Text.Encoding]::ASCII)
 "UnitData: $($d.Count) unita', $($s.Count) statistiche, $($b.Count) edifici"

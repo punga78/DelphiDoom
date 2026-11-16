@@ -1,7 +1,7 @@
 program MenuParity;
 {$APPTYPE CONSOLE}
 // Harness fuori dal repository: confronta tic per tic il menu ORIGINALE di xGreed (menu.pas, con d_font.pas, d_video.pas
-// e loadscreen di intro.pas) con TGreedMenu di Libs\Greed sugli stessi scenari
+// e loadscreen di intro.pas) con TGreedMenu di Games\Greed sugli stessi scenari
 // (Tests\Source\DelphiDoom.Tests.Greed.MenuScenarios). L'originale blocca nei suoi cicli: la sua Wait e' uno stub che
 // per ogni tic cattura lo schermo e la palette, applica i tasti dello scenario ed esegue il corpo di INT_TimerISR
 // (stubs\d_ints.pas). Le righe del golden sono i valori dell'ORIGINALE.

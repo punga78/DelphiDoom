@@ -59,7 +59,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Framework\Bytes;..\Framework\Clock;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\XcomDebriefing;..\Libs\XcomStrategy;..\Libs\XcomGeoscape;..\Libs\XcomBasescape;..\Libs\XcomMenu;..\Libs\XcomAudio;..\Libs\XcomBattle;..\Libs\XcomBattlescape;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Framework\Flic;..\Libs\XcomSave;..\Libs\XcomMod;..\Framework\Yaml;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;.\Source;..\Framework\AudioMix;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Framework\Bytes;..\Framework\Clock;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Games\XcomDebriefing;..\Games\XcomStrategy;..\Games\XcomGeoscape;..\Games\XcomBasescape;..\Games\XcomMenu;..\Games\XcomAudio;..\Games\XcomBattle;..\Games\XcomBattlescape;..\Games\XcomEngine;..\Games\XcomUi;..\Games\XcomSurface;..\Games\XcomFormats;..\Framework\Flic;..\Games\XcomSave;..\Games\XcomMod;..\Framework\Yaml;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;.\Source;..\Framework\AudioMix;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\Framework\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>

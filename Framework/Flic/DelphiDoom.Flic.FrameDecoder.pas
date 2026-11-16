@@ -1,9 +1,9 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: flic library - the frames of a FLI/FLC animation (issue #229)    }
-{  Moved from TXcomFlcDecoder (Libs\XcomFormats), the decoder of FlcPlayer of  }
+{  Moved from TXcomFlcDecoder (Games\XcomFormats), the decoder of FlcPlayer of }
 {  OpenXcom (GPL v3 or later) without screen, clock and audio device: see       }
-{  Libs\XcomFormats\README.md for the license of this unit                    }
+{  Games\XcomFormats\README.md for the license of this unit                   }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Flic.FrameDecoder;

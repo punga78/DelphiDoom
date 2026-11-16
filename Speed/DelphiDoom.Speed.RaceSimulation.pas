@@ -33,7 +33,7 @@ type
   /// <summary>
   ///   A race of cars driven by the computer on a level of the WAD that the translator of Speed Haste
   ///   made: the path and the starting positions from the lumps THINGS and PATH, the ground from the flat
-  ///   of the circuit, and the library of the racing (Libs\Racing) for everything else. There is no engine:
+  ///   of the circuit, and the library of the racing (Games\Racing) for everything else. There is no engine:
   ///   the cars do not meet walls or each other and there is no sound; the point is to run the rules of
   ///   the race on the real data and see that the cars go round the track
   /// </summary>

@@ -1,4 +1,4 @@
-# Verifica #198: parita' dell'audio di Libs\War con il C del remake
+# Verifica #198: parita' dell'audio di Games\War con il C del remake
 
 `war1` (acoto87/war1, zlib; i convertitori `shl/voc.h`, `wav.h`, `xmi2mid.h` sono MIT) e' in `Reference\war1` (sola lettura). Il codice ORIGINALE si compila con gcc
 di `Reference\_dati\_strumenti\w64devkit` (non c'e' un compilatore C nel PATH).

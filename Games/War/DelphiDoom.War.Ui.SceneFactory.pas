@@ -1,0 +1,84 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: war library - the maker of the scenes                           }
+{                                                                              }
+{  Port of war1 (acoto87/war1), war_scenes.c (wsc_createScene and the          }
+{  descriptors of the scenes), (c) 2019 Alejandro Coto Gutierrez, zlib License }
+{  (see Games\War\LICENSE-war1.txt). This is an altered version, not the       }
+{  original.                                                                   }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.War.Ui.SceneFactory;
+
+interface
+
+uses
+  System.SysUtils, System.Generics.Defaults, DelphiDoom.War.Level.Types, DelphiDoom.War.Ui.Intf,
+  DelphiDoom.War.Ui.SceneBase;
+
+type
+  /// <summary>
+  ///   Makes the scenes with the services it was given. It is not counted by reference: the scenes it makes hold it (the
+  ///   scene that starts another scene), it holds the services, and the owner (the factory of the library) frees it. The
+  ///   download scene (the network) is not ported
+  /// </summary>
+  TWarSceneFactory = class(TSingletonImplementation, IWarSceneFactory)
+  strict private
+    FServices: TWarSceneServices;
+  public
+    constructor Create(const AServices: TWarSceneServices);
+    function CreateBlizzard: IWarScene;
+    function CreateMainMenu: IWarScene;
+    function CreateIntroduction: IWarScene;
+    function CreateBriefing(ARace: TWarRace; AMapType: Integer): IWarScene;
+    /// <summary>
+    ///   Lets go of the services: the owner calls it before it frees the manager, that is the host the services hold
+    ///   (not counted), so no reference is released on an object that is gone. The factory makes no scene after this
+    /// </summary>
+    procedure Detach;
+  end;
+
+implementation
+
+uses
+  DelphiDoom.War.Ui.SceneBlizzard, DelphiDoom.War.Ui.SceneMainMenu, DelphiDoom.War.Ui.SceneBriefing,
+  DelphiDoom.War.Ui.SceneCinematics;
+
+{ TWarSceneFactory }
+
+constructor TWarSceneFactory.Create(const AServices: TWarSceneServices);
+begin
+  inherited Create;
+  FServices := AServices;
+  // the scenes that start scenes ask this factory
+  FServices.Scenes := Self;
+end;
+
+procedure TWarSceneFactory.Detach;
+begin
+  FServices := Default(TWarSceneServices);
+end;
+
+function TWarSceneFactory.CreateBlizzard: IWarScene;
+begin
+  Result := TWarSceneBlizzard.Create(FServices);
+end;
+
+function TWarSceneFactory.CreateMainMenu: IWarScene;
+begin
+  Result := TWarSceneMainMenu.Create(FServices);
+end;
+
+function TWarSceneFactory.CreateIntroduction: IWarScene;
+begin
+  Result := TWarSceneCinematics.Create(FServices, WAR_INTRODUCTION_ANIMATIONS);
+end;
+
+function TWarSceneFactory.CreateBriefing(ARace: TWarRace; AMapType: Integer): IWarScene;
+begin
+  Result := TWarSceneBriefing.Create(FServices, ARace, AMapType);
+end;
+
+end.

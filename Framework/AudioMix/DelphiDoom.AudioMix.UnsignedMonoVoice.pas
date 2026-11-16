@@ -4,7 +4,7 @@
 {                                                                              }
 {  Moved from DelphiDoom.War.Audio.WaveVoice: port of wa_playWave of           }
 {  war_audio.c, war1 (acoto87/war1), (c) 2019 Alejandro Coto Gutierrez, zlib   }
-{  License (see Libs\War\LICENSE-war1.txt). This is an altered version, not    }
+{  License (see Games\War\LICENSE-war1.txt). This is an altered version, not   }
 {  the original.                                                               }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

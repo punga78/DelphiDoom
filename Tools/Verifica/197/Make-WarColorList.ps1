@@ -1,5 +1,5 @@
 <#
-  Issue #197: scrive Libs\War\DelphiDoom.War.Render.ColorList.Data.pas dal codice ORIGINALE (Reference\war1\src\war_render.c,
+  Issue #197: scrive Games\War\DelphiDoom.War.Render.ColorList.Data.pas dal codice ORIGINALE (Reference\war1\src\war_render.c,
   wr_getColorFromList): i colori che il disegno di debug dei proiettili e delle altre righe prende dall'id di una entita'.
   Nessuna modifica a mano: se il C cambia si rifa.
 
@@ -22,7 +22,7 @@ $text = @"
 {  DelphiDoom: war library - the list of colors of the debug drawing (GENERATED)}
 {                                                                              }
 {  Port of war1 (acoto87/war1), war_render.c (wr_getColorFromList), (c) 2019    }
-{  Alejandro Coto Gutierrez, zlib License (see Libs\War\LICENSE-war1.txt). This }
+{  Alejandro Coto Gutierrez, zlib License (see Games\War\LICENSE-war1.txt). This }
 {  is an altered version, not the original.                                    }
 {                                                                              }
 {  Written by Tools\Verifica\197\Make-WarColorList.ps1 from the original C     }
@@ -49,6 +49,6 @@ implementation
 
 end.
 "@
-$out = Join-Path (Split-Path (Split-Path (Split-Path $PSScriptRoot))) 'Libs\War\DelphiDoom.War.Render.ColorList.Data.pas'
+$out = Join-Path (Split-Path (Split-Path (Split-Path $PSScriptRoot))) 'Games\War\DelphiDoom.War.Render.ColorList.Data.pas'
 [IO.File]::WriteAllText($out, ($text -replace "`r?`n", "`r`n"), (New-Object Text.UTF8Encoding($false)))
 "Scritto $out ($($rows.Count) colori)"

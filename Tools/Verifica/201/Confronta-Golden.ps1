@@ -1,5 +1,5 @@
 <#
-  Issue #201: rifa dal C del remake tutti i golden di Libs\War e li confronta con quelli di Tests\Data\War.
+  Issue #201: rifa dal C del remake tutti i golden di Games\War e li confronta con quelli di Tests\Data\War.
 
   Per ogni gruppo (191 archivio, 192 grafica, 193 livelli, 198 suoni, musica e scelta dei suoni) compila con gcc il codice
   ORIGINALE di Reference\war1, esegue i programmi e confronta le righe con il golden che il progetto di test legge.

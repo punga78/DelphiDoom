@@ -4,7 +4,7 @@
 {  Port of the second half of OpenGL::set_shader, of createShader and of the    }
 {  uniforms of OpenGL::refresh of OpenXcom (Engine\OpenGL.cpp)                  }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.OpenGlProgram;

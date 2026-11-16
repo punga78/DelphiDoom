@@ -274,7 +274,7 @@ Write-Host ("Fetta '{0}': {1} file di testo esaminati, {2} riscritti, {3} percor
 foreach ($k in ($contaRegole.Keys | Sort-Object)) { Write-Host ("  {0,5}  {1}" -f $contaRegole[$k], $k) }
 Write-Host ("Letterali di stringa nei .pas saltati: {0}; percorsi relativi verso cose che non esistono (lasciati): {1}" -f $letterali.Count, $inesistenti.Count)
 if ($letterali.Count -gt 0) { $letterali | Sort-Object -Unique | ForEach-Object { Write-Host "  LETTERALE $_" } }
-if ($inesistenti.Count -gt 0) { $inesistenti | Sort-Object -Unique | Select-Object -First 60 | ForEach-Object { Write-Host "  INESISTENTE $_" } }
+if ($inesistenti.Count -gt 0 -and $env:SPOSTA_VERBOSO) { $inesistenti | Sort-Object -Unique | Select-Object -First 60 | ForEach-Object { Write-Host "  INESISTENTE $_" } }
 if ($Prova -or $env:SPOSTA_ESEMPI) { $esempi | ForEach-Object { Write-Host "  es: $_" } }
 if ($Prova) { Write-Host 'Prova: niente scritto, niente spostato.'; return }
 if ($SoloRiferimenti) { return }

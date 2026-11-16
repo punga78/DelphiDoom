@@ -7,8 +7,8 @@ Il testo di riferimento (confronto con il decoder di Greed, difetti conservati, 
 ## Contenuto
 
 - Unit nella cartella: 2 (`DelphiDoom.Flic.Types`, `DelphiDoom.Flic.FrameDecoder`).
-- Classe: `TFlicFrameDecoder` (port del decoder di `FlcPlayer` di OpenXcom, GPL v3 o successiva: licenza in `Libs\XcomFormats\README.md`).
-- Chi la usa: `TXcomFlcDecoder` (`Libs\XcomFormats`, adattatore con la stessa API di prima) e `TFlicDecoder` (`Framework\Cinematic`).
+- Classe: `TFlicFrameDecoder` (port del decoder di `FlcPlayer` di OpenXcom, GPL v3 o successiva: licenza in `Games\XcomFormats\README.md`).
+- Chi la usa: `TXcomFlcDecoder` (`Games\XcomFormats`, adattatore con la stessa API di prima) e `TFlicDecoder` (`Framework\Cinematic`).
 
 ## Prova
 

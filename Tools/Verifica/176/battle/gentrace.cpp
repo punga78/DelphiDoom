@@ -1,4 +1,4 @@
-// Harness for Libs\XcomBattle (BattlescapeGenerator): runs the REAL BattlescapeGenerator (linked from the real OpenXcom
+// Harness for Games\XcomBattle (BattlescapeGenerator): runs the REAL BattlescapeGenerator (linked from the real OpenXcom
 // build, see build.cmd) on the real TFTD mods and writes, for every scenario,
 //   genNN.sav  the saved game just before the run (SavedGame::save: base, soldiers, craft, items)
 //   genNN.scn  the parameters of the run (key=value lines) and the RNG state before and after it

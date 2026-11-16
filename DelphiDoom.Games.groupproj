@@ -34,19 +34,19 @@
         <Projects Include="Speed\SpeedHaste32.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Keen\Keen32.dproj">
+        <Projects Include="Games\Keen\Keen32.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Greed\Greed32.dproj">
+        <Projects Include="Games\Greed\Greed32.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="War\Warcraft32.dproj">
+        <Projects Include="Games\War\Warcraft32.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Speed\Speed32.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="OpenXcom\Xcom32.dproj">
+        <Projects Include="Games\OpenXcom\Xcom32.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -148,31 +148,31 @@
         <MSBuild Projects="Speed\SpeedHaste32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Keen32">
-        <MSBuild Projects="Keen\Keen32.dproj"/>
+        <MSBuild Projects="Games\Keen\Keen32.dproj"/>
     </Target>
     <Target Name="Keen32:Clean">
-        <MSBuild Projects="Keen\Keen32.dproj" Targets="Clean"/>
+        <MSBuild Projects="Games\Keen\Keen32.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Keen32:Make">
-        <MSBuild Projects="Keen\Keen32.dproj" Targets="Make"/>
+        <MSBuild Projects="Games\Keen\Keen32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Greed32">
-        <MSBuild Projects="Greed\Greed32.dproj"/>
+        <MSBuild Projects="Games\Greed\Greed32.dproj"/>
     </Target>
     <Target Name="Greed32:Clean">
-        <MSBuild Projects="Greed\Greed32.dproj" Targets="Clean"/>
+        <MSBuild Projects="Games\Greed\Greed32.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Greed32:Make">
-        <MSBuild Projects="Greed\Greed32.dproj" Targets="Make"/>
+        <MSBuild Projects="Games\Greed\Greed32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Warcraft32">
-        <MSBuild Projects="War\Warcraft32.dproj"/>
+        <MSBuild Projects="Games\War\Warcraft32.dproj"/>
     </Target>
     <Target Name="Warcraft32:Clean">
-        <MSBuild Projects="War\Warcraft32.dproj" Targets="Clean"/>
+        <MSBuild Projects="Games\War\Warcraft32.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Warcraft32:Make">
-        <MSBuild Projects="War\Warcraft32.dproj" Targets="Make"/>
+        <MSBuild Projects="Games\War\Warcraft32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Speed32">
         <MSBuild Projects="Speed\Speed32.dproj"/>
@@ -184,13 +184,13 @@
         <MSBuild Projects="Speed\Speed32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Xcom32">
-        <MSBuild Projects="OpenXcom\Xcom32.dproj"/>
+        <MSBuild Projects="Games\OpenXcom\Xcom32.dproj"/>
     </Target>
     <Target Name="Xcom32:Clean">
-        <MSBuild Projects="OpenXcom\Xcom32.dproj" Targets="Clean"/>
+        <MSBuild Projects="Games\OpenXcom\Xcom32.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Xcom32:Make">
-        <MSBuild Projects="OpenXcom\Xcom32.dproj" Targets="Make"/>
+        <MSBuild Projects="Games\OpenXcom\Xcom32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
         <CallTarget Targets="Doom32;GLDoom32;Heretic32;GLHeretic32;Hexen32;GLHexen32;Strife32;GLStrife32;Radix32;SpeedHaste32;Keen32;Greed32;Warcraft32;Speed32;Xcom32"/>

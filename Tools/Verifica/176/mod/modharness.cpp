@@ -1,4 +1,4 @@
-// Harness for Libs\XcomMod: loads random rule nodes with the REAL OpenXcom rule classes and the real yaml-cpp.
+// Harness for Games\XcomMod: loads random rule nodes with the REAL OpenXcom rule classes and the real yaml-cpp.
 // Contains no OpenXcom code; output stays outside the repository (only the golden is committed).
 #include <yaml-cpp/yaml.h>
 #include <cstdarg>

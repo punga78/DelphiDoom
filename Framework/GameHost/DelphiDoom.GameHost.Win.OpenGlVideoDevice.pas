@@ -5,7 +5,7 @@
 {  the ruby library of bsnes, public domain) on WGL: OpenGL only presents the   }
 {  finished picture, the game stays at 8 bits with a palette                    }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.OpenGlVideoDevice;

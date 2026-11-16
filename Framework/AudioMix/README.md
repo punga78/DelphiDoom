@@ -17,4 +17,4 @@ Il testo di riferimento (contratto, confronto riga per riga dei tre mixer, cosa 
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
-- Usata da: `Libs\XcomAudio`, `Libs\War`, `Libs\Greed`, `Framework\Audio`.
+- Usata da: `Games\XcomAudio`, `Games\War`, `Games\Greed`, `Framework\Audio`.

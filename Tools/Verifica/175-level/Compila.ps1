@@ -2,7 +2,7 @@
 # (CheckItems, CheckWarps, CheckHere, CheckForSwitch, SwitchWall, CheckSpawnAreas, CheckBonusItem, TimeUpdate,
 # NewGoalItem, startover, EndLevel, WarpAnim, PrepareNexus, JamWarps, Check_Secret, Special_Code, piu'
 # CheckElevators, CheckDoors, TryDoor e chargeweapons) e TGreedItemRules, TGreedSwitchRules, TGreedLevelRules e
-# TGreedCheatCodes di Libs\Greed (issue #175).
+# TGreedCheatCodes di Games\Greed (issue #175).
 # Il codice originale resta in Reference\xGreed (sola lettura): le routine si ritagliano dal file originale, senza
 # cambiarle, dentro una unit "raven" generata in %TEMP%\LevelParity\src (variabili dell'interfaccia comprese); di
 # g_delphi.pas si genera la copia con i cambi che Delphi 11 richiede (FormatSettings). Il resto del gioco sono gli
@@ -81,7 +81,7 @@ end.
 Set-Content "$uscita\src\raven.pas" $unit
 
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$u = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
+$u = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;$radice\Games\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
 & $dcc -B -Q -CC -H- -W- '-$O+' "-U$u" "-I$Riferimento" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\LevelParity.dpr" | Select-String 'Error|Fatal'
 if ($LASTEXITCODE -ne 0) { exit 1 }

@@ -3,7 +3,7 @@
 {  DelphiDoom: bytes library - a sequential reader with the habits of           }
 {  the std::ifstream that OpenXcom reads its files with                         }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Bytes.StreamReader;

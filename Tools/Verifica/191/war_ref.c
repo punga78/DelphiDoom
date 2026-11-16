@@ -1,5 +1,5 @@
 /*
-  Issue #191: harness di riferimento per Libs\War.
+  Issue #191: harness di riferimento per Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez):
   wfile_loadWarFile e wfile_freeWarFile di src\war_file.c, la struttura WarFile di src\war_resources.h,
   la tabella assets[] di src\war_database.h e DatabaseEntryType di src\war_enums.h sono estratti

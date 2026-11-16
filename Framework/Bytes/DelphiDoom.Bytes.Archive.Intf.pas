@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: bytes library - contract of a CAT archive (issue #229)          }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of the CAT archive               }
+{  Games\XcomFormats\README.md for the license of the CAT archive              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

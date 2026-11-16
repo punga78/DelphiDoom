@@ -8,7 +8,7 @@
 #>
 param(
   [string]$Golden = (Join-Path $PSScriptRoot '..\..\..\Tests\Data\War\ai.tables.golden.txt'),
-  [string]$OutDir = (Join-Path $PSScriptRoot '..\..\..\Libs\War')
+  [string]$OutDir = (Join-Path $PSScriptRoot '..\..\..\Games\War')
 )
 $ErrorActionPreference = 'Stop'
 $lines = [IO.File]::ReadAllLines($Golden) | Where-Object { $_ -and -not $_.StartsWith('#') }
@@ -27,7 +27,7 @@ $o.AddRange([string[]]@(
   '{  DelphiDoom: war library - tables of the computer player (GENERATED)         }',
   '{                                                                              }',
   '{  Port of war1 (acoto87/war1), war_ai.c and war_units.c, (c) 2019 Alejandro    }',
-  '{  Coto Gutierrez, zlib License (see Libs\War\LICENSE-war1.txt). This is an     }',
+  '{  Coto Gutierrez, zlib License (see Games\War\LICENSE-war1.txt). This is an     }',
   '{  altered version, not the original.                                          }',
   '{                                                                              }',
   '{  Written by Tools\Verifica\194\Make-WarAiTables.ps1 from the output of the   }',

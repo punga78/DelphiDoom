@@ -2,7 +2,7 @@
 {                                                                              }
 {  DelphiDoom: game host library - the messages of a window as input events     }
 {  Derived from the window of Xcom32 (OpenXcom, the OpenXcom Developers),       }
-{  GPL v3 or later: see Libs\XcomFormats\README.md for the license of this unit }
+{  GPL v3 or later: see Games\XcomFormats\README.md for the license of this unit }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.MessageTranslator;

@@ -1,4 +1,4 @@
-// Harness for Libs\XcomEngine (the sounds): the REAL SoundSet of OpenXcom (linked from a real build, see build.cmd)
+// Harness for Games\XcomEngine (the sounds): the REAL SoundSet of OpenXcom (linked from a real build, see build.cmd)
 // loads a CAT file as Mod::loadExtraResources does and writes, for every sound, the size and the FNV-1a 64 bit
 // fingerprint of the samples that SDL_mixer keeps. The audio is opened with the dummy driver at 11025 Hz, 8 bit
 // unsigned, mono: the format of the WAV files that SoundSet builds, so the samples are those of the WAV, unconverted.

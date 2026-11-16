@@ -5,7 +5,7 @@
 {  follows the filter each time the mode is set, and goes back to the plain    }
 {  one when the OpenGL one cannot be made                                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.VideoDeviceSelector;

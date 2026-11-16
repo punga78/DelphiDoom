@@ -1,7 +1,7 @@
 # Tests\Data\Racing
 
 `racing.golden.txt` (111 righe) e l'uscita del **vecchio codice** di Speed Haste (`Reference\Speed\Speed`: le funzioni di `speed_cars`, `speed_race`, `speed_path`, `speed_score` e
-`speed_particles`) sugli scenari di `Tests\Source\DelphiDoom.Tests.Racing.Scenarios.pas`. `Libs\Racing` deve dare le stesse righe (`DelphiDoom.Tests.Racing.Parity`).
+`speed_particles`) sugli scenari di `Tests\Source\DelphiDoom.Tests.Racing.Scenarios.pas`. `Games\Racing` deve dare le stesse righe (`DelphiDoom.Tests.Racing.Parity`).
 
 | Prefisso | Che cosa |
 |---|---|

@@ -1,5 +1,5 @@
 # Compila ed esegue il confronto tic per tic tra il menu ORIGINALE di xGreed (menu.pas, d_font.pas, d_video.pas e
-# loadscreen di intro.pas) e TGreedMenu di Libs\Greed sugli scenari di
+# loadscreen di intro.pas) e TGreedMenu di Games\Greed sugli scenari di
 # Tests\Source\DelphiDoom.Tests.Greed.MenuScenarios (issue #175). Il codice originale resta in Reference\xGreed (sola
 # lettura):
 #   menu.pas (con un cast, vedi sotto), d_font.pas, d_video.pas  copiati come sono in %TEMP%\MenuParity\src (devono precedere gli stub

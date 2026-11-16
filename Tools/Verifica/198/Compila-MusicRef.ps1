@@ -1,6 +1,6 @@
 <#
   Issue #198: compila il codice ORIGINALE di wa_playMidi (war_audio.c, acoto87/war1, zlib) con tml.h di TinySoundFont
-  (zlib) e produce i golden del tempo e degli eventi della musica di Libs\War (Tests\Data\War\music.golden.txt).
+  (zlib) e produce i golden del tempo e degli eventi della musica di Games\War (Tests\Data\War\music.golden.txt).
   Niente e' modificato in Reference\: si leggono i sorgenti e si scrivono estratti e programma in -Out (una cartella
   NUOVA fuori da Reference e dal repository). Il sintetizzatore del remake (tsf) NON si usa: e' sostituito da uno
   stub che scrive le chiamate (e il SoundFont non serve).

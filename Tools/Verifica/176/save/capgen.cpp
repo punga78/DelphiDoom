@@ -1,4 +1,4 @@
-// Harness for Libs\XcomSave (the capacities of a base): runs the REAL OpenXcom objects (linked from a real build, see
+// Harness for Games\XcomSave (the capacities of a base): runs the REAL OpenXcom objects (linked from a real build, see
 // build5.cmd): Mod::loadAll on the real TFTD mods, SavedGame::load of every saveNN.sav of Tests\Data\XcomSave\realsave
 // and prints, for every base, what Base::getAvailableXxx/getUsedXxx/getXxxMaintenance... answer.
 // Contains no OpenXcom code; the output goes in Tests\Data\XcomSave\capacity.golden.txt.

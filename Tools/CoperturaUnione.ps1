@@ -1,12 +1,12 @@
 <#
   Unisce le misure di copertura di piu' progetti di test sulle stesse cartelle: una riga e' coperta se l'ha
   eseguita almeno una suite. Serve per le librerie che non hanno un progetto di test proprio, o che sono provate
-  da piu' progetti (Libs\XcomMenu: DelphiDoom.Tests.XcomEngine e DelphiDoom.Tests.XcomTour).
+  da piu' progetti (Games\XcomMenu: DelphiDoom.Tests.XcomEngine e DelphiDoom.Tests.XcomTour).
 
   Uso (dopo aver misurato ogni progetto con Tools\Copertura.ps1 -Test <nome> -Cartella "<cartelle>"):
-    powershell -NoProfile -File Tools\CoperturaUnione.ps1 -Test "XcomTour,XcomEngine" -Cartella "Libs\XcomMenu,Libs\XcomUi"
-    powershell -NoProfile -File Tools\CoperturaUnione.ps1 -Test "XcomTour,XcomEngine" -Cartella Libs\XcomMenu -Sotto 90
-    powershell -NoProfile -File Tools\CoperturaUnione.ps1 -Test XcomTour -Cartella Libs\XcomMenu -Righe AbandonGameState
+    powershell -NoProfile -File Tools\CoperturaUnione.ps1 -Test "XcomTour,XcomEngine" -Cartella "Games\XcomMenu,Games\XcomUi"
+    powershell -NoProfile -File Tools\CoperturaUnione.ps1 -Test "XcomTour,XcomEngine" -Cartella Games\XcomMenu -Sotto 90
+    powershell -NoProfile -File Tools\CoperturaUnione.ps1 -Test XcomTour -Cartella Games\XcomMenu -Righe AbandonGameState
 
   -Test      i progetti gia' misurati (logs\copertura\<nome>\CodeCoverage_Summary.xml), separati da virgole.
   -Cartella  le cartelle dei sorgenti, separate da virgole.

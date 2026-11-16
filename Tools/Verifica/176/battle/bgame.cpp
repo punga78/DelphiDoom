@@ -1,4 +1,4 @@
-// Harness for Libs\XcomBattle (BattlescapeGame and its states): the REAL OpenXcom objects (see build.cmd) with a REAL
+// Harness for Games\XcomBattle (BattlescapeGame and its states): the REAL OpenXcom objects (see build.cmd) with a REAL
 // Game (SDL dummy video and audio drivers), a real Mod with its resources and a real BattlescapeState/Map/Camera load a
 // battle from a saved game and execute a script of orders. After every order the real BattlescapeGame::handleState runs
 // until the list of states is empty; the harness writes the SavedBattleGame (YAML), the RNG seed and the names of the

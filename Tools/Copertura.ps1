@@ -4,7 +4,7 @@
   Uso:
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone
     powershell -NoProfile -File Tools\Copertura.ps1 -Test IdLib.Hashing -Cartella Framework\IdLib\Hashing
-    powershell -NoProfile -File Tools\Copertura.ps1 -Test XcomTour -Cartella "Libs\XcomGeoscape,Libs\XcomBasescape"
+    powershell -NoProfile -File Tools\Copertura.ps1 -Test XcomTour -Cartella "Games\XcomGeoscape,Games\XcomBasescape"
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SenzaCompilare
     powershell -NoProfile -File Tools\Copertura.ps1 -Tutti
     powershell -NoProfile -File Tools\Copertura.ps1 -Test Zone -SoloComando

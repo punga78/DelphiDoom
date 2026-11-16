@@ -1,4 +1,4 @@
-// Issue #168 (S4, Libs\Racing): the OLD code of Speed Haste (GLSpeed, Reference\Speed\Speed) in a harness.
+// Issue #168 (S4, Games\Racing): the OLD code of Speed Haste (GLSpeed, Reference\Speed\Speed) in a harness.
 //
 // The functions of speed_cars, speed_race, speed_path, speed_score and speed_particles are NOT copied
 // by hand: Extract-Old.ps1 cuts them from the original files and this unit includes them as they are.

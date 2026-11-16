@@ -1,9 +1,9 @@
 <#
-  Issue #192: genera Libs\War\DelphiDoom.War.Font.Data.pas dall'uscita del C ORIGINALE
+  Issue #192: genera Games\War\DelphiDoom.War.Font.Data.pas dall'uscita del C ORIGINALE
   (war_gfx_ref.exe - fonts, cioe' la tabella fontsData[2] di war_font.c stampata dal programma compilato).
   Non si modifica a mano il file generato: si rifa con questo script.
 
-  Uso:  powershell -NoProfile -File Make-WarFonts.ps1 -Fonts Tests\Data\War\fonts.golden.txt -Out Libs\War\DelphiDoom.War.Font.Data.pas
+  Uso:  powershell -NoProfile -File Make-WarFonts.ps1 -Fonts Tests\Data\War\fonts.golden.txt -Out Games\War\DelphiDoom.War.Font.Data.pas
 #>
 param(
   [Parameter(Mandatory)][string]$Fonts,
@@ -32,7 +32,7 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine('{  C code: do not edit by hand                                                  }')
 [void]$sb.AppendLine('{                                                                              }')
 [void]$sb.AppendLine('{  Port of war1 (c) 2019 Alejandro Coto Gutierrez, zlib License (see           }')
-[void]$sb.AppendLine('{  Libs\War\LICENSE-war1.txt). This is an altered version, not the original.   }')
+[void]$sb.AppendLine('{  Games\War\LICENSE-war1.txt). This is an altered version, not the original.   }')
 [void]$sb.AppendLine('{                                                                              }')
 [void]$sb.AppendLine('{  Licensed under the GNU General Public License, version 2 or later           }')
 [void]$sb.AppendLine('{                                                                              }')

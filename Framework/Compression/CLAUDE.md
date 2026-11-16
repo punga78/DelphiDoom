@@ -31,7 +31,7 @@ valutato in quella issue (non verificato qui).
 
 `TStream` della RTL al posto di `idFile`; `TIdHashIndex` (`Framework\IdLib\Containers`) per LZW; `TCrc32` (`Framework\MathCore`) solo nei
 test. Nel repository non esisteva un compressore con questo formato: i bit reader di `Framework\Jpeg`, `Framework\Mp3`, `Framework\Sound`
-(Vorbis) e `Framework\Png` sono lettori di formati di terzi (marcatori, solo lettura) e `Libs\Keen` (`Huffman`, `Lzh`) decomprime i formati di Keen; sono
+(Vorbis) e `Framework\Png` sono lettori di formati di terzi (marcatori, solo lettura) e `Games\Keen` (`Huffman`, `Lzh`) decomprime i formati di Keen; sono
 stati guardati per nome e struttura, non letti riga per riga, e non producono i byte di idTech 4: nessuna unificazione provata.
 
 ## Parita con il C++

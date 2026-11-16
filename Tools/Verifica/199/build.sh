@@ -2,7 +2,7 @@
 # Builds the parity tools of the issue #199 (FLIC) with the gcc of w64devkit.
 #   build.sh [output folder]
 # The decoder is not retyped: flc_original.inc is made of line ranges of
-# Reference/OpenXcom/src/Engine/FlcPlayer.cpp (read only), the code that Libs\XcomFormats
+# Reference/OpenXcom/src/Engine/FlcPlayer.cpp (read only), the code that Games\XcomFormats
 # already ported and that Framework\Cinematic reuses. The remake of Warcraft (acoto87/war1) has
 # no FLIC code, so the decoder of OpenXcom is the reference.
 set -e

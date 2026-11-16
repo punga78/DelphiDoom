@@ -1,4 +1,4 @@
-// Harness for Libs\XcomAudio (the music): the REAL Mod of OpenXcom (linked from a real build, see build.cmd) loads the
+// Harness for Games\XcomAudio (the music): the REAL Mod of OpenXcom (linked from a real build, see build.cmd) loads the
 // mods of options.cfg with the sound on (SDL_mixer with the dummy driver, 22050 Hz, 16 bit, stereo) and writes which
 // music of the rules it loaded: one line per music of Mod::_musics, "type adlib <bytes> <FNV-1a 64 of the song>" for
 // an AdlibMusic and "type other" for anything else, and "type missing" for a rule of musics: that has no music.

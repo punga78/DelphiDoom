@@ -59,7 +59,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\Framework\Bytes;..\Framework\AudioMix;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Greed;..\Framework\Input;..\Framework\GameHost;..\Framework\Audio;..\Framework\Mikmod;..\Greed;..\Framework\Clock;..\Framework\Logging;..\Framework\MathCore;..\Framework\GameMath;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\NetTransport;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Framework\Bytes;..\Framework\AudioMix;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Games\Greed;..\Framework\Input;..\Framework\GameHost;..\Framework\Audio;..\Framework\Mikmod;..\Games\Greed;..\Framework\Clock;..\Framework\Logging;..\Framework\MathCore;..\Framework\GameMath;..\Framework\Video;..\Framework\Palette;..\Framework\CommandLine;..\Framework\Png;..\Framework\Zlib;..\Framework\Platform;..\Framework\NetTransport;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\Framework\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>

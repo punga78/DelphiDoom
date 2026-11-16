@@ -18,7 +18,7 @@ uses
 type
   /// <summary>
   ///   The one place of Speed32 that knows the classes behind the interfaces: the translator of the game
-  ///   (Libs\Speed), the racing (Libs\Racing) and the log. It does not touch ComposeEngine nor
+  ///   (Libs\Speed), the racing (Games\Racing) and the log. It does not touch ComposeEngine nor
   ///   TIdTechGeneration: the engine of Speed (id Tech 1) is the S5 of the issue 168, not this program
   /// </summary>
   TSpeedComposition = class

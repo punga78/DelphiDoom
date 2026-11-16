@@ -4,7 +4,7 @@
 {  commendations of the soldiers (parity with the real SoldierDiary)            }
 {                                                                              }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.XcomSave.Diary;

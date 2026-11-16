@@ -1,4 +1,4 @@
-// Harness for Libs\XcomDebriefing (DebriefingState::prepareDebriefing): the REAL OpenXcom objects (see build.cmd) with a
+// Harness for Games\XcomDebriefing (DebriefingState::prepareDebriefing): the REAL OpenXcom objects (see build.cmd) with a
 // REAL Game (SDL dummy drivers) and a real Mod. For every saved game "genNN.after.sav" of gengen (a battle just
 // generated: base, craft, soldiers, UFO or mission site in the battle) and for every variant the harness
 //   - plays an outcome on the battle: units killed, stunned, mind controlled, moved to the exit area, items on the

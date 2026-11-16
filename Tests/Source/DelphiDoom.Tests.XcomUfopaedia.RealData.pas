@@ -5,7 +5,7 @@
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {  (the library itself is derived from OpenXcom, GPL v3 or later: see           }
-{  Libs\XcomFormats\README.md)                                                  }
+{  Games\XcomFormats\README.md)                                                 }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.XcomUfopaedia.RealData;

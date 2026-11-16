@@ -1,5 +1,5 @@
 # Compila ed esegue il confronto sui pixel tra l'HUD ORIGINALE di xGreed (display.pas, d_font.pas, d_video.pas e i
-# pezzi di raven.pas, utils.pas e i_video.pas che servono) e le classi di Libs\Greed (TGreedCanvas,
+# pezzi di raven.pas, utils.pas e i_video.pas che servono) e le classi di Games\Greed (TGreedCanvas,
 # TGreedPaletteFader, TGreedFont, TGreedTextPrinter, TGreedMessageLine, TGreedInventory, TGreedHud,
 # TGreedWeaponPainter, TGreedWeaponLight) sugli scenari di Tests\Source\DelphiDoom.Tests.Greed.HudScenarios
 # (issue #175). Il codice originale resta in Reference\xGreed (sola lettura):

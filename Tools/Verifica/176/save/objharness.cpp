@@ -1,4 +1,4 @@
-// Harness for the objects of Libs\XcomSave (second family: Target, Waypoint, AlienBase, MissionSite, Node,
+// Harness for the objects of Games\XcomSave (second family: Target, Waypoint, AlienBase, MissionSite, Node,
 // EquipmentLayoutItem, ...): loads random YAML nodes into the REAL OpenXcom classes (linked from the objects of a
 // real OpenXcom build, see build2.cmd) with the real yaml-cpp, saves them and prints the emitted YAML.
 // Contains no OpenXcom code; output stays outside the repository (only the golden is committed).

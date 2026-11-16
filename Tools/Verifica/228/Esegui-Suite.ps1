@@ -2,7 +2,7 @@
 # Prima/dopo lo spostamento dei tre mixer i numeri di War, Greed e XcomEngine erano
 #   War 306/305 (1 ignorato), Greed 1003/1003, XcomEngine 1151/1151;
 # dopo, le stesse suite hanno solo i test di parita' in piu' (War +2, Greed +2, XcomEngine +2) e AudioMix e' nuova.
-# In un worktree sotto .claude\worktrees serve DCC_UnitSearchPath con la cartella DUnitX\Source (vedi Libs\War\CLAUDE.md).
+# In un worktree sotto .claude\worktrees serve DCC_UnitSearchPath con la cartella DUnitX\Source (vedi Games\War\CLAUDE.md).
 param(
   [string[]]$Progetti = @('DelphiDoom.Tests.AudioMix', 'DelphiDoom.Tests.War', 'DelphiDoom.Tests.Greed', 'DelphiDoom.Tests.XcomEngine'),
   [string]$Configurazione = 'Release'

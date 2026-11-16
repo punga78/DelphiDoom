@@ -1,5 +1,5 @@
 /*
-  Issue #194 (prima fetta): harness di riferimento per il modello di gioco di Libs\War (entita', unita', macchina a stati,
+  Issue #194 (prima fetta): harness di riferimento per il modello di gioco di Games\War (entita', unita', macchina a stati,
   economia, danni).
 
   Il remake in C (acoto87/war1, zlib License, (C) 2019 Alejandro Coto Gutierrez) e' una "unity build": un solo file che
@@ -139,7 +139,7 @@ WarSpriteAnimation wanim_createSpellAnimation_cmd(WarContext* context, WarEntity
 /* stub                                                                                                               */
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-/* il generatore del gioco: stesso algoritmo di TWarSeededRandom (Libs\War\DelphiDoom.War.Sound.SeededRandom.pas) */
+/* il generatore del gioco: stesso algoritmo di TWarSeededRandom (Games\War\DelphiDoom.War.Sound.SeededRandom.pas) */
 static u32 gGameState = 0;
 static u32 gGameDraws = 0;
 static u32 gGameSum = 0;

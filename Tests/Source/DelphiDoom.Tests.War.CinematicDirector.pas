@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the director of the animations of Libs\War             }
+{  DelphiDoom: tests of the director of the animations of Games\War            }
 {                                                                              }
 {  A fake maker stands for the files: some animations are there, the others    }
 {  are not (as HMAP, OMAP, LOSE1 and WIN1 on the disk of the DOS game).        }

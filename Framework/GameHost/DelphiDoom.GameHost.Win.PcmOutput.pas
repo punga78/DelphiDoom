@@ -3,7 +3,7 @@
 {  DelphiDoom: game host library - the sound output of Windows (waveOut) that  }
 {  asks the mixer of a game for samples, as the audio callback of SDL does      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.PcmOutput;

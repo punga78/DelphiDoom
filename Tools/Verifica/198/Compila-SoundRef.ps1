@@ -1,6 +1,6 @@
 <#
   Issues #198 e #194: compila il codice ORIGINALE che SCEGLIE i suoni (war_audio.c, acoto87/war1, zlib) e produce i
-  golden della tabella dei suoni di Libs\War:
+  golden della tabella dei suoni di Games\War:
     Tests\Data\War\sounds.tables.golden.txt   gli esiti di wa_playAttackSound, wa_playDudeSelectionSound,
                                               wa_playBuildingSelectionSound e wa_playAcknowledgementSound
     Tests\Data\War\sounds.ranges.golden.txt   gli intervalli (randomFromId, randomToId) di OGNI chiamata del sorgente

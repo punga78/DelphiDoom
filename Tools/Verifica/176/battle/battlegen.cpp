@@ -1,4 +1,4 @@
-// Harness for Libs\XcomBattle (SavedBattleGame): runs the REAL OpenXcom objects (linked from a real build, see
+// Harness for Games\XcomBattle (SavedBattleGame): runs the REAL OpenXcom objects (linked from a real build, see
 // build.cmd) to make saved battles: Mod::loadAll on the real TFTD mods, Mod::newSave() for the soldiers, then a battle
 // built by hand with the real constructors and setters (tiles with parts of the real MCD files, soldiers and aliens,
 // items with ammo, nodes, fire, smoke, wounds), and writes

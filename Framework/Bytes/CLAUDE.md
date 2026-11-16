@@ -13,7 +13,7 @@ Una libreria che ha un'eccezione e un messaggio propri **non** la solleva da `Fr
 ## Lasciati fuori, con il motivo
 
 - **`TTextureByteReader`** (`Framework\Texture`) e **`TSoundByteReader`** (`Framework\Sound`, un `record`): la politica è "oltre la fine dà zeri e imposta `Overrun`", ma sono **diverse tra loro** nei dati troncati (Texture copia i byte che ci sono e azzera il resto, quindi una parola con un byte solo vale il byte basso; Sound dà 0 per tutta la lettura), e i decoder BMP/PCX/TGA e i formati audio di libsndfile hanno la parità con i file veri e con i difetti conservati. Unificarli significherebbe scegliere uno dei due comportamenti e cambiare l'altro; Sound è un `record` copiato per valore (passarlo a una classe cambierebbe la semantica). Non fatto.
-- **`TKeenLittleEndian`** (`Libs\Keen`) e **`TWarLittleEndian`** (`Libs\War`): funzioni statiche `(array, offset)` senza stato, con eccezione propria; non sono cursori, e ognuna è usata in decine di punti con il suo messaggio `[n, offset, len]`. Non fatto.
+- **`TKeenLittleEndian`** (`Games\Keen`) e **`TWarLittleEndian`** (`Games\War`): funzioni statiche `(array, offset)` senza stato, con eccezione propria; non sono cursori, e ognuna è usata in decine di punti con il suo messaggio `[n, offset, len]`. Non fatto.
 - **`TPngByteOrder`** (`Framework\Png`): su `PByte` nel percorso di decodifica, senza controlli di limiti: non è un lettore di `TBytes`. Letture simili in `Greed.Demo.Reader`, `M2m.MidiReader`, `Jpeg.ByteSource`, `Qvm.Memory`, `Net.*`: hanno altre semantiche (flusso, bit, memoria della macchina virtuale).
 - **`TGreedFliDecoder`**: vedi `Framework\Flic\CLAUDE.md` (differisce nei byte).
 

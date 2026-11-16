@@ -23,7 +23,7 @@
 // DESCRIPTION:
 //  Speed Haste: the race in a saved game. The saved game of the engine and
 //  p_saveg do not change: the state of the race goes in a file beside each
-//  one, <saved game>.speed (TRacingSaveGameCodec of Libs\Racing).
+//  one, <saved game>.speed (TRacingSaveGameCodec of Games\Racing).
 //  G_ConfigureSaveGameExtension (g_game) calls SH_SaveGame after the engine has
 //  written its file and SH_LoadGame after it has read its own and built the
 //  level again.

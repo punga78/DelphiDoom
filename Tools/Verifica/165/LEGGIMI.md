@@ -1,6 +1,6 @@
 # Verifica #165 (K8b): le azioni degli stati di Keen Dreams contro il C originale
 
-Le 67 funzioni think, contact e react di `kd_keen.c`, `kd_act1.c` e `kd_act2.c` (porting in `Libs\Keen`:
+Le 67 funzioni think, contact e react di `kd_keen.c`, `kd_act1.c` e `kd_act2.c` (porting in `Games\Keen`:
 `PlayerActions`, `CommonActions`, `Act1Actions`, `Act2Actions`, `ScoreBox`) sono confrontate con **gli oggetti originali**
 compilati con Open Watcom a 16 bit (`int` e `unsigned` a 16 bit come nel gioco), eseguiti in DOSBox.
 

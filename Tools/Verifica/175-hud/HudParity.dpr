@@ -1,7 +1,7 @@
 program HudParity;
 {$APPTYPE CONSOLE}
 // Harness fuori dal repository: confronta sui pixel l'HUD ORIGINALE di xGreed (display.pas, d_font.pas, d_video.pas
-// e i ritagli di raven.pas, utils.pas e i_video.pas fatti da Compila.ps1) con le classi di Libs\Greed sugli stessi
+// e i ritagli di raven.pas, utils.pas e i_video.pas fatti da Compila.ps1) con le classi di Games\Greed sugli stessi
 // scenari (Tests\Source\DelphiDoom.Tests.Greed.HudScenarios). Le righe del golden sono i valori dell'ORIGINALE.
 // Uso: HudParity <cartella con GREED.BLO | sintetico> <golden.txt | nessuno>
 uses

@@ -1,6 +1,6 @@
 # Compila ed esegue il gioco ORIGINALE di xGreed senza finestra e scrive le impronte del mondo intero (issue #175):
 # i golden di Tests\Data\Greed\world.*.golden.txt, che il test DelphiDoom.Tests.Greed.WorldParity confronta con una
-# partita uguale fatta da TGreedGame di Libs\Greed.
+# partita uguale fatta da TGreedGame di Games\Greed.
 # Il codice originale resta in Reference\xGreed (sola lettura) e si compila com'e': raven.pas, utils.pas, spawn.pas,
 # sprites.pas, event.pas, constant.pas, il renderer, display.pas, d_font.pas, d_video.pas, menu.pas, intro.pas,
 # d_disk.pas, d_misc.pas, net.pas, m_defs.pas. In %TEMP%\WorldGolden\src si generano quattro copie con i soli
@@ -128,12 +128,12 @@ if (-not $SenzaCompilare) {
   Set-Content "$uscita\src\d_ints.pas" ($d.Substring(0, $i + 1) + (Get-Content "$PSScriptRoot\d_ints.impl.txt" -Raw))
 
   $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-  $u = "$PSScriptRoot\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
+  $u = "$PSScriptRoot\stubs;$uscita\src;$Riferimento\Greed;$Riferimento\Base;$radice\Games\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Tests\Source"
   # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
   & $dcc -B -Q -CC -H- -W- '-$O+' "-U$u" "-I$Riferimento" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\WorldGolden.dpr" | Select-String 'Error|Fatal'
   if ($LASTEXITCODE -ne 0) { exit 1 }
   if ($Libreria) {
-    $u = "$radice\Libs\Greed;$radice\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Framework\Png;$radice\Framework\Video;$radice\Framework\Palette;$radice\Framework\Zlib;$radice\Tests\Source"
+    $u = "$radice\Games\Greed;$radice\Greed;$radice\Framework\Platform;$radice\Framework\MathCore;$radice\Framework\GameMath;$radice\Framework\Logging;$radice\Framework\Clock;$radice\Framework\Png;$radice\Framework\Video;$radice\Framework\Palette;$radice\Framework\Zlib;$radice\Tests\Source"
     & $dcc -B -Q '-$O+' "-U$u" "-N0$uscita\libreria" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\WorldLibrary.dpr" | Select-String 'Error|Fatal'
     if ($LASTEXITCODE -ne 0) { exit 1 }
   }

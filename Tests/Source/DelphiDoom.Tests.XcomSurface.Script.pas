@@ -10,7 +10,7 @@
 {  Random fills use the Mersenne Twister of the C++ standard library            }
 {                                                                              }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Tests.XcomSurface.Script;

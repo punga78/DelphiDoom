@@ -5,7 +5,7 @@
 {  Moved from DelphiDoom.War.Audio.Resampler: port of mv_resample_pcm and      }
 {  mw_resample_pcm (the same code twice) of shl/voc.h and shl/wav.h of war1    }
 {  (acoto87/war1), MIT License, (c) 2026 Alejandro Coto Gutierrez; war1 is     }
-{  under the zlib License (see Libs\War\LICENSE-war1.txt). This is an altered  }
+{  under the zlib License (see Games\War\LICENSE-war1.txt). This is an altered }
 {  version, not the original.                                                  }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }

@@ -1,5 +1,5 @@
 /*
-  Issue #193: harness di riferimento per i livelli, le campagne e i raccordi di Libs\War.
+  Issue #193: harness di riferimento per i livelli, le campagne e i raccordi di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez): le funzioni di
   war_resources.c che leggono i livelli (wres_loadLevelInfo, wres_loadLevelVisual, wres_loadLevelPassable e le
   funzioni di unita', strade, muri e miniere), war_campaigns.c intero, le tabelle di war_units.c, le funzioni dei

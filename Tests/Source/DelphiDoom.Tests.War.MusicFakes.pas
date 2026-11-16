@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: fakes for the tests of the music and of the sounds of Libs\War  }
+{  DelphiDoom: fakes for the tests of the music and of the sounds of Games\War }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

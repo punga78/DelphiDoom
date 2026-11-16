@@ -1,5 +1,5 @@
 /*
-  Issue #193 (seconda fetta): harness di riferimento per la mappa di gioco di Libs\War.
+  Issue #193 (seconda fetta): harness di riferimento per la mappa di gioco di Games\War.
   Compila il codice ORIGINALE di acoto87/war1 (zlib License, (C) 2019 Alejandro Coto Gutierrez) estratto alla lettera da
   Compila-MapRef.ps1 (file *.inc): wmap_enterMap (le funzioni init* e create*), le funzioni di stato delle tegole di
   war_map.c, updateFoW, determineFoWTypes, il ciclo di renderMinimap, we_createUnit, le funzioni wpath_* della griglia, le

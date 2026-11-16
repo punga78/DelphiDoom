@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tests of the timeline of the music of Libs\War                  }
+{  DelphiDoom: tests of the timeline of the music of Games\War                 }
 {                                                                              }
 {  It runs on the real sequencer of Framework\Midi and on small files built in }
 {  memory. With a division of 100 and the tempo of 500000 a tick is 5 ms.      }

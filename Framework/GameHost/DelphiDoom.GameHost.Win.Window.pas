@@ -5,7 +5,7 @@
 {  size, and its messages turned into events of the game. What draws in it      }
 {  (GDI or OpenGL) is a device that receives this window                        }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Games\XcomFormats\README.md for the license of this unit                     }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.GameHost.Win.Window;

@@ -76,7 +76,7 @@ Verso il gioco e verso il file system solo interfacce **gia' esistenti in `IdTec
 
 ## Test
 
-`Tests\DelphiDoom.Tests.Aas` (166 test; senza OpenArena e senza `DELPHIDOOM_ROUTE_GOLDENS` ne restano ignorati 10 e passano 156), copertura di tutta la libreria 96% (3037 righe su 3163, `Tools\Copertura.ps1 -Test Aas`; le unit nuove tra 90% e 100%). Win32 e Win64 (a 64 bit i dati si cercano in `bin\Win32\Release\Tests\Data`: `robocopy Tests\Data\Aas bin\Win32\Release\Tests\Data\Aas`). In un worktree serve `DCC_UnitSearchPath` con la cartella di DUnitX (vedi `Libs\War\CLAUDE.md`).
+`Tests\DelphiDoom.Tests.Aas` (166 test; senza OpenArena e senza `DELPHIDOOM_ROUTE_GOLDENS` ne restano ignorati 10 e passano 156), copertura di tutta la libreria 96% (3037 righe su 3163, `Tools\Copertura.ps1 -Test Aas`; le unit nuove tra 90% e 100%). Win32 e Win64 (a 64 bit i dati si cercano in `bin\Win32\Release\Tests\Data`: `robocopy Tests\Data\Aas bin\Win32\Release\Tests\Data\Aas`). In un worktree serve `DCC_UnitSearchPath` con la cartella di DUnitX (vedi `Games\War\CLAUDE.md`).
 
 ## Navigazione AAS di Doom 3 a runtime (issue #109)
 

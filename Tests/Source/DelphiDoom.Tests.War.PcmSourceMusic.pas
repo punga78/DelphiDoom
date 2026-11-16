@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the song under the effects in the PCM source of        }
-{  Libs\War                                                                    }
+{  Games\War                                                                   }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

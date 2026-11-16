@@ -7,7 +7,7 @@ Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md). Le unit `WinsockTransport
 ## Contenuto
 
 - Unit nella cartella: 4. Strato **L0** in `docs\Strati.psd1`; non dipende da nessuna altra libreria.
-- Chi la usa: `Libs\Net` (protocollo di Doom, `TicSync`, `Factory`), `Libs\EngineSystem`, `Libs\Greed` e `Greed\`, `Base` (`i_net`, `DelphiDoom.Engine.Net.*`).
+- Chi la usa: `Libs\Net` (protocollo di Doom, `TicSync`, `Factory`), `Libs\EngineSystem`, `Games\Greed` e `Games\Greed\`, `Base` (`i_net`, `DelphiDoom.Engine.Net.*`).
 
 ## Prova
 

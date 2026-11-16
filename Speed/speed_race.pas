@@ -24,7 +24,7 @@
 //  Speed Haste: the race on the engine of Doom (SH_InitRace, SH_InitLevelCars,
 //  SH_MoveCarAI and SH_MoveCarPlayer of the fork). The code of Doom is not
 //  touched and mobj_t does not grow: the state of every car is the one of
-//  TRacingRaceController (Libs\Racing), and a thinker of the level that sits at
+//  TRacingRaceController (Games\Racing), and a thinker of the level that sits at
 //  the HEAD of the thinker list does at every tic
 //   - copy the position of the object of each car into its state,
 //   - tick the race (the drivers, the physics, the positions, the lights),

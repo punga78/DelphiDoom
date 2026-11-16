@@ -4,7 +4,7 @@
 {                                                                              }
 {  Moved from DelphiDoom.XcomAudio.Resampler (what SDL_BuildAudioCVT does      }
 {  when a file and the mixer have different rates). Derived from OpenXcom      }
-{  (the OpenXcom Developers), GPL v3 or later: see Libs\XcomFormats\README.md  }
+{  (the OpenXcom Developers), GPL v3 or later: see Games\XcomFormats\README.md }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.AudioMix.FramePositionResampler;

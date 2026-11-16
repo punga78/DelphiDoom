@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: parity of the music of Libs\War with wa_playMidi of the remake  }
+{  DelphiDoom: parity of the music of Games\War with wa_playMidi of the remake }
 {                                                                              }
 {  Tests\Data\War\music.golden.txt is made by Tools\Verifica\198\              }
 {  Compila-MusicRef.ps1: the code of wa_playMidi (war_audio.c) and the MIDI    }
@@ -10,7 +10,7 @@
 {  lists; each call that the original makes to the synth is a line with the    }
 {  sample at which its block of 64 started. The file is in the golden itself   }
 {  (hexadecimal), so there is no generator to keep equal: the player of       }
-{  Libs\War, with the real sequencer of Framework\Midi, must make the same calls }
+{  Games\War, with the real sequencer of Framework\Midi, must make the same calls }
 {  at the same samples, velocities included (bits of the float). The notes    }
 {  that the player stops at the end (AO) are a choice of the port and are     }
 {  not compared.                                                               }
