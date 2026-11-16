@@ -99,6 +99,7 @@ implementation
 uses
   d_delphi,
   DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.LightIndex,
   DelphiDoom.Renderer.X87,
   doomdata,
   doomdef,
@@ -422,9 +423,7 @@ begin
       begin
         if not forcecolormaps then
         begin
-          ncolornum := _SHR(distance, HLL_ZDISTANCESHIFT);
-          if ncolornum >= HLL_MAXLIGHTZ then
-            ncolornum := HLL_MAXLIGHTZ - 1;
+          ncolornum := TRendererLightIndex.Clamp(_SHR(distance, HLL_ZDISTANCESHIFT), HLL_MAXLIGHTZ);
           ds_lightlevel := zlightlevels[ds_llzindex, ncolornum];
         end
         else
@@ -603,9 +602,7 @@ begin
         begin
           if not forcecolormaps then
           begin
-            ncolornum := _SHR(distance, HLL_ZDISTANCESHIFT);
-            if ncolornum >= HLL_MAXLIGHTZ then
-              ncolornum := HLL_MAXLIGHTZ - 1;
+            ncolornum := TRendererLightIndex.Clamp(_SHR(distance, HLL_ZDISTANCESHIFT), HLL_MAXLIGHTZ);
             ds_lightlevel := zlightlevels[ds_llzindex, ncolornum];
           end
           else
@@ -790,9 +787,7 @@ begin
         begin
           if not forcecolormaps then
           begin
-            ncolornum := _SHR(distance, HLL_ZDISTANCESHIFT);
-            if ncolornum >= HLL_MAXLIGHTZ then
-              ncolornum := HLL_MAXLIGHTZ - 1;
+            ncolornum := TRendererLightIndex.Clamp(_SHR(distance, HLL_ZDISTANCESHIFT), HLL_MAXLIGHTZ);
             ds_lightlevel := zlightlevels[ds_llzindex, ncolornum];
           end
           else
