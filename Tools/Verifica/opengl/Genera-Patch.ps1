@@ -16,7 +16,7 @@ $crlf = "`r`n"
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
 # the harness itself (ToolsVerifica) may be being edited: only the files the patch touches have to be clean
-$dirty = git status --porcelain --untracked-files=no -- Doom Heretic Hexen Strife Libs Base
+$dirty = git -c core.safecrlf=false status --porcelain --untracked-files=no -- Doom Heretic Hexen Strife Libs Base
 if ($dirty) { throw "L'albero non e' pulito: $dirty" }
 
 function Edit-File([string]$relative, [scriptblock]$edit) {
@@ -93,6 +93,6 @@ Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
 }
 
 $patch = Join-Path $PSScriptRoot 'hook-gl.patch'
-git diff --output=$patch -- Doom Heretic Hexen Strife Libs Base
-git checkout -- Doom Heretic Hexen Strife Libs\OpenGl\Legacy Base
+git -c core.safecrlf=false diff --output=$patch -- Doom Heretic Hexen Strife Libs Base
+git -c core.safecrlf=false checkout -- Doom Heretic Hexen Strife Libs\OpenGl\Legacy Base
 Write-Host "Scritto $patch"
