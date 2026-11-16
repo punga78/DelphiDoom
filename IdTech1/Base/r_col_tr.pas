@@ -38,14 +38,23 @@ interface
 //  Green/Red/Blue/Indigo shirts.
 //
 //==============================================================================
-procedure R_DrawTranslatedColumn;
 
 //==============================================================================
 //
 // R_DrawTranslatedColumnHi
 //
 //==============================================================================
-procedure R_DrawTranslatedColumnHi;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColTrDrawers = class sealed
+  public
+    class procedure R_DrawTranslatedColumn; static;
+    class procedure R_DrawTranslatedColumnHi; static;
+  end;
 
 implementation
 
@@ -68,7 +77,7 @@ uses
 //  identical sprites, kinda brightened up.
 //
 //==============================================================================
-procedure R_DrawTranslatedColumn;
+class procedure TRendererColTrDrawers.R_DrawTranslatedColumn;
 var
   count: integer;
   dest: PByte;
@@ -108,7 +117,7 @@ end;
 // R_DrawTranslatedColumnHi
 //
 //==============================================================================
-procedure R_DrawTranslatedColumnHi;
+class procedure TRendererColTrDrawers.R_DrawTranslatedColumnHi;
 var
   count: integer;
   destl: PLongWord;

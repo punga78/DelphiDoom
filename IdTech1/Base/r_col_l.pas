@@ -36,35 +36,44 @@ interface
 // Light column drawing functions
 //
 //==============================================================================
-procedure R_DrawWhiteLightColumnHi;
 
 //==============================================================================
 //
 // R_DrawRedLightColumnHi
 //
 //==============================================================================
-procedure R_DrawRedLightColumnHi;
 
 //==============================================================================
 //
 // R_DrawGreenLightColumnHi
 //
 //==============================================================================
-procedure R_DrawGreenLightColumnHi;
 
 //==============================================================================
 //
 // R_DrawBlueLightColumnHi
 //
 //==============================================================================
-procedure R_DrawBlueLightColumnHi;
 
 //==============================================================================
 //
 // R_DrawYellowLightColumnHi
 //
 //==============================================================================
-procedure R_DrawYellowLightColumnHi;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererColLDrawers = class sealed
+  public
+    class procedure R_DrawWhiteLightColumnHi; static;
+    class procedure R_DrawRedLightColumnHi; static;
+    class procedure R_DrawGreenLightColumnHi; static;
+    class procedure R_DrawBlueLightColumnHi; static;
+    class procedure R_DrawYellowLightColumnHi; static;
+  end;
 
 implementation
 
@@ -81,7 +90,7 @@ uses
 // R_DrawWhiteLightColumnHi
 //
 //==============================================================================
-procedure R_DrawWhiteLightColumnHi;
+class procedure TRendererColLDrawers.R_DrawWhiteLightColumnHi;
 {$DEFINE WHITE}
 {$I R_DrawLightColumnHi.inc}
 {$UNDEF WHITE}
@@ -91,7 +100,7 @@ procedure R_DrawWhiteLightColumnHi;
 // R_DrawRedLightColumnHi
 //
 //==============================================================================
-procedure R_DrawRedLightColumnHi;
+class procedure TRendererColLDrawers.R_DrawRedLightColumnHi;
 {$DEFINE RED}
 {$I R_DrawLightColumnHi.inc}
 {$UNDEF RED}
@@ -101,7 +110,7 @@ procedure R_DrawRedLightColumnHi;
 // R_DrawGreenLightColumnHi
 //
 //==============================================================================
-procedure R_DrawGreenLightColumnHi;
+class procedure TRendererColLDrawers.R_DrawGreenLightColumnHi;
 {$DEFINE GREEN}
 {$I R_DrawLightColumnHi.inc}
 {$UNDEF GREEN}
@@ -111,7 +120,7 @@ procedure R_DrawGreenLightColumnHi;
 // R_DrawBlueLightColumnHi
 //
 //==============================================================================
-procedure R_DrawBlueLightColumnHi;
+class procedure TRendererColLDrawers.R_DrawBlueLightColumnHi;
 {$DEFINE BLUE}
 {$I R_DrawLightColumnHi.inc}
 {$UNDEF BLUE}
@@ -121,7 +130,7 @@ procedure R_DrawBlueLightColumnHi;
 // R_DrawYellowLightColumnHi
 //
 //==============================================================================
-procedure R_DrawYellowLightColumnHi;
+class procedure TRendererColLDrawers.R_DrawYellowLightColumnHi;
 {$DEFINE YELLOW}
 {$I R_DrawLightColumnHi.inc}
 {$UNDEF YELLOW}

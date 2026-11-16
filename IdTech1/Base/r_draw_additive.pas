@@ -36,35 +36,44 @@ interface
 // Alpha column drawers (transparency effects)
 //
 //==============================================================================
-procedure R_DrawColumnAddLowest;
 
 //==============================================================================
 //
 // R_DrawColumnAddLow
 //
 //==============================================================================
-procedure R_DrawColumnAddLow;
 
 //==============================================================================
 //
 // R_DrawColumnAddMedium
 //
 //==============================================================================
-procedure R_DrawColumnAddMedium;
 
 //==============================================================================
 //
 // R_DrawColumnAddHi
 //
 //==============================================================================
-procedure R_DrawColumnAddHi;
 
 //==============================================================================
 //
 // R_DrawColumnAddHi_SmallStep
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_SmallStep;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererAdditiveDrawers = class sealed
+  public
+    class procedure R_DrawColumnAddLowest; static;
+    class procedure R_DrawColumnAddLow; static;
+    class procedure R_DrawColumnAddMedium; static;
+    class procedure R_DrawColumnAddHi; static;
+    class procedure R_DrawColumnAddHi_SmallStep; static;
+  end;
 
 implementation
 
@@ -83,7 +92,7 @@ uses
 // R_DrawColumnAddLowest
 //
 //==============================================================================
-procedure R_DrawColumnAddLowest;
+class procedure TRendererAdditiveDrawers.R_DrawColumnAddLowest;
 var
   count: integer;
   i: integer;
@@ -141,7 +150,7 @@ end;
 // R_DrawColumnAddLow
 //
 //==============================================================================
-procedure R_DrawColumnAddLow;
+class procedure TRendererAdditiveDrawers.R_DrawColumnAddLow;
 var
   count: integer;
   i: integer;
@@ -193,7 +202,7 @@ end;
 // R_DrawColumnAddMedium
 //
 //==============================================================================
-procedure R_DrawColumnAddMedium;
+class procedure TRendererAdditiveDrawers.R_DrawColumnAddMedium;
 var
   count: integer;
   dest: PByte;
@@ -250,7 +259,7 @@ end;
 // R_DrawColumnAddHi
 //
 //==============================================================================
-procedure R_DrawColumnAddHi;
+class procedure TRendererAdditiveDrawers.R_DrawColumnAddHi;
 var
   count: integer;
   destl: PLongWord;
@@ -328,7 +337,7 @@ var
 // R_DrawColumnAddHi_SmallStep
 //
 //==============================================================================
-procedure R_DrawColumnAddHi_SmallStep;
+class procedure TRendererAdditiveDrawers.R_DrawColumnAddHi_SmallStep;
 var
   count: integer;
   destl: PLongWord;

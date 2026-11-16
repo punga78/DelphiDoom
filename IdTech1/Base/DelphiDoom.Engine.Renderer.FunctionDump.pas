@@ -410,31 +410,31 @@ function ValueName(AValue: Pointer): string;
 begin
   if AValue = nil then
     Exit('nil');
-  if AValue = @R_DrawColumnLow_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnLow_Batch then
     Exit('R_DrawColumnLow_Batch');
-  if AValue = @R_DrawTranslatedColumn_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumn_Batch then
     Exit('R_DrawTranslatedColumn_Batch');
   if AValue = @TRendererColumnDrawers.DrawLowest then
     Exit('R_DrawColumnLowest');
-  if AValue = @R_DrawTallColumnLowest then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnLowest then
     Exit('R_DrawTallColumnLowest');
-  if AValue = @R_DrawTranslatedColumn then
+  if AValue = @TRendererColTrDrawers.R_DrawTranslatedColumn then
     Exit('R_DrawTranslatedColumn');
-  if AValue = @R_DrawColumnAverageLowest then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageLowest then
     Exit('R_DrawColumnAverageLowest');
-  if AValue = @R_DrawColumnAlphaLowest then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaLowest then
     Exit('R_DrawColumnAlphaLowest');
-  if AValue = @R_DrawColumnAverageMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAverageMedium_Batch then
     Exit('R_DrawColumnAverageMedium_Batch');
-  if AValue = @R_DrawColumnAlphaMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAlphaMedium_Batch then
     Exit('R_DrawColumnAlphaMedium_Batch');
-  if AValue = @R_DrawColumnAddLowest then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddLowest then
     Exit('R_DrawColumnAddLowest');
-  if AValue = @R_DrawColumnAddMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAddMedium_Batch then
     Exit('R_DrawColumnAddMedium_Batch');
-  if AValue = @R_DrawColumnSubtractLowest then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLowest then
     Exit('R_DrawColumnSubtractLowest');
-  if AValue = @R_DrawColumnSubtractMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractMedium_Batch then
     Exit('R_DrawColumnSubtractMedium_Batch');
   if AValue = @R_DrawSpanLow then
     Exit('R_DrawSpanLow');
@@ -442,7 +442,7 @@ begin
     Exit('R_DrawNewFuzzColumn');
   if AValue = @R_DrawFuzzColumn then
     Exit('R_DrawFuzzColumn');
-  if AValue = @R_DrawSkyColumnLow then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
   if AValue = @R_DrawColumnLow_BatchMT then
     Exit('R_DrawColumnLow_BatchMT');
@@ -466,19 +466,19 @@ begin
     Exit('R_StoreFlatSpan8');
   if AValue = @R_DrawSpanLowMT then
     Exit('R_DrawSpanLowMT');
-  if AValue = @R_DrawColumnAlphaMediumDiher then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
   if AValue = @TRendererColumnDrawers.DrawLow then
     Exit('R_DrawColumnLow');
-  if AValue = @R_DrawTallColumnLow then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnLow then
     Exit('R_DrawTallColumnLow');
-  if AValue = @R_DrawColumnAverageLow then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageLow then
     Exit('R_DrawColumnAverageLow');
-  if AValue = @R_DrawColumnAlphaLow then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaLow then
     Exit('R_DrawColumnAlphaLow');
-  if AValue = @R_DrawColumnAddLow then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddLow then
     Exit('R_DrawColumnAddLow');
-  if AValue = @R_DrawColumnSubtractLow then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLow then
     Exit('R_DrawColumnSubtractLow');
   if AValue = @R_DrawColumnLowMT then
     Exit('R_DrawColumnLowMT');
@@ -488,19 +488,19 @@ begin
     Exit('R_DrawColumnAddLowMT');
   if AValue = @R_DrawColumnSubtractLowMT then
     Exit('R_DrawColumnSubtractLowMT');
-  if AValue = @R_DrawColumnMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
   if AValue = @TRendererColumnDrawers.DrawMedium then
     Exit('R_DrawColumnMedium');
-  if AValue = @R_DrawTallColumnMedium then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnMedium then
     Exit('R_DrawTallColumnMedium');
-  if AValue = @R_DrawColumnAverageMedium then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageMedium then
     Exit('R_DrawColumnAverageMedium');
-  if AValue = @R_DrawColumnAlphaMedium then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMedium then
     Exit('R_DrawColumnAlphaMedium');
-  if AValue = @R_DrawColumnAddMedium then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddMedium then
     Exit('R_DrawColumnAddMedium');
-  if AValue = @R_DrawColumnSubtractMedium then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractMedium then
     Exit('R_DrawColumnSubtractMedium');
   if AValue = @R_DrawSpanMedium then
     Exit('R_DrawSpanMedium');
@@ -510,7 +510,7 @@ begin
     Exit('R_DrawSlopeMedium');
   if AValue = @R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
-  if AValue = @R_DrawSkyColumn then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
   if AValue = @R_DrawColumnMedium_BatchMT then
     Exit('R_DrawColumnMedium_BatchMT');
@@ -526,47 +526,47 @@ begin
     Exit('R_DrawSpanMediumMT');
   if AValue = @R_DrawSpanMedium_RippleMT then
     Exit('R_DrawSpanMedium_RippleMT');
-  if AValue = @R_DrawWhiteLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawWhiteLightColumnHi_Batch then
     Exit('R_DrawWhiteLightColumnHi_Batch');
-  if AValue = @R_DrawRedLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawRedLightColumnHi_Batch then
     Exit('R_DrawRedLightColumnHi_Batch');
-  if AValue = @R_DrawGreenLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawGreenLightColumnHi_Batch then
     Exit('R_DrawGreenLightColumnHi_Batch');
-  if AValue = @R_DrawBlueLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawBlueLightColumnHi_Batch then
     Exit('R_DrawBlueLightColumnHi_Batch');
-  if AValue = @R_DrawYellowLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawYellowLightColumnHi_Batch then
     Exit('R_DrawYellowLightColumnHi_Batch');
-  if AValue = @R_DrawTranslatedColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumnHi_Batch then
     Exit('R_DrawTranslatedColumnHi_Batch');
-  if AValue = @R_DrawColumnAverageHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAverageHi_Batch then
     Exit('R_DrawColumnAverageHi_Batch');
-  if AValue = @R_DrawColumnAlphaHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAlphaHi_Batch then
     Exit('R_DrawColumnAlphaHi_Batch');
-  if AValue = @R_DrawColumnAddHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAddHi_Batch then
     Exit('R_DrawColumnAddHi_Batch');
-  if AValue = @R_DrawColumnSubtractHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractHi_Batch then
     Exit('R_DrawColumnSubtractHi_Batch');
-  if AValue = @R_DrawColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnHi_Batch then
     Exit('R_DrawColumnHi_Batch');
   if AValue = @TRendererColumnDrawers.DrawHi then
     Exit('R_DrawColumnHi');
-  if AValue = @R_DrawTallColumnHi then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnHi then
     Exit('R_DrawTallColumnHi');
-  if AValue = @R_DrawTranslatedColumnHi then
+  if AValue = @TRendererColTrDrawers.R_DrawTranslatedColumnHi then
     Exit('R_DrawTranslatedColumnHi');
-  if AValue = @R_DrawColumnAverageHi then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageHi then
     Exit('R_DrawColumnAverageHi');
-  if AValue = @R_DrawColumnAlphaHi then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaHi then
     Exit('R_DrawColumnAlphaHi');
-  if AValue = @R_DrawColumnAddHi then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddHi then
     Exit('R_DrawColumnAddHi');
-  if AValue = @R_DrawColumnAddHi_SmallStep then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddHi_SmallStep then
     Exit('R_DrawColumnAddHi_SmallStep');
-  if AValue = @R_DrawColumnSubtractHi then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractHi then
     Exit('R_DrawColumnSubtractHi');
-  if AValue = @R_DrawMaskedColumnNormal then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnNormal then
     Exit('R_DrawMaskedColumnNormal');
-  if AValue = @R_DrawMaskedColumnHi32 then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi32 then
     Exit('R_DrawMaskedColumnHi32');
   if AValue = @R_DrawSpanNormal then
     Exit('R_DrawSpanNormal');
@@ -574,17 +574,17 @@ begin
     Exit('R_DrawSpanNormal_Ripple');
   if AValue = @R_DrawNewFuzzColumnHi then
     Exit('R_DrawNewFuzzColumnHi');
-  if AValue = @R_DrawWhiteLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawWhiteLightColumnHi then
     Exit('R_DrawWhiteLightColumnHi');
-  if AValue = @R_DrawRedLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawRedLightColumnHi then
     Exit('R_DrawRedLightColumnHi');
-  if AValue = @R_DrawGreenLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawGreenLightColumnHi then
     Exit('R_DrawGreenLightColumnHi');
-  if AValue = @R_DrawBlueLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawBlueLightColumnHi then
     Exit('R_DrawBlueLightColumnHi');
-  if AValue = @R_DrawYellowLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawYellowLightColumnHi then
     Exit('R_DrawYellowLightColumnHi');
-  if AValue = @R_DrawSkyColumnHi then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnHi then
     Exit('R_DrawSkyColumnHi');
   if AValue = @R_DrawColumnHi_BatchMT then
     Exit('R_DrawColumnHi_BatchMT');
@@ -616,7 +616,7 @@ begin
     Exit('R_DrawFuzzColumn32');
   if AValue = @R_DrawColumnHi_Fog then
     Exit('R_DrawColumnHi_Fog');
-  if AValue = @R_DrawTallColumnHi_Fog then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnHi_Fog then
     Exit('R_DrawTallColumnHi_Fog');
   if AValue = @R_DrawMaskedColumnNormal_Fog then
     Exit('R_DrawMaskedColumnNormal_Fog');
@@ -628,21 +628,21 @@ begin
     Exit('R_DrawSpanNormal_Fog_Ripple');
   if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
-  if AValue = @R_DrawTallColumnUltra then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnUltra then
     Exit('R_DrawTallColumnUltra');
-  if AValue = @R_DrawMaskedColumnHi then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi then
     Exit('R_DrawMaskedColumnHi');
   if AValue = @R_DrawColumnUltra_Fog then
     Exit('R_DrawColumnUltra_Fog');
-  if AValue = @R_DrawTallColumnUltra_Fog then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnUltra_Fog then
     Exit('R_DrawTallColumnUltra_Fog');
   if AValue = @R_DrawMaskedColumnHi_Fog then
     Exit('R_DrawMaskedColumnHi_Fog');
-  if AValue = @R_DrawColumnAverageUltra then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageUltra then
     Exit('R_DrawColumnAverageUltra');
-  if AValue = @R_DrawMaskedColumnUltra32 then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnUltra32 then
     Exit('R_DrawMaskedColumnUltra32');
-  if AValue = @R_DrawSkyColumnUltra then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnUltra then
     Exit('R_DrawSkyColumnUltra');
   if AValue = @R_DrawMaskedColumnUltra32_Fog then
     Exit('R_DrawMaskedColumnUltra32_Fog');
@@ -744,39 +744,39 @@ function ValueName(AValue: Pointer): string;
 begin
   if AValue = nil then
     Exit('nil');
-  if AValue = @R_DrawColumnLow_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnLow_Batch then
     Exit('R_DrawColumnLow_Batch');
-  if AValue = @R_DrawFuzzColumn1_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn1_Batch then
     Exit('R_DrawFuzzColumn1_Batch');
-  if AValue = @R_DrawFuzzColumn2_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn2_Batch then
     Exit('R_DrawFuzzColumn2_Batch');
-  if AValue = @R_DrawTranslatedColumn_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumn_Batch then
     Exit('R_DrawTranslatedColumn_Batch');
   if AValue = @R_DrawFuzzColumnTL then
     Exit('R_DrawFuzzColumnTL');
-  if AValue = @R_DrawFuzzColumnTL_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumnTL_Batch then
     Exit('R_DrawFuzzColumnTL_Batch');
   if AValue = @TRendererColumnDrawers.DrawLowest then
     Exit('R_DrawColumnLowest');
-  if AValue = @R_DrawTallColumnLowest then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnLowest then
     Exit('R_DrawTallColumnLowest');
-  if AValue = @R_DrawTranslatedColumn then
+  if AValue = @TRendererColTrDrawers.R_DrawTranslatedColumn then
     Exit('R_DrawTranslatedColumn');
-  if AValue = @R_DrawColumnAverageLowest then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageLowest then
     Exit('R_DrawColumnAverageLowest');
-  if AValue = @R_DrawColumnAlphaLowest then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaLowest then
     Exit('R_DrawColumnAlphaLowest');
-  if AValue = @R_DrawColumnAverageMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAverageMedium_Batch then
     Exit('R_DrawColumnAverageMedium_Batch');
-  if AValue = @R_DrawColumnAlphaMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAlphaMedium_Batch then
     Exit('R_DrawColumnAlphaMedium_Batch');
-  if AValue = @R_DrawColumnAddLowest then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddLowest then
     Exit('R_DrawColumnAddLowest');
-  if AValue = @R_DrawColumnAddMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAddMedium_Batch then
     Exit('R_DrawColumnAddMedium_Batch');
-  if AValue = @R_DrawColumnSubtractLowest then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLowest then
     Exit('R_DrawColumnSubtractLowest');
-  if AValue = @R_DrawColumnSubtractMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractMedium_Batch then
     Exit('R_DrawColumnSubtractMedium_Batch');
   if AValue = @R_DrawSpanLow then
     Exit('R_DrawSpanLow');
@@ -784,7 +784,7 @@ begin
     Exit('R_DrawFuzzColumn1');
   if AValue = @R_DrawFuzzColumn2 then
     Exit('R_DrawFuzzColumn2');
-  if AValue = @R_DrawSkyColumnLow then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
   if AValue = @R_DrawColumnLow_BatchMT then
     Exit('R_DrawColumnLow_BatchMT');
@@ -808,19 +808,19 @@ begin
     Exit('R_StoreFlatSpan8');
   if AValue = @R_DrawSpanLowMT then
     Exit('R_DrawSpanLowMT');
-  if AValue = @R_DrawColumnAlphaMediumDiher then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
   if AValue = @TRendererColumnDrawers.DrawLow then
     Exit('R_DrawColumnLow');
-  if AValue = @R_DrawTallColumnLow then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnLow then
     Exit('R_DrawTallColumnLow');
-  if AValue = @R_DrawColumnAverageLow then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageLow then
     Exit('R_DrawColumnAverageLow');
-  if AValue = @R_DrawColumnAlphaLow then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaLow then
     Exit('R_DrawColumnAlphaLow');
-  if AValue = @R_DrawColumnAddLow then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddLow then
     Exit('R_DrawColumnAddLow');
-  if AValue = @R_DrawColumnSubtractLow then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLow then
     Exit('R_DrawColumnSubtractLow');
   if AValue = @R_DrawColumnLowMT then
     Exit('R_DrawColumnLowMT');
@@ -830,19 +830,19 @@ begin
     Exit('R_DrawColumnAddLowMT');
   if AValue = @R_DrawColumnSubtractLowMT then
     Exit('R_DrawColumnSubtractLowMT');
-  if AValue = @R_DrawColumnMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
   if AValue = @TRendererColumnDrawers.DrawMedium then
     Exit('R_DrawColumnMedium');
-  if AValue = @R_DrawTallColumnMedium then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnMedium then
     Exit('R_DrawTallColumnMedium');
-  if AValue = @R_DrawColumnAverageMedium then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageMedium then
     Exit('R_DrawColumnAverageMedium');
-  if AValue = @R_DrawColumnAlphaMedium then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMedium then
     Exit('R_DrawColumnAlphaMedium');
-  if AValue = @R_DrawColumnAddMedium then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddMedium then
     Exit('R_DrawColumnAddMedium');
-  if AValue = @R_DrawColumnSubtractMedium then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractMedium then
     Exit('R_DrawColumnSubtractMedium');
   if AValue = @R_DrawSpanMedium then
     Exit('R_DrawSpanMedium');
@@ -852,7 +852,7 @@ begin
     Exit('R_DrawSlopeMedium');
   if AValue = @R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
-  if AValue = @R_DrawSkyColumn then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
   if AValue = @R_DrawColumnMedium_BatchMT then
     Exit('R_DrawColumnMedium_BatchMT');
@@ -868,55 +868,55 @@ begin
     Exit('R_DrawSpanMediumMT');
   if AValue = @R_DrawSpanMedium_RippleMT then
     Exit('R_DrawSpanMedium_RippleMT');
-  if AValue = @R_DrawColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnHi_Batch then
     Exit('R_DrawColumnHi_Batch');
-  if AValue = @R_DrawFuzzColumn1Hi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn1Hi_Batch then
     Exit('R_DrawFuzzColumn1Hi_Batch');
-  if AValue = @R_DrawFuzzColumn2Hi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn2Hi_Batch then
     Exit('R_DrawFuzzColumn2Hi_Batch');
-  if AValue = @R_DrawWhiteLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawWhiteLightColumnHi_Batch then
     Exit('R_DrawWhiteLightColumnHi_Batch');
-  if AValue = @R_DrawRedLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawRedLightColumnHi_Batch then
     Exit('R_DrawRedLightColumnHi_Batch');
-  if AValue = @R_DrawGreenLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawGreenLightColumnHi_Batch then
     Exit('R_DrawGreenLightColumnHi_Batch');
-  if AValue = @R_DrawBlueLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawBlueLightColumnHi_Batch then
     Exit('R_DrawBlueLightColumnHi_Batch');
-  if AValue = @R_DrawYellowLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawYellowLightColumnHi_Batch then
     Exit('R_DrawYellowLightColumnHi_Batch');
-  if AValue = @R_DrawTranslatedColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumnHi_Batch then
     Exit('R_DrawTranslatedColumnHi_Batch');
-  if AValue = @R_DrawColumnAverageHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAverageHi_Batch then
     Exit('R_DrawColumnAverageHi_Batch');
-  if AValue = @R_DrawColumnAlphaHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAlphaHi_Batch then
     Exit('R_DrawColumnAlphaHi_Batch');
-  if AValue = @R_DrawColumnAddHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAddHi_Batch then
     Exit('R_DrawColumnAddHi_Batch');
-  if AValue = @R_DrawColumnSubtractHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractHi_Batch then
     Exit('R_DrawColumnSubtractHi_Batch');
   if AValue = @R_DrawFuzzColumnHiTL then
     Exit('R_DrawFuzzColumnHiTL');
-  if AValue = @R_DrawFuzzColumnHiTL_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumnHiTL_Batch then
     Exit('R_DrawFuzzColumnHiTL_Batch');
   if AValue = @TRendererColumnDrawers.DrawHi then
     Exit('R_DrawColumnHi');
-  if AValue = @R_DrawTallColumnHi then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnHi then
     Exit('R_DrawTallColumnHi');
-  if AValue = @R_DrawTranslatedColumnHi then
+  if AValue = @TRendererColTrDrawers.R_DrawTranslatedColumnHi then
     Exit('R_DrawTranslatedColumnHi');
-  if AValue = @R_DrawColumnAverageHi then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageHi then
     Exit('R_DrawColumnAverageHi');
-  if AValue = @R_DrawColumnAlphaHi then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaHi then
     Exit('R_DrawColumnAlphaHi');
-  if AValue = @R_DrawColumnAddHi then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddHi then
     Exit('R_DrawColumnAddHi');
-  if AValue = @R_DrawColumnAddHi_SmallStep then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddHi_SmallStep then
     Exit('R_DrawColumnAddHi_SmallStep');
-  if AValue = @R_DrawColumnSubtractHi then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractHi then
     Exit('R_DrawColumnSubtractHi');
-  if AValue = @R_DrawMaskedColumnNormal then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnNormal then
     Exit('R_DrawMaskedColumnNormal');
-  if AValue = @R_DrawMaskedColumnHi32 then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi32 then
     Exit('R_DrawMaskedColumnHi32');
   if AValue = @R_DrawSpanNormal then
     Exit('R_DrawSpanNormal');
@@ -926,17 +926,17 @@ begin
     Exit('R_DrawFuzzColumn1Hi');
   if AValue = @R_DrawFuzzColumn2Hi then
     Exit('R_DrawFuzzColumn2Hi');
-  if AValue = @R_DrawWhiteLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawWhiteLightColumnHi then
     Exit('R_DrawWhiteLightColumnHi');
-  if AValue = @R_DrawRedLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawRedLightColumnHi then
     Exit('R_DrawRedLightColumnHi');
-  if AValue = @R_DrawGreenLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawGreenLightColumnHi then
     Exit('R_DrawGreenLightColumnHi');
-  if AValue = @R_DrawBlueLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawBlueLightColumnHi then
     Exit('R_DrawBlueLightColumnHi');
-  if AValue = @R_DrawYellowLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawYellowLightColumnHi then
     Exit('R_DrawYellowLightColumnHi');
-  if AValue = @R_DrawSkyColumnHi then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnHi then
     Exit('R_DrawSkyColumnHi');
   if AValue = @R_DrawColumnHi_BatchMT then
     Exit('R_DrawColumnHi_BatchMT');
@@ -966,15 +966,15 @@ begin
     Exit('R_DrawSpanNormal_RippleMT');
   if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
-  if AValue = @R_DrawTallColumnUltra then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnUltra then
     Exit('R_DrawTallColumnUltra');
-  if AValue = @R_DrawMaskedColumnHi then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi then
     Exit('R_DrawMaskedColumnHi');
-  if AValue = @R_DrawColumnAverageUltra then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageUltra then
     Exit('R_DrawColumnAverageUltra');
-  if AValue = @R_DrawMaskedColumnUltra32 then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnUltra32 then
     Exit('R_DrawMaskedColumnUltra32');
-  if AValue = @R_DrawSkyColumnUltra then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnUltra then
     Exit('R_DrawSkyColumnUltra');
   Result := '?' + IntToHex(NativeUInt(AValue), 8);
 end;
@@ -1072,39 +1072,39 @@ function ValueName(AValue: Pointer): string;
 begin
   if AValue = nil then
     Exit('nil');
-  if AValue = @R_DrawColumnLow_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnLow_Batch then
     Exit('R_DrawColumnLow_Batch');
-  if AValue = @R_DrawFuzzColumn_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn_Batch then
     Exit('R_DrawFuzzColumn_Batch');
-  if AValue = @R_DrawTranslatedColumn_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumn_Batch then
     Exit('R_DrawTranslatedColumn_Batch');
   if AValue = @TRendererColumnDrawers.DrawLowest then
     Exit('R_DrawColumnLowest');
-  if AValue = @R_DrawTallColumnLowest then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnLowest then
     Exit('R_DrawTallColumnLowest');
-  if AValue = @R_DrawTranslatedColumn then
+  if AValue = @TRendererColTrDrawers.R_DrawTranslatedColumn then
     Exit('R_DrawTranslatedColumn');
-  if AValue = @R_DrawColumnAverageLowest then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageLowest then
     Exit('R_DrawColumnAverageLowest');
-  if AValue = @R_DrawColumnAlphaLowest then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaLowest then
     Exit('R_DrawColumnAlphaLowest');
-  if AValue = @R_DrawColumnAverageMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAverageMedium_Batch then
     Exit('R_DrawColumnAverageMedium_Batch');
-  if AValue = @R_DrawColumnAlphaMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAlphaMedium_Batch then
     Exit('R_DrawColumnAlphaMedium_Batch');
-  if AValue = @R_DrawColumnAddLowest then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddLowest then
     Exit('R_DrawColumnAddLowest');
-  if AValue = @R_DrawColumnAddMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAddMedium_Batch then
     Exit('R_DrawColumnAddMedium_Batch');
-  if AValue = @R_DrawColumnSubtractLowest then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLowest then
     Exit('R_DrawColumnSubtractLowest');
-  if AValue = @R_DrawColumnSubtractMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractMedium_Batch then
     Exit('R_DrawColumnSubtractMedium_Batch');
   if AValue = @R_DrawSpanLow then
     Exit('R_DrawSpanLow');
   if AValue = @R_DrawFuzzColumn then
     Exit('R_DrawFuzzColumn');
-  if AValue = @R_DrawSkyColumnLow then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
   if AValue = @R_DrawColumnLow_BatchMT then
     Exit('R_DrawColumnLow_BatchMT');
@@ -1128,19 +1128,19 @@ begin
     Exit('R_StoreFlatSpan8');
   if AValue = @R_DrawSpanLowMT then
     Exit('R_DrawSpanLowMT');
-  if AValue = @R_DrawColumnAlphaMediumDiher then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMediumDiher then
     Exit('R_DrawColumnAlphaMediumDiher');
   if AValue = @TRendererColumnDrawers.DrawLow then
     Exit('R_DrawColumnLow');
-  if AValue = @R_DrawTallColumnLow then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnLow then
     Exit('R_DrawTallColumnLow');
-  if AValue = @R_DrawColumnAverageLow then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageLow then
     Exit('R_DrawColumnAverageLow');
-  if AValue = @R_DrawColumnAlphaLow then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaLow then
     Exit('R_DrawColumnAlphaLow');
-  if AValue = @R_DrawColumnAddLow then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddLow then
     Exit('R_DrawColumnAddLow');
-  if AValue = @R_DrawColumnSubtractLow then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLow then
     Exit('R_DrawColumnSubtractLow');
   if AValue = @R_DrawColumnLowMT then
     Exit('R_DrawColumnLowMT');
@@ -1150,19 +1150,19 @@ begin
     Exit('R_DrawColumnAddLowMT');
   if AValue = @R_DrawColumnSubtractLowMT then
     Exit('R_DrawColumnSubtractLowMT');
-  if AValue = @R_DrawColumnMedium_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
   if AValue = @TRendererColumnDrawers.DrawMedium then
     Exit('R_DrawColumnMedium');
-  if AValue = @R_DrawTallColumnMedium then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnMedium then
     Exit('R_DrawTallColumnMedium');
-  if AValue = @R_DrawColumnAverageMedium then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageMedium then
     Exit('R_DrawColumnAverageMedium');
-  if AValue = @R_DrawColumnAlphaMedium then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaMedium then
     Exit('R_DrawColumnAlphaMedium');
-  if AValue = @R_DrawColumnAddMedium then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddMedium then
     Exit('R_DrawColumnAddMedium');
-  if AValue = @R_DrawColumnSubtractMedium then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractMedium then
     Exit('R_DrawColumnSubtractMedium');
   if AValue = @R_DrawSpanMedium then
     Exit('R_DrawSpanMedium');
@@ -1172,7 +1172,7 @@ begin
     Exit('R_DrawSlopeMedium');
   if AValue = @R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
-  if AValue = @R_DrawSkyColumn then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
   if AValue = @R_DrawColumnMedium_BatchMT then
     Exit('R_DrawColumnMedium_BatchMT');
@@ -1188,49 +1188,49 @@ begin
     Exit('R_DrawSpanMediumMT');
   if AValue = @R_DrawSpanMedium_RippleMT then
     Exit('R_DrawSpanMedium_RippleMT');
-  if AValue = @R_DrawColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnHi_Batch then
     Exit('R_DrawColumnHi_Batch');
-  if AValue = @R_DrawFuzzColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumnHi_Batch then
     Exit('R_DrawFuzzColumnHi_Batch');
-  if AValue = @R_DrawWhiteLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawWhiteLightColumnHi_Batch then
     Exit('R_DrawWhiteLightColumnHi_Batch');
-  if AValue = @R_DrawRedLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawRedLightColumnHi_Batch then
     Exit('R_DrawRedLightColumnHi_Batch');
-  if AValue = @R_DrawGreenLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawGreenLightColumnHi_Batch then
     Exit('R_DrawGreenLightColumnHi_Batch');
-  if AValue = @R_DrawBlueLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawBlueLightColumnHi_Batch then
     Exit('R_DrawBlueLightColumnHi_Batch');
-  if AValue = @R_DrawYellowLightColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawYellowLightColumnHi_Batch then
     Exit('R_DrawYellowLightColumnHi_Batch');
-  if AValue = @R_DrawTranslatedColumnHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawTranslatedColumnHi_Batch then
     Exit('R_DrawTranslatedColumnHi_Batch');
-  if AValue = @R_DrawColumnAverageHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAverageHi_Batch then
     Exit('R_DrawColumnAverageHi_Batch');
-  if AValue = @R_DrawColumnAlphaHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAlphaHi_Batch then
     Exit('R_DrawColumnAlphaHi_Batch');
-  if AValue = @R_DrawColumnAddHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnAddHi_Batch then
     Exit('R_DrawColumnAddHi_Batch');
-  if AValue = @R_DrawColumnSubtractHi_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawColumnSubtractHi_Batch then
     Exit('R_DrawColumnSubtractHi_Batch');
   if AValue = @TRendererColumnDrawers.DrawHi then
     Exit('R_DrawColumnHi');
-  if AValue = @R_DrawTallColumnHi then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnHi then
     Exit('R_DrawTallColumnHi');
-  if AValue = @R_DrawTranslatedColumnHi then
+  if AValue = @TRendererColTrDrawers.R_DrawTranslatedColumnHi then
     Exit('R_DrawTranslatedColumnHi');
-  if AValue = @R_DrawColumnAverageHi then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageHi then
     Exit('R_DrawColumnAverageHi');
-  if AValue = @R_DrawColumnAlphaHi then
+  if AValue = @TRendererAlphaDrawers.R_DrawColumnAlphaHi then
     Exit('R_DrawColumnAlphaHi');
-  if AValue = @R_DrawColumnAddHi then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddHi then
     Exit('R_DrawColumnAddHi');
-  if AValue = @R_DrawColumnAddHi_SmallStep then
+  if AValue = @TRendererAdditiveDrawers.R_DrawColumnAddHi_SmallStep then
     Exit('R_DrawColumnAddHi_SmallStep');
-  if AValue = @R_DrawColumnSubtractHi then
+  if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractHi then
     Exit('R_DrawColumnSubtractHi');
-  if AValue = @R_DrawMaskedColumnNormal then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnNormal then
     Exit('R_DrawMaskedColumnNormal');
-  if AValue = @R_DrawMaskedColumnHi32 then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi32 then
     Exit('R_DrawMaskedColumnHi32');
   if AValue = @R_DrawSpanNormal then
     Exit('R_DrawSpanNormal');
@@ -1238,17 +1238,17 @@ begin
     Exit('R_DrawSpanNormal_Ripple');
   if AValue = @R_DrawFuzzColumnHi then
     Exit('R_DrawFuzzColumnHi');
-  if AValue = @R_DrawWhiteLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawWhiteLightColumnHi then
     Exit('R_DrawWhiteLightColumnHi');
-  if AValue = @R_DrawRedLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawRedLightColumnHi then
     Exit('R_DrawRedLightColumnHi');
-  if AValue = @R_DrawGreenLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawGreenLightColumnHi then
     Exit('R_DrawGreenLightColumnHi');
-  if AValue = @R_DrawBlueLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawBlueLightColumnHi then
     Exit('R_DrawBlueLightColumnHi');
-  if AValue = @R_DrawYellowLightColumnHi then
+  if AValue = @TRendererColLDrawers.R_DrawYellowLightColumnHi then
     Exit('R_DrawYellowLightColumnHi');
-  if AValue = @R_DrawSkyColumnHi then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnHi then
     Exit('R_DrawSkyColumnHi');
   if AValue = @R_DrawColumnHi_BatchMT then
     Exit('R_DrawColumnHi_BatchMT');
@@ -1276,21 +1276,21 @@ begin
     Exit('R_DrawSpanNormalMT');
   if AValue = @R_DrawSpanNormal_RippleMT then
     Exit('R_DrawSpanNormal_RippleMT');
-  if AValue = @R_DrawFuzzColumn32_Batch then
+  if AValue = @TRendererBatchColumnDrawers.R_DrawFuzzColumn32_Batch then
     Exit('R_DrawFuzzColumn32_Batch');
   if AValue = @R_DrawFuzzColumn32 then
     Exit('R_DrawFuzzColumn32');
   if AValue = @TRendererColumnDrawers.DrawUltra then
     Exit('R_DrawColumnUltra');
-  if AValue = @R_DrawTallColumnUltra then
+  if AValue = @TRendererTallColumnDrawers.R_DrawTallColumnUltra then
     Exit('R_DrawTallColumnUltra');
-  if AValue = @R_DrawMaskedColumnHi then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnHi then
     Exit('R_DrawMaskedColumnHi');
-  if AValue = @R_DrawColumnAverageUltra then
+  if AValue = @TRendererAverageDrawers.R_DrawColumnAverageUltra then
     Exit('R_DrawColumnAverageUltra');
-  if AValue = @R_DrawMaskedColumnUltra32 then
+  if AValue = @TRendererColMsDrawers.R_DrawMaskedColumnUltra32 then
     Exit('R_DrawMaskedColumnUltra32');
-  if AValue = @R_DrawSkyColumnUltra then
+  if AValue = @TRendererColSkDrawers.R_DrawSkyColumnUltra then
     Exit('R_DrawSkyColumnUltra');
   Result := '?' + IntToHex(NativeUInt(AValue), 8);
 end;

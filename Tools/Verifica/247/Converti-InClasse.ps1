@@ -92,7 +92,7 @@ function Convert-OneUnit([string]$Path) {
     $restText = [regex]::Replace($restText, "(?m)^procedure\s+$name\b", "class procedure $Class.$name")
   }
   $head = ($out -join $nl)
-  $text = $head + $nl + ($classText -join $nl) + $restText
+  $text = $head + $nl + ($classText -join $nl) + $nl + $restText
   [IO.File]::WriteAllText($Path, $text, $utf8)
   $found.Keys
 }
@@ -122,7 +122,7 @@ foreach ($file in (Get-ChildItem (Join-Path $Root $CallersDir) -Recurse -Include
   $fileLines = $new -split "`r?`n", -1
   for ($k = 0; $k -lt $fileLines.Count; $k++) {
     # le righe che sono commenti di riga non cambiano
-    if ($fileLines[$k] -match '^\s*//') { continue }
+    if ($fileLines[$k] -match '^\s*(//|\{\$I)') { continue }
     foreach ($name in $all) {
       if ($fileLines[$k] -match "\b$name\b") { $fileLines[$k] = [regex]::Replace($fileLines[$k], "(?<![\w.])$name\b", "$Class.$name") }
     }

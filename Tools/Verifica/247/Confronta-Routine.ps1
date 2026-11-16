@@ -34,6 +34,11 @@ function Get-Instructions([string]$Exe, [string]$Map, [string]$Name, [string]$Fi
 $different = 0
 foreach ($pair in @($Pairs | ForEach-Object { $_ -split ';' } | Where-Object { $_ -ne '' })) {
   $names = $pair -split '=', 2
+  # una routine che esiste solo in alcuni giochi manca dal .map degli altri: se manca in tutti e due non si confronta
+  $inOld = Select-String -Path $OldMap -SimpleMatch -Pattern (' ' + $names[0]) | Where-Object { $_.Line -match ('\s' + [regex]::Escape($names[0]) + '\s*$') } | Select-Object -First 1
+  $inNew = Select-String -Path $NewMap -SimpleMatch -Pattern (' ' + $names[1]) | Where-Object { $_.Line -match ('\s' + [regex]::Escape($names[1]) + '\s*$') } | Select-Object -First 1
+  if (-not $inOld -and -not $inNew) { continue }
+  if ((-not $inOld) -or (-not $inNew)) { $different++; Write-Output ("{0}{1} : DIVERSO (presente solo in uno)" -f $Label, $names[0]); continue }
   $a = Get-Instructions $OldExe $OldMap $names[0] (Join-Path $tmp 'a.txt')
   $b = Get-Instructions $NewExe $NewMap $names[1] (Join-Path $tmp 'b.txt')
   $same = ($a.Count -eq $b.Count)
