@@ -36,7 +36,16 @@ interface
 // R_DrawSpanNormal_Fog_Ripple
 //
 //==============================================================================
-procedure R_DrawSpanNormal_Fog_Ripple;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSpan32FogRippleDrawers = class sealed
+  public
+    class procedure R_DrawSpanNormal_Fog_Ripple; static;
+  end;
 
 implementation
 {$DEFINE FOG}
@@ -56,7 +65,7 @@ uses
 // R_DrawSpanNormal_Fog_Ripple
 //
 //==============================================================================
-procedure R_DrawSpanNormal_Fog_Ripple;
+class procedure TRendererSpan32FogRippleDrawers.R_DrawSpanNormal_Fog_Ripple;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;

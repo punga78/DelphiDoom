@@ -42,21 +42,18 @@ uses
 // No Sepctre effect needed.
 //
 //==============================================================================
-procedure R_DrawSpanLow;
 
 //==============================================================================
 //
 // R_DrawSpanMedium
 //
 //==============================================================================
-procedure R_DrawSpanMedium;
 
 //==============================================================================
 //
 // R_DrawSpanMedium_Ripple
 //
 //==============================================================================
-procedure R_DrawSpanMedium_Ripple;
 
 var
   ds_y: integer;
@@ -84,6 +81,18 @@ var
 // Flat size
   ds_size: integer;
 
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSpanDrawers = class sealed
+  public
+    class procedure R_DrawSpanLow; static;
+    class procedure R_DrawSpanMedium; static;
+    class procedure R_DrawSpanMedium_Ripple; static;
+  end;
+
 implementation
 
 uses
@@ -108,7 +117,7 @@ uses
 // Draws the actual span (Low resolution).
 //
 //==============================================================================
-procedure R_DrawSpanLow;
+class procedure TRendererSpanDrawers.R_DrawSpanLow;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;
@@ -356,7 +365,7 @@ end;
 // Draws the actual span (Medium resolution).
 //
 //==============================================================================
-procedure R_DrawSpanMedium;
+class procedure TRendererSpanDrawers.R_DrawSpanMedium;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;
@@ -383,7 +392,7 @@ end;
 // R_DrawSpanMedium_Ripple
 //
 //==============================================================================
-procedure R_DrawSpanMedium_Ripple;
+class procedure TRendererSpanDrawers.R_DrawSpanMedium_Ripple;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;

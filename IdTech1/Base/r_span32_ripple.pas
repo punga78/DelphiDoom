@@ -35,7 +35,16 @@ interface
 // R_DrawSpanNormal_Ripple
 //
 //==============================================================================
-procedure R_DrawSpanNormal_Ripple;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSpan32RippleDrawers = class sealed
+  public
+    class procedure R_DrawSpanNormal_Ripple; static;
+  end;
 
 implementation
 
@@ -54,7 +63,7 @@ uses
 // R_DrawSpanNormal_Ripple
 //
 //==============================================================================
-procedure R_DrawSpanNormal_Ripple;
+class procedure TRendererSpan32RippleDrawers.R_DrawSpanNormal_Ripple;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;

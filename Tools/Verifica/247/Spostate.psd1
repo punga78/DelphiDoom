@@ -75,4 +75,35 @@
   R_DrawTranslatedColumnHi_Batch = @{ Expression = 'TRendererBatchColumnDrawers.R_DrawTranslatedColumnHi_Batch'; Unit = 'r_batchcolumn' }
   R_DrawFuzzColumnHi_Batch = @{ Expression = 'TRendererBatchColumnDrawers.R_DrawFuzzColumnHi_Batch'; Unit = 'r_batchcolumn' }
   R_DrawFuzzColumn32_Batch = @{ Expression = 'TRendererBatchColumnDrawers.R_DrawFuzzColumn32_Batch'; Unit = 'r_batchcolumn' }
+  R_DrawFuzzColumnHi = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnHi'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn32'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn'; Unit = 'r_col_fz' }
+  R_DrawNewFuzzColumnHi = @{ Expression = 'TRendererColFzDrawers.R_DrawNewFuzzColumnHi'; Unit = 'r_col_fz' }
+  R_DrawNewFuzzColumn = @{ Expression = 'TRendererColFzDrawers.R_DrawNewFuzzColumn'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn2Hi = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2Hi'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn1 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumnTL = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnTL'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn2Hi32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2Hi32'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn1Hi = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1Hi'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumnHiTL = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumnHiTL'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn1Hi32 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn1Hi32'; Unit = 'r_col_fz' }
+  R_DrawFuzzColumn2 = @{ Expression = 'TRendererColFzDrawers.R_DrawFuzzColumn2'; Unit = 'r_col_fz' }
+  R_DrawColumnHi_Fog = @{ Expression = 'TRendererColFogDrawers.R_DrawColumnHi_Fog'; Unit = 'r_col_fog' }
+  R_DrawColumnUltra_Fog = @{ Expression = 'TRendererColFogDrawers.R_DrawColumnUltra_Fog'; Unit = 'r_col_fog' }
+  R_DrawMaskedColumnHi32_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnHi32_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawMaskedColumnNormal_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnNormal_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawMaskedColumnUltra32_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnUltra32_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawMaskedColumnHi_Fog = @{ Expression = 'TRendererColMsFogDrawers.R_DrawMaskedColumnHi_Fog'; Unit = 'r_col_ms_fog' }
+  R_DrawSpanNormal_Fog = @{ Expression = 'TRendererSpan32FogDrawers.R_DrawSpanNormal_Fog'; Unit = 'r_span32_fog' }
+  R_DrawSpanNormal_Fog_Ripple = @{ Expression = 'TRendererSpan32FogRippleDrawers.R_DrawSpanNormal_Fog_Ripple'; Unit = 'r_span32_fog_ripple' }
+  R_DrawSpanMedium = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanMedium'; Unit = 'r_span' }
+  R_DrawSpanMedium_Ripple = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanMedium_Ripple'; Unit = 'r_span' }
+  R_DrawSpanLow = @{ Expression = 'TRendererSpanDrawers.R_DrawSpanLow'; Unit = 'r_span' }
+  R_DrawSpanNormal = @{ Expression = 'TRendererSpan32Drawers.R_DrawSpanNormal'; Unit = 'r_span32' }
+  R_DrawSpanNormal_Ripple = @{ Expression = 'TRendererSpan32RippleDrawers.R_DrawSpanNormal_Ripple'; Unit = 'r_span32_ripple' }
+  R_DrawSpanMediumMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanMediumMT'; Unit = 'r_flat8' }
+  R_DrawSpanMedium_RippleMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanMedium_RippleMT'; Unit = 'r_flat8' }
+  R_DrawSpanLowMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanLowMT'; Unit = 'r_flat8' }
+  R_DrawSpanNormalMT = @{ Expression = 'TRendererFlat32Drawers.R_DrawSpanNormalMT'; Unit = 'r_flat32' }
+  R_DrawSpanNormal_RippleMT = @{ Expression = 'TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT'; Unit = 'r_flat32_ripple' }
 }

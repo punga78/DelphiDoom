@@ -348,9 +348,9 @@ begin
     {$IFDEF STRIFE}
     // villsa [STRIFE] render as transparent (25% or 75%?)
     else if curline.linedef.flags and ML_TRANSPARENT2 <> 0 then
-      colfunc := @R_DrawFuzzColumn2Hi32
+      colfunc := @TRendererColFzDrawers.R_DrawFuzzColumn2Hi32
     else if curline.linedef.flags and ML_TRANSPARENT1 <> 0 then
-      colfunc := @R_DrawFuzzColumn1Hi32
+      colfunc := @TRendererColFzDrawers.R_DrawFuzzColumn1Hi32
     {$ENDIF}
     else
     {$ENDIF}

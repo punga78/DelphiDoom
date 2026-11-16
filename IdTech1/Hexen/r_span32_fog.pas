@@ -36,7 +36,16 @@ interface
 // R_DrawSpanNormal_Fog
 //
 //==============================================================================
-procedure R_DrawSpanNormal_Fog;
+
+type
+  /// <summary>
+  ///   The drawing routines of this unit as static methods with the text and the names of the old procedures. They
+  ///   stay in the unit of the registers they read: a routine in another unit is compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererSpan32FogDrawers = class sealed
+  public
+    class procedure R_DrawSpanNormal_Fog; static;
+  end;
 
 implementation
 {$DEFINE FOG}
@@ -56,7 +65,7 @@ uses
 // Draws the actual span (Normal resolution).
 //
 //==============================================================================
-procedure R_DrawSpanNormal_Fog;
+class procedure TRendererSpan32FogDrawers.R_DrawSpanNormal_Fog;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;
