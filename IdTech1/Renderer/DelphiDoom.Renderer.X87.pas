@@ -16,7 +16,7 @@ unit DelphiDoom.Renderer.X87;
 interface
 
 uses
-  DelphiDoom.MathCore.SoftExtended, DelphiDoom.MathCore.X87Double;
+  DelphiDoom.MathCore.SoftExtended, DelphiDoom.MathCore.SoftArcTan, DelphiDoom.MathCore.X87Double;
 
 type
   /// <summary>
@@ -91,6 +91,40 @@ type
       static;
     /// <summary>The same; the native result is used when it is certainly the one of the FPU</summary>
     class function SlopeInverseDistance(ARTheta, ATheta: Integer; const AInverseLeft, AInverseRight: Single): Integer;
+      static;
+    /// <summary>
+    ///   fov of R_InitTextureMapping: Round(ArcTan(AAspect) * AFineAngles / D_PI) with the D_PI of tables.pas.
+    ///   The arc tangent is TSoftArcTan: the same integer as the FPU unless the value is within 1e-18 of a half
+    /// </summary>
+    class function FieldOfView(const AAspect: Double; AFineAngles: Integer): Integer; static;
+    /// <summary>
+    ///   The angle of a column of a voxel: Round(ArcTan2(AY, AX) * (ANG180 / D_PI)) (r_voxels.pas)
+    /// </summary>
+    class function VoxelColumnAngle(AY, AX: Integer): Int64; static;
+    /// <summary>
+    ///   The turn of a spinning voxel: Round(((ALevelTime + ATicFraction / FRACUNIT) / ATicRate * ASpin) *
+    ///   (ANGLE_MAX / 360)); with AWithFraction false the paused game one, without the fraction of the tic
+    /// </summary>
+    class function VoxelSpinAngle(ALevelTime, ATicFraction, ATicRate: Integer; ASpin: Int64;
+      AWithFraction: Boolean): Int64; static;
+    /// <summary>
+    ///   distf of R_AdjustTeleportZoom, a Single: Sqr(ATeleportTics / FRACUNIT) / (AZoom / FRACUNIT); the
+    ///   distance is Round(distf * FRACUNIT), computed by TeleportDistance
+    /// </summary>
+    class function TeleportDistance(ATeleportTics, AZoom: Integer): Integer; static;
+    /// <summary>
+    ///   GetOffset of gl_setup.pas: Round(Sqrt(a * a + b * b) * FRACUNIT) with a and b Singles of the two
+    ///   differences over FRACUNIT (the length of a wall of the OpenGL renderer)
+    /// </summary>
+    class function WallOffset(ADeltaX, ADeltaY: Integer): Integer; static;
+    /// <summary>
+    ///   R_PointToScreenBufferEx of r_utils.pas: the world point, as its distances from the view (ADeltaX, ADeltaY,
+    ///   ADeltaZ), on the screen. Every intermediate value is stored in a Single, as in the old code. Gives False,
+    ///   leaving the outputs alone, when the point is at the plane of the view or a value is out of the range of a
+    ///   Single: the caller then uses its own code (the FPU would give an infinity)
+    /// </summary>
+    class function ScreenPoint(ADeltaX, ADeltaY, ADeltaZ, AViewCosine, AViewSine, AProjection, AProjectionY,
+      ACenterX, ACenterY, AViewWidth, AViewHeight: Integer; out AX, AY: Integer; out AInside: Boolean): Boolean;
       static;
   end;
 
@@ -317,5 +351,96 @@ begin
   Result := SlopeInverseDistanceExact(ARTheta, ATheta, AInverseLeft, AInverseRight);
 end;
 {$IFEND}
+
+class function TRendererX87.FieldOfView(const AAspect: Double; AFineAngles: Integer): Integer;
+begin
+  // D_PI = 3.141592657 is a decimal literal of the 32 bit compiler: an Extended
+  Result := Integer((TSoftArcTan.ArcTan(TSoftExtended.FromDouble(AAspect)) * TSoftExtended.FromInt64(AFineAngles) /
+    TSoftExtended.FromRatio(3141592657, 1000000000)).Round);
+end;
+
+class function TRendererX87.VoxelColumnAngle(AY, AX: Integer): Int64;
+begin
+  // two integers choose the Single overload of ArcTan2 of System.Math: the arguments are Singles
+  Result := (TSoftArcTan.ArcTan2(TSoftExtended.FromDouble(Single(AY)), TSoftExtended.FromDouble(Single(AX))) *
+    (TSoftExtended.FromInt64($80000000) / TSoftExtended.FromRatio(3141592657, 1000000000))).Round;
+end;
+
+class function TRendererX87.VoxelSpinAngle(ALevelTime, ATicFraction, ATicRate: Integer; ASpin: Int64;
+  AWithFraction: Boolean): Int64;
+var
+  LTime: TSoftExtended;
+begin
+  LTime := TSoftExtended.FromInt64(ALevelTime);
+  if AWithFraction then
+    LTime := LTime + TSoftExtended.FromInt64(ATicFraction) / TSoftExtended.FromInt64(FRACTION_UNIT);
+  Result := ((LTime / TSoftExtended.FromInt64(ATicRate) * TSoftExtended.FromInt64(ASpin)) *
+    TSoftExtended.FromRatio($FFFFFFFF, 360)).Round;
+end;
+
+class function TRendererX87.TeleportDistance(ATeleportTics, AZoom: Integer): Integer;
+var
+  LRatio: TSoftExtended;
+  LDistance: Single;
+begin
+  LRatio := TSoftExtended.FromInt64(ATeleportTics) / TSoftExtended.FromInt64(FRACTION_UNIT);
+  LDistance := (LRatio * LRatio / (TSoftExtended.FromInt64(AZoom) / TSoftExtended.FromInt64(FRACTION_UNIT))).ToSingle;
+  Result := Integer((TSoftExtended.FromDouble(LDistance) * TSoftExtended.FromInt64(FRACTION_UNIT)).Round);
+end;
+
+class function TRendererX87.WallOffset(ADeltaX, ADeltaY: Integer): Integer;
+var
+  LX, LY: TSoftExtended;
+begin
+  LX := TSoftExtended.FromDouble((TSoftExtended.FromInt64(ADeltaX) / TSoftExtended.FromInt64(FRACTION_UNIT)).ToSingle);
+  LY := TSoftExtended.FromDouble((TSoftExtended.FromInt64(ADeltaY) / TSoftExtended.FromInt64(FRACTION_UNIT)).ToSingle);
+  Result := Integer((TSoftExtended.Sqrt(LX * LX + LY * LY) * TSoftExtended.FromInt64(FRACTION_UNIT)).Round);
+end;
+
+// a value that a Single keeps without overflow or underflow
+function TrySingle(const AValue: TSoftExtended; out ASingle: Single): Boolean;
+begin
+  Result := AValue.IsZero or ((AValue.BinaryExponent + 63 < 100) and (AValue.BinaryExponent + 63 > -100));
+  if Result then
+    ASingle := AValue.ToSingle
+  else
+    ASingle := 0;
+end;
+
+class function TRendererX87.ScreenPoint(ADeltaX, ADeltaY, ADeltaZ, AViewCosine, AViewSine, AProjection,
+  AProjectionY, ACenterX, ACenterY, AViewWidth, AViewHeight: Integer; out AX, AY: Integer;
+  out AInside: Boolean): Boolean;
+var
+  LUnit, LTransX, LTransY, LTransZ, LCosine, LSine: TSoftExtended;
+  LDepth, LHorizontal, LScaleX, LScaleY, LScreenX, LScreenY: Single;
+begin
+  Result := False;
+  LUnit := TSoftExtended.FromInt64(FRACTION_UNIT);
+  // each of these is a Single in the old code
+  LTransX := TSoftExtended.FromDouble((TSoftExtended.FromInt64(ADeltaX) / LUnit).ToSingle);
+  LTransY := TSoftExtended.FromDouble((TSoftExtended.FromInt64(ADeltaY) / LUnit).ToSingle);
+  LTransZ := TSoftExtended.FromDouble((TSoftExtended.FromInt64(ADeltaZ) / LUnit).ToSingle);
+  LCosine := TSoftExtended.FromDouble((TSoftExtended.FromInt64(AViewCosine) / LUnit).ToSingle);
+  LSine := TSoftExtended.FromDouble((TSoftExtended.FromInt64(AViewSine) / LUnit).ToSingle);
+  if not TrySingle(LTransX * LCosine + LTransY * LSine, LDepth) or (LDepth = 0) then
+    Exit;
+  if not TrySingle(TSoftExtended.FromInt64(AProjection) / LUnit / TSoftExtended.FromDouble(LDepth), LScaleX) then
+    Exit;
+  if not TrySingle(LTransX * LSine - LTransY * LCosine, LHorizontal) then
+    Exit;
+  if not TrySingle(TSoftExtended.FromInt64(ACenterX) +
+    TSoftExtended.FromDouble(LHorizontal) * TSoftExtended.FromDouble(LScaleX), LScreenX) then
+    Exit;
+  if not TrySingle(TSoftExtended.FromInt64(AProjectionY) / LUnit / TSoftExtended.FromDouble(LDepth), LScaleY) then
+    Exit;
+  if not TrySingle(TSoftExtended.FromInt64(ACenterY) - LTransZ * TSoftExtended.FromDouble(LScaleY), LScreenY) then
+    Exit;
+  if (Abs(LScreenX) >= 2147483647.0) or (Abs(LScreenY) >= 2147483647.0) then
+    Exit;
+  AInside := (LScreenX < AViewWidth) and (LScreenX >= 0) and (LScreenY < AViewHeight) and (LScreenY >= 0);
+  AX := Trunc(LScreenX);
+  AY := Trunc(LScreenY);
+  Result := True;
+end;
 
 end.
