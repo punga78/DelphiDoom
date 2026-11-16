@@ -55,14 +55,14 @@ $units = @(
 $unitLines = ''
 foreach ($u in $units) {
   $name = Split-Path $u -Leaf
-  $unitLines += "  $name in '..\$u.pas',$crlf"
+  $unitLines += "  $name in '..\..\$u.pas',$crlf"
 }
-$unitLines += "  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',$crlf"
+$unitLines += "  HarnessGl in '..\..\Tools\Verifica\opengl\HarnessGl.pas',$crlf"
 
 foreach ($dpr in @('IdTech1\Doom\GLDoom32.dpr', 'IdTech1\Heretic\GLHeretic32.dpr', 'IdTech1\Hexen\GLHexen32.dpr', 'IdTech1\Strife\GLStrife32.dpr')) {
   Edit-File $dpr {
     param($t)
-    Replace-Once $t "  gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\IdTech1\OpenGl\Legacy\gl_main.pas',")
+    Replace-Once $t "  gl_main in '..\OpenGl\Legacy\gl_main.pas'," ($unitLines + "  gl_main in '..\OpenGl\Legacy\gl_main.pas',")
   }
 }
 
