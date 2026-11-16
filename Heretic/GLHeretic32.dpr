@@ -1351,6 +1351,7 @@ uses
   DelphiDoom.Engine.GlLightmap.Calculator in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlLightmap.Calculator.pas',
   DelphiDoom.Engine.GlScene.SpritePainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SpritePainter.pas',
   DelphiDoom.Engine.GlScene.LightSorter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightSorter.pas',
+  DelphiDoom.Engine.GlFrameEnder in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlFrameEnder.pas',
   DelphiDoom.GlContext.PixelFormat in '..\Libs\GlContext\DelphiDoom.GlContext.PixelFormat.pas',
   DelphiDoom.GlContext.FullScreenMode in '..\Libs\GlContext\DelphiDoom.GlContext.FullScreenMode.pas',
   DelphiDoom.GlContext.DisplayModeClamp in '..\Libs\GlContext\DelphiDoom.GlContext.DisplayModeClamp.pas',

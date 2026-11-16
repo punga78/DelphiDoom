@@ -224,6 +224,7 @@ uses
   gl_tex,
   gl_defs,
   DelphiDoom.Engine.GlContext,
+  DelphiDoom.Engine.GlFrameEnder,
   DelphiDoom.GlContext.DisplayModeClamp,
   v_data,
   v_video;
@@ -404,11 +405,8 @@ begin
 end;
 
 var
-  overlay_tex: glUint = 0;
-  {$IFNDEF HEXEN}
-  endoom_tex: glUint = 0;
-  {$ENDIF}
-  wipe_tex: glUint = 0;
+  // the end of a frame (overlay, wipe, ENDOOM): created by GL_InitGraphics, freed when the program ends
+  gl_frameender: TEngineGlFrameEnder = nil;
 
 //==============================================================================
 //
@@ -418,23 +416,8 @@ var
 procedure I_ShutDownGraphics;
 begin
   gld_ShutDownTextures;
-  if overlay_tex <> 0 then
-  begin
-    glDeleteTextures(1, @overlay_tex);
-    overlay_tex := 0;
-  end;
-  {$IFNDEF HEXEN}
-  if endoom_tex <> 0 then
-  begin
-    glDeleteTextures(1, @endoom_tex);
-    endoom_tex := 0;
-  end;
-  {$ENDIF}
-  if wipe_tex <> 0 then
-  begin
-    glDeleteTextures(1, @wipe_tex);
-    wipe_tex := 0;
-  end;
+  if gl_frameender <> nil then
+    gl_frameender.ReleaseTextures;
   if gl_context <> nil then
     gl_context.Close;
   I_EnableAltTab;
@@ -443,294 +426,10 @@ begin
   memfree(oscreen, allocscreensize);
 end;
 
-var
-  set_hud: boolean;
-
-{$IFDEF OPENGLSAFETRANSLATE}
-var
-  translation_array: array[0..GLDRAWTEXHEIGHT - 1, 0..GLDRAWTEXWIDTH - 1] of LongWord;
-
-//==============================================================================
-//
-// GL_SafeTranslate
-//
-//==============================================================================
-procedure GL_SafeTranslate;
-var
-  i, j, k: integer;
-begin
-  k := 0;
-  for i := 0 to GLDRAWHEIGHT - 1 do
-    for j := 0 to GLDRAWWIDTH - 1 do
-    begin
-      translation_array[i, j] := screen32[k];
-      inc(k);
-    end;
-end;
-{$ENDIF}
-
-{$IFDEF DOOM}
-var
-  overlay_created: boolean = false;
-  sub_y2: integer;
-  did_fullhutics: integer = 10;
-  overlayupdatetic: integer = 30;
-  last_y1: integer = MAXINT;
-{$ENDIF}
-
-//==============================================================================
-//
-// I_FinishUpdateWIPE
-//
-//==============================================================================
-procedure I_FinishUpdateWIPE;
-begin
-  glPushAttrib(GL_ALL_ATTRIB_BITS);
-  gld_Enable2D;
-
-  if wipe_tex = 0 then
-    glGenTextures(1, @wipe_tex);
-
-  glBindTexture(GL_TEXTURE_2D, wipe_tex);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, WIPESCREENWIDTH, WIPESCREENHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, w_screen32);
-
-  glColor4f(1.0, 1.0, 1.0, 1.0);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_NOTEQUAL, 0);
-
-  glBegin(GL_QUADS);
-    glTexCoord2f(0.0, SCREENHEIGHT / WIPESCREENHEIGHT);
-    glVertex2f(0, 0);
-    glTexCoord2f(SCREENWIDTH / WIPESCREENWIDTH, SCREENHEIGHT / WIPESCREENHEIGHT);
-    glVertex2f(SCREENWIDTH, 0);
-    glTexCoord2f(SCREENWIDTH / WIPESCREENWIDTH, 0.0);
-    glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glTexCoord2f(0.0, 0.0);
-    glVertex2f(0, SCREENHEIGHT);
-  glEnd;
-
-// Blend overlay (Menu & Console) over the wipe
-  glBindTexture(GL_TEXTURE_2D, overlay_tex);
-  if set_hud <> gl_linear_hud then
-  begin
-    if gl_linear_hud then
-    begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    end
-    else
-    begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    end;
-    set_hud := gl_linear_hud;
-  end;
-
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, GLDRAWTEXWIDTH, GLDRAWTEXHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-
-  glColor4f(1.0, 1.0, 1.0, 1.0);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_NOTEQUAL, 0);
-
-  glBegin(GL_QUADS);
-    glTexCoord2f(0.0, GLDRAWHEIGHT / GLDRAWTEXHEIGHT);
-    glVertex2f(0, 0);
-    glTexCoord2f(GLDRAWWIDTH / GLDRAWTEXWIDTH, GLDRAWHEIGHT / GLDRAWTEXHEIGHT);
-    glVertex2f(SCREENWIDTH, 0);
-    glTexCoord2f(GLDRAWWIDTH / GLDRAWTEXWIDTH, 0.0);
-    glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glTexCoord2f(0.0, 0.0);
-    glVertex2f(0, SCREENHEIGHT);
-  glEnd;
-
-  glDisable(GL_BLEND);
-
-  gld_Disable2D;
-  glPopAttrib;
-
-  gld_Finish;
-end;
-
 {$IFNDEF HEXEN}
 var
   enterendoom: boolean = false;
-
-//==============================================================================
-//
-// I_FinishUpdateENDOOM
-//
-//==============================================================================
-procedure I_FinishUpdateENDOOM;
-begin
-  glPushAttrib(GL_ALL_ATTRIB_BITS);
-  gld_Enable2D;
-
-  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
-
-  if endoom_tex = 0 then
-    glGenTextures(1, @endoom_tex);
-
-  glBindTexture(GL_TEXTURE_2D, endoom_tex);
-
-  if gl_linear_hud then
-  begin
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  end
-  else
-  begin
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  end;
-
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, ENDOOM_TEXTURE_WIDTH, ENDOOM_TEXTURE_HEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, gl_endoom.Pixels32);
-
-  glColor4f(1.0, 1.0, 1.0, 1.0);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_NOTEQUAL, 0);
-
-  glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 200 / ENDOOM_TEXTURE_HEIGHT);
-    glVertex2f(0, 0);
-    glTexCoord2f(640 / ENDOOM_TEXTURE_WIDTH, 200 / ENDOOM_TEXTURE_HEIGHT);
-    glVertex2f(SCREENWIDTH, 0);
-    glTexCoord2f(640 / ENDOOM_TEXTURE_WIDTH, 0.0);
-    glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glTexCoord2f(0.0, 0.0);
-    glVertex2f(0, SCREENHEIGHT);
-  glEnd;
-
-  glDisable(GL_BLEND);
-
-  gld_Disable2D;
-  glPopAttrib;
-
-  gld_Finish;
-end;
 {$ENDIF}
-
-//==============================================================================
-//
-// I_FinishUpdateOverlay
-//
-//==============================================================================
-procedure I_FinishUpdateOverlay(const doflush: boolean);
-{$IFDEF DOOM}
-var
-  sub_y1, y1, y2, yovr: integer;
-{$ENDIF}
-begin
-  glPushAttrib(GL_ALL_ATTRIB_BITS);
-  gld_Enable2D;
-
-  glBindTexture(GL_TEXTURE_2D, overlay_tex);
-  if set_hud <> gl_linear_hud then
-  begin
-    if gl_linear_hud then
-    begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    end
-    else
-    begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    end;
-    set_hud := gl_linear_hud;
-  end;
-
-  if firstinterpolation then
-  begin
-{$IFDEF OPENGLSAFETRANSLATE}
-    GL_SafeTranslate;
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, GLDRAWTEXWIDTH, GLDRAWTEXHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, @translation_array);
-{$ELSE}
-{$IFDEF DOOM}
-    dec(overlayupdatetic);
-    if overlay_created then
-    begin
-      if (gamestate = GS_LEVEL) and (amstate = am_inactive) and not menuactive then
-      begin
-        if did_fullhutics > 0 then
-        begin
-          Dec(did_fullhutics);
-          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLDRAWWIDTH, GLDRAWHEIGHT, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-        end
-        else
-        begin
-          y1 := GL_Console.Position;
-          yovr := OVR_OverlayHeight;
-          if yovr > y1 then
-            y1 := yovr;
-          sub_y1 := V_PreserveY(HU_Height);
-          if sub_y1 > y1 then
-            y1 := sub_y1;
-          sub_y1 := V_PreserveY(diskbusy_height);
-          if sub_y1 > y1 then
-            y1 := sub_y1;
-          if last_y1 = MAXINT then
-            last_y1 := GLDRAWTEXHEIGHT;
-          if last_y1 > y1 then
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLDRAWWIDTH, last_y1, GL_BGRA, GL_UNSIGNED_BYTE, screen32)
-          else
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLDRAWWIDTH, y1, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-          last_y1 := y1;
-          if (screenblocks < 12) or (overlayupdatetic = 0) then
-            y2 := sub_y2
-          else
-            y2 := GLDRAWHEIGHT;
-          if demoplayback then
-            y2 := y2 - V_PreserveY(10);
-          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y2, GLDRAWWIDTH, GLDRAWHEIGHT - y2, GL_BGRA, GL_UNSIGNED_BYTE, @screen32[y2 * GLDRAWWIDTH]);
-        end;
-      end
-      else
-      begin
-        did_fullhutics := TICRATE;
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLDRAWWIDTH, GLDRAWHEIGHT, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-      end;
-      if overlayupdatetic = 0 then
-        overlayupdatetic := 30;
-    end
-    else
-    begin
-      overlay_created := true;
-      sub_y2 := V_PreserveY(ST_Y);
-      glTexImage2D(GL_TEXTURE_2D, 0, 4, GLDRAWTEXWIDTH, GLDRAWTEXHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-    end;
-{$ELSE}
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, GLDRAWTEXWIDTH, GLDRAWTEXHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-{$ENDIF}
-{$ENDIF}
-  end;
-
-  glColor4f(1.0, 1.0, 1.0, 1.0);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_NOTEQUAL, 0);
-
-  glBegin(GL_QUADS);
-    glTexCoord2f(0.0, GLDRAWHEIGHT / GLDRAWTEXHEIGHT);
-    glVertex2f(0, 0);
-    glTexCoord2f(GLDRAWWIDTH / GLDRAWTEXWIDTH, GLDRAWHEIGHT / GLDRAWTEXHEIGHT);
-    glVertex2f(SCREENWIDTH, 0);
-    glTexCoord2f(GLDRAWWIDTH / GLDRAWTEXWIDTH, 0.0);
-    glVertex2f(SCREENWIDTH, SCREENHEIGHT);
-    glTexCoord2f(0.0, 0.0);
-    glVertex2f(0, SCREENHEIGHT);
-  glEnd;
-
-  glDisable(GL_BLEND);
-
-  gld_Disable2D;
-  glPopAttrib;
-
-  if doflush then
-    gld_Finish;
-end;
 
 var
   wipe: boolean = false;
@@ -789,12 +488,12 @@ begin
   if (gamestate = GS_ENDOOM) or enterendoom then
   begin
     enterendoom := true;
-    I_FinishUpdateENDOOM;
+    gl_frameender.FinishEndoom;
     exit;
   end;
   {$ENDIF}
 
-  I_FinishUpdateOverlay(not wipe);  // Will also flush
+  gl_frameender.FinishOverlay(not wipe);  // Will also flush
 
   if not wipe then
     exit;
@@ -822,7 +521,7 @@ begin
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
     M_Drawer;         // Menu is drawn even on top of wipes
     GL_Console.Draw;         // Console draw on top of wipes and menus
-    I_FinishUpdateWIPE;
+    gl_frameender.FinishWipe;
     HU_DoFPSStuff;
   until done;
   {$IFDEF STRIFE}
@@ -918,29 +617,6 @@ begin
 end;
 
 //==============================================================================
-//
-// GL_CreateOverlayTexture
-//
-//==============================================================================
-procedure GL_CreateOverlayTexture;
-begin
-  glGenTextures(1, @overlay_tex);
-  glBindTexture(GL_TEXTURE_2D, overlay_tex);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);  {Texture blends with object background}
-  if gl_linear_hud then
-  begin
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  end
-  else
-  begin
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  end;
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, GLDRAWTEXWIDTH, GLDRAWTEXHEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, screen32);
-end;
-
-//==============================================================================
 // GL_InitGraphics
 //
 // Called by D_DoomMain,
@@ -960,6 +636,9 @@ begin
     gl_context := TEngineGlContext.Create;
   gl_context.Open(TFNWndProc(@WindowProc));
 
+  if gl_frameender = nil then
+    gl_frameender := TEngineGlFrameEnder.Create(GL_Console{$IFNDEF HEXEN}, gl_endoom{$ENDIF});
+
   // Ensure the OpenGL window is resized properly
   TEngineGlContext.ResizeViewport;
   TEngineGlContext.InitState;
@@ -974,9 +653,8 @@ begin
   // the rest of the texture was whatever the heap had (it changed from a run to another)
   ZeroMemory(screen, allocscreensize - $10000);
 
-  GL_CreateOverlayTexture;
-
-  set_hud := gl_linear_hud;
+  gl_frameender.CreateOverlayTexture;
+  gl_frameender.ResetHudFilter;
 
   GL_NotifyDisplayMode;
 end;
@@ -1024,8 +702,8 @@ begin
     SCREENHEIGHT := nheight;
 
     V_ReInit;
-    glDeleteTextures(1, @overlay_tex);
-    GL_CreateOverlayTexture;
+    gl_frameender.DeleteOverlayTexture;
+    gl_frameender.CreateOverlayTexture;
 
     GL_ChangeFullScreen(fullscreen);
 
@@ -1107,6 +785,7 @@ end;
 initialization
 
 finalization
+  FreeAndNil(gl_frameender);
   FreeAndNil(gl_context);
 
 end.
