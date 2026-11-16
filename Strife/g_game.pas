@@ -2249,7 +2249,7 @@ begin
   else
     G_DoLoadLevel();
 
-  leveltime := savedleveltime;
+  P_World.Time.LevelTime^ := savedleveltime;
 
   // dearchive all the modifications
   P_UnArchivePlayers(userload);
@@ -2397,13 +2397,13 @@ begin
     save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
-  save_p[0] := _SHR(leveltime, 16);
+  save_p[0] := _SHR(P_World.Time.LevelTime^, 16);
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  save_p[0] := _SHR(leveltime, 8);
+  save_p[0] := _SHR(P_World.Time.LevelTime^, 8);
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  save_p[0] := leveltime;
+  save_p[0] := P_World.Time.LevelTime^;
   save_p := PByteArray(NativeInt(save_p) + 1);
 
   len := NativeInt(save_p) - NativeInt(savebuffer);

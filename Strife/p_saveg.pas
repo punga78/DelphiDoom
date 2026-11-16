@@ -1061,8 +1061,8 @@ var
   parm: Pmobjcustomparam_t;
 begin
   // save off the current thinkers
-  th := thinkercap.next;
-  while th <> @thinkercap do
+  th := P_ThinkerHead.next;
+  while th <> P_ThinkerHead do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -1266,8 +1266,8 @@ var
   parm: mobjcustomparam_t;
 begin
   // remove all the current thinkers
-  currentthinker := thinkercap.next;
-  while currentthinker <> @thinkercap do
+  currentthinker := P_ThinkerHead.next;
+  while currentthinker <> P_ThinkerHead do
   begin
     next := currentthinker.next;
 
@@ -1290,8 +1290,8 @@ begin
         begin
           if savegameversion <> VERSION120 then
           begin
-            currentthinker := thinkercap.next;
-            while currentthinker <> @thinkercap do
+            currentthinker := P_ThinkerHead.next;
+            while currentthinker <> P_ThinkerHead do
             begin
               next := currentthinker.next;
 
@@ -1454,8 +1454,8 @@ var
 
 begin
   // save off the current thinkers
-  th1 := thinkercap.next;
-  while th1 <> @thinkercap do
+  th1 := P_ThinkerHead.next;
+  while th1 <> P_ThinkerHead do
   begin
     th := th1;
     th1 := th1.next;

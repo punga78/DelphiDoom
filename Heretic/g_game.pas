@@ -2377,7 +2377,7 @@ begin
   c := save_p[0];
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  leveltime := _SHL(a, 16) + _SHL(b, 8) + c;
+  P_World.Time.LevelTime^ := _SHL(a, 16) + _SHL(b, 8) + c;
 
   // dearchive all the modifications
   P_UnArchivePlayers;
@@ -2487,13 +2487,13 @@ begin
     save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
-  save_p[0] := _SHR(leveltime, 16);
+  save_p[0] := _SHR(P_World.Time.LevelTime^, 16);
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  save_p[0] := _SHR(leveltime, 8);
+  save_p[0] := _SHR(P_World.Time.LevelTime^, 8);
   save_p := PByteArray(NativeInt(save_p) + 1);
 
-  save_p[0] := leveltime;
+  save_p[0] := P_World.Time.LevelTime^;
   save_p := PByteArray(NativeInt(save_p) + 1);
 
   len := NativeInt(save_p) - NativeInt(savebuffer);
