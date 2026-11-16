@@ -388,6 +388,8 @@ uses
   DelphiDoom.Video.Stretch in '..\Libs\Video\DelphiDoom.Video.Stretch.pas',
   DelphiDoom.Video.ScreenOps in '..\Libs\Video\DelphiDoom.Video.ScreenOps.pas',
   DelphiDoom.Video.PatchPainter in '..\Libs\Video\DelphiDoom.Video.PatchPainter.pas',
+  DelphiDoom.Video.PatchPainter32 in '..\Libs\Video\DelphiDoom.Video.PatchPainter32.pas',
+  DelphiDoom.Video.PatchZoomer in '..\Libs\Video\DelphiDoom.Video.PatchZoomer.pas',
   DelphiDoom.Video.RectCopy in '..\Libs\Video\DelphiDoom.Video.RectCopy.pas',
   DelphiDoom.Video.SizeLimiter in '..\Libs\Video\DelphiDoom.Video.SizeLimiter.pas',
   DelphiDoom.Video.MemoryStallHack in '..\Libs\Video\DelphiDoom.Video.MemoryStallHack.pas',

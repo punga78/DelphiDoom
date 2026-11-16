@@ -570,6 +570,8 @@ uses
   DelphiDoom.Video.Stretch,
   DelphiDoom.Video.ScreenOps,
   DelphiDoom.Video.PatchPainter,
+  DelphiDoom.Video.PatchPainter32,
+  DelphiDoom.Video.PatchZoomer,
   DelphiDoom.Video.RectCopy,
   w_wad,
   z_zone;
@@ -2317,26 +2319,10 @@ end;
 //==============================================================================
 procedure V_DrawPatch8(x, y: integer; scrn: integer; patch: Ppatch_t; preserve: boolean);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
   desttop: PByte;
-  dest: PByte;
-  vs: byte;
-  source: PByte;
-  w: integer;
   pw: integer;
   ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
   swidth: integer;
-  sheight: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   swidth := V_GetScreenWidth(scrn);
   if not V_NeedsPreserve(scrn, SCN_320x200, preserve) then
@@ -2346,11 +2332,9 @@ begin
 
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-    w := patch.width;
-
     // the walk of the posts is TVideoPatchPainter (Libs\Video)
-    TVideoPatchPainter.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), w, System.PByte(desttop), swidth,
-      PVideoByteRow(v_translation), false);
+    TVideoPatchPainter.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), patch.width,
+      System.PByte(desttop), swidth, PVideoByteRow(v_translation), false);
 
   end
 ////////////////////////////////////////////////////
@@ -2371,62 +2355,11 @@ begin
       x := V_PreserveX(x);
       y := V_PreserveY(y);
 
-      fracx := 0;
-      fracxstep := FRACUNIT * patch.width div pw;
-      fracystep := FRACUNIT * patch.height div ph;
-
-      col := 0;
       desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-      sheight := V_GetScreenHeight(scrn);
-
-      while col < pw do
-      begin
-        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
-        delta := 0;
-        tallpatch := false;
-      // step through the posts in a column
-        while column.topdelta <> $ff do
-        begin
-          source := PByte(NativeInt(column) + 3);
-          vs := v_translation[source^];
-          delta := delta + column.topdelta;
-          dest := PByte(NativeInt(desttop) + ((delta * sheight) div 200) * swidth);
-          count := column.length;
-          fracy := 0;
-          lasty := 0;
-
-          while count > 0 do
-          begin
-            dest^ := vs;
-            inc(dest, swidth);
-            fracy := fracy + fracystep;
-            cury := LongWord(fracy) shr FRACBITS;
-            if cury > lasty then
-            begin
-              lasty := cury;
-              inc(source);
-              vs := v_translation[source^];
-              dec(count);
-            end;
-          end;
-          if not tallpatch then
-          begin
-            prevdelta := column.topdelta;
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-            if column.topdelta > prevdelta then
-              delta := 0
-            else
-              tallpatch := true;
-          end
-          else
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-        end;
-        inc(col);
-        inc(desttop);
-
-        fracx := fracx + fracxstep;
-      end;
+      TVideoPatchPainter.DrawColumnsStretched8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), pw,
+        FRACUNIT * patch.width div pw, FRACUNIT * patch.height div ph, System.PByte(desttop), swidth,
+        V_GetScreenHeight(scrn), PVideoByteRow(v_translation));
     end;
   end;
 end;
@@ -2438,26 +2371,9 @@ end;
 //==============================================================================
 procedure V_DrawPatch32(x, y: integer; patch: Ppatch_t; preserve: boolean);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
-  desttop: PLongWordArray;
-  dest: PLongWord;
-  source: PByte;
-  w: integer;
   pw: integer;
   ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
   swidth: integer;
-  sheight: integer;
-  vs: LongWord;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   swidth := V_GetScreenWidth(SCN_FG);
   x := x - patch.leftoffset;
@@ -2466,60 +2382,9 @@ begin
   if not V_NeedsPreserve(SCN_FG, SCN_320x200, preserve) then
   begin
 
-    col := 0;
-
-    desttop := @screen32[y * swidth + x];
-
-    w := patch.width;
-
-    while col < w do
-    begin
-      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
-      delta := 0;
-      tallpatch := false;
-    // step through the posts in a column
-      while column.topdelta <> $ff do
-      begin
-        source := PByte(NativeInt(column) + 3);
-        delta := delta + column.topdelta;
-        dest := @desttop[delta * swidth];
-        count := column.length;
-
-        if v_translation <> nil then
-        begin
-          while count > 0 do
-          begin
-            dest^ := videopal[v_translation[source^]];
-            inc(source);
-            inc(dest, swidth);
-            dec(count);
-          end;
-        end
-        else
-        begin
-          while count > 0 do
-          begin
-            dest^ := videopal[source^];
-            inc(source);
-            inc(dest, swidth);
-            dec(count);
-          end;
-        end;
-        if not tallpatch then
-        begin
-          prevdelta := column.topdelta;
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          if column.topdelta > prevdelta then
-            delta := 0
-          else
-            tallpatch := true;
-        end
-        else
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-      end;
-      inc(col);
-      desttop := @desttop[1];
-    end;
+    // the walk of the posts is TVideoPatchPainter32 (Libs\Video)
+    TVideoPatchPainter32.DrawColumns32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), patch.width,
+      @screen32[y * swidth + x], swidth, PVideoLongWordRow(@videopal[0]), PVideoByteRow(v_translation));
 
   end
 ////////////////////////////////////////////////////
@@ -2537,115 +2402,10 @@ begin
       x := V_PreserveX(x);
       y := V_PreserveY(y);
 
-      fracx := 0;
-      fracxstep := FRACUNIT * patch.width div pw;
-      fracystep := FRACUNIT * patch.height div ph;
-
-      col := 0;
-      desttop := @screen32[y * swidth + x];
-
-      sheight := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF};
-
-      if v_translation <> nil then
-      begin
-        while col < pw do
-        begin
-          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
-          delta := 0;
-          tallpatch := false;
-        // step through the posts in a column
-          while column.topdelta <> $ff do
-          begin
-            source := PByte(NativeInt(column) + 3);
-            vs := videopal[v_translation[source^]];
-            delta := delta + column.topdelta;
-            dest := @desttop[(Round(delta * sheight / 200) * swidth)];
-            count := column.length;
-            fracy := 0;
-            lasty := 0;
-
-            while count > 0 do
-            begin
-              dest^ := vs;
-              inc(dest, swidth);
-              fracy := fracy + fracystep;
-              cury := LongWord(fracy) shr FRACBITS;
-              if cury > lasty then
-              begin
-                lasty := cury;
-                inc(source);
-                vs := videopal[v_translation[source^]];
-                dec(count);
-              end;
-            end;
-            if not tallpatch then
-            begin
-              prevdelta := column.topdelta;
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-              if column.topdelta > prevdelta then
-                delta := 0
-              else
-                tallpatch := true;
-            end
-            else
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          end;
-          inc(col);
-          desttop := @desttop[1];
-
-          fracx := fracx + fracxstep;
-        end;
-      end
-      else
-      begin
-        while col < pw do
-        begin
-          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
-          delta := 0;
-          tallpatch := false;
-        // step through the posts in a column
-          while column.topdelta <> $ff do
-          begin
-            source := PByte(NativeInt(column) + 3);
-            vs := videopal[source^];
-            delta := delta + column.topdelta;
-            dest := @desttop[(Round(delta * sheight / 200) * swidth)];
-            count := column.length;
-            fracy := 0;
-            lasty := 0;
-
-            while count > 0 do
-            begin
-              dest^ := vs;
-              inc(dest, swidth);
-              fracy := fracy + fracystep;
-              cury := LongWord(fracy) shr FRACBITS;
-              if cury > lasty then
-              begin
-                lasty := cury;
-                inc(source);
-                vs := videopal[source^];
-                dec(count);
-              end;
-            end;
-            if not tallpatch then
-            begin
-              prevdelta := column.topdelta;
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-              if column.topdelta > prevdelta then
-                delta := 0
-              else
-                tallpatch := true;
-            end
-            else
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          end;
-          inc(col);
-          desttop := @desttop[1];
-
-          fracx := fracx + fracxstep;
-        end;
-      end;
+      TVideoPatchPainter32.DrawColumnsStretched32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), pw,
+        FRACUNIT * patch.width div pw, FRACUNIT * patch.height div ph, @screen32[y * swidth + x], swidth,
+        {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF}, PVideoLongWordRow(@videopal[0]),
+        PVideoByteRow(v_translation));
     end;
   end;
 end;
@@ -2701,29 +2461,16 @@ end;
 // V_DrawPatchTransparent8
 //
 //==============================================================================
-procedure V_DrawPatchTransparent8(x, y: integer; scrn: integer; patch: Ppatch_t; preserve: boolean);
+// The drawing of V_DrawPatchTransparent8 and of the _MT one: idx of numidxs is the thread (numidxs 1 draws
+// every column)
+procedure V_DrawPatchTransparent8_Index(idx, numidxs: integer;
+  x, y: integer; scrn: integer; patch: Ppatch_t; preserve: boolean);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
   desttop: PByte;
-  dest: PByte;
-  vs: byte;
-  source: PByte;
-  w: integer;
   pw: integer;
   ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
   swidth: integer;
-  sheight: integer;
   trans: Ptrans8table_t;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   trans := R_GetTransparency8table;
   swidth := V_GetScreenWidth(scrn);
@@ -2732,47 +2479,12 @@ begin
     y := y - patch.topoffset;
     x := x - patch.leftoffset;
 
-    col := 0;
-
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-    w := patch.width;
-
-    while col < w do
-    begin
-      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
-      delta := 0;
-      tallpatch := false;
-    // step through the posts in a column
-      while column.topdelta <> $ff do
-      begin
-        source := PByte(NativeInt(column) + 3);
-        delta := delta + column.topdelta;
-        dest := PByte(NativeInt(desttop) + delta * swidth);
-        count := column.length;
-
-        while count > 0 do
-        begin
-          dest^ := trans[dest^ shl 8 + v_translation[source^]];
-          inc(source);
-          inc(dest, swidth);
-          dec(count);
-        end;
-        if not tallpatch then
-        begin
-          prevdelta := column.topdelta;
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          if column.topdelta > prevdelta then
-            delta := 0
-          else
-            tallpatch := true;
-        end
-        else
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-      end;
-      inc(col);
-      inc(desttop);
-    end;
+    // the walk of the posts is TVideoPatchPainter (Libs\Video)
+    TVideoPatchPainter.DrawColumnsTransparent8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]),
+      patch.width, System.PByte(desttop), swidth, PVideoByteRow(v_translation), PVideoByteRow(trans),
+      idx, numidxs);
 
   end
 ////////////////////////////////////////////////////
@@ -2793,64 +2505,24 @@ begin
       x := V_PreserveX(x);
       y := V_PreserveY(y);
 
-      fracx := 0;
-      fracxstep := FRACUNIT * patch.width div pw;
-      fracystep := FRACUNIT * patch.height div ph;
-
-      col := 0;
       desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-      sheight := V_GetScreenHeight(scrn);
-
-      while col < pw do
-      begin
-        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
-        delta := 0;
-        tallpatch := false;
-      // step through the posts in a column
-        while column.topdelta <> $ff do
-        begin
-          source := PByte(NativeInt(column) + 3);
-          vs := v_translation[source^];
-          delta := delta + column.topdelta;
-          dest := PByte(NativeInt(desttop) + ((delta * sheight) div 200) * swidth);
-          count := column.length;
-          fracy := 0;
-          lasty := 0;
-
-          while count > 0 do
-          begin
-            dest^ := trans[dest^ shl 8 + vs];
-            inc(dest, swidth);
-            fracy := fracy + fracystep;
-            cury := LongWord(fracy) shr FRACBITS;
-            if cury > lasty then
-            begin
-              lasty := cury;
-              inc(source);
-              vs := v_translation[source^];
-              dec(count);
-            end;
-          end;
-          if not tallpatch then
-          begin
-            prevdelta := column.topdelta;
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-            if column.topdelta > prevdelta then
-              delta := 0
-            else
-              tallpatch := true;
-          end
-          else
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-        end;
-        inc(col);
-        inc(desttop);
-
-        fracx := fracx + fracxstep;
-      end;
+      TVideoPatchPainter.DrawColumnsStretchedTransparent8(System.PByte(patch),
+        PVideoIntegerRow(@patch.columnofs[0]), pw, FRACUNIT * patch.width div pw,
+        FRACUNIT * patch.height div ph, System.PByte(desttop), swidth, V_GetScreenHeight(scrn),
+        PVideoByteRow(v_translation), PVideoByteRow(trans), idx, numidxs);
     end;
   end;
+end;
+
+//==============================================================================
+//
+// V_DrawPatchTransparent8
+//
+//==============================================================================
+procedure V_DrawPatchTransparent8(x, y: integer; scrn: integer; patch: Ppatch_t; preserve: boolean);
+begin
+  V_DrawPatchTransparent8_Index(0, 1, x, y, scrn, patch, preserve);
 end;
 
 //==============================================================================
@@ -2861,161 +2533,8 @@ end;
 procedure V_DrawPatchTransparent8_MT(
   idx, numidxs: integer;
   x, y: integer; scrn: integer; patch: Ppatch_t; preserve: boolean);
-var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
-  desttop: PByte;
-  dest: PByte;
-  vs: byte;
-  source: PByte;
-  w: integer;
-  pw: integer;
-  ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
-  swidth: integer;
-  sheight: integer;
-  trans: Ptrans8table_t;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
-  trans := R_GetTransparency8table;
-  swidth := V_GetScreenWidth(scrn);
-  if not V_NeedsPreserve(scrn, SCN_320x200, preserve) then
-  begin
-    y := y - patch.topoffset;
-    x := x - patch.leftoffset;
-
-    col := 0;
-
-    desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
-
-    w := patch.width;
-
-    while col < w do
-    begin
-      if col mod numidxs = idx then
-      begin
-        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
-        delta := 0;
-        tallpatch := false;
-      // step through the posts in a column
-        while column.topdelta <> $ff do
-        begin
-          source := PByte(NativeInt(column) + 3);
-          delta := delta + column.topdelta;
-          dest := PByte(NativeInt(desttop) + delta * swidth);
-          count := column.length;
-
-          while count > 0 do
-          begin
-            dest^ := trans[dest^ shl 8 + v_translation[source^]];
-            inc(source);
-            inc(dest, swidth);
-            dec(count);
-          end;
-          if not tallpatch then
-          begin
-            prevdelta := column.topdelta;
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-            if column.topdelta > prevdelta then
-              delta := 0
-            else
-              tallpatch := true;
-          end
-          else
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-        end;
-      end;
-      inc(col);
-      inc(desttop);
-    end;
-
-  end
-////////////////////////////////////////////////////
-// Streching Draw, preserving original dimentions
-////////////////////////////////////////////////////
-  else
-  begin
-
-    y := y - patch.topoffset;
-    x := x - patch.leftoffset;
-
-    pw := V_PreserveW(x, patch.width);
-    ph := V_PreserveH(y, patch.height);
-
-    if (pw > 0) and (ph > 0) then
-    begin
-
-      x := V_PreserveX(x);
-      y := V_PreserveY(y);
-
-      fracx := 0;
-      fracxstep := FRACUNIT * patch.width div pw;
-      fracystep := FRACUNIT * patch.height div ph;
-
-      col := 0;
-      desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
-
-      sheight := V_GetScreenHeight(scrn);
-
-      while col < pw do
-      begin
-        if col mod numidxs = idx then
-        begin
-          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
-          delta := 0;
-          tallpatch := false;
-        // step through the posts in a column
-          while column.topdelta <> $ff do
-          begin
-            source := PByte(NativeInt(column) + 3);
-            vs := v_translation[source^];
-            delta := delta + column.topdelta;
-            dest := PByte(NativeInt(desttop) + ((delta * sheight) div 200) * swidth);
-            count := column.length;
-            fracy := 0;
-            lasty := 0;
-
-            while count > 0 do
-            begin
-              dest^ := trans[dest^ shl 8 + vs];
-              inc(dest, swidth);
-              fracy := fracy + fracystep;
-              cury := LongWord(fracy) shr FRACBITS;
-              if cury > lasty then
-              begin
-                lasty := cury;
-                inc(source);
-                vs := v_translation[source^];
-                dec(count);
-              end;
-            end;
-            if not tallpatch then
-            begin
-              prevdelta := column.topdelta;
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-              if column.topdelta > prevdelta then
-                delta := 0
-              else
-                tallpatch := true;
-            end
-            else
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          end;
-        end;
-        inc(col);
-        inc(desttop);
-
-        fracx := fracx + fracxstep;
-      end;
-    end;
-  end;
+  V_DrawPatchTransparent8_Index(idx, numidxs, x, y, scrn, patch, preserve);
 end;
 {$ENDIF}
 
@@ -3024,31 +2543,12 @@ end;
 // V_DrawPatchTransparent32
 //
 //==============================================================================
-procedure V_DrawPatchTransparent32(x, y: integer; patch: Ppatch_t; preserve: boolean);
+// The drawing of V_DrawPatchTransparent32 and of the _MT one (software only)
+procedure V_DrawPatchTransparent32_Index(idx, numidxs: integer; x, y: integer; patch: Ppatch_t; preserve: boolean);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
-  desttop: PLongWordArray;
-  dest: PLongWord;
-{$IFDEF OPENGL}
-  pb: PByte;
-{$ENDIF}
-  source: PByte;
-  w: integer;
   pw: integer;
   ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
   swidth: integer;
-  sheight: integer;
-  vs: LongWord;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   swidth := V_GetScreenWidth(SCN_FG);
   x := x - patch.leftoffset;
@@ -3057,51 +2557,14 @@ begin
   if not V_NeedsPreserve(SCN_FG, SCN_320x200, preserve) then
   begin
 
-    col := 0;
-
-    desttop := @screen32[y * swidth + x];
-
-    w := patch.width;
-
-    while col < w do
-    begin
-      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
-      delta := 0;
-      tallpatch := false;
-    // step through the posts in a column
-      while column.topdelta <> $ff do
-      begin
-        source := PByte(NativeInt(column) + 3);
-        delta := delta + column.topdelta;
-        dest := @desttop[delta * swidth];
-        count := column.length;
-
-        while count > 0 do
-        begin
-          dest^ := R_ColorMean(videopal[source^], dest^);
-          {$IFDEF OPENGL}
-          pb := PByte(NativeInt(dest) + 3);
-          pb^ := $80;
-          {$ENDIF}
-          inc(source);
-          inc(dest, swidth);
-          dec(count);
-        end;
-        if not tallpatch then
-        begin
-          prevdelta := column.topdelta;
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          if column.topdelta > prevdelta then
-            delta := 0
-          else
-            tallpatch := true;
-        end
-        else
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-      end;
-      inc(col);
-      desttop := @desttop[1];
-    end;
+    // the walk of the posts is TVideoPatchPainter32 (Libs\Video)
+{$IFDEF OPENGL}
+    TVideoPatchPainter32.DrawColumnsTransparentAlpha32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]),
+      patch.width, @screen32[y * swidth + x], swidth, PVideoLongWordRow(@videopal[0]));
+{$ELSE}
+    TVideoPatchPainter32.DrawColumnsTransparent32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]),
+      patch.width, @screen32[y * swidth + x], swidth, PVideoLongWordRow(@videopal[0]), idx, numidxs);
+{$ENDIF}
 
   end
 ////////////////////////////////////////////////////
@@ -3119,68 +2582,29 @@ begin
       x := V_PreserveX(x);
       y := V_PreserveY(y);
 
-      fracx := 0;
-      fracxstep := FRACUNIT * patch.width div pw;
-      fracystep := FRACUNIT * patch.height div ph;
-
-      col := 0;
-      desttop := @screen32[y * swidth + x];
-
-      sheight := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF};
-
-      while col < pw do
-      begin
-        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
-        delta := 0;
-        tallpatch := false;
-      // step through the posts in a column
-        while column.topdelta <> $ff do
-        begin
-          source := PByte(NativeInt(column) + 3);
-          vs := videopal[source^];
-          delta := delta + column.topdelta;
-          dest := @desttop[((delta * sheight div 200) * swidth)];
-          count := column.length;
-          fracy := 0;
-          lasty := 0;
-
-          while count > 0 do
-          begin
-            dest^ := R_ColorMean(vs, dest^);
-           {$IFDEF OPENGL}
-            pb := PByte(NativeInt(dest) + 3);
-            pb^ := $80;
-           {$ENDIF}
-            inc(dest, swidth);
-            fracy := fracy + fracystep;
-            cury := LongWord(fracy) shr FRACBITS;
-            if cury > lasty then
-            begin
-              lasty := cury;
-              inc(source);
-              vs := videopal[source^] ;
-              dec(count);
-            end;
-          end;
-          if not tallpatch then
-          begin
-            prevdelta := column.topdelta;
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-            if column.topdelta > prevdelta then
-              delta := 0
-            else
-              tallpatch := true;
-          end
-          else
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-        end;
-        inc(col);
-        desttop := @desttop[1];
-
-        fracx := fracx + fracxstep;
-      end;
+{$IFDEF OPENGL}
+      TVideoPatchPainter32.DrawColumnsStretchedTransparentAlpha32(System.PByte(patch),
+        PVideoIntegerRow(@patch.columnofs[0]), pw, FRACUNIT * patch.width div pw,
+        FRACUNIT * patch.height div ph, @screen32[y * swidth + x], swidth, V_GetScreenHeight(SCN_FG),
+        PVideoLongWordRow(@videopal[0]));
+{$ELSE}
+      TVideoPatchPainter32.DrawColumnsStretchedTransparent32(System.PByte(patch),
+        PVideoIntegerRow(@patch.columnofs[0]), pw, FRACUNIT * patch.width div pw,
+        FRACUNIT * patch.height div ph, @screen32[y * swidth + x], swidth, SCREENHEIGHT,
+        PVideoLongWordRow(@videopal[0]), idx, numidxs);
+{$ENDIF}
     end;
   end;
+end;
+
+//==============================================================================
+//
+// V_DrawPatchTransparent32
+//
+//==============================================================================
+procedure V_DrawPatchTransparent32(x, y: integer; patch: Ppatch_t; preserve: boolean);
+begin
+  V_DrawPatchTransparent32_Index(0, 1, x, y, patch, preserve);
 end;
 
 {$IFNDEF OPENGL}
@@ -3192,168 +2616,8 @@ end;
 procedure V_DrawPatchTransparent32_MT(
   idx, numidxs: integer;
   x, y: integer; patch: Ppatch_t; preserve: boolean);
-var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
-  desttop: PLongWordArray;
-  dest: PLongWord;
-{$IFDEF OPENGL}
-  pb: PByte;
-{$ENDIF}
-  source: PByte;
-  w: integer;
-  pw: integer;
-  ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
-  swidth: integer;
-  sheight: integer;
-  vs: LongWord;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
-  swidth := V_GetScreenWidth(SCN_FG);
-  x := x - patch.leftoffset;
-  y := y - patch.topoffset;
-
-  if not V_NeedsPreserve(SCN_FG, SCN_320x200, preserve) then
-  begin
-
-    col := 0;
-
-    desttop := @screen32[y * swidth + x];
-
-    w := patch.width;
-
-    while col < w do
-    begin
-      if col mod numidxs = idx then
-      begin
-        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
-        delta := 0;
-        tallpatch := false;
-      // step through the posts in a column
-        while column.topdelta <> $ff do
-        begin
-          source := PByte(NativeInt(column) + 3);
-          delta := delta + column.topdelta;
-          dest := @desttop[delta * swidth];
-          count := column.length;
-
-          while count > 0 do
-          begin
-            dest^ := R_ColorMean(videopal[source^], dest^);
-            {$IFDEF OPENGL}
-            pb := PByte(NativeInt(dest) + 3);
-            pb^ := $80;
-            {$ENDIF}
-            inc(source);
-            inc(dest, swidth);
-            dec(count);
-          end;
-          if not tallpatch then
-          begin
-            prevdelta := column.topdelta;
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-            if column.topdelta > prevdelta then
-              delta := 0
-            else
-              tallpatch := true;
-          end
-          else
-            column := Pcolumn_t(NativeInt(column) + column.length + 4);
-        end;
-      end;
-      inc(col);
-      desttop := @desttop[1];
-    end;
-
-  end
-////////////////////////////////////////////////////
-// Streching Draw, preserving original dimentions
-////////////////////////////////////////////////////
-  else
-  begin
-
-    pw := V_PreserveW(x, patch.width);
-    ph := V_PreserveH(y, patch.height);
-
-    if (pw > 0) and (ph > 0) then
-    begin
-
-      x := V_PreserveX(x);
-      y := V_PreserveY(y);
-
-      fracx := 0;
-      fracxstep := FRACUNIT * patch.width div pw;
-      fracystep := FRACUNIT * patch.height div ph;
-
-      col := 0;
-      desttop := @screen32[y * swidth + x];
-
-      sheight := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF};;
-
-      while col < pw do
-      begin
-        if col mod numidxs = idx then
-        begin
-          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
-          delta := 0;
-          tallpatch := false;
-        // step through the posts in a column
-          while column.topdelta <> $ff do
-          begin
-            source := PByte(NativeInt(column) + 3);
-            vs := videopal[source^];
-            delta := delta + column.topdelta;
-            dest := @desttop[((delta * sheight div 200) * swidth)];
-            count := column.length;
-            fracy := 0;
-            lasty := 0;
-
-            while count > 0 do
-            begin
-              dest^ := R_ColorMean(vs, dest^);
-             {$IFDEF OPENGL}
-              pb := PByte(NativeInt(dest) + 3);
-              pb^ := $80;
-             {$ENDIF}
-              inc(dest, swidth);
-              fracy := fracy + fracystep;
-              cury := LongWord(fracy) shr FRACBITS;
-              if cury > lasty then
-              begin
-                lasty := cury;
-                inc(source);
-                vs := videopal[source^] ;
-                dec(count);
-              end;
-            end;
-            if not tallpatch then
-            begin
-              prevdelta := column.topdelta;
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-              if column.topdelta > prevdelta then
-                delta := 0
-              else
-                tallpatch := true;
-            end
-            else
-              column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          end;
-        end;
-        inc(col);
-        desttop := @desttop[1];
-
-        fracx := fracx + fracxstep;
-      end;
-    end;
-  end;
+  V_DrawPatchTransparent32_Index(idx, numidxs, x, y, patch, preserve);
 end;
 {$ENDIF}
 
@@ -3449,24 +2713,11 @@ end;
 //==============================================================================
 procedure V_DrawPatchZoomed8(x, y: integer; scrn: integer; patch: Ppatch_t; preserve: boolean; fraczoom: fixed_t);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
   desttop: PByte;
-  dest: PByte;
-  source: PByte;
   pw: integer;
   ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
   swidth: integer;
   sheight: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   if fraczoom = FRACUNIT then
   begin
@@ -3493,65 +2744,15 @@ begin
   if (pw > 0) and (ph > 0) then
   begin
 
-    fracx := 0;
-    fracxstep := FRACUNIT * patch.width div pw;
-    fracystep := FRACUNIT * patch.height div ph;
-
     swidth := V_GetScreenWidth(scrn);
     sheight := V_GetScreenHeight(scrn);
 
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
-    col := 0;
-
-    while col < pw do
-    begin
-      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx shr FRACBITS]);
-      delta := 0;
-      tallpatch := false;
-      // step through the posts in a column
-      while column.topdelta <> $ff do
-      begin
-        source := PByte(NativeInt(column) + 3);
-        delta := delta + column.topdelta;
-        if preserve then
-          dest := PByte(NativeInt(desttop) + ((delta * sheight) * fraczoom div FRACUNIT div 200) * swidth)
-        else
-          dest := PByte(NativeInt(desttop) + (delta * fraczoom div FRACUNIT) * swidth);
-        count := column.length;
-        fracy := 0;
-        lasty := 0;
-
-        while count > 0 do
-        begin
-          dest^ := v_translation[source^];
-          inc(dest, swidth);
-          fracy := fracy + fracystep;
-          cury := LongWord(fracy) shr FRACBITS;
-          if cury > lasty then
-          begin
-            lasty := cury;
-            inc(source);
-            dec(count);
-          end;
-        end;
-        if not tallpatch then
-        begin
-          prevdelta := column.topdelta;
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          if column.topdelta > prevdelta then
-            delta := 0
-          else
-            tallpatch := true;
-        end
-        else
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-      end;
-      inc(desttop);
-      inc(col);
-
-      fracx := fracx + fracxstep;
-    end;
+    // the walk of the posts is TVideoPatchZoomer (Libs\Video)
+    TVideoPatchZoomer.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), pw,
+      FRACUNIT * patch.width div pw, FRACUNIT * patch.height div ph, System.PByte(desttop), swidth, sheight,
+      fraczoom, preserve, PVideoByteRow(v_translation));
   end;
 
 end;
@@ -3563,24 +2764,10 @@ end;
 //==============================================================================
 procedure V_DrawPatchZoomed32(x, y: integer; patch: Ppatch_t; preserve: boolean; fraczoom: fixed_t);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
-  desttop: PLongWordArray;
-  dest: PLongWord;
-  source: PByte;
   pw: integer;
   ph: integer;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  lasty: integer;
-  cury: integer;
   swidth: integer;
   sheight: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   if fraczoom = FRACUNIT then
   begin
@@ -3607,65 +2794,13 @@ begin
   if (pw > 0) and (ph > 0) then
   begin
 
-    fracx := 0;
-    fracxstep := FRACUNIT * patch.width div pw;
-    fracystep := FRACUNIT * patch.height div ph;
-
     swidth := V_GetScreenWidth(SCN_FG);
     sheight := V_GetScreenHeight(SCN_FG);
 
-    desttop := @screen32[y * swidth + x];
-
-    col := 0;
-
-    while col < pw do
-    begin
-      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
-      delta := 0;
-      tallpatch := false;
-      // step through the posts in a column
-      while column.topdelta <> $ff do
-      begin
-        source := PByte(NativeInt(column) + 3);
-        delta := delta + column.topdelta;
-        if preserve then
-          dest := @desttop[((delta * sheight) * fraczoom div FRACUNIT div 200) * swidth]
-        else
-          dest := @desttop[(delta * fraczoom div FRACUNIT) * swidth];
-        count := column.length;
-        fracy := 0;
-        lasty := 0;
-
-        while count > 0 do
-        begin
-          dest^ := videopal[source^];
-          inc(dest, swidth);
-          fracy := fracy + fracystep;
-          cury := LongWord(fracy) shr FRACBITS;
-          if cury > lasty then
-          begin
-            lasty := cury;
-            inc(source);
-            dec(count);
-          end;
-        end;
-        if not tallpatch then
-        begin
-          prevdelta := column.topdelta;
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          if column.topdelta > prevdelta then
-            delta := 0
-          else
-            tallpatch := true;
-        end
-        else
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-      end;
-      desttop := @desttop[1];
-      inc(col);
-
-      fracx := fracx + fracxstep;
-    end;
+    // the walk of the posts is TVideoPatchZoomer (Libs\Video)
+    TVideoPatchZoomer.DrawColumns32(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), pw,
+      FRACUNIT * patch.width div pw, FRACUNIT * patch.height div ph, @screen32[y * swidth + x], swidth, sheight,
+      fraczoom, preserve, PVideoLongWordRow(@videopal[0]));
   end;
 
 end;
@@ -4177,7 +3312,6 @@ var
   flat: Pointer;
   isflat: boolean;
   src: packed array[0..4095] of byte;
-  dest: integer;
   ovr: TOverlayDrawer;
   x, y: integer;
   xstart, ystart: integer;
@@ -4194,24 +3328,10 @@ begin
     Z_ChangeTag(flat, PU_CACHE);
     if isflat then
     begin
-      dest := 0;
+      // the rows of the flat repeated on the 320x200 screen are TVideoScreenOps (Libs\Video)
+      TVideoScreenOps.TileFlat64(@src[0], System.PByte(@screens[dstscn, 0]), 320, 200);
+      result := true;
 
-      for y := 0 to 200 - 1 do
-      begin
-        for x := 0 to (320 div 64) - 1 do
-        begin
-          memcpy(@screens[dstscn, dest], @src[_SHL(y and 63, 6)], 64);
-          dest := dest + 64;
-        end;
-
-        if 320 and 63 <> 0 then
-        begin
-          memcpy(@screens[dstscn, dest], @src[_SHL(y and 63, 6)], 320 and 63);
-          dest := dest + (320 and 63);
-        end;
-
-        result := true;
-      end;
     end
     else
     begin
