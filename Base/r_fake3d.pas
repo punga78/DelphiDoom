@@ -37,10 +37,18 @@ interface
 
 uses
   d_delphi,
-  d_player;
+  d_player,
+  DelphiDoom.Renderer.Intf;
 
 var
   usefake3d: boolean;
+
+//==============================================================================
+//
+// R_ConfigureFake3D
+//
+//==============================================================================
+procedure R_ConfigureFake3D(const AAngles: IRendererFake3DAngles);
 
 //==============================================================================
 //
@@ -139,8 +147,8 @@ var
   f3dinfobuffer: f3dinfobuffer_t;
   FAKE3D_ANGLE_COSINES: array[MIN_3DINFOBUFFERSIZE..MAX_3DINFOBUFFERSIZE] of double;
 
-const
-  LOOKDIR_TO_ANGLE = 0.5 / 16;
+var
+  fake3d_angles: IRendererFake3DAngles = nil;
 
 //==============================================================================
 //
@@ -738,89 +746,13 @@ end;
 
 //==============================================================================
 //
-// R_GetPointsInCircle
+// R_ConfigureFake3D
+// The table of the angles of the fake 3D view, given by the composition root
 //
 //==============================================================================
-procedure R_GetPointsInCircle(const l: integer; const x, y: extended; const r: extended; var v1, v2: extended);
-var
-  a: extended;
+procedure R_ConfigureFake3D(const AAngles: IRendererFake3DAngles);
 begin
-  a := sqrt(r * r - (l - x) * (l - x));
-  v1 := y - a;
-  v2 := y + a;
-end;
-
-//==============================================================================
-//
-// R_CalculateCircleFromPoints
-//
-// JVAL
-// Calculate circle from 3 (no collinear) points
-// The center of circle is (x, y). The radius is (r)
-// Returns false if the points are collinear.
-//
-//==============================================================================
-function R_CalculateCircleFromPoints(const a1, a2, b1, b2, c1, c2: extended; var x, y: extended; var r: extended): boolean;
-const
-  L_EPSILON = 0.0000000001;
-var
-  d: extended;
-  u, v: extended;
-begin
-  d := (a1 - b1) * (b2 - c2) - (b1 - c1) * (a2 - b2);
-  if (d > -L_EPSILON) and (d < L_EPSILON) then
-  begin
-    result := false;
-    exit;
-  end;
-  u := (a1 * a1 - b1 * b1 + a2 * a2 - b2 * b2) / 2;
-  v := (b1 * b1 - c1 * c1 + b2 * b2 - c2 * c2) / 2;
-  x := (u * (b2 - c2) - v * (a2 - b2)) / d;
-  y := (v * (a1 - b1) - u * (b1 - c1)) / d;
-  r := sqrt((x - a1) * (x - a1) + (y - a2) * (y - a2));
-  result := true;
-end;
-
-//==============================================================================
-//
-// R_CalculateAnglesTable
-//
-//==============================================================================
-procedure R_CalculateAnglesTable;
-const
-  T_EPSILON = 0.001;
-var
-  a1, a2, b1, b2, c1, c2: extended;
-  x, y: extended;
-  r: extended;
-  v1, v2: extended;
-  l: integer;
-  test1, test2: extended;
-begin
-  a1 := MIN_3DINFOBUFFERSIZE;
-  a2 := a1 * LOOKDIR_TO_ANGLE * pi / 270;
-  test1 := a2 - T_EPSILON;
-  b1 := 0.0;
-  b2 := 0.0;
-  c1 := MAX_3DINFOBUFFERSIZE;
-  c2 := c1 * LOOKDIR_TO_ANGLE * pi / 180;
-  test2 := c2 + T_EPSILON;
-  if R_CalculateCircleFromPoints(a1, a2, b1, b2, c1, c2, x, y, r) then
-  begin
-    for l := MIN_3DINFOBUFFERSIZE to MAX_3DINFOBUFFERSIZE do
-    begin
-      R_GetPointsInCircle(l, x, y, r, v1, v2);
-      if IsExtendedInRange(v1, test1, test2) then
-        FAKE3D_ANGLE_COSINES[l] := cos(v1)
-      else
-        FAKE3D_ANGLE_COSINES[l] := cos(v2);
-    end;
-  end
-  else // JVAL: Unreachable code
-  begin
-    for l := MIN_3DINFOBUFFERSIZE to MAX_3DINFOBUFFERSIZE do
-      FAKE3D_ANGLE_COSINES[l] := 1.0;
-  end;
+  fake3d_angles := AAngles;
 end;
 
 //==============================================================================
@@ -831,8 +763,14 @@ end;
 procedure R_InitFake3D;
 var
   i: integer;
+  cosines: TArray<Double>;
 begin
-  R_CalculateAnglesTable;
+  if fake3d_angles = nil then
+    I_Error('R_InitFake3D(): R_ConfigureFake3D() was not called');
+  // The table is made by TRendererFake3DAngles
+  cosines := fake3d_angles.Cosines(MIN_3DINFOBUFFERSIZE, MAX_3DINFOBUFFERSIZE);
+  for i := MIN_3DINFOBUFFERSIZE to MAX_3DINFOBUFFERSIZE do
+    FAKE3D_ANGLE_COSINES[i] := cosines[i - MIN_3DINFOBUFFERSIZE];
   for i := MIN_3DINFOBUFFERSIZE to MAX_3DINFOBUFFERSIZE do
     f3dinfobuffer[i] := nil;
   threadworker8 := TDThread.Create(@R_Thr_Execute3DTransform8);

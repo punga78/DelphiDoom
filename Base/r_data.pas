@@ -48,6 +48,7 @@ uses
   DelphiDoom.Engine.Voxel.Intf,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.Pak.Intf,
+  DelphiDoom.Renderer.Types,
   DelphiDoom.Renderer.Intf;
 
 // Retrieve column data for span blitting.
@@ -163,6 +164,16 @@ procedure R_ConfigureTextureLookup(const ALookup: IRendererTextureLookup);
 //==============================================================================
 procedure R_ConfigureLumpRanges(const ARanges: IRendererLumpRanges;
   const ASpriteTable: IRendererSpriteTableBuilder);
+
+//==============================================================================
+//
+// R_ConfigurePrecache
+// The planner of what a level uses (R_PrecacheLevel) and the rules of the game for the
+// textures of the sides
+//
+//==============================================================================
+procedure R_ConfigurePrecache(const APlanner: IRendererPrecachePlanner;
+  const AProfile: TRendererProfile);
 
 //==============================================================================
 //
@@ -318,7 +329,7 @@ procedure R_ChangeColormap(const lumpname: string);
 implementation
 
 uses
-  DelphiDoom.Renderer.Types,
+  DelphiDoom.Renderer.Profiles,
   DelphiDoom.TextureDefs.Types,
   DelphiDoom.Imaging.Types,
   DelphiDoom.Palette.Types,
@@ -384,6 +395,8 @@ var
   texture_lookup: IRendererTextureLookup = nil;
   lump_ranges: IRendererLumpRanges = nil;
   sprite_table_builder: IRendererSpriteTableBuilder = nil;
+  precache_planner: IRendererPrecachePlanner = nil;
+  renderer_profile: TRendererProfile;
   // the last index found for a name of a flat or of a texture (one table for both, as the
   // old global hash of m_hash): every answer is checked against flats[] or textures[]
   name_hash: IStringHashTable = nil;
@@ -422,6 +435,31 @@ procedure R_ConfigureLumpRanges(const ARanges: IRendererLumpRanges;
 begin
   lump_ranges := ARanges;
   sprite_table_builder := ASpriteTable;
+end;
+
+//==============================================================================
+//
+// R_ConfigurePrecache
+// The planner of what a level uses and the rules of the game, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigurePrecache(const APlanner: IRendererPrecachePlanner;
+  const AProfile: TRendererProfile);
+begin
+  precache_planner := APlanner;
+  renderer_profile := AProfile;
+end;
+
+//==============================================================================
+//
+// R_RendererProfile
+//
+//==============================================================================
+function R_RendererProfile: TRendererProfile;
+begin
+  if precache_planner = nil then
+    I_Error('R_RendererProfile(): R_ConfigurePrecache() was not called');
+  Result := renderer_profile;
 end;
 
 //==============================================================================
@@ -1941,22 +1979,14 @@ begin
   if name = '' then
   begin
     I_Warning('R_SafeTextureNumForName(): Texture name is null.'#13#10);
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    result := -1;
-{$ELSE}
-    result := 0;
-{$ENDIF}
+    result := R_RendererProfile.MissingTexture;
     exit;
   end;
 
   // "NoTexture" marker.
   if name[1] = '-' then
   begin
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    result := -1;
-{$ELSE}
-    result := 0;
-{$ENDIF}
+    result := R_RendererProfile.MissingTexture;
     exit;
   end;
 
@@ -1980,12 +2010,12 @@ begin
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   I_Warning('R_SafeTextureNumForName(): %s not found.'#13#10, [name]);
-  result := -1;
 {$ELSE}
+  // the name of a custom colormap is not missing
   if R_CustomColorMapForName(name) < 0 then
     I_Warning('R_SafeTextureNumForName(): %s not found.'#13#10, [name]);
-  result := 0;
 {$ENDIF}
+  result := renderer_profile.MissingTexture;
 end;
 
 //==============================================================================
@@ -2013,25 +2043,20 @@ begin
   ZeroMemory(@result, SizeOf(Result));
   Result[0] := '-';
 
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  if sn < 0 then
-{$ELSE}
-  if sn = 0 then
-{$ENDIF}
+  if TRendererProfiles.IsNoSideTexture(R_RendererProfile, sn) then
     exit;
 
   if sn >= numtextures then
     exit;
 
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  Result := textures[sn].name;
-{$ELSE}
-  if sn > 0 then
+  if (sn > 0) or not renderer_profile.CustomColormapsOnSides then
   begin
     Result := textures[sn].name;
     Exit;
   end;
 
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  // the games that have custom colormaps on the sides (the profile says which)
   if sn < -numcustomcolormaps then
     exit;
   Result := stringtochar8(customcolormaps[- sn - 1].name);
@@ -2046,9 +2071,9 @@ end;
 //==============================================================================
 procedure R_PrecacheLevel;
 var
-  flatpresent: PByteArray;
-  texturepresent: PByteArray;
-  sprpresent: PByteArray;
+  plan: TRendererPrecachePlan;
+  planinput: TRendererPrecacheInput;
+  nextra: integer;
   i: integer;
   j: integer;
   k: integer;
@@ -2063,31 +2088,89 @@ var
 {$IFNDEF OPENGL}
   flat: pointer;
 {$ENDIF}
-  sd: Pside_t;
 begin
   printf('R_PrecacheLevel()'#13#10);
 
-  // Precache flats.
-  flatpresent := mallocz(numflats);
+  if precache_planner = nil then
+    I_Error('R_PrecacheLevel(): R_ConfigurePrecache() was not called');
 
+  // What the level uses is decided by TRendererPrecachePlanner; here the numbers are collected.
+  planinput.FlatCount := numflats;
+  planinput.TextureCount := numtextures;
+  planinput.SpriteCount := numspritespresent;
+
+  SetLength(planinput.SectorFlats, numsectors * 2);
   for i := 0 to numsectors - 1 do
   begin
-    flatpresent[sectors[i].floorpic] := 1;
-    flatpresent[sectors[i].ceilingpic] := 1;
+    planinput.SectorFlats[i * 2] := sectors[i].floorpic;
+    planinput.SectorFlats[i * 2 + 1] := sectors[i].ceilingpic;
   end;
 {$IFDEF HEXEN}
   // JVAL: Precaching animated flats
+  SetLength(planinput.ExtraFlats, animatedflatslist.Count);
   for i := 0 to animatedflatslist.Count - 1 do
-    flatpresent[animatedflatslist[i]] := 1;
+    planinput.ExtraFlats[i] := animatedflatslist[i];
 {$ENDIF}
 
+  SetLength(planinput.SideTextures, numsides * 3);
+  for i := 0 to numsides - 1 do
+  begin
+    planinput.SideTextures[i * 3] := sides[i].toptexture;
+    planinput.SideTextures[i * 3 + 1] := sides[i].midtexture;
+    planinput.SideTextures[i * 3 + 2] := sides[i].bottomtexture;
+  end;
+{$IFDEF HEXEN}
+  // JVAL: Precaching animated textures
+  nextra := animatedtextureslist.Count;
+{$ENDIF}
+  // Sky texture is always present.
+  // Note that F_SKY1 is the name used to
+  //  indicate a sky floor/ceiling as a flat,
+  //  while the sky texture is stored like
+  //  a wall texture, with an episode dependend
+  //  name.
+{$IFDEF HEXEN}
+  SetLength(planinput.ExtraTextures, nextra + 2);
+  for i := 0 to nextra - 1 do
+    planinput.ExtraTextures[i] := animatedtextureslist[i];
+  planinput.ExtraTextures[nextra] := SkyTexture;
+  planinput.ExtraTextures[nextra + 1] := Sky2Texture;
+{$ELSE}
+  SetLength(planinput.ExtraTextures, 1);
+  planinput.ExtraTextures[0] := skytexture;
+{$ENDIF}
+
+  nextra := 0;
+  th := thinkercap.next;
+  while th <> @thinkercap do
+  begin
+    if @th._function.acp1 = @P_MobjThinker then
+      inc(nextra);
+    th := th.next;
+  end;
+  SetLength(planinput.ObjectSprites, nextra);
+  nextra := 0;
+  th := thinkercap.next;
+  while th <> @thinkercap do
+  begin
+    if @th._function.acp1 = @P_MobjThinker then
+    begin
+      planinput.ObjectSprites[nextra] := Pmobj_t(th).sprite;
+      inc(nextra);
+    end;
+    th := th.next;
+  end;
+
+  plan := precache_planner.Plan(planinput);
+
+  // Precache flats.
   flatmemory := 0;
   allocmemory := GetAllocMemSize;
 
   printf(' Precaching flats'#13#10);
   for i := 0 to numflats - 1 do
   begin
-    if flatpresent[i] <> 0 then
+    if plan.FlatPresent[i] then
     begin
       lump := R_GetLumpForFlat(i);
 {$IFDEF OPENGL}
@@ -2105,35 +2188,6 @@ begin
   printf('%6d KB memory usage for flats'#13#10, [(flatmemory + allocmemory) div 1024]);
 
   // Precache textures.
-  texturepresent := mallocz(numtextures);
-
-  sd := @sides[numsides];
-  while sd <> @sides[0] do
-  begin
-    dec(sd);
-    texturepresent[sd.toptexture] := 1;
-    texturepresent[sd.midtexture] := 1;
-    texturepresent[sd.bottomtexture] := 1;
-  end;
-{$IFDEF HEXEN}
-  // JVAL: Precaching animated textures
-  for i := 0 to animatedtextureslist.Count - 1 do
-    texturepresent[animatedtextureslist[i]] := 1;
-{$ENDIF}
-
-  // Sky texture is always present.
-  // Note that F_SKY1 is the name used to
-  //  indicate a sky floor/ceiling as a flat,
-  //  while the sky texture is stored like
-  //  a wall texture, with an episode dependend
-  //  name.
-{$IFDEF HEXEN}
-  texturepresent[SkyTexture] := 1;
-  texturepresent[Sky2Texture] := 1;
-{$ELSE}
-  texturepresent[skytexture] := 1;
-{$ENDIF}
-
   texturememory := 0;
   allocmemory := GetAllocMemSize;
 
@@ -2144,7 +2198,7 @@ begin
 {$ENDIF}
   for i := 0 to numtextures - 1 do
   begin
-    if texturepresent[i] = 0 then
+    if not plan.TexturePresent[i] then
       continue;
 
     texture := textures[i];
@@ -2163,23 +2217,13 @@ begin
   printf('%6d KB memory usage for textures'#13#10, [(texturememory + allocmemory) div 1024]);
 
   // Precache sprites.
-  sprpresent := mallocz(numspritespresent);
-
-  th := thinkercap.next;
-  while th <> @thinkercap do
-  begin
-    if @th._function.acp1 = @P_MobjThinker then
-      sprpresent[Pmobj_t(th).sprite] := 1;
-    th := th.next;
-  end;
-
   spritememory := 0;
   allocmemory := GetAllocMemSize;
 
   printf(' Precaching sprites'#13#10);
   for i := 0 to numspritespresent - 1 do
   begin
-    if sprpresent[i] <> 0 then
+    if plan.SpritePresent[i] then
     begin
       for j := 0 to sprites[i].numframes - 1 do
       begin
@@ -2195,10 +2239,6 @@ begin
   end;
   allocmemory := GetAllocMemSize - allocmemory;
   printf('%6d KB memory usage for sprites'#13#10, [(spritememory + allocmemory) div 1024]);
-
-  memfree(pointer(flatpresent), numflats);
-  memfree(pointer(texturepresent), numtextures);
-  memfree(pointer(sprpresent), numspritespresent);
 end;
 
 //==============================================================================

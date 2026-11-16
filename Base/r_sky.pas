@@ -77,6 +77,13 @@ var
 //==============================================================================
 procedure R_InitSkyMap;
 
+//==============================================================================
+//
+// R_ConfigureSky
+//
+//==============================================================================
+procedure R_ConfigureSky(const ATextureMid: integer);
+
 {$IFDEF HEXEN}
 //==============================================================================
 //
@@ -90,10 +97,13 @@ implementation
 
 uses
 {$IFDEF HEXEN}
-  p_mapinfo;
-{$ELSE}
-  m_fixed; // Needed for FRACUNIT.
+  p_mapinfo,
 {$ENDIF}
+  i_system;
+
+var
+  sky_texturemid: integer = 0;
+  sky_configured: boolean = false;
 
 //==============================================================================
 //
@@ -103,9 +113,12 @@ uses
 //==============================================================================
 procedure R_InitSkyMap;
 begin
-{$IF DEFINED(HEXEN)}
-  skytexturemid := 200 * FRACUNIT;
+  if not sky_configured then
+    I_Error('R_InitSkyMap(): R_ConfigureSky() was not called');
+  skytexturemid := sky_texturemid;
 end;
+
+{$IFDEF HEXEN}
 
 //==============================================================================
 //
@@ -123,11 +136,19 @@ begin
   Sky1ColumnOffset := 0;
   Sky2ColumnOffset := 0;
   DoubleSky := P_GetMapDoubleSky(map);
-{$ELSEIF DEFINED(STRIFE)}
-  skytexturemid := 199 * FRACUNIT;
-{$ELSE}
-  skytexturemid := 100 * FRACUNIT;
+end;
 {$ENDIF}
+
+//==============================================================================
+//
+// R_ConfigureSky
+// The height of the middle of the sky texture of the game, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureSky(const ATextureMid: integer);
+begin
+  sky_texturemid := ATextureMid;
+  sky_configured := True;
 end;
 
 end.

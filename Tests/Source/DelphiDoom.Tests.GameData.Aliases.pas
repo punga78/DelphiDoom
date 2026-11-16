@@ -37,6 +37,8 @@ type
     procedure DovrebbeDareIlProfiloDiDoomATuttiIFormatiEAlleRegolePerRadix;
     [Test]
     procedure DovrebbeLasciareRadixConIlProprioProfiloIwad;
+    [Test]
+    procedure DovrebbeDareIlProfiloDiDoomDelRendererASpeedERadix;
   end;
 
 implementation
@@ -106,6 +108,13 @@ procedure TTestGameDataAliases.DovrebbeLasciareRadixConIlProprioProfiloIwad;
 begin
   Assert.AreEqual('Radix', TGameAliases.ProfileOf('Radix', TGameProfileArea.Iwad));
   Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Script));
+end;
+
+procedure TTestGameDataAliases.DovrebbeDareIlProfiloDiDoomDelRendererASpeedERadix;
+begin
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Speed', TGameProfileArea.Renderer));
+  Assert.AreEqual('Doom', TGameAliases.ProfileOf('Radix', TGameProfileArea.Renderer));
+  Assert.AreEqual('Hexen', TGameAliases.ProfileOf('Hexen', TGameProfileArea.Renderer));
 end;
 
 end.

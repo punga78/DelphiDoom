@@ -36,15 +36,19 @@ interface
 
 uses
   DelphiDoom.Pak.Intf,
+  DelphiDoom.Renderer.Intf,
   DelphiDoom.Engine.Texture.Intf;
 
 //==============================================================================
 //
 // R_ConfigurePK3Textures
-// The external textures and the PAK file system, given by the composition root
+// The external textures, the PAK file system, the selector of the images, the questions
+// it asks of the engine and the hash of the names, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigurePK3Textures(const AFiles: IEngineTextureFiles; const APakFiles: IPakFileSystem);
+procedure R_ConfigurePK3Textures(const AFiles: IEngineTextureFiles; const APakFiles: IPakFileSystem;
+  const ASelector: IRendererPk3NameSelector; const ACatalog: IRendererPk3Catalog;
+  const AHash: IRendererPk3TextHash);
 
 //==============================================================================
 //
@@ -60,85 +64,41 @@ implementation
 
 uses
   d_delphi,
+  i_system,
   m_argv,
   mt_utils,
   r_data,
   r_defs,
   DelphiDoom.Engine.Texture.Item,
-  DelphiDoom.Wad.Pak.Types,
+  DelphiDoom.Renderer.Types,
   v_video,
   w_wadreader,
   w_wadwriter,
   w_wad;
-
-const
-  // the images in this folder of a PK3 are flats only
-  s_FLAT_PATH = 'FLATS\';
 
 var
   t_names: TDStringList;
   f_names: TDStringList;
   pk3_texturefiles: IEngineTextureFiles = nil;
   pk3_pakfiles: IPakFileSystem = nil;
+  pk3_selector: IRendererPk3NameSelector = nil;
+  pk3_catalog: IRendererPk3Catalog = nil;
+  pk3_hash: IRendererPk3TextHash = nil;
 
 //==============================================================================
 //
 // R_ConfigurePK3Textures
 //
 //==============================================================================
-procedure R_ConfigurePK3Textures(const AFiles: IEngineTextureFiles; const APakFiles: IPakFileSystem);
+procedure R_ConfigurePK3Textures(const AFiles: IEngineTextureFiles; const APakFiles: IPakFileSystem;
+  const ASelector: IRendererPk3NameSelector; const ACatalog: IRendererPk3Catalog;
+  const AHash: IRendererPk3TextHash);
 begin
   pk3_texturefiles := AFiles;
   pk3_pakfiles := APakFiles;
-end;
-
-//==============================================================================
-//
-// R_AddTextureFileName
-//
-//==============================================================================
-procedure R_AddTextureFileName(const filename: string);
-var
-  check: string;
-  name: string;
-  ext: string;
-  path: string;
-  istexture: boolean;
-  isflat: boolean;
-begin
-  check := strupper(filename);
-  ext := fext(check);  // includes the dot ('.PNG')
-  if not pk3_texturefiles.IsTextureExtension(ext) then
-    Exit;
-
-  path := fixpathname(check);
-  istexture := Pos(PAK_TEXTURE_PATH, path) > 0;
-  isflat := Pos(s_FLAT_PATH, path) > 0;
-  if not (istexture or isflat) then
-    Exit;
-
-  check := fname(check);
-  name := firstword_ch(check, '.');
-  // Only one '.' (the extension already has its dot: the old test compared with
-  // name + '.' + ext, "NAME..PNG", and was never true, so no cache was ever written)
-  if name + ext <> check then
-    Exit;
-  if Length(name) > 8 then
-    Exit;
-  if W_CheckNumForName(name) >= 0 then
-    Exit;
-
-  // The images of flats\ are only flats; the ones of textures\ are textures and flats
-  if istexture then
-    if t_names.IndexOf(name) < 0 then
-      if R_CheckTextureNumForName(name) <= 0 then
-      begin
-        t_names.Add(name);
-        f_names.Add(name);
-        Exit;
-      end;
-  if f_names.IndexOf(name) < 0 then
-    f_names.Add(name);
+  pk3_selector := ASelector;
+  pk3_catalog := ACatalog;
+  pk3_hash := AHash;
 end;
 
 type
@@ -404,35 +364,6 @@ end;
 
 //==============================================================================
 //
-// Hash
-//
-//==============================================================================
-function Hash(const name: string): integer;
-var
-  b: Byte;
-  i: integer;
-  len: integer;
-begin
-  len := Length(name);
-  if len = 0 then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  b := Ord(name[1]);
-
-  Result := 5381 * 33 + b;
-
-  for i := 2 to len do
-  begin
-    b := Ord(name[i]);
-    Result := Result * 33 + b;
-  end;
-end;
-
-//==============================================================================
-//
 // R_InitPK3Textures
 //
 //==============================================================================
@@ -444,6 +375,8 @@ var
   wad2filename: string;
   reader: TWadReader;
   t_ok, f_ok: Boolean;
+  entrynames: TArray<string>;
+  selected: TRendererPk3Names;
   i: integer;
   p: pointer;
   size: integer;
@@ -458,22 +391,29 @@ begin
   if not usepk3textures then
     Exit;
 
+  if (pk3_selector = nil) or (pk3_hash = nil) or (pk3_catalog = nil) then
+    I_Error('R_InitPK3Textures(): R_ConfigurePK3Textures() was not called');
+
+  // The names (already sorted) are chosen by TRendererPk3NameSelector
+  SetLength(entrynames, pk3_pakfiles.EntryCount);
+  for i := 0 to pk3_pakfiles.EntryCount - 1 do
+    entrynames[i] := pk3_pakfiles.EntryName(i);
+  selected := pk3_selector.Select(entrynames, pk3_catalog);
+
   t_names := TDStringList.Create;
   f_names := TDStringList.Create;
-
-  for i := 0 to pk3_pakfiles.EntryCount - 1 do
-    R_AddTextureFileName(pk3_pakfiles.EntryName(i));
+  for i := 0 to High(selected.Textures) do
+    t_names.Add(selected.Textures[i]);
+  for i := 0 to High(selected.Flats) do
+    f_names.Add(selected.Flats[i]);
 
   if f_names.Count > 0 then
   begin
-    t_names.Sort;
-    f_names.Sort;
-
     wad1filename := M_SaveFileName('DATA\');
     MkDir(wad1filename);
     wad1filename := wad1filename + 'WADS\';
     MkDir(wad1filename);
-    wad1filename := wad1filename + 'pk3tex_' + uitoa(pk3_pakfiles.GlobalHash) + '_' + itoa(Hash(t_names.Text)) + '.wad';
+    wad1filename := wad1filename + 'pk3tex_' + uitoa(pk3_pakfiles.GlobalHash) + '_' + itoa(pk3_hash.Compute(t_names.Text)) + '.wad';
     // Check if the texture cache exists
     // (a PK3 with only flats has no texture WAD)
     t_ok := t_names.Count = 0;
@@ -491,7 +431,7 @@ begin
     MkDir(wad2filename);
     wad2filename := wad2filename + 'WADS\';
     MkDir(wad2filename);
-    wad2filename := wad2filename + 'pk3flat_' + uitoa(pk3_pakfiles.GlobalHash) + '_' + itoa(Hash(f_names.Text)) + '.wad';
+    wad2filename := wad2filename + 'pk3flat_' + uitoa(pk3_pakfiles.GlobalHash) + '_' + itoa(pk3_hash.Compute(f_names.Text)) + '.wad';
     // Check if the flat cache exists
     f_ok := False;
     if fexists(wad2filename) then
