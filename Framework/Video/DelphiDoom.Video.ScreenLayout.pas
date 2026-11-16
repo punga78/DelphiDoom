@@ -32,6 +32,11 @@ type
       const ADefaultWidth, ADefaultHeight: Integer): Integer; static;
     /// <summary>The OpenGL drawing area: 512 wide below 1024 pixels of screen, 1024 otherwise</summary>
     class function GlDrawSize(const AScreenWidth, AScreenHeight: Integer): TVideoGlDrawSize; static;
+    /// <summary>
+    ///   Bytes of the 32 bit frame that the software video presents: 20 rows of padding under the screen, a
+    ///   multiple of 4096 (the padding may give up to 4% of speed)
+    /// </summary>
+    class function FrameBufferSize(const AScreenWidth, AScreenHeight: Integer): Integer; static;
   end;
 
 implementation
@@ -67,6 +72,13 @@ begin
     Result.Height := Round(AScreenHeight * LSide / AScreenWidth);
   Result.TextureWidth := LSide;
   Result.TextureHeight := LSide;
+end;
+
+class function TVideoScreenLayout.FrameBufferSize(const AScreenWidth, AScreenHeight: Integer): Integer;
+const
+  ERROR_OFFSET = 20;
+begin
+  Result := AScreenWidth * (AScreenHeight + ERROR_OFFSET) * SizeOf(LongWord) and not (4095);
 end;
 
 end.

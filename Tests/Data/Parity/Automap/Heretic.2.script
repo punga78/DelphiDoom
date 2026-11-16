@@ -1,0 +1,72 @@
+# Second automap script of the software renderer (issue #246, third round): the rules of the game that the first one does not reach.
+# E1M2 (key doors)
+hold 30 forward 25
+hold 25 forward 25 turn 4
+key 9
+hold 3
+shot 1
+# idbeholda: the all-map power (the lines the player has not seen)
+key 105
+hold 2
+key 100
+hold 2
+key 98
+hold 2
+key 101
+hold 2
+key 104
+hold 2
+key 111
+hold 2
+key 108
+hold 2
+key 100
+hold 2
+key 97
+hold 2
+hold 3
+shot 2
+hold 25 forward 25 turn -3
+shot 3
+# iddt once: the cheat of the lines (secret doors, teleporters, locked doors, floor and ceiling steps)
+key 105
+hold 2
+key 100
+hold 2
+key 100
+hold 2
+key 116
+hold 2
+hold 3
+shot 4
+hold 30 forward 25 turn 2
+shot 5
+# iddt again: the things
+key 105
+hold 2
+key 100
+hold 2
+key 100
+hold 2
+key 116
+hold 2
+hold 3
+shot 6
+# big: the whole level
+key 111
+hold 3
+shot 7
+key 111
+hold 3
+# rotate on, follow
+key 114
+hold 3
+hold 30 forward 25 turn 3
+shot 8
+# TAB: overlay, then off
+key 9
+hold 3
+shot 9
+key 9
+hold 3
+hold 20 forward 25 turn 2
