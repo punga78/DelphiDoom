@@ -134,4 +134,6 @@
   R_DrawColumnAlphaMedium_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAlphaMedium_BatchMT'; Unit = 'r_sprite' }
   R_DrawColumnSubtractMediumMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractMediumMT'; Unit = 'r_sprite' }
   R_DrawColumnAddHi_SmallStepMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddHi_SmallStepMT'; Unit = 'r_sprite' }
+  R_MapPlane = @{ Expression = 'TRendererPlaneMappers.R_MapPlane'; Unit = 'r_plane' }
+  R_MapPlaneAngle = @{ Expression = 'TRendererPlaneMappers.R_MapPlaneAngle'; Unit = 'r_plane' }
 }
