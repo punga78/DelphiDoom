@@ -673,6 +673,8 @@ uses
   DelphiDoom.MapInfo.MapName in '..\Libs\MapInfo\DelphiDoom.MapInfo.MapName.pas',
   DelphiDoom.MapInfo.LevelProgression in '..\Libs\MapInfo\DelphiDoom.MapInfo.LevelProgression.pas',
   DelphiDoom.Serializer.SaveGameName in '..\Libs\Serializer\DelphiDoom.Serializer.SaveGameName.pas',
+  DelphiDoom.Serializer.SaveGameHeader in '..\Libs\Serializer\DelphiDoom.Serializer.SaveGameHeader.pas',
+  DelphiDoom.Serializer.SaveGameVersions in '..\Libs\Serializer\DelphiDoom.Serializer.SaveGameVersions.pas',
   DelphiDoom.Input.KeyboardLayout in '..\Libs\Input\DelphiDoom.Input.KeyboardLayout.pas',
   DelphiDoom.Input.EventScaling in '..\Libs\Input\DelphiDoom.Input.EventScaling.pas',
   DelphiDoom.Thinkers.LevelTotals in '..\Libs\Thinkers\DelphiDoom.Thinkers.LevelTotals.pas',

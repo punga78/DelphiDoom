@@ -502,6 +502,8 @@ uses
   m_rnd,
   p_setup,
   p_saveg,
+  DelphiDoom.Serializer.SaveGameHeader,
+  DelphiDoom.Serializer.SaveGameVersions,
   p_tick,
   p_local,
   p_mobj_h,
@@ -2270,16 +2272,58 @@ const
 
 //==============================================================================
 //
+// G_ReadSaveVersion
+// Checks the version of a saved game (the text after the description)
+//
+//==============================================================================
+function G_ReadSaveVersion(const header: System.PByte; const filelength: integer): boolean;
+var
+  versions: TSaveGameVersions;
+  status: TSaveGameVersionStatus;
+  loadedversion, hack: integer;
+  vsaved: string;
+begin
+  versions := TSaveGameVersions.Create(VERSION, 'heretic');
+  try
+    // JVAL: check for compatible game versions here
+    versions.AddCompatible('version 110', 110);
+    versions.AddCompatible('heretic 111', 111);
+    versions.AddCompatible('heretic 112', 112);
+    versions.AddCompatible('heretic 113', 113);
+    versions.AddCompatible('heretic 114', 114);
+    versions.AddCompatible('heretic 115', 115);
+    versions.AddCompatible('heretic 203', 203);
+    versions.AddCompatible('heretic 204', 204);
+    versions.AddCompatible('heretic 205', 205);
+    versions.AddCompatible('heretic 206', 206);
+    status := versions.Resolve(header, filelength, loadedversion, hack, vsaved);
+  finally
+    versions.Free;
+  end;
+
+  savegameversion := loadedversion;
+  result := true;
+  if status = sgvTooShort then
+  begin
+    I_Warning('G_DoLoadGame(): Saved game is from an unsupported version.'#13#10);
+    result := false;
+  end
+  else if status = sgvUnsupported then
+  begin
+    I_Warning('G_DoLoadGame(): Saved game is from an unsupported version: %s!'#13#10, [vsaved]);
+    result := false;
+  end;
+end;
+
+//==============================================================================
+//
 // G_DoLoadGame
 //
 //==============================================================================
 procedure G_DoLoadGame;
 var
   len: integer;
-  i, j: integer;
-  a, b, c: integer;
-  vcheck: string;
-  vsaved: string;
+  i: integer;
 begin
   gameaction := ga_nothing;
 
@@ -2295,52 +2339,11 @@ begin
 
   savegameversion := VERSION; // Assume current version
 
-  // skip the description field
-  vcheck := '';
-  sprintf(vcheck, 'heretic %d', [VERSION]);
-
-  if len < Length(vcheck) then
+  if not G_ReadSaveVersion(System.PByte(save_p), len) then
   begin
-    I_Warning('G_DoLoadGame(): Saved game is from an unsupported version.'#13#10);
     Z_Free(savebuffer);
-    exit; // bad version // by JVAL extra checking
+    exit; // bad version
   end;
-
-  for i := 0 to Length(vcheck) - 1 do
-    if save_p[i] <> Ord(vcheck[i + 1]) then
-    begin
-      vsaved := '';
-      for j := 0 to Length(vcheck) - 1 do
-        vsaved := vsaved + Chr(save_p[j]);
-      // JVAL
-      // Check for compatible game versions here
-      if vsaved = 'version 110' then
-        savegameversion := 110
-      else if vsaved = 'heretic 111' then
-        savegameversion := 111
-      else if vsaved = 'heretic 112' then
-        savegameversion := 112
-      else if vsaved = 'heretic 113' then
-        savegameversion := 113
-      else if vsaved = 'heretic 114' then
-        savegameversion := 114
-      else if vsaved = 'heretic 115' then
-        savegameversion := 115
-      else if vsaved = 'heretic 203' then
-        savegameversion := 203
-      else if vsaved = 'heretic 204' then
-        savegameversion := 204
-      else if vsaved = 'heretic 205' then
-        savegameversion := 205
-      else if vsaved = 'heretic 206' then
-        savegameversion := 206
-      else
-      begin
-        I_Warning('G_DoLoadGame(): Saved game is from an unsupported version: %s!'#13#10, [vsaved]);
-        Z_Free(savebuffer);
-        exit; // bad version
-      end;
-    end;
 
   save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
 
@@ -2368,16 +2371,8 @@ begin
   G_InitNew(gameskill, gameepisode, gamemap);
 
   // get the times
-  a := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  b := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  c := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  P_World.Time.LevelTime^ := _SHL(a, 16) + _SHL(b, 8) + c;
+  P_World.Time.LevelTime^ := TSaveGameHeader.ReadLevelTime(System.PByte(save_p));
+  save_p := PByteArray(NativeInt(save_p) + 3);
 
   // dearchive all the modifications
   P_UnArchivePlayers;
@@ -2426,10 +2421,7 @@ end;
 //==============================================================================
 procedure G_DoSaveGameInFile(name: string);
 var
-  name2: string;
-  aversion: AnsiString;
   description: string;
-  adesc: AnsiString;
   len: integer;
   i: integer;
   maxsize: integer;
@@ -2447,28 +2439,14 @@ begin
 
   save_p := savebuffer;
 
-  // The description is stored as 8 bit text, padded with zeroes
-  ZeroMemory(save_p, SAVESTRINGSIZE);
-  adesc := AnsiString(description);
-  if Length(adesc) > SAVESTRINGSIZE then
-    SetLength(adesc, SAVESTRINGSIZE);
-  if Length(adesc) > 0 then
-    memcpy(save_p, @adesc[1], Length(adesc));
+  // The description is stored as 8 bit text
+  TSaveGameHeader.WriteDescription(System.PByte(save_p), SAVESTRINGSIZE, description, 0);
 
   save_p := PByteArray(NativeInt(save_p) + SAVESTRINGSIZE);
-  name2 := '';
 
-  // JVAL
-  // Hack:
-  //    Strings 'heretic' and 'version' have the same length!!
   savegameversion := VERSION;
-  sprintf(name2, 'heretic %d', [VERSION]);
-  while length(name2) < VERSIONSIZE do
-    name2 := name2 + ' ';
-
   // The version is stored as 8 bit text
-  aversion := AnsiString(name2);
-  memcpy(save_p, @aversion[1], VERSIONSIZE);
+  TSaveGameHeader.WriteVersion(System.PByte(save_p), VERSION, VERSIONSIZE, 'heretic');
   save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
   P_ArchiveScreenShot;
 
@@ -2487,14 +2465,8 @@ begin
     save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
-  save_p[0] := _SHR(P_World.Time.LevelTime^, 16);
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  save_p[0] := _SHR(P_World.Time.LevelTime^, 8);
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  save_p[0] := P_World.Time.LevelTime^;
-  save_p := PByteArray(NativeInt(save_p) + 1);
+  TSaveGameHeader.WriteLevelTime(System.PByte(save_p), P_World.Time.LevelTime^);
+  save_p := PByteArray(NativeInt(save_p) + 3);
 
   len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.WriteFile(name, savebuffer, len);
