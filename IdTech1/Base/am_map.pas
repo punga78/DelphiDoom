@@ -315,6 +315,7 @@ uses
   DelphiDoom.Automap.LineRasterizer,
 {$ENDIF}
   DelphiDoom.Automap.Shapes,
+  DelphiDoom.Automap.KeyCommands,
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   d_englsh,
 {$ENDIF}
@@ -714,12 +715,37 @@ var
 
 //==============================================================================
 //
+// AM_GetKeyBindings
+//
+//==============================================================================
+procedure AM_GetKeyBindings(var bindings: TAutomapKeyBindings);
+begin
+  bindings.PanRight := AM_PANRIGHTKEY;
+  bindings.PanLeft := AM_PANLEFTKEY;
+  bindings.PanUp := AM_PANUPKEY;
+  bindings.PanDown := AM_PANDOWNKEY;
+  bindings.ZoomOut := Ord(AM_ZOOMOUTKEY);
+  bindings.ZoomIn := Ord(AM_ZOOMINKEY);
+  bindings.ZoomInAlternative := Ord(AM_ZOOMINKEY2);
+  bindings.Toggle := AM_TONGLEKEY;
+  bindings.GoBig := AM_GOBIGKEY;
+  bindings.Follow := AM_FOLLOWKEY;
+  bindings.Grid := AM_GRIDKEY;
+  bindings.Rotate := AM_ROTATEKEY;
+  bindings.Textured := AM_TEXTUREDAUTOMAP;
+  bindings.Mark := AM_MARKKEY;
+  bindings.ClearMarks := AM_CLEARMARKKEY;
+end;
+
+//==============================================================================
+//
 // AM_Responder
 //
 //==============================================================================
 function AM_Responder(ev: Pevent_t): boolean;
 var
   _message: string;
+  bindings: TAutomapKeyBindings;
 begin
   result := false;
 
@@ -744,45 +770,41 @@ begin
   else if ev._type = ev_keydown then
   begin
     result := true;
-    case ev.data1 of
-      AM_PANRIGHTKEY: // pan right
+    AM_GetKeyBindings(bindings);
+    case TAutomapKeys.Classify(bindings, ev.data1) of
+      akcPanRight:
         begin
           if not am_navigator.FollowPlayer then
             am_navigator.PanX := am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
-      AM_PANLEFTKEY: // pan left
+      akcPanLeft:
         begin
           if not am_navigator.FollowPlayer then
             am_navigator.PanX := -am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
-      AM_PANUPKEY: // pan up
+      akcPanUp:
         begin
           if not am_navigator.FollowPlayer then
             am_navigator.PanY := am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
-      AM_PANDOWNKEY: // pan down
+      akcPanDown:
         begin
           if not am_navigator.FollowPlayer then
             am_navigator.PanY := -am_view.FrameToMap(F_PANINC)
           else
             result := false;
         end;
-      Ord(AM_ZOOMOUTKEY): // zoom out
-        begin
-          am_navigator.SetZoom(AUTOMAP_ZOOM_OUT, AUTOMAP_ZOOM_IN);
-        end;
-      Ord(AM_ZOOMINKEY),
-      Ord(AM_ZOOMINKEY2): // zoom in
-        begin
-          am_navigator.SetZoom(AUTOMAP_ZOOM_IN, AUTOMAP_ZOOM_OUT);
-        end;
-      AM_TONGLEKEY:
+      akcZoomOut:
+        am_navigator.SetZoom(AUTOMAP_ZOOM_OUT, AUTOMAP_ZOOM_IN);
+      akcZoomIn:
+        am_navigator.SetZoom(AUTOMAP_ZOOM_IN, AUTOMAP_ZOOM_OUT);
+      akcToggle:
         begin
           amstate := automapstate_t((Ord(amstate) + 1) mod Ord(AM_NUMSTATES));
           if amstate <> am_only then
@@ -793,9 +815,7 @@ begin
               AM_Stop;
           end;
         end;
-      else
-      begin
-        if ev.data1 = AM_GOBIGKEY then
+      akcGoBig:
         begin
           bigstate := not bigstate;
           if bigstate then
@@ -805,8 +825,8 @@ begin
           end
           else
             am_navigator.RestoreScaleAndLocation(AM_PlayerX, AM_PlayerY);
-        end
-        else if ev.data1 = AM_FOLLOWKEY then
+        end;
+      akcFollow:
         begin
           am_navigator.FollowPlayer := not am_navigator.FollowPlayer;
           am_navigator.ForgetPlayerLocation;
@@ -814,82 +834,70 @@ begin
             plr._message := AMSTR_FOLLOWON
           else
             plr._message := AMSTR_FOLLOWOFF;
-        end
-        else if ev.data1 = AM_GRIDKEY then
+        end;
+      akcGrid:
         begin
           automapgrid := not automapgrid;
           if automapgrid then
             plr._message := AMSTR_GRIDON
           else
             plr._message := AMSTR_GRIDOFF;
-        end
-        else if ev.data1 = AM_ROTATEKEY then
+        end;
+      akcRotate:
         begin
           allowautomaprotate := not allowautomaprotate;
           if allowautomaprotate then
             plr._message := AMSTR_ROTATEON
           else
             plr._message := AMSTR_ROTATEOFF;
-        end
-        else if ev.data1 = AM_TEXTUREDAUTOMAP then
+        end;
+      akcTextured:
         begin
           texturedautomap := not texturedautomap;
           if texturedautomap then
             plr._message := 'TEXTURED AUTOMAP ON'
           else
             plr._message := 'TEXTURED AUTOMAP OFF';
-        end
-        else if ev.data1 = AM_MARKKEY then
+        end;
+      akcMark:
         begin
           sprintf(_message, '%s %d', [AMSTR_MARKEDSPOT, am_marks.NextIndex]);
           plr._message := _message;
           AM_addMark;
-        end
-        else if ev.data1 = AM_CLEARMARKKEY then
+        end;
+      akcClearMarks:
         begin
           AM_clearMarks;
           plr._message := AMSTR_MARKSCLEARED;
-        end
-        else
-          result := false;
-      end;
+        end;
+    else
+      result := false;
     end;
   end
   else if ev._type = ev_keyup then
   begin
     result := false;
-    case ev.data1 of
-      AM_PANRIGHTKEY:
+    AM_GetKeyBindings(bindings);
+    case TAutomapKeys.Classify(bindings, ev.data1) of
+      akcPanRight,
+      akcPanLeft:
         begin
           if not am_navigator.FollowPlayer then
             am_navigator.PanX := 0;
         end;
-      AM_PANLEFTKEY:
-        begin
-          if not am_navigator.FollowPlayer then
-            am_navigator.PanX := 0;
-        end;
-      AM_PANUPKEY:
+      akcPanUp,
+      akcPanDown:
         begin
           if not am_navigator.FollowPlayer then
             am_navigator.PanY := 0;
         end;
-      AM_PANDOWNKEY:
-        begin
-          if not am_navigator.FollowPlayer then
-            am_navigator.PanY := 0;
-        end;
-      Ord(AM_ZOOMOUTKEY),
-      Ord(AM_ZOOMINKEY),
-      Ord(AM_ZOOMINKEY2):
-        begin
-          am_navigator.SetZoom(FRACUNIT, FRACUNIT);
-        end;
+      akcZoomOut,
+      akcZoomIn:
+        am_navigator.SetZoom(FRACUNIT, FRACUNIT);
     end;
   end;
 
 end;
-
 //
 //
 //
@@ -1370,7 +1378,7 @@ begin
     inc(their_color);
     p := @TGameSession.Players[i];
 
-    if (TGameSession.DeathMatch <> 0) and not singledemo and (p <> plr) then
+    if (TGameSession.DeathMatch <> 0) and not TGameSession.SingleDemo and (p <> plr) then
       continue;
 
     if not TGameSession.PlayerInGame[i] then

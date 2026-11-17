@@ -464,7 +464,7 @@ procedure WI_SlamBackground;
 var
   name: string;
 begin
-  if (gamemapinfo <> nil) or (u_mapinfo.mapcount > 0) then
+  if (TGameSession.GameMapInfo <> nil) or (u_mapinfo.mapcount > 0) then
   begin
     if (state <> StatCount) and (enterpic <> '') then
       name := enterpic
@@ -919,9 +919,9 @@ procedure WI_LoadData; forward;
 //==============================================================================
 procedure WI_InitShowNextLoc;
 begin
-  if gamemapinfo <> nil then
+  if TGameSession.GameMapInfo <> nil then
   begin
-    if gamemapinfo.endpic[0] <> '' then
+    if TGameSession.GameMapInfo.endpic[0] <> '' then
     begin
       G_WorldDone;
       exit;
@@ -970,9 +970,9 @@ var
   i: integer;
   last: integer;
 begin
-  if (gamemapinfo <> nil) and
-     (gamemapinfo.endpic <> '') and
-     (gamemapinfo.endpic <> '-') then
+  if (TGameSession.GameMapInfo <> nil) and
+     (TGameSession.GameMapInfo.endpic <> '') and
+     (TGameSession.GameMapInfo.endpic <> '-') then
     exit;
 
   WI_SlamBackground;

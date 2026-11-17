@@ -679,8 +679,8 @@ begin
   HU_CheckConfigured;
 
 {$IF DEFINED(DOOM)}
-  if (gamemapinfo <> nil) and (gamemapinfo.levelname <> '') then
-    s := THudMapTitle.FromMapInfo(gamemapinfo.mapname, gamemapinfo.mlabel, gamemapinfo.levelname)
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.levelname <> '') then
+    s := THudMapTitle.FromMapInfo(TGameSession.GameMapInfo.mapname, TGameSession.GameMapInfo.mlabel, TGameSession.GameMapInfo.levelname)
   else
   begin
     case gamemode of
@@ -699,8 +699,8 @@ begin
     end;
   end;
 {$ELSEIF DEFINED(HERETIC)}
-  if (gamemapinfo <> nil) and (gamemapinfo.levelname <> '') then
-    s := THudMapTitle.FromMapInfo(gamemapinfo.mapname, gamemapinfo.mlabel, gamemapinfo.levelname)
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.levelname <> '') then
+    s := THudMapTitle.FromMapInfo(TGameSession.GameMapInfo.mapname, TGameSession.GameMapInfo.mlabel, TGameSession.GameMapInfo.levelname)
   else
     s := HU_TITLE;
 {$ELSE}

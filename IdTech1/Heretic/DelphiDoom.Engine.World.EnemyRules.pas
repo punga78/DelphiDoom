@@ -2695,9 +2695,9 @@ begin
   // numbossactions == 0 means to use the defaults.
   // numbossactions == -1 means to do nothing.
   // positive values mean to check the list of boss actions and run all that apply.
-  if (gamemapinfo <> nil) and (gamemapinfo.numbossactions <> 0) then
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.numbossactions <> 0) then
   begin
-    if gamemapinfo.numbossactions < 0 then
+    if TGameSession.GameMapInfo.numbossactions < 0 then
       exit;
 
     // make sure there is a player alive for victory
@@ -2713,14 +2713,14 @@ begin
       exit; // no one left alive, so do not end game
 
     i := 0;
-    while i < gamemapinfo.numbossactions do
+    while i < TGameSession.GameMapInfo.numbossactions do
     begin
-      if gamemapinfo.bossactions[i].typ = actor._type then
+      if TGameSession.GameMapInfo.bossactions[i].typ = actor._type then
         break;
       Inc(i);
     end;
 
-    if i >= gamemapinfo.numbossactions then
+    if i >= TGameSession.GameMapInfo.numbossactions then
       exit; // no matches found
 
     // scan the remaining thinkers to see
@@ -2740,12 +2740,12 @@ begin
       think := think.next;
     end;
 
-    for i := 0 to gamemapinfo.numbossactions - 1 do
-      if gamemapinfo.bossactions[i].typ = actor._type then
+    for i := 0 to TGameSession.GameMapInfo.numbossactions - 1 do
+      if TGameSession.GameMapInfo.bossactions[i].typ = actor._type then
       begin
         dummyLine := lines[0];
-        dummyLine.special := gamemapinfo.bossactions[i].special;
-        dummyLine.tag := gamemapinfo.bossactions[i].tag;
+        dummyLine.special := TGameSession.GameMapInfo.bossactions[i].special;
+        dummyLine.tag := TGameSession.GameMapInfo.bossactions[i].tag;
         // use special semantics for line activation to block problem types.
         if not P_UseSpecialLine(actor, @dummyLine, 0, true) then
           P_CrossSpecialLinePtr(@dummyLine, 0, actor);

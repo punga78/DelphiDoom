@@ -158,6 +158,16 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>Quit after playing a demo from the command line</summary>
+    class var SingleDemo: boolean;
+    /// <summary>If true, load all the graphics at the start of a level</summary>
+    class var Precache: boolean;
+    /// <summary>Parameters for the world map and the intermission</summary>
+    class var WmInfo: wbstartstruct_t;
+    /// <summary>Compatibility mode of the level in progress</summary>
+    class var CompatibilityMode: boolean;
+    /// <summary>The compatibility mode before a demo changed it</summary>
+    class var OldCompatibilityMode: boolean;
     /// <summary>The player records</summary>
     class var Players: array[0..MAXPLAYERS - 1] of player_t;
     /// <summary>The player slots in use</summary>
@@ -277,16 +287,13 @@ var
   displayplayer: integer; // view being displayed
 
 
-  wminfo: wbstartstruct_t; // parms for world map / intermission
 
 
 
-  precache: boolean = true; // if true, load all graphics at start
 
 
   viewactive: boolean;
 
-  singledemo: boolean; // quit after playing a demo from cmdline
 
 
 
@@ -352,10 +359,6 @@ function G_NeedsCompatibilityMode: boolean;
 //
 //==============================================================================
 function G_PlayingEngineVersion: byte;
-
-var
-  compatibilitymode: boolean = false;
-  oldcompatibilitymode: boolean = false;
 
 type
 //
@@ -439,7 +442,9 @@ uses
   DelphiDoom.Thinkers.PlayerRespawn.Intf,
   DelphiDoom.Thinkers.PlayerRespawn,
   DelphiDoom.Thinkers.SpawnSpot,
+  DelphiDoom.Thinkers.CoopReborn,
   DelphiDoom.Engine.World.PlayerRespawnHost,
+  DelphiDoom.Engine.World.CoopRebornHost,
   DelphiDoom.MapInfo.NewGameLimits,
   DelphiDoom.MapInfo.SkillSpeed,
   DelphiDoom.Input.EventScaling,
@@ -1273,7 +1278,7 @@ begin
 
   // allow spy mode changes even during the demo
   if (TGameSession.GameState = GS_LEVEL) and (ev._type = ev_keydown) and
-     (ev.data1 = KEY_F12) and (singledemo or (TGameSession.DeathMatch = 0)) then
+     (ev.data1 = KEY_F12) and (TGameSession.SingleDemo or (TGameSession.DeathMatch = 0)) then
   begin
   // spy mode
     repeat
@@ -1286,7 +1291,7 @@ begin
   end;
 
   // any other key pops up menu if in demos
-  if (TGameSession.GameAction = ga_nothing) and not singledemo and
+  if (TGameSession.GameAction = ga_nothing) and not TGameSession.SingleDemo and
      (TGameSession.DemoPlayback or (TGameSession.GameState = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
@@ -1655,22 +1660,6 @@ end;
 
 //==============================================================================
 //
-// G_CheckSpot
-// Returns false if the player cannot be respawned
-// at the given mapthing_t spot
-// because something is occupying it
-//
-//==============================================================================
-function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
-var
-  host: ISpawnSpotHost;
-begin
-  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer);
-  result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
-end;
-
-//==============================================================================
-//
 // G_DeathMatchSpawnPlayer
 // Spawns a player at one of the random death match spots
 // called at level load and each death
@@ -1695,93 +1684,16 @@ end;
 //==============================================================================
 procedure G_DoReborn(playernum: integer);
 var
-  i: integer;
-  oldWeaponowned: array[0..Ord(NUMWEAPONS) - 1] of boolean;
-  oldKeys: integer;
-  oldPieces: integer;
-  foundSpot: boolean;
-  bestWeapon: integer;
+  reborn: TCoopReborn;
 begin
   if G_CheckDemoStatus then
     exit;
 
-  if not TGameSession.NetGame then
-  begin
-    if SV_RebornSlotAvailable then
-    begin // Use the reborn code if the slot is available
-      TGameSession.GameAction := ga_singlereborn;
-    end
-    else
-    begin // Start a new game if there's no reborn info
-      TGameSession.GameAction := ga_newgame;
-    end;
-  end
-  else
-  begin // Net-game
-    TGameSession.Players[playernum].mo.player := nil; // Dissassociate the corpse
-
-    if TGameSession.DeathMatch <> 0 then
-    begin // Spawn at random spot if in death match
-      G_DeathMatchSpawnPlayer(playernum);
-      exit;
-    end;
-
-    // Cooperative net-play, retain keys and weapons
-    oldKeys := TGameSession.Players[playernum].keys;
-    oldPieces := TGameSession.Players[playernum].pieces;
-    for i := 0 to Ord(NUMWEAPONS) - 1 do
-      oldWeaponowned[i] := TGameSession.Players[playernum].weaponowned[i];
-
-    foundSpot := false;
-    if G_CheckSpot(playernum, @playerstarts[RebornPosition][playernum]) then
-    begin // Appropriate player start spot is open
-      P_SpawnPlayer(@playerstarts[RebornPosition, playernum], @uplayerstarts[RebornPosition, playernum]);
-      foundSpot := true;
-    end
-    else
-    begin
-      // Try to spawn at one of the other player start spots
-      for i := 0 to MAXPLAYERS - 1 do
-      begin
-        if G_CheckSpot(playernum, @playerstarts[RebornPosition, i]) then
-        begin // Found an open start spot
-
-          // Fake as other player
-          playerstarts[RebornPosition, i]._type := playernum + 1;
-          P_SpawnPlayer(@playerstarts[RebornPosition, i], @uplayerstarts[RebornPosition, i]);
-
-          // Restore proper player type
-          playerstarts[RebornPosition, i]._type := i + 1;
-
-          foundSpot := true;
-          break;
-        end;
-      end;
-    end;
-
-    if not foundSpot then
-    begin // Player's going to be inside something
-      P_SpawnPlayer(@playerstarts[RebornPosition][playernum], @uplayerstarts[RebornPosition][playernum]);
-    end;
-
-    // Restore keys and weapons
-    TGameSession.Players[playernum].keys := oldKeys;
-    TGameSession.Players[playernum].pieces := oldPieces;
-    bestWeapon := 0;
-    for i := 0 to Ord(NUMWEAPONS) - 1 do
-    begin
-      if oldWeaponowned[i] then
-      begin
-        bestWeapon := i;
-        TGameSession.Players[playernum].weaponowned[i] := true;
-      end;
-    end;
-    TGameSession.Players[playernum].mana[Ord(MANA_1)] := 25;
-    TGameSession.Players[playernum].mana[Ord(MANA_2)] := 25;
-    if bestWeapon <> 0 then
-    begin // Bring up the best weapon
-      TGameSession.Players[playernum].pendingweapon := weapontype_t(bestWeapon);
-    end;
+  reborn := TCoopReborn.Create(TCoopRebornHost.Create(@RebornPosition, @TGameSession.ConsolePlayer));
+  try
+    reborn.Respawn(playernum, TGameSession.NetGame, TGameSession.DeathMatch, MAXPLAYERS);
+  finally
+    reborn.Free;
   end;
 end;
 
@@ -2303,7 +2215,7 @@ end;
 //==============================================================================
 function G_NeedsCompatibilityMode: boolean;
 begin
-  result := compatibilitymode;
+  result := TGameSession.CompatibilityMode;
 end;
 
 //==============================================================================
@@ -2341,6 +2253,7 @@ end;
 
 initialization
 
+  TGameSession.Precache := true;
   TGameSession.OldGameState := -1;
   mousebuttons := PBooleanArray(@mousearray[0]);
   joybuttons := PBooleanArray(@joyarray[0]);

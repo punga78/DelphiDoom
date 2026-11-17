@@ -1193,7 +1193,7 @@ const
      _type: tGroup),
 
     (name: 'compatibilitymode';
-     location: @compatibilitymode;
+     location: @TGameSession.CompatibilityMode;
      setable: DFS_NEVER;
      defaultsvalue: '';
      defaultivalue: 0;

@@ -224,9 +224,9 @@ begin
   finaletext := '';
   finaleflat := '';
 
-  if (gamemapinfo <> nil) and (gamemapinfo.intermusicnum > 0) then
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.intermusicnum > 0) then
   begin
-    S_ChangeMusic(gamemapinfo.intermusicnum, true);
+    S_ChangeMusic(TGameSession.GameMapInfo.intermusicnum, true);
     mus_changed := true;
   end;
 
@@ -347,18 +347,18 @@ begin
 
   using_FMI := false;
 
-  if gamemapinfo <> nil then
+  if TGameSession.GameMapInfo <> nil then
   begin
-    if (gamemapinfo.intertextsecret[0] <> #0) and secretexit and (gamemapinfo.intertextsecret[0] <> '-') then // '-' means that any default intermission was cleared.
-      finaletext := TEngineMapInfoRecords.BigStringToString(gamemapinfo.intertextsecret)
-    else if (gamemapinfo.intertext[0] <> #0) and  not secretexit and (gamemapinfo.intertext[0] <> '-') then // '-' means that any default intermission was cleared.
-      finaletext := TEngineMapInfoRecords.BigStringToString(gamemapinfo.intertext);
+    if (TGameSession.GameMapInfo.intertextsecret[0] <> #0) and TGameSession.SecretExit and (TGameSession.GameMapInfo.intertextsecret[0] <> '-') then // '-' means that any default intermission was cleared.
+      finaletext := TEngineMapInfoRecords.BigStringToString(TGameSession.GameMapInfo.intertextsecret)
+    else if (TGameSession.GameMapInfo.intertext[0] <> #0) and  not TGameSession.SecretExit and (TGameSession.GameMapInfo.intertext[0] <> '-') then // '-' means that any default intermission was cleared.
+      finaletext := TEngineMapInfoRecords.BigStringToString(TGameSession.GameMapInfo.intertext);
 
     if finaletext = '' then
       finaletext := 'The End';  // this is to avoid a crash on a missing text in the last map.
 
-    if gamemapinfo.interbackdrop <> '' then
-      finaleflat := gamemapinfo.interbackdrop;
+    if TGameSession.GameMapInfo.interbackdrop <> '' then
+      finaleflat := TGameSession.GameMapInfo.interbackdrop;
 
     if finaleflat = '' then
       finaleflat := 'FLOOR4_8'; // use a single fallback for all maps.
@@ -390,9 +390,9 @@ end;
 //==============================================================================
 procedure FMI_Ticker;
 begin
-  if (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-') then
+  if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then
   begin
-    if gamemapinfo.endpic = '$CAST' then
+    if TGameSession.GameMapInfo.endpic = '$CAST' then
     begin
       F_StartCast;
       using_FMI := false;
@@ -402,9 +402,9 @@ begin
       finalecount := 0;
       finalestage := 1;
       wipegamestate := -1;  // force a wipe
-      if gamemapinfo.endpic = '$BUNNY' then
+      if TGameSession.GameMapInfo.endpic = '$BUNNY' then
         S_StartMusic(Ord(mus_bunny))
-      else if gamemapinfo.endpic = '!' then
+      else if TGameSession.GameMapInfo.endpic = '!' then
         using_FMI := false;
     end;
   end
@@ -946,13 +946,13 @@ begin
     if finalestage = 0 then
     begin
       F_TextWrite;
-      if gamemapinfo.endpic = '' then
+      if TGameSession.GameMapInfo.endpic = '' then
         using_FMI := false;
     end
-    else if gamemapinfo.endpic = '$BUNNY' then
+    else if TGameSession.GameMapInfo.endpic = '$BUNNY' then
       F_BunnyScroll
     else
-      V_PageDrawer(gamemapinfo.endpic);
+      V_PageDrawer(TGameSession.GameMapInfo.endpic);
     exit;
   end;
 

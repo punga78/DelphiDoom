@@ -218,6 +218,18 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>Quit after playing a demo from the command line</summary>
+    class var SingleDemo: boolean;
+    /// <summary>If true, load all the graphics at the start of a level</summary>
+    class var Precache: boolean;
+    /// <summary>The UMAPINFO entry of the level in progress</summary>
+    class var GameMapInfo: Pmapentry_t;
+    /// <summary>Parameters for the world map and the intermission</summary>
+    class var WmInfo: wbstartstruct_t;
+    /// <summary>Compatibility mode of the level in progress</summary>
+    class var CompatibilityMode: boolean;
+    /// <summary>The compatibility mode before a demo changed it</summary>
+    class var OldCompatibilityMode: boolean;
     /// <summary>The player records</summary>
     class var Players: array[0..MAXPLAYERS - 1] of player_t;
     /// <summary>The player slots in use</summary>
@@ -342,22 +354,18 @@ var
 
   showdemoplaybackprogress: boolean;
 
-  gamemapinfo: Pmapentry_t;
 
 
   displayplayer: integer; // view being displayed
 
 
-  wminfo: wbstartstruct_t; // parms for world map / intermission
 
 
 
-  precache: boolean; // if true, load all graphics at start
 
 
   viewactive: boolean;
 
-  singledemo: boolean; // quit after playing a demo from cmdline
 
 
 
@@ -408,10 +416,6 @@ function G_LookupMapinfo(const episode, map: integer): Pmapentry_t;
 //
 //==============================================================================
 function G_ValidateMapName(const amap: string; const pepi, pmapnum: PInteger): boolean;
-
-var
-  compatibilitymode: boolean = false;
-  oldcompatibilitymode: boolean = false;
 
 type
 //
@@ -831,7 +835,7 @@ procedure G_FinishedDemoPlayback;
 begin
   TGameSession.DemoPlayback := false;
   // Restore old compatibility mode
-  compatibilitymode := oldcompatibilitymode;
+  TGameSession.CompatibilityMode := TGameSession.OldCompatibilityMode;
 end;
 
 var
@@ -1335,10 +1339,10 @@ begin
 
   skytexture := -1;
   skytexture2 := -1;
-  if (gamemapinfo <> nil) and (gamemapinfo.skytexture <> '') then
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture <> '') then
   begin
-    skytexture := R_TextureNumForName(gamemapinfo.skytexture);
-    skytexture2 := R_TextureNumForName(gamemapinfo.skytexture2);
+    skytexture := R_TextureNumForName(TGameSession.GameMapInfo.skytexture);
+    skytexture2 := R_TextureNumForName(TGameSession.GameMapInfo.skytexture2);
   end;
   if skytexture < 0 then
   begin
@@ -1418,7 +1422,7 @@ begin
   end;
   // allow spy mode changes even during the demo
   if (TGameSession.GameState = GS_LEVEL) and (ev._type = ev_keydown) and
-     (ev.data1 = KEY_F12) and (singledemo or (TGameSession.GameSkill = sk_baby)) then
+     (ev.data1 = KEY_F12) and (TGameSession.SingleDemo or (TGameSession.GameSkill = sk_baby)) then
   begin
   // spy mode
     repeat
@@ -1431,7 +1435,7 @@ begin
   end;
 
   // any other key pops up menu if in demos
-  if (TGameSession.GameAction = ga_nothing) and not singledemo and
+  if (TGameSession.GameAction = ga_nothing) and not TGameSession.SingleDemo and
      (TGameSession.DemoPlayback or (TGameSession.GameState = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
@@ -2011,7 +2015,7 @@ begin
 
   TGameSession.GameState := GS_LEVEL;
   TGameSession.GameMap := destmap;
-  gamemapinfo := G_LookupMapinfo(0, TGameSession.GameMap);
+  TGameSession.GameMapInfo := G_LookupMapinfo(0, TGameSession.GameMap);
 
   // [STRIFE] HUB LOAD
   G_LoadPath(destmap);
@@ -2183,7 +2187,7 @@ begin
   TGameSession.GameMap := LMap;
   save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, False));
 
-  gamemapinfo := G_LookupMapinfo(0, TGameSession.GameMap);
+  TGameSession.GameMapInfo := G_LookupMapinfo(0, TGameSession.GameMap);
 
   // get the times
   savedleveltime := TSaveGameHeader.ReadLevelTime(System.PByte(save_p));
@@ -2629,7 +2633,7 @@ begin
   viewactive := true;
   TGameSession.GameMap := map;
   TGameSession.GameSkill := skill;
-  gamemapinfo := G_LookupMapinfo(0, TGameSession.GameMap);
+  TGameSession.GameMapInfo := G_LookupMapinfo(0, TGameSession.GameMap);
   riftdest := 0; // haleyjd 08/24/10: [STRIFE] init riftdest to zero on new game
 
   viewactive := true;
@@ -2832,7 +2836,7 @@ begin
   LHeader.Respawn := TGameSession.RespawnParm;
   LHeader.Fast := TGameSession.FastParm;
   LHeader.NoMonsters := TGameSession.NoMonsters;
-  LHeader.Compatibility := compatibilitymode;
+  LHeader.Compatibility := TGameSession.CompatibilityMode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
   LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
@@ -3015,8 +3019,8 @@ begin
   TGameSession.FastParm := LHeader.Fast;
   TGameSession.NoMonsters := LHeader.NoMonsters;
 
-  oldcompatibilitymode := compatibilitymode;
-  compatibilitymode := LHeader.Compatibility;
+  TGameSession.OldCompatibilityMode := TGameSession.CompatibilityMode;
+  TGameSession.CompatibilityMode := LHeader.Compatibility;
 
   oldspawnrandommonsters := spawnrandommonsters;
   spawnrandommonsters := LHeader.SpawnRandomMonsters;
@@ -3035,11 +3039,11 @@ begin
 
   TGameSession.PreparingDemoPlayback := true;
   // don't spend a lot of time in loadlevel if not singledemo
-  precache := singledemo; // JVAL original code: precache := false
+  TGameSession.Precache := TGameSession.SingleDemo; // JVAL original code: precache := false
   G_InitNew(skill, map);
   TGameSession.PreparingDemoPlayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
-  precache := true;
+  TGameSession.Precache := true;
   TGameSession.UserGame := false;
   TGameSession.DemoPlayback := true;
   demotickstart := demo_p;
@@ -3109,12 +3113,12 @@ begin
       printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10,
         [TGameSession.GameTic, realtics]);
     TGameSession.TimingDemo := false;
-    singledemo := true;
+    TGameSession.SingleDemo := true;
   end;
 
   if TGameSession.DemoPlayback then
   begin
-    if singledemo then
+    if TGameSession.SingleDemo then
       I_Quit;
 
     Z_Free(demoBuffer);
@@ -3146,7 +3150,7 @@ end;
 //==============================================================================
 function G_NeedsCompatibilityMode: boolean;
 begin
-  result := compatibilitymode;
+  result := TGameSession.CompatibilityMode;
 end;
 
 //==============================================================================
@@ -3263,7 +3267,7 @@ initialization
   mousebuttons := PBooleanArray(@mousearray[0]);
   joybuttons := PBooleanArray(@joyarray[0]);
 
-  precache := true;
+  TGameSession.Precache := true;
 
   KEY_WEAPONS[0] := @key_weapon0;
   KEY_WEAPONS[1] := @key_weapon1;

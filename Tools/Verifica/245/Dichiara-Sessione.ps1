@@ -24,6 +24,16 @@ $members = [ordered]@{
   nomonsters    = @('NoMonsters', 'boolean', 'Checkparm of -nomonsters (or the demo header)')
   fastparm      = @('FastParm', 'boolean', 'Checkparm of -fast (or the demo header)')
   respawnparm   = @('RespawnParm', 'boolean', 'Checkparm of -respawn (or the demo header)')
+  secretexit    = @('SecretExit', 'boolean', 'The level ends through the secret exit')
+  pistolstart   = @('PistolStart', 'boolean', 'Checkparm of -pistolstart: every level starts with the pistol')
+  singledemo    = @('SingleDemo', 'boolean', 'Quit after playing a demo from the command line')
+  precache      = @('Precache', 'boolean', 'If true, load all the graphics at the start of a level')
+  demostarttic  = @('DemoStartTic', 'integer', 'The tic a demo started at')
+  gamemapinfo   = @('GameMapInfo', 'Pmapentry_t', 'The UMAPINFO entry of the level in progress')
+  wminfo        = @('WmInfo', 'wbstartstruct_t', 'Parameters for the world map and the intermission')
+  forcecompatibilitymode = @('ForceCompatibilityMode', 'boolean', 'The compatibility mode is forced by the command line')
+  compatibilitymode      = @('CompatibilityMode', 'boolean', 'Compatibility mode of the level in progress')
+  oldcompatibilitymode   = @('OldCompatibilityMode', 'boolean', 'The compatibility mode before a demo changed it')
 }
 foreach ($game in 'Doom', 'Heretic', 'Hexen', 'Strife') {
   $files = @("IdTech1\$game\g_game.pas")
@@ -60,6 +70,12 @@ foreach ($game in 'Doom', 'Heretic', 'Hexen', 'Strife') {
     $init = "initialization`r`n`r`n"
     if (-not $text.Contains($init)) { throw "initialization non trovata in $path" }
     $text = $text.Replace($init, $init + "  TGameSession.GameSkill := sk_medium;`r`n")
+  }
+  # Hexen had precache = true
+  if ($game -eq 'Hexen' -and ($added -contains 'precache')) {
+    $init = "initialization`r`n`r`n"
+    if (-not $text.Contains($init)) { throw "initialization non trovata in $path" }
+    $text = $text.Replace($init, $init + "  TGameSession.Precache := true;`r`n")
   }
   [System.IO.File]::WriteAllBytes($path, $latin1.GetBytes($text))
   "$game : " + ($added -join ', ')

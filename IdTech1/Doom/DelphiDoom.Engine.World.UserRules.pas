@@ -204,7 +204,7 @@ end;
 //==============================================================================
 class function TUserGameRules.MapNoJump: boolean;
 begin
-  result := (gamemapinfo <> nil) and gamemapinfo.nojump;
+  result := (TGameSession.GameMapInfo <> nil) and TGameSession.GameMapInfo.nojump;
 end;
 
 //==============================================================================
@@ -214,7 +214,7 @@ end;
 //==============================================================================
 class function TUserGameRules.MapNoCrouch: boolean;
 begin
-  result := (gamemapinfo <> nil) and gamemapinfo.nocrouch;
+  result := (TGameSession.GameMapInfo <> nil) and TGameSession.GameMapInfo.nocrouch;
 end;
 
 //==============================================================================

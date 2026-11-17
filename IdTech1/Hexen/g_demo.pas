@@ -189,7 +189,7 @@ procedure G_FinishedDemoPlayback;
 begin
   TGameSession.DemoPlayback := false;
   // Restore old compatibility mode
-  compatibilitymode := oldcompatibilitymode;
+  TGameSession.CompatibilityMode := TGameSession.OldCompatibilityMode;
 end;
 
 (*
@@ -218,12 +218,12 @@ begin
     // message box that waited for a click while the worker threads kept running (#147)
     printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10, [TGameSession.GameTic, endtime - starttime]);
     TGameSession.TimingDemo := false;
-    singledemo := true;
+    TGameSession.SingleDemo := true;
   end;
 
   if TGameSession.DemoPlayback then
   begin
-    if singledemo then
+    if TGameSession.SingleDemo then
       I_Quit;
 
     Z_Free(demoBuffer);
@@ -409,7 +409,7 @@ begin
   LHeader.Respawn := TGameSession.RespawnParm;
   LHeader.Fast := TGameSession.FastParm;
   LHeader.NoMonsters := TGameSession.NoMonsters;
-  LHeader.Compatibility := compatibilitymode;
+  LHeader.Compatibility := TGameSession.CompatibilityMode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
   LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
@@ -582,8 +582,8 @@ begin
   TGameSession.FastParm := LHeader.Fast;
   TGameSession.NoMonsters := LHeader.NoMonsters;
 
-  oldcompatibilitymode := compatibilitymode;
-  compatibilitymode := LHeader.Compatibility;
+  TGameSession.OldCompatibilityMode := TGameSession.CompatibilityMode;
+  TGameSession.CompatibilityMode := LHeader.Compatibility;
 
   oldspawnrandommonsters := spawnrandommonsters;
   spawnrandommonsters := LHeader.SpawnRandomMonsters;
@@ -606,11 +606,11 @@ begin
 
   TGameSession.PreparingDemoPlayback := true;
   // don't spend a lot of time in loadlevel if not singledemo
-  precache := singledemo; // JVAL original code: precache := false
+  TGameSession.Precache := TGameSession.SingleDemo; // JVAL original code: precache := false
   G_InitNew(skill, episode, map);
   TGameSession.PreparingDemoPlayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
-  precache := true;
+  TGameSession.Precache := true;
   TGameSession.UserGame := false;
   TGameSession.DemoPlayback := true;
   Info_Init(true); // JVAL: Start thinkers

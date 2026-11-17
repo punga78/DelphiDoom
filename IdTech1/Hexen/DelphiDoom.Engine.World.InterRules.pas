@@ -1503,7 +1503,7 @@ function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
 begin
   result := P_SpawnMobj(x, y, z, _type);
   // JVAL Dropped items fall down to floor.
-  if not compatibilitymode then
+  if not TGameSession.CompatibilityMode then
   begin
     result.z := result.z + 32 * FRACUNIT;
     result.momz := 4 * FRACUNIT;

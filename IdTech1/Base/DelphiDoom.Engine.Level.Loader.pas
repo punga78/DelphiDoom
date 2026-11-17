@@ -425,7 +425,7 @@ begin
   // preload graphics
   // JVAL
   // Precache if we have external textures
-  if precache or externalpakspresent then
+  if TGameSession.Precache or externalpakspresent then
   begin
     if FGame.IsDeveloperMode then
       printf('R_PrecacheLevel()'#13#10);

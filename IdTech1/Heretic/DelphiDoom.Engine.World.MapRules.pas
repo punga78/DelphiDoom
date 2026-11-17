@@ -198,6 +198,7 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.Engine.World.BloodSpawner,
   doomdata,
   g_game,
   info_h,
@@ -792,7 +793,7 @@ begin
   if intr.d.thing.flags and MF_NOBLOOD <> 0 then
     P_SpawnPuff(x, y, z)
   else
-    P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
+    TBloodSpawner.SpawnRed(x, y, z, TMapAim.Damage, intr.d.thing);
 
   if TMapAim.Damage <> 0 then
     P_DamageMobj(th, TMapAim.ShootThing, TMapAim.ShootThing, TMapAim.Damage);

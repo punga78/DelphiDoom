@@ -1983,21 +1983,21 @@ begin
 
   p := M_CheckParm('-forcecompatibilitymode');
   if (p <> 0) and (p <= myargc - 1) then
-    forcecompatibilitymode := true;
+    TGameSession.ForceCompatibilityMode := true;
 
   p := M_CheckParm('-compatibilitymode');
   if (p <> 0) and (p <= myargc - 1) then
-    compatibilitymode := true;
+    TGameSession.CompatibilityMode := true;
 
   p := M_CheckParm('-nocompatibilitymode');
   if (p <> 0) and (p <= myargc - 1) then
-    compatibilitymode := false;
+    TGameSession.CompatibilityMode := false;
 
   p := M_CheckParm('-spawnmask');
   if (p <> 0) and (p < myargc - 1) then
     spawnmask := atoi(myargv[p + 1]);
 
-  oldcompatibilitymode := compatibilitymode;
+  TGameSession.OldCompatibilityMode := TGameSession.CompatibilityMode;
 
   p := M_CheckParm('-spawnrandommonsters');
   if (p <> 0) and (p <= myargc - 1) then
@@ -2359,7 +2359,7 @@ begin
   devparm := M_CheckParm('-devparm') > 0;
   hackshareware := M_CheckParm('-hackshareware') > 0;
   debugmode := M_CheckParm('-debugmode') > 0;
-  pistolstart := M_CheckParm('-pistolstart') > 0;
+  TGameSession.PistolStart := M_CheckParm('-pistolstart') > 0;
 
   SUC_Progress(6);
 
@@ -3037,7 +3037,7 @@ begin
   // JVAL
   /// if -nosingledemo param exists does not
   // quit after one demo
-    singledemo := M_CheckParm('-nosingledemo') = 0;
+    TGameSession.SingleDemo := M_CheckParm('-nosingledemo') = 0;
     G_DeferedPlayDemo(myargv[p + 1]);
     D_DoomLoop;  // never returns
   end;

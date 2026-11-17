@@ -231,7 +231,7 @@ begin
   {$IFDEF DOOM}
   SkyTextureHack;
   {$ENDIF}
-  if precache or externalpakspresent then
+  if TGameSession.Precache or externalpakspresent then
     gld_Precache;
   PreprocessSectors(ACarver, ASectors);
   FWalls.BeginLevel(numsegs);

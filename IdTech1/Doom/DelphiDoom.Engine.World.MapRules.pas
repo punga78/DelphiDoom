@@ -215,6 +215,7 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.Engine.World.BloodSpawner,
   DelphiDoom.Engine.World.PhysicsExtension,
   doomdata,
   doomstat,
@@ -785,7 +786,7 @@ begin
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin
         case P_BloodType(thing) of
-          bt_red: P_SpawnBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
+          bt_red: TBloodSpawner.SpawnRed(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
           bt_blue: P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
           bt_green: P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
         end;
@@ -868,7 +869,7 @@ begin
   // depending on target type.
   case P_BloodType(intr.d.thing) of
     bt_puff: P_SpawnPuff(x, y, z);
-    bt_red: P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
+    bt_red: TBloodSpawner.SpawnRed(x, y, z, TMapAim.Damage, intr.d.thing);
     bt_blue: P_SpawnBlueBlood(x, y, z, TMapAim.Damage);
     bt_green: P_SpawnGreenBlood(x, y, z, TMapAim.Damage);
   end;

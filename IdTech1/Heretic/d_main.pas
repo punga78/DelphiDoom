@@ -1868,13 +1868,13 @@ begin
 
   p := M_CheckParm('-compatibilitymode');
   if (p <> 0) and (p <= myargc - 1) then
-    compatibilitymode := true;
+    TGameSession.CompatibilityMode := true;
 
   p := M_CheckParm('-nocompatibilitymode');
   if (p <> 0) and (p <= myargc - 1) then
-    compatibilitymode := false;
+    TGameSession.CompatibilityMode := false;
 
-  oldcompatibilitymode := compatibilitymode;
+  TGameSession.OldCompatibilityMode := TGameSession.CompatibilityMode;
 
   p := M_CheckParm('-spawnrandommonsters');
   if (p <> 0) and (p <= myargc - 1) then
@@ -2707,7 +2707,7 @@ begin
   // JVAL
   /// if -nosingledemo param exists does not
   // quit after one demo
-    singledemo := M_CheckParm('-nosingledemo') = 0;
+    TGameSession.SingleDemo := M_CheckParm('-nosingledemo') = 0;
     G_DeferedPlayDemo(myargv[p + 1]);
     D_DoomLoop;  // never returns
   end;
