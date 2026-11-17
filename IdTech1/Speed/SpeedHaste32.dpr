@@ -336,6 +336,7 @@ uses
   r_span32 in '..\Base\r_span32.pas',
   r_things in '..\Base\r_things.pas',
   s_sound in '..\Base\s_sound.pas',
+  DelphiDoom.MapInfo.DefaultMusic in '..\MapInfo\DelphiDoom.MapInfo.DefaultMusic.pas',
   sc_params in '..\Base\sc_params.pas',
   sounds in '..\Base\sounds.pas',
   st_lib in '..\Doom\st_lib.pas',

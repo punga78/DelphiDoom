@@ -432,6 +432,7 @@ uses
   i_system,
   info_h,
   DelphiDoom.Audio.Types,
+  DelphiDoom.MapInfo.DefaultMusic,
   DelphiDoom.Audio.SfxAttenuation,
   DelphiDoom.Audio.ChannelPicker,
   DelphiDoom.Audio.ExternalMusicNames,
@@ -1018,73 +1019,25 @@ function S_DefaultMusicForMap(const map: integer): integer;
 {$ELSE}
 function S_DefaultMusicForMap(const episode, map: integer): integer;
 {$ENDIF}
+var
+  mapinfomusic: integer;
 begin
-{$IF DEFINED(HERETIC)}
-  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.musicnum > 0) then
-    result := TGameSession.GameMapInfo.musicnum
-  else if episode < 6 then
-  // JVAL: Use DEH files to specify new sounds for E4
-    result := Ord(mus_e1m1) + (episode - 1) * 9 + map - 1
-  else  // JVAL Game episode > 5 ????
-  begin
-    case map of
-      1: result := Ord(mus_e1m1);
-      2: result := Ord(mus_e1m2);
-      3: result := Ord(mus_e1m3);
-      4: result := Ord(mus_e1m4);
-      5: result := Ord(mus_e1m5);
-      6: result := Ord(mus_e1m6);
-      7: result := Ord(mus_e1m7);
-      8: result := Ord(mus_e1m8);
-      9: result := Ord(mus_e1m9);
-    else
-      result := Ord(mus_e1m1); // JVAL ?????
-    end;
-  end;
-{$ELSEIF DEFINED(HEXEN)}
-  result := Ord(mus_map01) + map - 1;
-{$ELSEIF DEFINED(STRIFE)}
-  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.musicnum > 0) then
-    result := TGameSession.GameMapInfo.musicnum
-  // [STRIFE] Some interesting math here ;)
-  else if map <= 31 then
-    result := map + 1
-  else
-    result := map - 30;
-{$ELSE}
-  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.musicnum > 0) then
-    result := TGameSession.GameMapInfo.musicnum
-  else if gamemode = commercial then
-  begin
-    if map = 99 then
-      result := Ord(mus_runnin)
-    else
-      result := Ord(mus_runnin) + map - 1;
-  end
-  else
-  begin
-    // JVAL: Use DEH files to specify new sounds for E4
-    if episode < 5 then
-      result := Ord(mus_e1m1) + (episode - 1) * 9 + map - 1
-    else  // JVAL Game episode > 4 ????
-    begin
-      case map of
-        1: result := Ord(mus_e3m4); // American   e4m1
-        2: result := Ord(mus_e3m2); // Romero     e4m2
-        3: result := Ord(mus_e3m3); // Shawn      e4m3
-        4: result := Ord(mus_e1m5); // American   e4m4
-        5: result := Ord(mus_e2m7); // Tim        e4m5
-        6: result := Ord(mus_e2m4); // Romero     e4m6
-        7: result := Ord(mus_e2m6); // J.Anderson e4m7 CHIRON.WAD
-        8: result := Ord(mus_e2m5); // Shawn      e4m8
-        9: result := Ord(mus_e1m9); // Tim        e4m9
-      else
-        result := Ord(mus_e1m1); // JVAL ?????
-      end;
-    end;
-  end;
+  mapinfomusic := 0;
+{$IFNDEF HEXEN}
+  if TGameSession.GameMapInfo <> nil then
+    mapinfomusic := TGameSession.GameMapInfo.musicnum;
 {$ENDIF}
-end;
+{$IF DEFINED(HERETIC)}
+  result := TDefaultMusic.Heretic(mapinfomusic, episode, map, Ord(mus_e1m1));
+{$ELSEIF DEFINED(HEXEN)}
+  result := TDefaultMusic.Hexen(map, Ord(mus_map01));
+{$ELSEIF DEFINED(STRIFE)}
+  result := TDefaultMusic.Strife(mapinfomusic, map);
+{$ELSE}
+  result := TDefaultMusic.Doom(mapinfomusic, gamemode = commercial, episode, map, Ord(mus_e1m1), Ord(mus_runnin),
+    [Ord(mus_e3m4), Ord(mus_e3m2), Ord(mus_e3m3), Ord(mus_e1m5), Ord(mus_e2m7),
+     Ord(mus_e2m4), Ord(mus_e2m6), Ord(mus_e2m5), Ord(mus_e1m9)]);
+{$ENDIF}end;
 
 //==============================================================================
 // S_Start

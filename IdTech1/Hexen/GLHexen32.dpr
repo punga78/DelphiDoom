@@ -254,6 +254,7 @@ uses
   r_things in '..\Base\r_things.pas',
   s_sndseq in 's_sndseq.pas',
   s_sound in '..\Base\s_sound.pas',
+  DelphiDoom.MapInfo.DefaultMusic in '..\MapInfo\DelphiDoom.MapInfo.DefaultMusic.pas',
   sb_bar in 'sb_bar.pas',
   sc_params in '..\Base\sc_params.pas',
   sounds in '..\Base\sounds.pas',
