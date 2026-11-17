@@ -61,6 +61,7 @@ procedure V_ConfigureConsole(const AConsole: IEngineConsole);
 implementation
 
 uses
+  DelphiDoom.Video.DisplayModeClamp,
   am_map,
   doomdef,
   i_system,
@@ -122,20 +123,7 @@ begin
   if (SCREENWIDTH = newwidth) and (SCREENHEIGHT = newheight) then
     exit;
 
-  nwidth := newwidth and not 1;
-  if nwidth > MAXWIDTH then
-    nwidth := MAXWIDTH
-  else if nwidth < MINWIDTH then
-    nwidth := MINWIDTH;
-
-  nheight := newheight and not 1;
-  if nheight > MAXHEIGHT then
-    nwidth := MAXHEIGHT
-  else if nheight < MINHEIGHT then
-    nheight := MINHEIGHT;
-
-  if nheight > nwidth then
-    nheight := nwidth;
+  TVideoDisplayModeClamp.Clamp(newwidth, newheight, MINWIDTH, MINHEIGHT, MAXWIDTH, MAXHEIGHT, nwidth, nheight);
 
   if (SCREENWIDTH <> nwidth) or (SCREENHEIGHT <> nheight) then
     result := V_DoSetDisplayMode(nwidth, nheight);
