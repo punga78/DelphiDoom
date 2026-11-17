@@ -1,0 +1,8 @@
+#ifdef MISSIONPACK
+mp MISSIONPACK
+#else
+base
+#endif
+GADD(1, 2) tail
+#undef MISSIONPACK
+MISSIONPACK again 0x10 2.5

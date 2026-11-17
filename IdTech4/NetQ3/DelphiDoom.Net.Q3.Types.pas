@@ -68,6 +68,16 @@ const
   Q3_SVC_SNAPSHOT = 7;
   Q3_SVC_EOF = 8;
 
+  /// <summary>clc_ops_e: the commands of a client message</summary>
+  Q3_CLC_BAD = 0;
+  Q3_CLC_NOP = 1;
+  Q3_CLC_MOVE = 2;
+  Q3_CLC_MOVE_NODELTA = 3;
+  Q3_CLC_CLIENT_COMMAND = 4;
+  Q3_CLC_EOF = 5;
+  /// <summary>MAX_PACKET_USERCMDS</summary>
+  Q3_MAX_PACKET_USERCMDS = 32;
+
   Q3_MAX_STATS = 16;
   Q3_MAX_PERSISTANT = 16;
   Q3_MAX_POWERUPS = 16;

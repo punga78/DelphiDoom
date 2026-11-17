@@ -26,8 +26,8 @@ type
   ///   CG_PC_LOAD_SOURCE, FREE_SOURCE, READ_TOKEN, SOURCE_FILE_AND_LINE and the UI_PC_* twins, on the numbered
   ///   sources of the precompiler of botlib (TQ3SourceHandles of Framework\Scanner: the port of l_precomp.c, equal to
   ///   the C on its golden). The table of sources is the one of botlib and is shared with the bots, as in the C
-  ///   (botlib_export): the BOTLIB_PC_* of qagame are registered on it too (TQ3BotFactory), with the same object. CG_PC_ADD_GLOBAL_DEFINE and UI_PC_ADD_GLOBAL_DEFINE are not served: the scanner has no
-  ///   PC_DefineFromString and none of the twelve modules of OpenArena calls it
+  ///   (botlib_export): the BOTLIB_PC_* of qagame are registered on it too (TQ3BotFactory), with the same object.
+  ///   The three PC_ADD_GLOBAL_DEFINE are served on the same table (PC_AddGlobalDefine of l_precomp.c)
   /// </summary>
   TQ3PrecompilerSyscalls = class
   public
@@ -45,10 +45,18 @@ class procedure TQ3PrecompilerSyscalls.Register(AModule: TQ3Module; const ARegis
   ASources: TQ3SourceHandles);
 const
   LOAD: array[TQ3Module] of Integer = (BOTLIB_PC_LOAD_SOURCE, CG_PC_LOAD_SOURCE, UI_PC_LOAD_SOURCE);
+  ADD: array[TQ3Module] of Integer = (BOTLIB_PC_ADD_GLOBAL_DEFINE, CG_PC_ADD_GLOBAL_DEFINE, UI_PC_ADD_GLOBAL_DEFINE);
   FREE: array[TQ3Module] of Integer = (BOTLIB_PC_FREE_SOURCE, CG_PC_FREE_SOURCE, UI_PC_FREE_SOURCE);
   READ: array[TQ3Module] of Integer = (BOTLIB_PC_READ_TOKEN, CG_PC_READ_TOKEN, UI_PC_READ_TOKEN);
   WHERE: array[TQ3Module] of Integer = (BOTLIB_PC_SOURCE_FILE_AND_LINE, CG_PC_SOURCE_FILE_AND_LINE, UI_PC_SOURCE_FILE_AND_LINE);
 begin
+  // trap_PC_AddGlobalDefine: the define goes in the table of botlib and the sources opened after it get a copy
+  ARegistry.Register(ADD[AModule],
+    function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
+    begin
+      Result := Ord(ASources.AddGlobalDefine(TQ3SyscallArguments.Text(AMachine, AArgs[1], 'PC_AddGlobalDefine')));
+    end);
+
   ARegistry.Register(LOAD[AModule],
     function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
     begin

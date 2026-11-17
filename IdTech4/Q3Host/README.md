@@ -102,3 +102,19 @@ Le voci "fase 2c" dei paragrafi "Non portato" qui sopra sono superate da questa 
 | `OP_BLOCK_COPY` di ioquake3 (nessun controllo di allineamento) | `TQvmLimits.UnalignedBlockCopy` |
 
 Difetti conservati: nessuno nuovo. Differenze volute: vedi `CLAUDE.md`, fase 2e. Il server non ha rete: i messaggi sono i byte che il parser legge (con `svc_EOF` finale, come `SV_Netchan_Transmit`).
+
+## Fase 4: il server in memoria e la rete
+
+| C | Pascal |
+|---|---|
+| `SV_Init` (cvar), `SV_SpawnServer`, `SV_Map_f`, `SV_MapRestart_f` | `TQ3Server.InitCVars`, `SpawnServer`, `Map`, `MapRestart` |
+| `SV_DirectConnect`, `SVC_GetChallenge`, `SV_DropClient`, `SV_CheckTimeouts` | `DirectConnect`, `GetChallenge`, `DropClient`, `CheckTimeouts` |
+| `SV_ExecuteClientMessage`, `SV_ClientCommand`, `SV_UserMove`, `SV_ClientThink`, `SV_ClientEnterWorld`, `SV_SendClientGameState` | `ExecuteClientMessage`, `ClientCommand`, `UserMove`, `ClientThink`, `ClientEnterWorld`, `SendClientGameState` |
+| `SV_Frame`, `SV_SendClientMessages`, `SV_SendClientSnapshot` | `Frame`, `SendClientMessages`, `SendClientSnapshot` |
+| `CL_WritePacket` | `TQ3ClientPacketWriter.Write` |
+| `SV_PacketEvent`, `SV_ConnectionlessPacket`, `SV_Netchan_Transmit`/`TransmitNextFragment` | `TQ3ServerNetwork` |
+| `CL_Connect_f`, `CL_CheckForResend`, `CL_ConnectionlessPacket`, `CL_PacketEvent`, `CL_Netchan_Transmit` | `TQ3ClientNetwork` |
+| `SV_Netchan_Encode/Decode`, `CL_Netchan_Encode/Decode`, `Com_HashKey` | `TQ3PacketCrypt`, `TQ3HashKey` (in `IdTech4\NetQ3`) |
+| `PC_AddGlobalDefine` | `TQ3SourceHandles.AddGlobalDefine` (in `Framework\Scanner`) |
+
+Parita' sul vero C: `Com_HashKey`, `CL_WritePacket` e i quattro codificatori (`netcrypt.golden.txt`), `PC_AddGlobalDefine` sui sorgenti numerati (`q3.golden.txt`). Il server completo e' provato con i `.qvm` di OpenArena (baseoa e missionpack) in memoria e su un filo in memoria con il netchan; non e' mai stato collegato a un socket. Differenze dal C e difetti conservati: `CLAUDE.md`, "Fase 4".

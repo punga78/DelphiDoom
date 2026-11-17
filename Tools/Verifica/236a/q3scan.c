@@ -260,6 +260,62 @@ static void run_pc(source_t *s, const char *opsfile)
 	}
 }
 
+/* mode seq (issue #254): the numbered sources of botlib (PC_LoadSourceHandle...) and the global defines that
+ * they get when they are opened. Operations, one per line:
+ *   gdef|text   PC_AddGlobalDefine         G|result
+ *   rmall       PC_RemoveAllGlobalDefines
+ *   load|file   PC_LoadSourceHandle        H|handle
+ *   read|h|n    n tokens (0 = to the end)  K|type|subtype|intvalue (numbers only)|string, then R|last result
+ *   free|h      PC_FreeSourceHandle        F|result
+ *   where|h     PC_SourceFileAndLine       W|result|file|line
+ */
+static void run_seq(const char *opsfile)
+{
+	int len;
+	char *ops = opsfile ? slurp(opsfile, &len) : NULL, *line, *next;
+	if (!ops) { fprintf(out, "NOFILE\n"); return; }
+	for (line = ops; line && *line; line = next)
+	{
+		char *a[MAXARGS];
+		next = strchr(line, '\n');
+		if (next) *next++ = 0;
+		if (strchr(line, '\r')) *strchr(line, '\r') = 0;
+		if (!*line) continue;
+		split(line, a);
+		fprintf(out, ">%s\n", a[0]);
+		if (!strcmp(a[0], "gdef")) fprintf(out, "G|%d\n", PC_AddGlobalDefine(a[1]));
+		else if (!strcmp(a[0], "rmall")) PC_RemoveAllGlobalDefines();
+		else if (!strcmp(a[0], "load")) fprintf(out, "H|%d\n", PC_LoadSourceHandle(a[1]));
+		else if (!strcmp(a[0], "free")) fprintf(out, "F|%d\n", PC_FreeSourceHandle(atoi(a[1])));
+		else if (!strcmp(a[0], "where"))
+		{
+			char file[MAX_PATH + 1];
+			int ln = 0, r;
+			file[0] = 0;
+			r = PC_SourceFileAndLine(atoi(a[1]), file, &ln);
+			fprintf(out, "W|%d|%s|%d\n", r, file, ln);
+		}
+		else if (!strcmp(a[0], "read"))
+		{
+			int h = atoi(a[1]), n = atoi(a[2]), r = 0, i;
+			pc_token_t t;
+			for (i = 0; n == 0 || i < n; i++)
+			{
+				memset(&t, 0, sizeof(t));
+				r = PC_ReadTokenHandle(h, &t);
+				if (!r) break;
+				fprintf(out, "K|%d|%d|", t.type, t.subtype);
+				if (t.type == TT_NUMBER) fprintf(out, "%d|", t.intvalue); else fprintf(out, "-|");
+				print_escaped(out, t.string);
+				fputc('\n', out);
+			}
+			fprintf(out, "R|%d\n", r);
+		}
+		else fprintf(out, "?unknown op\n");
+	}
+	free(ops);
+}
+
 int main(int argc, char **argv)
 {
 	int len;
@@ -301,6 +357,7 @@ int main(int argc, char **argv)
 			else if (!strncmp(a[i], "base=", 5)) PS_SetBaseFolder(a[i] + 5);
 			else if (!strncmp(a[i], "gdef=", 5)) fprintf(out, "G|%d\n", PC_AddGlobalDefine(a[i] + 5));
 		}
+		if (!strcmp(a[0], "seq")) { run_seq(ops); continue; }
 		if (!strcmp(a[0], "ps"))
 		{
 			script_t *s;

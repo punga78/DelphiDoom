@@ -107,9 +107,9 @@ begin
   ARegistrar.Add(BOTLIB_PC_ADD_GLOBAL_DEFINE,
     function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
     begin
-      // the missionpack game defines MISSIONPACK for the scripts of the bots. The define is accepted (qtrue) and not
-      // kept: the parsers of IdTech4\BotAi (TIdParser) have no global defines, and the files of the bots that
-      // OpenArena ships do not test it
+      // only when the host passes no table of sources (TQ3BotFactory.Register without ASources): the define is
+      // accepted (qtrue) and not kept. With a table, TQ3PrecompilerSyscalls replaces this handler and keeps it
+      // (PC_AddGlobalDefine). The parsers of IdTech4\BotAi (TIdParser) have no global defines
       TQ3SyscallArguments.Text(AMachine, AArgs[1], 'BOTLIB_PC_ADD_GLOBAL_DEFINE');
       Result := 1;
     end);

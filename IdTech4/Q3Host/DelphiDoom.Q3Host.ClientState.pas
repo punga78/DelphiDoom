@@ -62,6 +62,8 @@ type
     function GameState: TBytes;
     function TryGetConfigString(AIndex: Integer; out AValue: AnsiString): Boolean;
     procedure CurrentSnapshotNumber(out ANumber, AServerTime: Integer);
+    /// <summary>cl.snap.valid</summary>
+    function SnapshotValid: Boolean;
     function TryGetSnapshot(ANumber: Integer; out ASnapshot: TQ3HostSnapshot): Boolean;
     function GetServerCommand(ANumber: Integer): Boolean;
     function CurrentCommandNumber: Integer;
@@ -116,7 +118,11 @@ type
     /// <summary>The commands the client sent that the server did not acknowledge yet (clc.reliableAcknowledge)</summary>
     procedure AcknowledgeReliableCommands(ASequence: Integer);
     function ReliableCommand(ASequence: Integer): AnsiString;
+    /// <summary>clc.serverCommands[ n &amp; 63 ] without marking it executed (what CL_WritePacket puts in its key)</summary>
+    function ServerCommandText(ASequence: Integer): AnsiString;
     property ReliableSequence: Integer read FReliableSequence;
+    /// <summary>clc.reliableAcknowledge: the last client command the server told it got</summary>
+    property ReliableAcknowledge: Integer read FReliableAcknowledge;
     property ServerCommandSequence: Integer read FServerCommandSequence;
     property LastExecutedServerCommand: Integer read FLastExecutedServerCommand;
     property DemoPlaying: Boolean read FDemoPlaying write FDemoPlaying;
@@ -461,6 +467,11 @@ begin
   FSnapshot := LSnapshot;
 end;
 
+function TQ3ClientState.SnapshotValid: Boolean;
+begin
+  Result := FSnapshot.Valid;
+end;
+
 procedure TQ3ClientState.CurrentSnapshotNumber(out ANumber, AServerTime: Integer);
 begin
   ANumber := FSnapshot.MessageNum;
@@ -559,6 +570,11 @@ end;
 function TQ3ClientState.ReliableCommand(ASequence: Integer): AnsiString;
 begin
   Result := FReliableCommands[ASequence and (Q3_MAX_RELIABLE_COMMANDS - 1)];
+end;
+
+function TQ3ClientState.ServerCommandText(ASequence: Integer): AnsiString;
+begin
+  Result := FServerCommands[ASequence and (Q3_MAX_RELIABLE_COMMANDS - 1)];
 end;
 
 function TQ3ClientState.ClientNumber: Integer;

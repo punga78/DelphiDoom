@@ -1,8 +1,6 @@
-cgame registered=98 of 102
+cgame registered=99 of 102
 cgame CG_CM_LOADMODEL
-cgame CG_PC_ADD_GLOBAL_DEFINE
 cgame CG_TESTPRINTINT
 cgame CG_TESTPRINTFLOAT
-ui registered=95 of 97
+ui registered=96 of 97
 ui UI_CM_LOADMODEL
-ui UI_PC_ADD_GLOBAL_DEFINE

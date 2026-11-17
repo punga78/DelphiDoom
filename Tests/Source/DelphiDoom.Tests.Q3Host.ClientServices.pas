@@ -49,6 +49,8 @@ type
     [Test]
     procedure IlParserDovrebbeUsareLaStessaTabellaPerCgameEUi;
     [Test]
+    procedure IDefineGlobaliDovrebberoValerePerISorgentiAperitiDopo;
+    [Test]
     procedure CgAcosDovrebbeDareLeRisposteDelC;
     [Test]
     procedure LeTrappeSenzaGestoreDovrebberoEssereQuelleDelGolden;
@@ -380,6 +382,42 @@ begin
   Assert.AreEqual(0, FRig.Call(TQ3Module.CGame, [CG_PC_SOURCE_FILE_AND_LINE, LHandle, 6200, 6300]));
   Assert.AreEqual(0, FRig.Call(TQ3Module.CGame, [CG_PC_READ_TOKEN, 0, 6000]));
   Assert.AreEqual(0, FRig.Call(TQ3Module.CGame, [CG_PC_READ_TOKEN, 64, 6000]));
+end;
+
+// trap_PC_AddGlobalDefine of cgame and ui (PC_AddGlobalDefine of l_precomp.c, golden of Tools\Verifica\236a, mode seq):
+// the sources that are open do not get the define, the ones opened after do; a text that is not a define answers 0
+procedure TTestQ3ClientServices.IDefineGlobaliDovrebberoValerePerISorgentiAperitiDopo;
+var
+  LMemory: IQvmMemory;
+  LFirst, LSecond, LThird: Integer;
+
+  function Words(AHandle: Integer): string;
+  begin
+    Result := '';
+    while FRig.Call(TQ3Module.CGame, [CG_PC_READ_TOKEN, AHandle, 6000]) <> 0 do
+      Result := Result + string(LMemory.ReadString(6000 + Q3_PCTOKEN_STRING)) + '|';
+  end;
+
+begin
+  LMemory := FRig.Memory(TQ3Module.CGame);
+  FRig.AddScriptFile('ui/mp.txt', '#ifdef MISSIONPACK'#10'mp MISSIONPACK'#10'#else'#10'base'#10'#endif');
+  Put(1, BUFFER, 'ui/mp.txt');
+  LFirst := FRig.Call(TQ3Module.CGame, [CG_PC_LOAD_SOURCE, BUFFER]);
+  Put(1, 6400, 'MISSIONPACK 7');
+  Assert.AreEqual(1, FRig.Call(TQ3Module.CGame, [CG_PC_ADD_GLOBAL_DEFINE, 6400]));
+  Put(1, 6400, 'BAD(');
+  Assert.AreEqual(0, FRig.Call(TQ3Module.CGame, [CG_PC_ADD_GLOBAL_DEFINE, 6400]));
+  Put(1, BUFFER, 'ui/mp.txt');
+  LSecond := FRig.Call(TQ3Module.CGame, [CG_PC_LOAD_SOURCE, BUFFER]);
+  Assert.AreEqual('base|', Words(LFirst));
+  Assert.AreEqual('mp|7|', Words(LSecond));
+  // the ui module defines on the same table
+  Put(2, 6400, 'UIDEF 1');
+  Assert.AreEqual(1, FRig.Call(TQ3Module.Ui, [UI_PC_ADD_GLOBAL_DEFINE, 6400]));
+  FRig.AddScriptFile('ui/ui.txt', 'UIDEF');
+  Put(1, BUFFER, 'ui/ui.txt');
+  LThird := FRig.Call(TQ3Module.CGame, [CG_PC_LOAD_SOURCE, BUFFER]);
+  Assert.AreEqual('1|', Words(LThird));
 end;
 
 procedure TTestQ3ClientServices.IlParserDovrebbeUsareLaStessaTabellaPerCgameEUi;

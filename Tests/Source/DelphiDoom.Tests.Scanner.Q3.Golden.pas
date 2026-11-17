@@ -54,6 +54,7 @@ type
     procedure RunScriptOperations(const AScript: TQ3Script; const AOperations: TStrings);
     procedure RunSourceOperations(const ASource: TQ3Source; const AOperations: TStrings);
     procedure RunCase(const AMode, AInput: string; const AOptions: TStrings);
+    procedure RunSequence(const AOptions: TStrings);
   public
     class function Escape(const AText: AnsiString): string; static;
     class function LongDoubleText(const AValue: TSoftExtended): string; static;
@@ -75,7 +76,7 @@ implementation
 
 uses
   System.StrUtils, DelphiDoom.Scanner.Q3.Define, DelphiDoom.Scanner.Q3.ScriptLoader,
-  DelphiDoom.Scanner.Q3.ScriptLoader.Intf;
+  DelphiDoom.Scanner.Q3.ScriptLoader.Intf, DelphiDoom.Scanner.Q3.SourceHandles;
 
 { TQ3FolderFiles }
 
@@ -511,6 +512,92 @@ begin
   end;
 end;
 
+// mode seq of q3scan.c: the numbered sources and the global defines they get when they are opened
+procedure TQ3GoldenRunner.RunSequence(const AOptions: TStrings);
+var
+  LOps: TStringList;
+  LGlobals: TQ3GlobalDefines;
+  LHandles: TQ3SourceHandles;
+  LLoader: IQ3ScriptLoader;
+  LLog: IQ3ScriptLog;
+  LParts: TArray<string>;
+  LLine, LName, LFile: string;
+  LOpsName: string;
+  LOption: string;
+  LHandle, LCount, LIndex, LRow: Integer;
+  LResult: Boolean;
+  LToken: TQ3PcToken;
+  LFileName: AnsiString;
+begin
+  LOpsName := '';
+  for LOption in AOptions do
+    if LOption.StartsWith('ops=') then
+      LOpsName := Copy(LOption, 5, MaxInt);
+  if (LOpsName = '') or not TFile.Exists(FFolder + LOpsName) then
+  begin
+    Add('NOFILE');
+    Exit;
+  end;
+  LGlobals := TQ3GlobalDefines.Create;
+  LLog := TQ3LineLog.Create(FOutput);
+  LLoader := TQ3ScriptLoader.Create(TQ3FolderFiles.Create(FFolder), LLog);
+  LHandles := TQ3SourceHandles.Create(LLoader, LLog, LGlobals);
+  LOps := ReadAllLines(LOpsName);
+  try
+    for LRow := 0 to LOps.Count - 1 do
+    begin
+      LLine := LOps[LRow];
+      if LLine = '' then
+        Continue;
+      LParts := LLine.Split(['|']);
+      LName := LParts[0];
+      Add('>' + LName);
+      if LName = 'gdef' then
+        Add('G|' + IntToStr(Ord(LHandles.AddGlobalDefine(AnsiString(LParts[1])))))
+      else if LName = 'rmall' then
+        LHandles.RemoveAllGlobalDefines
+      else if LName = 'load' then
+        Add('H|' + IntToStr(LHandles.Load(AnsiString(LParts[1]))))
+      else if LName = 'free' then
+        Add('F|' + IntToStr(Ord(LHandles.Release(StrToInt(LParts[1])))))
+      else if LName = 'where' then
+      begin
+        LFileName := '';
+        LCount := 0;
+        LResult := LHandles.SourceFileAndLine(StrToInt(LParts[1]), LFileName, LCount);
+        Add('W|' + IntToStr(Ord(LResult)) + '|' + string(LFileName) + '|' + IntToStr(LCount));
+      end
+      else if LName = 'read' then
+      begin
+        LHandle := StrToInt(LParts[1]);
+        LCount := StrToInt(LParts[2]);
+        LResult := False;
+        LIndex := 0;
+        while (LCount = 0) or (LIndex < LCount) do
+        begin
+          LResult := LHandles.ReadToken(LHandle, LToken);
+          if not LResult then
+            Break;
+          LFile := 'K|' + IntToStr(LToken.TokenType) + '|' + IntToStr(LToken.Subtype) + '|';
+          if LToken.TokenType = TT_NUMBER then
+            LFile := LFile + IntToStr(LToken.IntValue) + '|'
+          else
+            LFile := LFile + '-|';
+          Add(LFile + Escape(LToken.Text));
+          Inc(LIndex);
+        end;
+        Add('R|' + IntToStr(Ord(LResult)));
+      end
+      else
+        Add('?unknown op');
+    end;
+  finally
+    LOps.Free;
+    LHandles.Free;
+    LGlobals.Free;
+  end;
+end;
+
 procedure TQ3GoldenRunner.Run;
 var
   LCases: TStringList;
@@ -531,7 +618,10 @@ begin
       try
         for LPart := 3 to High(LParts) do
           LOptions.Add(LParts[LPart]);
-        RunCase(LParts[0], LParts[2], LOptions);
+        if LParts[0] = 'seq' then
+          RunSequence(LOptions)
+        else
+          RunCase(LParts[0], LParts[2], LOptions);
       finally
         LOptions.Free;
       end;
