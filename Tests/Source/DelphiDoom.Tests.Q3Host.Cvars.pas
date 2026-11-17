@@ -40,6 +40,8 @@ type
     [Test]
     procedure ImpostareEdLeggereUnaVariabileDovrebbeDareIValoriDelC;
     [Test]
+    procedure UnValoreNulloDovrebbeRimettereLaStringaDiReset;
+    [Test]
     procedure IlBufferDiUnaVariabileCheNonCeDovrebbeEssereVuoto;
     [Test]
     procedure IlBufferPiuPiccoloDelTestoDovrebbeTroncareEPadare;
@@ -204,6 +206,20 @@ begin
   Put(TQ3Module.Ui, DEFAULT_ADDRESS, '2.5');
   Call(TQ3Module.Ui, [UI_CVAR_SET, NAME_ADDRESS, DEFAULT_ADDRESS]);
   Assert.AreEqual(TQ3TestCalls.Bits(2.5), Call(TQ3Module.Ui, [UI_CVAR_VARIABLEVALUE, NAME_ADDRESS]));
+end;
+
+procedure TTestQ3CvarSyscalls.UnValoreNulloDovrebbeRimettereLaStringaDiReset;
+begin
+  FConsole.CVars.Get('g_reset', '5', 0);
+  FConsole.CVars.SetValueText('g_reset', '9');
+  Put(TQ3Module.Game, NAME_ADDRESS, 'g_reset');
+  // Cvar_Set( name, NULL )
+  Call(TQ3Module.Game, [G_CVAR_SET, NAME_ADDRESS, 0]);
+  Assert.AreEqual('5', string(FConsole.CVars.VariableString('g_reset')));
+  // a variable that is not there stays missing
+  Put(TQ3Module.Game, NAME_ADDRESS, 'g_nothere');
+  Call(TQ3Module.Game, [G_CVAR_SET, NAME_ADDRESS, 0]);
+  Assert.IsNull(FConsole.CVars.Find('g_nothere'));
 end;
 
 procedure TTestQ3CvarSyscalls.IlBufferDiUnaVariabileCheNonCeDovrebbeEssereVuoto;

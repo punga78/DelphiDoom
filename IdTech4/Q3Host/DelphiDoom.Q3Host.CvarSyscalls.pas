@@ -41,7 +41,7 @@ implementation
 
 uses
   System.SysUtils, DelphiDoom.Qvm.Types, DelphiDoom.Qvm.Intf, DelphiDoom.Console.Q3.Types,
-  DelphiDoom.Q3Host.Opcodes, DelphiDoom.Q3Host.Arguments;
+  DelphiDoom.Console.Q3.CVar, DelphiDoom.Q3Host.Opcodes, DelphiDoom.Q3Host.Arguments;
 
 const
   // the layout of vmCvar_t (Tests\Data\Q3Host\layout.golden.txt)
@@ -144,9 +144,20 @@ begin
   if LNumbers.SetText <> NONE then
     ARegistry.Register(LNumbers.SetText,
       function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
+      var
+        LCVarName: AnsiString;
+        LCVar: TQ3CVar;
       begin
-        ACVars.SetValueText(TQ3SyscallArguments.Text(AMachine, AArgs[1], LName),
-          TQ3SyscallArguments.Text(AMachine, AArgs[2], LName));
+        LCVarName := TQ3SyscallArguments.Text(AMachine, AArgs[1], LName);
+        if AArgs[2] <> 0 then
+          ACVars.SetValueText(LCVarName, TQ3SyscallArguments.Text(AMachine, AArgs[2], LName))
+        else
+        begin
+          // Cvar_Set( name, NULL ): Cvar_Set2 takes the reset string of the variable, if there is one
+          LCVar := ACVars.Find(LCVarName);
+          if Assigned(LCVar) then
+            ACVars.SetValueText(LCVarName, LCVar.ResetString);
+        end;
         Result := 0;
       end);
 

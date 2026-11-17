@@ -76,7 +76,9 @@ uses
   DelphiDoom.Tests.Q3Host.Layout in 'Source\DelphiDoom.Tests.Q3Host.Layout.pas',
   DelphiDoom.Tests.Q3Host.Cvars in 'Source\DelphiDoom.Tests.Q3Host.Cvars.pas',
   DelphiDoom.Tests.Q3Host.Files in 'Source\DelphiDoom.Tests.Q3Host.Files.pas',
-  DelphiDoom.Tests.Q3Host.GameWorld in 'Source\DelphiDoom.Tests.Q3Host.GameWorld.pas';
+  DelphiDoom.Tests.Q3Host.GameWorld in 'Source\DelphiDoom.Tests.Q3Host.GameWorld.pas',
+  DelphiDoom.Tests.Q3Host.Reach in 'Source\DelphiDoom.Tests.Q3Host.Reach.pas',
+  DelphiDoom.Tests.Q3Host.Coverage in 'Source\DelphiDoom.Tests.Q3Host.Coverage.pas';
 
 var
   Runner: ITestRunner;
