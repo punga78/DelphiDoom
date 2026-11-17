@@ -18,6 +18,15 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.D3Host.Types in '..\IdTech4\D3Host\DelphiDoom.D3Host.Types.pas',
   DelphiDoom.D3Host.Intf in '..\IdTech4\D3Host\DelphiDoom.D3Host.Intf.pas',
+  DelphiDoom.D3Host.Input.Types in '..\IdTech4\D3Host\DelphiDoom.D3Host.Input.Types.pas',
+  DelphiDoom.D3Host.Input.Intf in '..\IdTech4\D3Host\DelphiDoom.D3Host.Input.Intf.pas',
+  DelphiDoom.D3Host.Lifecycle.Intf in '..\IdTech4\D3Host\DelphiDoom.D3Host.Lifecycle.Intf.pas',
+  DelphiDoom.D3Host.KeyNames in '..\IdTech4\D3Host\DelphiDoom.D3Host.KeyNames.pas',
+  DelphiDoom.D3Host.KeyInput in '..\IdTech4\D3Host\DelphiDoom.D3Host.KeyInput.pas',
+  DelphiDoom.D3Host.EditField in '..\IdTech4\D3Host\DelphiDoom.D3Host.EditField.pas',
+  DelphiDoom.D3Host.UsercmdGen in '..\IdTech4\D3Host\DelphiDoom.D3Host.UsercmdGen.pas',
+  DelphiDoom.D3Host.Console in '..\IdTech4\D3Host\DelphiDoom.D3Host.Console.pas',
+  DelphiDoom.D3Host.Lifecycle in '..\IdTech4\D3Host\DelphiDoom.D3Host.Lifecycle.pas',
   DelphiDoom.D3Host.Printer in '..\IdTech4\D3Host\DelphiDoom.D3Host.Printer.pas',
   DelphiDoom.D3Host.Diagnostics in '..\IdTech4\D3Host\DelphiDoom.D3Host.Diagnostics.pas',
   DelphiDoom.D3Host.ErrorHandler in '..\IdTech4\D3Host\DelphiDoom.D3Host.ErrorHandler.pas',
@@ -30,6 +39,9 @@ uses
   DelphiDoom.Tests.D3Host.World in 'Source\DelphiDoom.Tests.D3Host.World.pas',
   DelphiDoom.Tests.D3Host.Scenario in 'Source\DelphiDoom.Tests.D3Host.Scenario.pas',
   DelphiDoom.Tests.D3Host.Parity in 'Source\DelphiDoom.Tests.D3Host.Parity.pas',
+  DelphiDoom.Tests.D3Host.HostWorld in 'Source\DelphiDoom.Tests.D3Host.HostWorld.pas',
+  DelphiDoom.Tests.D3Host.HostScenario in 'Source\DelphiDoom.Tests.D3Host.HostScenario.pas',
+  DelphiDoom.Tests.D3Host.HostParity in 'Source\DelphiDoom.Tests.D3Host.HostParity.pas',
   DelphiDoom.Tests.D3Host.Classes in 'Source\DelphiDoom.Tests.D3Host.Classes.pas';
 
 var

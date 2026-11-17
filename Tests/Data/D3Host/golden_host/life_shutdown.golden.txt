@@ -61,6 +61,7 @@ RMCMD conDump
 CALL cvar.Shutdown
 CALL cmd.Shutdown
 CALL ClearWarnings DOOM 3 shutdown
+MEMLEAKTEST doom
 CALL idlib.ShutDown
 CMD state
 STATE tic=0 frameTime=0 frame=0 fully=0 shutting=1 lastTic=0 lastlib=0
@@ -86,6 +87,7 @@ RMCMD conDump
 CALL cvar.Shutdown
 CALL cmd.Shutdown
 CALL ClearWarnings DOOM 3 shutdown
+MEMLEAKTEST doom
 CALL idlib.ShutDown
 SYSQUIT
 EXIT quit

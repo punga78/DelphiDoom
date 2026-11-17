@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Doom 3 host library - printing (idCommonLocal::VPrintf)         }
 {                                                                              }
@@ -19,7 +19,7 @@ unit DelphiDoom.D3Host.Printer;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.D3Host.Types, DelphiDoom.D3Host.Intf;
+  System.SysUtils, DelphiDoom.D3Host.Types, DelphiDoom.D3Host.Intf, DelphiDoom.D3Host.Lifecycle.Intf;
 
 type
   /// <summary>BeginRedirect: what is called with the text when the buffer is full or ends</summary>
@@ -30,7 +30,7 @@ type
   ///   a text that is already formatted (the C++ fmt and the varargs are not ported) and without NUL characters.
   ///   Print does nothing while the cvar system is not initialized.
   /// </summary>
-  TD3Printer = class(TInterfacedObject, ID3Printer)
+  TD3Printer = class(TInterfacedObject, ID3Printer, ID3LogFileControl)
   strict private
     FState: TD3CommonState;
     FCVars: ID3CommonCVars;

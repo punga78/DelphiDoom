@@ -30,7 +30,7 @@ type
   ///   other (fatal). A drop raises ED3HostException with the text and leaves ErrorEntered at 0. A fatal error
   ///   calls Shutdown and System.Error, which do not return in the engine.
   /// </summary>
-  TD3ErrorHandler = class(TInterfacedObject, ID3FatalErrorSink)
+  TD3ErrorHandler = class(TInterfacedObject, ID3FatalErrorSink, ID3ErrorReporter)
   strict private
     FState: TD3CommonState;
     FCVars: ID3CommonCVars;

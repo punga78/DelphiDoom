@@ -22,7 +22,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.IdLib.Text.CmdArgs, DelphiDoom.Console.CmdSystem.Types, DelphiDoom.Console.CmdSystem.Intf, DelphiDoom.D3Host.Types,
-  DelphiDoom.D3Host.Intf;
+  DelphiDoom.D3Host.Intf, DelphiDoom.D3Host.Lifecycle.Intf;
 
 type
   /// <summary>
@@ -30,7 +30,7 @@ type
   ///   "doom +set test blah +map test", "doom set test blah+map test" and "doom set test blah + map test" are
   ///   all the same. At most 32 lines (the C++ writes past its array; here it is an ED3HostException).
   /// </summary>
-  TD3CommandLine = class(TInterfacedObject, ID3StartupVariables)
+  TD3CommandLine = class(TInterfacedObject, ID3StartupVariables, ID3CommandLineControl)
   strict private
     FCVars: ID3CommonCVars;
     FBuffer: ICmdBuffer;

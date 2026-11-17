@@ -323,6 +323,7 @@ RMCMD conDump
 CALL cvar.Shutdown
 CALL cmd.Shutdown
 CALL ClearWarnings DOOM 3 shutdown
+MEMLEAKTEST doom
 CALL idlib.ShutDown
 CMD async
 CMD state

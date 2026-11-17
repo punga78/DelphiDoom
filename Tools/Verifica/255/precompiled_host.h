@@ -220,6 +220,9 @@ public:
 	int Length() { return (int)data.size(); } long Timestamp() { return 0; } const char *GetFullPath() { return name.c_str(); }
 	int Printf( const char *fmt, ... );
 };
+// the idlib objects (compiled with the stub of the first harness) hold an inline idFileSystem::OpenExplicitFileRead
+// that returns 0, and the linker would pick it over the definition of the driver: another name
+#define OpenExplicitFileRead OpenExplicitFileReadHost
 class idFileSystem {
 public:
 	void Init(); void Shutdown( bool reloading );
@@ -260,6 +263,8 @@ public:
 	static idAsyncServerFake server; static idAsyncClientFake client;
 };
 class idSIMDFake { public: static void InitProcessor( const char *module, bool forceGeneric ); };
+// idlib's Heap.cpp has the real one, which prints nothing
+#define Mem_EnableLeakTest Mem_EnableLeakTestHost
 void Mem_EnableLeakTest( const char *name );
 void Com_ExecMachineSpec_f( const idCmdArgs &args );
 extern int com_editors;

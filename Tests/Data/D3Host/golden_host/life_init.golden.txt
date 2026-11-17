@@ -24,6 +24,7 @@ CALL InitCommands
 CALL files.Init
 CALL decl.Init
 CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec fail
 OPENW config.spec fs_savepath
 CLOSE config.spec
 CALL SetMachineSpec
@@ -88,6 +89,7 @@ RMCMD conDump
 CALL cvar.Shutdown
 CALL cmd.Shutdown
 CALL ClearWarnings DOOM 3 shutdown
+MEMLEAKTEST doom
 CALL idlib.ShutDown
 CMD state
 STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0
@@ -119,10 +121,8 @@ CALL InitCommands
 CALL files.Init
 CALL decl.Init
 CALL CheckToolMode
-OPENW config.spec fs_savepath
-CLOSE config.spec
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
 CALL render.Init
 CALL InitLanguageDict
 CALL PrintLoadingMessage <#str_04344>
@@ -150,11 +150,6 @@ CALL PrintLoadingMessage <#str_04350>
 CALL LoadGameDLL
 CALL PrintLoadingMessage <#str_04351>
 CALL session.Init
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
-CVARSETI s_numberOfSpeakers 6
-BUFTEXT now s_restart\n
-BUFEXEC
 CALL AddStartupCommands -> 1
 PRINTF --- Common Initialization Complete ---\n
 CALL PrintWarnings
@@ -166,6 +161,7 @@ CMD initgame
 CALL files.Init
 CALL decl.Init
 CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec fail
 OPENW config.spec fs_savepath
 CLOSE config.spec
 CALL SetMachineSpec
@@ -208,10 +204,8 @@ CMD initgame
 CALL files.Init
 CALL decl.Init
 CALL CheckToolMode
-OPENW config.spec fs_savepath
-CLOSE config.spec
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
 CALL render.Init
 CALL InitLanguageDict
 CALL PrintLoadingMessage <#str_04344>
@@ -239,21 +233,14 @@ CALL PrintLoadingMessage <#str_04350>
 CALL LoadGameDLL
 CALL PrintLoadingMessage <#str_04351>
 CALL session.Init
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
-CVARSETI s_numberOfSpeakers 6
-BUFTEXT now s_restart\n
-BUFEXEC
 CMD dedicated 0
 CMD ret safemode 1
 CMD initgame
 CALL files.Init
 CALL decl.Init
 CALL CheckToolMode
-OPENW config.spec fs_savepath
-CLOSE config.spec
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
 CALL render.Init
 CALL InitLanguageDict
 CALL PrintLoadingMessage <#str_04344>
@@ -280,11 +267,6 @@ CALL PrintLoadingMessage <#str_04350>
 CALL LoadGameDLL
 CALL PrintLoadingMessage <#str_04351>
 CALL session.Init
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
-CVARSETI s_numberOfSpeakers 6
-BUFTEXT now s_restart\n
-BUFEXEC
 CMD ret safemode 0
 CMD ret already 1
 CMD init
@@ -391,10 +373,8 @@ CALL InitCommands
 CALL files.Init
 CALL decl.Init
 CALL CheckToolMode
-OPENW config.spec fs_savepath
-CLOSE config.spec
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
 CALL render.Init
 CALL InitLanguageDict
 CALL PrintLoadingMessage <#str_04344>
@@ -422,11 +402,6 @@ CALL PrintLoadingMessage <#str_04350>
 CALL LoadGameDLL
 CALL PrintLoadingMessage <#str_04351>
 CALL session.Init
-CALL SetMachineSpec
-CALL Com_ExecMachineSpec_f
-CVARSETI s_numberOfSpeakers 6
-BUFTEXT now s_restart\n
-BUFEXEC
 CALL AddStartupCommands -> 1
 PRINTF --- Common Initialization Complete ---\n
 CALL PrintWarnings
