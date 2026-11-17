@@ -11,7 +11,6 @@ interface
 
 uses
   System.SysUtils,
-  System.Types,
   DUnitX.TestFramework,
   DelphiDoom.Video.TileGrid;
 
@@ -22,7 +21,7 @@ type
   strict private
     /// <summary>The loops of V_TileScreen8 as they were, copied from the old text (the oracle)</summary>
     class function OldPositions(const AWidth, AHeight, ALeft, ATop: Integer): string; static;
-    class function Describe(const APoints: TArray<TPoint>): string; static;
+    class function Describe(const APoints: TArray<TVideoTilePosition>): string; static;
   public
     [Test]
     procedure DovrebbeIniziareDaZeroSenzaScostamento;
@@ -64,9 +63,9 @@ begin
   end;
 end;
 
-class function TTestVideoTileGrid.Describe(const APoints: TArray<TPoint>): string;
+class function TTestVideoTileGrid.Describe(const APoints: TArray<TVideoTilePosition>): string;
 var
-  LPoint: TPoint;
+  LPoint: TVideoTilePosition;
 begin
   Result := '';
   for LPoint in APoints do
@@ -86,7 +85,7 @@ end;
 
 procedure TTestVideoTileGrid.DovrebbeRiempireLaPaginaColonnaPerColonna;
 var
-  LPoints: TArray<TPoint>;
+  LPoints: TArray<TVideoTilePosition>;
 begin
   LPoints := TVideoTileGrid.Positions(160, 100, 0, 0, 320, 200);
   Assert.AreEqual(4, Length(LPoints));

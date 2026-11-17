@@ -10,10 +10,13 @@ unit DelphiDoom.Video.TileGrid;
 
 interface
 
-uses
-  System.Types;
-
 type
+  /// <summary>Where a copy of the patch is drawn on the page</summary>
+  TVideoTilePosition = record
+    X: Integer;
+    Y: Integer;
+  end;
+
   /// <summary>
   ///   Pure rule of V_TileScreen8 (v_video): where the copies of a patch go when a page is
   ///   filled with it. Cold (once per page), static functions, no state
@@ -30,7 +33,7 @@ type
     ///   loop, as in the old code). Empty when the patch has no size
     /// </summary>
     class function Positions(const APatchWidth, APatchHeight, ALeftOffset, ATopOffset: Integer;
-      const AAreaWidth, AAreaHeight: Integer): TArray<TPoint>; static;
+      const AAreaWidth, AAreaHeight: Integer): TArray<TVideoTilePosition>; static;
   end;
 
 implementation
@@ -44,7 +47,7 @@ begin
 end;
 
 class function TVideoTileGrid.Positions(const APatchWidth, APatchHeight, ALeftOffset, ATopOffset: Integer;
-  const AAreaWidth, AAreaHeight: Integer): TArray<TPoint>;
+  const AAreaWidth, AAreaHeight: Integer): TArray<TVideoTilePosition>;
 var
   LX: Integer;
   LY: Integer;
@@ -63,7 +66,8 @@ begin
     while LY < AAreaHeight do
     begin
       SetLength(Result, LCount + 1);
-      Result[LCount] := Point(LX, LY);
+      Result[LCount].X := LX;
+      Result[LCount].Y := LY;
       Inc(LCount);
       LY := LY + APatchHeight;
     end;

@@ -67,7 +67,7 @@ begin
   for LW in CValues do
     for LH in CValues do
     begin
-      // the old text: bigpatch := (p.width > 320) or (p.height > 200) and (p.width <> 426) or (p.height <> 200)
+      // the conditions of the old text of V_PageDrawer: bigpatch, the scale and the stretch
       Assert.AreEqual((LW > 320) or (LH > 200), TVideoPageLayout.IsOversized(LW, LH));
       Assert.AreEqual((LW <> 426) or (LH <> 200), TVideoPageLayout.NeedsStretch(LW, LH));
       for LSW in CValues do
