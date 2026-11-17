@@ -53,8 +53,13 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    /// <summary>Builds the life cycle on the fakes; with a session, that one replaces the fake session</summary>
+    procedure Prepare(const ASession: ID3SessionLifecycle = nil; const AScreen: ID3ScreenUpdater = nil);
     procedure Run(const AScenario: TStrings);
     function Trace: TStringList;
+    property World: THostWorld read FWorld;
+    property State: TD3CommonState read FState;
+    property Lifecycle: TD3Lifecycle read FLifecycle;
   end;
 
 implementation
@@ -167,19 +172,31 @@ begin
   Result := TD3CNumbers.Atoi(AnsiString(AText));
 end;
 
+procedure THostScenarioRunner.Prepare(const ASession: ID3SessionLifecycle; const AScreen: ID3ScreenUpdater);
+var
+  LServices: TD3LifecycleServices;
+begin
+  if Assigned(FLifecycle) then
+    Exit;
+  LServices := FWorld.Services;
+  LServices.Keys := FKeyInput as ID3Subsystem;
+  LServices.Console := FConsole as ID3ConsoleControl;
+  LServices.Usercmd := FUsercmd as ID3UsercmdGenerator;
+  if Assigned(ASession) then
+    LServices.Session := ASession;
+  if Assigned(AScreen) then
+    LServices.Screen := AScreen;
+  FLifecycle := TD3Lifecycle.Create(FState, LServices, 'DOOM 3', 'DOOM 3 harness 1.0');
+  FLifecycleRef := FLifecycle;
+end;
+
 procedure THostScenarioRunner.Run(const AScenario: TStrings);
 var
   LLine: string;
   LIndex: Integer;
   LSpace: Integer;
-  LServices: TD3LifecycleServices;
 begin
-  LServices := FWorld.Services;
-  LServices.Keys := FKeyInput as ID3Subsystem;
-  LServices.Console := FConsole as ID3ConsoleControl;
-  LServices.Usercmd := FUsercmd as ID3UsercmdGenerator;
-  FLifecycle := TD3Lifecycle.Create(FState, LServices, 'DOOM 3', 'DOOM 3 harness 1.0');
-  FLifecycleRef := FLifecycle;
+  Prepare;
   for LIndex := 0 to AScenario.Count - 1 do
   begin
     LLine := AScenario[LIndex];

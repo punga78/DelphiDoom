@@ -27,6 +27,8 @@ uses
   DelphiDoom.D3Host.UsercmdGen in '..\IdTech4\D3Host\DelphiDoom.D3Host.UsercmdGen.pas',
   DelphiDoom.D3Host.Console in '..\IdTech4\D3Host\DelphiDoom.D3Host.Console.pas',
   DelphiDoom.D3Host.Lifecycle in '..\IdTech4\D3Host\DelphiDoom.D3Host.Lifecycle.pas',
+  DelphiDoom.D3Host.Session.Intf in '..\IdTech4\D3Host\DelphiDoom.D3Host.Session.Intf.pas',
+  DelphiDoom.D3Host.Session in '..\IdTech4\D3Host\DelphiDoom.D3Host.Session.pas',
   DelphiDoom.D3Host.Printer in '..\IdTech4\D3Host\DelphiDoom.D3Host.Printer.pas',
   DelphiDoom.D3Host.Diagnostics in '..\IdTech4\D3Host\DelphiDoom.D3Host.Diagnostics.pas',
   DelphiDoom.D3Host.ErrorHandler in '..\IdTech4\D3Host\DelphiDoom.D3Host.ErrorHandler.pas',
@@ -41,6 +43,10 @@ uses
   DelphiDoom.Tests.D3Host.Parity in 'Source\DelphiDoom.Tests.D3Host.Parity.pas',
   DelphiDoom.Tests.D3Host.HostWorld in 'Source\DelphiDoom.Tests.D3Host.HostWorld.pas',
   DelphiDoom.Tests.D3Host.HostScenario in 'Source\DelphiDoom.Tests.D3Host.HostScenario.pas',
+  DelphiDoom.Tests.IdLib.Fakes in 'Source\DelphiDoom.Tests.IdLib.Fakes.pas',
+  DelphiDoom.Tests.DoomScript.Fakes in 'Source\DelphiDoom.Tests.DoomScript.Fakes.pas',
+  DelphiDoom.Tests.DoomScript.Rig in 'Source\DelphiDoom.Tests.DoomScript.Rig.pas',
+  DelphiDoom.Tests.D3Host.Proof in 'Source\DelphiDoom.Tests.D3Host.Proof.pas',
   DelphiDoom.Tests.D3Host.HostParity in 'Source\DelphiDoom.Tests.D3Host.HostParity.pas',
   DelphiDoom.Tests.D3Host.Classes in 'Source\DelphiDoom.Tests.D3Host.Classes.pas';
 
