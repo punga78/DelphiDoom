@@ -39,11 +39,25 @@ type
     FSavedFinish: Pointer;
     FSavedFlush: Pointer;
     FInstalled: Boolean;
+    FHookTargets: array of PPointer;
+    FHookSaved: array of Pointer;
+    /// <summary>Puts a fake in a function variable, remembering the real one for Restore</summary>
+    procedure Hook(const ATarget: PPointer; const AFake: Pointer);
   public
     /// <summary>The lines written by the calls since the last Clear</summary>
     class var Lines: TStringList;
     /// <summary>The four values glGetIntegerv(GL_VIEWPORT) gives</summary>
     class var Viewport: array[0..3] of Integer;
+    /// <summary>What glGetIntegerv(GL_MAX_TEXTURE_SIZE) and (GL_MAX_3D_TEXTURE_SIZE) give</summary>
+    class var MaxTextureSize: Integer;
+    class var MaxTexture3DSize: Integer;
+    /// <summary>What glGetString(GL_VENDOR), (GL_RENDERER), (GL_VERSION) and (GL_EXTENSIONS) give</summary>
+    class var Vendor: AnsiString;
+    class var Renderer: AnsiString;
+    class var Version: AnsiString;
+    class var Extensions: AnsiString;
+    /// <summary>What wglGetProcAddress gives for every name (nil: the extension function is missing)</summary>
+    class var ExtensionProc: Pointer;
     /// <summary>Installs the fakes; the calls go to Lines</summary>
     procedure Install;
     /// <summary>Gives the real variables back</summary>
@@ -57,6 +71,10 @@ implementation
 uses
   System.SysUtils,
   dglOpenGL;
+
+type
+  TFloatQuad = array[0..3] of Single;
+  PFloatQuad = ^TFloatQuad;
 
 function Bits(const AValue: Single): string;
 begin
@@ -148,7 +166,146 @@ procedure FakeGetIntegerv(pname: GLenum; params: PGLint); stdcall;
 begin
   TFakeGlLog.Lines.Add('glGetIntegerv ' + IntToHex(pname, 4));
   if pname = GL_VIEWPORT then
-    Move(TFakeGlLog.Viewport, params^, SizeOf(TFakeGlLog.Viewport));
+    Move(TFakeGlLog.Viewport, params^, SizeOf(TFakeGlLog.Viewport))
+  else if pname = GL_MAX_TEXTURE_SIZE then
+    params^ := TFakeGlLog.MaxTextureSize
+  else if pname = GL_MAX_3D_TEXTURE_SIZE then
+    params^ := TFakeGlLog.MaxTexture3DSize;
+end;
+
+function FakeGetString(name: GLenum): PAnsiChar; stdcall;
+begin
+  TFakeGlLog.Lines.Add('glGetString ' + IntToHex(name, 4));
+  case name of
+    GL_VENDOR: Result := PAnsiChar(TFakeGlLog.Vendor);
+    GL_RENDERER: Result := PAnsiChar(TFakeGlLog.Renderer);
+    GL_VERSION: Result := PAnsiChar(TFakeGlLog.Version);
+    GL_EXTENSIONS: Result := PAnsiChar(TFakeGlLog.Extensions);
+  else
+    Result := nil;
+  end;
+end;
+
+function FakeGetProcAddress(ProcName: PAnsiChar): Pointer; stdcall;
+begin
+  TFakeGlLog.Lines.Add('wglGetProcAddress ' + string(AnsiString(ProcName)));
+  Result := TFakeGlLog.ExtensionProc;
+end;
+
+procedure FakeViewport(x, y: GLint; width, height: GLsizei); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glViewport ' + IntToStr(x) + ' ' + IntToStr(y) + ' ' + IntToStr(width) + ' ' + IntToStr(height));
+end;
+
+procedure FakeScissor(x, y: GLint; width, height: GLsizei); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glScissor ' + IntToStr(x) + ' ' + IntToStr(y) + ' ' + IntToStr(width) + ' ' + IntToStr(height));
+end;
+
+procedure FakeClear(mask: GLbitfield); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glClear ' + IntToHex(mask, 8));
+end;
+
+procedure FakeClearColor(red, green, blue, alpha: GLclampf); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glClearColor ' + Bits(red) + ' ' + Bits(green) + ' ' + Bits(blue) + ' ' + Bits(alpha));
+end;
+
+procedure FakeClearDepth(depth: GLclampd); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glClearDepth ' + BitsD(depth));
+end;
+
+procedure FakeHint(target, mode: GLenum); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glHint ' + IntToHex(target, 4) + ' ' + IntToHex(mode, 4));
+end;
+
+procedure FakePixelStorei(pname: GLenum; param: GLint); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glPixelStorei ' + IntToHex(pname, 4) + ' ' + IntToStr(param));
+end;
+
+procedure FakeDepthFunc(func: GLenum); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glDepthFunc ' + IntToHex(func, 4));
+end;
+
+procedure FakeAlphaFunc(func: GLenum; ref: GLclampf); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glAlphaFunc ' + IntToHex(func, 4) + ' ' + Bits(ref));
+end;
+
+procedure FakeTexEnvf(target, pname: GLenum; param: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glTexEnvf ' + IntToHex(target, 4) + ' ' + IntToHex(pname, 4) + ' ' + Bits(param));
+end;
+
+procedure FakeTexGenf(coord, pname: GLenum; param: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glTexGenf ' + IntToHex(coord, 4) + ' ' + IntToHex(pname, 4) + ' ' + Bits(param));
+end;
+
+procedure FakeTexGenfv(coord, pname: GLenum; const params: PGLfloat); stdcall;
+var
+  LValues: PFloatQuad;
+begin
+  // GL_EYE_PLANE (the only vector the scene sets) has four floats
+  LValues := PFloatQuad(params);
+  TFakeGlLog.Lines.Add('glTexGenfv ' + IntToHex(coord, 4) + ' ' + IntToHex(pname, 4) + ' ' + Bits(LValues[0]) +
+    ' ' + Bits(LValues[1]) + ' ' + Bits(LValues[2]) + ' ' + Bits(LValues[3]));
+end;
+
+procedure FakeFogi(pname: GLenum; param: GLint); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glFogi ' + IntToHex(pname, 4) + ' ' + IntToStr(param));
+end;
+
+procedure FakeShadeModel(mode: GLenum); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glShadeModel ' + IntToHex(mode, 4));
+end;
+
+procedure FakeMultMatrixd(const m: PGLdouble); stdcall;
+var
+  LIndex: Integer;
+  LLine: string;
+begin
+  LLine := 'glMultMatrixd';
+  for LIndex := 0 to 15 do
+    LLine := LLine + ' ' + BitsD(PDouble(PByte(m) + LIndex * SizeOf(Double))^);
+  TFakeGlLog.Lines.Add(LLine);
+end;
+
+procedure FakePolygonMode(face, mode: GLenum); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glPolygonMode ' + IntToHex(face, 4) + ' ' + IntToHex(mode, 4));
+end;
+
+procedure FakeBindTexture(target: GLenum; texture: GLuint); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glBindTexture ' + IntToHex(target, 4) + ' ' + IntToStr(texture));
+end;
+
+procedure FakeVertex2f(x, y: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glVertex2f ' + Bits(x) + ' ' + Bits(y));
+end;
+
+procedure FakeTexCoord2f(s, t: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glTexCoord2f ' + Bits(s) + ' ' + Bits(t));
+end;
+
+procedure FakeVertex2i(x, y: GLint); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glVertex2i ' + IntToStr(x) + ' ' + IntToStr(y));
+end;
+
+procedure FakeColor3f(red, green, blue: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glColor3f ' + Bits(red) + ' ' + Bits(green) + ' ' + Bits(blue));
 end;
 
 procedure FakeFinish; stdcall;
@@ -159,6 +316,21 @@ end;
 procedure FakeFlush; stdcall;
 begin
   TFakeGlLog.Lines.Add('glFlush');
+end;
+
+procedure FakeFogf(pname: GLenum; param: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glFogf ' + IntToHex(pname, 4) + ' ' + Bits(param));
+end;
+
+procedure FakeFogfv(pname: GLenum; params: PGLfloat); stdcall;
+var
+  LValues: PFloatQuad;
+begin
+  // GL_FOG_COLOR (the only vector the scene sets) has four floats
+  LValues := PFloatQuad(params);
+  TFakeGlLog.Lines.Add('glFogfv ' + IntToHex(pname, 4) + ' ' + Bits(LValues[0]) + ' ' + Bits(LValues[1]) + ' ' +
+    Bits(LValues[2]) + ' ' + Bits(LValues[3]));
 end;
 
 { TFakeGlLog }
@@ -205,11 +377,50 @@ begin
   glGetIntegerv := @FakeGetIntegerv;
   glFinish := @FakeFinish;
   glFlush := @FakeFlush;
+  Hook(@@glFogf, @FakeFogf);
+  Hook(@@glFogfv, @FakeFogfv);
+  Hook(@@glGetString, @FakeGetString);
+  Hook(@@wglGetProcAddress, @FakeGetProcAddress);
+  Hook(@@glViewport, @FakeViewport);
+  Hook(@@glScissor, @FakeScissor);
+  Hook(@@glClear, @FakeClear);
+  Hook(@@glClearColor, @FakeClearColor);
+  Hook(@@glClearDepth, @FakeClearDepth);
+  Hook(@@glHint, @FakeHint);
+  Hook(@@glPixelStorei, @FakePixelStorei);
+  Hook(@@glDepthFunc, @FakeDepthFunc);
+  Hook(@@glAlphaFunc, @FakeAlphaFunc);
+  Hook(@@glTexEnvf, @FakeTexEnvf);
+  Hook(@@glTexGenf, @FakeTexGenf);
+  Hook(@@glTexGenfv, @FakeTexGenfv);
+  Hook(@@glFogi, @FakeFogi);
+  Hook(@@glShadeModel, @FakeShadeModel);
+  Hook(@@glMultMatrixd, @FakeMultMatrixd);
+  Hook(@@glPolygonMode, @FakePolygonMode);
+  Hook(@@glBindTexture, @FakeBindTexture);
+  Hook(@@glVertex2f, @FakeVertex2f);
+  Hook(@@glColor3f, @FakeColor3f);
+  Hook(@@glTexCoord2f, @FakeTexCoord2f);
+  Hook(@@glVertex2i, @FakeVertex2i);
   FInstalled := True;
   Clear;
 end;
 
+procedure TFakeGlLog.Hook(const ATarget: PPointer; const AFake: Pointer);
+var
+  LCount: Integer;
+begin
+  LCount := Length(FHookTargets);
+  SetLength(FHookTargets, LCount + 1);
+  SetLength(FHookSaved, LCount + 1);
+  FHookTargets[LCount] := ATarget;
+  FHookSaved[LCount] := ATarget^;
+  ATarget^ := AFake;
+end;
+
 procedure TFakeGlLog.Restore;
+var
+  LIndex: Integer;
 begin
   if not FInstalled then
     Exit;
@@ -231,6 +442,10 @@ begin
   glGetIntegerv := FSavedGetIntegerv;
   glFinish := FSavedFinish;
   glFlush := FSavedFlush;
+  for LIndex := High(FHookTargets) downto 0 do
+    FHookTargets[LIndex]^ := FHookSaved[LIndex];
+  FHookTargets := nil;
+  FHookSaved := nil;
   FInstalled := False;
 end;
 
