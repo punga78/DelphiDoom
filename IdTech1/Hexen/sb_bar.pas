@@ -234,7 +234,7 @@ begin
     CPlayer.cheats := CPlayer.cheats xor CF_GODMODE;
     if CPlayer.cheats and CF_GODMODE <> 0 then
     begin
-      CPlayer.health := P_MaxPlayerHealth(CPlayer);
+      CPlayer.health := TInterRoutines.P_MaxPlayerHealth(CPlayer);
 
       if CPlayer.mo <> nil then
         CPlayer.mo.health := CPlayer.health;
@@ -264,7 +264,7 @@ begin
   if CPlayer.mo.health >= 0 then
   begin
     P_DamageMobj(CPlayer.mo, nil, CPlayer.mo, 10000);
-    P_SetMessage(CPlayer, TXT_CHEATIDDQD, true);
+    TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATIDDQD, true);
   end;
 end;
 
@@ -406,11 +406,11 @@ begin
   if not SB_CmdCheckPlayerStatus then
     exit;
 
-  CPlayer.health := P_MaxPlayerHealth(CPlayer);
+  CPlayer.health := TInterRoutines.P_MaxPlayerHealth(CPlayer);
   if CPlayer.mo <> nil then
     CPlayer.mo.health := CPlayer.health;
 
-  P_SetMessage(CPlayer, TXT_CHEATHEALTH, false);
+  TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATHEALTH, false);
 end;
 
 //==============================================================================
@@ -424,10 +424,10 @@ begin
     exit;
 
   if CPlayer.morphTics > 0 then
-    P_UndoPlayerMorph(CPlayer)
+    TUserRoutines.P_UndoPlayerMorph(CPlayer)
   else
-     P_MorphPlayer(CPlayer);
-  P_SetMessage(CPlayer, TXT_CHEATPIG, true);
+     TInterRoutines.P_MorphPlayer(CPlayer);
+  TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATPIG, true);
 end;
 
 //==============================================================================
@@ -461,7 +461,7 @@ begin
     _class := atoi(cl, -1);
     if (_class < 0) or (_class > 2) then
     begin
-      P_SetMessage(CPlayer, 'INVALID PLAYER CLASS: ' + parm, true);
+      TInterRoutines.P_SetMessage(CPlayer, 'INVALID PLAYER CLASS: ' + parm, true);
       exit;
     end;
   end;
@@ -484,9 +484,9 @@ procedure SB_CmdCheatSoundFunc;
 begin
   DebugSound := not DebugSound;
   if DebugSound then
-    P_SetMessage(CPlayer, TXT_CHEATSOUNDON, true)
+    TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATSOUNDON, true)
   else
-    P_SetMessage(CPlayer, TXT_CHEATSOUNDOFF, true);
+    TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATSOUNDOFF, true);
 end;
 
 //==============================================================================
@@ -502,7 +502,7 @@ begin
     exit;
 
   for i := 0 to num - 1 do
-    P_GiveArtifact(CPlayer, arti, nil);
+    TInterRoutines.P_GiveArtifact(CPlayer, arti, nil);
 end;
 
 //==============================================================================
@@ -527,13 +527,13 @@ begin
     begin
       for i := Ord(arti_none) + 1 to arti_firstpuzzitem - 1 do
         SB_GiveArtifacts(artitype_t(i), p_maxartifacts);
-      P_SetMessage(CPlayer, TXT_ARTIALL);
+      TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIALL);
     end
     else if strlower(art) = 'puzzle' then
     begin
       for i := arti_firstpuzzitem to Ord(NUMARTIFACTS) - 1 do
         SB_GiveArtifacts(artitype_t(i), p_maxartifacts);
-      P_SetMessage(CPlayer, TXT_ARTIALLPUZZLE);
+      TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIALLPUZZLE);
     end
     else
     begin
@@ -618,7 +618,7 @@ begin
     howmany := 1;
 
   SB_GiveArtifacts(arti, howmany);
-  P_SetMessage(CPlayer, artifactMessages[Ord(arti)]);
+  TInterRoutines.P_SetMessage(CPlayer, artifactMessages[Ord(arti)]);
 end;
 
 const

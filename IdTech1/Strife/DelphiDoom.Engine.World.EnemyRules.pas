@@ -21,34 +21,6 @@ uses
   d_player,
   sounddata;
 
-//==============================================================================
-//
-// A_Chase
-//
-//==============================================================================
-procedure A_Chase(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Scream
-//
-//==============================================================================
-procedure A_Scream(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_CheckMeleeRange
-//
-//==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
-
-//==============================================================================
-//
-// P_LookForPlayers
-//
-//==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
-
 type
   /// <summary>
   ///   What Strife does in the enemy code of p_enemy (issue #185, step 2f-4). The routines that
@@ -761,6 +733,42 @@ type
     class procedure P_DoPunchAlert(puncher: Pmobj_t; punchee: Pmobj_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_Chase
+    //
+    //==============================================================================
+    class procedure A_Chase(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Scream
+    //
+    //==============================================================================
+    class procedure A_Scream(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckMeleeRange
+    //
+    //==============================================================================
+    class function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean; static;
+
+    //==============================================================================
+    //
+    // P_LookForPlayers
+    //
+    //==============================================================================
+    class function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean; static;
+  end;
+
 
 implementation
 
@@ -924,7 +932,7 @@ end;
 // [STRIFE] Minor change to meleerange.
 //
 //==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
+class function TMonsterBaseActions.P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
 var
   mo: Pmobj_t;
   dist: fixed_t;
@@ -1231,7 +1239,7 @@ end;
 // haleyjd 09/05/10: Modifications to support friendly units.
 //
 //==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
+class function TMonsterBaseActions.P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 var
   c: integer;
   stop: integer;
@@ -1630,7 +1638,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_AttackSound1(actor);
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
@@ -1716,7 +1724,7 @@ end;
 // A_Chase
 //
 //==============================================================================
-procedure A_Chase(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Chase(actor: Pmobj_t);
 begin
   TStrifeMonsterActions.P_DoChase(actor, false);
 end;
@@ -1737,7 +1745,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     P_DamageMobj(actor.target, actor, actor, 2 * (P_Random mod 5) + 2);
 end;
 
@@ -1848,7 +1856,7 @@ var
   an: angle_t;
   i: integer;
 begin
-  mo := P_SpawnFacingMissile(actor, actor.target, Ord(MT_L_LASER));
+  mo := TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_L_LASER));
   an := actor.angle div ANGLETOFINEUNIT;
 
   if (mo.momy <> 0) or (mo.momx <> 0) then
@@ -1958,7 +1966,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     P_DamageMobj(actor.target, actor, actor, 2 * (P_Random mod 8) + 2);
 end;
 
@@ -2013,7 +2021,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     S_StartSound(actor, Ord(sfx_revbld));
     P_DamageMobj(actor.target, actor, actor, 3 * (P_Random mod 8 + 1));
@@ -2076,20 +2084,20 @@ begin
   begin
     A_FaceTarget(actor);
     actor.angle := actor.angle - (ANG90 div 8);
-    P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
+    TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
   end
   else if P_CheckMissileRange(actor) then
   begin
     A_FaceTarget(actor);
     actor.z := actor.z + (16 * FRACUNIT);
-    P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_MISSILE));
+    TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_MISSILE));
 
     actor.angle := actor.angle - (ANG45 div 32);
     actor.z := actor.z - (16 * FRACUNIT);
-    P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_MISSILE));
+    TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_MISSILE));
 
     actor.angle := actor.angle + (ANG45 div 16);
-    P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_MISSILE));
+    TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_MISSILE));
 
     P_SetMobjState(actor, statenum_t(actor.info.seestate));
     actor.reactiontime := actor.reactiontime + 15;
@@ -2112,7 +2120,7 @@ var
   mo: Pmobj_t;
 begin
    actor.angle := actor.angle + (ANG90 div 16);
-   mo := P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
+   mo := TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
    mo.momz := FRACUNIT;
    mo.z := mo.z + (16 * FRACUNIT);
 end;
@@ -2129,7 +2137,7 @@ var
   mo: Pmobj_t;
 begin
   actor.angle := actor.angle - (ANG90 div 16);
-  mo := P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
+  mo := TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
   mo.momz := FRACUNIT;
   mo.z := mo.z + (16 * FRACUNIT);
 end;
@@ -2197,12 +2205,12 @@ begin
 
   // grenade 1
   actor.angle := actor.angle - (ANG45 div 32);
-  mo := P_SpawnFacingMissile(actor, actor.target, Ord(MT_INQGRENADE));
+  mo := TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_INQGRENADE));
   mo.momz := mo.momz + (9 * FRACUNIT);
 
   // grenade 2
   actor.angle := actor.angle + (ANG45 div 16);
-  mo := P_SpawnFacingMissile(actor, actor.target, Ord(MT_INQGRENADE));
+  mo := TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_INQGRENADE));
   mo.momz := mo.momz + (16 * FRACUNIT);
 
   actor.z := actor.z - MAXRADIUS;
@@ -2409,7 +2417,7 @@ begin
   for i := 0 to 19 do
   begin
     actor.angle := actor.angle + (ANG90 div 10);
-    mo := P_SpawnMortar(actor, Ord(MT_SIGIL_C_SHOT));
+    mo := TMobjRoutines.P_SpawnMortar(actor, Ord(MT_SIGIL_C_SHOT));
     mo.health := -2;
     mo.z := actor.z + (32 * FRACUNIT);
   end;
@@ -2463,13 +2471,13 @@ end;
 class procedure TStrifeMonsterActions.A_Sigil_E_Action(actor: Pmobj_t);
 begin
   actor.angle := actor.angle + ANG90;
-  P_SpawnMortar(actor, Ord(MT_SIGIL_E_OFFSHOOT));
+  TMobjRoutines.P_SpawnMortar(actor, Ord(MT_SIGIL_E_OFFSHOOT));
 
   actor.angle := actor.angle - ANG180;
-  P_SpawnMortar(actor, Ord(MT_SIGIL_E_OFFSHOOT));
+  TMobjRoutines.P_SpawnMortar(actor, Ord(MT_SIGIL_E_OFFSHOOT));
 
   actor.angle := actor.angle + ANG90;
-  P_SpawnMortar(actor, Ord(MT_SIGIL_E_OFFSHOOT));
+  TMobjRoutines.P_SpawnMortar(actor, Ord(MT_SIGIL_E_OFFSHOOT));
 end;
 
 //==============================================================================
@@ -2729,7 +2737,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := 6 * (P_Random mod 10 + 1);
 
@@ -2806,7 +2814,7 @@ end;
 // A_Scream
 //
 //==============================================================================
-procedure A_Scream(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Scream(actor: Pmobj_t);
 begin
   A_DeathSound1(actor);
 end;
@@ -2881,7 +2889,7 @@ begin
   end;
 
   if actor.health <= 0 then
-    P_KillMobj(actor.target, actor);
+    TInterRoutines.P_KillMobj(actor.target, actor);
 end;
 
 //==============================================================================
@@ -3646,7 +3654,7 @@ begin
 
             // KILL ALL ORACLES! RAWWR!
             if (mo <> actor) and (mo._type = Ord(MT_ORACLE)) and (mo.health > 0) then
-              P_KillMobj(actor, mo);
+              TInterRoutines.P_KillMobj(actor, mo);
           end;
           th := th.next;
         end;
@@ -3772,7 +3780,7 @@ end;
 class procedure TStrifeMonsterActions.A_InqChase(actor: Pmobj_t);
 begin
   S_StartSound(actor, Ord(sfx_inqact));
-  A_Chase(actor);
+  TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -3784,7 +3792,7 @@ end;
 class procedure TStrifeMonsterActions.A_StalkerChase(actor: Pmobj_t);
 begin
   S_StartSound(actor, Ord(sfx_spdwlk));
-  A_Chase(actor);
+  TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -4134,7 +4142,7 @@ class procedure TEnemyGameRules.ClearFloating(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not (MF_INFLOAT or MF_FEETCLIPPED);
   // villsa [STRIFE]
-  if P_GetTerrainType(actor) <> FLOOR_SOLID then
+  if TMobjRoutines.P_GetTerrainType(actor) <> FLOOR_SOLID then
   begin
     actor.flags := actor.flags or MF_FEETCLIPPED;
     actor.floorclip := FOOTCLIPSIZE;

@@ -31,31 +31,9 @@ const
   FF_FULLBRIGHT = $8000; // flag in thing->frame
   FF_FRAMEMASK = $7fff;
 
-//==============================================================================
-//
-// P_CheckAmmo
-//
-//==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
-
 var
 // plasma cells for a bfg attack
   p_bfgcells: integer = 40;
-
-//==============================================================================
-//
-// P_BringUpWeapon
-// Starts bringing the pending weapon up from the bottom of the screen
-//
-//==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_FireWeapon
-//
-//==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
 
 type
   /// <summary>
@@ -201,6 +179,36 @@ type
     class procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_CheckAmmo
+    //
+    //==============================================================================
+    class function P_CheckAmmo(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_BringUpWeapon
+    // Starts bringing the pending weapon up from the bottom of the screen
+    //
+    //==============================================================================
+    class procedure P_BringUpWeapon(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_FireWeapon
+    //
+    //==============================================================================
+    class procedure P_FireWeapon(player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -323,7 +331,7 @@ end;
 // Uses player
 //
 //==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_BringUpWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -352,7 +360,7 @@ end;
 // If not, selects the next weapon to use.
 //
 //==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
+class function TWeaponBaseActions.P_CheckAmmo(player: Pplayer_t): boolean;
 var
   ammo: ammotype_t;
   count: integer;
@@ -468,7 +476,7 @@ end;
 // P_FireWeapon.
 //
 //==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_FireWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -526,7 +534,7 @@ begin
     if not player.attackdown or (weaponinfo[Ord(player.readyweapon)].mbf21bits and WPF_NOAUTOFIRE = 0) then
     begin
       player.attackdown := true;
-      P_FireWeapon(player);
+      TWeaponBaseActions.P_FireWeapon(player);
       exit;
     end;
   end
@@ -547,7 +555,7 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 {
 #if 0
     if (player->ammo[am_shell]<2)
@@ -987,7 +995,7 @@ end;
 //==============================================================================
 class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 end;
 
 end.

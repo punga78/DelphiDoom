@@ -20,7 +20,8 @@ param(
   [string[]]$Names = @(),
   [string[]]$Exclude = @(),
   [string[]]$CallerDirs = @(),
-  [string]$Root = ''
+  [string]$Root = '',
+  [switch]$CallersOnly
 )
 $ErrorActionPreference = 'Stop'
 if ($Root -eq '') { $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path }
@@ -71,6 +72,7 @@ $implementation = -1
 for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match '^implementation\s*$') { $implementation = $i; break } }
 if ($implementation -lt 0) { throw "implementation non trovata" }
 
+if (-not $CallersOnly) {
 # 1) le dichiarazioni dell'interfaccia
 $selected = New-Object System.Collections.Generic.List[string]
 $classBody = New-Object System.Collections.Generic.List[string]
@@ -85,7 +87,14 @@ while ($i -lt $implementation) {
     if ($take) {
       $decl = New-Object System.Collections.Generic.List[string]
       $decl.Add($line)
-      while ($decl[$decl.Count - 1] -notmatch ';\s*(//.*)?$') { $i++; $decl.Add($lines[$i]) }
+      # la dichiarazione finisce al ';' fuori dalle parentesi (i ';' tra i parametri non la chiudono)
+      while ($true) {
+        $joined = ($decl -join ' ') -replace '//.*$', ''
+        $balance = ($joined.ToCharArray() | Where-Object { $_ -eq '(' }).Count - ($joined.ToCharArray() | Where-Object { $_ -eq ')' }).Count
+        if ($balance -le 0 -and $decl[$decl.Count - 1] -match ';\s*(//.*)?$') { break }
+        $i++
+        $decl.Add($lines[$i])
+      }
       # il commento di intestazione che precede (righe // consecutive) viene con la dichiarazione
       $header = New-Object System.Collections.Generic.List[string]
       while ($out.Count -gt 0 -and $out[$out.Count - 1] -match '^//') { $header.Insert(0, $out[$out.Count - 1]); $out.RemoveAt($out.Count - 1) }
@@ -151,6 +160,12 @@ for ($j = $implementation; $j -lt $lines.Count; $j++) {
 $head = ($tidy -join $nl)
 $text = $head + $nl + ($classText -join $nl) + $nl + $nl + ($impl -join $nl)
 Write-Source $path $text $src.Bom
+}
+else {
+  $all = @($Names)
+  $script:NameRegex = New-Object Text.RegularExpressions.Regex(('(?<![\w.])(' + ($all -join '|') + ')\b'))
+  $script:NameProbe = '\b(' + ($all -join '|') + ')\b'
+}
 
 # 3) i chiamanti
 $changed = 0
@@ -158,6 +173,12 @@ foreach ($dir in $CallerDirs) {
   foreach ($file in (Get-ChildItem (Join-Path $Root $dir) -Recurse -Include *.pas, *.inc, *.dpr -File)) {
     if ($file.FullName -eq $path) { continue }
     $s = Read-Source $file.FullName
+    # un nome che il file stesso definisce (intestazione a colonna 0) e' una routine sua, non quella della unit
+    $own = @([regex]::Matches($s.Text, '(?m)^(?:procedure|function)\s+(\w+)') | ForEach-Object { $_.Groups[1].Value } | Where-Object { $all -contains $_ })
+    $useNames = @($all | Where-Object { $own -notcontains $_ })
+    if ($useNames.Count -eq 0) { continue }
+    $script:NameRegex = New-Object Text.RegularExpressions.Regex(('(?<![\w.])(' + ($useNames -join '|') + ')\b'))
+    $script:NameProbe = '\b(' + ($useNames -join '|') + ')\b'
     if ($s.Text -notmatch $script:NameProbe) { continue }
     $eol = if ($s.Text.Contains("`r`n")) { "`r`n" } else { "`n" }
     $fl = $s.Text -split "`r?`n", -1

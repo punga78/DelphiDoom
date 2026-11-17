@@ -25,36 +25,8 @@ uses
 // Data.
   sounddata;
 
-//==============================================================================
-//
-// A_Chase
-//
-//==============================================================================
-procedure A_Chase(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Scream
-//
-//==============================================================================
-procedure A_Scream(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_CheckMeleeRange
-//
-//==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
-
 var
   continueafterplayerdeath: boolean;
-
-//==============================================================================
-//
-// P_LookForPlayers
-//
-//==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 
 type
   /// <summary>
@@ -488,6 +460,42 @@ type
     class procedure A_TurretChase(actor: Pmobj_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_Chase
+    //
+    //==============================================================================
+    class procedure A_Chase(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Scream
+    //
+    //==============================================================================
+    class procedure A_Scream(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckMeleeRange
+    //
+    //==============================================================================
+    class function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean; static;
+
+    //==============================================================================
+    //
+    // P_LookForPlayers
+    //
+    //==============================================================================
+    class function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean; static;
+  end;
+
 
 implementation
 
@@ -561,7 +569,7 @@ end;
 // P_CheckMeleeRange
 //
 //==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
+class function TMonsterBaseActions.P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
 var
   mo: Pmobj_t;
   dist: fixed_t;
@@ -708,7 +716,7 @@ end;
 // Returns true if a player is targeted.
 //
 //==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
+class function TMonsterBaseActions.P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 var
   c: integer;
   stop: integer;
@@ -983,7 +991,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_AttackSound(actor, actor);
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
@@ -1091,7 +1099,7 @@ begin
   if (actor.target = nil) or (actor.target.flags and MF_SHOOTABLE = 0) then
   begin
     // look for a new target
-    if P_LookForPlayers(actor, True) then
+    if TMonsterBaseActions.P_LookForPlayers(actor, True) then
       exit; // got a new target
 
     P_SetMobjState(actor, statenum_t(actor.info.spawnstate));
@@ -1108,7 +1116,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.info.attacksound <> 0 then
       S_StartSound(actor, actor.info.attacksound);
@@ -1149,7 +1157,7 @@ begin
   // possibly choose another target
   if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
   begin
-    if P_LookForPlayers(actor, True) then
+    if TMonsterBaseActions.P_LookForPlayers(actor, True) then
       exit;  // got a new target
   end;
 
@@ -1168,7 +1176,7 @@ end;
 // A_Chase
 //
 //==============================================================================
-procedure A_Chase(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Chase(actor: Pmobj_t);
 begin
   if G_PlayingEngineVersion <= VERSION110 then // JVAL: 20210103 - Vanilla demo
     P_DoChaseVanilla(actor)
@@ -1320,7 +1328,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     S_StartSound(actor, Ord(sfx_claw));
     damage := (P_Random mod 8 + 1) * 3;
@@ -1345,7 +1353,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := ((P_Random mod 10) + 1) * 4;
     P_DamageMobj(actor.target, actor, actor, damage);
@@ -1365,7 +1373,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := (P_Random mod 6 + 1) * 10;
     P_DamageMobj(actor.target, actor, actor, damage);
@@ -1402,7 +1410,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     S_StartSound(actor, Ord(sfx_claw));
     damage := (P_Random mod 8 + 1) * 10;
@@ -1548,7 +1556,7 @@ begin
 
   A_FaceTarget(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := ((P_Random mod 10) + 1) * 6;
     S_StartSound(actor, Ord(sfx_skepch));
@@ -1708,7 +1716,7 @@ begin
   end;
 
   // Return to normal attack.
-  A_Chase(actor);
+  TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -2102,7 +2110,7 @@ end;
 // A_Scream
 //
 //==============================================================================
-procedure A_Scream(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Scream(actor: Pmobj_t);
 var
   sound: integer;
 begin
@@ -2252,8 +2260,8 @@ begin
         junk.special := TGameSession.GameMapInfo.bossactions[i].special;
         junk.tag := TGameSession.GameMapInfo.bossactions[i].tag;
         // use special semantics for line activation to block problem types.
-        if not P_UseSpecialLine(mo, @junk, 0, true) then
-          P_CrossSpecialLinePtr(@junk, 0, mo, true);
+        if not TSwitchRoutines.P_UseSpecialLine(mo, @junk, 0, true) then
+          TSpecRoutines.P_CrossSpecialLinePtr(@junk, 0, mo, true);
       end;
 
     exit;
@@ -2398,7 +2406,7 @@ end;
 class procedure TDoomMonsterActions.A_Hoof(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_hoof));
-  A_Chase(mo);
+  TMonsterBaseActions.A_Chase(mo);
 end;
 
 //==============================================================================
@@ -2409,7 +2417,7 @@ end;
 class procedure TDoomMonsterActions.A_Metal(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_metal));
-  A_Chase(mo);
+  TMonsterBaseActions.A_Chase(mo);
 end;
 
 //==============================================================================
@@ -2420,7 +2428,7 @@ end;
 class procedure TDoomMonsterActions.A_BabyMetal(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_bspwlk));
-  A_Chase(mo);
+  TMonsterBaseActions.A_Chase(mo);
 end;
 
 //==============================================================================
@@ -2928,7 +2936,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_MeleeSound(actor, actor);
     if actor.state <> @states[actor.info.meleestate] then

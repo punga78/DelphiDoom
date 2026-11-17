@@ -5311,9 +5311,9 @@ begin
   {$IFDEF HEXEN}
   if flags and SIXF_CLEARCALLERTID <> 0 then
   begin
-    P_RemoveMobjFromTIDList(self);
+    TMobjRoutines.P_RemoveMobjFromTIDList(self);
     self.tid := 0;
-    P_InsertMobjIntoTIDList(self, 0); // ?
+    TMobjRoutines.P_InsertMobjIntoTIDList(self, 0); // ?
   end;
   {$ENDIF}
 
@@ -5929,7 +5929,7 @@ end;
 //==============================================================================
 procedure A_ScreamAndUnblock(actor: Pmobj_t);
 begin
-  A_Scream(actor);
+  TMonsterBaseActions.A_Scream(actor);
   A_NoBlocking(actor);
 end;
 
@@ -7056,7 +7056,7 @@ begin
   if not P_CheckStateParams(actor, 1) then
     exit;
 
-  if not P_CheckMeleeRange(actor) then
+  if not TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[0]);
     if @states[offset] <> actor.state then
@@ -7076,7 +7076,7 @@ begin
   if not P_CheckStateParams(actor, 1) then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[0]);
     if @states[offset] <> actor.state then
@@ -8114,7 +8114,7 @@ begin
   if actor.target <> nil then
   begin
     A_FaceTarget(actor);
-    if P_CheckMeleeRange(actor) then
+    if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     begin
       if actor.state.misc2 > 0 then
         S_StartSound(actor, actor.state.misc2);
@@ -8204,8 +8204,8 @@ begin
     player.health := 100;                                     // Alive player
     actor.player := @player;                                  // Fake player
     junk.tag := actor.state.misc2;                            // Sector tag for linedef
-    if not P_UseSpecialLine(actor, @junk, 0) then             // Try using it
-      P_CrossSpecialLinePtr(@junk, 0, actor);                 // Try crossing it
+    if not TSwitchRoutines.P_UseSpecialLine(actor, @junk, 0) then             // Try using it
+      TSpecRoutines.P_CrossSpecialLinePtr(@junk, 0, actor);                 // Try crossing it
     if junk.special = 0 then                                  // If type cleared,
       actor.flags3_ex := actor.flags3_ex or MF3_EX_LINEDONE;  // no more for this thing
     actor.player := oldplayer;
@@ -8311,7 +8311,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.state.params.IsComputed[1] then
       sndidx := actor.state.params.IntVal[1]
@@ -8360,7 +8360,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.state.params.IsComputed[3] then
       sndidx := actor.state.params.IntVal[3]
@@ -8751,7 +8751,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if domelee and (meleedamage > 0) and P_CheckMeleeRange(actor) then
+  if domelee and (meleedamage > 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := (P_Random mod 8 + 1) * meleedamage;
     if meleesound > 0 then
@@ -10809,7 +10809,7 @@ begin
   end;
 
   if not P_HealCorpse(actor, actor.radius, state, sound) then
-    A_Chase(actor);
+    TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -12328,7 +12328,7 @@ begin
   if not P_CheckStateArgs(psp.state) then
     exit;
 
-  if ((psp.state.params.IntVal[1] <> 0) or P_CheckAmmo(player)) and
+  if ((psp.state.params.IntVal[1] <> 0) or TWeaponBaseActions.P_CheckAmmo(player)) and
     (player.cmd.buttons and BT_ATTACK <> 0) and
     ((player.pendingweapon = wp_nochange) and (player.health > 0)) then
     P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));

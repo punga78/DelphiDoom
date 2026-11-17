@@ -5,7 +5,7 @@
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
-{  Port of the tests of PIT_CheckThing (p_map.pas) and of P_LookForPlayers     }
+{  Port of the tests of PIT_CheckThing (p_map.pas) and of TMonsterBaseActions.P_LookForPlayers     }
 {  (p_enemy.pas) that Rad-X added                                              }
 {                                                                              }
 {******************************************************************************}

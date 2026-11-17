@@ -232,54 +232,63 @@ type
     class procedure FootClipOnFloor(mobj: Pmobj_t; sec: Psector_t); static;
   end;
 
-//==============================================================================
-//
-// P_SpawnBlood
-//
-//==============================================================================
-procedure P_SpawnBlood(x, y, z: fixed_t; damage: integer; const originator: Pmobj_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_SpawnBlood
+    //
+    //==============================================================================
+    class procedure P_SpawnBlood(x, y, z: fixed_t; damage: integer; const originator: Pmobj_t); static;
 
-//==============================================================================
-//
-// P_SpawnGreenBlood
-//
-//==============================================================================
-procedure P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer);
+    //==============================================================================
+    //
+    // P_SpawnGreenBlood
+    //
+    //==============================================================================
+    class procedure P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer); static;
 
-//==============================================================================
-//
-// P_SpawnBlueBlood
-//
-//==============================================================================
-procedure P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer);
+    //==============================================================================
+    //
+    // P_SpawnBlueBlood
+    //
+    //==============================================================================
+    class procedure P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer); static;
 
-//==============================================================================
-//
-// P_GetTerrainType
-//
-//==============================================================================
-function P_GetTerrainType(mobj: Pmobj_t): integer;
+    //==============================================================================
+    //
+    // P_GetTerrainType
+    //
+    //==============================================================================
+    class function P_GetTerrainType(mobj: Pmobj_t): integer; static;
 
-//==============================================================================
-//
-// P_SpawnMortar
-//
-//==============================================================================
-function P_SpawnMortar(source: Pmobj_t; _type: integer): Pmobj_t;
+    //==============================================================================
+    //
+    // P_SpawnMortar
+    //
+    //==============================================================================
+    class function P_SpawnMortar(source: Pmobj_t; _type: integer): Pmobj_t; static;
 
-//==============================================================================
-//
-// P_SpawnFacingMissile
-//
-//==============================================================================
-function P_SpawnFacingMissile(source: Pmobj_t; target: Pmobj_t; _type: integer): Pmobj_t;
+    //==============================================================================
+    //
+    // P_SpawnFacingMissile
+    //
+    //==============================================================================
+    class function P_SpawnFacingMissile(source: Pmobj_t; target: Pmobj_t; _type: integer): Pmobj_t; static;
 
-//==============================================================================
-//
-// P_SpawnSparkPuff
-//
-//==============================================================================
-function P_SpawnSparkPuff(x, y, z: fixed_t): Pmobj_t;
+    //==============================================================================
+    //
+    // P_SpawnSparkPuff
+    //
+    //==============================================================================
+    class function P_SpawnSparkPuff(x, y, z: fixed_t): Pmobj_t; static;
+  end;
+
 
 implementation
 
@@ -409,7 +418,7 @@ class procedure TMobjGameRules.AfterZAdjust(mo: Pmobj_t);
 begin
   // adjust height
   // villsa [STRIFE] check for things standing on top of other things
-  if not P_CheckPositionZ(mo, mo.z + mo.momz) then
+  if not TMapRoutines.P_CheckPositionZ(mo, mo.z + mo.momz) then
   begin
     if mo.momz >= 0 then
       mo.ceilingz := mo.height + mo.z
@@ -474,7 +483,7 @@ begin
         end;
 
       // villsa [STRIFE] get terrain type
-      if P_GetTerrainType(mo) <> FLOOR_SOLID then
+      if TMobjRoutines.P_GetTerrainType(mo) <> FLOOR_SOLID then
         mo.flags := mo.flags and not MF_BOUNCE;
     end;
 
@@ -882,7 +891,7 @@ end;
 // villsa [STRIFE] new function
 //
 //==============================================================================
-function P_SpawnSparkPuff(x, y, z: fixed_t): Pmobj_t;
+class function TMobjRoutines.P_SpawnSparkPuff(x, y, z: fixed_t): Pmobj_t;
 begin
   result := P_SpawnMobj(x, y, z + _SHL(P_Random - P_Random, 10), Ord(MT_SPARKPUFF));
 end;
@@ -896,7 +905,7 @@ end;
 // * Different damage ranges for state setting
 //
 //==============================================================================
-procedure P_SpawnBlood(x, y, z: fixed_t; damage: integer; const originator: Pmobj_t);
+class procedure TMobjRoutines.P_SpawnBlood(x, y, z: fixed_t; damage: integer; const originator: Pmobj_t);
 var
   th: Pmobj_t;
 begin
@@ -925,7 +934,7 @@ end;
 // P_SpawnGreenBlood
 //
 //==============================================================================
-procedure P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer);
+class procedure TMobjRoutines.P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer);
 var
   th: Pmobj_t;
 begin
@@ -952,7 +961,7 @@ end;
 // P_SpawnBlueBlood
 //
 //==============================================================================
-procedure P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer);
+class procedure TMobjRoutines.P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer);
 var
   th: Pmobj_t;
 begin
@@ -1038,7 +1047,7 @@ end;
 // Spawn a missile based on source's angle
 //
 //==============================================================================
-function P_SpawnFacingMissile(source: Pmobj_t; target: Pmobj_t; _type: integer): Pmobj_t;
+class function TMobjRoutines.P_SpawnFacingMissile(source: Pmobj_t; target: Pmobj_t; _type: integer): Pmobj_t;
 var
   an: angle_t;
   dist: fixed_t;
@@ -1130,7 +1139,7 @@ end;
 // Spawn a high-arcing ballistic projectile
 //
 //==============================================================================
-function P_SpawnMortar(source: Pmobj_t; _type: integer): Pmobj_t;
+class function TMobjRoutines.P_SpawnMortar(source: Pmobj_t; _type: integer): Pmobj_t;
 var
   an: angle_t;
   slope: fixed_t;
@@ -1162,7 +1171,7 @@ end;
 // r_data when the flat was loaded)
 //
 //==============================================================================
-function P_GetTerrainType(mobj: Pmobj_t): integer;
+class function TMobjRoutines.P_GetTerrainType(mobj: Pmobj_t): integer;
 var
   ss: Psubsector_t;
 begin
@@ -1432,7 +1441,7 @@ begin
           PS_EventShootLine(mo, pDiff(blockingline, lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, blockingline));
 
       if blockingline.special <> 0 then
-        P_ShootSpecialLine(mo, blockingline);
+        TSpecRoutines.P_ShootSpecialLine(mo, blockingline);
     end;
 
     if TMapCheck.NumSpecHit > 0 then
@@ -1441,7 +1450,7 @@ begin
         if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
           PS_EventShootLine(mo, pDiff(TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1], lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]));
 
-      P_ShootSpecialLine(mo, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]);
+      TSpecRoutines.P_ShootSpecialLine(mo, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]);
     end;
 
     // explode a missile
@@ -1521,7 +1530,7 @@ end;
 class procedure TMobjGameRules.AfterXYMovement(mobj: Pmobj_t);
 begin
   // villsa [STRIFE] terrain clipping
-  if P_GetTerrainType(mobj) = FLOOR_SOLID then
+  if TMobjRoutines.P_GetTerrainType(mobj) = FLOOR_SOLID then
   begin
     mobj.flags := mobj.flags and not MF_FEETCLIPPED;
     mobj.floorclip := 0;
@@ -1556,7 +1565,7 @@ begin
       end;
 
     // villsa [STRIFE] terrain clipping and sounds
-    if P_GetTerrainType(mobj) = FLOOR_SOLID then
+    if TMobjRoutines.P_GetTerrainType(mobj) = FLOOR_SOLID then
     begin
       mobj.flags := mobj.flags and not MF_FEETCLIPPED;
       mobj.floorclip := 0;
@@ -1622,7 +1631,7 @@ end;
 class procedure TMobjGameRules.SpawnedOnFloor(mobj: Pmobj_t);
 begin
   // villsa [STRIFE]
-  if P_GetTerrainType(mobj) <> FLOOR_SOLID then
+  if TMobjRoutines.P_GetTerrainType(mobj) <> FLOOR_SOLID then
   begin
     mobj.flags := mobj.flags or MF_FEETCLIPPED;
     mobj.floorclip := FOOTCLIPSIZE;

@@ -26,13 +26,6 @@ uses
   s_sound,
   d_player;
 
-//==============================================================================
-//
-// P_GivePower
-//
-//==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
@@ -80,6 +73,22 @@ type
     /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
     class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_GivePower
+    //
+    //==============================================================================
+    class function P_GivePower(player: Pplayer_t; power: integer): boolean; static;
+  end;
+
 
 implementation
 
@@ -331,7 +340,7 @@ end;
 // P_GivePower
 //
 //==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
+class function TInterRoutines.P_GivePower(player: Pplayer_t; power: integer): boolean;
 begin
   if power = Ord(pw_invulnerability) then
   begin
@@ -602,7 +611,7 @@ begin
   // power ups
     Ord(SPR_PINV):
       begin
-        if not P_GivePower(player, Ord(pw_invulnerability)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_invulnerability)) then
           exit;
         player._message := GOTINVUL;
         if not oldsharewareversion then
@@ -611,7 +620,7 @@ begin
 
     Ord(SPR_PSTR):
       begin
-        if not P_GivePower(player, Ord(pw_strength)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_strength)) then
           exit;
         player._message := GOTBERSERK;
         if player.readyweapon <> wp_fist then
@@ -622,7 +631,7 @@ begin
 
     Ord(SPR_PINS):
       begin
-        if not P_GivePower(player, Ord(pw_invisibility)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_invisibility)) then
           exit;
         player._message := GOTINVIS;
         if not oldsharewareversion then
@@ -631,7 +640,7 @@ begin
 
     Ord(SPR_SUIT):
       begin
-        if not P_GivePower(player, Ord(pw_ironfeet)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_ironfeet)) then
           exit;
         player._message := GOTSUIT;
         if not oldsharewareversion then
@@ -640,7 +649,7 @@ begin
 
     Ord(SPR_PMAP):
       begin
-        if not P_GivePower(player, Ord(pw_allmap)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_allmap)) then
           exit;
         player._message := GOTMAP;
         if not oldsharewareversion then
@@ -649,7 +658,7 @@ begin
 
     Ord(SPR_PVIS):
       begin
-        if not P_GivePower(player, Ord(pw_infrared)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_infrared)) then
           exit;
         player._message := GOTVISOR;
         if not oldsharewareversion then

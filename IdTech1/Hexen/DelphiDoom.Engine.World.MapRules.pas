@@ -185,39 +185,48 @@ type
     class procedure CrushBlood(thing: Pmobj_t); static;
   end;
 
-//==============================================================================
-// P_CheckForPushSpecial
-//
-// CheckForPushSpecial
-//
-//==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
-
-
-//==============================================================================
-//
-// PIT_ThrustSpike
-//
-//==============================================================================
-procedure PIT_ThrustSpike(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_UsePuzzleItem
-//
-//==============================================================================
-function P_UsePuzzleItem(player: Pplayer_t; itemType: integer): boolean;
-
-//==============================================================================
-//
-// P_BounceWall
-//
-//==============================================================================
-procedure P_BounceWall(mo: Pmobj_t);
-
 var
   PuffSpawned: Pmobj_t;
   BlockingMobj: Pmobj_t;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapRoutines = class sealed
+  public
+    //==============================================================================
+    // P_CheckForPushSpecial
+    //
+    // CheckForPushSpecial
+    //
+    //==============================================================================
+    class procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // PIT_ThrustSpike
+    //
+    //==============================================================================
+    class procedure PIT_ThrustSpike(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_UsePuzzleItem
+    //
+    //==============================================================================
+    class function P_UsePuzzleItem(player: Pplayer_t; itemType: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_BounceWall
+    //
+    //==============================================================================
+    class procedure P_BounceWall(mo: Pmobj_t); static;
+  end;
+
+
 implementation
 
 uses
@@ -510,7 +519,7 @@ begin
       begin
         if TMapCheck.Thing.flags2 and MF2_BLASTED <> 0 then
           P_DamageMobj(TMapCheck.Thing, nil, nil, _SHR(TMapCheck.Thing.mass, 5));
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -532,7 +541,7 @@ begin
     begin
       if TMapCheck.Thing.flags2 and MF2_BLASTED <> 0 then
         P_DamageMobj(TMapCheck.Thing, nil, nil, _SHR(TMapCheck.Thing.mass, 5));
-      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+      TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
       TMapCheck.BounceLine := ld;
       exit;
@@ -561,7 +570,7 @@ begin
       begin
         if TMapCheck.Thing.flags2 and MF2_BLASTED <> 0 then
           P_DamageMobj(TMapCheck.Thing, nil, nil, _SHR(TMapCheck.Thing.mass, 5));
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -582,7 +591,7 @@ begin
     begin
       if TMapCheck.Thing.flags2 and MF2_BLASTED <> 0 then
         P_DamageMobj(TMapCheck.Thing, nil, nil, _SHR(TMapCheck.Thing.mass, 5));
-      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+      TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
       TMapCheck.BounceLine := ld;
       exit;
@@ -1021,7 +1030,7 @@ begin
          (thing.flags2 and MF2_INVULNERABLE = 0) and
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin // Ok to spawn some blood
-        P_RipperBlood(TMapCheck.Thing);
+        TMobjRoutines.P_RipperBlood(TMapCheck.Thing);
       end;
 
       damage := ((P_Random and 3) + 2) * TMapCheck.Thing.damage;
@@ -1057,7 +1066,7 @@ begin
          (TMapCheck.Thing._type <> Ord(MT_TELOTHER_FX4)) and
          (TMapCheck.Thing._type <> Ord(MT_TELOTHER_FX5)) and
          (P_Random < 192) then
-        P_BloodSplatter(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, thing);
+        TMobjRoutines.P_BloodSplatter(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, thing);
       P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
     end;
 
@@ -1113,9 +1122,9 @@ begin
        (intr.d.thing.flags_ex and MF_EX_INVULNERABLE = 0) then
     begin
       if (PuffType = MT_AXEPUFF) or (PuffType = MT_AXEPUFF_GLOW) then
-        P_BloodSplatter2(x, y, z, intr.d.thing);
+        TMobjRoutines.P_BloodSplatter2(x, y, z, intr.d.thing);
       if P_Random < 192 then
-        P_BloodSplatter(x, y, z, intr.d.thing);
+        TMobjRoutines.P_BloodSplatter(x, y, z, intr.d.thing);
     end;
 
     if PuffType = MT_FLAMEPUFF2 then
@@ -1134,7 +1143,7 @@ end;
 // CheckForPushSpecial
 //
 //==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
+class procedure TMapRoutines.P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
 begin
   if line.special <> 0 then
   begin
@@ -1261,7 +1270,7 @@ end;
 // PIT_ThrustSpike
 //
 //==============================================================================
-procedure PIT_ThrustSpike(actor: Pmobj_t);
+class procedure TMapRoutines.PIT_ThrustSpike(actor: Pmobj_t);
 var
   xl, xh, yl, yh, bx, by: integer;
   x0, x2, y0, y2: integer;
@@ -1390,7 +1399,7 @@ end;
 // Returns true if the puzzle item was used on a line or a thing.
 //
 //==============================================================================
-function P_UsePuzzleItem(player: Pplayer_t; itemType: integer): boolean;
+class function TMapRoutines.P_UsePuzzleItem(player: Pplayer_t; itemType: integer): boolean;
 var
   angle: integer;
   x1, y1, x2, y2: fixed_t;
@@ -1468,7 +1477,7 @@ end;
 // P_BounceWall
 //
 //==============================================================================
-procedure P_BounceWall(mo: Pmobj_t);
+class procedure TMapRoutines.P_BounceWall(mo: Pmobj_t);
 var
   leadx, leady: fixed_t;
   side: integer;

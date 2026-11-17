@@ -562,9 +562,9 @@ begin
   DEH_AddAction(@TStrifeMonsterActions.A_Fall, 'A_Fall()'); // 15
   DEH_AddAction(@TStrifeMonsterActions.A_XScream, 'A_XScream()'); // 16
   DEH_AddAction(@TStrifeMonsterActions.A_Look, 'A_Look()'); // 17
-  DEH_AddAction(@A_Chase, 'A_Chase()'); // 18
+  DEH_AddAction(@TMonsterBaseActions.A_Chase, 'A_Chase()'); // 18
   DEH_AddAction(@A_FaceTarget, 'A_FaceTarget()'); // 19
-  DEH_AddAction(@A_Scream, 'A_Scream()'); // 20
+  DEH_AddAction(@TMonsterBaseActions.A_Scream, 'A_Scream()'); // 20
   DEH_AddAction(@TStrifeMonsterActions.A_Tracer, 'A_Tracer()'); // 21
   DEH_AddAction(@TStrifeMonsterActions.A_BossDeath, 'A_BossDeath()'); // 22
   DEH_AddAction(@TStrifeMonsterActions.A_Listen, 'A_Listen()'); // 23

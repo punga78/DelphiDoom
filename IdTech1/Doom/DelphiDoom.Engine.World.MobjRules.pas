@@ -232,22 +232,31 @@ type
     class procedure FootClipOnFloor(mobj: Pmobj_t; sec: Psector_t); static;
   end;
 
-//==============================================================================
-//
-// P_SpawnGreenBlood
-//
-//==============================================================================
-procedure P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer);
-
-//==============================================================================
-//
-// P_SpawnBlueBlood
-//
-//==============================================================================
-procedure P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer);
-
 var
   spawnmask: LongWord = $FFFFFFFF;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_SpawnGreenBlood
+    //
+    //==============================================================================
+    class procedure P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer); static;
+
+    //==============================================================================
+    //
+    // P_SpawnBlueBlood
+    //
+    //==============================================================================
+    class procedure P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer); static;
+  end;
+
 
 implementation
 
@@ -859,7 +868,7 @@ end;
 // P_SpawnGreenBlood
 //
 //==============================================================================
-procedure P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer);
+class procedure TMobjRoutines.P_SpawnGreenBlood(x, y, z: fixed_t; damage: integer);
 var
   th: Pmobj_t;
 begin
@@ -886,7 +895,7 @@ end;
 // P_SpawnBlueBlood
 //
 //==============================================================================
-procedure P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer);
+class procedure TMobjRoutines.P_SpawnBlueBlood(x, y, z: fixed_t; damage: integer);
 var
   th: Pmobj_t;
 begin
@@ -1410,7 +1419,7 @@ begin
     else
       P_ZMovement(mobj);
 
-    P_MobjInSpecialSector(mobj);
+    TSpecRoutines.P_MobjInSpecialSector(mobj);
 
     if P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed

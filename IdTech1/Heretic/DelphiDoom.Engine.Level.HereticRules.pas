@@ -108,8 +108,8 @@ end;
 
 procedure THereticLevelRules.InitializeData;
 begin
-  P_InitSwitchList;
-  P_InitPicAnims;
+  TSwitchRoutines.P_InitSwitchList;
+  TSpecRoutines.P_InitPicAnims;
   FAnimDefs.Load; // Init flat and texture animations
 end;
 

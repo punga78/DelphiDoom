@@ -445,7 +445,7 @@ begin
       {$ENDIF}
       sprintf(LockedBuffer, 'YOU NEED THE %s', [TextKeyMessages[lock - 1]]);
       {$IFDEF HEXEN}
-      P_SetMessage(mo.player, LockedBuffer, true);
+      TInterRoutines.P_SetMessage(mo.player, LockedBuffer, true);
       {$ELSE}
       Pplayer_t(mo.player)._message := LockedBuffer;
       {$ENDIF}

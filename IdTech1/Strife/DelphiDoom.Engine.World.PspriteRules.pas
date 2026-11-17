@@ -30,28 +30,6 @@ const
   FF_FULLBRIGHT = $8000; // flag in thing->frame
   FF_FRAMEMASK = $7fff;
 
-//==============================================================================
-//
-// P_CheckAmmo
-//
-//==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
-
-//==============================================================================
-//
-// P_BringUpWeapon
-// Starts bringing the pending weapon up from the bottom of the screen
-//
-//==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_FireWeapon
-//
-//==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
-
 type
   /// <summary>
   ///   What Strife does in the weapon sprite code of p_pspr (issue #185, step 2f-3). The routines that
@@ -224,6 +202,36 @@ type
     class procedure A_TorpedoExplode(actor: Pmobj_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_CheckAmmo
+    //
+    //==============================================================================
+    class function P_CheckAmmo(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_BringUpWeapon
+    // Starts bringing the pending weapon up from the bottom of the screen
+    //
+    //==============================================================================
+    class procedure P_BringUpWeapon(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_FireWeapon
+    //
+    //==============================================================================
+    class procedure P_FireWeapon(player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -264,7 +272,7 @@ const
 // Uses player
 //
 //==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_BringUpWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -301,7 +309,7 @@ end;
 // villsa [STRIFE] Changes to handle Strife weapons
 //
 //==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
+class function TWeaponBaseActions.P_CheckAmmo(player: Pplayer_t): boolean;
 var
   ammo: ammotype_t;
   count: integer;
@@ -375,7 +383,7 @@ end;
 // villsa [STRIFE] Changes for player state and weapons
 //
 //==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_FireWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -437,7 +445,7 @@ begin
        ((player.readyweapon <> wp_missile) and (player.readyweapon <> wp_torpedo)) then // villsa [STRIFE] replace bfg with torpedo
     begin
       player.attackdown := true;
-      P_FireWeapon(player);
+      TWeaponBaseActions.P_FireWeapon(player);
       exit;
     end;
   end
@@ -458,7 +466,7 @@ end;
 //==============================================================================
 class procedure TStrifeWeaponActions.A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 
   // villsa [STRIFE] set animating sprite for crossbow
   if player.readyweapon = wp_elecbow then
@@ -620,7 +628,7 @@ begin
   P_SetPsprite(player, Ord(ps_flash), statenum_t((NativeInt(st1) - NativeInt(st2)) div SizeOf(state_t)));
 
   player.mo.z := player.mo.z + 32 * FRACUNIT; // ugh
-  mo := P_SpawnMortar(player.mo, _type);
+  mo := TMobjRoutines.P_SpawnMortar(player.mo, _type);
   player.mo.z := player.mo.z - 32 * FRACUNIT; // ugh
 
   // change momz based on player's pitch
@@ -858,7 +866,7 @@ begin
         for i := 0 to 19 do // increment by 1/10 of 90, 20 times.
         begin
           player.mo.angle := player.mo.angle + (ANG90 div 10);
-          mo := P_SpawnMortar(player.mo, Ord(MT_SIGIL_C_SHOT));
+          mo := TMobjRoutines.P_SpawnMortar(player.mo, Ord(MT_SIGIL_C_SHOT));
           mo.health := -1;
           mo.z := player.mo.z + (32 * FRACUNIT);
         end;
@@ -966,7 +974,7 @@ begin
   for i := 0 to 79 do
   begin
     actor.angle := actor.angle + (ANG90 div 20);
-    P_SpawnMortar(actor, Ord(MT_TORPEDOSPREAD)).target := actor.target;
+    TMobjRoutines.P_SpawnMortar(actor, Ord(MT_TORPEDOSPREAD)).target := actor.target;
   end;
 end;
 
@@ -1045,7 +1053,7 @@ end;
 //==============================================================================
 class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 end;
 
 end.

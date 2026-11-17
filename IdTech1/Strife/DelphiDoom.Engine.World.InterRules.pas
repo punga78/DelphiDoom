@@ -24,13 +24,6 @@ uses
   s_sound,
   d_player;
 
-//==============================================================================
-//
-// P_GivePower
-//
-//==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
@@ -47,34 +40,6 @@ var
   p_maxarmor: integer = 200;
   p_greenarmorclass: integer = 1;
   p_bluearmorclass: integer = 2;
-
-//==============================================================================
-//
-// P_GiveCard
-//
-//==============================================================================
-function P_GiveCard(player: Pplayer_t; card: card_t): boolean;
-
-//==============================================================================
-//
-// P_GiveAmmo
-//
-//==============================================================================
-function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
-
-//==============================================================================
-//
-// P_GiveWeapon
-//
-//==============================================================================
-function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean;
-
-//==============================================================================
-//
-// P_KillMobj
-//
-//==============================================================================
-procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t);
 
 type
   /// <summary>
@@ -105,6 +70,50 @@ type
     /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
     class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_GivePower
+    //
+    //==============================================================================
+    class function P_GivePower(player: Pplayer_t; power: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_GiveCard
+    //
+    //==============================================================================
+    class function P_GiveCard(player: Pplayer_t; card: card_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_GiveAmmo
+    //
+    //==============================================================================
+    class function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_GiveWeapon
+    //
+    //==============================================================================
+    class function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean; static;
+
+    //==============================================================================
+    //
+    // P_KillMobj
+    //
+    //==============================================================================
+    class procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t); static;
+  end;
+
 
 implementation
 
@@ -157,7 +166,7 @@ const
 // Returns false if the ammo can't be picked up at all
 //
 //==============================================================================
-function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
+class function TInterRoutines.P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
 var
   oldammo: integer;
 begin
@@ -252,7 +261,7 @@ end;
 // villsa [STRIFE] some stuff has been changed/moved around
 //
 //==============================================================================
-function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean;
+class function TInterRoutines.P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean;
 var
   gaveammo: boolean;
   gaveweapon: boolean;
@@ -409,7 +418,7 @@ end;
 // [STRIFE] Modified to use larger bonuscount
 //
 //==============================================================================
-function P_GiveCard(player: Pplayer_t; card: card_t): boolean;
+class function TInterRoutines.P_GiveCard(player: Pplayer_t; card: card_t): boolean;
 begin
   if player.cards[Ord(card)] then
   begin
@@ -430,7 +439,7 @@ end;
 // [STRIFE] Modifications for new powerups
 //
 //==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
+class function TInterRoutines.P_GivePower(player: Pplayer_t; power: integer): boolean;
 begin
   // haleyjd 09/14/10: [STRIFE] moved to top, exception for Shadow Armor
   if (player.powers[power] <> 0) and (power <> Ord(pw_invisibility)) then
@@ -565,77 +574,77 @@ begin
     // bullets
     Ord(SPR_BLIT): // haleyjd: fixed missing MF_DROPPED check
       begin
-        if not P_GiveAmmo(player, am_bullets, intval(special.flags and MF_DROPPED = 0)) then
+        if not TInterRoutines.P_GiveAmmo(player, am_bullets, intval(special.flags and MF_DROPPED = 0)) then
           exit;
       end;
 
     // box of bullets
     Ord(SPR_BBOX):
       begin
-        if not P_GiveAmmo(player, am_bullets, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_bullets, 5) then
           exit;
       end;
 
     // missile
     Ord(SPR_MSSL):
       begin
-        if not P_GiveAmmo(player, am_missiles, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_missiles, 1) then
           exit;
       end;
 
     // box of missiles
     Ord(SPR_ROKT):
       begin
-        if not P_GiveAmmo(player, am_missiles, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_missiles, 5) then
           exit;
       end;
 
     // battery
     Ord(SPR_BRY1):
       begin
-        if not P_GiveAmmo(player, am_cell, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_cell, 1) then
           exit;
       end;
 
     // cell pack
     Ord(SPR_CPAC):
       begin
-        if not P_GiveAmmo(player, am_cell, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_cell, 5) then
           exit;
       end;
 
     // poison bolts
     Ord(SPR_PQRL):
       begin
-        if not P_GiveAmmo(player, am_poisonbolts, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_poisonbolts, 5) then
           exit;
       end;
 
     // electric bolts
     Ord(SPR_XQRL):
       begin
-        if not P_GiveAmmo(player, am_elecbolts, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_elecbolts, 5) then
           exit;
       end;
 
     // he grenades
     Ord(SPR_GRN1):
       begin
-        if not P_GiveAmmo(player, am_hegrenades, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_hegrenades, 1) then
           exit;
       end;
 
     // wp grenades
     Ord(SPR_GRN2):
       begin
-        if not P_GiveAmmo(player, am_wpgrenades, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_wpgrenades, 1) then
           exit;
       end;
 
     // rifle
     Ord(SPR_RIFL):
       begin
-        if not P_GiveWeapon(player, wp_rifle, special.flags and MF_DROPPED <> 0) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_rifle, special.flags and MF_DROPPED <> 0) then
           exit;
         sound := Ord(sfx_wpnup); // haleyjd: SHK-CHK!
       end;
@@ -643,17 +652,17 @@ begin
     // flame thrower
     Ord(SPR_FLAM):
       begin
-        if not P_GiveWeapon(player, wp_flame, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_flame, false) then
           exit;
         // haleyjd: gives extra ammo.
-        P_GiveAmmo(player, am_cell, 3);
+        TInterRoutines.P_GiveAmmo(player, am_cell, 3);
         sound := Ord(sfx_wpnup); // haleyjd: SHK-CHK!
       end;
 
     // missile launcher
     Ord(SPR_MMSL):
       begin
-        if P_GiveWeapon(player, wp_missile, false) then
+        if TInterRoutines.P_GiveWeapon(player, wp_missile, false) then
           exit;
         sound := Ord(sfx_wpnup); // haleyjd: SHK-CHK!
       end;
@@ -661,7 +670,7 @@ begin
     // grenade launcher
     Ord(SPR_GRND):
       begin
-        if P_GiveWeapon(player, wp_hegrenade, special.flags and MF_DROPPED <> 0) then
+        if TInterRoutines.P_GiveWeapon(player, wp_hegrenade, special.flags and MF_DROPPED <> 0) then
           exit;
         sound := Ord(sfx_wpnup); // haleyjd: SHK-CHK!
       end;
@@ -669,7 +678,7 @@ begin
     // mauler
     Ord(SPR_TRPD):
       begin
-        if not P_GiveWeapon(player, wp_mauler, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_mauler, false) then
           exit;
         sound := Ord(sfx_wpnup); // haleyjd: SHK-CHK!
       end;
@@ -677,7 +686,7 @@ begin
     // electric bolt crossbow
     Ord(SPR_CBOW):
       begin
-        if not P_GiveWeapon(player, wp_elecbow, special.flags and MF_DROPPED <> 0) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_elecbow, special.flags and MF_DROPPED <> 0) then
           exit;
         sound := Ord(sfx_wpnup); // haleyjd: SHK-CHK!
       end;
@@ -685,7 +694,7 @@ begin
     // haleyjd 09/21/10: missed case: THE SIGIL!
     Ord(SPR_SIGL):
       begin
-        if not P_GiveWeapon(player, wp_sigil, special.flags and MF_DROPPED <> 0) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_sigil, special.flags and MF_DROPPED <> 0) then
         begin
           player.sigiltype := special.frame;
           if special.special <> 0 then
@@ -723,7 +732,7 @@ begin
           player.backpack := true;
         end;
         for i := 0 to Ord(NUMAMMO) - 1 do
-          P_GiveAmmo(player, ammotype_t(i), 1);
+          TInterRoutines.P_GiveAmmo(player, ammotype_t(i), 1);
       end;
 
     // 1 Gold
@@ -782,7 +791,7 @@ begin
     // All-map powerup
     Ord(SPR_PMAP):
       begin
-        if not P_GivePower(player, Ord(pw_allmap)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_allmap)) then
           exit;
         sound := Ord(sfx_yeah);
       end;
@@ -791,7 +800,7 @@ begin
     // whole time and telling you how lost she is :P
     Ord(SPR_COMM):
       begin
-        if not P_GivePower(player, Ord(pw_communicator)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_communicator)) then
           exit;
         sound := Ord(sfx_yeah);
       end;
@@ -813,7 +822,7 @@ begin
         begin
           // haleyjd 09/21/10: Strife player still picks up keys that
           // he has already found. (break, not return)
-          P_GiveCard(player, card_t(special._type - Ord(MT_KEY_BASE)));
+          TInterRoutines.P_GiveCard(player, card_t(special._type - Ord(MT_KEY_BASE)));
         end
         else
         begin
@@ -869,7 +878,7 @@ end;
 // KillMobj
 //
 //==============================================================================
-procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t);
+class procedure TInterRoutines.P_KillMobj(source: Pmobj_t; target: Pmobj_t);
 var
   item: integer;
   gibhealth: integer;
@@ -956,7 +965,7 @@ begin
           amount := 1;
         end;
 
-        P_RemoveInventoryItem(p, 0, amount);
+        TUserRoutines.P_RemoveInventoryItem(p, 0, amount);
         r := P_Random;
         loot.momx := loot.momx + ((r and 7) - (P_Random and 7)) * FRACUNIT;
         loot.momy := loot.momy + ((P_Random and 7) + 1) * FRACUNIT;
@@ -1331,8 +1340,8 @@ begin
         player.armortype := 0;
 
         // villsa [STRIFE]
-        P_UseInventoryItem(player, Ord(SPR_ARM1));
-        P_UseInventoryItem(player, Ord(SPR_ARM2));
+        TUserRoutines.P_UseInventoryItem(player, Ord(SPR_ARM1));
+        TUserRoutines.P_UseInventoryItem(player, Ord(SPR_ARM2));
       end;
       player.armorpoints := player.armorpoints - saved;
       damage := damage - saved;
@@ -1356,8 +1365,8 @@ begin
     if player.health < 50 then
       if (TGameSession.DeathMatch <> 0) or (player.cheats and CF_AUTOHEALTH <> 0) then
       begin
-        while (player.health < 50) and (P_UseInventoryItem(player, Ord(SPR_MDKT))) do begin end;
-        while (player.health < 50) and (P_UseInventoryItem(player, Ord(SPR_STMP))) do begin end;
+        while (player.health < 50) and (TUserRoutines.P_UseInventoryItem(player, Ord(SPR_MDKT))) do begin end;
+        while (player.health < 50) and (TUserRoutines.P_UseInventoryItem(player, Ord(SPR_STMP))) do begin end;
       end;
 
   if target.health <= 0 then
@@ -1403,7 +1412,7 @@ begin
       exit;
     end;
 
-    P_KillMobj(source, target);
+    TInterRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;

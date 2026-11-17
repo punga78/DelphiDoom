@@ -553,10 +553,10 @@ begin
   DEH_AddAction(@TDoomMonsterActions.A_Fall, 'A_Fall()'); // 27
   DEH_AddAction(@TDoomMonsterActions.A_XScream, 'A_XScream()'); // 28
   DEH_AddAction(@TDoomMonsterActions.A_Look, 'A_Look()'); // 29
-  DEH_AddAction(@A_Chase, 'A_Chase()'); // 30
+  DEH_AddAction(@TMonsterBaseActions.A_Chase, 'A_Chase()'); // 30
   DEH_AddAction(@A_FaceTarget, 'A_FaceTarget()'); // 31
   DEH_AddAction(@TDoomMonsterActions.A_PosAttack, 'A_PosAttack()'); // 32
-  DEH_AddAction(@A_Scream, 'A_Scream()'); // 33
+  DEH_AddAction(@TMonsterBaseActions.A_Scream, 'A_Scream()'); // 33
   DEH_AddAction(@TDoomMonsterActions.A_SPosAttack, 'A_SPosAttack()'); // 34
   DEH_AddAction(@TDoomMonsterActions.A_VileChase, 'A_VileChase()'); // 35
   DEH_AddAction(@TDoomMonsterActions.A_VileStart, 'A_VileStart()'); // 36

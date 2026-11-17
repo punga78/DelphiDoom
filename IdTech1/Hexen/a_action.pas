@@ -909,7 +909,7 @@ begin
       else
       begin
         mo.special1 := actor.special1;    // Pointer to master (mobj_t *)
-        P_GivePower(master.player, pw_minotaur);
+        TInterRoutines.P_GivePower(master.player, pw_minotaur);
       end;
 
       // Make smoke puff
@@ -1393,7 +1393,7 @@ end;
 class procedure THexenActions.A_ThrustImpale(actor: Pmobj_t);
 begin
   // Impale all shootables in radius
-  PIT_ThrustSpike(actor);
+  TMapRoutines.PIT_ThrustSpike(actor);
 end;
 
 //==============================================================================
@@ -1512,7 +1512,7 @@ begin
   if delta = 0 then
     delta := 1;
   angle := actor.angle + _SHLW((P_Random mod delta) - (delta div 2), 24);
-  mo := P_SpawnMissileAngle(actor, Ord(MT_BAT), angle, 0);
+  mo := TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_BAT), angle, 0);
   if mo <> nil then
   begin
     mo.args[0] := P_Random and 63;      // floatbob index

@@ -190,7 +190,7 @@ var
   LSector: Psector_t;
 begin
   // JVAL: 3d floors
-  LSector := P_PointInSector(AX, AY);
+  LSector := TMapRoutines.P_PointInSector(AX, AY);
   Result := LSector.floorheight;
   if LSector.midsec >= 0 then
     if TGameSession.Players[APlayer].mo.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then

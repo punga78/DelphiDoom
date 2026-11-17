@@ -8,7 +8,7 @@
 {  Port of the rules of the weapons of the craft: radix_weapons.pas (refire,   }
 {  energy drain, volleys of the neutron cannons and of the plasma spreader,    }
 {  tables of the EPC, plasma bomb), the refire tics of d_items.pas and         }
-{  P_CheckAmmo of p_pspr.pas of Rad-X                                          }
+{  TWeaponBaseActions.P_CheckAmmo of p_pspr.pas of Rad-X                                          }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Radix.Weapon.Rules;

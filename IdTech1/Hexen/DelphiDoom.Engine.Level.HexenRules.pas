@@ -105,10 +105,10 @@ end;
 procedure THexenLevelRules.InitializeData;
 begin
   P_InitMapInfo;
-  P_InitSwitchList;
+  TSwitchRoutines.P_InitSwitchList;
   P_InitAnimations;
   P_InitFTAnims; // Init flat and texture animations
-  P_InitLava;
+  TSpecRoutines.P_InitLava;
 end;
 
 procedure THexenLevelRules.ShutDownData;

@@ -558,7 +558,7 @@ begin
   DEH_AddAction(@THexenWeaponActions.A_CFlameMissile, 'A_CFlameMissile()'); // 25
   DEH_AddAction(@THexenWeaponActions.A_CFlamePuff, 'A_CFlamePuff()'); // 26
   DEH_AddAction(@THexenWeaponActions.A_CFlameRotate, 'A_CFlameRotate()'); // 27
-  DEH_AddAction(@A_Chase, 'A_Chase()'); // 28
+  DEH_AddAction(@TMonsterBaseActions.A_Chase, 'A_Chase()'); // 28
   DEH_AddAction(@THexenMonsterActions.A_CheckBurnGone, 'A_CheckBurnGone()'); // 29
   DEH_AddAction(@A_CheckFloor, 'A_CheckFloor(offset: integer)'); // 30
   DEH_AddAction(@THexenMonsterActions.A_CheckSkullDone, 'A_CheckSkullDone()'); // 31
@@ -690,7 +690,7 @@ begin
   DEH_AddAction(@A_RestoreArtifact, 'A_RestoreArtifact()'); // 157
   DEH_AddAction(@A_RestoreSpecialThing1, 'A_RestoreSpecialThing1()'); // 158
   DEH_AddAction(@A_RestoreSpecialThing2, 'A_RestoreSpecialThing2()'); // 159
-  DEH_AddAction(@A_Scream, 'A_Scream()'); // 160
+  DEH_AddAction(@TMonsterBaseActions.A_Scream, 'A_Scream()'); // 160
   DEH_AddAction(@THexenMonsterActions.A_SerpentBirthScream, 'A_SerpentBirthScream()'); // 161
   DEH_AddAction(@THexenMonsterActions.A_SerpentChase, 'A_SerpentChase()'); // 162
   DEH_AddAction(@THexenMonsterActions.A_SerpentCheckForAttack, 'A_SerpentCheckForAttack()'); // 163
@@ -729,7 +729,7 @@ begin
   DEH_AddAction(@THexenMonsterActions.A_SpawnBishop, 'A_SpawnBishop()'); // 196
   DEH_AddAction(@THexenMonsterActions.A_SpawnFizzle, 'A_SpawnFizzle()'); // 197
   DEH_AddAction(@THexenMonsterActions.A_SpeedBalls, 'A_SpeedBalls()'); // 198
-  DEH_AddAction(@A_SpeedFade, 'A_SpeedFade()'); // 199
+  DEH_AddAction(@TUserRoutines.A_SpeedFade, 'A_SpeedFade()'); // 199
   DEH_AddAction(@THexenActions.A_Summon, 'A_Summon()'); // 200
   DEH_AddAction(@THexenActions.A_TeloSpawnA, 'A_TeloSpawnA()'); // 201
   DEH_AddAction(@THexenActions.A_TeloSpawnB, 'A_TeloSpawnB()'); // 202

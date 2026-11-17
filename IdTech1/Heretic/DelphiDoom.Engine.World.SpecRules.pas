@@ -48,66 +48,6 @@ uses
   p_spec_h;
 
 //==============================================================================
-// P_InitPicAnims
-//
-// at game start
-//
-//==============================================================================
-procedure P_InitPicAnims;
-
-//==============================================================================
-// P_SpawnSpecials
-//
-// at map load
-//
-//==============================================================================
-procedure P_SpawnSpecials;
-
-//==============================================================================
-// P_UpdateSpecials
-//
-// every tic
-//
-//==============================================================================
-procedure P_UpdateSpecials;
-
-//==============================================================================
-//
-// P_InitLava
-//
-//==============================================================================
-procedure P_InitLava;
-
-//==============================================================================
-// P_ShootSpecialLine
-//
-// when needed
-//
-//==============================================================================
-procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
-
-//==============================================================================
-//
-// P_CrossSpecialLine
-//
-//==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_CrossSpecialLinePtr
-//
-//==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_PlayerInSpecialSector
-//
-//==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
-
-//==============================================================================
 //
 // getSector
 //
@@ -160,6 +100,75 @@ type
     /// <summary>The sector has no platform any more</summary>
     class procedure PlatDetach(sec: Psector_t); static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSpecRoutines = class sealed
+  public
+    //==============================================================================
+    // P_InitPicAnims
+    //
+    // at game start
+    //
+    //==============================================================================
+    class procedure P_InitPicAnims; static;
+
+    //==============================================================================
+    // P_SpawnSpecials
+    //
+    // at map load
+    //
+    //==============================================================================
+    class procedure P_SpawnSpecials; static;
+
+    //==============================================================================
+    // P_UpdateSpecials
+    //
+    // every tic
+    //
+    //==============================================================================
+    class procedure P_UpdateSpecials; static;
+
+    //==============================================================================
+    //
+    // P_InitLava
+    //
+    //==============================================================================
+    class procedure P_InitLava; static;
+
+    //==============================================================================
+    // P_ShootSpecialLine
+    //
+    // when needed
+    //
+    //==============================================================================
+    class procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t); static;
+
+    //==============================================================================
+    //
+    // P_CrossSpecialLine
+    //
+    //==============================================================================
+    class procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CrossSpecialLinePtr
+    //
+    //==============================================================================
+    class procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_PlayerInSpecialSector
+    //
+    //==============================================================================
+    class procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t); static;
+  end;
+
 
 implementation
 
@@ -275,7 +284,7 @@ const
 // P_InitPicAnims
 //
 //==============================================================================
-procedure P_InitPicAnims;
+class procedure TSpecRoutines.P_InitPicAnims;
 var
   i, j: integer;
 begin
@@ -390,7 +399,7 @@ end;
 //  to cross a line with a non 0 special.
 //
 //==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
+class procedure TSpecRoutines.P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
 begin
   P_CrossSpecialLinePtr(@lines[linenum], side, thing);
 end;
@@ -400,7 +409,7 @@ end;
 // P_CrossSpecialLinePtr
 //
 //==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
+class procedure TSpecRoutines.P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
 begin
 
   //  Triggers that other things can activate
@@ -814,7 +823,7 @@ end;
 // Called when a thing shoots a special line.
 //
 //==============================================================================
-procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
+class procedure TSpecRoutines.P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
 begin
   //  Impacts that other things can activate.
   if thing.player = nil then
@@ -829,21 +838,21 @@ begin
       begin
         // RAISE FLOOR
         EV_DoFloor(line, raiseFloor);
-        P_ChangeSwitchTexture(line, false);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     46:
       begin
         // OPEN DOOR
         EV_DoDoor(line, open);
-        P_ChangeSwitchTexture(line, true);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
         EV_DoPlat(line, raiseToNearestAndChange, 0);
-        P_ChangeSwitchTexture(line, false);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
   end;
 end;
@@ -856,7 +865,7 @@ var
 // P_InitLava
 //
 //==============================================================================
-procedure P_InitLava;
+class procedure TSpecRoutines.P_InitLava;
 begin
   memset(@LavaInflictor, 0, SizeOf(mobj_t));
   LavaInflictor._type := Ord(MT_PHOENIXFX2);
@@ -882,7 +891,7 @@ const
 // P_PlayerInSpecialSector
 //
 //==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
+class procedure TSpecRoutines.P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
 begin
   // Falling, not all the way down yet?
   if player.mo.z <> height then
@@ -991,7 +1000,7 @@ var
 // P_UpdateSpecials
 //
 //==============================================================================
-procedure P_UpdateSpecials;
+class procedure TSpecRoutines.P_UpdateSpecials;
 var
   anim: Panim_t;
   pic: integer;
@@ -1169,7 +1178,7 @@ end;
 // Parses command line parameters.
 //
 //==============================================================================
-procedure P_SpawnSpecials;
+class procedure TSpecRoutines.P_SpawnSpecials;
 var
   sector: Psector_t;
   i: integer;

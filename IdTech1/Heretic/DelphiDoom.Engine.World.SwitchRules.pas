@@ -41,26 +41,35 @@ uses
   DelphiDoom.Engine.World.SpecRules,
   p_spec;
 
-//==============================================================================
-//
-// P_InitSwitchList
-//
-//==============================================================================
-procedure P_InitSwitchList;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSwitchRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_InitSwitchList
+    //
+    //==============================================================================
+    class procedure P_InitSwitchList; static;
 
-//==============================================================================
-//
-// P_ChangeSwitchTexture
-//
-//==============================================================================
-procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
+    //==============================================================================
+    //
+    // P_ChangeSwitchTexture
+    //
+    //==============================================================================
+    class procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean); static;
 
-//==============================================================================
-//
-// P_UseSpecialLine
-//
-//==============================================================================
-function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
+    //==============================================================================
+    //
+    // P_UseSpecialLine
+    //
+    //==============================================================================
+    class function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean; static;
+  end;
+
 
 implementation
 
@@ -112,7 +121,7 @@ var
 // Only called at game initialization.
 //
 //==============================================================================
-procedure P_InitSwitchList;
+class procedure TSwitchRoutines.P_InitSwitchList;
 var
   i: integer;
   index: integer;
@@ -145,7 +154,7 @@ end;
 // Tell it if switch is ok to use again (1=yes, it's a button).
 //
 //==============================================================================
-procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
+class procedure TSwitchRoutines.P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
 var
   texTop: integer;
   texMid: integer;
@@ -212,7 +221,7 @@ end;
 // Only the front sides of lines are usable.
 //
 //==============================================================================
-function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
+class function TSwitchRoutines.P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
 begin
   // Switches that other things can activate.
   if thing.player = nil then

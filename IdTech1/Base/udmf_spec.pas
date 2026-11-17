@@ -1213,7 +1213,7 @@ begin
 
   {  129: // UsePuzzleItem
       begin
-        result := EVH_LineSearchForPuzzleItem(line, args, mo);
+        result := TSpecRoutines.EVH_LineSearchForPuzzleItem(line, args, mo);
       end;}
 
   // Thing_Activate
@@ -1388,7 +1388,7 @@ begin
   end;
 
   if ((line.activators and ULAC_USE <> 0) or (line.activators and ULAC_IMPACT <> 0)) and buttonSuccess then
-    P_ChangeSwitchTexture(line, dorepeat);
+    TSwitchRoutines.P_ChangeSwitchTexture(line, dorepeat);
 
   result := true;
 end;

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - the red blood of the map objects (P_SpawnBlood)        }
+{  DelphiDoom: engine - the red blood of the map objects (TMobjRoutines.P_SpawnBlood)        }
 {  Copyright (C) 1993-1996 by id Software, Inc.                                }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }

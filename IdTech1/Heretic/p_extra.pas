@@ -232,7 +232,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.info.meleesound > 0 then
     begin
@@ -431,7 +431,7 @@ var
 begin
   A_FaceTarget(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.info.meleesound > 0 then
     begin

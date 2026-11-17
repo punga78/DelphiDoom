@@ -412,7 +412,7 @@ begin
   if FGame.IsDeveloperMode then
     printf('P_SpawnSpecials()'#13#10);
   Trace('P_SpawnSpecials');
-  P_SpawnSpecials;
+  TSpecRoutines.P_SpawnSpecials;
   FRules.AfterSpecials;
 
 {$IFNDEF OPENGL}

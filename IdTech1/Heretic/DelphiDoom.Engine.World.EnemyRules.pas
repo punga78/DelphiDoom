@@ -21,38 +21,10 @@ uses
 
 //==============================================================================
 //
-// A_Chase
-//
-//==============================================================================
-procedure A_Chase(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Scream
-//
-//==============================================================================
-procedure A_Scream(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_NoBlocking
 //
 //==============================================================================
 procedure A_NoBlocking(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_CheckMeleeRange
-//
-//==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
-
-//==============================================================================
-//
-// P_LookForPlayers
-//
-//==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 
 type
   /// <summary>
@@ -675,6 +647,42 @@ type
     class procedure P_AddBossSpot(x, y: fixed_t; angle: angle_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_Chase
+    //
+    //==============================================================================
+    class procedure A_Chase(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Scream
+    //
+    //==============================================================================
+    class procedure A_Scream(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckMeleeRange
+    //
+    //==============================================================================
+    class function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean; static;
+
+    //==============================================================================
+    //
+    // P_LookForPlayers
+    //
+    //==============================================================================
+    class function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean; static;
+  end;
+
 
 implementation
 
@@ -787,7 +795,7 @@ end;
 // P_CheckMeleeRange
 //
 //==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
+class function TMonsterBaseActions.P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
 var
   mo: Pmobj_t;
   dist: fixed_t;
@@ -944,7 +952,7 @@ const
 // Returns true if a player is targeted.
 //
 //==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
+class function TMonsterBaseActions.P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 var
   c: integer;
   stop: integer;
@@ -1135,7 +1143,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_AttackSound1(actor);
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
@@ -1211,7 +1219,7 @@ end;
 // A_Chase
 //
 //==============================================================================
-procedure A_Chase(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Chase(actor: Pmobj_t);
 begin
   THereticMonsterActions.P_DoChase(actor, false);
 end;
@@ -1255,7 +1263,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(3));
     S_StartSound(actor, Ord(sfx_kgtat2));
@@ -1325,7 +1333,7 @@ begin
     exit;
 
   A_AttackSound1(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     P_DamageMobj(actor.target, actor, actor, 5 + (P_Random and 7));
 end;
 
@@ -1373,7 +1381,7 @@ begin
     exit;
 
   A_AttackSound1(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, 5 + (P_Random and 7));
     exit;
@@ -1485,7 +1493,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     P_DamageMobj(actor.target, actor, actor, 1 + (P_Random and 1));
 
 end;
@@ -1513,7 +1521,7 @@ begin
   if P_UpdateChicken(actor, 3) then
     exit;
 
-  A_Chase(actor);
+  TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -1575,7 +1583,7 @@ begin
 
   A_AttackSound1(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(2));
     S_StartSound(actor, Ord(sfx_mumat2));
@@ -1598,7 +1606,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(2));
     exit;
@@ -1656,7 +1664,7 @@ begin
     dec(actor.special1);
     actor.tics := actor.tics - 3;
   end;
-  A_Chase(actor);
+  TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -1677,7 +1685,7 @@ begin
 
   A_AttackSound1(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(8));
     exit;
@@ -1694,8 +1702,8 @@ begin
     begin
       momz := mo.momz;
       angle := mo.angle;
-      P_SpawnMissileAngle(actor, Ord(MT_SRCRFX1), angle - ANG1 * 3, momz);
-      P_SpawnMissileAngle(actor, Ord(MT_SRCRFX1), angle + ANG1 * 3, momz);
+      TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_SRCRFX1), angle - ANG1 * 3, momz);
+      TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_SRCRFX1), angle + ANG1 * 3, momz);
     end;
     if actor.health < actor.info.spawnhealth div 3 then
     begin // Maybe attack again
@@ -1807,7 +1815,7 @@ begin
 
   A_AttackSound1(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(20));
     exit;
@@ -1819,8 +1827,8 @@ begin
     chance := 48;
   if P_Random < chance then
   begin // Wizard spawners
-    P_SpawnMissileAngle(actor, Ord(MT_SOR2FX2), actor.angle - ANG45, FRACUNIT div 2);
-    P_SpawnMissileAngle(actor, Ord(MT_SOR2FX2), actor.angle + ANG45, FRACUNIT div 2);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_SOR2FX2), actor.angle - ANG45, FRACUNIT div 2);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_SOR2FX2), actor.angle + ANG45, FRACUNIT div 2);
   end
   else
   begin // Blue bolt
@@ -1970,7 +1978,7 @@ begin
     exit;
 
   S_StartSound(actor, Ord(sfx_stfpow));
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(4));
     if actor.target.player <> nil then // Squish the player
@@ -2066,7 +2074,7 @@ begin
     exit;
 
   S_StartSound(actor, Ord(sfx_minat2));
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(5));
     exit;
@@ -2077,10 +2085,10 @@ begin
     S_StartSound(mo, Ord(sfx_minat2));
     momz := mo.momz;
     angle := mo.angle;
-    P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle - (ANG45 div 8), momz);
-    P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle + (ANG45 div 8), momz);
-    P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle - (ANG45 div 16), momz);
-    P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle + (ANG45 div 16), momz);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle - (ANG45 div 8), momz);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle + (ANG45 div 8), momz);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle - (ANG45 div 16), momz);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle + (ANG45 div 16), momz);
   end;
 end;
 
@@ -2098,7 +2106,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(5));
     if actor.target.player <> nil then // Squish the player
@@ -2149,7 +2157,7 @@ begin
 
   A_AttackSound1(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     P_DamageMobj(actor.target, actor, actor, HITDICE(3))
   else
     P_SpawnMissile(actor, actor.target, Ord(MT_BEASTBALL));
@@ -2184,7 +2192,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(target, actor, actor, HITDICE(6));
     exit;
@@ -2364,7 +2372,7 @@ begin
 
   A_AttackSound1(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := (P_Random mod 7) + 3;
     P_DamageMobj(actor.target, actor, actor, damage);
@@ -2411,7 +2419,7 @@ begin
 
   A_AttackSound1(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(4));
     exit;
@@ -2422,8 +2430,8 @@ begin
   begin
     momz := mo.momz;
     angle := mo.angle;
-    P_SpawnMissileAngle(actor, Ord(MT_WIZFX1), angle - (ANG45 div 8), momz);
-    P_SpawnMissileAngle(actor, Ord(MT_WIZFX1), angle + (ANG45 div 8), momz);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_WIZFX1), angle - (ANG45 div 8), momz);
+    TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_WIZFX1), angle + (ANG45 div 8), momz);
   end;
 end;
 
@@ -2432,7 +2440,7 @@ end;
 // PROC A_Scream
 //
 //==============================================================================
-procedure A_Scream(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Scream(actor: Pmobj_t);
 begin
   case actor._type of
     Ord(MT_CHICPLAYER),
@@ -2756,8 +2764,8 @@ begin
         dummyLine.special := TGameSession.GameMapInfo.bossactions[i].special;
         dummyLine.tag := TGameSession.GameMapInfo.bossactions[i].tag;
         // use special semantics for line activation to block problem types.
-        if not P_UseSpecialLine(actor, @dummyLine, 0, true) then
-          P_CrossSpecialLinePtr(@dummyLine, 0, actor);
+        if not TSwitchRoutines.P_UseSpecialLine(actor, @dummyLine, 0, true) then
+          TSpecRoutines.P_CrossSpecialLinePtr(@dummyLine, 0, actor);
       end;
 
     exit;

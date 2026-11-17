@@ -1037,7 +1037,7 @@ begin
         if check_cheat(@cheat_powerup[i], Chr(ev.data1)) then
         begin
           if plyr.powers[i] = 0 then
-            P_GivePower(plyr, i)
+            TInterRoutines.P_GivePower(plyr, i)
           else if i <> Ord(pw_strength) then
             plyr.powers[i] := 1
           else

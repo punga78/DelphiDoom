@@ -356,7 +356,7 @@ begin
   P_World.RunThinkers;
   if not isgamefreezed then
   begin
-    P_UpdateSpecials;
+    TSpecRoutines.P_UpdateSpecials;
     P_AnimateSurfaces;
 {$IF DEFINED(HERETIC)}
     P_RespawnSpecials;

@@ -41,20 +41,6 @@ const
   FF_FULLBRIGHT = $8000; // flag in thing.frame
   FF_FRAMEMASK = $7fff;
 
-//==============================================================================
-//
-// P_FireWeapon
-//
-//==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_CheckAmmo
-//
-//==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
-
 var
   WeaponManaUse: array[0..Ord(NUMCLASSES) - 1, 0..Ord(NUMWEAPONS) - 1] of integer = (
     (0, 2, 3, 14),
@@ -62,14 +48,6 @@ var
     (0, 3, 5, 15),
     (0, 0, 0, 0 )
   );
-
-//==============================================================================
-//
-// P_BringUpWeapon
-// Starts bringing the pending weapon up from the bottom of the screen
-//
-//==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
 
 type
   /// <summary>
@@ -481,6 +459,36 @@ type
     class procedure A_ShedShard(actor: Pmobj_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_FireWeapon
+    //
+    //==============================================================================
+    class procedure P_FireWeapon(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckAmmo
+    //
+    //==============================================================================
+    class function P_CheckAmmo(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_BringUpWeapon
+    // Starts bringing the pending weapon up from the bottom of the screen
+    //
+    //==============================================================================
+    class procedure P_BringUpWeapon(player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -581,7 +589,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_BringUpWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -665,7 +673,7 @@ end;
 // P_CheckAmmo
 //
 //==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
+class function TWeaponBaseActions.P_CheckAmmo(player: Pplayer_t): boolean;
 begin
   result := THexenWeaponActions.P_CheckMana(player);
 end;
@@ -677,7 +685,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_FireWeapon(player: Pplayer_t);
 var
   attackState: statenum_t;
 begin
@@ -765,7 +773,7 @@ begin
   if player.cmd.buttons and BT_ATTACK <> 0 then
   begin
     player.attackdown := true;
-    P_FireWeapon(player);
+    TWeaponBaseActions.P_FireWeapon(player);
     exit;
   end;
 
@@ -970,11 +978,11 @@ begin
   player.mana[Ord(MANA_1)] := player.mana[Ord(MANA_1)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
   player.mana[Ord(MANA_2)] := player.mana[Ord(MANA_2)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
   pmo := player.mo;
-  P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z - 10 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle + ANG45 div 4);
-  P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z - 5 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle + ANG45 div 8);
-  P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z, Ord(MT_FSWORD_MISSILE), pmo.angle);
-  P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z + 5 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle - ANG45 div 8);
-  P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z + 10 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle - ANG45 div 4);
+  TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z - 10 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle + ANG45 div 4);
+  TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z - 5 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle + ANG45 div 8);
+  TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z, Ord(MT_FSWORD_MISSILE), pmo.angle);
+  TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z + 5 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle - ANG45 div 8);
+  TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z + 10 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle - ANG45 div 4);
   S_StartSound(pmo, Ord(SFX_FIGHTER_SWORD_FIRE));
 end;
 
@@ -988,11 +996,11 @@ var
   angle: angle_t;
 begin
   angle := actor.angle;
-  P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle + ANG45 div 4, 0);
-  P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle + ANG45 div 8, 0);
-  P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle, 0);
-  P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle - ANG45 div 8, 0);
-  P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle - ANG45 div 4, 0);
+  TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle + ANG45 div 4, 0);
+  TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle + ANG45 div 8, 0);
+  TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle, 0);
+  TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle - ANG45 div 8, 0);
+  TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle - ANG45 div 4, 0);
   S_StartSound(actor, Ord(SFX_FIGHTER_SWORD_FIRE));
 end;
 
@@ -1027,7 +1035,7 @@ var
 begin
   mo := P_SpawnPlayerMissile(player.mo, Ord(MT_MWAND_MISSILE));
   if mo <> nil then
-    mo.thinker._function.acp1 := @P_BlasterMobjThinker;
+    mo.thinker._function.acp1 := @TMobjRoutines.P_BlasterMobjThinker;
   S_StartSound(player.mo, Ord(SFX_MAGE_WAND_FIRE));
 end;
 
@@ -1264,7 +1272,7 @@ class procedure THexenWeaponActions.P_MStaffSpawn(pmo: Pmobj_t; angle: angle_t);
 var
   mo: Pmobj_t;
 begin
-  mo := P_SPMAngle(pmo, Ord(MT_MSTAFF_FX2), angle);
+  mo := TMobjRoutines.P_SPMAngle(pmo, Ord(MT_MSTAFF_FX2), angle);
   if mo <> nil then
   begin
     mo.target := pmo;
@@ -1383,7 +1391,7 @@ class procedure THexenWeaponActions.P_MStaffSpawn2(actor: Pmobj_t; angle: angle_
 var
   mo: Pmobj_t;
 begin
-  mo := P_SpawnMissileAngle(actor, Ord(MT_MSTAFF_FX2), angle, 0);
+  mo := TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_MSTAFF_FX2), angle, 0);
   if mo <> nil then
   begin
     mo.target := actor;
@@ -1710,10 +1718,10 @@ var
 begin
   player.mana[Ord(MANA_1)] := player.mana[Ord(MANA_1)] -  WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
   pmo := player.mo;
-  mo := P_SPMAngle(pmo, Ord(MT_CSTAFF_MISSILE), pmo.angle - (ANG45 div 15));
+  mo := TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CSTAFF_MISSILE), pmo.angle - (ANG45 div 15));
   if mo <> nil then
     mo.special2 := 32;
-  mo := P_SPMAngle(pmo, Ord(MT_CSTAFF_MISSILE), pmo.angle + (ANG45 div 15));
+  mo := TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CSTAFF_MISSILE), pmo.angle + (ANG45 div 15));
   if mo <> nil then
     mo.special2 := 0;
   S_StartSound(player.mo, Ord(SFX_CLERIC_CSTAFF_FIRE));
@@ -1765,7 +1773,7 @@ begin
   mo := P_SpawnPlayerMissile(player.mo, Ord(MT_CFLAME_MISSILE));
   if mo <> nil then
   begin
-    mo.thinker._function.acp1 := @P_BlasterMobjThinker;
+    mo.thinker._function.acp1 := @TMobjRoutines.P_BlasterMobjThinker;
     mo.special1 := 2;
   end;
 
@@ -2334,7 +2342,7 @@ begin
   // every so many calls, spawn a new missile in it's set directions
   if spawndir and SHARDSPAWN_LEFT <> 0 then
   begin
-    mo := P_SpawnMissileAngleSpeed(
+    mo := TMobjRoutines.P_SpawnMissileAngleSpeed(
             actor, Ord(MT_SHARDFX1),
               actor.angle + (ANG45 div 9), 0, (20 + 2 * spermcount) * FRACUNIT);
     if mo <> nil then
@@ -2352,7 +2360,7 @@ begin
 
   if spawndir and SHARDSPAWN_RIGHT <> 0 then
   begin
-    mo := P_SpawnMissileAngleSpeed(
+    mo := TMobjRoutines.P_SpawnMissileAngleSpeed(
             actor, Ord(MT_SHARDFX1), actor.angle - (ANG45 div 9), 0, (20 + 2 * spermcount) * FRACUNIT);
     if mo <> nil then
     begin
@@ -2369,7 +2377,7 @@ begin
 
   if spawndir and SHARDSPAWN_UP <> 0 then
   begin
-    mo := P_SpawnMissileAngleSpeed(
+    mo := TMobjRoutines.P_SpawnMissileAngleSpeed(
             actor, Ord(MT_SHARDFX1), actor.angle, 0, (15 + 2 * spermcount) * FRACUNIT);
     if mo <> nil then
     begin
@@ -2390,7 +2398,7 @@ begin
 
   if spawndir and SHARDSPAWN_DOWN <> 0 then
   begin
-    mo := P_SpawnMissileAngleSpeed(
+    mo := TMobjRoutines.P_SpawnMissileAngleSpeed(
             actor, Ord(MT_SHARDFX1),
               actor.angle, 0, (15 + 2 * spermcount) * FRACUNIT);
     if mo <> nil then

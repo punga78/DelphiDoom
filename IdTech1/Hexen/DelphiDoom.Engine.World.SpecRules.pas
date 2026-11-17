@@ -44,13 +44,6 @@ uses
 
 //==============================================================================
 //
-// P_InitLava
-//
-//==============================================================================
-procedure P_InitLava;
-
-//==============================================================================
-//
 // P_FindSectorFromTag
 //
 //==============================================================================
@@ -79,13 +72,6 @@ function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean;
 
 //==============================================================================
 //
-// EVH_LineSearchForPuzzleItem
-//
-//==============================================================================
-function EVH_LineSearchForPuzzleItem(line: Pline_t; args: PByteArray; mo: Pmobj_t): boolean;
-
-//==============================================================================
-//
 // P_ExecuteLineSpecial
 //
 //==============================================================================
@@ -101,34 +87,6 @@ function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
 function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer;
 
   activationType: integer): boolean;
-
-//==============================================================================
-//
-// P_PlayerInSpecialSector
-//
-//==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
-
-//==============================================================================
-//
-// P_PlayerOnSpecialFlat
-//
-//==============================================================================
-procedure P_PlayerOnSpecialFlat(player: Pplayer_t; floorType: integer);
-
-//==============================================================================
-//
-// P_UpdateSpecials
-//
-//==============================================================================
-procedure P_UpdateSpecials;
-
-//==============================================================================
-//
-// P_SpawnSpecials
-//
-//==============================================================================
-procedure P_SpawnSpecials;
 
 //==============================================================================
 //
@@ -161,6 +119,57 @@ type
     /// <summary>The tag of the sectors that the line refers to (Hexen: the first argument of the special)</summary>
     class function LineSectorTag(line: Pline_t): integer; static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSpecRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_InitLava
+    //
+    //==============================================================================
+    class procedure P_InitLava; static;
+
+    //==============================================================================
+    //
+    // EVH_LineSearchForPuzzleItem
+    //
+    //==============================================================================
+    class function EVH_LineSearchForPuzzleItem(line: Pline_t; args: PByteArray; mo: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_PlayerInSpecialSector
+    //
+    //==============================================================================
+    class procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t); static;
+
+    //==============================================================================
+    //
+    // P_PlayerOnSpecialFlat
+    //
+    //==============================================================================
+    class procedure P_PlayerOnSpecialFlat(player: Pplayer_t; floorType: integer); static;
+
+    //==============================================================================
+    //
+    // P_UpdateSpecials
+    //
+    //==============================================================================
+    class procedure P_UpdateSpecials; static;
+
+    //==============================================================================
+    //
+    // P_SpawnSpecials
+    //
+    //==============================================================================
+    class procedure P_SpawnSpecials; static;
+  end;
+
 
 implementation
 
@@ -206,7 +215,7 @@ uses
 // P_InitLava
 //
 //==============================================================================
-procedure P_InitLava;
+class procedure TSpecRoutines.P_InitLava;
 begin
   memset(@LavaInflictor, 0, SizeOf(mobj_t));
   LavaInflictor._type := Ord(MT_CIRCLEFLAME);
@@ -306,7 +315,7 @@ begin
   if Pplayer_t(mo.player).keys and _SHL(1, lock - 1) = 0 then
   begin
     sprintf(LockedBuffer, 'YOU NEED THE %s', [TextKeyMessages[lock - 1]]);
-    P_SetMessage(mo.player, LockedBuffer, true);
+    TInterRoutines.P_SetMessage(mo.player, LockedBuffer, true);
     S_StartSound(mo, Ord(SFX_DOOR_LOCKED));
     result := false;
     exit;
@@ -320,7 +329,7 @@ end;
 // EVH_LineSearchForPuzzleItem
 //
 //==============================================================================
-function EVH_LineSearchForPuzzleItem(line: Pline_t; args: PByteArray; mo: Pmobj_t): boolean;
+class function TSpecRoutines.EVH_LineSearchForPuzzleItem(line: Pline_t; args: PByteArray; mo: Pmobj_t): boolean;
 var
   player: Pplayer_t;
   i: integer;
@@ -351,7 +360,7 @@ begin
     if _type = line.arg1 then
     begin
       // A puzzle item was found for the line
-      if P_UseArtifact(player, arti) then
+      if TUserRoutines.P_UseArtifact(player, arti) then
       begin
         // A puzzle item was found for the line
         P_PlayerRemoveArtifact(player, i);
@@ -665,7 +674,7 @@ begin
           begin
             if P_GetMapCluster(args[0]) = 0 then
             begin
-              P_SetMessage(mo.player, GACCESSDENIEDDEMO);
+              TInterRoutines.P_SetMessage(mo.player, GACCESSDENIEDDEMO);
               result := false;
             end
             else
@@ -799,7 +808,7 @@ begin
 
     129: // UsePuzzleItem
       begin
-        result := EVH_LineSearchForPuzzleItem(line, args, mo);
+        result := TSpecRoutines.EVH_LineSearchForPuzzleItem(line, args, mo);
       end;
 
     130: // Thing_Activate
@@ -907,7 +916,7 @@ begin
   end;
 
   if ((lineActivation = SPAC_USE) or (lineActivation = SPAC_IMPACT)) and buttonSuccess then
-    P_ChangeSwitchTexture(line, dorepeat);
+    TSwitchRoutines.P_ChangeSwitchTexture(line, dorepeat);
 
   result := true;
 end;
@@ -932,7 +941,7 @@ const
 // P_PlayerInSpecialSector
 //
 //==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
+class procedure TSpecRoutines.P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
 begin
   // Falling, not all the way down yet?
   if player.mo.z <> height then
@@ -1010,7 +1019,7 @@ end;
 // P_PlayerOnSpecialFlat
 //
 //==============================================================================
-procedure P_PlayerOnSpecialFlat(player: Pplayer_t; floorType: integer);
+class procedure TSpecRoutines.P_PlayerOnSpecialFlat(player: Pplayer_t; floorType: integer);
 begin
   if player.mo.z <> player.mo.floorz then
   begin // Player is not touching the floor
@@ -1035,7 +1044,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_UpdateSpecials;
+class procedure TSpecRoutines.P_UpdateSpecials;
 var
   i: integer;
 begin
@@ -1076,7 +1085,7 @@ end;
 // spawn thinkers
 //
 //==============================================================================
-procedure P_SpawnSpecials;
+class procedure TSpecRoutines.P_SpawnSpecials;
 var
   sector: Psector_t;
   i: integer;

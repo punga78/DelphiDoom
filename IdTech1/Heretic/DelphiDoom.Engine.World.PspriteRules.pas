@@ -33,13 +33,6 @@ const
   FF_FULLBRIGHT = $8000; // flag in thing.frame
   FF_FRAMEMASK = $7fff;
 
-//==============================================================================
-//
-// P_CheckAmmo
-//
-//==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
-
 const
   USE_GWND_AMMO_1 = 1;
   USE_GWND_AMMO_2 = 1;
@@ -78,21 +71,6 @@ var
     0,          // gauntlets
     0          // beak
   );
-
-//==============================================================================
-//
-// P_BringUpWeapon
-// Starts bringing the pending weapon up from the bottom of the screen
-//
-//==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_FireWeapon
-//
-//==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
 
 type
   /// <summary>
@@ -434,6 +412,36 @@ type
     class procedure P_ActivateBeak(player: Pplayer_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_CheckAmmo
+    //
+    //==============================================================================
+    class function P_CheckAmmo(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_BringUpWeapon
+    // Starts bringing the pending weapon up from the bottom of the screen
+    //
+    //==============================================================================
+    class procedure P_BringUpWeapon(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_FireWeapon
+    //
+    //==============================================================================
+    class procedure P_FireWeapon(player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -579,7 +587,7 @@ end;
 // Uses player
 //
 //==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_BringUpWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -607,7 +615,7 @@ end;
 // If not, selects the next weapon to use.
 //
 //==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
+class function TWeaponBaseActions.P_CheckAmmo(player: Pplayer_t): boolean;
 var
   ammo: ammotype_t;
   count: integer;
@@ -681,7 +689,7 @@ end;
 // P_FireWeapon.
 //
 //==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_FireWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
   weaponinfo: Pweaponinfo_tArray;
@@ -752,7 +760,7 @@ begin
        (player.readyweapon <> wp_phoenixrod) then
     begin
       player.attackdown := true;
-      P_FireWeapon(player);
+      TWeaponBaseActions.P_FireWeapon(player);
       exit;
     end;
   end
@@ -946,7 +954,7 @@ begin
   mo := P_SpawnPlayerMissile(player.mo, Ord(MT_BLASTERFX1));
 
   if mo <> nil then
-    mo.thinker._function.acp2 := @P_BlasterMobjThinker;
+    mo.thinker._function.acp2 := @TMobjRoutines.P_BlasterMobjThinker;
 
   S_StartSound(player.mo, Ord(sfx_blssht));
 end;
@@ -999,8 +1007,8 @@ begin
   PuffType := MT_GOLDWANDPUFF2;
   P_BulletSlope(mo);
   momz := FixedMul(mobjinfo[Ord(MT_GOLDWANDFX2)].speed, bulletslope);
-  P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle - (ANG45 div 8), momz);
-  P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle + (ANG45 div 8), momz);
+  TMobjRoutines.P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle - (ANG45 div 8), momz);
+  TMobjRoutines.P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle + (ANG45 div 8), momz);
   angle := mo.angle - (ANG45 div 8);
   for i := 0 to 4 do
   begin
@@ -1070,7 +1078,7 @@ begin
   player.ammo[Ord(am_mace)] := player.ammo[Ord(am_mace)] - USE_MACE_AMMO_1;
   psp.sx := ((P_Random and 3) - 2) * FRACUNIT;
   psp.sy := WEAPONTOP + (P_Random and 3) * FRACUNIT;
-  ball := P_SPMAngle(player.mo, Ord(MT_MACEFX1), player.mo.angle + LongWord(((P_Random and 7) - 4) * $1000000));
+  ball := TMobjRoutines.P_SPMAngle(player.mo, Ord(MT_MACEFX1), player.mo.angle + LongWord(((P_Random and 7) - 4) * $1000000));
   if ball <> nil then
     ball.special1 := 16; // tics till dropoff
 end;
@@ -1323,8 +1331,8 @@ begin
   pmo := player.mo;
   player.ammo[Ord(am_crossbow)] := player.ammo[Ord(am_crossbow)] - USE_CBOW_AMMO_1;
   P_SpawnPlayerMissile(pmo, Ord(MT_CRBOWFX1));
-  P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle - (ANG45 div 10));
-  P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle + (ANG45 div 10));
+  TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle - (ANG45 div 10));
+  TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle + (ANG45 div 10));
 end;
 
 //----------------------------------------------------------------------------
@@ -1345,10 +1353,10 @@ begin
     player.ammo[Ord(am_crossbow)] := player.ammo[Ord(am_crossbow)] - USE_CBOW_AMMO_2;
 
   P_SpawnPlayerMissile(pmo, Ord(MT_CRBOWFX2));
-  P_SPMAngle(pmo, Ord(MT_CRBOWFX2), pmo.angle - (ANG45 div 10));
-  P_SPMAngle(pmo, Ord(MT_CRBOWFX2), pmo.angle + (ANG45 div 10));
-  P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle - (ANG45 div 5));
-  P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle + (ANG45 div 5));
+  TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CRBOWFX2), pmo.angle - (ANG45 div 10));
+  TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CRBOWFX2), pmo.angle + (ANG45 div 10));
+  TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle - (ANG45 div 5));
+  TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CRBOWFX3), pmo.angle + (ANG45 div 5));
 end;
 
 //----------------------------------------------------------------------------
@@ -1919,7 +1927,7 @@ end;
 //==============================================================================
 class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 end;
 
 end.

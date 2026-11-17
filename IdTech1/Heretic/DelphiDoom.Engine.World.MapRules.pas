@@ -185,13 +185,21 @@ type
     class procedure CrushBlood(thing: Pmobj_t); static;
   end;
 
-//==============================================================================
-// P_CheckForPushSpecial
-//
-// CheckForPushSpecial
-//
-//==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapRoutines = class sealed
+  public
+    //==============================================================================
+    // P_CheckForPushSpecial
+    //
+    // CheckForPushSpecial
+    //
+    //==============================================================================
+    class procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t); static;
+  end;
 
 
 implementation
@@ -345,7 +353,7 @@ end;
 
 class function TMapGameRules.UseSpecialLine(usething: Pmobj_t; li: Pline_t; side: integer): boolean;
 begin
-  P_UseSpecialLine(usething, li, side);
+  TSwitchRoutines.P_UseSpecialLine(usething, li, side);
   P_ActivateLine(li, usething, 0, ULAC_USE);
 
   // can't use for than one special line in a row
@@ -406,7 +414,7 @@ begin
     begin
       if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -424,7 +432,7 @@ begin
   begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
-      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+      TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
       TMapCheck.BounceLine := ld;
       exit;
@@ -467,7 +475,7 @@ begin
     begin
       if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -476,7 +484,7 @@ begin
 
     if (TMapCheck.Thing.player = nil) and ((ld.flags and ML_BLOCKMONSTERS) <> 0) then
     begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // block monsters only
       TMapCheck.BounceLine := ld;
       exit;
@@ -571,7 +579,7 @@ end;
 
 class procedure TMapGameRules.CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t);
 begin
-  P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
+  TSpecRoutines.P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
   if thing.player <> nil then
   begin
     P_ActivateLine(ld, thing, oldside, ULAC_CROSS);
@@ -711,7 +719,7 @@ begin
       if (thing.flags and MF_NOBLOOD = 0) and
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin // Ok to spawn some blood
-        P_RipperBlood(TMapCheck.Thing);
+        TMobjRoutines.P_RipperBlood(TMapCheck.Thing);
       end;
 
       if TMapCheck.Thing.info.ripsound <> 0 then
@@ -740,7 +748,7 @@ begin
     if damage <> 0 then
     begin
       if (thing.flags and MF_NOBLOOD = 0) and (P_Random < 192) then
-        P_BloodSplatter(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, thing);
+        TMobjRoutines.P_BloodSplatter(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, thing);
       P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
     end;
 
@@ -777,7 +785,7 @@ end;
 
 class procedure TMapGameRules.ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t);
 begin
-  P_ShootSpecialLine(shootthing, li);
+  TSpecRoutines.P_ShootSpecialLine(shootthing, li);
   P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
 end;
 
@@ -808,7 +816,7 @@ end;
 // CheckForPushSpecial
 //
 //==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
+class procedure TMapRoutines.P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
 begin
   if line.special <> 0 then
   begin

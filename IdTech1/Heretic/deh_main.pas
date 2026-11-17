@@ -536,7 +536,7 @@ begin
   DEH_AddAction(@THereticMonsterActions.A_BlueSpark, 'A_BlueSpark()'); // 10
   DEH_AddAction(@THereticWeaponActions.A_BoltSpark, 'A_BoltSpark()'); // 11
   DEH_AddAction(@THereticMonsterActions.A_BossDeath, 'A_BossDeath()'); // 12
-  DEH_AddAction(@A_Chase, 'A_Chase()'); // 13
+  DEH_AddAction(@TMonsterBaseActions.A_Chase, 'A_Chase()'); // 13
   DEH_AddAction(@THereticMonsterActions.A_CheckBurnGone, 'A_CheckBurnGone()'); // 14
   DEH_AddAction(@THereticMonsterActions.A_CheckSkullDone, 'A_CheckSkullDone()'); // 15
   DEH_AddAction(@THereticMonsterActions.A_CheckSkullFloor, 'A_CheckSkullFloor()'); // 16
@@ -614,7 +614,7 @@ begin
   DEH_AddAction(@A_RestoreArtifact, 'A_RestoreArtifact()'); // 88
   DEH_AddAction(@A_RestoreSpecialThing1, 'A_RestoreSpecialThing1()'); // 89
   DEH_AddAction(@A_RestoreSpecialThing2, 'A_RestoreSpecialThing2()'); // 90
-  DEH_AddAction(@A_Scream, 'A_Scream()'); // 91
+  DEH_AddAction(@TMonsterBaseActions.A_Scream, 'A_Scream()'); // 91
   DEH_AddAction(@THereticWeaponActions.A_ShutdownPhoenixPL2, 'A_ShutdownPhoenixPL2()'); // 92
   DEH_AddAction(@THereticMonsterActions.A_SkullPop, 'A_SkullPop()'); // 93
   DEH_AddAction(@THereticWeaponActions.A_SkullRodPL2Seek, 'A_SkullRodPL2Seek()'); // 94
