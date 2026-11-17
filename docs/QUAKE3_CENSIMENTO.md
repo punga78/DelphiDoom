@@ -1,4 +1,4 @@
-# Quake III Arena: dalle librerie a un eseguibile che parte (issue #254)
+﻿# Quake III Arena: dalle librerie a un eseguibile che parte (issue #254)
 
 Censimento dei moduli del C (`Reference\quake3\code`, righe contate il 2026-11-16 su `.c` e `.h`), cosa e' gia' stato portato, cosa manca per un eseguibile `Quake3` che carica un `.pk3` di OpenArena e fa giocare contro i bot, e le fasi con dipendenze. Licenza: GPL v2 o successiva (intestazione "Based on the Quake III Arena GPL Source Code"): nessuna decisione da prendere. Il gioco non si avvia in questo documento: tutto cio' che e' qui sotto "fatto" e' provato da test unitari e da programmi C compilati con gcc (`Reference\_dati\_strumenti\w64devkit`).
 
@@ -42,6 +42,7 @@ Censimento dei moduli del C (`Reference\quake3\code`, righe contate il 2026-11-1
 | 1 | Verifica dei `.qvm` di OpenArena | `Qvm` | -- | **fatta** (`Tests\DelphiDoom.Tests.Qvm`, 12 su 12; init uguale al C) |
 | 2a | Numeri e nomi di tutte le trap; dispatcher; trap comuni; init dei 12 `.qvm` attraverso l'host | 1 | 1 ondata | **fatta (questo giro)**: `IdTech4\Q3Host`, parita' sul C |
 | 2b | Host di `qagame`: cvar, comandi, configstring, `locate_game_data`, entita', `trace`, `link`/`unlink`, `entities_in_box`; file; collisione di `cgame` | 2a, 3, `Collision` | 1-2 ondate | **fatta (ondata 8)** tranne botlib: vedi par. 5 |
+| 2d | Ponte BOTLIB di `qagame`: 132 trap `BOTLIB_*` su 137 verso `BotAi` e `Aas` | 2b, `BotAi`, `Aas` | 1 ondata | **fatta (ondata 9)**: par. 6 |
 | 2c | Host di `cgame` e `ui` (non-render): snapshot, usercmd, gamestate, key catcher | 2a, 3 | 1 ondata | da fare |
 | 3 | File system (`FS_*`), cvar e comandi nell'host, console | `Wad`, `Console` | 1 ondata | da fare (#251) |
 | 4 | Server: mondo, snapshot, client; client: ciclo, parse, `cl_cgame`; parita' con `parsegen.c` e una demo `.dm_68` | 2b, 2c, 3, `NetQ3` | 2-3 ondate | da fare |
@@ -69,3 +70,11 @@ Codice e dettagli in `IdTech4\Q3Host` (README e CLAUDE.md); qui i numeri. Tutto 
 - **Fin dove arrivano i 12 `.qvm`** di OpenArena (cartella vera, file system di `Framework\Wad`, mappa `oa_dm1`): **`qagame` esegue `GAME_INIT`, un client che si connette e inizia, e 100 fotogrammi fino in fondo**: baseoa 15389 chiamate di sistema, missionpack 11277 (zero trap non risposte; `bot_enable` e' 0, quindi nessuna `BOTLIB_*`). `cgame`: 5 chiamate poi `CG_R_REGISTERSHADER`; `ui`: baseoa 864 chiamate poi `UI_GETGLCONFIG`, missionpack 110. Il fermarsi di cgame e ui e' il renderer (fase 5), non un servizio mancante di questa fase. L'inizializzazione uguale al C (fase 2a) non e' cambiata. Golden: `Tests\Data\Q3Host\reach.golden.txt`.
 - **Trap che restano** (`Tests\Data\Q3Host\unhandled.golden.txt`, 272): `qagame` 142 = 137 `BOTLIB_*` (setup, libvar, `PC_*`, `AAS_*`, `EA_*`, `AI_*`) + 5 `TRAP_*` matematiche di vettori; `cgame` 61 = renderer (`CG_R_*` 20, `CG_GETGLCONFIG`, `CG_UPDATESCREEN`, `CG_CM_LOADMODEL`, `CG_CM_MARKFRAGMENTS`), suono (`CG_S_*` 11), stato del client (`CG_GETGAMESTATE`, snapshot, comandi del server, usercmd), tasti (4), parser (`CG_PC_*` 5), filmati (5), `CG_MEMORY_REMAINING`, `CG_SENDCLIENTCOMMAND`; `ui` 66 = renderer 13, suono 4, tasti 9, `UI_LAN_*` 18, filmati 5, parser 5, stato del client, appunti, chiavi CD, `UI_GETGLCONFIG`, `UI_MEMORY_REMAINING`, `UI_VERIFY_CDKEY`.
 - **Non fatto in questo giro**: il ponte `BOTLIB_*` (137 trap: la parte grande, handle e numeri verso `IdTech4\BotAi` e `IdTech4\Aas`: fase 2d); `IdTech4\Pmove` non ha trap (il codice di `bg_pmove.c` e' dentro i `.qvm`, che usano `G_TRACE` e `CG_CM_BOXTRACE`, ora serviti).
+
+## 6. Cosa ha fatto la fase 2d (ondata 9, 2026-11-17)
+
+`IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.*` (README e CLAUDE.md della libreria): `be_interface.c`, i `BotImport_*` di `sv_bot.c` e le 132 trap `BOTLIB_*` di `qagame` (non le quattro `PC_*` di sorgente, che nessun modulo chiama). Layout delle strutture sui veri header (`botlayout.golden.txt`); 14 test di layout e 25 di chiamate, Win32 e Win64.
+
+- **Misura** (`reach.bots.golden.txt`): con `bot_enable 1`, `.aas` e BSP veri di `oa_dm1`, `GAME_INIT`, un fotogramma, due `addbot`, 300 fotogrammi con `BOTAI_START_FRAME` prima di `GAME_RUN_FRAME`. **missionpack: 300 fotogrammi fino in fondo, 433006 chiamate di sistema, 332592 BOTLIB (5120 `BOTLIB_UPDATENTITY` ogni 5 fotogrammi, tutte le 1024 entita'), 67 BOTLIB distinte, nessun errore della libreria, Win32 = Win64.** **baseoa: `qagame` carica botlib, mappa, item e istanzia le AI del bot (20 BOTLIB distinte) e poi il QVM si ferma con `OP_BLOCK_COPY not dword aligned` in `ClientUserinfoChanged` del bot**; causa non trovata, aperta.
+- `unhandled.golden.txt`: qagame 188 trap registrate su 197; restano 4 `BOTLIB_PC_*`, `TRAP_MATRIXMULTIPLY`, `TRAP_ANGLEVECTORS`, `TRAP_PERPENDICULARVECTOR`, `TRAP_TESTPRINTINT/FLOAT` (questi ultimi due non sono nello `switch` del C). cgame 61 e ui 66 restano come prima.
+- **Resta**: il server vero che da' lo snapshot, lo userinfo e i comandi affidabili ai bot (fase 4: oggi `TQ3HostBotServer` e' senza rete e i bot non vedono entita' se nessuno chiama `SetSnapshot`), la causa dello stop di baseoa.

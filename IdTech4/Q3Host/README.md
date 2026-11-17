@@ -46,3 +46,23 @@ Una trap che il modulo ha e nessuno ha registrato solleva `EQ3UnhandledSyscallEx
 **Difetti del C conservati**: nessuno rilevante. **Differenze volute**: (1) un intervallo di memoria (`memset`, `memcpy`, `strncpy`) che esce dall'immagine del programma e' un'eccezione (`EQvmExecutionException`); il C maschera l'indirizzo e poi si fida della lunghezza, cioe' legge e scrive memoria del processo; (2) un puntatore a stringa nullo e' `EQ3HostException` (il C legge l'indirizzo 0); (3) `memset` e `memcpy` rispondono 0 come il C, `strncpy` l'indirizzo di destinazione nel programma (il C da' il puntatore dell'host troncato a 32 bit, inutilizzabile); (4) `sqrt` di un negativo da' il NaN `FFC00000`, `sin(-0)` da' `-0` anche a Win64 (la RTL lo perde): ogni NaN e' considerato uguale a un altro NaN nel confronto col C (segno e payload dipendono dall'unita' in virgola mobile).
 
 Parita': vedi `CLAUDE.md`.
+
+## Fase 2d: il ponte BOTLIB di qagame
+
+`TQ3HostServices.Bot` (`Files`: i botfiles e le mappe `.aas` come `IBotFileSource`; `Server`: `IQ3HostBotServer`, `TQ3HostBotServer` ne e' una senza rete; `Random`: nil e' il `rand()` del runtime Microsoft, seme 1). Con `Files` il gruppo si registra nell'host di qagame.
+
+| C | Pascal |
+|---|---|
+| `Export_BotLibSetup/Shutdown/StartFrame/LoadMap/UpdateEntity/VarSet/VarGet` (`be_interface.c`), `SV_BotLibSetup` | `TQ3BotLibrary`, `TQ3BotCoreSyscalls` |
+| `BotImport_*` (`sv_bot.c`): `Print` con `^3Warning: `, `^1Error: `, `^1Fatal: `, `Trace`, `EntityTrace`, `PointContents`, `inPVS`, `BSPEntityData`, `BSPModelMinsMaxsOrigin`, `BotClientCommand` | `TQ3BotImport`, `TQ3BotBsp`, `IQ3HostBotServer` |
+| `SV_BotGetConsoleMessage`, `SV_BotGetSnapshotEntity`, `SV_ClientThink` (`BOTLIB_USER_COMMAND`) | `TQ3HostBotServer`, `TQ3BotCoreSyscalls` (chiamata annidata di `GAME_CLIENT_THINK`) |
+| `aas_export_t` (22 trap `BOTLIB_AAS_*`) | `IQ3BotAas`, `TQ3BotAas`, `TQ3BotAasSyscalls` |
+| `ea_export_t` (25 `BOTLIB_EA_*`), `ai_export_t` (caratteri, chat, obiettivi, movimento, armi, genetica) | `TQ3BotEaSyscalls`, `TQ3BotChatSyscalls`, `TQ3BotGoalSyscalls`, `TQ3BotMoveSyscalls` su `IBotAi` di `IdTech4\BotAi` |
+
+**Non portato**: `BOTLIB_PC_LOAD_SOURCE`, `_FREE_SOURCE`, `_READ_TOKEN`, `_SOURCE_FILE_AND_LINE` (nessun modulo li chiama), `BOTLIB_TEST` risponde 0 (disegno di debug), `Log_Write` non scrive `botlib.log`, `TRAP_MATRIXMULTIPLY`, `TRAP_ANGLEVECTORS`, `TRAP_PERPENDICULARVECTOR`.
+
+**Difetti del C conservati**: `BOTLIB_EA_ACTION` risponde -1 (`break` e poi `return -1`); `ValidEntityNumber` accetta `num == maxentities`; `BOTLIB_AI_GET_WEAPON_INFO`, `GET_TOP_GOAL`, `NEXT_CONSOLE_MESSAGE`, `GET_LEVEL_ITEM_GOAL`, `MOVEMENT_VIEW_TARGET` scrivono la struttura solo dove il C la scrive; `AAS_TraceAreas` azzera `areas[0]` anche senza mappa; `BOTLIB_AAS_VALUE_FOR_BSP_EPAIR_KEY` azzera `value[0]` prima di tutto.
+
+**Differenze volute**: (1) `bot_consolemessage_t.prev/next` sono 0 (il C copia puntatori dell'host); (2) un'entita' con numero `== maxentities` e' `EAasEntityException` (il C scrive oltre la tabella); (3) l'inventario passato per puntatore e' letto per 256 interi (`MAX_ITEMS` del game: il C non conosce la lunghezza); (4) il testo cambiato sul posto (`UnifyWhiteSpaces`, `BotReplaceSynonyms`) e' scritto in un buffer da 256; (5) `PC_AddGlobalDefine` risponde 1 e non tiene il define; (6) il server senza rete scarta il comando affidabile piu' vecchio invece di buttare fuori il client; (7) `BOTLIB_GET_SNAPSHOT_ENTITY` e' -1 finche' il server non da' lo snapshot (`SetSnapshot`).
+
+**Dopo la lettura del layout**: `bot_input_t` 40 byte, `bot_goal_t` 56, `aas_entityinfo_t` 140, `weaponinfo_t` 552, `bot_match_t` 328 (`char offset` + 3 di riempimento), `aas_altroutegoal_t` 24 (tre `unsigned short` e 2 byte di riempimento non scritti), `bot_consolemessage_t` 276.
