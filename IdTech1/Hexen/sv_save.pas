@@ -1116,7 +1116,7 @@ begin
       incp(saveptr, P_RecordDiskSize(TypeInfo(playertracehistory_t)));
     end;
     TGameSession.Players[i].mo := nil; // Will be set when unarc thinker
-    P_ClearMessage(@TGameSession.Players[i]);
+    TInterRoutines.P_ClearMessage(@TGameSession.Players[i]);
     TGameSession.Players[i].attacker := nil;
     TGameSession.Players[i].poisoner := nil;
     for j := 0 to Ord(NUMPSPRITES) - 1 do
@@ -1824,7 +1824,7 @@ begin
       TGameSession.Players[i].plinetarget := P_FindMobjFromKey(NativeInt(TGameSession.Players[i].plinetarget));
 
   P_CreateTIDList;
-  P_InitCreatureCorpseQueue(true); // true := scan for corpses
+  THexenMonsterActions.P_InitCreatureCorpseQueue(true); // true := scan for corpses
 end;
 
 //==============================================================================
@@ -2725,7 +2725,7 @@ begin
     if not TGameSession.PlayerInGame[i] then
       continue;
     TGameSession.Players[i] := playerBackup[i];
-    P_ClearMessage(@TGameSession.Players[i]);
+    TInterRoutines.P_ClearMessage(@TGameSession.Players[i]);
     TGameSession.Players[i].attacker := nil;
     TGameSession.Players[i].poisoner := nil;
 

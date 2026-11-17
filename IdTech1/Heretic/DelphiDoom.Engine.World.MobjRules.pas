@@ -220,44 +220,53 @@ type
     class procedure FootClipOnFloor(mobj: Pmobj_t; sec: Psector_t); static;
   end;
 
-//==============================================================================
-//
-// P_BlasterMobjThinker
-//
-//==============================================================================
-procedure P_BlasterMobjThinker(mobj: Pmobj_t);
-
-//==============================================================================
-//
-// P_SpawnMissileAngle
-//
-//==============================================================================
-function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t; momz: fixed_t): Pmobj_t;
-
-//==============================================================================
-//
-// P_BloodSplatter
-//
-//==============================================================================
-procedure P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t);
-
-//==============================================================================
-//
-// P_RipperBlood
-//
-//==============================================================================
-procedure P_RipperBlood(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_SPMAngle
-//
-//==============================================================================
-function P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t;
-
 var
   PuffType: mobjtype_t;
   MissileMobj: Pmobj_t;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_BlasterMobjThinker
+    //
+    //==============================================================================
+    class procedure P_BlasterMobjThinker(mobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_SpawnMissileAngle
+    //
+    //==============================================================================
+    class function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t; momz: fixed_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // P_BloodSplatter
+    //
+    //==============================================================================
+    class procedure P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_RipperBlood
+    //
+    //==============================================================================
+    class procedure P_RipperBlood(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_SPMAngle
+    //
+    //==============================================================================
+    class function P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t; static;
+  end;
+
 
 implementation
 
@@ -338,6 +347,16 @@ const
   windTab: array[0..2] of integer = (2048 * 5, 2048 * 10, 2048 * 25);
 
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjLocalRoutines = class sealed
+  public
+    class procedure P_FloorBounceMissile(mo: Pmobj_t); static;
+  end;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_FloorBounceMissile
@@ -345,7 +364,7 @@ const
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_FloorBounceMissile(mo: Pmobj_t);
+class procedure TMobjLocalRoutines.P_FloorBounceMissile(mo: Pmobj_t);
 begin
   mo.momz := -mo.momz;
   P_SetMobjState(mo, statenum_t(mobjinfo[mo._type].deathstate));
@@ -447,7 +466,7 @@ begin
       mo.z := mo.floorz;
       if (mo.flags2 and MF2_FLOORBOUNCE <> 0) or (mo.flags3_ex and MF3_EX_FLOORBOUNCE <> 0) then
       begin
-        P_FloorBounceMissile(mo);
+        TMobjLocalRoutines.P_FloorBounceMissile(mo);
         exit;
       end
       else if mo._type = Ord(MT_MNTRFX2) then
@@ -693,7 +712,7 @@ end;
 // Thinker for the ultra-fast blaster PL2 ripper-spawning missile.
 //
 //==============================================================================
-procedure P_BlasterMobjThinker(mobj: Pmobj_t);
+class procedure TMobjRoutines.P_BlasterMobjThinker(mobj: Pmobj_t);
 var
   i: integer;
   xfrac: fixed_t;
@@ -862,7 +881,7 @@ begin
   // Check for boss spots
   if mthing._type = 56 then // Monster_BossSpot
   begin
-    P_AddBossSpot(mthing.x * FRACUNIT, mthing.y * FRACUNIT,  ANG1 * mthing.angle);
+    THereticMonsterActions.P_AddBossSpot(mthing.x * FRACUNIT, mthing.y * FRACUNIT,  ANG1 * mthing.angle);
     result := True;
     exit;
   end;
@@ -902,7 +921,7 @@ begin
     Ord(MT_WMACE):
       begin
         if gamemode <> shareware then // Put in the mace spot list
-          P_AddMaceSpot(mthing);
+          THereticWeaponActions.P_AddMaceSpot(mthing);
         result := True;
       end;
   end;
@@ -951,7 +970,7 @@ end;
 // PROC P_BloodSplatter
 //
 //==============================================================================
-procedure P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t);
+class procedure TMobjRoutines.P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -971,7 +990,7 @@ end;
 // PROC P_RipperBlood
 //
 //==============================================================================
-procedure P_RipperBlood(mo: Pmobj_t);
+class procedure TMobjRoutines.P_RipperBlood(mo: Pmobj_t);
 var
   th: Pmobj_t;
   x, y, z: fixed_t;
@@ -1054,7 +1073,7 @@ end;
 // a mobj_t pointer to the missile.
 //
 //==============================================================================
-function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t; momz: fixed_t): Pmobj_t;
+class function TMobjRoutines.P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t; momz: fixed_t): Pmobj_t;
 var
   th: Pmobj_t;
   z: fixed_t;
@@ -1290,7 +1309,7 @@ end;
 // PROC P_SPMAngle
 //
 //==============================================================================
-function P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t;
+class function TMobjRoutines.P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t;
 var
   th: Pmobj_t;
   an: angle_t;

@@ -563,7 +563,7 @@ begin
   if ld.backsector = nil then
   begin
     TMapGameRules.BlastedHitsWall(TMapCheck.Thing);
-    P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+    TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
     result := false;  // one sided line
     TMapCheck.BounceLine := ld;
     exit;
@@ -658,7 +658,7 @@ begin
   if ld.backsector = nil then
   begin
     TMapGameRules.BlastedHitsWall(TMapCheck.Thing);
-    P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+    TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
     result := false;  // one sided line
     TMapCheck.BounceLine := ld;
     exit;
@@ -1338,7 +1338,7 @@ var
         // see if the line was crossed
         ld := TMapCheck.SpecHit[numSpecHitTemp];
         side := P_PointOnLineSide(thing.x, thing.y, ld);
-        P_CheckForPushSpecial(ld, side, thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, side, thing);
       end;
     end;
   end;

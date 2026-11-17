@@ -226,7 +226,7 @@ begin
   if CPlayer.mo.health >= 0 then
   begin
     P_DamageMobj(CPlayer.mo, nil, CPlayer.mo, 10000);
-    P_SetMessage(CPlayer, TXT_CHEATIDDQD, true);
+    TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATIDDQD, true);
   end;
 end;
 
@@ -373,7 +373,7 @@ begin
   if not SB_CmdCheckPlayerStatus then
     exit;
 
-  P_Massacre;
+  THereticMonsterActions.P_Massacre;
   CPlayer._message := TXT_CHEATMASSACRE;
 end;
 
@@ -397,7 +397,7 @@ begin
   CPlayer.health := health;
   CPlayer.mo.health := health;
 
-  P_SetMessage(CPlayer, TXT_CHEATHEALTH, false);
+  TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATHEALTH, false);
 end;
 
 //==============================================================================
@@ -409,9 +409,9 @@ procedure SB_CmdCheatSoundFunc;
 begin
   DebugSound := not DebugSound;
   if DebugSound then
-    P_SetMessage(CPlayer, TXT_CHEATSOUNDON, true)
+    TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATSOUNDON, true)
   else
-    P_SetMessage(CPlayer, TXT_CHEATSOUNDOFF, true);
+    TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATSOUNDOFF, true);
 end;
 
 //==============================================================================
@@ -483,7 +483,7 @@ begin
         SB_GiveArtifacts(arti_superhealth, p_maxartifacts);
         SB_GiveArtifacts(arti_teleport, p_maxartifacts);
       end;
-      P_SetMessage(CPlayer, TXT_ARTIALL);
+      TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIALL);
     end
     else
     begin
@@ -555,37 +555,37 @@ begin
     arti_health:
       begin
         SB_GiveArtifacts(arti_health, howmany);
-        P_SetMessage(CPlayer, TXT_ARTIHEALTH);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIHEALTH);
       end;
 
     arti_fly:
       begin
         SB_GiveArtifacts(arti_fly, howmany);
-        P_SetMessage(CPlayer, TXT_ARTIFLY);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIFLY);
       end;
 
     arti_invulnerability:
       begin
         SB_GiveArtifacts(arti_invulnerability, howmany);
-        P_SetMessage(CPlayer, TXT_ARTIINVULNERABILITY);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIINVULNERABILITY);
       end;
 
     arti_tomeofpower: // Arti_TomeOfPower
       begin
         SB_GiveArtifacts(arti_tomeofpower, howmany);
-        P_SetMessage(CPlayer, TXT_ARTITOMEOFPOWER);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTITOMEOFPOWER);
       end;
 
     arti_invisibility:
       begin
         SB_GiveArtifacts(arti_invisibility, howmany);
-        P_SetMessage(CPlayer, TXT_ARTIINVISIBILITY, false);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIINVISIBILITY, false);
       end;
 
     arti_egg:
       begin
         SB_GiveArtifacts(arti_egg, howmany);
-        P_SetMessage(CPlayer, TXT_ARTIEGG, false);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIEGG, false);
       end;
 
     arti_superhealth:
@@ -593,22 +593,22 @@ begin
         if gamemode <> shareware then
         begin
           SB_GiveArtifacts(arti_superhealth, howmany);
-          P_SetMessage(CPlayer, TXT_ARTISUPERHEALTH, false);
+          TInterRoutines.P_SetMessage(CPlayer, TXT_ARTISUPERHEALTH, false);
         end
         else
-          P_SetMessage(CPlayer, TXT_CHEATARTIFACTSFAIL, false);
+          TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATARTIFACTSFAIL, false);
       end;
 
     arti_torch:
       begin
         SB_GiveArtifacts(arti_torch, howmany);
-        P_SetMessage(CPlayer, TXT_ARTITORCH);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTITORCH);
       end;
 
     arti_firebomb:
       begin
         SB_GiveArtifacts(arti_firebomb, howmany);
-        P_SetMessage(CPlayer, TXT_ARTIFIREBOMB);
+        TInterRoutines.P_SetMessage(CPlayer, TXT_ARTIFIREBOMB);
       end;
 
     arti_teleport:
@@ -616,10 +616,10 @@ begin
         if gamemode <> shareware then
         begin
           SB_GiveArtifacts(arti_teleport, howmany);
-          P_SetMessage(CPlayer, TXT_ARTITELEPORT);
+          TInterRoutines.P_SetMessage(CPlayer, TXT_ARTITELEPORT);
         end
         else
-          P_SetMessage(CPlayer, TXT_CHEATARTIFACTSFAIL, false);
+          TInterRoutines.P_SetMessage(CPlayer, TXT_CHEATARTIFACTSFAIL, false);
       end;
   end;
 end;

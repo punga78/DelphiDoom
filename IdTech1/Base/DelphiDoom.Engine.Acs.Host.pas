@@ -423,7 +423,7 @@ begin
   else
     LPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
   {$IFDEF HEXEN}
-  P_SetMessage(LPlayer, AText, True);
+  TInterRoutines.P_SetMessage(LPlayer, AText, True);
   {$ELSE}
   LPlayer._message := AText;
   {$ENDIF}
@@ -437,7 +437,7 @@ begin
     if TGameSession.PlayerInGame[LIndex] then
     begin
       {$IFDEF HEXEN}
-      P_SetMessage(@TGameSession.Players[LIndex], AText, True);
+      TInterRoutines.P_SetMessage(@TGameSession.Players[LIndex], AText, True);
       {$ELSE}
       TGameSession.Players[LIndex]._message := AText;
       {$ENDIF}
@@ -447,7 +447,7 @@ end;
 procedure TEngineAcsHost.ShowConsoleMessage(const AText: string);
 begin
   {$IFDEF HEXEN}
-  P_SetMessage(@TGameSession.Players[TGameSession.ConsolePlayer], AText, True);
+  TInterRoutines.P_SetMessage(@TGameSession.Players[TGameSession.ConsolePlayer], AText, True);
   {$ELSE}
   TGameSession.Players[TGameSession.ConsolePlayer]._message := AText;
   {$ENDIF}

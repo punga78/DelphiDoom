@@ -150,14 +150,14 @@ end;
 procedure TEngineScriptPlayers.UseArtifact(const APlayer: Integer; const AArtifact: Integer);
 begin
 {$IFDEF HERETIC_OR_HEXEN}
-  P_PlayerUseArtifact(@TGameSession.Players[APlayer], artitype_t(AArtifact));
+  TUserRoutines.P_PlayerUseArtifact(@TGameSession.Players[APlayer], artitype_t(AArtifact));
 {$ENDIF}
 end;
 
 function TEngineScriptPlayers.GiveArtifact(const APlayer: Integer; const AArtifact: Integer): Boolean;
 begin
 {$IFDEF HERETIC_OR_HEXEN}
-  Result := P_GiveArtifact(@TGameSession.Players[APlayer], artitype_t(AArtifact), nil);
+  Result := TInterRoutines.P_GiveArtifact(@TGameSession.Players[APlayer], artitype_t(AArtifact), nil);
 {$ELSE}
   Result := False;
 {$ENDIF}

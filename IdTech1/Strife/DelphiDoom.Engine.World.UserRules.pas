@@ -87,33 +87,42 @@ type
     class procedure ClampViewZ(const player: Pplayer_t); static; inline;
   end;
 
-//==============================================================================
-//
-// P_UseInventoryItem
-//
-//==============================================================================
-function P_UseInventoryItem(player: Pplayer_t; item: integer): boolean;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_UseInventoryItem
+    //
+    //==============================================================================
+    class function P_UseInventoryItem(player: Pplayer_t; item: integer): boolean; static;
 
-//==============================================================================
-//
-// P_DropInventoryItem
-//
-//==============================================================================
-procedure P_DropInventoryItem(player: Pplayer_t; sprite: integer);
+    //==============================================================================
+    //
+    // P_DropInventoryItem
+    //
+    //==============================================================================
+    class procedure P_DropInventoryItem(player: Pplayer_t; sprite: integer); static;
 
-//==============================================================================
-//
-// P_RemoveInventoryItem
-//
-//==============================================================================
-function P_RemoveInventoryItem(player: Pplayer_t; slot: integer; amount: integer): string;
+    //==============================================================================
+    //
+    // P_RemoveInventoryItem
+    //
+    //==============================================================================
+    class function P_RemoveInventoryItem(player: Pplayer_t; slot: integer; amount: integer): string; static;
 
-//==============================================================================
-//
-// P_ItemBehavior
-//
-//==============================================================================
-function P_ItemBehavior(player: Pplayer_t; item: integer): boolean;
+    //==============================================================================
+    //
+    // P_ItemBehavior
+    //
+    //==============================================================================
+    class function P_ItemBehavior(player: Pplayer_t; item: integer): boolean; static;
+  end;
+
 
 implementation
 
@@ -167,7 +176,7 @@ uses
 // villsa [STRIFE] new function
 //
 //==============================================================================
-function P_RemoveInventoryItem(player: Pplayer_t; slot: integer; amount: integer): string;
+class function TUserRoutines.P_RemoveInventoryItem(player: Pplayer_t; slot: integer; amount: integer): string;
 var
   _type: integer;
   j: integer;
@@ -213,7 +222,7 @@ end;
 // villsa [STRIFE] new function
 //
 //==============================================================================
-procedure P_DropInventoryItem(player: Pplayer_t; sprite: integer);
+class procedure TUserRoutines.P_DropInventoryItem(player: Pplayer_t; sprite: integer);
 var
   invslot: integer;
   item: Pinventory_t;
@@ -294,6 +303,16 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserLocalRoutines = class sealed
+  public
+    class function P_SpawnTeleportBeacon(player: Pplayer_t): boolean; static;
+  end;
+
 //==============================================================================
 //
 // P_SpawnTeleportBeacon
@@ -302,7 +321,7 @@ end;
 // haleyjd 20140918: bug fixed to propagate allegiance properly.
 //
 //==============================================================================
-function P_SpawnTeleportBeacon(player: Pplayer_t): boolean;
+class function TUserLocalRoutines.P_SpawnTeleportBeacon(player: Pplayer_t): boolean;
 var
   angle: angle_t;
   r: integer;
@@ -354,7 +373,7 @@ end;
 // villsa [STRIFE] new function
 //
 //==============================================================================
-function P_UseInventoryItem(player: Pplayer_t; item: integer): boolean;
+class function TUserRoutines.P_UseInventoryItem(player: Pplayer_t; item: integer): boolean;
 var
   i: integer;
   name: string;
@@ -399,7 +418,7 @@ end;
 // villsa [STRIFE] new function
 //
 //==============================================================================
-function P_ItemBehavior(player: Pplayer_t; item: integer): boolean;
+class function TUserRoutines.P_ItemBehavior(player: Pplayer_t; item: integer): boolean;
 begin
   case item of
     Ord(SPR_ARM1):  // 136
@@ -416,13 +435,13 @@ begin
 
     Ord(SPR_SHD1):  // 186
       begin
-        result := P_GivePower(player, Ord(pw_invisibility));
+        result := TInterRoutines.P_GivePower(player, Ord(pw_invisibility));
         exit;
       end;
 
     Ord(SPR_MASK):  // 187
       begin
-        result := P_GivePower(player, Ord(pw_ironfeet));
+        result := TInterRoutines.P_GivePower(player, Ord(pw_ironfeet));
         exit;
       end;
 
@@ -459,13 +478,13 @@ begin
 
     Ord(SPR_BEAC):  // 135
       begin
-        result := P_SpawnTeleportBeacon(player);
+        result := TUserLocalRoutines.P_SpawnTeleportBeacon(player);
         exit;
       end;
 
     Ord(SPR_TARG):  // 108
       begin
-        result := P_GivePower(player, Ord(pw_targeter));
+        result := TInterRoutines.P_GivePower(player, Ord(pw_targeter));
         exit;
       end;
   end;
@@ -687,11 +706,11 @@ begin
     if not player.inventorydown then
     begin
       if cmd.buttons2 and BT2_HEALTH <> 0 then
-        P_UseInventoryItem(player, Ord(SPR_FULL))
+        TUserRoutines.P_UseInventoryItem(player, Ord(SPR_FULL))
       else if cmd.buttons2 and BT2_INVUSE <> 0 then
-        P_UseInventoryItem(player, cmd.inventory)
+        TUserRoutines.P_UseInventoryItem(player, cmd.inventory)
       else if cmd.buttons2 and BT2_INVDROP <> 0 then
-        P_DropInventoryItem(player, cmd.inventory);
+        TUserRoutines.P_DropInventoryItem(player, cmd.inventory);
 
       player.inventorydown := true;
     end

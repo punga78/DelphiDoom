@@ -185,24 +185,33 @@ type
     class procedure CrushBlood(thing: Pmobj_t); static;
   end;
 
-//==============================================================================
-// P_CheckForPushSpecial
-//
-// CheckForPushSpecial
-//
-//==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
-
-
-//==============================================================================
-//
-// P_CheckPositionZ
-//
-//==============================================================================
-function P_CheckPositionZ(thing: Pmobj_t; height: fixed_t): boolean;
-
 var
   blockingline: Pline_t;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapRoutines = class sealed
+  public
+    //==============================================================================
+    // P_CheckForPushSpecial
+    //
+    // CheckForPushSpecial
+    //
+    //==============================================================================
+    class procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckPositionZ
+    //
+    //==============================================================================
+    class function P_CheckPositionZ(thing: Pmobj_t; height: fixed_t): boolean; static;
+  end;
+
+
 implementation
 
 uses
@@ -366,7 +375,7 @@ end;
 
 class function TMapGameRules.UseSpecialLine(usething: Pmobj_t; li: Pline_t; side: integer): boolean;
 begin
-  P_UseSpecialLine(usething, li, side);
+  TSwitchRoutines.P_UseSpecialLine(usething, li, side);
   P_ActivateLine(li, usething, 0, ULAC_USE);
 
   // can't use for than one special line in a row
@@ -440,7 +449,7 @@ begin
     begin
       if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -470,7 +479,7 @@ begin
     if (ld.flags and ML_BLOCKING <> 0) and
        ((ld.flags and ML_JUMPOVER = 0) or (TMapCheck.FloorZ + (32 * FRACUNIT) > TMapCheck.Thing.z)) then
     begin
-      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+      TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
       TMapCheck.BounceLine := ld;
       exit;
@@ -518,7 +527,7 @@ begin
     if (TMapCheck.Thing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
        (TMapCheck.Thing.flags and MF_FLOAT = 0) then
     begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // block monsters only
       TMapCheck.BounceLine := ld;
       exit;
@@ -604,7 +613,7 @@ end;
 
 class procedure TMapGameRules.CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t);
 begin
-  P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
+  TSpecRoutines.P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
   if thing.player <> nil then
   begin
     P_ActivateLine(ld, thing, oldside, ULAC_CROSS);
@@ -709,11 +718,11 @@ begin
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin
         if thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-          P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage)
+          TMobjRoutines.P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage)
         else if thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-          P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage)
+          TMobjRoutines.P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage)
         else
-          P_SpawnBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
+          TMobjRoutines.P_SpawnBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
       end;
 
       A_RipSound1(TMapCheck.Thing);
@@ -782,7 +791,7 @@ end;
 
 class procedure TMapGameRules.ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t);
 begin
-  P_ShootSpecialLine(shootthing, li);
+  TSpecRoutines.P_ShootSpecialLine(shootthing, li);
   P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
 end;
 
@@ -809,16 +818,16 @@ begin
   // Spawn bullet puffs or blood spots,
   // depending on target type.
   if intr.d.thing.flags and MF_NOBLOOD <> 0 then
-    P_SpawnSparkPuff(x, y, z) // villsa [STRIFE] call spark puff function instead
+    TMobjRoutines.P_SpawnSparkPuff(x, y, z) // villsa [STRIFE] call spark puff function instead
   else
   begin
   // JVAL 18/09/2009 Added Blue and Green blood spawners
     if intr.d.thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-      P_SpawnBlueBlood(x, y, z, TMapAim.Damage)
+      TMobjRoutines.P_SpawnBlueBlood(x, y, z, TMapAim.Damage)
     else if intr.d.thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-      P_SpawnGreenBlood(x, y, z, TMapAim.Damage)
+      TMobjRoutines.P_SpawnGreenBlood(x, y, z, TMapAim.Damage)
     else
-      P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
+      TMobjRoutines.P_SpawnBlood(x, y, z, TMapAim.Damage, intr.d.thing);
   end;
 
   P_DamageMobj(th, TMapAim.ShootThing, TMapAim.ShootThing, TMapAim.Damage);
@@ -833,7 +842,7 @@ end;
 // CheckForPushSpecial
 //
 //==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
+class procedure TMapRoutines.P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
 begin
   if line.special <> 0 then
   begin
@@ -881,10 +890,10 @@ begin
       thing.flags4_ex := thing.flags4_ex or MF4_EX_DONTGIB;
     end
     else if thing.flags4_ex and MF4_EX_DONTGIB = 0 then
-      A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
+      TStrifeMonsterActions.A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
   end
   else
-    A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
+    TStrifeMonsterActions.A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
 
   thing.flags := thing.flags and not MF_SOLID;
   thing.height := 0;
@@ -939,7 +948,7 @@ end;
 // Check colliding things on top of one another; ie., 3D Object Clipping
 //
 //==============================================================================
-function P_CheckPositionZ(thing: Pmobj_t; height: fixed_t): boolean;
+class function TMapRoutines.P_CheckPositionZ(thing: Pmobj_t; height: fixed_t): boolean;
 var
   x, y, z: fixed_t;
   xl, xh, yl, yh, bx, by: integer;

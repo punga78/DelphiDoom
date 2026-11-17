@@ -327,7 +327,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_MeleeSound(actor, actor);
     if actor.state.params = nil then
@@ -439,7 +439,7 @@ end;
 //==============================================================================
 procedure A_FastChase(actor: Pmobj_t);
 begin
-  P_DoChase(actor, true);
+  TStrifeMonsterActions.P_DoChase(actor, true);
 end;
 
 //==============================================================================
@@ -514,7 +514,7 @@ var
 begin
   A_FaceTarget(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_MeleeSound(actor, actor);
     P_DamageMobj(actor.target, actor, actor, actor.info.meleedamage);

@@ -189,41 +189,6 @@ type
 
 //==============================================================================
 //
-// P_FloorBounceMissile
-//
-//==============================================================================
-procedure P_FloorBounceMissile(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_BlasterMobjThinker
-//
-//==============================================================================
-procedure P_BlasterMobjThinker(mobj: Pmobj_t);
-
-//==============================================================================
-//
-// P_PlayerLandedOnThing
-//
-//==============================================================================
-procedure P_PlayerLandedOnThing(mo: Pmobj_t; onmobj: Pmobj_t);
-
-//==============================================================================
-//
-// P_InsertMobjIntoTIDList
-//
-//==============================================================================
-procedure P_InsertMobjIntoTIDList(mobj: Pmobj_t; tid: integer);
-
-//==============================================================================
-//
-// P_RemoveMobjFromTIDList
-//
-//==============================================================================
-procedure P_RemoveMobjFromTIDList(mobj: Pmobj_t);
-
-//==============================================================================
-//
 // P_FindMobjFromTID
 //
 //==============================================================================
@@ -236,69 +201,113 @@ function P_FindMobjFromTID(tid: integer; searchPosition: PInteger): Pmobj_t; ove
 //==============================================================================
 function P_FindMobjFromTID(tid: integer; searchPosition: PInteger; var mo: Pmobj_t): Pmobj_t; overload;
 
-//==============================================================================
-//
-// P_BloodSplatter
-//
-//==============================================================================
-procedure P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t);
-
-//==============================================================================
-//
-// P_BloodSplatter2
-//
-//==============================================================================
-procedure P_BloodSplatter2(x, y, z: fixed_t; originator: Pmobj_t);
-
-//==============================================================================
-//
-// P_RipperBlood
-//
-//==============================================================================
-procedure P_RipperBlood(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_SpawnMissileAngle
-//
-//==============================================================================
-function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t;
-  momz: fixed_t): Pmobj_t;
-
-//==============================================================================
-//
-// P_SpawnMissileAngleSpeed
-//
-//==============================================================================
-function P_SpawnMissileAngleSpeed(source: Pmobj_t; _type: integer;
-  angle: angle_t; momz: fixed_t; speed: fixed_t): Pmobj_t;
-
-//==============================================================================
-//
-// P_SPMAngle
-//
-//==============================================================================
-function P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t;
-
-//==============================================================================
-//
-// P_SPMAngleXYZ
-//
-//==============================================================================
-function P_SPMAngleXYZ(source: Pmobj_t; x, y, z: fixed_t; _type: integer;
-  angle: angle_t): Pmobj_t;
-
-//==============================================================================
-//
-// P_SpawnKoraxMissile
-//
-//==============================================================================
-function P_SpawnKoraxMissile(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t;
-  _type: integer): Pmobj_t;
-
 var
   PuffType: mobjtype_t;
   MissileMobj: Pmobj_t;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_FloorBounceMissile
+    //
+    //==============================================================================
+    class procedure P_FloorBounceMissile(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_BlasterMobjThinker
+    //
+    //==============================================================================
+    class procedure P_BlasterMobjThinker(mobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_PlayerLandedOnThing
+    //
+    //==============================================================================
+    class procedure P_PlayerLandedOnThing(mo: Pmobj_t; onmobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_InsertMobjIntoTIDList
+    //
+    //==============================================================================
+    class procedure P_InsertMobjIntoTIDList(mobj: Pmobj_t; tid: integer); static;
+
+    //==============================================================================
+    //
+    // P_RemoveMobjFromTIDList
+    //
+    //==============================================================================
+    class procedure P_RemoveMobjFromTIDList(mobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_BloodSplatter
+    //
+    //==============================================================================
+    class procedure P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_BloodSplatter2
+    //
+    //==============================================================================
+    class procedure P_BloodSplatter2(x, y, z: fixed_t; originator: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_RipperBlood
+    //
+    //==============================================================================
+    class procedure P_RipperBlood(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_SpawnMissileAngle
+    //
+    //==============================================================================
+    class function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t;
+      momz: fixed_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // P_SpawnMissileAngleSpeed
+    //
+    //==============================================================================
+    class function P_SpawnMissileAngleSpeed(source: Pmobj_t; _type: integer;
+      angle: angle_t; momz: fixed_t; speed: fixed_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // P_SPMAngle
+    //
+    //==============================================================================
+    class function P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // P_SPMAngleXYZ
+    //
+    //==============================================================================
+    class function P_SPMAngleXYZ(source: Pmobj_t; x, y, z: fixed_t; _type: integer;
+      angle: angle_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // P_SpawnKoraxMissile
+    //
+    //==============================================================================
+    class function P_SpawnKoraxMissile(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t;
+      _type: integer): Pmobj_t; static;
+  end;
+
 
 implementation
 
@@ -383,7 +392,7 @@ const
 // PROC P_FloorBounceMissile
 //
 //==============================================================================
-procedure P_FloorBounceMissile(mo: Pmobj_t);
+class procedure TMobjRoutines.P_FloorBounceMissile(mo: Pmobj_t);
 begin
 
   if P_HitFloor(mo) >= FLOOR_LIQUID then
@@ -457,13 +466,23 @@ begin
 //  P_SetMobjState(mo, mobjinfo[mo.type].deathstate);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjLocalRoutines = class sealed
+  public
+    class procedure P_MonsterFallingDamage(mo: Pmobj_t); static;
+  end;
+
 //==============================================================================
 // P_MonsterFallingDamage
 //
 // Move this to p_inter ***
 //
 //==============================================================================
-procedure P_MonsterFallingDamage(mo: Pmobj_t);
+class procedure TMobjLocalRoutines.P_MonsterFallingDamage(mo: Pmobj_t);
 var
   damage: integer;
   mom: integer;
@@ -580,7 +599,7 @@ begin
       mo.z := mo.floorz;
       if (mo.flags2 and MF2_FLOORBOUNCE <> 0) and (mo.flags3_ex and MF3_EX_FLOORBOUNCE <> 0) then
       begin
-        P_FloorBounceMissile(mo);
+        TMobjRoutines.P_FloorBounceMissile(mo);
         exit;
       end
       else if mo._type = Ord(MT_HOLY_FX) then
@@ -605,7 +624,7 @@ begin
     begin
       if mo.momz < -(23 * FRACUNIT) then
       begin
-        P_MonsterFallingDamage(mo);
+        TMobjLocalRoutines.P_MonsterFallingDamage(mo);
       end;
     end;
 
@@ -637,7 +656,7 @@ begin
             pl.deltaviewheight := FixedMul(pl.deltaviewheight, FixedDiv(mo.height, mo.info.height));
           if mo.momz < -23 * FRACUNIT then
           begin
-            P_FallingDamage(mo.player);
+            TInterRoutines.P_FallingDamage(mo.player);
             P_NoiseAlert(mo, mo);
           end
           else if (mo.momz < -P_GetMobjGravity(mo) * 12) and (pl.morphTics = 0) then
@@ -813,7 +832,7 @@ end;
 // PROC P_BlasterMobjThinker
 //
 //==============================================================================
-procedure P_BlasterMobjThinker(mobj: Pmobj_t);
+class procedure TMobjRoutines.P_BlasterMobjThinker(mobj: Pmobj_t);
 var
   i: integer;
   xfrac: fixed_t;
@@ -911,7 +930,7 @@ end;
 // P_PlayerLandedOnThing
 //
 //==============================================================================
-procedure P_PlayerLandedOnThing(mo: Pmobj_t; onmobj: Pmobj_t);
+class procedure TMobjRoutines.P_PlayerLandedOnThing(mo: Pmobj_t; onmobj: Pmobj_t);
 var
   pl: Pplayer_t;
 begin
@@ -922,7 +941,7 @@ begin
   pl.deltaviewheight := _SHR3(mo.momz);
   if mo.momz < -23 * FRACUNIT then
   begin
-    P_FallingDamage(mo.player);
+    TInterRoutines.P_FallingDamage(mo.player);
     P_NoiseAlert(mo, mo);
   end
   else if (mo.momz < -P_GetMobjGravity(mo) * 12) and
@@ -1061,7 +1080,7 @@ begin
   p.mo := result;
   p.playerstate := PST_LIVE;
   p.refire := 0;
-  P_ClearMessage(p);
+  TInterRoutines.P_ClearMessage(p);
   p.damagecount := 0;
   p.bonuscount := 0;
   p.poisoncount := 0;
@@ -1520,7 +1539,7 @@ end;
 // P_InsertMobjIntoTIDList
 //
 //==============================================================================
-procedure P_InsertMobjIntoTIDList(mobj: Pmobj_t; tid: integer);
+class procedure TMobjRoutines.P_InsertMobjIntoTIDList(mobj: Pmobj_t; tid: integer);
 var
   i: integer;
   index: integer;
@@ -1554,7 +1573,7 @@ end;
 // P_RemoveMobjFromTIDList
 //
 //==============================================================================
-procedure P_RemoveMobjFromTIDList(mobj: Pmobj_t);
+class procedure TMobjRoutines.P_RemoveMobjFromTIDList(mobj: Pmobj_t);
 var
   i: integer;
 begin
@@ -1647,7 +1666,7 @@ end;
 // PROC P_BloodSplatter
 //
 //==============================================================================
-procedure P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t);
+class procedure TMobjRoutines.P_BloodSplatter(x, y, z: fixed_t; originator: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1667,7 +1686,7 @@ end;
 //  P_BloodSplatter2
 //
 //==============================================================================
-procedure P_BloodSplatter2(x, y, z: fixed_t; originator: Pmobj_t);
+class procedure TMobjRoutines.P_BloodSplatter2(x, y, z: fixed_t; originator: Pmobj_t);
 var
   mo: Pmobj_t;
   LX, LY: fixed_t;
@@ -1688,7 +1707,7 @@ end;
 // PROC P_RipperBlood
 //
 //==============================================================================
-procedure P_RipperBlood(mo: Pmobj_t);
+class procedure TMobjRoutines.P_RipperBlood(mo: Pmobj_t);
 var
   th: Pmobj_t;
   x, y, z: fixed_t;
@@ -1990,7 +2009,7 @@ end;
 // a mobj_t pointer to the missile.
 //
 //==============================================================================
-function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t;
+class function TMobjRoutines.P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t;
   momz: fixed_t): Pmobj_t;
 var
   z: fixed_t;
@@ -2045,7 +2064,7 @@ end;
 // a mobj_t pointer to the missile.
 //
 //==============================================================================
-function P_SpawnMissileAngleSpeed(source: Pmobj_t; _type: integer;
+class function TMobjRoutines.P_SpawnMissileAngleSpeed(source: Pmobj_t; _type: integer;
   angle: angle_t; momz: fixed_t; speed: fixed_t): Pmobj_t;
 var
   z: fixed_t;
@@ -2176,7 +2195,7 @@ end;
 // P_SPMAngle
 //
 //==============================================================================
-function P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t;
+class function TMobjRoutines.P_SPMAngle(source: Pmobj_t; _type: integer; angle: angle_t): Pmobj_t;
 var
   th: Pmobj_t;
   an: angle_t;
@@ -2235,7 +2254,7 @@ end;
 // P_SPMAngleXYZ
 //
 //==============================================================================
-function P_SPMAngleXYZ(source: Pmobj_t; x, y, z: fixed_t; _type: integer;
+class function TMobjRoutines.P_SPMAngleXYZ(source: Pmobj_t; x, y, z: fixed_t; _type: integer;
   angle: angle_t): Pmobj_t;
 var
   th: Pmobj_t;
@@ -2293,7 +2312,7 @@ end;
 // P_SpawnKoraxMissile
 //
 //==============================================================================
-function P_SpawnKoraxMissile(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t;
+class function TMobjRoutines.P_SpawnKoraxMissile(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t;
   _type: integer): Pmobj_t;
 var
   th: Pmobj_t;
@@ -2370,12 +2389,12 @@ begin
   if (mobj.flags and MF_COUNTKILL <> 0) and
      (mobj.flags and MF_CORPSE <> 0) then
   begin
-    A_DeQueueCorpse(mobj);
+    THexenMonsterActions.A_DeQueueCorpse(mobj);
   end;
 
   if mobj.tid <> 0 then
   begin // Remove from TID list
-    P_RemoveMobjFromTIDList(mobj);
+    TMobjRoutines.P_RemoveMobjFromTIDList(mobj);
   end;
 end;
 
@@ -2621,7 +2640,7 @@ begin
       end
       else
       begin // Struck a wall
-        P_BounceWall(mo);
+        TMapRoutines.P_BounceWall(mo);
         case mo._type of
           Ord(MT_SORCBALL1),
           Ord(MT_SORCBALL2),
@@ -2784,7 +2803,7 @@ class procedure TMobjGameRules.StandsStill(mobj: Pmobj_t);
 begin
   if mobj.flags2 and MF2_BLASTED <> 0 then
   begin // Reset to not blasted when momentums are gone
-    P_ResetBlasted(mobj);
+    TUserRoutines.P_ResetBlasted(mobj);
   end;
 end;
 
@@ -2820,7 +2839,7 @@ begin
         begin
           if (mobj.momz < -P_GetMobjGravity(mobj) * 8) and (mobj.flags2 and MF2_FLY = 0) then
           begin
-            P_PlayerLandedOnThing(mobj, onmo);
+            TMobjRoutines.P_PlayerLandedOnThing(mobj, onmo);
           end;
           if onmo.z + onmo.height - mobj.z <= 24 * FRACUNIT then
           begin

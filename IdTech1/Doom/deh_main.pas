@@ -525,79 +525,79 @@ begin
   DEH_AddNullAction;
 
   DEH_AddAction(@A_Light0, 'A_Light0()'); // 1
-  DEH_AddAction(@A_WeaponReady, 'A_WeaponReady()'); // 2
+  DEH_AddAction(@TDoomWeaponActions.A_WeaponReady, 'A_WeaponReady()'); // 2
   DEH_AddAction(@A_Lower, 'A_Lower()'); // 3
   DEH_AddAction(@A_Raise, 'A_Raise()'); // 4
-  DEH_AddAction(@A_Punch, 'A_Punch()'); // 5
+  DEH_AddAction(@TDoomWeaponActions.A_Punch, 'A_Punch()'); // 5
   DEH_AddAction(@A_ReFire, 'A_ReFire()'); // 6
-  DEH_AddAction(@A_FirePistol, 'A_FirePistol()'); // 7
-  DEH_AddAction(@A_Light1, 'A_Light1()'); // 8
-  DEH_AddAction(@A_FireShotgun, 'A_FireShotgun()'); // 9
-  DEH_AddAction(@A_Light2, 'A_Light2()'); // 10
-  DEH_AddAction(@A_FireShotgun2, 'A_FireShotgun2()'); // 11
-  DEH_AddAction(@A_CheckReload, 'A_CheckReload()'); // 12
-  DEH_AddAction(@A_OpenShotgun2, 'A_OpenShotgun2()'); // 13
-  DEH_AddAction(@A_LoadShotgun2, 'A_LoadShotgun2()'); // 14
-  DEH_AddAction(@A_CloseShotgun2, 'A_CloseShotgun2()'); // 15
-  DEH_AddAction(@A_FireCGun, 'A_FireCGun()'); // 16
-  DEH_AddAction(@A_GunFlash, 'A_GunFlash()'); // 17
-  DEH_AddAction(@A_FireMissile, 'A_FireMissile()'); // 18
-  DEH_AddAction(@A_Saw, 'A_Saw()'); // 19
-  DEH_AddAction(@A_FirePlasma, 'A_FirePlasma()'); // 20
-  DEH_AddAction(@A_BFGsound, 'A_BFGsound()'); // 21
-  DEH_AddAction(@A_FireBFG, 'A_FireBFG()'); // 22
-  DEH_AddAction(@A_BFGSpray, 'A_BFGSpray()'); // 23
-  DEH_AddAction(@A_Explode, 'A_Explode()'); // 24
-  DEH_AddAction(@A_Pain, 'A_Pain()'); // 25
-  DEH_AddAction(@A_PlayerScream, 'A_PlayerScream()'); // 26
-  DEH_AddAction(@A_Fall, 'A_Fall()'); // 27
-  DEH_AddAction(@A_XScream, 'A_XScream()'); // 28
-  DEH_AddAction(@A_Look, 'A_Look()'); // 29
-  DEH_AddAction(@A_Chase, 'A_Chase()'); // 30
+  DEH_AddAction(@TDoomWeaponActions.A_FirePistol, 'A_FirePistol()'); // 7
+  DEH_AddAction(@TDoomWeaponActions.A_Light1, 'A_Light1()'); // 8
+  DEH_AddAction(@TDoomWeaponActions.A_FireShotgun, 'A_FireShotgun()'); // 9
+  DEH_AddAction(@TDoomWeaponActions.A_Light2, 'A_Light2()'); // 10
+  DEH_AddAction(@TDoomWeaponActions.A_FireShotgun2, 'A_FireShotgun2()'); // 11
+  DEH_AddAction(@TDoomWeaponActions.A_CheckReload, 'A_CheckReload()'); // 12
+  DEH_AddAction(@TDoomMonsterActions.A_OpenShotgun2, 'A_OpenShotgun2()'); // 13
+  DEH_AddAction(@TDoomMonsterActions.A_LoadShotgun2, 'A_LoadShotgun2()'); // 14
+  DEH_AddAction(@TDoomMonsterActions.A_CloseShotgun2, 'A_CloseShotgun2()'); // 15
+  DEH_AddAction(@TDoomWeaponActions.A_FireCGun, 'A_FireCGun()'); // 16
+  DEH_AddAction(@TDoomWeaponActions.A_GunFlash, 'A_GunFlash()'); // 17
+  DEH_AddAction(@TDoomWeaponActions.A_FireMissile, 'A_FireMissile()'); // 18
+  DEH_AddAction(@TDoomWeaponActions.A_Saw, 'A_Saw()'); // 19
+  DEH_AddAction(@TDoomWeaponActions.A_FirePlasma, 'A_FirePlasma()'); // 20
+  DEH_AddAction(@TDoomWeaponActions.A_BFGsound, 'A_BFGsound()'); // 21
+  DEH_AddAction(@TDoomWeaponActions.A_FireBFG, 'A_FireBFG()'); // 22
+  DEH_AddAction(@TDoomWeaponActions.A_BFGSpray, 'A_BFGSpray()'); // 23
+  DEH_AddAction(@TDoomMonsterActions.A_Explode, 'A_Explode()'); // 24
+  DEH_AddAction(@TDoomMonsterActions.A_Pain, 'A_Pain()'); // 25
+  DEH_AddAction(@TDoomMonsterActions.A_PlayerScream, 'A_PlayerScream()'); // 26
+  DEH_AddAction(@TDoomMonsterActions.A_Fall, 'A_Fall()'); // 27
+  DEH_AddAction(@TDoomMonsterActions.A_XScream, 'A_XScream()'); // 28
+  DEH_AddAction(@TDoomMonsterActions.A_Look, 'A_Look()'); // 29
+  DEH_AddAction(@TMonsterBaseActions.A_Chase, 'A_Chase()'); // 30
   DEH_AddAction(@A_FaceTarget, 'A_FaceTarget()'); // 31
-  DEH_AddAction(@A_PosAttack, 'A_PosAttack()'); // 32
-  DEH_AddAction(@A_Scream, 'A_Scream()'); // 33
-  DEH_AddAction(@A_SPosAttack, 'A_SPosAttack()'); // 34
-  DEH_AddAction(@A_VileChase, 'A_VileChase()'); // 35
-  DEH_AddAction(@A_VileStart, 'A_VileStart()'); // 36
-  DEH_AddAction(@A_VileTarget, 'A_VileTarget()'); // 37
-  DEH_AddAction(@A_VileAttack, 'A_VileAttack()'); // 38
-  DEH_AddAction(@A_StartFire, 'A_StartFire()'); // 39
-  DEH_AddAction(@A_Fire, 'A_Fire()'); // 40
-  DEH_AddAction(@A_FireCrackle, 'A_FireCrackle()'); // 41
-  DEH_AddAction(@A_Tracer, 'A_Tracer()'); // 42
-  DEH_AddAction(@A_SkelWhoosh, 'A_SkelWhoosh()'); // 43
-  DEH_AddAction(@A_SkelFist, 'A_SkelFist()'); // 44
-  DEH_AddAction(@A_SkelMissile, 'A_SkelMissile()'); // 45
-  DEH_AddAction(@A_FatRaise, 'A_FatRaise()'); // 46
-  DEH_AddAction(@A_FatAttack1, 'A_FatAttack1()'); // 47
-  DEH_AddAction(@A_FatAttack2, 'A_FatAttack2()'); // 48
-  DEH_AddAction(@A_FatAttack3, 'A_FatAttack3()'); // 49
-  DEH_AddAction(@A_BossDeath, 'A_BossDeath()'); // 50
-  DEH_AddAction(@A_CPosAttack, 'A_CPosAttack()'); // 51
-  DEH_AddAction(@A_CPosRefire, 'A_CPosRefire()'); // 52
-  DEH_AddAction(@A_TroopAttack, 'A_TroopAttack()'); // 53
-  DEH_AddAction(@A_SargAttack, 'A_SargAttack()'); // 54
-  DEH_AddAction(@A_HeadAttack, 'A_HeadAttack()'); // 55
-  DEH_AddAction(@A_BruisAttack, 'A_BruisAttack()'); // 56
-  DEH_AddAction(@A_SkullAttack, 'A_SkullAttack()'); // 57
-  DEH_AddAction(@A_Metal, 'A_Metal()'); // 58
-  DEH_AddAction(@A_SpidRefire, 'A_SpidRefire()'); // 59
-  DEH_AddAction(@A_BabyMetal, 'A_BabyMetal()'); // 60
-  DEH_AddAction(@A_BspiAttack, 'A_BspiAttack()'); // 61
-  DEH_AddAction(@A_Hoof, 'A_Hoof()'); // 62
-  DEH_AddAction(@A_CyberAttack, 'A_CyberAttack()'); // 63
-  DEH_AddAction(@A_PainAttack, 'A_PainAttack()'); // 64
-  DEH_AddAction(@A_PainDie, 'A_PainDie()'); // 65
-  DEH_AddAction(@A_KeenDie, 'A_KeenDie()'); // 66
-  DEH_AddAction(@A_BrainPain, 'A_BrainPain()'); // 67
-  DEH_AddAction(@A_BrainScream, 'A_BrainScream()'); // 68
-  DEH_AddAction(@A_BrainDie, 'A_BrainDie()'); // 69
-  DEH_AddAction(@A_BrainAwake, 'A_BrainAwake()'); // 70
-  DEH_AddAction(@A_BrainSpit, 'A_BrainSpit()'); // 71
-  DEH_AddAction(@A_SpawnSound, 'A_SpawnSound()'); // 72
-  DEH_AddAction(@A_SpawnFly, 'A_SpawnFly()'); // 73
-  DEH_AddAction(@A_BrainExplode, 'A_BrainExplode()'); // 74
+  DEH_AddAction(@TDoomMonsterActions.A_PosAttack, 'A_PosAttack()'); // 32
+  DEH_AddAction(@TMonsterBaseActions.A_Scream, 'A_Scream()'); // 33
+  DEH_AddAction(@TDoomMonsterActions.A_SPosAttack, 'A_SPosAttack()'); // 34
+  DEH_AddAction(@TDoomMonsterActions.A_VileChase, 'A_VileChase()'); // 35
+  DEH_AddAction(@TDoomMonsterActions.A_VileStart, 'A_VileStart()'); // 36
+  DEH_AddAction(@TDoomMonsterActions.A_VileTarget, 'A_VileTarget()'); // 37
+  DEH_AddAction(@TDoomMonsterActions.A_VileAttack, 'A_VileAttack()'); // 38
+  DEH_AddAction(@TDoomMonsterActions.A_StartFire, 'A_StartFire()'); // 39
+  DEH_AddAction(@TDoomMonsterActions.A_Fire, 'A_Fire()'); // 40
+  DEH_AddAction(@TDoomMonsterActions.A_FireCrackle, 'A_FireCrackle()'); // 41
+  DEH_AddAction(@TDoomMonsterActions.A_Tracer, 'A_Tracer()'); // 42
+  DEH_AddAction(@TDoomMonsterActions.A_SkelWhoosh, 'A_SkelWhoosh()'); // 43
+  DEH_AddAction(@TDoomMonsterActions.A_SkelFist, 'A_SkelFist()'); // 44
+  DEH_AddAction(@TDoomMonsterActions.A_SkelMissile, 'A_SkelMissile()'); // 45
+  DEH_AddAction(@TDoomMonsterActions.A_FatRaise, 'A_FatRaise()'); // 46
+  DEH_AddAction(@TDoomMonsterActions.A_FatAttack1, 'A_FatAttack1()'); // 47
+  DEH_AddAction(@TDoomMonsterActions.A_FatAttack2, 'A_FatAttack2()'); // 48
+  DEH_AddAction(@TDoomMonsterActions.A_FatAttack3, 'A_FatAttack3()'); // 49
+  DEH_AddAction(@TDoomMonsterActions.A_BossDeath, 'A_BossDeath()'); // 50
+  DEH_AddAction(@TDoomMonsterActions.A_CPosAttack, 'A_CPosAttack()'); // 51
+  DEH_AddAction(@TDoomMonsterActions.A_CPosRefire, 'A_CPosRefire()'); // 52
+  DEH_AddAction(@TDoomMonsterActions.A_TroopAttack, 'A_TroopAttack()'); // 53
+  DEH_AddAction(@TDoomMonsterActions.A_SargAttack, 'A_SargAttack()'); // 54
+  DEH_AddAction(@TDoomMonsterActions.A_HeadAttack, 'A_HeadAttack()'); // 55
+  DEH_AddAction(@TDoomMonsterActions.A_BruisAttack, 'A_BruisAttack()'); // 56
+  DEH_AddAction(@TDoomMonsterActions.A_SkullAttack, 'A_SkullAttack()'); // 57
+  DEH_AddAction(@TDoomMonsterActions.A_Metal, 'A_Metal()'); // 58
+  DEH_AddAction(@TDoomMonsterActions.A_SpidRefire, 'A_SpidRefire()'); // 59
+  DEH_AddAction(@TDoomMonsterActions.A_BabyMetal, 'A_BabyMetal()'); // 60
+  DEH_AddAction(@TDoomMonsterActions.A_BspiAttack, 'A_BspiAttack()'); // 61
+  DEH_AddAction(@TDoomMonsterActions.A_Hoof, 'A_Hoof()'); // 62
+  DEH_AddAction(@TDoomMonsterActions.A_CyberAttack, 'A_CyberAttack()'); // 63
+  DEH_AddAction(@TDoomMonsterActions.A_PainAttack, 'A_PainAttack()'); // 64
+  DEH_AddAction(@TDoomMonsterActions.A_PainDie, 'A_PainDie()'); // 65
+  DEH_AddAction(@TDoomMonsterActions.A_KeenDie, 'A_KeenDie()'); // 66
+  DEH_AddAction(@TDoomMonsterActions.A_BrainPain, 'A_BrainPain()'); // 67
+  DEH_AddAction(@TDoomMonsterActions.A_BrainScream, 'A_BrainScream()'); // 68
+  DEH_AddAction(@TDoomMonsterActions.A_BrainDie, 'A_BrainDie()'); // 69
+  DEH_AddAction(@TDoomMonsterActions.A_BrainAwake, 'A_BrainAwake()'); // 70
+  DEH_AddAction(@TDoomMonsterActions.A_BrainSpit, 'A_BrainSpit()'); // 71
+  DEH_AddAction(@TDoomMonsterActions.A_SpawnSound, 'A_SpawnSound()'); // 72
+  DEH_AddAction(@TDoomMonsterActions.A_SpawnFly, 'A_SpawnFly()'); // 73
+  DEH_AddAction(@TDoomMonsterActions.A_BrainExplode, 'A_BrainExplode()'); // 74
   // Custom actions
   DEH_AddAction(@A_CustomSound1, 'A_CustomSound1()'); // 75
   DEH_AddAction(@A_CustomSound2, 'A_CustomSound2()'); // 76
@@ -888,7 +888,7 @@ begin
   DEH_AddAction(@A_ActiveSound1, 'A_ActiveSound()'); // 361
   DEH_AddAction(@A_MatchTargetZ, 'A_MatchTargetZ(zspeed: integer; threshold: integer; maxmomz: integer)'); // 362
   DEH_AddAction(@A_SimpleDialog, 'A_SimpleDialog(dialog1: string; [dialog2...])'); // 363
-  DEH_AddAction(@A_TurretChase, 'A_TurretChase()'); // 364
+  DEH_AddAction(@TDoomMonsterActions.A_TurretChase, 'A_TurretChase()'); // 364
   DEH_AddAction(@A_SetMasterCustomParam, 'A_SetMasterCustomParam(param: string, value: integer)');
   DEH_AddAction(@A_AddMasterCustomParam, 'A_AddMasterCustomParam(param: string, value: integer)');
   DEH_AddAction(@A_SubtractMasterCustomParam, 'A_SubtractMasterCustomParam(param: string, value: integer)');
@@ -943,8 +943,8 @@ begin
   DEH_AddAction(@A_Delayfire, 'A_Delayfire(tics: integer = TICRATE);');
   DEH_AddAction(@A_SetTranslation, 'A_SetTranslation(trans: string);');
   DEH_AddAction(@A_SetBloodColor, 'A_SetBloodColor(color: string);');
-  DEH_AddAction(@A_BrainAwakeVanilla, 'A_BrainAwakeVanilla();');
-  DEH_AddAction(@A_BrainSpitVanilla, 'A_BrainSpitVanilla();');
+  DEH_AddAction(@TDoomMonsterActions.A_BrainAwakeVanilla, 'A_BrainAwakeVanilla();');
+  DEH_AddAction(@TDoomMonsterActions.A_BrainSpitVanilla, 'A_BrainSpitVanilla();');
 
   weapontype_tokens := TDTextList.Create;
   for i := 0 to Ord(NUMWEAPONS) do

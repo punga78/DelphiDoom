@@ -140,7 +140,7 @@ end;
 procedure TDoomLevelRules.InitializeData;
 begin
   FSwitches.Load;
-  P_InitPicAnims;
+  TSpecRoutines.P_InitPicAnims;
   FAnimDefs.Load; // Init flat and texture animations
 end;
 

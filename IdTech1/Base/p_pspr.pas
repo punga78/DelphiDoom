@@ -229,7 +229,7 @@ begin
      (player.health > 0) then
   begin
     player.refire := player.refire + 1;
-    P_FireWeapon(player);
+    TWeaponBaseActions.P_FireWeapon(player);
   end
   else
   begin
@@ -276,7 +276,7 @@ begin
 
   player.readyweapon := player.pendingweapon;
 
-  P_BringUpWeapon(player);
+  TWeaponBaseActions.P_BringUpWeapon(player);
 end;
 
 //==============================================================================
@@ -313,7 +313,7 @@ begin
 
   // spawn the gun
   player.pendingweapon := player.readyweapon;
-  P_BringUpWeapon(player);
+  TWeaponBaseActions.P_BringUpWeapon(player);
 end;
 
 //==============================================================================

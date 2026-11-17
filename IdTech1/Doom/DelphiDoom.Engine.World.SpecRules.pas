@@ -47,80 +47,6 @@ uses
   r_defs,
   p_spec_h;
 
-//==============================================================================
-// P_InitPicAnims
-//
-// at game start
-//
-//==============================================================================
-procedure P_InitPicAnims;
-
-//==============================================================================
-// P_SpawnSpecials
-//
-// at map load
-//
-//==============================================================================
-procedure P_SpawnSpecials;
-
-//==============================================================================
-// P_UpdateSpecials
-//
-// every tic
-//
-//==============================================================================
-procedure P_UpdateSpecials;
-
-//==============================================================================
-// P_ShootSpecialLine
-//
-// when needed
-//
-//==============================================================================
-procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
-
-//==============================================================================
-//
-// P_CrossSpecialLine
-//
-//==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
-
-//==============================================================================
-//
-// P_CrossSpecialLinePtr
-//
-//==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
-
-//==============================================================================
-//
-// P_PlayerInSpecialSector
-//
-//==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
-
-//==============================================================================
-//
-// P_MobjInSpecialSector
-//
-//==============================================================================
-procedure P_MobjInSpecialSector(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_CanUnlockGenDoor
-//
-//==============================================================================
-function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
-
-//==============================================================================
-//
-// P_CheckTag
-//
-//==============================================================================
-function P_CheckTag(line: Pline_t): boolean;
-
 type
   /// <summary>
   ///   What Doom does differently in the sector utilities of IdTech1\Base\p_spec.pas (issue #185, step 2g)
@@ -159,6 +85,89 @@ type
     /// <summary>The sector has no platform any more</summary>
     class procedure PlatDetach(sec: Psector_t); static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSpecRoutines = class sealed
+  public
+    //==============================================================================
+    // P_InitPicAnims
+    //
+    // at game start
+    //
+    //==============================================================================
+    class procedure P_InitPicAnims; static;
+
+    //==============================================================================
+    // P_SpawnSpecials
+    //
+    // at map load
+    //
+    //==============================================================================
+    class procedure P_SpawnSpecials; static;
+
+    //==============================================================================
+    // P_UpdateSpecials
+    //
+    // every tic
+    //
+    //==============================================================================
+    class procedure P_UpdateSpecials; static;
+
+    //==============================================================================
+    // P_ShootSpecialLine
+    //
+    // when needed
+    //
+    //==============================================================================
+    class procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t); static;
+
+    //==============================================================================
+    //
+    // P_CrossSpecialLine
+    //
+    //==============================================================================
+    class procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t; const bossaction: boolean = false); static;
+
+    //==============================================================================
+    //
+    // P_CrossSpecialLinePtr
+    //
+    //==============================================================================
+    class procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; const bossaction: boolean = false); static;
+
+    //==============================================================================
+    //
+    // P_PlayerInSpecialSector
+    //
+    //==============================================================================
+    class procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t); static;
+
+    //==============================================================================
+    //
+    // P_MobjInSpecialSector
+    //
+    //==============================================================================
+    class procedure P_MobjInSpecialSector(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CanUnlockGenDoor
+    //
+    //==============================================================================
+    class function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_CheckTag
+    //
+    //==============================================================================
+    class function P_CheckTag(line: Pline_t): boolean; static;
+  end;
+
 
 implementation
 
@@ -314,7 +323,7 @@ const
 // P_InitPicAnims
 //
 //==============================================================================
-procedure P_InitPicAnims;
+class procedure TSpecRoutines.P_InitPicAnims;
 var
   i: integer;
   lump: integer;
@@ -422,7 +431,7 @@ end;
 //  generalized locked doors
 //
 //==============================================================================
-function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
+class function TSpecRoutines.P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
 var
   skulliscard: boolean;
 begin
@@ -586,7 +595,7 @@ end;
 // jff 2/27/98 Added to check for zero tag allowed for regular special types
 //
 //==============================================================================
-function P_CheckTag(line: Pline_t): boolean;
+class function TSpecRoutines.P_CheckTag(line: Pline_t): boolean;
 begin
   // allow zero tags in compatibility mode
   if G_PlayingEngineVersion <= VERSION115 then
@@ -674,7 +683,7 @@ end;
 //  to cross a line with a non 0 special.
 //
 //==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
+class procedure TSpecRoutines.P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
 begin
   P_CrossSpecialLinePtr(@lines[linenum], side, thing, bossaction);
 end;
@@ -684,7 +693,7 @@ end;
 // P_CrossSpecialLinePtr
 //
 //==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
+class procedure TSpecRoutines.P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
 var
   linefunc: linefunc_t;
   oldcompatibility: boolean;
@@ -1699,7 +1708,7 @@ end;
 //
 // JVAL: Changed for BOOM compatibility
 ///
-procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
+class procedure TSpecRoutines.P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
 var
   linefunc: linefunc_t;
   oldcompatibility: boolean;
@@ -1794,12 +1803,12 @@ begin
         Ord(GunOnce):
           begin
             if linefunc(line) <> 0 then
-              P_ChangeSwitchTexture(line, false);
+              TSwitchRoutines.P_ChangeSwitchTexture(line, false);
           end;
         Ord(GunMany):
           begin
             if linefunc(line) <> 0 then
-              P_ChangeSwitchTexture(line, true);
+              TSwitchRoutines.P_ChangeSwitchTexture(line, true);
           end;
       end;
       exit; // if not a gun type, do nothing here
@@ -1823,21 +1832,21 @@ begin
       begin
         // RAISE FLOOR
         if (EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
-          P_ChangeSwitchTexture(line, false);
+          TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     46:
       begin
         // OPEN DOOR
         EV_DoDoor(line, open);
-        P_ChangeSwitchTexture(line, true);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
         if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
-          P_ChangeSwitchTexture(line, false);
+          TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
   else
     begin
@@ -1846,14 +1855,14 @@ begin
          197:
           begin
             // Exit to next level
-            P_ChangeSwitchTexture(line, false);
+            TSwitchRoutines.P_ChangeSwitchTexture(line, false);
             G_ExitLevel;
           end;
 
          198:
           begin
             // Exit to secret level
-            P_ChangeSwitchTexture(line, false);
+            TSwitchRoutines.P_ChangeSwitchTexture(line, false);
             G_SecretExitLevel;
           end;
         end;
@@ -1868,7 +1877,7 @@ end;
 //  that the player origin is in a special sector
 //
 //==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
+class procedure TSpecRoutines.P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
 var
   i: integer;
 begin
@@ -2017,7 +2026,7 @@ end;
 // P_MobjInSpecialSector
 //
 //==============================================================================
-procedure P_MobjInSpecialSector(mo: Pmobj_t);
+class procedure TSpecRoutines.P_MobjInSpecialSector(mo: Pmobj_t);
 var
   sec: Psector_t;
 begin
@@ -2059,7 +2068,7 @@ var
 // P_UpdateSpecials
 //
 //==============================================================================
-procedure P_UpdateSpecials;
+class procedure TSpecRoutines.P_UpdateSpecials;
 var
   anim: Panim_t;
   pic: integer;
@@ -2171,7 +2180,7 @@ end;
 // Parses command line parameters.
 //
 //==============================================================================
-procedure P_SpawnSpecials;
+class procedure TSpecRoutines.P_SpawnSpecials;
 var
   sector: Psector_t;
   i: integer;

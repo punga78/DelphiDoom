@@ -105,10 +105,10 @@ end;
 procedure THexenLevelRules.InitializeData;
 begin
   P_InitMapInfo;
-  P_InitSwitchList;
+  TSwitchRoutines.P_InitSwitchList;
   P_InitAnimations;
   P_InitFTAnims; // Init flat and texture animations
-  P_InitLava;
+  TSpecRoutines.P_InitLava;
 end;
 
 procedure THexenLevelRules.ShutDownData;
@@ -259,7 +259,7 @@ end;
 procedure THexenLevelRules.AfterMapThingsSpawned;
 begin
   P_CreateTIDList;
-  P_InitCreatureCorpseQueue(False); // false = do NOT scan for corpses
+  THexenMonsterActions.P_InitCreatureCorpseQueue(False); // false = do NOT scan for corpses
 end;
 
 procedure THexenLevelRules.AfterThingsLoaded;

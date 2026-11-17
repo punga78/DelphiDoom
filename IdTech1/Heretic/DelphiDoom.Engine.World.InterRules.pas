@@ -25,13 +25,6 @@ uses
   s_sound,
   d_player;
 
-//==============================================================================
-//
-// P_GivePower
-//
-//==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
@@ -77,13 +70,6 @@ const
     0     // beak
   );
 
-//==============================================================================
-//
-// P_SetMessage
-//
-//==============================================================================
-procedure P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
-
 var
   p_maxhealth: integer = 200;
   p_maxchickenhealth: integer = 30;
@@ -96,13 +82,6 @@ var
   p_greenarmorclass: integer = 1;
   p_bluearmorclass: integer = 2;
   p_maxartifacts: integer = 16;
-
-//==============================================================================
-//
-// P_GiveArtifact
-//
-//==============================================================================
-function P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean;
 
 type
   /// <summary>
@@ -137,6 +116,36 @@ type
     /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
     class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_GivePower
+    //
+    //==============================================================================
+    class function P_GivePower(player: Pplayer_t; power: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_SetMessage
+    //
+    //==============================================================================
+    class procedure P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false); static;
+
+    //==============================================================================
+    //
+    // P_GiveArtifact
+    //
+    //==============================================================================
+    class function P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean; static;
+  end;
+
 
 implementation
 
@@ -176,6 +185,24 @@ uses
 const
   BONUSADD = 6;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterLocalRoutines = class sealed
+  public
+    class function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean; static;
+    class function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t): boolean; static;
+    class procedure P_GiveKey(player: Pplayer_t; key: keytype_t); static;
+    class procedure P_SetDormantArtifact(arti: Pmobj_t); static;
+    class procedure P_TouchWhirlwind(target: Pmobj_t); static;
+    class function P_ChickenMorphPlayer(player: Pplayer_t): boolean; static;
+    class function P_ChickenMorph(actor: Pmobj_t): boolean; static;
+    class function P_AutoUseChaosDevice(player: Pplayer_t): boolean; static;
+    class procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t); static;
+  end;
+
 //==============================================================================
 //
 // GET STUFF
@@ -186,7 +213,7 @@ const
 // Returns false if the ammo can't be picked up at all
 //
 //==============================================================================
-function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
+class function TInterLocalRoutines.P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
 var
   oldammo: integer;
 begin
@@ -243,7 +270,7 @@ end;
 // The weapon name may have a MF_DROPPED flag ored in.
 //
 //==============================================================================
-function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t): boolean;
+class function TInterLocalRoutines.P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t): boolean;
 var
   gaveammo: boolean;
   gaveweapon: boolean;
@@ -300,7 +327,7 @@ end;
 // P_GiveCard
 //
 //==============================================================================
-procedure P_GiveKey(player: Pplayer_t; key: keytype_t);
+class procedure TInterLocalRoutines.P_GiveKey(player: Pplayer_t; key: keytype_t);
 begin
   if player.keys[Ord(key)] then
     exit;
@@ -317,7 +344,7 @@ end;
 // P_GivePower
 //
 //==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
+class function TInterRoutines.P_GivePower(player: Pplayer_t; power: integer): boolean;
 begin
   if power = Ord(pw_invulnerability) then
   begin
@@ -402,7 +429,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-function P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean;
+class function TInterRoutines.P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean;
 var
   i: integer;
 begin
@@ -447,7 +474,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_SetDormantArtifact(arti: Pmobj_t);
+class procedure TInterLocalRoutines.P_SetDormantArtifact(arti: Pmobj_t);
 begin
   arti.flags := arti.flags and not MF_SPECIAL;
 
@@ -466,7 +493,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_TouchWhirlwind(target: Pmobj_t);
+class procedure TInterLocalRoutines.P_TouchWhirlwind(target: Pmobj_t);
 var
   randVal: integer;
 begin
@@ -495,7 +522,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-function P_ChickenMorphPlayer(player: Pplayer_t): boolean;
+class function TInterLocalRoutines.P_ChickenMorphPlayer(player: Pplayer_t): boolean;
 var
   pmo: Pmobj_t;
   fog: Pmobj_t;
@@ -509,7 +536,7 @@ begin
     if (player.chickenTics < CHICKENTICS - TICRATE) and
        (player.powers[Ord(pw_weaponlevel2)] = 0) then
     begin // Make a super chicken
-      P_GivePower(player, Ord(pw_weaponlevel2));
+      TInterRoutines.P_GivePower(player, Ord(pw_weaponlevel2));
     end;
     result := false;
     exit;
@@ -544,7 +571,7 @@ begin
   if oldFlags2 and MF2_FLY <> 0 then
     chicken.flags2 := chicken.flags2 or MF2_FLY;
   player.chickenTics := CHICKENTICS;
-  P_ActivateBeak(player);
+  THereticWeaponActions.P_ActivateBeak(player);
   result := true;
 end;
 
@@ -555,7 +582,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-function P_ChickenMorph(actor: Pmobj_t): boolean;
+class function TInterLocalRoutines.P_ChickenMorph(actor: Pmobj_t): boolean;
 var
   fog: Pmobj_t;
   chicken: Pmobj_t;
@@ -610,7 +637,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-function P_AutoUseChaosDevice(player: Pplayer_t): boolean;
+class function TInterLocalRoutines.P_AutoUseChaosDevice(player: Pplayer_t): boolean;
 var
   i: integer;
 begin
@@ -618,7 +645,7 @@ begin
   begin
     if player.inventory[i]._type = Ord(arti_teleport) then
     begin
-      P_PlayerUseArtifact(player, arti_teleport);
+      TUserRoutines.P_PlayerUseArtifact(player, arti_teleport);
       player.health := (player.health + 1) div 2;
       player.mo.health := player.health;
       result := true;
@@ -664,7 +691,7 @@ begin
         if not P_GiveBody(player, 10) then
           exit;
 
-        P_SetMessage(player, TXT_ITEMHEALTH);
+        TInterRoutines.P_SetMessage(player, TXT_ITEMHEALTH);
       end;
 
     Ord(SPR_SHLD): // Item_Shield1
@@ -672,7 +699,7 @@ begin
         if not P_GiveArmor(player, 1) then
           exit;
 
-        P_SetMessage(player, TXT_ITEMSHIELD1);
+        TInterRoutines.P_SetMessage(player, TXT_ITEMSHIELD1);
       end;
 
     Ord(SPR_SHD2): // Item_Shield2
@@ -680,7 +707,7 @@ begin
         if not P_GiveArmor(player, 2) then
           exit;
 
-        P_SetMessage(player, TXT_ITEMSHIELD2);
+        TInterRoutines.P_SetMessage(player, TXT_ITEMSHIELD2);
       end;
 
     Ord(SPR_BAGH): // Item_BagOfHolding
@@ -691,28 +718,28 @@ begin
             player.maxammo[i] := player.maxammo[i] * 2;
           player.backpack := true;
         end;
-        P_GiveAmmo(player, am_goldwand, AMMO_GWND_WIMPY);
-        P_GiveAmmo(player, am_blaster, AMMO_BLSR_WIMPY);
-        P_GiveAmmo(player, am_crossbow, AMMO_CBOW_WIMPY);
-        P_GiveAmmo(player, am_skullrod, AMMO_SKRD_WIMPY);
-        P_GiveAmmo(player, am_phoenixrod, AMMO_PHRD_WIMPY);
-        P_SetMessage(player, TXT_ITEMBAGOFHOLDING);
+        TInterLocalRoutines.P_GiveAmmo(player, am_goldwand, AMMO_GWND_WIMPY);
+        TInterLocalRoutines.P_GiveAmmo(player, am_blaster, AMMO_BLSR_WIMPY);
+        TInterLocalRoutines.P_GiveAmmo(player, am_crossbow, AMMO_CBOW_WIMPY);
+        TInterLocalRoutines.P_GiveAmmo(player, am_skullrod, AMMO_SKRD_WIMPY);
+        TInterLocalRoutines.P_GiveAmmo(player, am_phoenixrod, AMMO_PHRD_WIMPY);
+        TInterRoutines.P_SetMessage(player, TXT_ITEMBAGOFHOLDING);
       end;
 
     Ord(SPR_SPMP): // Item_SuperMap
       begin
-        if not P_GivePower(player, Ord(pw_allmap)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_allmap)) then
           exit;
 
-        P_SetMessage(player, TXT_ITEMSUPERMAP);
+        TInterRoutines.P_SetMessage(player, TXT_ITEMSUPERMAP);
       end;
 
     // Keys
     Ord(SPR_BKYY): // Key_Blue
       begin
         if not player.keys[Ord(key_blue)] then
-          P_SetMessage(player, TXT_GOTBLUEKEY);
-        P_GiveKey(player, key_blue);
+          TInterRoutines.P_SetMessage(player, TXT_GOTBLUEKEY);
+        TInterLocalRoutines.P_GiveKey(player, key_blue);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -728,8 +755,8 @@ begin
     Ord(SPR_CKYY): // Key_Yellow
       begin
         if not player.keys[Ord(key_yellow)] then
-          P_SetMessage(player, TXT_GOTYELLOWKEY);
-        P_GiveKey(player, key_yellow);
+          TInterRoutines.P_SetMessage(player, TXT_GOTYELLOWKEY);
+        TInterLocalRoutines.P_GiveKey(player, key_yellow);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -745,8 +772,8 @@ begin
     Ord(SPR_AKYY): // Key_Green
       begin
       if not player.keys[Ord(key_green)] then
-        P_SetMessage(player, TXT_GOTGREENKEY);
-        P_GiveKey(player, key_green);
+        TInterRoutines.P_SetMessage(player, TXT_GOTGREENKEY);
+        TInterLocalRoutines.P_GiveKey(player, key_green);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -762,150 +789,150 @@ begin
     // Artifacts
     Ord(SPR_PTN2): // Arti_HealingPotion
       begin
-        if P_GiveArtifact(player, arti_health, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_health, special) then
         begin
-          P_SetMessage(player, TXT_ARTIHEALTH);
+          TInterRoutines.P_SetMessage(player, TXT_ARTIHEALTH);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_SOAR): // Arti_Fly
       begin
-        if P_GiveArtifact(player, arti_fly, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_fly, special) then
         begin
-          P_SetMessage(player, TXT_ARTIFLY);
+          TInterRoutines.P_SetMessage(player, TXT_ARTIFLY);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_INVU): // Arti_Invulnerability
       begin
-        if P_GiveArtifact(player, arti_invulnerability, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_invulnerability, special) then
         begin
-          P_SetMessage(player, TXT_ARTIINVULNERABILITY);
+          TInterRoutines.P_SetMessage(player, TXT_ARTIINVULNERABILITY);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_PWBK): // Arti_TomeOfPower
       begin
-        if P_GiveArtifact(player, arti_tomeofpower, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_tomeofpower, special) then
         begin
-          P_SetMessage(player, TXT_ARTITOMEOFPOWER);
+          TInterRoutines.P_SetMessage(player, TXT_ARTITOMEOFPOWER);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_INVS): // Arti_Invisibility
       begin
-        if P_GiveArtifact(player, arti_invisibility, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_invisibility, special) then
         begin
-          P_SetMessage(player, TXT_ARTIINVISIBILITY, false);
+          TInterRoutines.P_SetMessage(player, TXT_ARTIINVISIBILITY, false);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_EGGC): // Arti_Egg
       begin
-        if P_GiveArtifact(player, arti_egg, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_egg, special) then
         begin
-          P_SetMessage(player, TXT_ARTIEGG, false);
+          TInterRoutines.P_SetMessage(player, TXT_ARTIEGG, false);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_SPHL): // Arti_SuperHealth
       begin
-        if P_GiveArtifact(player, arti_superhealth, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_superhealth, special) then
         begin
-          P_SetMessage(player, TXT_ARTISUPERHEALTH, false);
+          TInterRoutines.P_SetMessage(player, TXT_ARTISUPERHEALTH, false);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_TRCH): // Arti_Torch
       begin
-        if P_GiveArtifact(player, arti_torch, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_torch, special) then
         begin
-          P_SetMessage(player, TXT_ARTITORCH);
+          TInterRoutines.P_SetMessage(player, TXT_ARTITORCH);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_FBMB): // Arti_FireBomb
       begin
-        if P_GiveArtifact(player, arti_firebomb, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_firebomb, special) then
         begin
-          P_SetMessage(player, TXT_ARTIFIREBOMB);
+          TInterRoutines.P_SetMessage(player, TXT_ARTIFIREBOMB);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
 
     Ord(SPR_ATLP): // Arti_Teleport
       begin
-        if P_GiveArtifact(player, arti_teleport, special) then
+        if TInterRoutines.P_GiveArtifact(player, arti_teleport, special) then
         begin
-          P_SetMessage(player, TXT_ARTITELEPORT);
+          TInterRoutines.P_SetMessage(player, TXT_ARTITELEPORT);
           if special.special <> 0 then
           begin
             P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
-          P_SetDormantArtifact(special);
+          TInterLocalRoutines.P_SetDormantArtifact(special);
         end;
         exit;
       end;
@@ -913,152 +940,152 @@ begin
     // Ammo
     Ord(SPR_AMG1): // Ammo_GoldWandWimpy
       begin
-        if not P_GiveAmmo(player, am_goldwand, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_goldwand, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOGOLDWAND1);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOGOLDWAND1);
       end;
 
     Ord(SPR_AMG2): // Ammo_GoldWandHefty
       begin
-        if not P_GiveAmmo(player, am_goldwand, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_goldwand, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOGOLDWAND2);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOGOLDWAND2);
       end;
 
     Ord(SPR_AMM1): // Ammo_MaceWimpy
       begin
-        if not P_GiveAmmo(player, am_mace, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_mace, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOMACE1);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOMACE1);
       end;
 
     Ord(SPR_AMM2): // Ammo_MaceHefty
       begin
-        if not P_GiveAmmo(player, am_mace, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_mace, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOMACE2);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOMACE2);
       end;
 
     Ord(SPR_AMC1): // Ammo_CrossbowWimpy
       begin
-        if not P_GiveAmmo(player, am_crossbow, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_crossbow, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOCROSSBOW1);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOCROSSBOW1);
       end;
 
     Ord(SPR_AMC2): // Ammo_CrossbowHefty
       begin
-        if not P_GiveAmmo(player, am_crossbow, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_crossbow, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOCROSSBOW2);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOCROSSBOW2);
       end;
 
     Ord(SPR_AMB1): // Ammo_BlasterWimpy
       begin
-        if not P_GiveAmmo(player, am_blaster, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_blaster, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOBLASTER1);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOBLASTER1);
       end;
 
     Ord(SPR_AMB2): // Ammo_BlasterHefty
       begin
-        if not P_GiveAmmo(player, am_blaster, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_blaster, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOBLASTER2);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOBLASTER2);
       end;
 
     Ord(SPR_AMS1): // Ammo_SkullRodWimpy
       begin
-        if not P_GiveAmmo(player, am_skullrod, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_skullrod, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOSKULLROD1);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOSKULLROD1);
       end;
 
     Ord(SPR_AMS2): // Ammo_SkullRodHefty
       begin
-        if not P_GiveAmmo(player, am_skullrod, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_skullrod, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOSKULLROD2);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOSKULLROD2);
       end;
 
     Ord(SPR_AMP1): // Ammo_PhoenixRodWimpy
       begin
-        if not P_GiveAmmo(player, am_phoenixrod, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_phoenixrod, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOPHOENIXROD1);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOPHOENIXROD1);
       end;
 
     Ord(SPR_AMP2): // Ammo_PhoenixRodHefty
       begin
-        if not P_GiveAmmo(player, am_phoenixrod, special.health) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_phoenixrod, special.health) then
           exit;
 
-        P_SetMessage(player, TXT_AMMOPHOENIXROD2);
+        TInterRoutines.P_SetMessage(player, TXT_AMMOPHOENIXROD2);
       end;
 
     // Weapons
     Ord(SPR_WMCE): // Weapon_Mace
       begin
-        if not P_GiveWeapon(player, wp_mace) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_mace) then
           exit;
 
-        P_SetMessage(player, TXT_WPNMACE);
+        TInterRoutines.P_SetMessage(player, TXT_WPNMACE);
         sound := Ord(sfx_wpnup);
       end;
 
     Ord(SPR_WBOW): // Weapon_Crossbow
       begin
-        if not P_GiveWeapon(player, wp_crossbow) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_crossbow) then
           exit;
 
-        P_SetMessage(player, TXT_WPNCROSSBOW);
+        TInterRoutines.P_SetMessage(player, TXT_WPNCROSSBOW);
         sound := Ord(sfx_wpnup);
       end;
 
     Ord(SPR_WBLS): // Weapon_Blaster
       begin
-        if not P_GiveWeapon(player, wp_blaster) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_blaster) then
           exit;
 
-        P_SetMessage(player, TXT_WPNBLASTER);
+        TInterRoutines.P_SetMessage(player, TXT_WPNBLASTER);
         sound := Ord(sfx_wpnup);
       end;
 
     Ord(SPR_WSKL): // Weapon_SkullRod
       begin
-        if not P_GiveWeapon(player, wp_skullrod) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_skullrod) then
           exit;
 
-        P_SetMessage(player, TXT_WPNSKULLROD);
+        TInterRoutines.P_SetMessage(player, TXT_WPNSKULLROD);
         sound := Ord(sfx_wpnup);
       end;
 
     Ord(SPR_WPHX): // Weapon_PhoenixRod
       begin
-        if not P_GiveWeapon(player, wp_phoenixrod) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_phoenixrod) then
           exit;
 
-        P_SetMessage(player, TXT_WPNPHOENIXROD);
+        TInterRoutines.P_SetMessage(player, TXT_WPNPHOENIXROD);
         sound := Ord(sfx_wpnup);
       end;
 
     Ord(SPR_WGNT): // Weapon_Gauntlets
       begin
-        if not P_GiveWeapon(player, wp_gauntlets) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_gauntlets) then
           exit;
 
-        P_SetMessage(player, TXT_WPNGAUNTLETS);
+        TInterRoutines.P_SetMessage(player, TXT_WPNGAUNTLETS);
         sound := Ord(sfx_wpnup);
       end;
     else
@@ -1093,7 +1120,7 @@ end;
 // P_KillMobj
 //
 //==============================================================================
-procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t);
+class procedure TInterLocalRoutines.P_KillMobj(source: Pmobj_t; target: Pmobj_t);
 var
   item: integer;
   gibhealth: integer;
@@ -1129,7 +1156,7 @@ begin
         if source.player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           S_StartSound(nil, Ord(sfx_gfrag));
         if Pplayer_t(source.player).chickenTics <> 0 then // Make a super chicken
-          P_GivePower(source.player, Ord(pw_weaponlevel2));
+          TInterRoutines.P_GivePower(source.player, Ord(pw_weaponlevel2));
       end;
     end;
   end
@@ -1283,14 +1310,14 @@ begin
       Ord(MT_EGGFX):
         begin
           if player <> nil then
-            P_ChickenMorphPlayer(player)
+            TInterLocalRoutines.P_ChickenMorphPlayer(player)
           else
-            P_ChickenMorph(target);
+            TInterLocalRoutines.P_ChickenMorph(target);
           exit; // Always return
         end;
       Ord(MT_WHIRLWIND):
         begin
-          P_TouchWhirlwind(target);
+          TInterLocalRoutines.P_TouchWhirlwind(target);
           exit;
         end;
       Ord(MT_MINOTAUR):
@@ -1310,7 +1337,7 @@ begin
               // Can't hurt invulnerable players
               if Pplayer_t(target.player).powers[Ord(pw_invulnerability)] = 0 then
               begin
-                if P_AutoUseChaosDevice(target.player) then
+                if TInterLocalRoutines.P_AutoUseChaosDevice(target.player) then
                 begin // Player was saved using chaos device
                   exit;
                 end;
@@ -1339,7 +1366,7 @@ begin
         begin
           if (target._type = Ord(MT_SORCERER2)) and (P_Random < 96) then
           begin // D'Sparil teleports away
-            P_DSparilTeleport(target);
+            THereticMonsterActions.P_DSparilTeleport(target);
             exit;
           end;
         end;
@@ -1475,7 +1502,7 @@ begin
         target.flags2 := target.flags2 or MF2_FIREDAMAGE;
     end;
 
-    P_KillMobj(source, target);
+    TInterLocalRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;
@@ -1521,7 +1548,7 @@ var
 // P_SetMessage
 //
 //==============================================================================
-procedure P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
+class procedure TInterRoutines.P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
 begin
   if (ultimatemsg or (showMessages = 0)) and not ultmsg then
     exit;
@@ -1542,7 +1569,7 @@ class procedure TInterGameRules.RepositionSpecial(thing: Pmobj_t);
 begin
   if thing._type = Ord(MT_WMACE) then
   begin // Do random mace placement
-    P_RepositionMace(thing);
+    THereticWeaponActions.P_RepositionMace(thing);
   end;
 end;
 

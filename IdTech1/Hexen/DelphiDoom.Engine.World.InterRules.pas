@@ -27,71 +27,6 @@ uses
 
 //==============================================================================
 //
-// P_GiveMana
-//
-//==============================================================================
-function P_GiveMana(player: Pplayer_t; mana: manatype_t; num: integer): boolean;
-
-//==============================================================================
-//
-// P_MaxPlayerHealth
-//
-//==============================================================================
-function P_MaxPlayerHealth(player: Pplayer_t): integer;
-
-//==============================================================================
-//
-// P_GiveKey
-//
-//==============================================================================
-function P_GiveKey(player: Pplayer_t; key: integer): boolean;
-
-//==============================================================================
-//
-// P_GivePower
-//
-//==============================================================================
-function P_GivePower(player: Pplayer_t; power: powertype_t): boolean;
-
-//==============================================================================
-//
-// P_MorphPlayer
-//
-//==============================================================================
-function P_MorphPlayer(player: Pplayer_t): boolean;
-
-//==============================================================================
-//
-// P_ActiveMinotaur
-//
-//==============================================================================
-function P_ActiveMinotaur(master: Pplayer_t): Pmobj_t;
-
-//==============================================================================
-//
-// P_MorphMonster
-//
-//==============================================================================
-function P_MorphMonster(actor: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_TryPickupWeapon
-//
-//==============================================================================
-procedure P_TryPickupWeapon(player: Pplayer_t; weaponClass: pclass_t;
-  weaponType: weapontype_t; weapon: Pmobj_t; const _message: string);
-
-//==============================================================================
-//
-// P_TryPickupWeaponPiece
-//
-//==============================================================================
-procedure P_TryPickupWeaponPiece(player: Pplayer_t; matchClass: pclass_t;
-  pieceValue: integer; pieceMobj: Pmobj_t);
-
-//==============================================================================
-//
 // P_GiveArmor
 //
 //==============================================================================
@@ -99,75 +34,10 @@ function P_GiveArmor(player: Pplayer_t; armortype: armortype_t; amount: integer)
 
 //==============================================================================
 //
-// P_GiveArtifact
-//
-//==============================================================================
-function P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_SetDormantArtifact
-//
-//==============================================================================
-procedure P_SetDormantArtifact(arti: Pmobj_t);
-
-//==============================================================================
-//
-// P_TryPickupArtifact
-//
-//==============================================================================
-procedure P_TryPickupArtifact(player: Pplayer_t; artifactType: artitype_t;
-  artifact: Pmobj_t);
-
-//==============================================================================
-//
 // P_SpawnDroppedMobj
 //
 //==============================================================================
 function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
-
-//==============================================================================
-//
-// P_FallingDamage
-//
-//==============================================================================
-procedure P_FallingDamage(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_PoisonPlayer
-//
-//==============================================================================
-procedure P_PoisonPlayer(player: Pplayer_t; poisoner: Pmobj_t; poison: integer);
-
-//==============================================================================
-//
-// P_PoisonDamage
-//
-//==============================================================================
-procedure P_PoisonDamage(player: Pplayer_t; source: Pmobj_t; damage: integer;
-  playPainSound: boolean);
-
-//==============================================================================
-//
-// P_SetMessage
-//
-//==============================================================================
-procedure P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
-
-//==============================================================================
-//
-// P_SetYellowMessage
-//
-//==============================================================================
-procedure P_SetYellowMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
-
-//==============================================================================
-//
-// P_ClearMessage
-//
-//==============================================================================
-procedure P_ClearMessage(player: Pplayer_t);
 
 var
   p_maxmorphhealth: integer = 30;
@@ -212,6 +82,145 @@ type
     /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
     class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_GiveMana
+    //
+    //==============================================================================
+    class function P_GiveMana(player: Pplayer_t; mana: manatype_t; num: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_MaxPlayerHealth
+    //
+    //==============================================================================
+    class function P_MaxPlayerHealth(player: Pplayer_t): integer; static;
+
+    //==============================================================================
+    //
+    // P_GiveKey
+    //
+    //==============================================================================
+    class function P_GiveKey(player: Pplayer_t; key: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_GivePower
+    //
+    //==============================================================================
+    class function P_GivePower(player: Pplayer_t; power: powertype_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_MorphPlayer
+    //
+    //==============================================================================
+    class function P_MorphPlayer(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_ActiveMinotaur
+    //
+    //==============================================================================
+    class function P_ActiveMinotaur(master: Pplayer_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // P_MorphMonster
+    //
+    //==============================================================================
+    class function P_MorphMonster(actor: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_TryPickupWeapon
+    //
+    //==============================================================================
+    class procedure P_TryPickupWeapon(player: Pplayer_t; weaponClass: pclass_t;
+      weaponType: weapontype_t; weapon: Pmobj_t; const _message: string); static;
+
+    //==============================================================================
+    //
+    // P_TryPickupWeaponPiece
+    //
+    //==============================================================================
+    class procedure P_TryPickupWeaponPiece(player: Pplayer_t; matchClass: pclass_t;
+      pieceValue: integer; pieceMobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_GiveArtifact
+    //
+    //==============================================================================
+    class function P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_SetDormantArtifact
+    //
+    //==============================================================================
+    class procedure P_SetDormantArtifact(arti: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_TryPickupArtifact
+    //
+    //==============================================================================
+    class procedure P_TryPickupArtifact(player: Pplayer_t; artifactType: artitype_t;
+      artifact: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_FallingDamage
+    //
+    //==============================================================================
+    class procedure P_FallingDamage(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_PoisonPlayer
+    //
+    //==============================================================================
+    class procedure P_PoisonPlayer(player: Pplayer_t; poisoner: Pmobj_t; poison: integer); static;
+
+    //==============================================================================
+    //
+    // P_PoisonDamage
+    //
+    //==============================================================================
+    class procedure P_PoisonDamage(player: Pplayer_t; source: Pmobj_t; damage: integer;
+      playPainSound: boolean); static;
+
+    //==============================================================================
+    //
+    // P_SetMessage
+    //
+    //==============================================================================
+    class procedure P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false); static;
+
+    //==============================================================================
+    //
+    // P_SetYellowMessage
+    //
+    //==============================================================================
+    class procedure P_SetYellowMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false); static;
+
+    //==============================================================================
+    //
+    // P_ClearMessage
+    //
+    //==============================================================================
+    class procedure P_ClearMessage(player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -269,7 +278,7 @@ const
 // refused (player has MAX_MANA).
 //
 //==============================================================================
-function P_GiveMana(player: Pplayer_t; mana: manatype_t; num: integer): boolean;
+class function TInterRoutines.P_GiveMana(player: Pplayer_t; mana: manatype_t; num: integer): boolean;
 var
   prevmana: integer;
 begin
@@ -313,7 +322,7 @@ end;
 // JVAL: Retrieve maximum player health
 //
 //==============================================================================
-function P_MaxPlayerHealth(player: Pplayer_t): integer;
+class function TInterRoutines.P_MaxPlayerHealth(player: Pplayer_t): integer;
 begin
   if player.morphTics <> 0 then
     result := p_maxmorphhealth
@@ -334,7 +343,7 @@ end;
 // P_GiveKey
 //
 //==============================================================================
-function P_GiveKey(player: Pplayer_t; key: integer): boolean;
+class function TInterRoutines.P_GiveKey(player: Pplayer_t; key: integer): boolean;
 begin
   if player.keys and (1 shl key) <> 0 then
   begin
@@ -352,7 +361,7 @@ end;
 // P_GivePower
 //
 //==============================================================================
-function P_GivePower(player: Pplayer_t; power: powertype_t): boolean;
+class function TInterRoutines.P_GivePower(player: Pplayer_t; power: powertype_t): boolean;
 begin
   if power = pw_invulnerability then
   begin
@@ -434,7 +443,7 @@ end;
 // Returns true if the player gets turned into a pig.
 //
 //==============================================================================
-function P_MorphPlayer(player: Pplayer_t): boolean;
+class function TInterRoutines.P_MorphPlayer(player: Pplayer_t): boolean;
 var
   pmo: Pmobj_t;
   fog: Pmobj_t;
@@ -476,7 +485,7 @@ begin
   if oldFlags2 and MF2_FLY <> 0 then
     beast.flags2 := beast.flags2 or MF2_FLY;
   player.morphTics := MORPHTICS;
-  P_ActivateMorphWeapon(player);
+  THexenWeaponActions.P_ActivateMorphWeapon(player);
   result := true;
 end;
 
@@ -486,7 +495,7 @@ end;
 // Search thinker list for minotaur
 //
 //==============================================================================
-function P_ActiveMinotaur(master: Pplayer_t): Pmobj_t;
+class function TInterRoutines.P_ActiveMinotaur(master: Pplayer_t): Pmobj_t;
 var
   mo: Pmobj_t;
   plr: Pplayer_t;
@@ -549,7 +558,7 @@ end;
 // FUNC P_MorphMonster
 //
 //==============================================================================
-function P_MorphMonster(actor: Pmobj_t): boolean;
+class function TInterRoutines.P_MorphMonster(actor: Pmobj_t): boolean;
 var
   fog: Pmobj_t;
   beast: Pmobj_t;
@@ -593,7 +602,7 @@ begin
   x := oldmo.x;
   y := oldmo.y;
   z := oldmo.z;
-  P_RemoveMobjFromTIDList(actor);
+  TMobjRoutines.P_RemoveMobjFromTIDList(actor);
   P_SetMobjState(actor, S_FREETARGMOBJ);
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
   S_StartSound(fog, Ord(SFX_TELEPORT));
@@ -605,7 +614,7 @@ begin
   beast.angle := oldmo.angle;
   beast.tid := oldmo.tid;
   beast.special := oldmo.special;
-  P_InsertMobjIntoTIDList(beast, oldmo.tid);
+  TMobjRoutines.P_InsertMobjIntoTIDList(beast, oldmo.tid);
   for i := 0 to 4 do
     beast.args[i] := oldmo.args[i];
 
@@ -626,7 +635,7 @@ end;
 // P_TryPickupWeapon
 //
 //==============================================================================
-procedure P_TryPickupWeapon(player: Pplayer_t; weaponClass: pclass_t;
+class procedure TInterRoutines.P_TryPickupWeapon(player: Pplayer_t; weaponClass: pclass_t;
   weaponType: weapontype_t; weapon: Pmobj_t; const _message: string);
 var
   remove, gaveMana, gaveWeapon: boolean;
@@ -745,7 +754,7 @@ var
 // P_TryPickupWeaponPiece
 //
 //==============================================================================
-procedure P_TryPickupWeaponPiece(player: Pplayer_t; matchClass: pclass_t;
+class procedure TInterRoutines.P_TryPickupWeaponPiece(player: Pplayer_t; matchClass: pclass_t;
   pieceValue: integer; pieceMobj: Pmobj_t);
 var
   remove, checkAssembled, gaveWeapon: boolean;
@@ -901,7 +910,7 @@ end;
 // Returns true if artifact accepted.
 //
 //==============================================================================
-function P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean;
+class function TInterRoutines.P_GiveArtifact(player: Pplayer_t; arti: artitype_t; mo: Pmobj_t): boolean;
 var
   i, j: integer;
   slidePointer: boolean;
@@ -974,7 +983,7 @@ end;
 // animation.
 //
 //==============================================================================
-procedure P_SetDormantArtifact(arti: Pmobj_t);
+class procedure TInterRoutines.P_SetDormantArtifact(arti: Pmobj_t);
 begin
   arti.flags := arti.flags and not MF_SPECIAL;
   if (TGameSession.DeathMatch <> 0) and (arti.flags2 and MF2_DROPPED = 0) then
@@ -1003,7 +1012,7 @@ end;
 // P_TryPickupArtifact
 //
 //==============================================================================
-procedure P_TryPickupArtifact(player: Pplayer_t; artifactType: artitype_t;
+class procedure TInterRoutines.P_TryPickupArtifact(player: Pplayer_t; artifactType: artitype_t;
   artifact: Pmobj_t);
 begin
   if P_GiveArtifact(player, artifactType, artifact) then
@@ -1066,7 +1075,7 @@ begin
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_ITEMHEALTH, false);
+        TInterRoutines.P_SetMessage(player, TXT_ITEMHEALTH, false);
       end;
 
     Ord(SPR_ARM1):
@@ -1075,7 +1084,7 @@ begin
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_ARMOR1, false);
+        TInterRoutines.P_SetMessage(player, TXT_ARMOR1, false);
       end;
 
     Ord(SPR_ARM2):
@@ -1084,7 +1093,7 @@ begin
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_ARMOR2, false);
+        TInterRoutines.P_SetMessage(player, TXT_ARMOR2, false);
       end;
 
     Ord(SPR_ARM3):
@@ -1093,7 +1102,7 @@ begin
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_ARMOR3, false);
+        TInterRoutines.P_SetMessage(player, TXT_ARMOR3, false);
       end;
 
     Ord(SPR_ARM4):
@@ -1102,7 +1111,7 @@ begin
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_ARMOR4, false);
+        TInterRoutines.P_SetMessage(player, TXT_ARMOR4, false);
       end;
 
     // Keys
@@ -1118,11 +1127,11 @@ begin
     Ord(SPR_KEYA),
     Ord(SPR_KEYB):
       begin
-        if not P_GiveKey(player, special.sprite - Ord(SPR_KEY1)) then
+        if not TInterRoutines.P_GiveKey(player, special.sprite - Ord(SPR_KEY1)) then
         begin
           exit;
         end;
-        P_SetMessage(player, TextKeyMessages[special.sprite - Ord(SPR_KEY1)]);
+        TInterRoutines.P_SetMessage(player, TextKeyMessages[special.sprite - Ord(SPR_KEY1)]);
         sound := Ord(SFX_PICKUP_KEY);
 
         // Check and process the special now in the key doesn't
@@ -1147,323 +1156,323 @@ begin
     // Artifacts
     Ord(SPR_PTN2):
       begin
-        P_TryPickupArtifact(player, arti_health, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_health, special);
         exit;
       end;
 
     Ord(SPR_SOAR):
       begin
-        P_TryPickupArtifact(player, arti_fly, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_fly, special);
         exit;
       end;
 
     Ord(SPR_INVU):
       begin
-        P_TryPickupArtifact(player, arti_invulnerability, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_invulnerability, special);
         exit;
       end;
 
     Ord(SPR_SUMN):
       begin
-        P_TryPickupArtifact(player, arti_summon, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_summon, special);
         exit;
       end;
 
     Ord(SPR_PORK):
       begin
-        P_TryPickupArtifact(player, arti_egg, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_egg, special);
         exit;
       end;
 
     Ord(SPR_SPHL):
       begin
-        P_TryPickupArtifact(player, arti_superhealth, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_superhealth, special);
         exit;
       end;
 
     Ord(SPR_HRAD):
       begin
-        P_TryPickupArtifact(player, arti_healingradius, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_healingradius, special);
         exit;
       end;
 
     Ord(SPR_TRCH):
       begin
-        P_TryPickupArtifact(player, arti_torch, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_torch, special);
         exit;
       end;
 
     Ord(SPR_ATLP):
       begin
-        P_TryPickupArtifact(player, arti_teleport, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_teleport, special);
         exit;
       end;
 
     Ord(SPR_TELO):
       begin
-        P_TryPickupArtifact(player, arti_teleportother, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_teleportother, special);
         exit;
       end;
 
     Ord(SPR_PSBG):
       begin
-        P_TryPickupArtifact(player, arti_poisonbag, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_poisonbag, special);
         exit;
       end;
 
     Ord(SPR_SPED):
       begin
-        P_TryPickupArtifact(player, arti_speed, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_speed, special);
         exit;
       end;
 
     Ord(SPR_BMAN):
       begin
-        P_TryPickupArtifact(player, arti_boostmana, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_boostmana, special);
         exit;
       end;
 
     Ord(SPR_BRAC):
       begin
-        P_TryPickupArtifact(player, arti_boostarmor, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_boostarmor, special);
         exit;
       end;
 
     Ord(SPR_BLST):
       begin
-        P_TryPickupArtifact(player, arti_blastradius, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_blastradius, special);
         exit;
       end;
 
     // Puzzle artifacts
     Ord(SPR_ASKU):
       begin
-        P_TryPickupArtifact(player, arti_puzzskull, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzskull, special);
         exit;
       end;
 
     Ord(SPR_ABGM):
       begin
-        P_TryPickupArtifact(player, arti_puzzgembig, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgembig, special);
         exit;
       end;
 
     Ord(SPR_AGMR):
       begin
-        P_TryPickupArtifact(player, arti_puzzgemred, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgemred, special);
         exit;
       end;
 
     Ord(SPR_AGMG):
       begin
-        P_TryPickupArtifact(player, arti_puzzgemgreen1, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgemgreen1, special);
         exit;
       end;
 
     Ord(SPR_AGG2):
       begin
-        P_TryPickupArtifact(player, arti_puzzgemgreen2, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgemgreen2, special);
         exit;
       end;
 
     Ord(SPR_AGMB):
       begin
-        P_TryPickupArtifact(player, arti_puzzgemblue1, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgemblue1, special);
         exit;
       end;
 
     Ord(SPR_AGB2):
       begin
-        P_TryPickupArtifact(player, arti_puzzgemblue2, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgemblue2, special);
         exit;
       end;
 
     Ord(SPR_ABK1):
       begin
-        P_TryPickupArtifact(player, arti_puzzbook1, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzbook1, special);
         exit;
       end;
 
     Ord(SPR_ABK2):
       begin
-        P_TryPickupArtifact(player, arti_puzzbook2, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzbook2, special);
         exit;
       end;
 
     Ord(SPR_ASK2):
       begin
-        P_TryPickupArtifact(player, arti_puzzskull2, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzskull2, special);
         exit;
       end;
 
     Ord(SPR_AFWP):
       begin
-        P_TryPickupArtifact(player, arti_puzzfweapon, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzfweapon, special);
         exit;
       end;
 
     Ord(SPR_ACWP):
       begin
-        P_TryPickupArtifact(player, arti_puzzcweapon, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzcweapon, special);
         exit;
       end;
 
     Ord(SPR_AMWP):
       begin
-        P_TryPickupArtifact(player, arti_puzzmweapon, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzmweapon, special);
         exit;
       end;
 
     Ord(SPR_AGER):
       begin
-        P_TryPickupArtifact(player, arti_puzzgear1, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgear1, special);
         exit;
       end;
 
     Ord(SPR_AGR2):
       begin
-        P_TryPickupArtifact(player, arti_puzzgear2, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgear2, special);
         exit;
       end;
 
     Ord(SPR_AGR3):
       begin
-        P_TryPickupArtifact(player, arti_puzzgear3, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgear3, special);
         exit;
       end;
 
     Ord(SPR_AGR4):
       begin
-        P_TryPickupArtifact(player, arti_puzzgear4, special);
+        TInterRoutines.P_TryPickupArtifact(player, arti_puzzgear4, special);
         exit;
       end;
 
     // Mana
     Ord(SPR_MAN1):
       begin
-        if not P_GiveMana(player, MANA_1, 15) then
+        if not TInterRoutines.P_GiveMana(player, MANA_1, 15) then
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_MANA_1, false);
+        TInterRoutines.P_SetMessage(player, TXT_MANA_1, false);
       end;
 
     Ord(SPR_MAN2):
       begin
-        if not P_GiveMana(player, MANA_2, 15) then
+        if not TInterRoutines.P_GiveMana(player, MANA_2, 15) then
         begin
           exit;
         end;
-        P_SetMessage(player, TXT_MANA_2, false);
+        TInterRoutines.P_SetMessage(player, TXT_MANA_2, false);
       end;
 
     Ord(SPR_MAN3): // Double Mana Dodecahedron
       begin
-        if not P_GiveMana(player, MANA_1, 20) then
+        if not TInterRoutines.P_GiveMana(player, MANA_1, 20) then
         begin
-          if not P_GiveMana(player, MANA_2, 20) then
+          if not TInterRoutines.P_GiveMana(player, MANA_2, 20) then
           begin
             exit;
           end;
         end
         else
         begin
-          P_GiveMana(player, MANA_2, 20);
+          TInterRoutines.P_GiveMana(player, MANA_2, 20);
         end;
-        P_SetMessage(player, TXT_MANA_BOTH, false);
+        TInterRoutines.P_SetMessage(player, TXT_MANA_BOTH, false);
       end;
 
     // 2nd and 3rd Mage Weapons
     Ord(SPR_WMCS): // Frost Shards
       begin
-        P_TryPickupWeapon(player, PCLASS_MAGE, WP_SECOND, special, TXT_WEAPON_M2);
+        TInterRoutines.P_TryPickupWeapon(player, PCLASS_MAGE, WP_SECOND, special, TXT_WEAPON_M2);
         exit;
       end;
 
     Ord(SPR_WMLG): // Arc of Death
       begin
-        P_TryPickupWeapon(player, PCLASS_MAGE, WP_THIRD, special, TXT_WEAPON_M3);
+        TInterRoutines.P_TryPickupWeapon(player, PCLASS_MAGE, WP_THIRD, special, TXT_WEAPON_M3);
         exit;
       end;
 
     // 2nd and 3rd Fighter Weapons
     Ord(SPR_WFAX): // Timon's Axe
       begin
-        P_TryPickupWeapon(player, PCLASS_FIGHTER, WP_SECOND, special, TXT_WEAPON_F2);
+        TInterRoutines.P_TryPickupWeapon(player, PCLASS_FIGHTER, WP_SECOND, special, TXT_WEAPON_F2);
         exit;
       end;
 
     Ord(SPR_WFHM): // Hammer of Retribution
       begin
-        P_TryPickupWeapon(player, PCLASS_FIGHTER, WP_THIRD, special, TXT_WEAPON_F3);
+        TInterRoutines.P_TryPickupWeapon(player, PCLASS_FIGHTER, WP_THIRD, special, TXT_WEAPON_F3);
         exit;
       end;
 
     // 2nd and 3rd Cleric Weapons
     Ord(SPR_WCSS): // Serpent Staff
       begin
-        P_TryPickupWeapon(player, PCLASS_CLERIC, WP_SECOND, special, TXT_WEAPON_C2);
+        TInterRoutines.P_TryPickupWeapon(player, PCLASS_CLERIC, WP_SECOND, special, TXT_WEAPON_C2);
         exit;
       end;
 
     Ord(SPR_WCFM): // Firestorm
       begin
-        P_TryPickupWeapon(player, PCLASS_CLERIC, WP_THIRD, special, TXT_WEAPON_C3);
+        TInterRoutines.P_TryPickupWeapon(player, PCLASS_CLERIC, WP_THIRD, special, TXT_WEAPON_C3);
         exit;
       end;
 
     // Fourth Weapon Pieces
     Ord(SPR_WFR1):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE1, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE1, special);
         exit;
       end;
 
     Ord(SPR_WFR2):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE2, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE2, special);
         exit;
       end;
 
     Ord(SPR_WFR3):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE3, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE3, special);
         exit;
       end;
 
     Ord(SPR_WCH1):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE1, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE1, special);
         exit;
       end;
 
     Ord(SPR_WCH2):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE2, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE2, special);
         exit;
       end;
 
     Ord(SPR_WCH3):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE3, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE3, special);
         exit;
       end;
 
     Ord(SPR_WMS1):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE1, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE1, special);
         exit;
       end;
 
     Ord(SPR_WMS2):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE2, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE2, special);
         exit;
       end;
 
     Ord(SPR_WMS3):
       begin
-        P_TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE3, special);
+        TInterRoutines.P_TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE3, special);
         exit;
       end;
 
@@ -1510,12 +1519,22 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterLocalRoutines = class sealed
+  public
+    class procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t); static;
+  end;
+
 //==============================================================================
 //
 // P_KillMobj
 //
 //==============================================================================
-procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t);
+class procedure TInterLocalRoutines.P_KillMobj(source: Pmobj_t; target: Pmobj_t);
 var
   dummy: int64;
   master: Pmobj_t;
@@ -1771,7 +1790,7 @@ begin
     begin
       if master.health > 0 then
       begin
-        if P_ActiveMinotaur(master.player) = nil then
+        if TInterRoutines.P_ActiveMinotaur(master.player) = nil then
         begin
           Pplayer_t(master.player).powers[Ord(pw_minotaur)] := 0;
         end;
@@ -1950,9 +1969,9 @@ begin
       Ord(MT_EGGFX):
         begin
           if player <> nil then
-            P_MorphPlayer(player)
+            TInterRoutines.P_MorphPlayer(player)
           else
-            P_MorphMonster(target);
+            TInterRoutines.P_MorphMonster(target);
           exit; // Always return
         end;
 
@@ -1967,7 +1986,7 @@ begin
              (target._type <> Ord(MT_SERPENTLEADER)) and
              (target.flags2 and MF2_BOSS = 0) and
              (target.flags_ex and MF_EX_BOSS = 0) then
-            P_TeleportOther(target);
+            TUserRoutines.P_TeleportOther(target);
           exit;
         end;
 
@@ -2000,7 +2019,7 @@ begin
           // Cleric Serpent Staff does poison damage
           if target.player <> nil then
           begin
-            P_PoisonPlayer(target.player, source, 20);
+            TInterRoutines.P_PoisonPlayer(target.player, source, 20);
             damage := _SHR1(damage);
           end;
         end;
@@ -2014,7 +2033,7 @@ begin
         begin
           if player <> nil then
           begin
-            P_PoisonPlayer(player, source, 20);
+            TInterRoutines.P_PoisonPlayer(player, source, 20);
             damage := _SHR1(damage);
           end;
         end;
@@ -2025,8 +2044,8 @@ begin
           begin
             if player.poisoncount < 4 then
             begin
-              P_PoisonDamage(player, source, 15 + (P_Random and 15), false); // Don't play painsound
-              P_PoisonPlayer(player, source, 50);
+              TInterRoutines.P_PoisonDamage(player, source, 15 + (P_Random and 15), false); // Don't play painsound
+              TInterRoutines.P_PoisonPlayer(player, source, 50);
               S_StartSound(target, Ord(SFX_PLAYER_POISONCOUGH));
             end;
             exit;
@@ -2168,7 +2187,7 @@ begin
       // Always extreme death from fourth weapon
       target.health := -5000;
     end;
-    P_KillMobj(source, target);
+    TInterLocalRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;
@@ -2255,7 +2274,7 @@ end;
 // P_FallingDamage
 //
 //==============================================================================
-procedure P_FallingDamage(player: Pplayer_t);
+class procedure TInterRoutines.P_FallingDamage(player: Pplayer_t);
 var
   damage: integer;
   mom: integer;
@@ -2284,7 +2303,7 @@ end;
 // P_PoisonPlayer - Sets up all data concerning poisoning
 //
 //==============================================================================
-procedure P_PoisonPlayer(player: Pplayer_t; poisoner: Pmobj_t; poison: integer);
+class procedure TInterRoutines.P_PoisonPlayer(player: Pplayer_t; poisoner: Pmobj_t; poison: integer);
 begin
   if (player.cheats and CF_GODMODE <> 0) or (player.powers[Ord(pw_invulnerability)] <> 0) then
     exit;
@@ -2300,7 +2319,7 @@ end;
 // P_PoisonDamage - Similar to P_DamageMobj
 //
 //==============================================================================
-procedure P_PoisonDamage(player: Pplayer_t; source: Pmobj_t; damage: integer;
+class procedure TInterRoutines.P_PoisonDamage(player: Pplayer_t; source: Pmobj_t; damage: integer;
   playPainSound: boolean);
 var
   target: Pmobj_t;
@@ -2351,7 +2370,7 @@ begin
       if inflictor.flags2 and MF2_ICEDAMAGE <> 0 then
         target.flags2 := target.flags2 or MF2_ICEDAMAGE;
     end;
-    P_KillMobj(source, target);
+    TInterLocalRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;
@@ -2364,7 +2383,7 @@ end;
 // P_SetMessage
 //
 //==============================================================================
-procedure P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
+class procedure TInterRoutines.P_SetMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
 begin
   if (player.ultimateMessage or (showMessages = 0)) and not ultmsg then
     exit;
@@ -2382,7 +2401,7 @@ end;
 // P_SetYellowMessage
 //
 //==============================================================================
-procedure P_SetYellowMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
+class procedure TInterRoutines.P_SetYellowMessage(player: Pplayer_t; const msg: string; ultmsg: boolean = false);
 begin
   if (player.ultimateMessage or (showMessages = 0)) and not ultmsg then
     exit;
@@ -2400,7 +2419,7 @@ end;
 // P_ClearMessage
 //
 //==============================================================================
-procedure P_ClearMessage(player: Pplayer_t);
+class procedure TInterRoutines.P_ClearMessage(player: Pplayer_t);
 begin
   player.messageTics := 0;
   player._message := '';
@@ -2424,7 +2443,7 @@ end;
 //==============================================================================
 class function TInterGameRules.MaxPlayerHealth(player: Pplayer_t): integer;
 begin
-  result := P_MaxPlayerHealth(player);
+  result := TInterRoutines.P_MaxPlayerHealth(player);
 end;
 
 //==============================================================================

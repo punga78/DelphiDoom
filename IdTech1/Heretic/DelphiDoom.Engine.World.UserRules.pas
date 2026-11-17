@@ -91,26 +91,35 @@ type
     class procedure ClampViewZ(const player: Pplayer_t); static; inline;
   end;
 
-//==============================================================================
-//
-// P_PlayerUseArtifact
-//
-//==============================================================================
-procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_PlayerUseArtifact
+    //
+    //==============================================================================
+    class procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t); static;
 
-//==============================================================================
-//
-// P_UndoPlayerChicken
-//
-//==============================================================================
-function P_UndoPlayerChicken(player: Pplayer_t): boolean;
+    //==============================================================================
+    //
+    // P_UndoPlayerChicken
+    //
+    //==============================================================================
+    class function P_UndoPlayerChicken(player: Pplayer_t): boolean; static;
 
-//==============================================================================
-//
-// P_UseArtifact
-//
-//==============================================================================
-function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
+    //==============================================================================
+    //
+    // P_UseArtifact
+    //
+    //==============================================================================
+    class function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean; static;
+  end;
+
 
 implementation
 
@@ -154,6 +163,17 @@ uses
   DelphiDoom.Engine.World.PlayerArtifacts;
 
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserLocalRoutines = class sealed
+  public
+    class procedure P_ChickenPlayerThink(player: Pplayer_t); static;
+    class procedure P_ArtiTele(player: Pplayer_t); static;
+  end;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_ChickenPlayerThink
@@ -161,13 +181,13 @@ uses
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ChickenPlayerThink(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ChickenPlayerThink(player: Pplayer_t);
 var
   pmo: Pmobj_t;
 begin
   if player.health > 0 then
   begin // Handle beak movement
-    P_UpdateBeak(player, @player.psprites[ps_weapon]);
+    THereticWeaponActions.P_UpdateBeak(player, @player.psprites[ps_weapon]);
   end;
 
   if player.chickenTics and 15 <> 0 then
@@ -197,7 +217,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ArtiTele(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ArtiTele(player: Pplayer_t);
 var
   i: integer;
   selections: integer;
@@ -242,7 +262,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
+class procedure TUserRoutines.P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
 var
   i: integer;
 begin
@@ -275,7 +295,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
+class function TUserRoutines.P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
 var
   mo: Pmobj_t;
   angle: angle_t;
@@ -284,7 +304,7 @@ begin
   case arti of
     arti_invulnerability:
       begin
-        if not P_GivePower(player, Ord(pw_invulnerability)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_invulnerability)) then
         begin
           result := false;
           exit;
@@ -292,7 +312,7 @@ begin
       end;
     arti_invisibility:
       begin
-        if not P_GivePower(player, Ord(pw_invisibility)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_invisibility)) then
         begin
           result := false;
           exit;
@@ -328,7 +348,7 @@ begin
         end
         else
         begin
-          if not P_GivePower(player, Ord(pw_weaponlevel2)) then
+          if not TInterRoutines.P_GivePower(player, Ord(pw_weaponlevel2)) then
           begin
             result := false;
             exit;
@@ -342,7 +362,7 @@ begin
       end;
     arti_torch:
       begin
-        if not P_GivePower(player, Ord(pw_infrared)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_infrared)) then
         begin
           result := false;
           exit;
@@ -365,14 +385,14 @@ begin
       begin
         mo := player.mo;
         P_SpawnPlayerMissile(mo, Ord(MT_EGGFX));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 6));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 6));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 3));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 3));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 6));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 6));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 3));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 3));
       end;
     arti_fly:
       begin
-        if not P_GivePower(player, Ord(pw_flight)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_flight)) then
         begin
           result := false;
           exit;
@@ -380,7 +400,7 @@ begin
       end;
     arti_teleport:
       begin
-        P_ArtiTele(player);
+        TUserLocalRoutines.P_ArtiTele(player);
       end
     else
       begin
@@ -406,7 +426,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-function P_UndoPlayerChicken(player: Pplayer_t): boolean;
+class function TUserRoutines.P_UndoPlayerChicken(player: Pplayer_t): boolean;
 var
   fog: Pmobj_t;
   mo: Pmobj_t;
@@ -466,7 +486,7 @@ begin
   angle := angle shr ANGLETOFINESHIFT;
   fog := P_SpawnMobj(x + 20 * finecosine[angle], y + 20 * finesine[angle], z + TELEFOGHEIGHT, Ord(MT_TFOG));
   S_StartSound(fog, Ord(sfx_telept));
-  P_PostChickenWeapon(player, weapon);
+  THereticWeaponActions.P_PostChickenWeapon(player, weapon);
   result := true;
 end;
 
@@ -673,7 +693,7 @@ begin
     end;
   end
   else if fly > 0 then
-    P_PlayerUseArtifact(player, arti_fly);
+    TUserRoutines.P_PlayerUseArtifact(player, arti_fly);
 
   if player.mo.flags2 and MF2_FLY <> 0 then
   begin
@@ -701,7 +721,7 @@ end;
 class procedure TUserGameRules.BeforeMove(const player: Pplayer_t);
 begin
   if player.chickenTics <> 0 then
-    P_ChickenPlayerThink(player);
+    TUserLocalRoutines.P_ChickenPlayerThink(player);
 end;
 
 //==============================================================================
@@ -716,7 +736,7 @@ begin
     if cmd.arti = $ff then
       P_PlayerNextArtifact(player)
     else
-      P_PlayerUseArtifact(player, artitype_t(cmd.arti));
+      TUserRoutines.P_PlayerUseArtifact(player, artitype_t(cmd.arti));
   end;
 end;
 
@@ -778,7 +798,7 @@ begin
 
     dec(player.chickenTics);
     if player.chickenTics = 0 then  // Attempt to undo the chicken
-      P_UndoPlayerChicken(player);
+      TUserRoutines.P_UndoPlayerChicken(player);
   end;
 end;
 

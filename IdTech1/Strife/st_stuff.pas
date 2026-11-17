@@ -470,7 +470,7 @@ begin
 
   if (TGameSession.GameState = GS_LEVEL) and (plyr.mo <> nil) then
   begin
-    P_Massacre;
+    TStrifeMonsterActions.P_Massacre;
     plyr._message := STSTR_MASSACRE;
   end;
 end;
@@ -952,7 +952,7 @@ begin
           if plyr.powers[i] <> 0 then
             plyr.powers[i] := intval(i <> 1)
           else
-            P_GivePower(plyr, i);
+            TInterRoutines.P_GivePower(plyr, i);
           plyr._message := STSTR_BEHOLDX;
         end;
       end;
@@ -976,7 +976,7 @@ begin
         plyr.backpack := true;
 
         for i := 0 to Ord(NUMAMMO) - 1 do
-          P_GiveAmmo(plyr, ammotype_t(i), 1);
+          TInterRoutines.P_GiveAmmo(plyr, ammotype_t(i), 1);
         plyr._message := DEH_GetString('you got the stuff!');
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_S], Chr(ev.data1)) then
@@ -989,7 +989,7 @@ begin
       else if check_cheat(@cheat_powerup[ST_PUMPUP_T], Chr(ev.data1)) then
       begin
         // [STRIFE] PUMPUPT gives targeter
-        P_GivePower(plyr, Ord(pw_targeter));
+        TInterRoutines.P_GivePower(plyr, Ord(pw_targeter));
         plyr._message := DEH_GetString('you got the stuff!');
       end
       // [STRIFE]: PUMPUP

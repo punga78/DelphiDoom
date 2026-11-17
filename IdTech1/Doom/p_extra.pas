@@ -372,7 +372,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_MeleeSound(actor, actor);
     if actor.state.params = nil then
@@ -490,7 +490,7 @@ end;
 //==============================================================================
 procedure A_FastChase(actor: Pmobj_t);
 begin
-  P_DoChase(actor, true);
+  TDoomMonsterActions.P_DoChase(actor, true);
 end;
 
 //==============================================================================
@@ -545,7 +545,7 @@ var
 begin
   A_FaceTarget(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_MeleeSound(actor, actor);
     P_DamageMobj(actor.target, actor, actor, actor.info.meleedamage);
@@ -902,7 +902,7 @@ begin
   else
     misc2 := 4 * FRACUNIT;
 
-  A_Explode(actor);  // make normal explosion
+  TDoomMonsterActions.A_Explode(actor);  // make normal explosion
 
   i := -n;
   while i <= n do    // launch mushroom cloud
@@ -1008,7 +1008,7 @@ begin
     newmobj.flags2_ex := newmobj.flags2_ex or MF2_EX_FRIEND;
 
   newmobj.target := actor.target;
-  A_SkullAttack(newmobj);
+  TDoomMonsterActions.A_SkullAttack(newmobj);
 end;
 
 //==============================================================================

@@ -75,48 +75,6 @@ type
     class procedure ClampViewZ(const player: Pplayer_t); static; inline;
   end;
 
-//==============================================================================
-//
-// P_PlayerUseArtifact
-//
-//==============================================================================
-procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
-
-//==============================================================================
-//
-// P_UndoPlayerMorph
-//
-//==============================================================================
-function P_UndoPlayerMorph(player: Pplayer_t): boolean;
-
-//==============================================================================
-//
-// P_UseArtifact
-//
-//==============================================================================
-function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
-
-//==============================================================================
-//
-// P_TeleportOther
-//
-//==============================================================================
-procedure P_TeleportOther(victim: Pmobj_t);
-
-//==============================================================================
-//
-// P_ResetBlasted
-//
-//==============================================================================
-procedure P_ResetBlasted(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpeedFade
-//
-//==============================================================================
-procedure A_SpeedFade(actor: Pmobj_t);
-
 const
   PStateNormal: array[0..Ord(NUMCLASSES) - 1] of statenum_t = (
     S_FPLAY,
@@ -148,6 +106,57 @@ const
 
 const
   ArmorMax: array[0..Ord(NUMCLASSES) - 1] of integer = (20, 18, 16, 1);
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_PlayerUseArtifact
+    //
+    //==============================================================================
+    class procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t); static;
+
+    //==============================================================================
+    //
+    // P_UndoPlayerMorph
+    //
+    //==============================================================================
+    class function P_UndoPlayerMorph(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_UseArtifact
+    //
+    //==============================================================================
+    class function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_TeleportOther
+    //
+    //==============================================================================
+    class procedure P_TeleportOther(victim: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_ResetBlasted
+    //
+    //==============================================================================
+    class procedure P_ResetBlasted(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpeedFade
+    //
+    //==============================================================================
+    class procedure A_SpeedFade(actor: Pmobj_t); static;
+  end;
+
 
 implementation
 
@@ -331,6 +340,23 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserLocalRoutines = class sealed
+  public
+    class procedure P_MorphPlayerThink(player: Pplayer_t); static;
+    class procedure P_ArtiTele(player: Pplayer_t); static;
+    class procedure P_ArtiTeleportOther(player: Pplayer_t); static;
+    class procedure P_TeleportToPlayerStarts(victim: Pmobj_t); static;
+    class procedure P_TeleportToDeathmatchStarts(victim: Pmobj_t); static;
+    class procedure P_BlastMobj(source: Pmobj_t; victim: Pmobj_t; strength: fixed_t); static;
+    class procedure P_BlastRadius(player: Pplayer_t); static;
+    class function P_HealRadius(player: Pplayer_t): boolean; static;
+  end;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_MorphPlayerThink
@@ -338,7 +364,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_MorphPlayerThink(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_MorphPlayerThink(player: Pplayer_t);
 var
   pmo: Pmobj_t;
 begin
@@ -348,7 +374,7 @@ begin
   pmo := player.mo;
   if (pmo.momx + pmo.momy = 0) and (P_Random < 64) then
   begin // Snout sniff
-    P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
+    THexenWeaponActions.P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
     S_StartSound(pmo, Ord(SFX_PIG_ACTIVE1)); // snort
     exit;
   end;
@@ -376,7 +402,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-function P_UndoPlayerMorph(player: Pplayer_t): boolean;
+class function TUserRoutines.P_UndoPlayerMorph(player: Pplayer_t): boolean;
 var
   fog: Pmobj_t;
   mo: Pmobj_t;
@@ -463,7 +489,7 @@ begin
 
   player.morphTics := 0;
 
-  player.health := P_MaxPlayerHealth(player);
+  player.health := TInterRoutines.P_MaxPlayerHealth(player);
   mo.health := player.health;
 
   player.mo := mo;
@@ -474,7 +500,7 @@ begin
                      z + TELEFOGHEIGHT,
                      Ord(MT_TFOG));
   S_StartSound(fog, Ord(SFX_TELEPORT));
-  P_PostMorphWeapon(player, weapon);
+  THexenWeaponActions.P_PostMorphWeapon(player, weapon);
   result := true;
 end;
 
@@ -556,7 +582,7 @@ begin
     dec(player.jumpTics);
 
   if player.morphTics > 0 then
-    P_MorphPlayerThink(player);
+    TUserLocalRoutines.P_MorphPlayerThink(player);
 
   // Handle movement
   if player.mo.reactiontime > 0 then
@@ -609,14 +635,14 @@ begin
   // JVAL: 3d Floors
   sec := Psubsector_t(player.mo.subsector).sector;
   if sec.special <> 0 then
-    P_PlayerInSpecialSector(player, sec, P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
+    TSpecRoutines.P_PlayerInSpecialSector(player, sec, P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
   if sec.midsec >= 0 then
     if sectors[sec.midsec].special <> 0 then
-      P_PlayerInSpecialSector(player, @sectors[sec.midsec], sectors[sec.midsec].ceilingheight);  // JVAL: 3d Floors
+      TSpecRoutines.P_PlayerInSpecialSector(player, @sectors[sec.midsec], sectors[sec.midsec].ceilingheight);  // JVAL: 3d Floors
 
   floorType := P_GetThingFloorType(player.mo);
   if floorType <> FLOOR_SOLID then
-    P_PlayerOnSpecialFlat(player, floorType);
+    TSpecRoutines.P_PlayerOnSpecialFlat(player, floorType);
 
   case player._class of
 
@@ -671,11 +697,11 @@ begin
     if artitype_t(cmd.arti) = NUMARTIFACTS then
     begin // use one of each artifact (except puzzle artifacts)
       for i := 1 to arti_firstpuzzitem - 1 do
-        P_PlayerUseArtifact(player, artitype_t(i));
+        TUserRoutines.P_PlayerUseArtifact(player, artitype_t(i));
     end
     else
     begin
-      P_PlayerUseArtifact(player, artitype_t(cmd.arti and AFLAG_MASK));
+      TUserRoutines.P_PlayerUseArtifact(player, artitype_t(cmd.arti and AFLAG_MASK));
     end;
   end;
 
@@ -712,7 +738,7 @@ begin
     dec(player.morphTics);
     if player.morphTics = 0 then
     begin // Attempt to undo the pig
-      P_UndoPlayerMorph(player);
+      TUserRoutines.P_UndoPlayerMorph(player);
     end;
   end;
   // Cycle psprites
@@ -807,7 +833,7 @@ begin
     begin
       player.poisoncount := 0;
     end;
-    P_PoisonDamage(player, player.poisoner, 1, true);
+    TInterRoutines.P_PoisonDamage(player, player.poisoner, 1, true);
   end;
   // Colormaps
 //  if player.powers[pw_invulnerability])
@@ -872,7 +898,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ArtiTele(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ArtiTele(player: Pplayer_t);
 var
   i: integer;
   selections: integer;
@@ -906,7 +932,7 @@ begin
   PH_Teleport(player.mo, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(mt), P_3dFloorFindMapthingCeilingZ(mt));
   if player.morphTics <> 0 then
   begin // Teleporting away will undo any morph effects (pig)
-    P_UndoPlayerMorph(player);
+    TUserRoutines.P_UndoPlayerMorph(player);
   end;
 end;
 
@@ -917,7 +943,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ArtiTeleportOther(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ArtiTeleportOther(player: Pplayer_t);
 var
   mo: Pmobj_t;
 begin
@@ -931,7 +957,7 @@ end;
 // P_TeleportToPlayerStarts
 //
 //==============================================================================
-procedure P_TeleportToPlayerStarts(victim: Pmobj_t);
+class procedure TUserLocalRoutines.P_TeleportToPlayerStarts(victim: Pmobj_t);
 var
   i, selections: integer;
   destX, destY: fixed_t;
@@ -957,7 +983,7 @@ end;
 // P_TeleportToDeathmatchStarts
 //
 //==============================================================================
-procedure P_TeleportToDeathmatchStarts(victim: Pmobj_t);
+class procedure TUserLocalRoutines.P_TeleportToDeathmatchStarts(victim: Pmobj_t);
 var
   i, selections: integer;
   destX, destY: fixed_t;
@@ -986,27 +1012,27 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_TeleportOther(victim: Pmobj_t);
+class procedure TUserRoutines.P_TeleportOther(victim: Pmobj_t);
 begin
   if victim.player <> nil then
   begin
     if TGameSession.DeathMatch <> 0 then
-      P_TeleportToDeathmatchStarts(victim)
+      TUserLocalRoutines.P_TeleportToDeathmatchStarts(victim)
     else
-      P_TeleportToPlayerStarts(victim);
+      TUserLocalRoutines.P_TeleportToPlayerStarts(victim);
   end
   else
   begin
     // If death action, run it upon teleport
     if (victim.flags and MF_COUNTKILL <> 0) and (victim.special <> 0) then
     begin
-      P_RemoveMobjFromTIDList(victim);
+      TMobjRoutines.P_RemoveMobjFromTIDList(victim);
       P_ExecuteLineSpecial(victim.special, @victim.args, nil, 0, victim); // JVAL SOS
       victim.special := 0;
     end;
 
     // Send all monsters to deathmatch spots
-    P_TeleportToDeathmatchStarts(victim);
+    TUserLocalRoutines.P_TeleportToDeathmatchStarts(victim);
   end;
 end;
 
@@ -1020,7 +1046,7 @@ const
 // P_ResetBlasted
 //
 //==============================================================================
-procedure P_ResetBlasted(mo: Pmobj_t);
+class procedure TUserRoutines.P_ResetBlasted(mo: Pmobj_t);
 begin
   mo.flags2 := mo.flags2 and not MF2_BLASTED;
   if mo.flags and MF_ICECORPSE = 0 then
@@ -1032,7 +1058,7 @@ end;
 // P_BlastMobj
 //
 //==============================================================================
-procedure P_BlastMobj(source: Pmobj_t; victim: Pmobj_t; strength: fixed_t);
+class procedure TUserLocalRoutines.P_BlastMobj(source: Pmobj_t; victim: Pmobj_t; strength: fixed_t);
 var
   angle, ang: angle_t;
   mo: Pmobj_t;
@@ -1118,7 +1144,7 @@ end;
 // Blast all mobj things away
 //
 //==============================================================================
-procedure P_BlastRadius(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_BlastRadius(player: Pplayer_t);
 var
   mo: Pmobj_t;
   pmo: Pmobj_t;
@@ -1208,7 +1234,7 @@ const
 // Do class specific effect for everyone in radius
 //
 //==============================================================================
-function P_HealRadius(player: Pplayer_t): boolean;
+class function TUserLocalRoutines.P_HealRadius(player: Pplayer_t): boolean;
 var
   mo: Pmobj_t;
   pmo: Pmobj_t;
@@ -1275,8 +1301,8 @@ begin
       PCLASS_MAGE:      // Radius mana boost
         begin
           amount := 50 + (P_Random mod 50);
-          if (P_GiveMana(mo.player, MANA_1, amount)) or
-             (P_GiveMana(mo.player, MANA_2, amount)) then
+          if (TInterRoutines.P_GiveMana(mo.player, MANA_1, amount)) or
+             (TInterRoutines.P_GiveMana(mo.player, MANA_2, amount)) then
           begin
             result := true;
             S_StartSound(mo, Ord(SFX_MYSTICINCANT));
@@ -1303,7 +1329,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
+class procedure TUserRoutines.P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
 var
   i: integer;
 begin
@@ -1340,7 +1366,7 @@ end;
 // Returns true if the artifact was used.
 //
 //==============================================================================
-function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
+class function TUserRoutines.P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
 var
   mo: Pmobj_t;
   angle: angle_t;
@@ -1351,7 +1377,7 @@ begin
 
     arti_invulnerability:
       begin
-        if not P_GivePower(player, pw_invulnerability) then
+        if not TInterRoutines.P_GivePower(player, pw_invulnerability) then
         begin
           result := false;
           exit;
@@ -1378,7 +1404,7 @@ begin
 
     arti_healingradius:
       begin
-        if not P_HealRadius(player) then
+        if not TUserLocalRoutines.P_HealRadius(player) then
         begin
           result := false;
           exit;
@@ -1387,7 +1413,7 @@ begin
 
     arti_torch:
       begin
-        if not P_GivePower(player, pw_infrared) then
+        if not TInterRoutines.P_GivePower(player, pw_infrared) then
         begin
           result := false;
           exit;
@@ -1398,15 +1424,15 @@ begin
       begin
         mo := player.mo;
         P_SpawnPlayerMissile(mo, Ord(MT_EGGFX));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 6));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 6));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 3));
-        P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 3));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 6));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 6));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle - (ANG45 div 3));
+        TMobjRoutines.P_SPMAngle(mo, Ord(MT_EGGFX), mo.angle + (ANG45 div 3));
       end;
 
     arti_fly:
       begin
-        if not P_GivePower(player, pw_flight) then
+        if not TInterRoutines.P_GivePower(player, pw_flight) then
         begin
           result := false;
           exit;
@@ -1430,12 +1456,12 @@ begin
 
     arti_teleport:
       begin
-        P_ArtiTele(player);
+        TUserLocalRoutines.P_ArtiTele(player);
       end;
 
     arti_teleportother:
       begin
-        P_ArtiTeleportOther(player);
+        TUserLocalRoutines.P_ArtiTeleportOther(player);
       end;
 
     arti_poisonbag:
@@ -1482,7 +1508,7 @@ begin
 
     arti_speed:
       begin
-        if not P_GivePower(player, pw_speed) then
+        if not TInterRoutines.P_GivePower(player, pw_speed) then
         begin
           result := false;
           exit;
@@ -1491,16 +1517,16 @@ begin
 
     arti_boostmana:
       begin
-        if not P_GiveMana(player, MANA_1, MAX_MANA) then
+        if not TInterRoutines.P_GiveMana(player, MANA_1, MAX_MANA) then
         begin
-          if not P_GiveMana(player, MANA_2, MAX_MANA) then
+          if not TInterRoutines.P_GiveMana(player, MANA_2, MAX_MANA) then
           begin
             result := false;
             exit;
           end;
         end
         else
-          P_GiveMana(player, MANA_2, MAX_MANA);
+          TInterRoutines.P_GiveMana(player, MANA_2, MAX_MANA);
       end;
 
     arti_boostarmor:
@@ -1521,7 +1547,7 @@ begin
 
     arti_blastradius:
       begin
-        P_BlastRadius(player);
+        TUserLocalRoutines.P_BlastRadius(player);
       end;
 
     arti_puzzskull,
@@ -1542,14 +1568,14 @@ begin
     arti_puzzgear3,
     arti_puzzgear4:
       begin
-        if P_UsePuzzleItem(player, Ord(arti) - arti_firstpuzzitem) then
+        if TMapRoutines.P_UsePuzzleItem(player, Ord(arti) - arti_firstpuzzitem) then
         begin
           result := true;
           exit;
         end
         else
         begin
-          P_SetYellowMessage(player, TXT_USEPUZZLEFAILED, false);
+          TInterRoutines.P_SetYellowMessage(player, TXT_USEPUZZLEFAILED, false);
           result := false;
           exit;
         end;
@@ -1571,7 +1597,7 @@ end;
 // A_SpeedFade
 //
 //==============================================================================
-procedure A_SpeedFade(actor: Pmobj_t);
+class procedure TUserRoutines.A_SpeedFade(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_SHADOW;
   actor.flags := actor.flags and not MF_ALTSHADOW;
@@ -1765,7 +1791,7 @@ begin
     end;
   end
   else if fly > 0 then
-    P_PlayerUseArtifact(player, arti_fly);
+    TUserRoutines.P_PlayerUseArtifact(player, arti_fly);
 
   if player.mo.flags2 and MF2_FLY <> 0 then
   begin

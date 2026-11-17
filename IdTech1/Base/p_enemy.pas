@@ -263,10 +263,10 @@ begin
     result := P_LookForMonsters(actor);
     if not result then
       if P_Random < 200 then
-        result := P_LookForPlayers(actor, true);
+        result := TMonsterBaseActions.P_LookForPlayers(actor, true);
   end
   else
-    result := P_LookForPlayers(actor, allaround);
+    result := TMonsterBaseActions.P_LookForPlayers(actor, allaround);
 end;
 
 //==============================================================================

@@ -25,428 +25,8 @@ uses
 // Data.
   sounddata;
 
-//==============================================================================
-//
-// A_Fall
-//
-//==============================================================================
-procedure A_Fall(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_KeenDie
-//
-//==============================================================================
-procedure A_KeenDie(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_Look
-//
-//==============================================================================
-procedure A_Look(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Chase
-//
-//==============================================================================
-procedure A_Chase(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PosAttack
-//
-//==============================================================================
-procedure A_PosAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SPosAttack
-//
-//==============================================================================
-procedure A_SPosAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CPosAttack
-//
-//==============================================================================
-procedure A_CPosAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CPosRefire
-//
-//==============================================================================
-procedure A_CPosRefire(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpidRefire
-//
-//==============================================================================
-procedure A_SpidRefire(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BspiAttack
-//
-//==============================================================================
-procedure A_BspiAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TroopAttack
-//
-//==============================================================================
-procedure A_TroopAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SargAttack
-//
-//==============================================================================
-procedure A_SargAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_HeadAttack
-//
-//==============================================================================
-procedure A_HeadAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CyberAttack
-//
-//==============================================================================
-procedure A_CyberAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BruisAttack
-//
-//==============================================================================
-procedure A_BruisAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SkelMissile
-//
-//==============================================================================
-procedure A_SkelMissile(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Tracer
-//
-//==============================================================================
-procedure A_Tracer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SkelWhoosh
-//
-//==============================================================================
-procedure A_SkelWhoosh(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SkelFist
-//
-//==============================================================================
-procedure A_SkelFist(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_VileChase
-//
-//==============================================================================
-procedure A_VileChase(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_VileStart
-//
-//==============================================================================
-procedure A_VileStart(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Fire
-//
-//==============================================================================
-procedure A_Fire(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_StartFire
-//
-//==============================================================================
-procedure A_StartFire(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FireCrackle
-//
-//==============================================================================
-procedure A_FireCrackle(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_VileTarget
-//
-//==============================================================================
-procedure A_VileTarget(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_VileAttack
-//
-//==============================================================================
-procedure A_VileAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FatRaise
-//
-//==============================================================================
-procedure A_FatRaise(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FatAttack1
-//
-//==============================================================================
-procedure A_FatAttack1(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FatAttack2
-//
-//==============================================================================
-procedure A_FatAttack2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FatAttack3
-//
-//==============================================================================
-procedure A_FatAttack3(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SkullAttack
-//
-//==============================================================================
-procedure A_SkullAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PainAttack
-//
-//==============================================================================
-procedure A_PainAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PainDie
-//
-//==============================================================================
-procedure A_PainDie(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Scream
-//
-//==============================================================================
-procedure A_Scream(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_XScream
-//
-//==============================================================================
-procedure A_XScream(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Pain
-//
-//==============================================================================
-procedure A_Pain(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Explode
-//
-//==============================================================================
-procedure A_Explode(thingy: Pmobj_t);
-
-//==============================================================================
-//
-// A_BossDeath
-//
-//==============================================================================
-procedure A_BossDeath(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_Hoof
-//
-//==============================================================================
-procedure A_Hoof(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_Metal
-//
-//==============================================================================
-procedure A_Metal(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BabyMetal
-//
-//==============================================================================
-procedure A_BabyMetal(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_OpenShotgun2
-//
-//==============================================================================
-procedure A_OpenShotgun2(player: Pplayer_t; psp: Pplayer_t);
-
-//==============================================================================
-//
-// A_LoadShotgun2
-//
-//==============================================================================
-procedure A_LoadShotgun2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CloseShotgun2
-//
-//==============================================================================
-procedure A_CloseShotgun2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BrainAwakeVanilla
-//
-//==============================================================================
-procedure A_BrainAwakeVanilla(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainAwake
-//
-//==============================================================================
-procedure A_BrainAwake(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainPain
-//
-//==============================================================================
-procedure A_BrainPain(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainScream
-//
-//==============================================================================
-procedure A_BrainScream(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainExplode
-//
-//==============================================================================
-procedure A_BrainExplode(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainDie
-//
-//==============================================================================
-procedure A_BrainDie(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainSpitVanilla
-//
-//==============================================================================
-procedure A_BrainSpitVanilla(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BrainSpit
-//
-//==============================================================================
-procedure A_BrainSpit(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpawnFly
-//
-//==============================================================================
-procedure A_SpawnFly(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpawnSound
-//
-//==============================================================================
-procedure A_SpawnSound(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_PlayerScream
-//
-//==============================================================================
-procedure A_PlayerScream(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_DoChase
-//
-//==============================================================================
-procedure P_DoChase(actor: Pmobj_t; const fast: boolean);
-
-//==============================================================================
-//
-// P_CheckMeleeRange
-//
-//==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
-
-//==============================================================================
-//
-// P_Massacre
-//
-//==============================================================================
-procedure P_Massacre;
-
-//==============================================================================
-//
-// A_TurretChase
-//
-//==============================================================================
-procedure A_TurretChase(actor: Pmobj_t);
-
 var
   continueafterplayerdeath: boolean;
-
-//==============================================================================
-//
-// P_LookForPlayers
-//
-//==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 
 type
   /// <summary>
@@ -479,6 +59,443 @@ type
     /// <summary>The weapon in the hand of the player makes the monsters flee from the melee (WPF_FLEEMELEE)</summary>
     class function FleesMeleeWeapon(player: Pplayer_t): boolean; static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDoomMonsterActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_Fall
+    //
+    //==============================================================================
+    class procedure A_Fall(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_KeenDie
+    //
+    //==============================================================================
+    class procedure A_KeenDie(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Look
+    //
+    //==============================================================================
+    class procedure A_Look(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PosAttack
+    //
+    //==============================================================================
+    class procedure A_PosAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SPosAttack
+    //
+    //==============================================================================
+    class procedure A_SPosAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CPosAttack
+    //
+    //==============================================================================
+    class procedure A_CPosAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CPosRefire
+    //
+    //==============================================================================
+    class procedure A_CPosRefire(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpidRefire
+    //
+    //==============================================================================
+    class procedure A_SpidRefire(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BspiAttack
+    //
+    //==============================================================================
+    class procedure A_BspiAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TroopAttack
+    //
+    //==============================================================================
+    class procedure A_TroopAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SargAttack
+    //
+    //==============================================================================
+    class procedure A_SargAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_HeadAttack
+    //
+    //==============================================================================
+    class procedure A_HeadAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CyberAttack
+    //
+    //==============================================================================
+    class procedure A_CyberAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BruisAttack
+    //
+    //==============================================================================
+    class procedure A_BruisAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SkelMissile
+    //
+    //==============================================================================
+    class procedure A_SkelMissile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Tracer
+    //
+    //==============================================================================
+    class procedure A_Tracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SkelWhoosh
+    //
+    //==============================================================================
+    class procedure A_SkelWhoosh(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SkelFist
+    //
+    //==============================================================================
+    class procedure A_SkelFist(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_VileChase
+    //
+    //==============================================================================
+    class procedure A_VileChase(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_VileStart
+    //
+    //==============================================================================
+    class procedure A_VileStart(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Fire
+    //
+    //==============================================================================
+    class procedure A_Fire(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_StartFire
+    //
+    //==============================================================================
+    class procedure A_StartFire(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FireCrackle
+    //
+    //==============================================================================
+    class procedure A_FireCrackle(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_VileTarget
+    //
+    //==============================================================================
+    class procedure A_VileTarget(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_VileAttack
+    //
+    //==============================================================================
+    class procedure A_VileAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FatRaise
+    //
+    //==============================================================================
+    class procedure A_FatRaise(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FatAttack1
+    //
+    //==============================================================================
+    class procedure A_FatAttack1(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FatAttack2
+    //
+    //==============================================================================
+    class procedure A_FatAttack2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FatAttack3
+    //
+    //==============================================================================
+    class procedure A_FatAttack3(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SkullAttack
+    //
+    //==============================================================================
+    class procedure A_SkullAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PainAttack
+    //
+    //==============================================================================
+    class procedure A_PainAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PainDie
+    //
+    //==============================================================================
+    class procedure A_PainDie(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_XScream
+    //
+    //==============================================================================
+    class procedure A_XScream(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Pain
+    //
+    //==============================================================================
+    class procedure A_Pain(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Explode
+    //
+    //==============================================================================
+    class procedure A_Explode(thingy: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BossDeath
+    //
+    //==============================================================================
+    class procedure A_BossDeath(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Hoof
+    //
+    //==============================================================================
+    class procedure A_Hoof(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Metal
+    //
+    //==============================================================================
+    class procedure A_Metal(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BabyMetal
+    //
+    //==============================================================================
+    class procedure A_BabyMetal(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_OpenShotgun2
+    //
+    //==============================================================================
+    class procedure A_OpenShotgun2(player: Pplayer_t; psp: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // A_LoadShotgun2
+    //
+    //==============================================================================
+    class procedure A_LoadShotgun2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CloseShotgun2
+    //
+    //==============================================================================
+    class procedure A_CloseShotgun2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainAwakeVanilla
+    //
+    //==============================================================================
+    class procedure A_BrainAwakeVanilla(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainAwake
+    //
+    //==============================================================================
+    class procedure A_BrainAwake(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainPain
+    //
+    //==============================================================================
+    class procedure A_BrainPain(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainScream
+    //
+    //==============================================================================
+    class procedure A_BrainScream(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainExplode
+    //
+    //==============================================================================
+    class procedure A_BrainExplode(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainDie
+    //
+    //==============================================================================
+    class procedure A_BrainDie(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainSpitVanilla
+    //
+    //==============================================================================
+    class procedure A_BrainSpitVanilla(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BrainSpit
+    //
+    //==============================================================================
+    class procedure A_BrainSpit(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpawnFly
+    //
+    //==============================================================================
+    class procedure A_SpawnFly(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpawnSound
+    //
+    //==============================================================================
+    class procedure A_SpawnSound(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PlayerScream
+    //
+    //==============================================================================
+    class procedure A_PlayerScream(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_DoChase
+    //
+    //==============================================================================
+    class procedure P_DoChase(actor: Pmobj_t; const fast: boolean); static;
+
+    //==============================================================================
+    //
+    // P_Massacre
+    //
+    //==============================================================================
+    class procedure P_Massacre; static;
+
+    //==============================================================================
+    //
+    // A_TurretChase
+    //
+    //==============================================================================
+    class procedure A_TurretChase(actor: Pmobj_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_Chase
+    //
+    //==============================================================================
+    class procedure A_Chase(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Scream
+    //
+    //==============================================================================
+    class procedure A_Scream(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckMeleeRange
+    //
+    //==============================================================================
+    class function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean; static;
+
+    //==============================================================================
+    //
+    // P_LookForPlayers
+    //
+    //==============================================================================
+    class function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean; static;
+  end;
+
 
 implementation
 
@@ -530,7 +547,7 @@ uses
 // A_Fall
 //
 //==============================================================================
-procedure A_Fall(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_Fall(actor: Pmobj_t);
 begin
   // actor is on ground, it can be walked over
   actor.flags := actor.flags and not MF_SOLID;
@@ -552,7 +569,7 @@ end;
 // P_CheckMeleeRange
 //
 //==============================================================================
-function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
+class function TMonsterBaseActions.P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
 var
   mo: Pmobj_t;
   dist: fixed_t;
@@ -601,12 +618,26 @@ begin
   result := P_CheckSight(actor, actor.target);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterLocalActions = class sealed
+  public
+    class function P_CheckMissileRange(actor: Pmobj_t): boolean; static;
+    class function P_DogFollowPlayerHandler(actor: Pmobj_t): boolean; static;
+    class procedure P_DoChaseVanilla(actor: Pmobj_t); static;
+    class function PIT_VileCheck(thing: Pmobj_t): boolean; static;
+    class procedure A_PainShootSkull(actor: Pmobj_t; angle: angle_t); static;
+  end;
+
 //==============================================================================
 //
 // P_CheckMissileRange
 //
 //==============================================================================
-function P_CheckMissileRange(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
@@ -699,7 +730,7 @@ end;
 // Returns true if a player is targeted.
 //
 //==============================================================================
-function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
+class function TMonsterBaseActions.P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 var
   c: integer;
   stop: integer;
@@ -777,7 +808,7 @@ end;
 // Uses special tag 666.
 //
 //==============================================================================
-procedure A_KeenDie(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_KeenDie(mo: Pmobj_t);
 var
   th: Pthinker_t;
   mo2: Pmobj_t;
@@ -810,7 +841,7 @@ end;
 // ACTION ROUTINES
 //
 //==============================================================================
-function P_DogFollowPlayerHandler(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_DogFollowPlayerHandler(actor: Pmobj_t): boolean;
 begin
   // JVAL: 20200512 - Drones follow player 's trace
   if actor.info.doomednum = 888 then
@@ -839,13 +870,13 @@ end;
 // Stay in state until a player is sighted.
 //
 //==============================================================================
-procedure A_Look(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_Look(actor: Pmobj_t);
 var
   targ: Pmobj_t;
   seeyou: boolean;
   sound: integer;
 begin
-  if P_DogFollowPlayerHandler(actor) then
+  if TMonsterLocalActions.P_DogFollowPlayerHandler(actor) then
     exit;
 
   actor.threshold := 0; // any shot will wake up
@@ -915,7 +946,7 @@ end;
 // so it tries to close as fast as possible
 //
 //==============================================================================
-procedure P_DoChase(actor: Pmobj_t; const fast: boolean);
+class procedure TDoomMonsterActions.P_DoChase(actor: Pmobj_t; const fast: boolean);
 var
   delta: integer;
   nomissile: boolean;
@@ -925,7 +956,7 @@ begin
   if actor.reactiontime <> 0 then
     actor.reactiontime := actor.reactiontime - 1;
 
-  if P_DogFollowPlayerHandler(actor) then
+  if TMonsterLocalActions.P_DogFollowPlayerHandler(actor) then
     exit;
 
   // modify target threshold
@@ -974,7 +1005,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_AttackSound(actor, actor);
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
@@ -987,7 +1018,7 @@ begin
     nomissile := false;
     if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
-    else if not P_CheckMissileRange(actor) then
+    else if not TMonsterLocalActions.P_CheckMissileRange(actor) then
       nomissile := true;
     if not nomissile then
     begin
@@ -1050,7 +1081,7 @@ end;
 // P_DoChaseVanilla
 //
 //==============================================================================
-procedure P_DoChaseVanilla(actor: Pmobj_t);
+class procedure TMonsterLocalActions.P_DoChaseVanilla(actor: Pmobj_t);
 var
   delta: integer;
   nomissile: boolean;
@@ -1082,7 +1113,7 @@ begin
   if (actor.target = nil) or (actor.target.flags and MF_SHOOTABLE = 0) then
   begin
     // look for a new target
-    if P_LookForPlayers(actor, True) then
+    if TMonsterBaseActions.P_LookForPlayers(actor, True) then
       exit; // got a new target
 
     P_SetMobjState(actor, statenum_t(actor.info.spawnstate));
@@ -1099,7 +1130,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.info.attacksound <> 0 then
       S_StartSound(actor, actor.info.attacksound);
@@ -1140,7 +1171,7 @@ begin
   // possibly choose another target
   if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
   begin
-    if P_LookForPlayers(actor, True) then
+    if TMonsterBaseActions.P_LookForPlayers(actor, True) then
       exit;  // got a new target
   end;
 
@@ -1159,12 +1190,12 @@ end;
 // A_Chase
 //
 //==============================================================================
-procedure A_Chase(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Chase(actor: Pmobj_t);
 begin
   if G_PlayingEngineVersion <= VERSION110 then // JVAL: 20210103 - Vanilla demo
-    P_DoChaseVanilla(actor)
+    TMonsterLocalActions.P_DoChaseVanilla(actor)
   else
-    P_DoChase(actor, false);
+    TDoomMonsterActions.P_DoChase(actor, false);
 end;
 
 //==============================================================================
@@ -1172,7 +1203,7 @@ end;
 // A_PosAttack
 //
 //==============================================================================
-procedure A_PosAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_PosAttack(actor: Pmobj_t);
 var
   angle: angle_t;
   damage: integer;
@@ -1196,7 +1227,7 @@ end;
 // A_SPosAttack
 //
 //==============================================================================
-procedure A_SPosAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SPosAttack(actor: Pmobj_t);
 var
   i: integer;
   angle: angle_t;
@@ -1225,7 +1256,7 @@ end;
 // A_CPosAttack
 //
 //==============================================================================
-procedure A_CPosAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_CPosAttack(actor: Pmobj_t);
 var
   angle: angle_t;
   bangle: angle_t;
@@ -1251,7 +1282,7 @@ end;
 // A_CPosRefire
 //
 //==============================================================================
-procedure A_CPosRefire(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_CPosRefire(actor: Pmobj_t);
 begin
   // keep firing unless target got out of sight
   A_FaceTarget(actor);
@@ -1269,7 +1300,7 @@ end;
 // A_SpidRefire
 //
 //==============================================================================
-procedure A_SpidRefire(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SpidRefire(actor: Pmobj_t);
 begin
   // keep firing unless target got out of sight
   A_FaceTarget(actor);
@@ -1287,7 +1318,7 @@ end;
 // A_BspiAttack
 //
 //==============================================================================
-procedure A_BspiAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_BspiAttack(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -1303,7 +1334,7 @@ end;
 // A_TroopAttack
 //
 //==============================================================================
-procedure A_TroopAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_TroopAttack(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -1311,7 +1342,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     S_StartSound(actor, Ord(sfx_claw));
     damage := (P_Random mod 8 + 1) * 3;
@@ -1328,7 +1359,7 @@ end;
 // A_SargAttack
 //
 //==============================================================================
-procedure A_SargAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SargAttack(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -1336,7 +1367,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := ((P_Random mod 10) + 1) * 4;
     P_DamageMobj(actor.target, actor, actor, damage);
@@ -1348,7 +1379,7 @@ end;
 // A_HeadAttack
 //
 //==============================================================================
-procedure A_HeadAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_HeadAttack(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -1356,7 +1387,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := (P_Random mod 6 + 1) * 10;
     P_DamageMobj(actor.target, actor, actor, damage);
@@ -1372,7 +1403,7 @@ end;
 // A_CyberAttack
 //
 //==============================================================================
-procedure A_CyberAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_CyberAttack(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -1386,14 +1417,14 @@ end;
 // A_BruisAttack
 //
 //==============================================================================
-procedure A_BruisAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_BruisAttack(actor: Pmobj_t);
 var
   damage: integer;
 begin
   if actor.target = nil then
     exit;
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     S_StartSound(actor, Ord(sfx_claw));
     damage := (P_Random mod 8 + 1) * 10;
@@ -1410,7 +1441,7 @@ end;
 // A_SkelMissile
 //
 //==============================================================================
-procedure A_SkelMissile(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SkelMissile(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1440,7 +1471,7 @@ const
 // A_Tracer
 //
 //==============================================================================
-procedure A_Tracer(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_Tracer(actor: Pmobj_t);
 var
   exact: angle_t;
   dist: fixed_t;
@@ -1516,7 +1547,7 @@ end;
 // A_SkelWhoosh
 //
 //==============================================================================
-procedure A_SkelWhoosh(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SkelWhoosh(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -1530,7 +1561,7 @@ end;
 // A_SkelFist
 //
 //==============================================================================
-procedure A_SkelFist(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SkelFist(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -1539,7 +1570,7 @@ begin
 
   A_FaceTarget(actor);
 
-  if P_CheckMeleeRange(actor) then
+  if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := ((P_Random mod 10) + 1) * 6;
     S_StartSound(actor, Ord(sfx_skepch));
@@ -1561,7 +1592,7 @@ var
 // PIT_VileCheck
 //
 //==============================================================================
-function PIT_VileCheck(thing: Pmobj_t): boolean;
+class function TMonsterLocalActions.PIT_VileCheck(thing: Pmobj_t): boolean;
 var
   maxdist: integer;
   check: boolean;
@@ -1612,7 +1643,7 @@ end;
 // Check for ressurecting a body
 //
 //==============================================================================
-procedure A_VileChase(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_VileChase(actor: Pmobj_t);
 var
   xl: integer;
   xh: integer;
@@ -1653,7 +1684,7 @@ begin
       // Call PIT_VileCheck to check
       // whether object is a corpse
       // that canbe raised.
-        if not P_BlockThingsIterator(bx, by, PIT_VileCheck) then
+        if not P_BlockThingsIterator(bx, by, TMonsterLocalActions.PIT_VileCheck) then
         begin
         // got one!
           temp := actor.target;
@@ -1699,7 +1730,7 @@ begin
   end;
 
   // Return to normal attack.
-  A_Chase(actor);
+  TMonsterBaseActions.A_Chase(actor);
 end;
 
 //==============================================================================
@@ -1707,7 +1738,7 @@ end;
 // A_VileStart
 //
 //==============================================================================
-procedure A_VileStart(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_VileStart(actor: Pmobj_t);
 begin
   S_StartSound(actor, Ord(sfx_vilatk));
 end;
@@ -1718,7 +1749,7 @@ end;
 // Keep fire in front of player unless out of sight
 //
 //==============================================================================
-procedure A_Fire(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_Fire(actor: Pmobj_t);
 var
   dest: Pmobj_t;
   an: LongWord;
@@ -1749,7 +1780,7 @@ end;
 // A_StartFire
 //
 //==============================================================================
-procedure A_StartFire(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_StartFire(actor: Pmobj_t);
 begin
   S_StartSound(actor, Ord(sfx_flamst));
   A_Fire(actor);
@@ -1760,7 +1791,7 @@ end;
 // A_FireCrackle
 //
 //==============================================================================
-procedure A_FireCrackle(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_FireCrackle(actor: Pmobj_t);
 begin
   S_StartSound(actor, Ord(sfx_flame));
   A_Fire(actor);
@@ -1772,7 +1803,7 @@ end;
 // Spawn the hellfire
 //
 //==============================================================================
-procedure A_VileTarget(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_VileTarget(actor: Pmobj_t);
 var
   fog: Pmobj_t;
 begin
@@ -1799,7 +1830,7 @@ end;
 // A_VileAttack
 //
 //==============================================================================
-procedure A_VileAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_VileAttack(actor: Pmobj_t);
 var
   fire: Pmobj_t;
   an: angle_t;
@@ -1847,7 +1878,7 @@ const
 // A_FatRaise
 //
 //==============================================================================
-procedure A_FatRaise(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_FatRaise(actor: Pmobj_t);
 begin
   A_FaceTarget(actor);
   S_StartSound(actor, Ord(sfx_manatk));
@@ -1858,7 +1889,7 @@ end;
 // A_FatAttack1
 //
 //==============================================================================
-procedure A_FatAttack1(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_FatAttack1(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   an: angle_t;
@@ -1887,7 +1918,7 @@ end;
 // A_FatAttack2
 //
 //==============================================================================
-procedure A_FatAttack2(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_FatAttack2(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   an: angle_t;
@@ -1916,7 +1947,7 @@ end;
 // A_FatAttack3
 //
 //==============================================================================
-procedure A_FatAttack3(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_FatAttack3(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   an: angle_t;
@@ -1962,7 +1993,7 @@ const
 // A_SkullAttack
 //
 //==============================================================================
-procedure A_SkullAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_SkullAttack(actor: Pmobj_t);
 var
   dest: Pmobj_t;
   an: angle_t;
@@ -1997,7 +2028,7 @@ end;
 // Spawn a lost soul and launch it at the target
 //
 //==============================================================================
-procedure A_PainShootSkull(actor: Pmobj_t; angle: angle_t);
+class procedure TMonsterLocalActions.A_PainShootSkull(actor: Pmobj_t; angle: angle_t);
 var
   x: fixed_t;
   y: fixed_t;
@@ -2057,7 +2088,7 @@ begin
     newmobj.flags2_ex := newmobj.flags2_ex or MF2_EX_FRIEND;
 
   newmobj.target := actor.target;
-  A_SkullAttack(newmobj);
+  TDoomMonsterActions.A_SkullAttack(newmobj);
 end;
 
 //==============================================================================
@@ -2066,13 +2097,13 @@ end;
 // Spawn a lost soul and launch it at the target
 //
 //==============================================================================
-procedure A_PainAttack(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_PainAttack(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
 
   A_FaceTarget(actor);
-  A_PainShootSkull(actor, actor.angle);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle);
 end;
 
 //==============================================================================
@@ -2080,12 +2111,12 @@ end;
 // A_PainDie
 //
 //==============================================================================
-procedure A_PainDie(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_PainDie(actor: Pmobj_t);
 begin
   A_Fall(actor);
-  A_PainShootSkull(actor, actor.angle + ANG90);
-  A_PainShootSkull(actor, actor.angle + ANG180);
-  A_PainShootSkull(actor, actor.angle + ANG270);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle + ANG90);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle + ANG180);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle + ANG270);
 end;
 
 //==============================================================================
@@ -2093,7 +2124,7 @@ end;
 // A_Scream
 //
 //==============================================================================
-procedure A_Scream(actor: Pmobj_t);
+class procedure TMonsterBaseActions.A_Scream(actor: Pmobj_t);
 var
   sound: integer;
 begin
@@ -2127,7 +2158,7 @@ end;
 // A_XScream
 //
 //==============================================================================
-procedure A_XScream(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_XScream(actor: Pmobj_t);
 begin
   S_StartSound(actor, Ord(sfx_slop));
 end;
@@ -2137,7 +2168,7 @@ end;
 // A_Pain
 //
 //==============================================================================
-procedure A_Pain(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_Pain(actor: Pmobj_t);
 begin
   A_PainSound1(actor);
 end;
@@ -2147,7 +2178,7 @@ end;
 // A_Explode
 //
 //==============================================================================
-procedure A_Explode(thingy: Pmobj_t);
+class procedure TDoomMonsterActions.A_Explode(thingy: Pmobj_t);
 begin
   if G_PlayingEngineVersion >= VERSION205 then
   begin
@@ -2181,7 +2212,7 @@ end;
 // if on first boss level
 //
 //==============================================================================
-procedure A_BossDeath(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BossDeath(mo: Pmobj_t);
 var
   th: Pthinker_t;
   mo2: Pmobj_t;
@@ -2243,8 +2274,8 @@ begin
         junk.special := TGameSession.GameMapInfo.bossactions[i].special;
         junk.tag := TGameSession.GameMapInfo.bossactions[i].tag;
         // use special semantics for line activation to block problem types.
-        if not P_UseSpecialLine(mo, @junk, 0, true) then
-          P_CrossSpecialLinePtr(@junk, 0, mo, true);
+        if not TSwitchRoutines.P_UseSpecialLine(mo, @junk, 0, true) then
+          TSpecRoutines.P_CrossSpecialLinePtr(@junk, 0, mo, true);
       end;
 
     exit;
@@ -2386,10 +2417,10 @@ end;
 // A_Hoof
 //
 //==============================================================================
-procedure A_Hoof(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_Hoof(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_hoof));
-  A_Chase(mo);
+  TMonsterBaseActions.A_Chase(mo);
 end;
 
 //==============================================================================
@@ -2397,10 +2428,10 @@ end;
 // A_Metal
 //
 //==============================================================================
-procedure A_Metal(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_Metal(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_metal));
-  A_Chase(mo);
+  TMonsterBaseActions.A_Chase(mo);
 end;
 
 //==============================================================================
@@ -2408,10 +2439,10 @@ end;
 // A_BabyMetal
 //
 //==============================================================================
-procedure A_BabyMetal(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BabyMetal(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_bspwlk));
-  A_Chase(mo);
+  TMonsterBaseActions.A_Chase(mo);
 end;
 
 //==============================================================================
@@ -2419,7 +2450,7 @@ end;
 // A_OpenShotgun2
 //
 //==============================================================================
-procedure A_OpenShotgun2(player: Pplayer_t; psp: Pplayer_t);
+class procedure TDoomMonsterActions.A_OpenShotgun2(player: Pplayer_t; psp: Pplayer_t);
 begin
   S_StartSound(player.mo, Ord(sfx_dbopn));
 end;
@@ -2429,7 +2460,7 @@ end;
 // A_LoadShotgun2
 //
 //==============================================================================
-procedure A_LoadShotgun2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomMonsterActions.A_LoadShotgun2(player: Pplayer_t; psp: Ppspdef_t);
 begin
   S_StartSound(player.mo, Ord(sfx_dbload));
 end;
@@ -2439,7 +2470,7 @@ end;
 // A_CloseShotgun2
 //
 //==============================================================================
-procedure A_CloseShotgun2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomMonsterActions.A_CloseShotgun2(player: Pplayer_t; psp: Ppspdef_t);
 begin
   S_StartSound(player.mo, Ord(sfx_dbcls));
   A_ReFire(player, psp);
@@ -2458,7 +2489,7 @@ var
 // A_BrainAwakeVanilla
 //
 //==============================================================================
-procedure A_BrainAwakeVanilla(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainAwakeVanilla(mo: Pmobj_t);
 var
   thinker: Pthinker_t;
   m: Pmobj_t;
@@ -2497,7 +2528,7 @@ const
 // A_BrainAwake
 //
 //==============================================================================
-procedure A_BrainAwake(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainAwake(mo: Pmobj_t);
 var
   thinker: Pthinker_t;
   m: Pmobj_t;
@@ -2538,7 +2569,7 @@ end;
 // A_BrainPain
 //
 //==============================================================================
-procedure A_BrainPain(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainPain(mo: Pmobj_t);
 begin
   S_StartSound(nil, Ord(sfx_bospn));
 end;
@@ -2548,7 +2579,7 @@ end;
 // A_BrainScream
 //
 //==============================================================================
-procedure A_BrainScream(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainScream(mo: Pmobj_t);
 var
   x: integer;
   y: integer;
@@ -2579,7 +2610,7 @@ end;
 // A_BrainExplode
 //
 //==============================================================================
-procedure A_BrainExplode(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainExplode(mo: Pmobj_t);
 var
   x: integer;
   y: integer;
@@ -2604,7 +2635,7 @@ end;
 // A_BrainDie
 //
 //==============================================================================
-procedure A_BrainDie(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainDie(mo: Pmobj_t);
 begin
   G_ExitLevel;
 end;
@@ -2617,7 +2648,7 @@ var
 // A_BrainSpitVanilla
 //
 //==============================================================================
-procedure A_BrainSpitVanilla(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainSpitVanilla(mo: Pmobj_t);
 var
   targ: Pmobj_t;
   newmobj: Pmobj_t;
@@ -2652,7 +2683,7 @@ end;
 // A_BrainSpit
 //
 //==============================================================================
-procedure A_BrainSpit(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_BrainSpit(mo: Pmobj_t);
 const
   S_EASY = 'user_braineasy';
 var
@@ -2717,7 +2748,7 @@ end;
 // A_SpawnFly
 //
 //==============================================================================
-procedure A_SpawnFly(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_SpawnFly(mo: Pmobj_t);
 var
   newmobj: Pmobj_t;
   fog: Pmobj_t;
@@ -2795,7 +2826,7 @@ end;
 // travelling cube sound
 //
 //==============================================================================
-procedure A_SpawnSound(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_SpawnSound(mo: Pmobj_t);
 begin
   S_StartSound(mo, Ord(sfx_boscub));
   A_SpawnFly(mo);
@@ -2806,7 +2837,7 @@ end;
 // A_PlayerScream
 //
 //==============================================================================
-procedure A_PlayerScream(mo: Pmobj_t);
+class procedure TDoomMonsterActions.A_PlayerScream(mo: Pmobj_t);
 var
   sound: integer;
 begin
@@ -2834,7 +2865,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_Massacre;
+class procedure TDoomMonsterActions.P_Massacre;
 var
   mo: Pmobj_t;
   think: Pthinker_t;
@@ -2861,7 +2892,7 @@ end;
 // A_TurretChase
 //
 //==============================================================================
-procedure A_TurretChase(actor: Pmobj_t);
+class procedure TDoomMonsterActions.A_TurretChase(actor: Pmobj_t);
 var
   delta: integer;
   nomissile: boolean;
@@ -2919,7 +2950,7 @@ begin
   end;
 
   // check for melee attack
-  if (actor.info.meleestate <> 0) and P_CheckMeleeRange(actor) then
+  if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     A_MeleeSound(actor, actor);
     if actor.state <> @states[actor.info.meleestate] then
@@ -2933,7 +2964,7 @@ begin
   begin
     if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
-    else if not P_CheckMissileRange(actor) then
+    else if not TMonsterLocalActions.P_CheckMissileRange(actor) then
       nomissile := true;
     if not nomissile then
     begin

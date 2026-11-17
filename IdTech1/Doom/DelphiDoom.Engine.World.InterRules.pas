@@ -26,13 +26,6 @@ uses
   s_sound,
   d_player;
 
-//==============================================================================
-//
-// P_GivePower
-//
-//==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
@@ -81,6 +74,22 @@ type
     class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_GivePower
+    //
+    //==============================================================================
+    class function P_GivePower(player: Pplayer_t; power: integer): boolean; static;
+  end;
+
+
 implementation
 
 uses
@@ -114,6 +123,20 @@ const
 // GET STUFF
 //
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterLocalRoutines = class sealed
+  public
+    class function P_GiveAmmoAutoSwitch(player: Pplayer_t; ammo: ammotype_t; oldammo: integer): boolean; static;
+    class function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean; static;
+    class function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean; static;
+    class procedure P_GiveCard(player: Pplayer_t; card: card_t); static;
+    class procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t); static;
+  end;
+
 //==============================================================================
 // P_GiveAmmoAutoSwitch
 //
@@ -125,7 +148,7 @@ const
 // mbf21: take into account new weapon autoswitch flags
 //
 //==============================================================================
-function P_GiveAmmoAutoSwitch(player: Pplayer_t; ammo: ammotype_t; oldammo: integer): boolean;
+class function TInterLocalRoutines.P_GiveAmmoAutoSwitch(player: Pplayer_t; ammo: ammotype_t; oldammo: integer): boolean;
 var
   i: integer;
 begin
@@ -154,7 +177,7 @@ end;
 // P_GiveAmmo
 //
 //==============================================================================
-function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
+class function TInterLocalRoutines.P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
 var
   oldammo: integer;
 begin
@@ -257,7 +280,7 @@ end;
 // The weapon name may have a MF_DROPPED flag ored in.
 //
 //==============================================================================
-function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean;
+class function TInterLocalRoutines.P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean;
 var
   gaveammo: boolean;
   gaveweapon: boolean;
@@ -317,7 +340,7 @@ end;
 // P_GiveCard
 //
 //==============================================================================
-procedure P_GiveCard(player: Pplayer_t; card: card_t);
+class procedure TInterLocalRoutines.P_GiveCard(player: Pplayer_t; card: card_t);
 begin
   if player.cards[Ord(card)] then
     exit;
@@ -331,7 +354,7 @@ end;
 // P_GivePower
 //
 //==============================================================================
-function P_GivePower(player: Pplayer_t; power: integer): boolean;
+class function TInterRoutines.P_GivePower(player: Pplayer_t; power: integer): boolean;
 begin
   if power = Ord(pw_invulnerability) then
   begin
@@ -476,7 +499,7 @@ begin
       begin
         if not player.cards[Ord(it_bluecard)] then
           player._message := GOTBLUECARD;
-        P_GiveCard(player, it_bluecard);
+        TInterLocalRoutines.P_GiveCard(player, it_bluecard);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -492,7 +515,7 @@ begin
       begin
         if not player.cards[Ord(it_yellowcard)] then
           player._message := GOTYELWCARD;
-        P_GiveCard(player, it_yellowcard);
+        TInterLocalRoutines.P_GiveCard(player, it_yellowcard);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -508,7 +531,7 @@ begin
       begin
         if not player.cards[Ord(it_redcard)] then
           player._message := GOTREDCARD;
-        P_GiveCard(player, it_redcard);
+        TInterLocalRoutines.P_GiveCard(player, it_redcard);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -524,7 +547,7 @@ begin
       begin
         if not player.cards[Ord(it_blueskull)] then
           player._message := GOTBLUESKUL;
-        P_GiveCard(player, it_blueskull);
+        TInterLocalRoutines.P_GiveCard(player, it_blueskull);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -540,7 +563,7 @@ begin
       begin
         if not player.cards[Ord(it_yellowskull)] then
           player._message := GOTYELWSKUL;
-        P_GiveCard(player, it_yellowskull);
+        TInterLocalRoutines.P_GiveCard(player, it_yellowskull);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -556,7 +579,7 @@ begin
       begin
         if not player.cards[Ord(it_redskull)] then
           player._message := GOTREDSKULL;
-        P_GiveCard(player, it_redskull);
+        TInterLocalRoutines.P_GiveCard(player, it_redskull);
         if TGameSession.NetGame then
         begin
           if special.special <> 0 then
@@ -602,7 +625,7 @@ begin
   // power ups
     Ord(SPR_PINV):
       begin
-        if not P_GivePower(player, Ord(pw_invulnerability)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_invulnerability)) then
           exit;
         player._message := GOTINVUL;
         if not oldsharewareversion then
@@ -611,7 +634,7 @@ begin
 
     Ord(SPR_PSTR):
       begin
-        if not P_GivePower(player, Ord(pw_strength)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_strength)) then
           exit;
         player._message := GOTBERSERK;
         if player.readyweapon <> wp_fist then
@@ -622,7 +645,7 @@ begin
 
     Ord(SPR_PINS):
       begin
-        if not P_GivePower(player, Ord(pw_invisibility)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_invisibility)) then
           exit;
         player._message := GOTINVIS;
         if not oldsharewareversion then
@@ -631,7 +654,7 @@ begin
 
     Ord(SPR_SUIT):
       begin
-        if not P_GivePower(player, Ord(pw_ironfeet)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_ironfeet)) then
           exit;
         player._message := GOTSUIT;
         if not oldsharewareversion then
@@ -640,7 +663,7 @@ begin
 
     Ord(SPR_PMAP):
       begin
-        if not P_GivePower(player, Ord(pw_allmap)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_allmap)) then
           exit;
         player._message := GOTMAP;
         if not oldsharewareversion then
@@ -649,7 +672,7 @@ begin
 
     Ord(SPR_PVIS):
       begin
-        if not P_GivePower(player, Ord(pw_infrared)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_infrared)) then
           exit;
         player._message := GOTVISOR;
         if not oldsharewareversion then
@@ -661,12 +684,12 @@ begin
       begin
         if special.flags and MF_DROPPED <> 0 then
         begin
-          if not P_GiveAmmo(player, am_clip, 0) then
+          if not TInterLocalRoutines.P_GiveAmmo(player, am_clip, 0) then
             exit;
         end
         else
         begin
-          if not P_GiveAmmo(player, am_clip, 1) then
+          if not TInterLocalRoutines.P_GiveAmmo(player, am_clip, 1) then
             exit;
         end;
         player._message := GOTCLIP;
@@ -674,35 +697,35 @@ begin
 
     Ord(SPR_AMMO):
       begin
-        if not P_GiveAmmo(player, am_clip, 5) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_clip, 5) then
           exit;
         player._message := GOTCLIPBOX;
       end;
 
     Ord(SPR_ROCK):
       begin
-        if not P_GiveAmmo(player, am_misl, 1) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_misl, 1) then
           exit;
         player._message := GOTROCKET;
       end;
 
     Ord(SPR_BROK):
       begin
-        if not P_GiveAmmo(player, am_misl, 5) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_misl, 5) then
           exit;
         player._message := GOTROCKBOX;
       end;
 
     Ord(SPR_CELL):
       begin
-        if not P_GiveAmmo(player, am_cell, 1) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_cell, 1) then
           exit;
         player._message := GOTCELL;
       end;
 
     Ord(SPR_CELP):
       begin
-        if not P_GiveAmmo(player, am_cell, 5) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_cell, 5) then
           exit;
         player._message := GOTCELLBOX;
       end;
@@ -712,7 +735,7 @@ begin
       // JVAL: 7/12/2007 display exact number of picked-up shells.
         oldshells := player.ammo[Ord(am_shell)];
 
-        if not P_GiveAmmo(player, am_shell, 1) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_shell, 1) then
           exit;
 
         pickedshells := player.ammo[Ord(am_shell)] - oldshells;
@@ -732,7 +755,7 @@ begin
 
     Ord(SPR_SBOX):
       begin
-        if not P_GiveAmmo(player, am_shell, 5) then
+        if not TInterLocalRoutines.P_GiveAmmo(player, am_shell, 5) then
           exit;
         player._message := GOTSHELLBOX;
       end;
@@ -746,14 +769,14 @@ begin
           player.backpack := true;
         end;
         for i := 0 to Ord(NUMAMMO) - 1 do
-          P_GiveAmmo(player, ammotype_t(i), 1);
+          TInterLocalRoutines.P_GiveAmmo(player, ammotype_t(i), 1);
         player._message := GOTBACKPACK;
       end;
 
   // weapons
     Ord(SPR_BFUG):
       begin
-        if not P_GiveWeapon(player, wp_bfg, false) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_bfg, false) then
           exit;
         player._message := GOTBFG9000;
         sound := Ord(sfx_wpnup);
@@ -761,7 +784,7 @@ begin
 
     Ord(SPR_MGUN):
       begin
-        if not P_GiveWeapon(player, wp_chaingun, special.flags and MF_DROPPED <> 0) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_chaingun, special.flags and MF_DROPPED <> 0) then
           exit;
         player._message := GOTCHAINGUN;
         sound := Ord(sfx_wpnup);
@@ -769,7 +792,7 @@ begin
 
     Ord(SPR_CSAW):
       begin
-        if not P_GiveWeapon(player, wp_chainsaw, false) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_chainsaw, false) then
           exit;
         player._message := GOTCHAINSAW;
         sound := Ord(sfx_wpnup);
@@ -777,7 +800,7 @@ begin
 
     Ord(SPR_LAUN):
       begin
-        if not P_GiveWeapon(player, wp_missile, false) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_missile, false) then
           exit;
         player._message := GOTLAUNCHER;
         sound := Ord(sfx_wpnup);
@@ -785,7 +808,7 @@ begin
 
     Ord(SPR_PLAS):
       begin
-        if not P_GiveWeapon(player, wp_plasma, false) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_plasma, false) then
           exit;
         player._message := GOTPLASMA;
         sound := Ord(sfx_wpnup);
@@ -793,7 +816,7 @@ begin
 
     Ord(SPR_SHOT):
       begin
-        if not P_GiveWeapon(player, wp_shotgun, special.flags and MF_DROPPED <> 0) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_shotgun, special.flags and MF_DROPPED <> 0) then
           exit;
         player._message := GOTSHOTGUN;
         sound := Ord(sfx_wpnup);
@@ -801,7 +824,7 @@ begin
 
     Ord(SPR_SGN2):
       begin
-        if not P_GiveWeapon(player, wp_supershotgun, special.flags and MF_DROPPED <> 0) then
+        if not TInterLocalRoutines.P_GiveWeapon(player, wp_supershotgun, special.flags and MF_DROPPED <> 0) then
           exit;
         player._message := GOTSHOTGUN2;
         sound := Ord(sfx_wpnup);
@@ -831,7 +854,7 @@ end;
 // P_KillMobj
 //
 //==============================================================================
-procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t);
+class procedure TInterLocalRoutines.P_KillMobj(source: Pmobj_t; target: Pmobj_t);
 var
   item: integer;
   gibhealth: integer;
@@ -1106,7 +1129,7 @@ begin
   target.health := target.health - damage;
   if target.health <= 0 then
   begin
-    P_KillMobj(source, target);
+    TInterLocalRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;

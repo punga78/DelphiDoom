@@ -41,25 +41,34 @@ uses
   DelphiDoom.Engine.World.SpecRules,
   p_spec;
 
-//==============================================================================
-//
-// P_ChangeSwitchTexture
-//
-//==============================================================================
-procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
-
-//==============================================================================
-//
-// P_UseSpecialLine
-//
-//==============================================================================
-function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
-
 // The pairs of the textures of the switches, ended by -1: TEngineSwitchListLoader writes them at
 // the start
 var
   switchlist: PIntegerArray;
   numswitches: integer;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSwitchRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_ChangeSwitchTexture
+    //
+    //==============================================================================
+    class procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean); static;
+
+    //==============================================================================
+    //
+    // P_UseSpecialLine
+    //
+    //==============================================================================
+    class function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean; static;
+  end;
+
 
 implementation
 
@@ -94,7 +103,7 @@ doomstat;
 // Tell it if switch is ok to use again (1=yes, it's a button).
 //
 //==============================================================================
-procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
+class procedure TSwitchRoutines.P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
 var
   texTop: integer;
   texMid: integer;
@@ -165,7 +174,7 @@ end;
 // Only the front sides of lines are usable.
 //
 //==============================================================================
-function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
+class function TSwitchRoutines.P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
 var
   linefunc: linefunc_t;
   oldcompatibility: boolean;
@@ -257,7 +266,7 @@ begin
         result := false;   // monsters disallowed from unlocking doors
         exit;
       end;
-      if not P_CanUnlockGenDoor(line, thing.player) then
+      if not TSpecRoutines.P_CanUnlockGenDoor(line, thing.player) then
       begin
         result := false;
         exit;
@@ -413,7 +422,7 @@ begin
         end;
     end;
 
-  if not P_CheckTag(line) then  //jff 2/27/98 disallow zero tag on some types
+  if not TSpecRoutines.P_CheckTag(line) then  //jff 2/27/98 disallow zero tag on some types
   begin
     result := false;
     exit;

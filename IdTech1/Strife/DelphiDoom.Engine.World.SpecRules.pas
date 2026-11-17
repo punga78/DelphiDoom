@@ -54,66 +54,6 @@ uses
   r_defs,
   p_spec_h;
 
-//==============================================================================
-// P_InitPicAnims
-//
-// at game start
-//
-//==============================================================================
-procedure P_InitPicAnims;
-
-//==============================================================================
-// P_SpawnSpecials
-//
-// at map load
-//
-//==============================================================================
-procedure P_SpawnSpecials;
-
-//==============================================================================
-// P_UpdateSpecials
-//
-// every tic
-//
-//==============================================================================
-procedure P_UpdateSpecials;
-
-//==============================================================================
-// P_ShootSpecialLine
-//
-// when needed
-//
-//==============================================================================
-procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
-
-//==============================================================================
-//
-// P_CrossSpecialLine
-//
-//==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_CrossSpecialLinePtr
-//
-//==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_PlayerInSpecialSector
-//
-//==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
-
-//==============================================================================
-//
-// P_CanUnlockGenDoor
-//
-//==============================================================================
-function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
-
 type
   /// <summary>
   ///   What Strife does differently in the sector utilities of IdTech1\Base\p_spec.pas (issue #185, step 2g)
@@ -152,6 +92,75 @@ type
     /// <summary>The sector has no platform any more</summary>
     class procedure PlatDetach(sec: Psector_t); static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSpecRoutines = class sealed
+  public
+    //==============================================================================
+    // P_InitPicAnims
+    //
+    // at game start
+    //
+    //==============================================================================
+    class procedure P_InitPicAnims; static;
+
+    //==============================================================================
+    // P_SpawnSpecials
+    //
+    // at map load
+    //
+    //==============================================================================
+    class procedure P_SpawnSpecials; static;
+
+    //==============================================================================
+    // P_UpdateSpecials
+    //
+    // every tic
+    //
+    //==============================================================================
+    class procedure P_UpdateSpecials; static;
+
+    //==============================================================================
+    // P_ShootSpecialLine
+    //
+    // when needed
+    //
+    //==============================================================================
+    class procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t); static;
+
+    //==============================================================================
+    //
+    // P_CrossSpecialLine
+    //
+    //==============================================================================
+    class procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CrossSpecialLinePtr
+    //
+    //==============================================================================
+    class procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_PlayerInSpecialSector
+    //
+    //==============================================================================
+    class procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t); static;
+
+    //==============================================================================
+    //
+    // P_CanUnlockGenDoor
+    //
+    //==============================================================================
+    class function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean; static;
+  end;
+
 
 implementation
 
@@ -317,7 +326,7 @@ const
 // P_InitPicAnims
 //
 //==============================================================================
-procedure P_InitPicAnims;
+class procedure TSpecRoutines.P_InitPicAnims;
 var
   i: integer;
   lump: integer;
@@ -427,7 +436,7 @@ end;
 // JVAL: Only AnyKey or AllKeys in Strife :(
 //
 //==============================================================================
-function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
+class function TSpecRoutines.P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
 begin
 
   // determine for each of lock type if player's keys are adequate
@@ -527,7 +536,7 @@ var
 //  to cross a line with a non 0 special.
 //
 //==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
+class procedure TSpecRoutines.P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
 begin
   P_CrossSpecialLinePtr(@lines[linenum], side, thing);
 end;
@@ -537,7 +546,7 @@ end;
 // P_CrossSpecialLinePtr
 //
 //==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
+class procedure TSpecRoutines.P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
 var
   linefunc: linefunc_t;
   ok: boolean;
@@ -1032,7 +1041,7 @@ begin
         // 182 is a unique linetype in that it is both a G1 and a W1 linetype,
         // but only missiles may activate it as a W1 type.
         if thing.flags and MF_MISSILE <> 0 then
-          P_ChangeSwitchTexture(line, true); // why 1? it will be cleared anyway.
+          TSwitchRoutines.P_ChangeSwitchTexture(line, true); // why 1? it will be cleared anyway.
       end;
 
     187:
@@ -1486,7 +1495,7 @@ begin
       begin
         // villsa [STRIFE] plat up wait down stay
         if EV_DoPlat(line, upWaitDownStay, 0) <> 0 then
-          P_ChangeSwitchTexture(line, true); // In P_CrossSpecialLine? Copypasta error? // JVAL: SOS
+          TSwitchRoutines.P_ChangeSwitchTexture(line, true); // In P_CrossSpecialLine? Copypasta error? // JVAL: SOS
       end;
 
     185:
@@ -1891,7 +1900,7 @@ end;
 //
 // JVAL: Changed for BOOM compatibility
 ///
-procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
+class procedure TSpecRoutines.P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
 var
   linefunc: linefunc_t;
 begin
@@ -1983,12 +1992,12 @@ begin
         Ord(GunOnce):
           begin
             if linefunc(line) <> 0 then
-              P_ChangeSwitchTexture(line, false);
+              TSwitchRoutines.P_ChangeSwitchTexture(line, false);
           end;
         Ord(GunMany):
           begin
             if linefunc(line) <> 0 then
-              P_ChangeSwitchTexture(line, true);
+              TSwitchRoutines.P_ChangeSwitchTexture(line, true);
           end;
       end;
       exit; // if not a gun type, do nothing here
@@ -2010,28 +2019,28 @@ begin
       begin
         // RAISE FLOOR
         if (EV_DoFloor(line, raiseFloor) <> 0) or G_NeedsCompatibilityMode then
-          P_ChangeSwitchTexture(line, false);
+          TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     46:
       begin
         // OPEN DOOR
         EV_DoDoor(line, vld_open);
-        P_ChangeSwitchTexture(line, true);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
         if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or G_NeedsCompatibilityMode then
-          P_ChangeSwitchTexture(line, false);
+          TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     180:
       begin
         // haleyjd 09/22/10: [STRIFE] G1 Raise Floor 512 & Change
         EV_DoFloor(line, raiseFloor512AndChange);
-        P_ChangeSwitchTexture(line, false);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     182:
@@ -2039,7 +2048,7 @@ begin
         // villsa [STRIFE] G1 Break Glass
         //   haleyjd: note that 182 is also a W1 type in P_CrossSpecialLine, but
         //   can only be activated in that manner by an MF_MISSILE object.
-        P_ChangeSwitchTexture(line, false);
+        TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
   else
@@ -2050,7 +2059,7 @@ begin
          197:
           begin
             // Exit to next level
-            P_ChangeSwitchTexture(line, false);
+            TSwitchRoutines.P_ChangeSwitchTexture(line, false);
             G_ExitLevel(0);
           end;
 
@@ -2068,7 +2077,7 @@ end;
 // [STRIFE] Modified for new sector types and changes to old ones.
 //
 //==============================================================================
-procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
+class procedure TSpecRoutines.P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
 var
   tagval: integer;
   force: fixed_t;
@@ -2208,7 +2217,7 @@ var
 // [STRIFE] Modifications to support multiple scrolling line types.
 //
 //==============================================================================
-procedure P_UpdateSpecials;
+class procedure TSpecRoutines.P_UpdateSpecials;
 var
   anim: Panim_t;
   pic: integer;
@@ -2317,7 +2326,7 @@ end;
 // Parses command line parameters.
 //
 //==============================================================================
-procedure P_SpawnSpecials;
+class procedure TSpecRoutines.P_SpawnSpecials;
 var
   sector: Psector_t;
   i: integer;

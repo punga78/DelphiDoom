@@ -31,143 +31,9 @@ const
   FF_FULLBRIGHT = $8000; // flag in thing->frame
   FF_FRAMEMASK = $7fff;
 
-//==============================================================================
-//
-// A_WeaponReady
-//
-//==============================================================================
-procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CheckReload
-//
-//==============================================================================
-procedure A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_GunFlash
-//
-//==============================================================================
-procedure A_GunFlash(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Punch
-//
-//==============================================================================
-procedure A_Punch(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Saw
-//
-//==============================================================================
-procedure A_Saw(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireMissile
-//
-//==============================================================================
-procedure A_FireMissile(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireBFG
-//
-//==============================================================================
-procedure A_FireBFG(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FirePlasma
-//
-//==============================================================================
-procedure A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FirePistol
-//
-//==============================================================================
-procedure A_FirePistol(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireShotgun
-//
-//==============================================================================
-procedure A_FireShotgun(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireShotgun2
-//
-//==============================================================================
-procedure A_FireShotgun2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireCGun
-//
-//==============================================================================
-procedure A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Light1
-//
-//==============================================================================
-procedure A_Light1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Light2
-//
-//==============================================================================
-procedure A_Light2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BFGSpray
-//
-//==============================================================================
-procedure A_BFGSpray(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_BFGsound
-//
-//==============================================================================
-procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_CheckAmmo
-//
-//==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
-
 var
 // plasma cells for a bfg attack
   p_bfgcells: integer = 40;
-
-//==============================================================================
-//
-// P_BringUpWeapon
-// Starts bringing the pending weapon up from the bottom of the screen
-//
-//==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_FireWeapon
-//
-//==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
 
 type
   /// <summary>
@@ -192,6 +58,157 @@ type
     /// <summary>What A_ReFire does when the player does not fire again: the check of the ammo, or of the mana</summary>
     class procedure CheckSupplies(const player: Pplayer_t); static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDoomWeaponActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_WeaponReady
+    //
+    //==============================================================================
+    class procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckReload
+    //
+    //==============================================================================
+    class procedure A_CheckReload(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_GunFlash
+    //
+    //==============================================================================
+    class procedure A_GunFlash(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_Punch
+    //
+    //==============================================================================
+    class procedure A_Punch(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_Saw
+    //
+    //==============================================================================
+    class procedure A_Saw(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireMissile
+    //
+    //==============================================================================
+    class procedure A_FireMissile(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireBFG
+    //
+    //==============================================================================
+    class procedure A_FireBFG(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FirePlasma
+    //
+    //==============================================================================
+    class procedure A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FirePistol
+    //
+    //==============================================================================
+    class procedure A_FirePistol(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireShotgun
+    //
+    //==============================================================================
+    class procedure A_FireShotgun(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireShotgun2
+    //
+    //==============================================================================
+    class procedure A_FireShotgun2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireCGun
+    //
+    //==============================================================================
+    class procedure A_FireCGun(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_Light1
+    //
+    //==============================================================================
+    class procedure A_Light1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_Light2
+    //
+    //==============================================================================
+    class procedure A_Light2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BFGSpray
+    //
+    //==============================================================================
+    class procedure A_BFGSpray(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BFGsound
+    //
+    //==============================================================================
+    class procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponBaseActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_CheckAmmo
+    //
+    //==============================================================================
+    class function P_CheckAmmo(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_BringUpWeapon
+    // Starts bringing the pending weapon up from the bottom of the screen
+    //
+    //==============================================================================
+    class procedure P_BringUpWeapon(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_FireWeapon
+    //
+    //==============================================================================
+    class procedure P_FireWeapon(player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -245,6 +262,19 @@ var
     (6, 9, 4, 3, 2, 8, 5, 7, 1, 0)   //  compatibility preferences
   );
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponLocalActions = class sealed
+  public
+    class function P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t; static;
+    class procedure P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer); static;
+    class procedure A_FireSomething(player: Pplayer_t; adder: integer); static;
+    class procedure P_GunShot(mo: Pmobj_t; accurate: boolean); static;
+  end;
+
 //==============================================================================
 // P_SwitchWeaponMBF21
 //
@@ -253,7 +283,7 @@ var
 // instead of blindly assuming both.
 //
 //==============================================================================
-function P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t;
+class function TWeaponLocalActions.P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t;
 var
   currentweapon, newweapon: weapontype_t;
   i: integer;
@@ -314,7 +344,7 @@ end;
 // Uses player
 //
 //==============================================================================
-procedure P_BringUpWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_BringUpWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -326,7 +356,7 @@ begin
 
   if G_PlayingEngineVersion >= VERSION207 then
     if player.pendingweapon = wp_nochange then
-      player.pendingweapon := P_SwitchWeaponMBF21(player);
+      player.pendingweapon := TWeaponLocalActions.P_SwitchWeaponMBF21(player);
 
   newstate := statenum_t(weaponinfo[Ord(player.pendingweapon)].upstate);
 
@@ -343,7 +373,7 @@ end;
 // If not, selects the next weapon to use.
 //
 //==============================================================================
-function P_CheckAmmo(player: Pplayer_t): boolean;
+class function TWeaponBaseActions.P_CheckAmmo(player: Pplayer_t): boolean;
 var
   ammo: ammotype_t;
   count: integer;
@@ -371,7 +401,7 @@ begin
   // Out of ammo, pick a weapon to change to.
   // Preferences are set here.
   if G_PlayingEngineVersion >= VERSION207 then
-    player.pendingweapon := P_SwitchWeaponMBF21(player)
+    player.pendingweapon := TWeaponLocalActions.P_SwitchWeaponMBF21(player)
   else
   begin
     repeat
@@ -427,7 +457,7 @@ end;
 // have to worry about any compatibility shenanigans.
 //
 //==============================================================================
-procedure P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer);
+class procedure TWeaponLocalActions.P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer);
 var
   amount: integer;
   ammotype: ammotype_t;
@@ -459,7 +489,7 @@ end;
 // P_FireWeapon.
 //
 //==============================================================================
-procedure P_FireWeapon(player: Pplayer_t);
+class procedure TWeaponBaseActions.P_FireWeapon(player: Pplayer_t);
 var
   newstate: statenum_t;
 begin
@@ -485,7 +515,7 @@ end;
 // or after previous attack/fire sequence.
 //
 //==============================================================================
-procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
 var
   newstate: statenum_t;
   angle: integer;
@@ -517,7 +547,7 @@ begin
     if not player.attackdown or (weaponinfo[Ord(player.readyweapon)].mbf21bits and WPF_NOAUTOFIRE = 0) then
     begin
       player.attackdown := true;
-      P_FireWeapon(player);
+      TWeaponBaseActions.P_FireWeapon(player);
       exit;
     end;
   end
@@ -536,9 +566,9 @@ end;
 // A_CheckReload
 //
 //==============================================================================
-procedure A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_CheckReload(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 {
 #if 0
     if (player->ammo[am_shell]<2)
@@ -572,7 +602,7 @@ var
 // A_FireSomething
 //
 //==============================================================================
-procedure A_FireSomething(player: Pplayer_t; adder: integer);
+class procedure TWeaponLocalActions.A_FireSomething(player: Pplayer_t; adder: integer);
 begin
   P_SetPsprite(player, Ord(ps_flash),
     statenum_t(weaponinfo[Ord(player.readyweapon)].flashstate + adder));
@@ -589,10 +619,10 @@ end;
 // A_GunFlash
 //
 //==============================================================================
-procedure A_GunFlash(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_GunFlash(player: Pplayer_t; psp: Ppspdef_t);
 begin
   P_SetMobjState(player.mo, S_PLAY_ATK2);
-  A_FireSomething(player, 0);
+  TWeaponLocalActions.A_FireSomething(player, 0);
 end;
 
 //==============================================================================
@@ -602,7 +632,7 @@ end;
 // A_Punch
 //
 //==============================================================================
-procedure A_Punch(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_Punch(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -642,7 +672,7 @@ end;
 // A_Saw
 //
 //==============================================================================
-procedure A_Saw(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_Saw(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -700,9 +730,9 @@ end;
 // A_FireMissile
 //
 //==============================================================================
-procedure A_FireMissile(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FireMissile(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
   P_SpawnPlayerMissile(player.mo, Ord(MT_ROCKET));
 end;
 
@@ -711,9 +741,9 @@ end;
 // A_FireBFG
 //
 //==============================================================================
-procedure A_FireBFG(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FireBFG(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_SubtractAmmo(player, p_bfgcells);
+  TWeaponLocalActions.P_SubtractAmmo(player, p_bfgcells);
   P_SpawnPlayerMissile(player.mo, Ord(MT_BFG));
 end;
 
@@ -722,10 +752,10 @@ end;
 // A_FirePlasma
 //
 //==============================================================================
-procedure A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_SubtractAmmo(player, 1);
-  A_FireSomething(player, P_Random and 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.A_FireSomething(player, P_Random and 1);
 
   P_SetPsprite(player,
     Ord(ps_flash), statenum_t(weaponinfo[Ord(player.readyweapon)].flashstate + (P_Random and 1)));
@@ -738,7 +768,7 @@ end;
 // P_GunShot
 //
 //==============================================================================
-procedure P_GunShot(mo: Pmobj_t; accurate: boolean);
+class procedure TWeaponLocalActions.P_GunShot(mo: Pmobj_t; accurate: boolean);
 var
   angle: angle_t;
   damage: integer;
@@ -757,18 +787,18 @@ end;
 // A_FirePistol
 //
 //==============================================================================
-procedure A_FirePistol(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FirePistol(player: Pplayer_t; psp: Ppspdef_t);
 begin
   S_StartSound(player.mo, Ord(sfx_pistol));
 
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
 
-  A_FireSomething(player,0);  // phares
+  TWeaponLocalActions.A_FireSomething(player,0);  // phares
 
   P_BulletSlope(player.mo);
-  P_GunShot(player.mo, player.refire = 0);
+  TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;
 
 //==============================================================================
@@ -776,21 +806,21 @@ end;
 // A_FireShotgun
 //
 //==============================================================================
-procedure A_FireShotgun(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FireShotgun(player: Pplayer_t; psp: Ppspdef_t);
 var
   i: integer;
 begin
   S_StartSound(player.mo, Ord(sfx_shotgn));
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
 
-  A_FireSomething(player, 0); // phares
+  TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
   P_BulletSlope(player.mo);
 
   for i := 0 to 6 do
-    P_GunShot(player.mo, false);
+    TWeaponLocalActions.P_GunShot(player.mo, false);
 end;
 
 //==============================================================================
@@ -798,7 +828,7 @@ end;
 // A_FireShotgun2
 //
 //==============================================================================
-procedure A_FireShotgun2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FireShotgun2(player: Pplayer_t; psp: Ppspdef_t);
 var
   i: integer;
   angle: angle_t;
@@ -807,9 +837,9 @@ begin
   S_StartSound(player.mo, Ord(sfx_dshtgn));
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 2);
+  TWeaponLocalActions.P_SubtractAmmo(player, 2);
 
-  A_FireSomething(player, 0); // phares
+  TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
   P_BulletSlope(player.mo);
 
@@ -828,7 +858,7 @@ end;
 // A_FireCGun
 //
 //==============================================================================
-procedure A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
 begin
   S_StartSound(player.mo, Ord(sfx_pistol));
 
@@ -837,13 +867,13 @@ begin
 
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
 
-  A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
+  TWeaponLocalActions.A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
 
   P_BulletSlope(player.mo);
 
-  P_GunShot(player.mo, player.refire = 0);
+  TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;
 
 //==============================================================================
@@ -851,7 +881,7 @@ end;
 // A_Light1
 //
 //==============================================================================
-procedure A_Light1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_Light1(player: Pplayer_t; psp: Ppspdef_t);
 begin
   player.extralight := 1;
 end;
@@ -861,7 +891,7 @@ end;
 // A_Light2
 //
 //==============================================================================
-procedure A_Light2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_Light2(player: Pplayer_t; psp: Ppspdef_t);
 begin
   player.extralight := 2;
 end;
@@ -872,7 +902,7 @@ end;
 // Spawn a BFG explosion on every monster in view
 //
 //==============================================================================
-procedure A_BFGSpray(mo: Pmobj_t);
+class procedure TDoomWeaponActions.A_BFGSpray(mo: Pmobj_t);
 var
   i: integer;
   j: integer;
@@ -915,7 +945,7 @@ end;
 // A_BFGsound
 //
 //==============================================================================
-procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TDoomWeaponActions.A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
 begin
   S_StartSound(player.mo, Ord(sfx_bfg));
 end;
@@ -968,7 +998,7 @@ class procedure TPspriteGameRules.AfterLowered(const player: Pplayer_t);
 begin
   if G_PlayingEngineVersion >= VERSION207 then
     if player.pendingweapon = wp_nochange then
-      player.pendingweapon := P_SwitchWeaponMBF21(player);
+      player.pendingweapon := TWeaponLocalActions.P_SwitchWeaponMBF21(player);
 end;
 
 //==============================================================================
@@ -978,7 +1008,7 @@ end;
 //==============================================================================
 class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
 begin
-  P_CheckAmmo(player);
+  TWeaponBaseActions.P_CheckAmmo(player);
 end;
 
 end.

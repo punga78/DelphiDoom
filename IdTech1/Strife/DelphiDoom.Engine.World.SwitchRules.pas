@@ -47,26 +47,35 @@ uses
   DelphiDoom.Engine.World.SpecRules,
   p_spec;
 
-//==============================================================================
-//
-// P_InitSwitchList
-//
-//==============================================================================
-procedure P_InitSwitchList;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSwitchRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_InitSwitchList
+    //
+    //==============================================================================
+    class procedure P_InitSwitchList; static;
 
-//==============================================================================
-//
-// P_ChangeSwitchTexture
-//
-//==============================================================================
-procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
+    //==============================================================================
+    //
+    // P_ChangeSwitchTexture
+    //
+    //==============================================================================
+    class procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean); static;
 
-//==============================================================================
-//
-// P_UseSpecialLine
-//
-//==============================================================================
-function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer): boolean;
+    //==============================================================================
+    //
+    // P_UseSpecialLine
+    //
+    //==============================================================================
+    class function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer): boolean; static;
+  end;
+
 
 implementation
 
@@ -222,7 +231,7 @@ var
 // Only called at game initialization.
 //
 //==============================================================================
-procedure P_InitSwitchList;
+class procedure TSwitchRoutines.P_InitSwitchList;
 var
   i: integer;
   index: integer;
@@ -296,13 +305,24 @@ begin
   switchlist := Z_ReAlloc(switchlist, (index + 1) * SizeOf(integer), PU_STATIC, nil);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSwitchLocalRoutines = class sealed
+  public
+    class procedure P_SpawnBrokenGlass(line: Pline_t); static;
+    class procedure P_MoveWall(line: Pline_t; thing: Pmobj_t); static;
+  end;
+
 //==============================================================================
 //
 // P_SpawnBrokenGlass
 // villsa [STRIFE] new function
 //
 //==============================================================================
-procedure P_SpawnBrokenGlass(line: Pline_t);
+class procedure TSwitchLocalRoutines.P_SpawnBrokenGlass(line: Pline_t);
 var
   x1, x2: fixed_t;
   y1, y2: fixed_t;
@@ -340,7 +360,7 @@ end;
 // Tell it if switch is ok to use again (1=yes, it's a button).
 //
 //==============================================================================
-procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
+class procedure TSwitchRoutines.P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
 var
   texTop: integer;
   texMid: integer;
@@ -399,7 +419,7 @@ begin
         P_StartButton(line, top, switchlist[i], BUTTONTIME);
 
       if breakglass then
-        P_SpawnBrokenGlass(line);
+        TSwitchLocalRoutines.P_SpawnBrokenGlass(line);
 
       exit;
     end
@@ -445,7 +465,7 @@ begin
 
         // villsa [STRIFE]
         if breakglass or (sound = Ord(sfx_bglass)) then
-          P_SpawnBrokenGlass(line);
+          TSwitchLocalRoutines.P_SpawnBrokenGlass(line);
 
         exit;
       end
@@ -464,7 +484,7 @@ begin
             P_StartButton(line, bottom, switchlist[i], BUTTONTIME);
 
           if breakglass then
-            P_SpawnBrokenGlass(line);
+            TSwitchLocalRoutines.P_SpawnBrokenGlass(line);
 
           exit;
         end;
@@ -481,7 +501,7 @@ end;
 // Dynamically move a solid line. Unused in Strife
 //
 //==============================================================================
-procedure P_MoveWall(line: Pline_t; thing: Pmobj_t);
+class procedure TSwitchLocalRoutines.P_MoveWall(line: Pline_t; thing: Pmobj_t);
 var
   v1, v2: Pvertex_t;
   x, y: fixed_t;
@@ -551,7 +571,7 @@ end;
 // Only the front sides of lines are usable.
 //
 //==============================================================================
-function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer): boolean;
+class function TSwitchRoutines.P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer): boolean;
 var
   linefunc: linefunc_t;
   oldcompatibility: boolean;
@@ -643,7 +663,7 @@ begin
         result := false;   // monsters disallowed from unlocking doors
         exit;
       end;
-      if not P_CanUnlockGenDoor(line, thing.player) then
+      if not TSpecRoutines.P_CanUnlockGenDoor(line, thing.player) then
       begin
         result := false;
         exit;
@@ -1289,7 +1309,7 @@ begin
         if EV_DoDoor(line, vld_open) <> 0 then
         begin
           P_ChangeSwitchTexture(line, false);
-          P_FreePrisoners;
+          TStrifeMonsterActions.P_FreePrisoners;
         end;
       end;
 
@@ -1299,7 +1319,7 @@ begin
         if EV_DoCeiling(line, lowerAndCrush) <> 0 then
         begin
           P_ChangeSwitchTexture(line, false);
-          P_DestroyConverter;
+          TStrifeMonsterActions.P_DestroyConverter;
         end;
       end;
 
@@ -1428,7 +1448,7 @@ begin
     666:
       begin
         // villsa [STRIFE] SR Move Wall
-        P_MoveWall(line, thing);
+        TSwitchLocalRoutines.P_MoveWall(line, thing);
       end;
   else
     begin

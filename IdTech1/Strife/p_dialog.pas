@@ -1305,7 +1305,7 @@ begin
   // check for keys
   if (_type >= MT_KEY_BASE) and (_type <= MT_NEWKEY5) then
   begin
-    P_GiveCard(player, card_t(Ord(_type) - Ord(MT_KEY_BASE)));
+    TInterRoutines.P_GiveCard(player, card_t(Ord(_type) - Ord(MT_KEY_BASE)));
     result := true;
     exit;
   end;
@@ -1376,7 +1376,7 @@ begin
 
     Ord(SPR_BBOX): // Box of Bullets
       begin
-        if not P_GiveAmmo(player, am_bullets, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_bullets, 5) then
         begin
           result := false;
           exit;
@@ -1385,7 +1385,7 @@ begin
 
     Ord(SPR_BLIT): // Bullet Clip
       begin
-        if not P_GiveAmmo(player, am_bullets, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_bullets, 1) then
         begin
           result := false;
           exit;
@@ -1394,7 +1394,7 @@ begin
 
     Ord(SPR_PMAP): // Map powerup
       begin
-        if not P_GivePower(player, Ord(pw_allmap)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_allmap)) then
         begin
           result := false;
           exit;
@@ -1404,7 +1404,7 @@ begin
 
     Ord(SPR_COMM): // Communicator
       begin
-        if not P_GivePower(player, Ord(pw_communicator)) then
+        if not TInterRoutines.P_GivePower(player, Ord(pw_communicator)) then
         begin
           result := false;
           exit;
@@ -1414,7 +1414,7 @@ begin
 
     Ord(SPR_MSSL): // Mini-missile
       begin
-        if not P_GiveAmmo(player, am_missiles, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_missiles, 1) then
         begin
           result := false;
           exit;
@@ -1423,7 +1423,7 @@ begin
 
     Ord(SPR_ROKT): // Crate of missiles
       begin
-        if not P_GiveAmmo(player, am_missiles, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_missiles, 5) then
         begin
           result := false;
           exit;
@@ -1432,7 +1432,7 @@ begin
 
     Ord(SPR_BRY1): // Battery cell
       begin
-        if not P_GiveAmmo(player, am_cell, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_cell, 1) then
         begin
           result := false;
           exit;
@@ -1441,7 +1441,7 @@ begin
 
     Ord(SPR_CPAC): // Cell pack
       begin
-        if not P_GiveAmmo(player, am_cell, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_cell, 5) then
         begin
           result := false;
           exit;
@@ -1450,7 +1450,7 @@ begin
 
     Ord(SPR_PQRL): // Poison bolts
       begin
-        if not P_GiveAmmo(player, am_poisonbolts, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_poisonbolts, 5) then
         begin
           result := false;
           exit;
@@ -1459,7 +1459,7 @@ begin
 
     Ord(SPR_XQRL): // Electric bolts
       begin
-        if not P_GiveAmmo(player, am_elecbolts, 5) then
+        if not TInterRoutines.P_GiveAmmo(player, am_elecbolts, 5) then
         begin
           result := false;
           exit;
@@ -1468,7 +1468,7 @@ begin
 
     Ord(SPR_GRN1): // HE Grenades
       begin
-        if not P_GiveAmmo(player, am_hegrenades, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_hegrenades, 1) then
         begin
           result := false;
           exit;
@@ -1477,7 +1477,7 @@ begin
 
     Ord(SPR_GRN2): // WP Grenades
       begin
-        if not P_GiveAmmo(player, am_wpgrenades, 1) then
+        if not TInterRoutines.P_GiveAmmo(player, am_wpgrenades, 1) then
         begin
           result := false;
           exit;
@@ -1494,7 +1494,7 @@ begin
             player.backpack := true;
         end;
         for i := 0 to Ord(NUMAMMO) - 1 do
-          P_GiveAmmo(player, ammotype_t(i), 1);
+          TInterRoutines.P_GiveAmmo(player, ammotype_t(i), 1);
       end;
 
     Ord(SPR_RIFL): // Assault Rifle
@@ -1505,7 +1505,7 @@ begin
           exit;
         end;
 
-        if not P_GiveWeapon(player, wp_rifle, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_rifle, false) then
         begin
           result := false;
           exit;
@@ -1522,7 +1522,7 @@ begin
           exit;
         end;
 
-        if not P_GiveWeapon(player, wp_flame, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_flame, false) then
         begin
           result := false;
           exit;
@@ -1539,7 +1539,7 @@ begin
           exit;
         end;
 
-        if not P_GiveWeapon(player, wp_missile, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_missile, false) then
         begin
           result := false;
           exit;
@@ -1556,7 +1556,7 @@ begin
           exit;
         end;
 
-        if not P_GiveWeapon(player, wp_mauler, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_mauler, false) then
         begin
           result := false;
           exit;
@@ -1573,7 +1573,7 @@ begin
           exit;
         end;
 
-        if not P_GiveWeapon(player, wp_elecbow, false) then
+        if not TInterRoutines.P_GiveWeapon(player, wp_elecbow, false) then
         begin
           result := false;
           exit;
@@ -1587,7 +1587,7 @@ begin
         case _type of
           MT_KEY_HAND: // Severed hand
             begin
-              P_GiveCard(player, key_SeveredHand);
+              TInterRoutines.P_GiveCard(player, key_SeveredHand);
             end;
 
           MT_MONY_300: // 300 Gold (this is the only way to get it, in fact)
@@ -1619,7 +1619,7 @@ begin
           MT_TOKEN_ALARM: // Alarm token - particularly from the Oracle.
             begin
               P_NoiseAlert(player.mo, player.mo);
-              A_AlertSpectreC(dialogtalker); // BUG: assumes in a dialog o_O
+              TStrifeMonsterActions.A_AlertSpectreC(dialogtalker); // BUG: assumes in a dialog o_O
             end;
 
           MT_TOKEN_DOOR1: // Door special 1

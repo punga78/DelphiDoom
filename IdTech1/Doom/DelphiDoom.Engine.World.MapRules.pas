@@ -186,31 +186,40 @@ type
     class procedure CrushBlood(thing: Pmobj_t); static;
   end;
 
-//==============================================================================
-// P_CheckForPushSpecial
-//
-// CheckForPushSpecial
-//
-//==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
-
-
-//==============================================================================
-//
-// P_BloodType
-//
-//==============================================================================
-function P_BloodType(const th: Pmobj_t): bloodtype_t;
-
-//==============================================================================
-//
-// P_PointInSector
-//
-//==============================================================================
-function P_PointInSector(const x: fixed_t; const y: fixed_t): Psector_t;
-
 var
   p_confcoloredblood: boolean = true;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapRoutines = class sealed
+  public
+    //==============================================================================
+    // P_CheckForPushSpecial
+    //
+    // CheckForPushSpecial
+    //
+    //==============================================================================
+    class procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_BloodType
+    //
+    //==============================================================================
+    class function P_BloodType(const th: Pmobj_t): bloodtype_t; static;
+
+    //==============================================================================
+    //
+    // P_PointInSector
+    //
+    //==============================================================================
+    class function P_PointInSector(const x: fixed_t; const y: fixed_t): Psector_t; static;
+  end;
+
+
 implementation
 
 uses
@@ -256,7 +265,7 @@ uses
 
 class function TMapGameRules.PointInSector(const x, y: fixed_t): Psector_t;
 begin
-  result := P_PointInSector(x, y);
+  result := TMapRoutines.P_PointInSector(x, y);
 end;
 
 class function TMapGameRules.CanStomp(thing: Pmobj_t): boolean;
@@ -368,7 +377,7 @@ end;
 
 class function TMapGameRules.UseSpecialLine(usething: Pmobj_t; li: Pline_t; side: integer): boolean;
 begin
-  P_UseSpecialLine(usething, li, side);
+  TSwitchRoutines.P_UseSpecialLine(usething, li, side);
   P_ActivateLine(li, usething, 0, ULAC_USE);
 
   // can't use for than one special line in a row
@@ -433,7 +442,7 @@ begin
     begin
       if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -452,7 +461,7 @@ begin
   begin
     if ld.flags and ML_BLOCKING <> 0 then
     begin
-      P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+      TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
       result := false;  // explicitly blocking everything
       TMapCheck.BounceLine := ld;
       exit;
@@ -495,7 +504,7 @@ begin
     begin
       if TMapCheck.Thing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
       begin
-        P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
+        TMapRoutines.P_CheckForPushSpecial(ld, 0, TMapCheck.Thing);
         result := false;  // explicitly blocking everything
         TMapCheck.BounceLine := ld;
         exit;
@@ -610,7 +619,7 @@ end;
 
 class procedure TMapGameRules.CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t);
 begin
-  P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
+  TSpecRoutines.P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
   if thing.player <> nil then
   begin
     P_ActivateLine(ld, thing, oldside, ULAC_CROSS);
@@ -785,10 +794,10 @@ begin
       if (thing.flags and MF_NOBLOOD = 0) and
          (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
       begin
-        case P_BloodType(thing) of
+        case TMapRoutines.P_BloodType(thing) of
           bt_red: TBloodSpawner.SpawnRed(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage, thing);
-          bt_blue: P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
-          bt_green: P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
+          bt_blue: TMobjRoutines.P_SpawnBlueBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
+          bt_green: TMobjRoutines.P_SpawnGreenBlood(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, damage);
         end;
       end;
 
@@ -854,7 +863,7 @@ end;
 
 class procedure TMapGameRules.ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t);
 begin
-  P_ShootSpecialLine(shootthing, li);
+  TSpecRoutines.P_ShootSpecialLine(shootthing, li);
   P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
 end;
 
@@ -867,11 +876,11 @@ class function TMapGameRules.ShotHitsThing(intr: Pintercept_t; th: Pmobj_t; x, y
 begin
   // Spawn bullet puffs or blood spots,
   // depending on target type.
-  case P_BloodType(intr.d.thing) of
+  case TMapRoutines.P_BloodType(intr.d.thing) of
     bt_puff: P_SpawnPuff(x, y, z);
     bt_red: TBloodSpawner.SpawnRed(x, y, z, TMapAim.Damage, intr.d.thing);
-    bt_blue: P_SpawnBlueBlood(x, y, z, TMapAim.Damage);
-    bt_green: P_SpawnGreenBlood(x, y, z, TMapAim.Damage);
+    bt_blue: TMobjRoutines.P_SpawnBlueBlood(x, y, z, TMapAim.Damage);
+    bt_green: TMobjRoutines.P_SpawnGreenBlood(x, y, z, TMapAim.Damage);
   end;
 
   if TMapAim.Damage <> 0 then
@@ -887,7 +896,7 @@ end;
 // CheckForPushSpecial
 //
 //==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
+class procedure TMapRoutines.P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
 begin
   if line.special <> 0 then
   begin
@@ -929,7 +938,7 @@ begin
         end
         else
         begin
-          bt := P_BloodType(thing);
+          bt := TMapRoutines.P_BloodType(thing);
           if (bt = bt_green) and (MT_GREENGIBS <> Ord(MT_NONE)) then
             st := mobjinfo[MT_GREENGIBS].spawnstate
           else if (bt = bt_blue) and (MT_BLUEGIBS <> Ord(MT_NONE)) then
@@ -1009,7 +1018,7 @@ end;
 // P_BloodType
 //
 //==============================================================================
-function P_BloodType(const th: Pmobj_t): bloodtype_t;
+class function TMapRoutines.P_BloodType(const th: Pmobj_t): bloodtype_t;
 var
   confcoloredblood: boolean;
 begin
@@ -1045,12 +1054,22 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapLocalRoutines = class sealed
+  public
+    class function P_PointInSectorVanilla(const x: fixed_t; const y: fixed_t): Psector_t; static;
+  end;
+
 //==============================================================================
 //
 // P_PointInSectorVanilla
 //
 //==============================================================================
-function P_PointInSectorVanilla(const x: fixed_t; const y: fixed_t): Psector_t;
+class function TMapLocalRoutines.P_PointInSectorVanilla(const x: fixed_t; const y: fixed_t): Psector_t;
 var
   node: Pvanillanode_t;
   nodenum: LongWord;
@@ -1074,10 +1093,10 @@ end;
 // P_PointInSector
 //
 //==============================================================================
-function P_PointInSector(const x: fixed_t; const y: fixed_t): Psector_t;
+class function TMapRoutines.P_PointInSector(const x: fixed_t; const y: fixed_t): Psector_t;
 begin
   if G_IsOldDemoPlaying and hasvanillanodes then
-    result := P_PointInSectorVanilla(x, y)
+    result := TMapLocalRoutines.P_PointInSectorVanilla(x, y)
   else
     result := R_PointInSubSector(x, y).sector;
 end;

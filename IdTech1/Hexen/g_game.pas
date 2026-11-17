@@ -1494,7 +1494,7 @@ begin
       for i := 0 to p_maxartifacts - 1 do
       begin
         player.powers[Ord(pw_flight)] := 0;
-        P_PlayerUseArtifact(player, arti_fly);
+        TUserRoutines.P_PlayerUseArtifact(player, arti_fly);
       end;
       player.powers[Ord(pw_flight)] := 0;
     end;
@@ -1861,7 +1861,7 @@ begin
   SV_SaveGame(savegameslot, savedescription);
   TGameSession.GameAction := ga_nothing;
   savedescription := '';
-  P_SetMessage(@TGameSession.Players[TGameSession.ConsolePlayer], GGSAVED, true);
+  TInterRoutines.P_SetMessage(@TGameSession.Players[TGameSession.ConsolePlayer], GGSAVED, true);
   borderneedsrefresh := true;
 end;
 
