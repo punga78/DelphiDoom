@@ -1,0 +1,4 @@
+# without a renderer (no OpenGL running) every Error is fatal: Shutdown and Sys_Error, no drop
+error first error without a renderer
+state
+warnlist

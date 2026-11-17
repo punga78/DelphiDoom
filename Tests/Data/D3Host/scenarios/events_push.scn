@@ -1,0 +1,19 @@
+# pushed events come first and in order; 64 fit, the 65th loses the oldest and says so once
+evpush 1 10 1
+evpush 2 11 0
+evqueue
+evsys 3 1 1
+evget
+evget
+evget
+evqueue
+pushmany 64
+evqueue
+pushmany 3
+evqueue
+evget
+evget
+pushmany 70
+evqueue
+evrun 0
+evqueue

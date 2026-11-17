@@ -1,0 +1,94 @@
+CMD cmdline +set test blah +map test
+CMD lines
+LINE 0 set|test|blah
+LINE 1 map|test
+LINES 2
+CMD cmdline +set a b +set c d
+CMD lines
+LINE 0 set|test|blah|set|a|b
+LINE 1 map|test|set|c|d
+LINES 2
+CMD safemode
+RET 0
+CMD cmdline set test blah+map test
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test
+LINES 1
+CMD cmdline set test blah + map test
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah
+LINE 1 map|test|set|c|d||map|test
+LINES 2
+CMD cmdline +map e1m1 +safe
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah|map|e1m1
+LINE 1 map|test|set|c|d||map|test|safe
+LINES 2
+CMD safemode
+RET 0
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah|map|e1m1
+LINE 1 map|test|set|c|d||map|test|safe
+LINES 2
+CMD cmdline
+CMD lines
+LINES 0
+CMD cmdline noplus first +second third
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah|map|e1m1|noplus|first
+LINE 1 map|test|set|c|d||map|test|safe|second|third
+LINES 2
+CMD startup test 0
+CVARSET test blah
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah|map|e1m1|noplus|first
+LINE 1 map|test|set|c|d||map|test|safe|second|third
+LINES 2
+CMD cmdline +set a 1 +set b 2 +set A 3 +map x +set com_timestampPrints 2
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah|map|e1m1|noplus|first|set|a|1
+LINE 1 map|test|set|c|d||map|test|safe|second|third|set|b|2
+LINE 2 set|A|3
+LINE 3 map|x
+LINE 4 set|com_timestampPrints|2
+LINES 5
+CMD startup * 0
+CVARSET test blah
+CVARSET A 3
+CVARSET com_timestampPrints 2
+CMD startup a 1
+CVARSET A 3
+CMD lines
+LINE 0 set|test|blah|set|a|b|set|test|blah+map|test|set|test|blah|map|e1m1|noplus|first|set|a|1
+LINE 1 map|test|set|c|d||map|test|safe|second|third|set|b|2
+LINE 2 map|x
+LINE 3 set|com_timestampPrints|2
+LINES 4
+CMD startup * 1
+CVARSET test blah
+CVARSET com_timestampPrints 2
+CMD lines
+LINE 0 map|test|set|c|d||map|test|safe|second|third|set|b|2
+LINE 1 map|x
+LINES 2
+CMD addstartup
+BUFARGS append map|test|set|c|d||map|test|safe|second|third|set|b|2
+BUFARGS append map|x
+RET 1
+CMD cmdline +set only +set these
+CMD addstartup
+BUFARGS append map|test|set|c|d||map|test|safe|second|third|set|b|2|set|only
+BUFARGS append map|x|set|these
+RET 1
+CMD cmdline +SET x 1 +setmore y +map m1
+CMD startup x 0
+CMD addstartup
+BUFARGS append map|test|set|c|d||map|test|safe|second|third|set|b|2|set|only|SET|x|1
+BUFARGS append map|x|set|these|setmore|y
+BUFARGS append set|com_timestampPrints|2|map|m1
+RET 1
+CMD cmdline +devmap this;that +exec a_b
+CMD addstartup
+BUFARGS append map|test|set|c|d||map|test|safe|second|third|set|b|2|set|only|SET|x|1|devmap|this;that
+BUFARGS append map|x|set|these|setmore|y|exec|a_b
+RET 1

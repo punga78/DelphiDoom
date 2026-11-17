@@ -1,0 +1,48 @@
+CMD opengl 1
+CMD time 1000
+CMD error one
+CLIP one
+SESSION stop
+CON ********************\nERROR: one\n********************\n
+SYS ********************\nERROR: one\n********************\n
+SESSION pacifier
+THROW one
+CMD time 1050
+CMD error two
+CLIP two
+SESSION stop
+CON ********************\nERROR: two\n********************\n
+SYS ********************\nERROR: two\n********************\n
+SESSION pacifier
+THROW two
+CMD time 1100
+CMD error three
+CLIP three
+SESSION stop
+CON ********************\nERROR: three\n********************\n
+SYS ********************\nERROR: three\n********************\n
+SESSION pacifier
+THROW three
+CMD time 1150
+CMD error four
+CLIP four
+SESSION stop
+CON ********************\nERROR: four\n********************\n
+SYS ********************\nERROR: four\n********************\n
+SESSION pacifier
+THROW four
+CMD time 1200
+CMD error five
+CLIP five
+SESSION stop
+CON ********************\nERROR: five\n********************\n
+SYS ********************\nERROR: five\n********************\n
+SHUTDOWN
+SYSERR five
+EXIT error
+CMD time 1250
+CMD error six
+SYSQUIT
+EXIT quit
+CMD state
+STATE err=1 refresh=0 editors=0

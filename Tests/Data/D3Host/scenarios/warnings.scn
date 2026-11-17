@@ -1,0 +1,32 @@
+# Warning, DWarning, PrintWarnings, ClearWarnings, DumpWarnings
+printwarnings
+dumpwarnings
+clearwarnings loading map one
+warning texture missing
+warning ^2colored text
+warning texture missing
+warning Zebra
+warning apple
+warning Banana
+warning banana2
+warning Texture missing
+warnlist
+dwarning hidden
+cvar developer 1
+dwarning shown
+cvars 0
+dwarning does not need the cvar system
+warning neither does warning
+cvars 1
+printwarnings
+files 0
+dumpwarnings
+files 1
+dumpwarnings
+clearwarnings the next level
+printwarnings
+warnlist
+warnmany 300
+printwarnings
+warnlist
+dumpwarnings

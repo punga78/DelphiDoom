@@ -1,0 +1,16 @@
+# a text longer than the buffer: Printf, DPrintf, Warning, with and without time stamp
+rep 410 printf 0123456789
+state
+rep 410 dprintf abcdefghij
+cvar developer 1
+rep 410 dprintf abcdefghij
+cvar com_timestampPrints 1
+time 5000
+rep 410 printf 0123456789
+cvar com_timestampPrints 2
+time 123456789
+rep 410 printf 0123456789
+cvar com_timestampPrints 0
+rep 410 warning ABCDEFGHIJ
+warnlist
+rep 410 dwarning ABCDEFGHIJ

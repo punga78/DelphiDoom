@@ -1,0 +1,14 @@
+CMD error first error without a renderer
+CLIP first error without a renderer
+SESSION stop
+CON ********************\nERROR: first error without a renderer\n********************\n
+SYS ********************\nERROR: first error without a renderer\n********************\n
+SHUTDOWN
+SYSERR first error without a renderer
+EXIT error
+CMD state
+STATE err=1 refresh=0 editors=0
+CMD warnlist
+WARNLIST 0 1
+E first error without a renderer
+CAPTION 

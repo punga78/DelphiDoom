@@ -1,0 +1,17 @@
+# the editors: the error is an exception and the session is not stopped
+opengl 1
+editors 4
+time 5000
+error in the gui editor
+state
+editors 8
+time 6000
+error in the script debugger
+editors 2
+time 7000
+error in radiant, a plain drop
+editors 0
+time 8000
+error ^1colored^7 error text
+warnlist
+dumpwarnings

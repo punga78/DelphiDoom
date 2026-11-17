@@ -1,0 +1,35 @@
+# the command line: + separates the lines
+cmdline +set test blah +map test
+lines
+cmdline +set a b +set c d
+lines
+safemode
+cmdline set test blah+map test
+lines
+cmdline set test blah + map test
+lines
+cmdline +map e1m1 +safe
+lines
+safemode
+lines
+cmdline
+lines
+cmdline noplus first +second third
+lines
+startup test 0
+lines
+cmdline +set a 1 +set b 2 +set A 3 +map x +set com_timestampPrints 2
+lines
+startup * 0
+startup a 1
+lines
+startup * 1
+lines
+addstartup
+cmdline +set only +set these
+addstartup
+cmdline +SET x 1 +setmore y +map m1
+startup x 0
+addstartup
+cmdline +devmap this;that +exec a_b
+addstartup

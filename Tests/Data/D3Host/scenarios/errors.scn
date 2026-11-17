@@ -1,0 +1,11 @@
+# Error with a renderer: a drop, twice, the second one equal to the first (the error list has no duplicates)
+opengl 1
+time 1000
+error a drop
+state
+time 2000
+error a drop
+time 3000
+error ^1another^7 drop
+state
+warnlist

@@ -1,0 +1,27 @@
+CMD cvar com_journal 2
+CVARSET com_journal 2
+CMD evinit
+CON Replaying journaled events\n
+SYS Replaying journaled events\n
+SESSION pacifier
+OPENR journal.dat fail
+OPENR journaldata.dat fail
+CON Couldn't open journal files\n
+SYS Couldn't open journal files\n
+SESSION pacifier
+CMD evlevel
+RET 0
+CMD cvar com_journal 1
+CVARSET com_journal 1
+CMD openfail 1
+CMD evinit
+CON Journaling events\n
+SYS Journaling events\n
+SESSION pacifier
+OPENW journal.dat fs_savepath fail
+OPENW journaldata.dat fs_savepath fail
+CON Couldn't open journal files\n
+SYS Couldn't open journal files\n
+SESSION pacifier
+CMD evlevel
+RET 0

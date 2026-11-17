@@ -1,0 +1,6 @@
+# the log file that cannot be opened: a fatal error
+cvar logFile 1
+openfail 1
+printf this print asks for the log\n
+state
+printf and it does not try again\n
