@@ -13,6 +13,15 @@ interface
 uses
   d_delphi;
 
+var
+  extra_red: float = 0.0;
+  extra_green: float = 0.0;
+  extra_blue: float = 0.0;
+  extra_alpha: float = 0.0;
+
+procedure gld_SetPalette(palette: integer);
+procedure gld_DrawBackgroundFrame;
+
 /// <summary>A light that depends on the level only (the line shows the argument)</summary>
 function gld_CalcLightLevel(lightlevel: integer): float;
 procedure gld_StaticLight(light: float);
@@ -26,6 +35,16 @@ uses
 function FloatBits(const AValue: Single): string;
 begin
   Result := IntToHex(PCardinal(@AValue)^, 8);
+end;
+
+procedure gld_SetPalette(palette: integer);
+begin
+  ShimEvent('gld_SetPalette ' + IntToStr(palette));
+end;
+
+procedure gld_DrawBackgroundFrame;
+begin
+  ShimEvent('gld_DrawBackgroundFrame');
 end;
 
 function gld_CalcLightLevel(lightlevel: integer): float;

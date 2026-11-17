@@ -51,11 +51,13 @@ procedure ShimEvent(const AText: string);
 procedure printf(const str: string); overload;
 procedure printf(const Fmt: string; const Args: array of const); overload;
 function strupper(const S: string): string;
+function tan(const x: extended): extended;
 function StringVal(const Str: PAnsiChar): string;
 
 implementation
 
 uses
+  System.Math,
   System.SysUtils;
 
 function T2DNumberList.Get(Index: Integer): twointeger_t;
@@ -102,6 +104,11 @@ end;
 procedure printf(const Fmt: string; const Args: array of const);
 begin
   printf(Format(Fmt, Args));
+end;
+
+function tan(const x: extended): extended;
+begin
+  Result := System.Math.Tan(x);
 end;
 
 function strupper(const S: string): string;

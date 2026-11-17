@@ -42,6 +42,7 @@ type
   Pgld_camera_t = ^gld_camera_t;
 
 const
+  __glPi = 3.14159265358979323846;
   MAP_COEFF = 128.0;
   MAP_SCALE = MAP_COEFF * FRACUNIT;
 
@@ -55,6 +56,9 @@ var
   tran_filter_pct: integer = 66;
 
   gl_screensync: boolean = true;
+  gl_nearclip: integer = 5;
+  gl_renderwireframe: Boolean = false;
+  gl_no_glfinish_hack: Boolean = true;
   gl_texture_filter_anisotropic: boolean = false;
   gl_use_paletted_texture: integer = 0;
   gl_use_shared_texture_palette: integer = 0;

@@ -5,11 +5,21 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-// Stands in for IdTech1\Base\r_things.pas in DelphiDoom.Tests.OpenGl.<Game> only: nothing the OpenGL HUD painter reads.
+// Stands in for IdTech1\Base\r_things.pas in DelphiDoom.Tests.OpenGl.<Game> only: the weapon drawing is a line of EventLog.
 unit r_things;
 
 interface
 
+procedure R_DrawPlayer;
+
 implementation
+
+uses
+  d_delphi;
+
+procedure R_DrawPlayer;
+begin
+  ShimEvent('R_DrawPlayer');
+end;
 
 end.

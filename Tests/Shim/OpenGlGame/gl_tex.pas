@@ -20,6 +20,8 @@ var
   gld_max_texturesize3d: integer = 0;
   /// <summary>The filter gld_GetCurrTexFiltering gives</summary>
   ShimTexFilter: gl_filter_t = FLT_LINEAR;
+  last_gltexture: PGLTexture = nil;
+  last_cm: integer = -1;
 
 /// <summary>The texture gld_RegisterPatch and gld_RegisterFlat give (nil: the lump has no texture)</summary>
   ShimTexture: PGLTexture = nil;
