@@ -14,7 +14,8 @@ unit DelphiDoom.Q3Host.Factory;
 interface
 
 uses
-  DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf;
+  DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf,
+  DelphiDoom.Q3Host.Client.Services;
 
 type
   /// <summary>
@@ -36,6 +37,8 @@ type
     ServerCommands: IQ3HostServerCommands;
     /// <summary>The real time calls</summary>
     Calendar: IQ3HostCalendar;
+    /// <summary>The client services of cgame and ui (phase 2c): state, keys, sound, renderer, parser, server lists</summary>
+    Client: TQ3HostClientServices;
   end;
 
   /// <summary>The only place that knows the classes of the host</summary>
@@ -92,6 +95,7 @@ begin
     TQ3FileSyscalls.Register(AModule, Result.Registry, AServices.Files);
   if Assigned(AServices.Calendar) then
     TQ3MiscSyscalls.Register(AModule, Result.Registry, AServices.Calendar);
+  TQ3ClientGroups.Register(AModule, Result.Registry, AServices.Client, AServices.CVars);
 
   if not Assigned(AServices.ClipMap) then
     Exit;
