@@ -1,0 +1,24 @@
+# CheckToolMode
+cvar r_fullscreen 1
+cmdline +map e1m1
+toolmode
+state
+cmdline +guieditor +map e1m1
+toolmode
+state
+cvar r_fullscreen 1
+cmdline +Debugger
+toolmode
+state
+cvar r_fullscreen 1
+cmdline +materialEditor +dmap
+toolmode
+state
+cvar r_fullscreen 1
+cmdline +editor
+toolmode
+state
+cvar r_fullscreen 1
+cmdline +renderbump +DMAP
+toolmode
+state

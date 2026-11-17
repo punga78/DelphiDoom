@@ -1,0 +1,66 @@
+CMD cvar logFile 1
+CVARSET logFile 1
+CMD printf before
+CON before
+SYS before
+OPENW qconsole.log fs_savepath ok
+CON log file 'qconsole.log' opened on Thu Jan 01 00:00:00 1970\n\n
+SYS log file 'qconsole.log' opened on Thu Jan 01 00:00:00 1970\n\n
+FW qconsole.log log file 'qconsole.log' opened on Thu Jan 01 00:00:00 1970\n\n
+FLUSH qconsole.log
+SESSION pacifier
+FW qconsole.log before
+FLUSH qconsole.log
+SESSION pacifier
+CMD printf the first line goes to the log\\n
+CON the first line goes to the log\n
+SYS the first line goes to the log\n
+FW qconsole.log the first line goes to the log\n
+FLUSH qconsole.log
+SESSION pacifier
+CMD printf ^2second line, with color\\n
+CON ^2second line, with color\n
+SYS second line, with color\n
+FW qconsole.log second line, with color\n
+FLUSH qconsole.log
+SESSION pacifier
+CMD cvar logFileName x
+CVARSET logFileName x
+CMD cvar logFileName
+CVARSET logFileName 
+CMD printf same file\\n
+CON same file\n
+SYS same file\n
+FW qconsole.log same file\n
+FLUSH qconsole.log
+SESSION pacifier
+CMD closelog
+CLOSE qconsole.log
+CMD printf log closed\\n
+CON log closed\n
+SYS log closed\n
+SESSION pacifier
+CMD cvar logFile 2
+CVARSET logFile 2
+CMD cvar logFileName mylog.txt
+CVARSET logFileName mylog.txt
+CMD printf now with flush after each print\\n
+CON now with flush after each print\n
+SYS now with flush after each print\n
+OPENW mylog.txt fs_savepath ok
+FFLUSH mylog.txt
+CON log file 'mylog.txt' opened on Thu Jan 01 00:00:00 1970\n\n
+SYS log file 'mylog.txt' opened on Thu Jan 01 00:00:00 1970\n\n
+FW mylog.txt log file 'mylog.txt' opened on Thu Jan 01 00:00:00 1970\n\n
+FLUSH mylog.txt
+SESSION pacifier
+FW mylog.txt now with flush after each print\n
+FLUSH mylog.txt
+SESSION pacifier
+CMD files 0
+CMD closelog
+CLOSE mylog.txt
+CMD printf the file system is gone\\n
+CON the file system is gone\n
+SYS the file system is gone\n
+SESSION pacifier

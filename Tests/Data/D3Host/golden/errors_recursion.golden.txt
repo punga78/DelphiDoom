@@ -1,0 +1,24 @@
+CMD opengl 1
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD time 100
+CMD fatal first fatal
+BUFTEXT now vid_restart partial windowed\n
+FATALERR first fatal
+SHUTDOWN
+SYSERR first fatal
+EXIT error
+CMD state
+STATE err=1 refresh=0 editors=0
+CMD time 200
+CMD error second error, recursive
+SYSQUIT
+EXIT quit
+CMD state
+STATE err=1 refresh=0 editors=0
+CMD time 300
+CMD fatal third
+SYS FATAL: recursed fatal error:\nfirst fatal\n
+SYS third\n
+SYSQUIT
+EXIT quit

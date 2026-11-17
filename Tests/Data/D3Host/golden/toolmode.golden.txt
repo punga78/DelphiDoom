@@ -1,0 +1,34 @@
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD cmdline +map e1m1
+CMD toolmode
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD cmdline +guieditor +map e1m1
+CMD toolmode
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD cmdline +Debugger
+CMD toolmode
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD cmdline +materialEditor +dmap
+CMD toolmode
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD cmdline +editor
+CMD toolmode
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD cmdline +renderbump +DMAP
+CMD toolmode
+CMD state
+STATE err=0 refresh=0 editors=0

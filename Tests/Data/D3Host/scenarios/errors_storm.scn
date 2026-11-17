@@ -1,0 +1,15 @@
+# more than 3 errors less than 100 ms one from the other make the next one fatal
+opengl 1
+time 1000
+error one
+time 1050
+error two
+time 1100
+error three
+time 1150
+error four
+time 1200
+error five
+time 1250
+error six
+state

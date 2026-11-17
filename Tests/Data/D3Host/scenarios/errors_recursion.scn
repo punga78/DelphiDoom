@@ -1,0 +1,11 @@
+# an error inside an error, and Quit for an error inside a fatal one
+opengl 1
+cvar r_fullscreen 1
+time 100
+fatal first fatal
+state
+time 200
+error second error, recursive
+state
+time 300
+fatal third

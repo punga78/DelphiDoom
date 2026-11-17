@@ -1,0 +1,18 @@
+# the journal: record the events, play them back
+cvar com_journal 1
+time 500
+evinit
+evlevel
+evsys 1 65 1
+evsys 5 0 0 say hello\n
+evsys 3 7 -8
+evsys 1 66 0
+evrun 1
+evshutdown
+cvar com_journal 2
+evinit
+evlevel
+evrun 1
+evget
+evrun 0
+evshutdown

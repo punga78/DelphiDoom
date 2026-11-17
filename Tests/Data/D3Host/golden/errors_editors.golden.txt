@@ -1,0 +1,39 @@
+CMD opengl 1
+CMD editors 4
+CMD time 5000
+CMD error in the gui editor
+CLIP in the gui editor
+THROW in the gui editor
+CMD state
+STATE err=0 refresh=0 editors=4
+CMD editors 8
+CMD time 6000
+CMD error in the script debugger
+CLIP in the script debugger
+THROW in the script debugger
+CMD editors 2
+CMD time 7000
+CMD error in radiant, a plain drop
+CLIP in radiant, a plain drop
+SESSION stop
+CON ********************\nERROR: in radiant, a plain drop\n********************\n
+SYS ********************\nERROR: in radiant, a plain drop\n********************\n
+SESSION pacifier
+THROW in radiant, a plain drop
+CMD editors 0
+CMD time 8000
+CMD error ^1colored^7 error text
+CLIP ^1colored^7 error text
+SESSION stop
+CON ********************\nERROR: ^1colored^7 error text\n********************\n
+SYS ********************\nERROR: colored error text\n********************\n
+SESSION pacifier
+THROW ^1colored^7 error text
+CMD warnlist
+WARNLIST 0 4
+E in the gui editor
+E in the script debugger
+E in radiant, a plain drop
+E ^1colored^7 error text
+CAPTION 
+CMD dumpwarnings

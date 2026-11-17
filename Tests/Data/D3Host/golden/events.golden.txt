@@ -1,0 +1,65 @@
+CMD evinit
+CON Couldn't open journal files\n
+SYS Couldn't open journal files\n
+SESSION pacifier
+CMD evlevel
+RET 0
+CMD time 1000
+CMD evinit
+CON Couldn't open journal files\n
+SYS Couldn't open journal files\n
+SESSION pacifier
+CMD evms
+RET 0
+CMD time 1250
+CMD evms
+RET 250
+CMD evget
+GETEV 0 0 0 0
+EV 0 0 0 0 
+CMD evsys 1 65 1
+CMD evsys 1 65 0
+CMD evsys 2 97 0
+CMD evsys 3 4 -5
+CMD evsys 5 0 0 map e1m1\\n
+CMD evsys 4 2 100
+CMD evget
+GETEV 1 65 1 0
+EV 1 65 1 0 
+CMD evrun 1
+BUFEXEC
+GETEV 1 65 0 0
+KEY 65 0
+SESSION event 1 65 0 0
+BUFEXEC
+GETEV 2 97 0 0
+SESSION event 2 97 0 0
+BUFEXEC
+GETEV 3 4 -5 0
+SESSION event 3 4 -5 0
+BUFEXEC
+GETEV 5 0 0 10
+BUFTEXT append map e1m1\n
+BUFTEXT append \n
+BUFEXEC
+GETEV 4 2 100 0
+SESSION event 4 2 100 0
+BUFEXEC
+GETEV 0 0 0 0
+RET 0
+CMD evrun 0
+GETEV 0 0 0 0
+RET 0
+CMD evsys 5 0 0 quit
+CMD evrun 1
+BUFEXEC
+GETEV 5 0 0 5
+BUFTEXT append quit
+BUFTEXT append \n
+BUFEXEC
+GETEV 0 0 0 0
+RET 0
+CMD evget
+GETEV 0 0 0 0
+EV 0 0 0 0 
+CMD evshutdown

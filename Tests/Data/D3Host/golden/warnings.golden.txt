@@ -1,0 +1,2331 @@
+CMD printwarnings
+CMD dumpwarnings
+CMD clearwarnings loading map one
+CMD warning texture missing
+CON ^3WARNING: ^1texture missing\n
+SYS WARNING: texture missing\n
+SESSION pacifier
+CMD warning ^2colored text
+CON ^3WARNING: ^1^2colored text\n
+SYS WARNING: colored text\n
+SESSION pacifier
+CMD warning texture missing
+CON ^3WARNING: ^1texture missing\n
+SYS WARNING: texture missing\n
+SESSION pacifier
+CMD warning Zebra
+CON ^3WARNING: ^1Zebra\n
+SYS WARNING: Zebra\n
+SESSION pacifier
+CMD warning apple
+CON ^3WARNING: ^1apple\n
+SYS WARNING: apple\n
+SESSION pacifier
+CMD warning Banana
+CON ^3WARNING: ^1Banana\n
+SYS WARNING: Banana\n
+SESSION pacifier
+CMD warning banana2
+CON ^3WARNING: ^1banana2\n
+SYS WARNING: banana2\n
+SESSION pacifier
+CMD warning Texture missing
+CON ^3WARNING: ^1Texture missing\n
+SYS WARNING: Texture missing\n
+SESSION pacifier
+CMD warnlist
+WARNLIST 7 0
+W texture missing
+W ^2colored text
+W Zebra
+W apple
+W Banana
+W banana2
+W Texture missing
+CAPTION loading map one
+CMD dwarning hidden
+CMD cvar developer 1
+CVARSET developer 1
+CMD dwarning shown
+CON ^3WARNING: shown\n
+SYS WARNING: shown\n
+SESSION pacifier
+CMD cvars 0
+CMD dwarning does not need the cvar system
+CMD warning neither does warning
+CMD cvars 1
+CMD printwarnings
+CON ------------- Warnings ---------------\n
+SYS ------------- Warnings ---------------\n
+SESSION pacifier
+CON during loading map one...\n
+SYS during loading map one...\n
+SESSION pacifier
+CON ^3WARNING: ^1^2colored text\n
+SYS WARNING: colored text\n
+SESSION pacifier
+CON ^3WARNING: ^1apple\n
+SYS WARNING: apple\n
+SESSION pacifier
+CON ^3WARNING: ^1Banana\n
+SYS WARNING: Banana\n
+SESSION pacifier
+CON ^3WARNING: ^1banana2\n
+SYS WARNING: banana2\n
+SESSION pacifier
+CON ^3WARNING: ^1neither does warning\n
+SYS WARNING: neither does warning\n
+SESSION pacifier
+CON ^3WARNING: ^1Texture missing\n
+SYS WARNING: Texture missing\n
+SESSION pacifier
+CON ^3WARNING: ^1texture missing\n
+SYS WARNING: texture missing\n
+SESSION pacifier
+CON ^3WARNING: ^1Zebra\n
+SYS WARNING: Zebra\n
+SESSION pacifier
+CON 8 warnings\n
+SYS 8 warnings\n
+SESSION pacifier
+CMD files 0
+CMD dumpwarnings
+OPENW warnings.txt fs_savepath ok
+FW warnings.txt ------------- Warnings ---------------\n\n
+FW warnings.txt during loading map one...\n
+FW warnings.txt WARNING: colored text\n
+FW warnings.txt WARNING: apple\n
+FW warnings.txt WARNING: Banana\n
+FW warnings.txt WARNING: banana2\n
+FW warnings.txt WARNING: neither does warning\n
+FW warnings.txt WARNING: texture missing\n
+FW warnings.txt WARNING: Texture missing\n
+FW warnings.txt WARNING: Zebra\n
+FW warnings.txt \n8 warnings.\n
+FW warnings.txt \n\n-------------- Errors ---------------\n\n
+FFLUSH warnings.txt
+CLOSE warnings.txt
+CMD files 1
+CMD dumpwarnings
+OPENW warnings.txt fs_savepath ok
+FW warnings.txt ------------- Warnings ---------------\n\n
+FW warnings.txt during loading map one...\n
+FW warnings.txt WARNING: apple\n
+FW warnings.txt WARNING: Banana\n
+FW warnings.txt WARNING: banana2\n
+FW warnings.txt WARNING: colored text\n
+FW warnings.txt WARNING: neither does warning\n
+FW warnings.txt WARNING: Texture missing\n
+FW warnings.txt WARNING: texture missing\n
+FW warnings.txt WARNING: Zebra\n
+FW warnings.txt \n8 warnings.\n
+FW warnings.txt \n\n-------------- Errors ---------------\n\n
+FFLUSH warnings.txt
+CLOSE warnings.txt
+CMD clearwarnings the next level
+CMD printwarnings
+CMD warnlist
+WARNLIST 0 0
+CAPTION the next level
+CMD warnmany 300
+CON ^3WARNING: ^1warning number 0\n
+SYS WARNING: warning number 0\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 1\n
+SYS WARNING: warning number 1\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 2\n
+SYS WARNING: warning number 2\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 3\n
+SYS WARNING: warning number 3\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 4\n
+SYS WARNING: warning number 4\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 5\n
+SYS WARNING: warning number 5\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 6\n
+SYS WARNING: warning number 6\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 7\n
+SYS WARNING: warning number 7\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 8\n
+SYS WARNING: warning number 8\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 9\n
+SYS WARNING: warning number 9\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 10\n
+SYS WARNING: warning number 10\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 11\n
+SYS WARNING: warning number 11\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 12\n
+SYS WARNING: warning number 12\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 13\n
+SYS WARNING: warning number 13\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 14\n
+SYS WARNING: warning number 14\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 15\n
+SYS WARNING: warning number 15\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 16\n
+SYS WARNING: warning number 16\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 17\n
+SYS WARNING: warning number 17\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 18\n
+SYS WARNING: warning number 18\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 19\n
+SYS WARNING: warning number 19\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 20\n
+SYS WARNING: warning number 20\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 21\n
+SYS WARNING: warning number 21\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 22\n
+SYS WARNING: warning number 22\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 23\n
+SYS WARNING: warning number 23\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 24\n
+SYS WARNING: warning number 24\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 25\n
+SYS WARNING: warning number 25\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 26\n
+SYS WARNING: warning number 26\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 27\n
+SYS WARNING: warning number 27\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 28\n
+SYS WARNING: warning number 28\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 29\n
+SYS WARNING: warning number 29\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 30\n
+SYS WARNING: warning number 30\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 31\n
+SYS WARNING: warning number 31\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 32\n
+SYS WARNING: warning number 32\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 33\n
+SYS WARNING: warning number 33\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 34\n
+SYS WARNING: warning number 34\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 35\n
+SYS WARNING: warning number 35\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 36\n
+SYS WARNING: warning number 36\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 37\n
+SYS WARNING: warning number 37\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 38\n
+SYS WARNING: warning number 38\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 39\n
+SYS WARNING: warning number 39\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 40\n
+SYS WARNING: warning number 40\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 41\n
+SYS WARNING: warning number 41\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 42\n
+SYS WARNING: warning number 42\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 43\n
+SYS WARNING: warning number 43\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 44\n
+SYS WARNING: warning number 44\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 45\n
+SYS WARNING: warning number 45\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 46\n
+SYS WARNING: warning number 46\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 47\n
+SYS WARNING: warning number 47\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 48\n
+SYS WARNING: warning number 48\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 49\n
+SYS WARNING: warning number 49\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 50\n
+SYS WARNING: warning number 50\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 51\n
+SYS WARNING: warning number 51\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 52\n
+SYS WARNING: warning number 52\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 53\n
+SYS WARNING: warning number 53\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 54\n
+SYS WARNING: warning number 54\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 55\n
+SYS WARNING: warning number 55\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 56\n
+SYS WARNING: warning number 56\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 57\n
+SYS WARNING: warning number 57\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 58\n
+SYS WARNING: warning number 58\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 59\n
+SYS WARNING: warning number 59\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 60\n
+SYS WARNING: warning number 60\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 61\n
+SYS WARNING: warning number 61\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 62\n
+SYS WARNING: warning number 62\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 63\n
+SYS WARNING: warning number 63\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 64\n
+SYS WARNING: warning number 64\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 65\n
+SYS WARNING: warning number 65\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 66\n
+SYS WARNING: warning number 66\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 67\n
+SYS WARNING: warning number 67\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 68\n
+SYS WARNING: warning number 68\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 69\n
+SYS WARNING: warning number 69\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 70\n
+SYS WARNING: warning number 70\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 71\n
+SYS WARNING: warning number 71\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 72\n
+SYS WARNING: warning number 72\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 73\n
+SYS WARNING: warning number 73\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 74\n
+SYS WARNING: warning number 74\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 75\n
+SYS WARNING: warning number 75\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 76\n
+SYS WARNING: warning number 76\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 77\n
+SYS WARNING: warning number 77\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 78\n
+SYS WARNING: warning number 78\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 79\n
+SYS WARNING: warning number 79\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 80\n
+SYS WARNING: warning number 80\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 81\n
+SYS WARNING: warning number 81\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 82\n
+SYS WARNING: warning number 82\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 83\n
+SYS WARNING: warning number 83\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 84\n
+SYS WARNING: warning number 84\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 85\n
+SYS WARNING: warning number 85\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 86\n
+SYS WARNING: warning number 86\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 87\n
+SYS WARNING: warning number 87\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 88\n
+SYS WARNING: warning number 88\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 89\n
+SYS WARNING: warning number 89\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 90\n
+SYS WARNING: warning number 90\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 91\n
+SYS WARNING: warning number 91\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 92\n
+SYS WARNING: warning number 92\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 93\n
+SYS WARNING: warning number 93\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 94\n
+SYS WARNING: warning number 94\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 95\n
+SYS WARNING: warning number 95\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 96\n
+SYS WARNING: warning number 96\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 97\n
+SYS WARNING: warning number 97\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 98\n
+SYS WARNING: warning number 98\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 99\n
+SYS WARNING: warning number 99\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 100\n
+SYS WARNING: warning number 100\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 101\n
+SYS WARNING: warning number 101\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 102\n
+SYS WARNING: warning number 102\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 103\n
+SYS WARNING: warning number 103\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 104\n
+SYS WARNING: warning number 104\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 105\n
+SYS WARNING: warning number 105\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 106\n
+SYS WARNING: warning number 106\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 107\n
+SYS WARNING: warning number 107\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 108\n
+SYS WARNING: warning number 108\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 109\n
+SYS WARNING: warning number 109\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 110\n
+SYS WARNING: warning number 110\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 111\n
+SYS WARNING: warning number 111\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 112\n
+SYS WARNING: warning number 112\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 113\n
+SYS WARNING: warning number 113\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 114\n
+SYS WARNING: warning number 114\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 115\n
+SYS WARNING: warning number 115\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 116\n
+SYS WARNING: warning number 116\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 117\n
+SYS WARNING: warning number 117\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 118\n
+SYS WARNING: warning number 118\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 119\n
+SYS WARNING: warning number 119\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 120\n
+SYS WARNING: warning number 120\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 121\n
+SYS WARNING: warning number 121\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 122\n
+SYS WARNING: warning number 122\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 123\n
+SYS WARNING: warning number 123\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 124\n
+SYS WARNING: warning number 124\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 125\n
+SYS WARNING: warning number 125\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 126\n
+SYS WARNING: warning number 126\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 127\n
+SYS WARNING: warning number 127\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 128\n
+SYS WARNING: warning number 128\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 129\n
+SYS WARNING: warning number 129\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 130\n
+SYS WARNING: warning number 130\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 131\n
+SYS WARNING: warning number 131\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 132\n
+SYS WARNING: warning number 132\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 133\n
+SYS WARNING: warning number 133\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 134\n
+SYS WARNING: warning number 134\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 135\n
+SYS WARNING: warning number 135\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 136\n
+SYS WARNING: warning number 136\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 137\n
+SYS WARNING: warning number 137\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 138\n
+SYS WARNING: warning number 138\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 139\n
+SYS WARNING: warning number 139\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 140\n
+SYS WARNING: warning number 140\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 141\n
+SYS WARNING: warning number 141\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 142\n
+SYS WARNING: warning number 142\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 143\n
+SYS WARNING: warning number 143\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 144\n
+SYS WARNING: warning number 144\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 145\n
+SYS WARNING: warning number 145\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 146\n
+SYS WARNING: warning number 146\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 147\n
+SYS WARNING: warning number 147\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 148\n
+SYS WARNING: warning number 148\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 149\n
+SYS WARNING: warning number 149\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 150\n
+SYS WARNING: warning number 150\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 151\n
+SYS WARNING: warning number 151\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 152\n
+SYS WARNING: warning number 152\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 153\n
+SYS WARNING: warning number 153\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 154\n
+SYS WARNING: warning number 154\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 155\n
+SYS WARNING: warning number 155\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 156\n
+SYS WARNING: warning number 156\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 157\n
+SYS WARNING: warning number 157\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 158\n
+SYS WARNING: warning number 158\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 159\n
+SYS WARNING: warning number 159\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 160\n
+SYS WARNING: warning number 160\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 161\n
+SYS WARNING: warning number 161\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 162\n
+SYS WARNING: warning number 162\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 163\n
+SYS WARNING: warning number 163\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 164\n
+SYS WARNING: warning number 164\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 165\n
+SYS WARNING: warning number 165\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 166\n
+SYS WARNING: warning number 166\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 167\n
+SYS WARNING: warning number 167\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 168\n
+SYS WARNING: warning number 168\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 169\n
+SYS WARNING: warning number 169\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 170\n
+SYS WARNING: warning number 170\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 171\n
+SYS WARNING: warning number 171\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 172\n
+SYS WARNING: warning number 172\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 173\n
+SYS WARNING: warning number 173\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 174\n
+SYS WARNING: warning number 174\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 175\n
+SYS WARNING: warning number 175\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 176\n
+SYS WARNING: warning number 176\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 177\n
+SYS WARNING: warning number 177\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 178\n
+SYS WARNING: warning number 178\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 179\n
+SYS WARNING: warning number 179\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 180\n
+SYS WARNING: warning number 180\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 181\n
+SYS WARNING: warning number 181\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 182\n
+SYS WARNING: warning number 182\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 183\n
+SYS WARNING: warning number 183\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 184\n
+SYS WARNING: warning number 184\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 185\n
+SYS WARNING: warning number 185\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 186\n
+SYS WARNING: warning number 186\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 187\n
+SYS WARNING: warning number 187\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 188\n
+SYS WARNING: warning number 188\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 189\n
+SYS WARNING: warning number 189\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 190\n
+SYS WARNING: warning number 190\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 191\n
+SYS WARNING: warning number 191\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 192\n
+SYS WARNING: warning number 192\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 193\n
+SYS WARNING: warning number 193\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 194\n
+SYS WARNING: warning number 194\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 195\n
+SYS WARNING: warning number 195\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 196\n
+SYS WARNING: warning number 196\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 197\n
+SYS WARNING: warning number 197\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 198\n
+SYS WARNING: warning number 198\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 199\n
+SYS WARNING: warning number 199\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 200\n
+SYS WARNING: warning number 200\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 201\n
+SYS WARNING: warning number 201\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 202\n
+SYS WARNING: warning number 202\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 203\n
+SYS WARNING: warning number 203\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 204\n
+SYS WARNING: warning number 204\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 205\n
+SYS WARNING: warning number 205\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 206\n
+SYS WARNING: warning number 206\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 207\n
+SYS WARNING: warning number 207\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 208\n
+SYS WARNING: warning number 208\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 209\n
+SYS WARNING: warning number 209\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 210\n
+SYS WARNING: warning number 210\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 211\n
+SYS WARNING: warning number 211\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 212\n
+SYS WARNING: warning number 212\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 213\n
+SYS WARNING: warning number 213\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 214\n
+SYS WARNING: warning number 214\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 215\n
+SYS WARNING: warning number 215\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 216\n
+SYS WARNING: warning number 216\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 217\n
+SYS WARNING: warning number 217\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 218\n
+SYS WARNING: warning number 218\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 219\n
+SYS WARNING: warning number 219\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 220\n
+SYS WARNING: warning number 220\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 221\n
+SYS WARNING: warning number 221\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 222\n
+SYS WARNING: warning number 222\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 223\n
+SYS WARNING: warning number 223\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 224\n
+SYS WARNING: warning number 224\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 225\n
+SYS WARNING: warning number 225\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 226\n
+SYS WARNING: warning number 226\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 227\n
+SYS WARNING: warning number 227\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 228\n
+SYS WARNING: warning number 228\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 229\n
+SYS WARNING: warning number 229\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 230\n
+SYS WARNING: warning number 230\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 231\n
+SYS WARNING: warning number 231\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 232\n
+SYS WARNING: warning number 232\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 233\n
+SYS WARNING: warning number 233\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 234\n
+SYS WARNING: warning number 234\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 235\n
+SYS WARNING: warning number 235\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 236\n
+SYS WARNING: warning number 236\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 237\n
+SYS WARNING: warning number 237\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 238\n
+SYS WARNING: warning number 238\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 239\n
+SYS WARNING: warning number 239\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 240\n
+SYS WARNING: warning number 240\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 241\n
+SYS WARNING: warning number 241\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 242\n
+SYS WARNING: warning number 242\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 243\n
+SYS WARNING: warning number 243\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 244\n
+SYS WARNING: warning number 244\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 245\n
+SYS WARNING: warning number 245\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 246\n
+SYS WARNING: warning number 246\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 247\n
+SYS WARNING: warning number 247\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 248\n
+SYS WARNING: warning number 248\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 249\n
+SYS WARNING: warning number 249\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 250\n
+SYS WARNING: warning number 250\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 251\n
+SYS WARNING: warning number 251\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 252\n
+SYS WARNING: warning number 252\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 253\n
+SYS WARNING: warning number 253\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 254\n
+SYS WARNING: warning number 254\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 255\n
+SYS WARNING: warning number 255\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 256\n
+SYS WARNING: warning number 256\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 257\n
+SYS WARNING: warning number 257\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 258\n
+SYS WARNING: warning number 258\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 259\n
+SYS WARNING: warning number 259\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 260\n
+SYS WARNING: warning number 260\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 261\n
+SYS WARNING: warning number 261\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 262\n
+SYS WARNING: warning number 262\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 263\n
+SYS WARNING: warning number 263\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 264\n
+SYS WARNING: warning number 264\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 265\n
+SYS WARNING: warning number 265\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 266\n
+SYS WARNING: warning number 266\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 267\n
+SYS WARNING: warning number 267\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 268\n
+SYS WARNING: warning number 268\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 269\n
+SYS WARNING: warning number 269\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 270\n
+SYS WARNING: warning number 270\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 271\n
+SYS WARNING: warning number 271\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 272\n
+SYS WARNING: warning number 272\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 273\n
+SYS WARNING: warning number 273\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 274\n
+SYS WARNING: warning number 274\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 275\n
+SYS WARNING: warning number 275\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 276\n
+SYS WARNING: warning number 276\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 277\n
+SYS WARNING: warning number 277\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 278\n
+SYS WARNING: warning number 278\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 279\n
+SYS WARNING: warning number 279\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 280\n
+SYS WARNING: warning number 280\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 281\n
+SYS WARNING: warning number 281\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 282\n
+SYS WARNING: warning number 282\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 283\n
+SYS WARNING: warning number 283\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 284\n
+SYS WARNING: warning number 284\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 285\n
+SYS WARNING: warning number 285\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 286\n
+SYS WARNING: warning number 286\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 287\n
+SYS WARNING: warning number 287\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 288\n
+SYS WARNING: warning number 288\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 289\n
+SYS WARNING: warning number 289\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 290\n
+SYS WARNING: warning number 290\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 291\n
+SYS WARNING: warning number 291\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 292\n
+SYS WARNING: warning number 292\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 293\n
+SYS WARNING: warning number 293\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 294\n
+SYS WARNING: warning number 294\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 295\n
+SYS WARNING: warning number 295\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 296\n
+SYS WARNING: warning number 296\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 297\n
+SYS WARNING: warning number 297\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 298\n
+SYS WARNING: warning number 298\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 299\n
+SYS WARNING: warning number 299\n
+SESSION pacifier
+CMD printwarnings
+CON ------------- Warnings ---------------\n
+SYS ------------- Warnings ---------------\n
+SESSION pacifier
+CON during the next level...\n
+SYS during the next level...\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 0\n
+SYS WARNING: warning number 0\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 1\n
+SYS WARNING: warning number 1\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 10\n
+SYS WARNING: warning number 10\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 100\n
+SYS WARNING: warning number 100\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 101\n
+SYS WARNING: warning number 101\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 102\n
+SYS WARNING: warning number 102\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 103\n
+SYS WARNING: warning number 103\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 104\n
+SYS WARNING: warning number 104\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 105\n
+SYS WARNING: warning number 105\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 106\n
+SYS WARNING: warning number 106\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 107\n
+SYS WARNING: warning number 107\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 108\n
+SYS WARNING: warning number 108\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 109\n
+SYS WARNING: warning number 109\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 11\n
+SYS WARNING: warning number 11\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 110\n
+SYS WARNING: warning number 110\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 111\n
+SYS WARNING: warning number 111\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 112\n
+SYS WARNING: warning number 112\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 113\n
+SYS WARNING: warning number 113\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 114\n
+SYS WARNING: warning number 114\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 115\n
+SYS WARNING: warning number 115\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 116\n
+SYS WARNING: warning number 116\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 117\n
+SYS WARNING: warning number 117\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 118\n
+SYS WARNING: warning number 118\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 119\n
+SYS WARNING: warning number 119\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 12\n
+SYS WARNING: warning number 12\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 120\n
+SYS WARNING: warning number 120\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 121\n
+SYS WARNING: warning number 121\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 122\n
+SYS WARNING: warning number 122\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 123\n
+SYS WARNING: warning number 123\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 124\n
+SYS WARNING: warning number 124\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 125\n
+SYS WARNING: warning number 125\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 126\n
+SYS WARNING: warning number 126\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 127\n
+SYS WARNING: warning number 127\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 128\n
+SYS WARNING: warning number 128\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 129\n
+SYS WARNING: warning number 129\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 13\n
+SYS WARNING: warning number 13\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 130\n
+SYS WARNING: warning number 130\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 131\n
+SYS WARNING: warning number 131\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 132\n
+SYS WARNING: warning number 132\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 133\n
+SYS WARNING: warning number 133\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 134\n
+SYS WARNING: warning number 134\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 135\n
+SYS WARNING: warning number 135\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 136\n
+SYS WARNING: warning number 136\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 137\n
+SYS WARNING: warning number 137\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 138\n
+SYS WARNING: warning number 138\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 139\n
+SYS WARNING: warning number 139\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 14\n
+SYS WARNING: warning number 14\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 140\n
+SYS WARNING: warning number 140\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 141\n
+SYS WARNING: warning number 141\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 142\n
+SYS WARNING: warning number 142\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 143\n
+SYS WARNING: warning number 143\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 144\n
+SYS WARNING: warning number 144\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 145\n
+SYS WARNING: warning number 145\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 146\n
+SYS WARNING: warning number 146\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 147\n
+SYS WARNING: warning number 147\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 148\n
+SYS WARNING: warning number 148\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 149\n
+SYS WARNING: warning number 149\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 15\n
+SYS WARNING: warning number 15\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 150\n
+SYS WARNING: warning number 150\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 151\n
+SYS WARNING: warning number 151\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 152\n
+SYS WARNING: warning number 152\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 153\n
+SYS WARNING: warning number 153\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 154\n
+SYS WARNING: warning number 154\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 155\n
+SYS WARNING: warning number 155\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 156\n
+SYS WARNING: warning number 156\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 157\n
+SYS WARNING: warning number 157\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 158\n
+SYS WARNING: warning number 158\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 159\n
+SYS WARNING: warning number 159\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 16\n
+SYS WARNING: warning number 16\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 160\n
+SYS WARNING: warning number 160\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 161\n
+SYS WARNING: warning number 161\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 162\n
+SYS WARNING: warning number 162\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 163\n
+SYS WARNING: warning number 163\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 164\n
+SYS WARNING: warning number 164\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 165\n
+SYS WARNING: warning number 165\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 166\n
+SYS WARNING: warning number 166\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 167\n
+SYS WARNING: warning number 167\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 168\n
+SYS WARNING: warning number 168\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 169\n
+SYS WARNING: warning number 169\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 17\n
+SYS WARNING: warning number 17\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 170\n
+SYS WARNING: warning number 170\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 171\n
+SYS WARNING: warning number 171\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 172\n
+SYS WARNING: warning number 172\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 173\n
+SYS WARNING: warning number 173\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 174\n
+SYS WARNING: warning number 174\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 175\n
+SYS WARNING: warning number 175\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 176\n
+SYS WARNING: warning number 176\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 177\n
+SYS WARNING: warning number 177\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 178\n
+SYS WARNING: warning number 178\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 179\n
+SYS WARNING: warning number 179\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 18\n
+SYS WARNING: warning number 18\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 180\n
+SYS WARNING: warning number 180\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 181\n
+SYS WARNING: warning number 181\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 182\n
+SYS WARNING: warning number 182\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 183\n
+SYS WARNING: warning number 183\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 184\n
+SYS WARNING: warning number 184\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 185\n
+SYS WARNING: warning number 185\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 186\n
+SYS WARNING: warning number 186\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 187\n
+SYS WARNING: warning number 187\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 188\n
+SYS WARNING: warning number 188\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 189\n
+SYS WARNING: warning number 189\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 19\n
+SYS WARNING: warning number 19\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 190\n
+SYS WARNING: warning number 190\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 191\n
+SYS WARNING: warning number 191\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 192\n
+SYS WARNING: warning number 192\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 193\n
+SYS WARNING: warning number 193\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 194\n
+SYS WARNING: warning number 194\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 195\n
+SYS WARNING: warning number 195\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 196\n
+SYS WARNING: warning number 196\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 197\n
+SYS WARNING: warning number 197\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 198\n
+SYS WARNING: warning number 198\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 199\n
+SYS WARNING: warning number 199\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 2\n
+SYS WARNING: warning number 2\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 20\n
+SYS WARNING: warning number 20\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 200\n
+SYS WARNING: warning number 200\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 201\n
+SYS WARNING: warning number 201\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 202\n
+SYS WARNING: warning number 202\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 203\n
+SYS WARNING: warning number 203\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 204\n
+SYS WARNING: warning number 204\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 205\n
+SYS WARNING: warning number 205\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 206\n
+SYS WARNING: warning number 206\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 207\n
+SYS WARNING: warning number 207\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 208\n
+SYS WARNING: warning number 208\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 209\n
+SYS WARNING: warning number 209\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 21\n
+SYS WARNING: warning number 21\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 210\n
+SYS WARNING: warning number 210\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 211\n
+SYS WARNING: warning number 211\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 212\n
+SYS WARNING: warning number 212\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 213\n
+SYS WARNING: warning number 213\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 214\n
+SYS WARNING: warning number 214\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 215\n
+SYS WARNING: warning number 215\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 216\n
+SYS WARNING: warning number 216\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 217\n
+SYS WARNING: warning number 217\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 218\n
+SYS WARNING: warning number 218\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 219\n
+SYS WARNING: warning number 219\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 22\n
+SYS WARNING: warning number 22\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 220\n
+SYS WARNING: warning number 220\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 221\n
+SYS WARNING: warning number 221\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 222\n
+SYS WARNING: warning number 222\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 223\n
+SYS WARNING: warning number 223\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 224\n
+SYS WARNING: warning number 224\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 225\n
+SYS WARNING: warning number 225\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 226\n
+SYS WARNING: warning number 226\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 227\n
+SYS WARNING: warning number 227\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 228\n
+SYS WARNING: warning number 228\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 229\n
+SYS WARNING: warning number 229\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 23\n
+SYS WARNING: warning number 23\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 230\n
+SYS WARNING: warning number 230\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 231\n
+SYS WARNING: warning number 231\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 232\n
+SYS WARNING: warning number 232\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 233\n
+SYS WARNING: warning number 233\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 234\n
+SYS WARNING: warning number 234\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 235\n
+SYS WARNING: warning number 235\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 236\n
+SYS WARNING: warning number 236\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 237\n
+SYS WARNING: warning number 237\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 238\n
+SYS WARNING: warning number 238\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 239\n
+SYS WARNING: warning number 239\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 24\n
+SYS WARNING: warning number 24\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 240\n
+SYS WARNING: warning number 240\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 241\n
+SYS WARNING: warning number 241\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 242\n
+SYS WARNING: warning number 242\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 243\n
+SYS WARNING: warning number 243\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 244\n
+SYS WARNING: warning number 244\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 245\n
+SYS WARNING: warning number 245\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 246\n
+SYS WARNING: warning number 246\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 247\n
+SYS WARNING: warning number 247\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 248\n
+SYS WARNING: warning number 248\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 249\n
+SYS WARNING: warning number 249\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 25\n
+SYS WARNING: warning number 25\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 250\n
+SYS WARNING: warning number 250\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 251\n
+SYS WARNING: warning number 251\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 252\n
+SYS WARNING: warning number 252\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 253\n
+SYS WARNING: warning number 253\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 254\n
+SYS WARNING: warning number 254\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 255\n
+SYS WARNING: warning number 255\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 26\n
+SYS WARNING: warning number 26\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 27\n
+SYS WARNING: warning number 27\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 28\n
+SYS WARNING: warning number 28\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 29\n
+SYS WARNING: warning number 29\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 3\n
+SYS WARNING: warning number 3\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 30\n
+SYS WARNING: warning number 30\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 31\n
+SYS WARNING: warning number 31\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 32\n
+SYS WARNING: warning number 32\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 33\n
+SYS WARNING: warning number 33\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 34\n
+SYS WARNING: warning number 34\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 35\n
+SYS WARNING: warning number 35\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 36\n
+SYS WARNING: warning number 36\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 37\n
+SYS WARNING: warning number 37\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 38\n
+SYS WARNING: warning number 38\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 39\n
+SYS WARNING: warning number 39\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 4\n
+SYS WARNING: warning number 4\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 40\n
+SYS WARNING: warning number 40\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 41\n
+SYS WARNING: warning number 41\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 42\n
+SYS WARNING: warning number 42\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 43\n
+SYS WARNING: warning number 43\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 44\n
+SYS WARNING: warning number 44\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 45\n
+SYS WARNING: warning number 45\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 46\n
+SYS WARNING: warning number 46\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 47\n
+SYS WARNING: warning number 47\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 48\n
+SYS WARNING: warning number 48\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 49\n
+SYS WARNING: warning number 49\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 5\n
+SYS WARNING: warning number 5\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 50\n
+SYS WARNING: warning number 50\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 51\n
+SYS WARNING: warning number 51\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 52\n
+SYS WARNING: warning number 52\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 53\n
+SYS WARNING: warning number 53\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 54\n
+SYS WARNING: warning number 54\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 55\n
+SYS WARNING: warning number 55\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 56\n
+SYS WARNING: warning number 56\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 57\n
+SYS WARNING: warning number 57\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 58\n
+SYS WARNING: warning number 58\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 59\n
+SYS WARNING: warning number 59\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 6\n
+SYS WARNING: warning number 6\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 60\n
+SYS WARNING: warning number 60\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 61\n
+SYS WARNING: warning number 61\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 62\n
+SYS WARNING: warning number 62\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 63\n
+SYS WARNING: warning number 63\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 64\n
+SYS WARNING: warning number 64\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 65\n
+SYS WARNING: warning number 65\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 66\n
+SYS WARNING: warning number 66\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 67\n
+SYS WARNING: warning number 67\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 68\n
+SYS WARNING: warning number 68\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 69\n
+SYS WARNING: warning number 69\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 7\n
+SYS WARNING: warning number 7\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 70\n
+SYS WARNING: warning number 70\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 71\n
+SYS WARNING: warning number 71\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 72\n
+SYS WARNING: warning number 72\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 73\n
+SYS WARNING: warning number 73\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 74\n
+SYS WARNING: warning number 74\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 75\n
+SYS WARNING: warning number 75\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 76\n
+SYS WARNING: warning number 76\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 77\n
+SYS WARNING: warning number 77\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 78\n
+SYS WARNING: warning number 78\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 79\n
+SYS WARNING: warning number 79\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 8\n
+SYS WARNING: warning number 8\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 80\n
+SYS WARNING: warning number 80\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 81\n
+SYS WARNING: warning number 81\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 82\n
+SYS WARNING: warning number 82\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 83\n
+SYS WARNING: warning number 83\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 84\n
+SYS WARNING: warning number 84\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 85\n
+SYS WARNING: warning number 85\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 86\n
+SYS WARNING: warning number 86\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 87\n
+SYS WARNING: warning number 87\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 88\n
+SYS WARNING: warning number 88\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 89\n
+SYS WARNING: warning number 89\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 9\n
+SYS WARNING: warning number 9\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 90\n
+SYS WARNING: warning number 90\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 91\n
+SYS WARNING: warning number 91\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 92\n
+SYS WARNING: warning number 92\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 93\n
+SYS WARNING: warning number 93\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 94\n
+SYS WARNING: warning number 94\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 95\n
+SYS WARNING: warning number 95\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 96\n
+SYS WARNING: warning number 96\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 97\n
+SYS WARNING: warning number 97\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 98\n
+SYS WARNING: warning number 98\n
+SESSION pacifier
+CON ^3WARNING: ^1warning number 99\n
+SYS WARNING: warning number 99\n
+SESSION pacifier
+CON more than 256 warnings\n
+SYS more than 256 warnings\n
+SESSION pacifier
+CMD warnlist
+WARNLIST 256 0
+W warning number 0
+W warning number 1
+W warning number 10
+W warning number 100
+W warning number 101
+W warning number 102
+W warning number 103
+W warning number 104
+W warning number 105
+W warning number 106
+W warning number 107
+W warning number 108
+W warning number 109
+W warning number 11
+W warning number 110
+W warning number 111
+W warning number 112
+W warning number 113
+W warning number 114
+W warning number 115
+W warning number 116
+W warning number 117
+W warning number 118
+W warning number 119
+W warning number 12
+W warning number 120
+W warning number 121
+W warning number 122
+W warning number 123
+W warning number 124
+W warning number 125
+W warning number 126
+W warning number 127
+W warning number 128
+W warning number 129
+W warning number 13
+W warning number 130
+W warning number 131
+W warning number 132
+W warning number 133
+W warning number 134
+W warning number 135
+W warning number 136
+W warning number 137
+W warning number 138
+W warning number 139
+W warning number 14
+W warning number 140
+W warning number 141
+W warning number 142
+W warning number 143
+W warning number 144
+W warning number 145
+W warning number 146
+W warning number 147
+W warning number 148
+W warning number 149
+W warning number 15
+W warning number 150
+W warning number 151
+W warning number 152
+W warning number 153
+W warning number 154
+W warning number 155
+W warning number 156
+W warning number 157
+W warning number 158
+W warning number 159
+W warning number 16
+W warning number 160
+W warning number 161
+W warning number 162
+W warning number 163
+W warning number 164
+W warning number 165
+W warning number 166
+W warning number 167
+W warning number 168
+W warning number 169
+W warning number 17
+W warning number 170
+W warning number 171
+W warning number 172
+W warning number 173
+W warning number 174
+W warning number 175
+W warning number 176
+W warning number 177
+W warning number 178
+W warning number 179
+W warning number 18
+W warning number 180
+W warning number 181
+W warning number 182
+W warning number 183
+W warning number 184
+W warning number 185
+W warning number 186
+W warning number 187
+W warning number 188
+W warning number 189
+W warning number 19
+W warning number 190
+W warning number 191
+W warning number 192
+W warning number 193
+W warning number 194
+W warning number 195
+W warning number 196
+W warning number 197
+W warning number 198
+W warning number 199
+W warning number 2
+W warning number 20
+W warning number 200
+W warning number 201
+W warning number 202
+W warning number 203
+W warning number 204
+W warning number 205
+W warning number 206
+W warning number 207
+W warning number 208
+W warning number 209
+W warning number 21
+W warning number 210
+W warning number 211
+W warning number 212
+W warning number 213
+W warning number 214
+W warning number 215
+W warning number 216
+W warning number 217
+W warning number 218
+W warning number 219
+W warning number 22
+W warning number 220
+W warning number 221
+W warning number 222
+W warning number 223
+W warning number 224
+W warning number 225
+W warning number 226
+W warning number 227
+W warning number 228
+W warning number 229
+W warning number 23
+W warning number 230
+W warning number 231
+W warning number 232
+W warning number 233
+W warning number 234
+W warning number 235
+W warning number 236
+W warning number 237
+W warning number 238
+W warning number 239
+W warning number 24
+W warning number 240
+W warning number 241
+W warning number 242
+W warning number 243
+W warning number 244
+W warning number 245
+W warning number 246
+W warning number 247
+W warning number 248
+W warning number 249
+W warning number 25
+W warning number 250
+W warning number 251
+W warning number 252
+W warning number 253
+W warning number 254
+W warning number 255
+W warning number 26
+W warning number 27
+W warning number 28
+W warning number 29
+W warning number 3
+W warning number 30
+W warning number 31
+W warning number 32
+W warning number 33
+W warning number 34
+W warning number 35
+W warning number 36
+W warning number 37
+W warning number 38
+W warning number 39
+W warning number 4
+W warning number 40
+W warning number 41
+W warning number 42
+W warning number 43
+W warning number 44
+W warning number 45
+W warning number 46
+W warning number 47
+W warning number 48
+W warning number 49
+W warning number 5
+W warning number 50
+W warning number 51
+W warning number 52
+W warning number 53
+W warning number 54
+W warning number 55
+W warning number 56
+W warning number 57
+W warning number 58
+W warning number 59
+W warning number 6
+W warning number 60
+W warning number 61
+W warning number 62
+W warning number 63
+W warning number 64
+W warning number 65
+W warning number 66
+W warning number 67
+W warning number 68
+W warning number 69
+W warning number 7
+W warning number 70
+W warning number 71
+W warning number 72
+W warning number 73
+W warning number 74
+W warning number 75
+W warning number 76
+W warning number 77
+W warning number 78
+W warning number 79
+W warning number 8
+W warning number 80
+W warning number 81
+W warning number 82
+W warning number 83
+W warning number 84
+W warning number 85
+W warning number 86
+W warning number 87
+W warning number 88
+W warning number 89
+W warning number 9
+W warning number 90
+W warning number 91
+W warning number 92
+W warning number 93
+W warning number 94
+W warning number 95
+W warning number 96
+W warning number 97
+W warning number 98
+W warning number 99
+CAPTION the next level
+CMD dumpwarnings
+OPENW warnings.txt fs_savepath ok
+FW warnings.txt ------------- Warnings ---------------\n\n
+FW warnings.txt during the next level...\n
+FW warnings.txt WARNING: warning number 0\n
+FW warnings.txt WARNING: warning number 1\n
+FW warnings.txt WARNING: warning number 10\n
+FW warnings.txt WARNING: warning number 100\n
+FW warnings.txt WARNING: warning number 101\n
+FW warnings.txt WARNING: warning number 102\n
+FW warnings.txt WARNING: warning number 103\n
+FW warnings.txt WARNING: warning number 104\n
+FW warnings.txt WARNING: warning number 105\n
+FW warnings.txt WARNING: warning number 106\n
+FW warnings.txt WARNING: warning number 107\n
+FW warnings.txt WARNING: warning number 108\n
+FW warnings.txt WARNING: warning number 109\n
+FW warnings.txt WARNING: warning number 11\n
+FW warnings.txt WARNING: warning number 110\n
+FW warnings.txt WARNING: warning number 111\n
+FW warnings.txt WARNING: warning number 112\n
+FW warnings.txt WARNING: warning number 113\n
+FW warnings.txt WARNING: warning number 114\n
+FW warnings.txt WARNING: warning number 115\n
+FW warnings.txt WARNING: warning number 116\n
+FW warnings.txt WARNING: warning number 117\n
+FW warnings.txt WARNING: warning number 118\n
+FW warnings.txt WARNING: warning number 119\n
+FW warnings.txt WARNING: warning number 12\n
+FW warnings.txt WARNING: warning number 120\n
+FW warnings.txt WARNING: warning number 121\n
+FW warnings.txt WARNING: warning number 122\n
+FW warnings.txt WARNING: warning number 123\n
+FW warnings.txt WARNING: warning number 124\n
+FW warnings.txt WARNING: warning number 125\n
+FW warnings.txt WARNING: warning number 126\n
+FW warnings.txt WARNING: warning number 127\n
+FW warnings.txt WARNING: warning number 128\n
+FW warnings.txt WARNING: warning number 129\n
+FW warnings.txt WARNING: warning number 13\n
+FW warnings.txt WARNING: warning number 130\n
+FW warnings.txt WARNING: warning number 131\n
+FW warnings.txt WARNING: warning number 132\n
+FW warnings.txt WARNING: warning number 133\n
+FW warnings.txt WARNING: warning number 134\n
+FW warnings.txt WARNING: warning number 135\n
+FW warnings.txt WARNING: warning number 136\n
+FW warnings.txt WARNING: warning number 137\n
+FW warnings.txt WARNING: warning number 138\n
+FW warnings.txt WARNING: warning number 139\n
+FW warnings.txt WARNING: warning number 14\n
+FW warnings.txt WARNING: warning number 140\n
+FW warnings.txt WARNING: warning number 141\n
+FW warnings.txt WARNING: warning number 142\n
+FW warnings.txt WARNING: warning number 143\n
+FW warnings.txt WARNING: warning number 144\n
+FW warnings.txt WARNING: warning number 145\n
+FW warnings.txt WARNING: warning number 146\n
+FW warnings.txt WARNING: warning number 147\n
+FW warnings.txt WARNING: warning number 148\n
+FW warnings.txt WARNING: warning number 149\n
+FW warnings.txt WARNING: warning number 15\n
+FW warnings.txt WARNING: warning number 150\n
+FW warnings.txt WARNING: warning number 151\n
+FW warnings.txt WARNING: warning number 152\n
+FW warnings.txt WARNING: warning number 153\n
+FW warnings.txt WARNING: warning number 154\n
+FW warnings.txt WARNING: warning number 155\n
+FW warnings.txt WARNING: warning number 156\n
+FW warnings.txt WARNING: warning number 157\n
+FW warnings.txt WARNING: warning number 158\n
+FW warnings.txt WARNING: warning number 159\n
+FW warnings.txt WARNING: warning number 16\n
+FW warnings.txt WARNING: warning number 160\n
+FW warnings.txt WARNING: warning number 161\n
+FW warnings.txt WARNING: warning number 162\n
+FW warnings.txt WARNING: warning number 163\n
+FW warnings.txt WARNING: warning number 164\n
+FW warnings.txt WARNING: warning number 165\n
+FW warnings.txt WARNING: warning number 166\n
+FW warnings.txt WARNING: warning number 167\n
+FW warnings.txt WARNING: warning number 168\n
+FW warnings.txt WARNING: warning number 169\n
+FW warnings.txt WARNING: warning number 17\n
+FW warnings.txt WARNING: warning number 170\n
+FW warnings.txt WARNING: warning number 171\n
+FW warnings.txt WARNING: warning number 172\n
+FW warnings.txt WARNING: warning number 173\n
+FW warnings.txt WARNING: warning number 174\n
+FW warnings.txt WARNING: warning number 175\n
+FW warnings.txt WARNING: warning number 176\n
+FW warnings.txt WARNING: warning number 177\n
+FW warnings.txt WARNING: warning number 178\n
+FW warnings.txt WARNING: warning number 179\n
+FW warnings.txt WARNING: warning number 18\n
+FW warnings.txt WARNING: warning number 180\n
+FW warnings.txt WARNING: warning number 181\n
+FW warnings.txt WARNING: warning number 182\n
+FW warnings.txt WARNING: warning number 183\n
+FW warnings.txt WARNING: warning number 184\n
+FW warnings.txt WARNING: warning number 185\n
+FW warnings.txt WARNING: warning number 186\n
+FW warnings.txt WARNING: warning number 187\n
+FW warnings.txt WARNING: warning number 188\n
+FW warnings.txt WARNING: warning number 189\n
+FW warnings.txt WARNING: warning number 19\n
+FW warnings.txt WARNING: warning number 190\n
+FW warnings.txt WARNING: warning number 191\n
+FW warnings.txt WARNING: warning number 192\n
+FW warnings.txt WARNING: warning number 193\n
+FW warnings.txt WARNING: warning number 194\n
+FW warnings.txt WARNING: warning number 195\n
+FW warnings.txt WARNING: warning number 196\n
+FW warnings.txt WARNING: warning number 197\n
+FW warnings.txt WARNING: warning number 198\n
+FW warnings.txt WARNING: warning number 199\n
+FW warnings.txt WARNING: warning number 2\n
+FW warnings.txt WARNING: warning number 20\n
+FW warnings.txt WARNING: warning number 200\n
+FW warnings.txt WARNING: warning number 201\n
+FW warnings.txt WARNING: warning number 202\n
+FW warnings.txt WARNING: warning number 203\n
+FW warnings.txt WARNING: warning number 204\n
+FW warnings.txt WARNING: warning number 205\n
+FW warnings.txt WARNING: warning number 206\n
+FW warnings.txt WARNING: warning number 207\n
+FW warnings.txt WARNING: warning number 208\n
+FW warnings.txt WARNING: warning number 209\n
+FW warnings.txt WARNING: warning number 21\n
+FW warnings.txt WARNING: warning number 210\n
+FW warnings.txt WARNING: warning number 211\n
+FW warnings.txt WARNING: warning number 212\n
+FW warnings.txt WARNING: warning number 213\n
+FW warnings.txt WARNING: warning number 214\n
+FW warnings.txt WARNING: warning number 215\n
+FW warnings.txt WARNING: warning number 216\n
+FW warnings.txt WARNING: warning number 217\n
+FW warnings.txt WARNING: warning number 218\n
+FW warnings.txt WARNING: warning number 219\n
+FW warnings.txt WARNING: warning number 22\n
+FW warnings.txt WARNING: warning number 220\n
+FW warnings.txt WARNING: warning number 221\n
+FW warnings.txt WARNING: warning number 222\n
+FW warnings.txt WARNING: warning number 223\n
+FW warnings.txt WARNING: warning number 224\n
+FW warnings.txt WARNING: warning number 225\n
+FW warnings.txt WARNING: warning number 226\n
+FW warnings.txt WARNING: warning number 227\n
+FW warnings.txt WARNING: warning number 228\n
+FW warnings.txt WARNING: warning number 229\n
+FW warnings.txt WARNING: warning number 23\n
+FW warnings.txt WARNING: warning number 230\n
+FW warnings.txt WARNING: warning number 231\n
+FW warnings.txt WARNING: warning number 232\n
+FW warnings.txt WARNING: warning number 233\n
+FW warnings.txt WARNING: warning number 234\n
+FW warnings.txt WARNING: warning number 235\n
+FW warnings.txt WARNING: warning number 236\n
+FW warnings.txt WARNING: warning number 237\n
+FW warnings.txt WARNING: warning number 238\n
+FW warnings.txt WARNING: warning number 239\n
+FW warnings.txt WARNING: warning number 24\n
+FW warnings.txt WARNING: warning number 240\n
+FW warnings.txt WARNING: warning number 241\n
+FW warnings.txt WARNING: warning number 242\n
+FW warnings.txt WARNING: warning number 243\n
+FW warnings.txt WARNING: warning number 244\n
+FW warnings.txt WARNING: warning number 245\n
+FW warnings.txt WARNING: warning number 246\n
+FW warnings.txt WARNING: warning number 247\n
+FW warnings.txt WARNING: warning number 248\n
+FW warnings.txt WARNING: warning number 249\n
+FW warnings.txt WARNING: warning number 25\n
+FW warnings.txt WARNING: warning number 250\n
+FW warnings.txt WARNING: warning number 251\n
+FW warnings.txt WARNING: warning number 252\n
+FW warnings.txt WARNING: warning number 253\n
+FW warnings.txt WARNING: warning number 254\n
+FW warnings.txt WARNING: warning number 255\n
+FW warnings.txt WARNING: warning number 26\n
+FW warnings.txt WARNING: warning number 27\n
+FW warnings.txt WARNING: warning number 28\n
+FW warnings.txt WARNING: warning number 29\n
+FW warnings.txt WARNING: warning number 3\n
+FW warnings.txt WARNING: warning number 30\n
+FW warnings.txt WARNING: warning number 31\n
+FW warnings.txt WARNING: warning number 32\n
+FW warnings.txt WARNING: warning number 33\n
+FW warnings.txt WARNING: warning number 34\n
+FW warnings.txt WARNING: warning number 35\n
+FW warnings.txt WARNING: warning number 36\n
+FW warnings.txt WARNING: warning number 37\n
+FW warnings.txt WARNING: warning number 38\n
+FW warnings.txt WARNING: warning number 39\n
+FW warnings.txt WARNING: warning number 4\n
+FW warnings.txt WARNING: warning number 40\n
+FW warnings.txt WARNING: warning number 41\n
+FW warnings.txt WARNING: warning number 42\n
+FW warnings.txt WARNING: warning number 43\n
+FW warnings.txt WARNING: warning number 44\n
+FW warnings.txt WARNING: warning number 45\n
+FW warnings.txt WARNING: warning number 46\n
+FW warnings.txt WARNING: warning number 47\n
+FW warnings.txt WARNING: warning number 48\n
+FW warnings.txt WARNING: warning number 49\n
+FW warnings.txt WARNING: warning number 5\n
+FW warnings.txt WARNING: warning number 50\n
+FW warnings.txt WARNING: warning number 51\n
+FW warnings.txt WARNING: warning number 52\n
+FW warnings.txt WARNING: warning number 53\n
+FW warnings.txt WARNING: warning number 54\n
+FW warnings.txt WARNING: warning number 55\n
+FW warnings.txt WARNING: warning number 56\n
+FW warnings.txt WARNING: warning number 57\n
+FW warnings.txt WARNING: warning number 58\n
+FW warnings.txt WARNING: warning number 59\n
+FW warnings.txt WARNING: warning number 6\n
+FW warnings.txt WARNING: warning number 60\n
+FW warnings.txt WARNING: warning number 61\n
+FW warnings.txt WARNING: warning number 62\n
+FW warnings.txt WARNING: warning number 63\n
+FW warnings.txt WARNING: warning number 64\n
+FW warnings.txt WARNING: warning number 65\n
+FW warnings.txt WARNING: warning number 66\n
+FW warnings.txt WARNING: warning number 67\n
+FW warnings.txt WARNING: warning number 68\n
+FW warnings.txt WARNING: warning number 69\n
+FW warnings.txt WARNING: warning number 7\n
+FW warnings.txt WARNING: warning number 70\n
+FW warnings.txt WARNING: warning number 71\n
+FW warnings.txt WARNING: warning number 72\n
+FW warnings.txt WARNING: warning number 73\n
+FW warnings.txt WARNING: warning number 74\n
+FW warnings.txt WARNING: warning number 75\n
+FW warnings.txt WARNING: warning number 76\n
+FW warnings.txt WARNING: warning number 77\n
+FW warnings.txt WARNING: warning number 78\n
+FW warnings.txt WARNING: warning number 79\n
+FW warnings.txt WARNING: warning number 8\n
+FW warnings.txt WARNING: warning number 80\n
+FW warnings.txt WARNING: warning number 81\n
+FW warnings.txt WARNING: warning number 82\n
+FW warnings.txt WARNING: warning number 83\n
+FW warnings.txt WARNING: warning number 84\n
+FW warnings.txt WARNING: warning number 85\n
+FW warnings.txt WARNING: warning number 86\n
+FW warnings.txt WARNING: warning number 87\n
+FW warnings.txt WARNING: warning number 88\n
+FW warnings.txt WARNING: warning number 89\n
+FW warnings.txt WARNING: warning number 9\n
+FW warnings.txt WARNING: warning number 90\n
+FW warnings.txt WARNING: warning number 91\n
+FW warnings.txt WARNING: warning number 92\n
+FW warnings.txt WARNING: warning number 93\n
+FW warnings.txt WARNING: warning number 94\n
+FW warnings.txt WARNING: warning number 95\n
+FW warnings.txt WARNING: warning number 96\n
+FW warnings.txt WARNING: warning number 97\n
+FW warnings.txt WARNING: warning number 98\n
+FW warnings.txt WARNING: warning number 99\n
+FW warnings.txt \nmore than 256 warnings!\n
+FW warnings.txt \n\n-------------- Errors ---------------\n\n
+FFLUSH warnings.txt
+CLOSE warnings.txt

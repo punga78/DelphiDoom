@@ -1,0 +1,34 @@
+CMD opengl 1
+CMD time 1000
+CMD error a drop
+CLIP a drop
+SESSION stop
+CON ********************\nERROR: a drop\n********************\n
+SYS ********************\nERROR: a drop\n********************\n
+SESSION pacifier
+THROW a drop
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD time 2000
+CMD error a drop
+CLIP a drop
+SESSION stop
+CON ********************\nERROR: a drop\n********************\n
+SYS ********************\nERROR: a drop\n********************\n
+SESSION pacifier
+THROW a drop
+CMD time 3000
+CMD error ^1another^7 drop
+CLIP ^1another^7 drop
+SESSION stop
+CON ********************\nERROR: ^1another^7 drop\n********************\n
+SYS ********************\nERROR: another drop\n********************\n
+SESSION pacifier
+THROW ^1another^7 drop
+CMD state
+STATE err=0 refresh=0 editors=0
+CMD warnlist
+WARNLIST 0 2
+E a drop
+E ^1another^7 drop
+CAPTION 
