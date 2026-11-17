@@ -79,6 +79,12 @@ type
     ///   missile explodes or is removed (Removed: the movement is over). Always true
     /// </summary>
     class function WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean; static;
+    /// <summary>
+    ///   P_TryMove of Rad-X: a player with floorslidetics (A_PlayerFloorSlide) does not check the heights of
+    ///   the place it goes to. The check that the ceiling and the floor leave room for the height of
+    ///   the craft stays (P_TryMove of the engine does it before the rules are asked)
+    /// </summary>
+    class function SlidesOnPlanes(thing: Pmobj_t): boolean; static;
     /// <summary>P_GetThingDamage of Rad-X: the damage of a missile or of a skull</summary>
     class function ThingDamage(th: Pmobj_t): integer; static;
     /// <summary>
@@ -100,6 +106,8 @@ uses
   m_rnd,
   radix_physics,
   radix_pickups,
+  radix_playerstate,
+  DelphiDoom.Radix.Physics.Impact,
   radix_walls,
   DelphiDoom.Engine.World.RadixBounce,
   DelphiDoom.Engine.World.RadixSky,
@@ -152,6 +160,13 @@ end;
 class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
 begin
   result := TRadixBounceEngine.CeilingBounce(mo, Bouncing);
+end;
+
+class function TPhysicsExtension.SlidesOnPlanes(thing: Pmobj_t): boolean;
+begin
+  result := false;
+  if thing.player <> nil then
+    result := not TRadixCraftImpactRules.ChecksHeights(RX_PlayerState(Pplayer_t(thing.player)).floorslidetics);
 end;
 
 class function TPhysicsExtension.ThingDamage(th: Pmobj_t): integer;

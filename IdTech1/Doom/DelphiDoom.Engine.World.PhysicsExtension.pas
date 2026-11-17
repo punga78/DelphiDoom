@@ -72,6 +72,11 @@ type
     class function FloorBounce(mo: Pmobj_t): boolean; static; inline;
     /// <summary>TMobjGameRules.ZHitCeiling: the bounce on the ceiling; false when the missile exploded</summary>
     class function CeilingBounce(mo: Pmobj_t): boolean; static; inline;
+    /// <summary>
+    ///   TMapGameRules.IgnoresCeilingFit, IgnoresStepHeight, IgnoresDropoff in P_TryMove: a player
+    ///   that slides on floors and ceilings does not check the heights of the place it goes to
+    /// </summary>
+    class function SlidesOnPlanes(thing: Pmobj_t): boolean; static; inline;
     /// <summary>TMapGameRules.CheckThingContact: the damage of a missile or of a skull (the alternate one for some)</summary>
     class function ThingDamage(th: Pmobj_t): integer; static; inline;
     /// <summary>TMapGameRules.NoClipSkipsThings, in P_CheckPosition: the base planes of the sector may be moved (a sky)</summary>
@@ -122,6 +127,11 @@ end;
 class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
 begin
   result := true;
+end;
+
+class function TPhysicsExtension.SlidesOnPlanes(thing: Pmobj_t): boolean;
+begin
+  result := false;
 end;
 
 class function TPhysicsExtension.ThingDamage(th: Pmobj_t): integer;

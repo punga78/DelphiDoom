@@ -555,6 +555,9 @@ end;
 class function TMapGameRules.IgnoresCeilingFit(thing: Pmobj_t): boolean;
 begin
   result := thing.flags and MF_TELEPORT <> 0;
+  // a game with the physics of its own: a craft that slides on floors and ceilings (Radix)
+  if TPhysicsExtension.Enabled then
+    result := result or TPhysicsExtension.SlidesOnPlanes(thing);
 end;
 
 class function TMapGameRules.FlightBlocked(thing: Pmobj_t): boolean;
@@ -570,6 +573,8 @@ end;
 class function TMapGameRules.IgnoresStepHeight(thing: Pmobj_t): boolean;
 begin
   result := thing.flags and MF_TELEPORT <> 0;
+  if TPhysicsExtension.Enabled then
+    result := result or TPhysicsExtension.SlidesOnPlanes(thing);
 end;
 
 class function TMapGameRules.MissileStepTooHigh(thing: Pmobj_t): boolean;
@@ -580,6 +585,8 @@ end;
 class function TMapGameRules.IgnoresDropoff(thing: Pmobj_t): boolean;
 begin
   result := false;
+  if TPhysicsExtension.Enabled then
+    result := TPhysicsExtension.SlidesOnPlanes(thing);
 end;
 
 class function TMapGameRules.CannotLeaveFloorPic(thing: Pmobj_t): boolean;
