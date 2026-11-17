@@ -1,0 +1,64 @@
+sizeof gameState_t 20100
+sizeof snapshot_t 53772
+sizeof playerState_t 468
+sizeof entityState_t 208
+sizeof usercmd_t 24
+sizeof uiClientState_t 3084
+sizeof glconfig_t 11332
+sizeof pc_token_t 1040
+gameState_t.stringOffsets 0
+gameState_t.stringData 4096
+gameState_t.dataCount 20096
+snapshot_t.snapFlags 0
+snapshot_t.ping 4
+snapshot_t.serverTime 8
+snapshot_t.areamask 12
+snapshot_t.ps 44
+snapshot_t.numEntities 512
+snapshot_t.entities 516
+snapshot_t.numServerCommands 53764
+snapshot_t.serverCommandSequence 53768
+playerState_t.clientNum 140
+uiClientState_t.connState 0
+uiClientState_t.connectPacketCount 4
+uiClientState_t.clientNum 8
+uiClientState_t.servername 12
+uiClientState_t.updateInfoString 1036
+uiClientState_t.messageString 2060
+glconfig_t.renderer_string 0
+glconfig_t.vendor_string 1024
+glconfig_t.version_string 2048
+glconfig_t.extensions_string 3072
+glconfig_t.maxTextureSize 11264
+glconfig_t.maxActiveTextures 11268
+glconfig_t.colorBits 11272
+glconfig_t.depthBits 11276
+glconfig_t.stencilBits 11280
+glconfig_t.driverType 11284
+glconfig_t.hardwareType 11288
+glconfig_t.deviceSupportsGamma 11292
+glconfig_t.textureCompression 11296
+glconfig_t.textureEnvAddAvailable 11300
+glconfig_t.vidWidth 11304
+glconfig_t.vidHeight 11308
+glconfig_t.windowAspect 11312
+glconfig_t.displayFrequency 11316
+glconfig_t.isFullscreen 11320
+glconfig_t.stereoEnabled 11324
+glconfig_t.smpActive 11328
+pc_token_t.type 0
+pc_token_t.subtype 4
+pc_token_t.intvalue 8
+pc_token_t.floatvalue 12
+pc_token_t.string 16
+const MAX_CONFIGSTRINGS 1024
+const MAX_GAMESTATE_CHARS 16000
+const MAX_ENTITIES_IN_SNAPSHOT 256
+const MAX_MAP_AREA_BYTES 32
+const MAX_QPATH 64
+const MAX_STRING_CHARS 1024
+const BIG_INFO_STRING 8192
+const MAX_NAME_LENGTH 32
+const MAX_TOKENLENGTH 1024
+const MAX_OSPATH 260
+const MAX_RELIABLE_COMMANDS 64
