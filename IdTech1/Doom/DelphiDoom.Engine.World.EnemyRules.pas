@@ -618,12 +618,26 @@ begin
   result := P_CheckSight(actor, actor.target);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterLocalActions = class sealed
+  public
+    class function P_CheckMissileRange(actor: Pmobj_t): boolean; static;
+    class function P_DogFollowPlayerHandler(actor: Pmobj_t): boolean; static;
+    class procedure P_DoChaseVanilla(actor: Pmobj_t); static;
+    class function PIT_VileCheck(thing: Pmobj_t): boolean; static;
+    class procedure A_PainShootSkull(actor: Pmobj_t; angle: angle_t); static;
+  end;
+
 //==============================================================================
 //
 // P_CheckMissileRange
 //
 //==============================================================================
-function P_CheckMissileRange(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
@@ -827,7 +841,7 @@ end;
 // ACTION ROUTINES
 //
 //==============================================================================
-function P_DogFollowPlayerHandler(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_DogFollowPlayerHandler(actor: Pmobj_t): boolean;
 begin
   // JVAL: 20200512 - Drones follow player 's trace
   if actor.info.doomednum = 888 then
@@ -862,7 +876,7 @@ var
   seeyou: boolean;
   sound: integer;
 begin
-  if P_DogFollowPlayerHandler(actor) then
+  if TMonsterLocalActions.P_DogFollowPlayerHandler(actor) then
     exit;
 
   actor.threshold := 0; // any shot will wake up
@@ -942,7 +956,7 @@ begin
   if actor.reactiontime <> 0 then
     actor.reactiontime := actor.reactiontime - 1;
 
-  if P_DogFollowPlayerHandler(actor) then
+  if TMonsterLocalActions.P_DogFollowPlayerHandler(actor) then
     exit;
 
   // modify target threshold
@@ -1004,7 +1018,7 @@ begin
     nomissile := false;
     if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
-    else if not P_CheckMissileRange(actor) then
+    else if not TMonsterLocalActions.P_CheckMissileRange(actor) then
       nomissile := true;
     if not nomissile then
     begin
@@ -1067,7 +1081,7 @@ end;
 // P_DoChaseVanilla
 //
 //==============================================================================
-procedure P_DoChaseVanilla(actor: Pmobj_t);
+class procedure TMonsterLocalActions.P_DoChaseVanilla(actor: Pmobj_t);
 var
   delta: integer;
   nomissile: boolean;
@@ -1179,7 +1193,7 @@ end;
 class procedure TMonsterBaseActions.A_Chase(actor: Pmobj_t);
 begin
   if G_PlayingEngineVersion <= VERSION110 then // JVAL: 20210103 - Vanilla demo
-    P_DoChaseVanilla(actor)
+    TMonsterLocalActions.P_DoChaseVanilla(actor)
   else
     TDoomMonsterActions.P_DoChase(actor, false);
 end;
@@ -1578,7 +1592,7 @@ var
 // PIT_VileCheck
 //
 //==============================================================================
-function PIT_VileCheck(thing: Pmobj_t): boolean;
+class function TMonsterLocalActions.PIT_VileCheck(thing: Pmobj_t): boolean;
 var
   maxdist: integer;
   check: boolean;
@@ -1670,7 +1684,7 @@ begin
       // Call PIT_VileCheck to check
       // whether object is a corpse
       // that canbe raised.
-        if not P_BlockThingsIterator(bx, by, PIT_VileCheck) then
+        if not P_BlockThingsIterator(bx, by, TMonsterLocalActions.PIT_VileCheck) then
         begin
         // got one!
           temp := actor.target;
@@ -2014,7 +2028,7 @@ end;
 // Spawn a lost soul and launch it at the target
 //
 //==============================================================================
-procedure A_PainShootSkull(actor: Pmobj_t; angle: angle_t);
+class procedure TMonsterLocalActions.A_PainShootSkull(actor: Pmobj_t; angle: angle_t);
 var
   x: fixed_t;
   y: fixed_t;
@@ -2089,7 +2103,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  A_PainShootSkull(actor, actor.angle);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle);
 end;
 
 //==============================================================================
@@ -2100,9 +2114,9 @@ end;
 class procedure TDoomMonsterActions.A_PainDie(actor: Pmobj_t);
 begin
   A_Fall(actor);
-  A_PainShootSkull(actor, actor.angle + ANG90);
-  A_PainShootSkull(actor, actor.angle + ANG180);
-  A_PainShootSkull(actor, actor.angle + ANG270);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle + ANG90);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle + ANG180);
+  TMonsterLocalActions.A_PainShootSkull(actor, actor.angle + ANG270);
 end;
 
 //==============================================================================
@@ -2950,7 +2964,7 @@ begin
   begin
     if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
-    else if not P_CheckMissileRange(actor) then
+    else if not TMonsterLocalActions.P_CheckMissileRange(actor) then
       nomissile := true;
     if not nomissile then
     begin

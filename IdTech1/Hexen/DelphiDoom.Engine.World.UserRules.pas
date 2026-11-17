@@ -340,6 +340,23 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserLocalRoutines = class sealed
+  public
+    class procedure P_MorphPlayerThink(player: Pplayer_t); static;
+    class procedure P_ArtiTele(player: Pplayer_t); static;
+    class procedure P_ArtiTeleportOther(player: Pplayer_t); static;
+    class procedure P_TeleportToPlayerStarts(victim: Pmobj_t); static;
+    class procedure P_TeleportToDeathmatchStarts(victim: Pmobj_t); static;
+    class procedure P_BlastMobj(source: Pmobj_t; victim: Pmobj_t; strength: fixed_t); static;
+    class procedure P_BlastRadius(player: Pplayer_t); static;
+    class function P_HealRadius(player: Pplayer_t): boolean; static;
+  end;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_MorphPlayerThink
@@ -347,7 +364,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_MorphPlayerThink(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_MorphPlayerThink(player: Pplayer_t);
 var
   pmo: Pmobj_t;
 begin
@@ -565,7 +582,7 @@ begin
     dec(player.jumpTics);
 
   if player.morphTics > 0 then
-    P_MorphPlayerThink(player);
+    TUserLocalRoutines.P_MorphPlayerThink(player);
 
   // Handle movement
   if player.mo.reactiontime > 0 then
@@ -881,7 +898,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ArtiTele(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ArtiTele(player: Pplayer_t);
 var
   i: integer;
   selections: integer;
@@ -926,7 +943,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ArtiTeleportOther(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ArtiTeleportOther(player: Pplayer_t);
 var
   mo: Pmobj_t;
 begin
@@ -940,7 +957,7 @@ end;
 // P_TeleportToPlayerStarts
 //
 //==============================================================================
-procedure P_TeleportToPlayerStarts(victim: Pmobj_t);
+class procedure TUserLocalRoutines.P_TeleportToPlayerStarts(victim: Pmobj_t);
 var
   i, selections: integer;
   destX, destY: fixed_t;
@@ -966,7 +983,7 @@ end;
 // P_TeleportToDeathmatchStarts
 //
 //==============================================================================
-procedure P_TeleportToDeathmatchStarts(victim: Pmobj_t);
+class procedure TUserLocalRoutines.P_TeleportToDeathmatchStarts(victim: Pmobj_t);
 var
   i, selections: integer;
   destX, destY: fixed_t;
@@ -1000,9 +1017,9 @@ begin
   if victim.player <> nil then
   begin
     if TGameSession.DeathMatch <> 0 then
-      P_TeleportToDeathmatchStarts(victim)
+      TUserLocalRoutines.P_TeleportToDeathmatchStarts(victim)
     else
-      P_TeleportToPlayerStarts(victim);
+      TUserLocalRoutines.P_TeleportToPlayerStarts(victim);
   end
   else
   begin
@@ -1015,7 +1032,7 @@ begin
     end;
 
     // Send all monsters to deathmatch spots
-    P_TeleportToDeathmatchStarts(victim);
+    TUserLocalRoutines.P_TeleportToDeathmatchStarts(victim);
   end;
 end;
 
@@ -1041,7 +1058,7 @@ end;
 // P_BlastMobj
 //
 //==============================================================================
-procedure P_BlastMobj(source: Pmobj_t; victim: Pmobj_t; strength: fixed_t);
+class procedure TUserLocalRoutines.P_BlastMobj(source: Pmobj_t; victim: Pmobj_t; strength: fixed_t);
 var
   angle, ang: angle_t;
   mo: Pmobj_t;
@@ -1127,7 +1144,7 @@ end;
 // Blast all mobj things away
 //
 //==============================================================================
-procedure P_BlastRadius(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_BlastRadius(player: Pplayer_t);
 var
   mo: Pmobj_t;
   pmo: Pmobj_t;
@@ -1217,7 +1234,7 @@ const
 // Do class specific effect for everyone in radius
 //
 //==============================================================================
-function P_HealRadius(player: Pplayer_t): boolean;
+class function TUserLocalRoutines.P_HealRadius(player: Pplayer_t): boolean;
 var
   mo: Pmobj_t;
   pmo: Pmobj_t;
@@ -1387,7 +1404,7 @@ begin
 
     arti_healingradius:
       begin
-        if not P_HealRadius(player) then
+        if not TUserLocalRoutines.P_HealRadius(player) then
         begin
           result := false;
           exit;
@@ -1439,12 +1456,12 @@ begin
 
     arti_teleport:
       begin
-        P_ArtiTele(player);
+        TUserLocalRoutines.P_ArtiTele(player);
       end;
 
     arti_teleportother:
       begin
-        P_ArtiTeleportOther(player);
+        TUserLocalRoutines.P_ArtiTeleportOther(player);
       end;
 
     arti_poisonbag:
@@ -1530,7 +1547,7 @@ begin
 
     arti_blastradius:
       begin
-        P_BlastRadius(player);
+        TUserLocalRoutines.P_BlastRadius(player);
       end;
 
     arti_puzzskull,

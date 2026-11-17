@@ -348,6 +348,16 @@ begin
   result := sides[(sectors[currentSector].lines[line]).sidenum[side]].sector;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSpecLocalRoutines = class sealed
+  public
+    class function P_FindShortestTextureAround(secnum: integer): fixed_t; static;
+  end;
+
 //==============================================================================
 //
 // P_FindShortestTextureAround()
@@ -363,7 +373,7 @@ end;
 // JVAL BOOM compatibility
 //
 //==============================================================================
-function P_FindShortestTextureAround(secnum: integer): fixed_t;
+class function TSpecLocalRoutines.P_FindShortestTextureAround(secnum: integer): fixed_t;
 var
   side: Pside_t;
   i: integer;

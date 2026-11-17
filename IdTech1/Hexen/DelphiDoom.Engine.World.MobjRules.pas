@@ -466,13 +466,23 @@ begin
 //  P_SetMobjState(mo, mobjinfo[mo.type].deathstate);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjLocalRoutines = class sealed
+  public
+    class procedure P_MonsterFallingDamage(mo: Pmobj_t); static;
+  end;
+
 //==============================================================================
 // P_MonsterFallingDamage
 //
 // Move this to p_inter ***
 //
 //==============================================================================
-procedure P_MonsterFallingDamage(mo: Pmobj_t);
+class procedure TMobjLocalRoutines.P_MonsterFallingDamage(mo: Pmobj_t);
 var
   damage: integer;
   mom: integer;
@@ -614,7 +624,7 @@ begin
     begin
       if mo.momz < -(23 * FRACUNIT) then
       begin
-        P_MonsterFallingDamage(mo);
+        TMobjLocalRoutines.P_MonsterFallingDamage(mo);
       end;
     end;
 

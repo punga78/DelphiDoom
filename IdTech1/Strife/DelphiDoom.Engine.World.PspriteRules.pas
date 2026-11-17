@@ -692,6 +692,16 @@ begin
   S_StartSound(player.mo, Ord(sfx_xbow));
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponLocalActions = class sealed
+  public
+    class procedure P_GunShot(mo: Pmobj_t; accurate: boolean); static;
+  end;
+
 //==============================================================================
 //
 // P_GunShot
@@ -699,7 +709,7 @@ end;
 // [STRIFE] Modifications to support accuracy.
 //
 //==============================================================================
-procedure P_GunShot(mo: Pmobj_t; accurate: boolean);
+class procedure TWeaponLocalActions.P_GunShot(mo: Pmobj_t; accurate: boolean);
 var
   angle: angle_t;
   damage: integer;
@@ -737,7 +747,7 @@ begin
     P_BulletSlope(player.mo);
     if TMapAim.LineTarget <> nil then
       player.mo.target := TMapAim.LineTarget;
-    P_GunShot(player.mo, player.refire = 0);
+    TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
   end;
 end;
 

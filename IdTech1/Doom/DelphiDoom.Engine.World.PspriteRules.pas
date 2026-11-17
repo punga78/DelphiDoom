@@ -262,6 +262,19 @@ var
     (6, 9, 4, 3, 2, 8, 5, 7, 1, 0)   //  compatibility preferences
   );
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponLocalActions = class sealed
+  public
+    class function P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t; static;
+    class procedure P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer); static;
+    class procedure A_FireSomething(player: Pplayer_t; adder: integer); static;
+    class procedure P_GunShot(mo: Pmobj_t; accurate: boolean); static;
+  end;
+
 //==============================================================================
 // P_SwitchWeaponMBF21
 //
@@ -270,7 +283,7 @@ var
 // instead of blindly assuming both.
 //
 //==============================================================================
-function P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t;
+class function TWeaponLocalActions.P_SwitchWeaponMBF21(player: Pplayer_t): weapontype_t;
 var
   currentweapon, newweapon: weapontype_t;
   i: integer;
@@ -343,7 +356,7 @@ begin
 
   if G_PlayingEngineVersion >= VERSION207 then
     if player.pendingweapon = wp_nochange then
-      player.pendingweapon := P_SwitchWeaponMBF21(player);
+      player.pendingweapon := TWeaponLocalActions.P_SwitchWeaponMBF21(player);
 
   newstate := statenum_t(weaponinfo[Ord(player.pendingweapon)].upstate);
 
@@ -388,7 +401,7 @@ begin
   // Out of ammo, pick a weapon to change to.
   // Preferences are set here.
   if G_PlayingEngineVersion >= VERSION207 then
-    player.pendingweapon := P_SwitchWeaponMBF21(player)
+    player.pendingweapon := TWeaponLocalActions.P_SwitchWeaponMBF21(player)
   else
   begin
     repeat
@@ -444,7 +457,7 @@ end;
 // have to worry about any compatibility shenanigans.
 //
 //==============================================================================
-procedure P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer);
+class procedure TWeaponLocalActions.P_SubtractAmmo(player: Pplayer_t; const vanilla_amount: integer);
 var
   amount: integer;
   ammotype: ammotype_t;
@@ -589,7 +602,7 @@ var
 // A_FireSomething
 //
 //==============================================================================
-procedure A_FireSomething(player: Pplayer_t; adder: integer);
+class procedure TWeaponLocalActions.A_FireSomething(player: Pplayer_t; adder: integer);
 begin
   P_SetPsprite(player, Ord(ps_flash),
     statenum_t(weaponinfo[Ord(player.readyweapon)].flashstate + adder));
@@ -609,7 +622,7 @@ end;
 class procedure TDoomWeaponActions.A_GunFlash(player: Pplayer_t; psp: Ppspdef_t);
 begin
   P_SetMobjState(player.mo, S_PLAY_ATK2);
-  A_FireSomething(player, 0);
+  TWeaponLocalActions.A_FireSomething(player, 0);
 end;
 
 //==============================================================================
@@ -719,7 +732,7 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_FireMissile(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
   P_SpawnPlayerMissile(player.mo, Ord(MT_ROCKET));
 end;
 
@@ -730,7 +743,7 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_FireBFG(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_SubtractAmmo(player, p_bfgcells);
+  TWeaponLocalActions.P_SubtractAmmo(player, p_bfgcells);
   P_SpawnPlayerMissile(player.mo, Ord(MT_BFG));
 end;
 
@@ -741,8 +754,8 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_FirePlasma(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  P_SubtractAmmo(player, 1);
-  A_FireSomething(player, P_Random and 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.A_FireSomething(player, P_Random and 1);
 
   P_SetPsprite(player,
     Ord(ps_flash), statenum_t(weaponinfo[Ord(player.readyweapon)].flashstate + (P_Random and 1)));
@@ -755,7 +768,7 @@ end;
 // P_GunShot
 //
 //==============================================================================
-procedure P_GunShot(mo: Pmobj_t; accurate: boolean);
+class procedure TWeaponLocalActions.P_GunShot(mo: Pmobj_t; accurate: boolean);
 var
   angle: angle_t;
   damage: integer;
@@ -780,12 +793,12 @@ begin
 
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
 
-  A_FireSomething(player,0);  // phares
+  TWeaponLocalActions.A_FireSomething(player,0);  // phares
 
   P_BulletSlope(player.mo);
-  P_GunShot(player.mo, player.refire = 0);
+  TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;
 
 //==============================================================================
@@ -800,14 +813,14 @@ begin
   S_StartSound(player.mo, Ord(sfx_shotgn));
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
 
-  A_FireSomething(player, 0); // phares
+  TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
   P_BulletSlope(player.mo);
 
   for i := 0 to 6 do
-    P_GunShot(player.mo, false);
+    TWeaponLocalActions.P_GunShot(player.mo, false);
 end;
 
 //==============================================================================
@@ -824,9 +837,9 @@ begin
   S_StartSound(player.mo, Ord(sfx_dshtgn));
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 2);
+  TWeaponLocalActions.P_SubtractAmmo(player, 2);
 
-  A_FireSomething(player, 0); // phares
+  TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
   P_BulletSlope(player.mo);
 
@@ -854,13 +867,13 @@ begin
 
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
-  P_SubtractAmmo(player, 1);
+  TWeaponLocalActions.P_SubtractAmmo(player, 1);
 
-  A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
+  TWeaponLocalActions.A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
 
   P_BulletSlope(player.mo);
 
-  P_GunShot(player.mo, player.refire = 0);
+  TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;
 
 //==============================================================================
@@ -985,7 +998,7 @@ class procedure TPspriteGameRules.AfterLowered(const player: Pplayer_t);
 begin
   if G_PlayingEngineVersion >= VERSION207 then
     if player.pendingweapon = wp_nochange then
-      player.pendingweapon := P_SwitchWeaponMBF21(player);
+      player.pendingweapon := TWeaponLocalActions.P_SwitchWeaponMBF21(player);
 end;
 
 //==============================================================================

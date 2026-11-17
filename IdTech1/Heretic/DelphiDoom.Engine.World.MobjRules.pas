@@ -347,6 +347,16 @@ const
   windTab: array[0..2] of integer = (2048 * 5, 2048 * 10, 2048 * 25);
 
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMobjLocalRoutines = class sealed
+  public
+    class procedure P_FloorBounceMissile(mo: Pmobj_t); static;
+  end;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_FloorBounceMissile
@@ -354,7 +364,7 @@ const
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_FloorBounceMissile(mo: Pmobj_t);
+class procedure TMobjLocalRoutines.P_FloorBounceMissile(mo: Pmobj_t);
 begin
   mo.momz := -mo.momz;
   P_SetMobjState(mo, statenum_t(mobjinfo[mo._type].deathstate));
@@ -456,7 +466,7 @@ begin
       mo.z := mo.floorz;
       if (mo.flags2 and MF2_FLOORBOUNCE <> 0) or (mo.flags3_ex and MF3_EX_FLOORBOUNCE <> 0) then
       begin
-        P_FloorBounceMissile(mo);
+        TMobjLocalRoutines.P_FloorBounceMissile(mo);
         exit;
       end
       else if mo._type = Ord(MT_MNTRFX2) then

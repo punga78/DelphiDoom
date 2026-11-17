@@ -163,6 +163,17 @@ uses
   DelphiDoom.Engine.World.PlayerArtifacts;
 
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserLocalRoutines = class sealed
+  public
+    class procedure P_ChickenPlayerThink(player: Pplayer_t); static;
+    class procedure P_ArtiTele(player: Pplayer_t); static;
+  end;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_ChickenPlayerThink
@@ -170,7 +181,7 @@ uses
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ChickenPlayerThink(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ChickenPlayerThink(player: Pplayer_t);
 var
   pmo: Pmobj_t;
 begin
@@ -206,7 +217,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ArtiTele(player: Pplayer_t);
+class procedure TUserLocalRoutines.P_ArtiTele(player: Pplayer_t);
 var
   i: integer;
   selections: integer;
@@ -389,7 +400,7 @@ begin
       end;
     arti_teleport:
       begin
-        P_ArtiTele(player);
+        TUserLocalRoutines.P_ArtiTele(player);
       end
     else
       begin
@@ -710,7 +721,7 @@ end;
 class procedure TUserGameRules.BeforeMove(const player: Pplayer_t);
 begin
   if player.chickenTics <> 0 then
-    P_ChickenPlayerThink(player);
+    TUserLocalRoutines.P_ChickenPlayerThink(player);
 end;
 
 //==============================================================================

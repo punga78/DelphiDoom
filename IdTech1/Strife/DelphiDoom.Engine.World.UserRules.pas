@@ -303,6 +303,16 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUserLocalRoutines = class sealed
+  public
+    class function P_SpawnTeleportBeacon(player: Pplayer_t): boolean; static;
+  end;
+
 //==============================================================================
 //
 // P_SpawnTeleportBeacon
@@ -311,7 +321,7 @@ end;
 // haleyjd 20140918: bug fixed to propagate allegiance properly.
 //
 //==============================================================================
-function P_SpawnTeleportBeacon(player: Pplayer_t): boolean;
+class function TUserLocalRoutines.P_SpawnTeleportBeacon(player: Pplayer_t): boolean;
 var
   angle: angle_t;
   r: integer;
@@ -468,7 +478,7 @@ begin
 
     Ord(SPR_BEAC):  // 135
       begin
-        result := P_SpawnTeleportBeacon(player);
+        result := TUserLocalRoutines.P_SpawnTeleportBeacon(player);
         exit;
       end;
 

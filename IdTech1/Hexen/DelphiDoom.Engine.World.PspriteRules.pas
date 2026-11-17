@@ -855,13 +855,24 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWeaponLocalActions = class sealed
+  public
+    class function HAMMER_RANGE(const p: Pplayer_t): fixed_t; static;
+    class function AXERANGE(const p: Pplayer_t): fixed_t; static;
+  end;
+
 //==============================================================================
 // HAMMER_RANGE
 //
 // A_FHammerAttack
 //
 //==============================================================================
-function HAMMER_RANGE(const p: Pplayer_t): fixed_t;
+class function TWeaponLocalActions.HAMMER_RANGE(const p: Pplayer_t): fixed_t;
 var
   mrange: integer;
 begin
@@ -901,10 +912,10 @@ begin
   for i := 0 to 15 do
   begin
     angle := pmo.angle + d_an;
-    slope := P_AimLineAttack(pmo, angle, HAMMER_RANGE(player));
+    slope := P_AimLineAttack(pmo, angle, TWeaponLocalActions.HAMMER_RANGE(player));
     if TMapAim.LineTarget <> nil then
     begin
-      P_LineAttack(pmo, angle, HAMMER_RANGE(player), slope, damage);
+      P_LineAttack(pmo, angle, TWeaponLocalActions.HAMMER_RANGE(player), slope, damage);
       P_AdjustPlayerAngle(pmo);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
       begin
@@ -915,10 +926,10 @@ begin
       exit;
     end;
     angle := pmo.angle - d_an;
-    slope := P_AimLineAttack(pmo, angle, HAMMER_RANGE(player));
+    slope := P_AimLineAttack(pmo, angle, TWeaponLocalActions.HAMMER_RANGE(player));
     if TMapAim.LineTarget <> nil then
     begin
-      P_LineAttack(pmo, angle, HAMMER_RANGE(player), slope, damage);
+      P_LineAttack(pmo, angle, TWeaponLocalActions.HAMMER_RANGE(player), slope, damage);
       P_AdjustPlayerAngle(pmo);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
       begin
@@ -934,8 +945,8 @@ begin
   // didn't find any targets in meleerange, so set to throw out a hammer
   PuffSpawned := nil;
   angle := pmo.angle;
-  slope := P_AimLineAttack(pmo, angle, HAMMER_RANGE(player));
-  P_LineAttack(pmo, angle, HAMMER_RANGE(player), slope, damage);
+  slope := P_AimLineAttack(pmo, angle, TWeaponLocalActions.HAMMER_RANGE(player));
+  P_LineAttack(pmo, angle, TWeaponLocalActions.HAMMER_RANGE(player), slope, damage);
   if PuffSpawned <> nil then
   begin
     pmo.special1 := 0;
@@ -1504,7 +1515,7 @@ end;
 // A_FAxeAttack
 //
 //==============================================================================
-function AXERANGE(const p: Pplayer_t): fixed_t;
+class function TWeaponLocalActions.AXERANGE(const p: Pplayer_t): fixed_t;
 var
   mrange: integer;
 begin
@@ -1560,10 +1571,10 @@ begin
   for i := 0 to 15 do
   begin
     angle := pmo.angle + d_an;
-    slope := P_AimLineAttack(pmo, angle, AXERANGE(player));
+    slope := P_AimLineAttack(pmo, angle, TWeaponLocalActions.AXERANGE(player));
     if TMapAim.LineTarget <> nil then
     begin
-      P_LineAttack(pmo, angle, AXERANGE(player), slope, damage);
+      P_LineAttack(pmo, angle, TWeaponLocalActions.AXERANGE(player), slope, damage);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
         P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
@@ -1572,10 +1583,10 @@ begin
       exit;
     end;
     angle := pmo.angle - d_an;
-    slope := P_AimLineAttack(pmo, angle, AXERANGE(player));
+    slope := P_AimLineAttack(pmo, angle, TWeaponLocalActions.AXERANGE(player));
     if TMapAim.LineTarget <> nil then
     begin
-      P_LineAttack(pmo, angle, AXERANGE(player), slope, damage);
+      P_LineAttack(pmo, angle, TWeaponLocalActions.AXERANGE(player), slope, damage);
       if TMapAim.LineTarget.flags and MF_COUNTKILL <> 0 then
         P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);

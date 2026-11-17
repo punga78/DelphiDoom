@@ -305,13 +305,24 @@ begin
   switchlist := Z_ReAlloc(switchlist, (index + 1) * SizeOf(integer), PU_STATIC, nil);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSwitchLocalRoutines = class sealed
+  public
+    class procedure P_SpawnBrokenGlass(line: Pline_t); static;
+    class procedure P_MoveWall(line: Pline_t; thing: Pmobj_t); static;
+  end;
+
 //==============================================================================
 //
 // P_SpawnBrokenGlass
 // villsa [STRIFE] new function
 //
 //==============================================================================
-procedure P_SpawnBrokenGlass(line: Pline_t);
+class procedure TSwitchLocalRoutines.P_SpawnBrokenGlass(line: Pline_t);
 var
   x1, x2: fixed_t;
   y1, y2: fixed_t;
@@ -408,7 +419,7 @@ begin
         P_StartButton(line, top, switchlist[i], BUTTONTIME);
 
       if breakglass then
-        P_SpawnBrokenGlass(line);
+        TSwitchLocalRoutines.P_SpawnBrokenGlass(line);
 
       exit;
     end
@@ -454,7 +465,7 @@ begin
 
         // villsa [STRIFE]
         if breakglass or (sound = Ord(sfx_bglass)) then
-          P_SpawnBrokenGlass(line);
+          TSwitchLocalRoutines.P_SpawnBrokenGlass(line);
 
         exit;
       end
@@ -473,7 +484,7 @@ begin
             P_StartButton(line, bottom, switchlist[i], BUTTONTIME);
 
           if breakglass then
-            P_SpawnBrokenGlass(line);
+            TSwitchLocalRoutines.P_SpawnBrokenGlass(line);
 
           exit;
         end;
@@ -490,7 +501,7 @@ end;
 // Dynamically move a solid line. Unused in Strife
 //
 //==============================================================================
-procedure P_MoveWall(line: Pline_t; thing: Pmobj_t);
+class procedure TSwitchLocalRoutines.P_MoveWall(line: Pline_t; thing: Pmobj_t);
 var
   v1, v2: Pvertex_t;
   x, y: fixed_t;
@@ -1437,7 +1448,7 @@ begin
     666:
       begin
         // villsa [STRIFE] SR Move Wall
-        P_MoveWall(line, thing);
+        TSwitchLocalRoutines.P_MoveWall(line, thing);
       end;
   else
     begin

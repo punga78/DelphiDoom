@@ -1519,12 +1519,22 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TInterLocalRoutines = class sealed
+  public
+    class procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t); static;
+  end;
+
 //==============================================================================
 //
 // P_KillMobj
 //
 //==============================================================================
-procedure P_KillMobj(source: Pmobj_t; target: Pmobj_t);
+class procedure TInterLocalRoutines.P_KillMobj(source: Pmobj_t; target: Pmobj_t);
 var
   dummy: int64;
   master: Pmobj_t;
@@ -2177,7 +2187,7 @@ begin
       // Always extreme death from fourth weapon
       target.health := -5000;
     end;
-    P_KillMobj(source, target);
+    TInterLocalRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;
@@ -2360,7 +2370,7 @@ begin
       if inflictor.flags2 and MF2_ICEDAMAGE <> 0 then
         target.flags2 := target.flags2 or MF2_ICEDAMAGE;
     end;
-    P_KillMobj(source, target);
+    TInterLocalRoutines.P_KillMobj(source, target);
     P_Obituary(target, inflictor, source);
     exit;
   end;

@@ -1054,12 +1054,22 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapLocalRoutines = class sealed
+  public
+    class function P_PointInSectorVanilla(const x: fixed_t; const y: fixed_t): Psector_t; static;
+  end;
+
 //==============================================================================
 //
 // P_PointInSectorVanilla
 //
 //==============================================================================
-function P_PointInSectorVanilla(const x: fixed_t; const y: fixed_t): Psector_t;
+class function TMapLocalRoutines.P_PointInSectorVanilla(const x: fixed_t; const y: fixed_t): Psector_t;
 var
   node: Pvanillanode_t;
   nodenum: LongWord;
@@ -1086,7 +1096,7 @@ end;
 class function TMapRoutines.P_PointInSector(const x: fixed_t; const y: fixed_t): Psector_t;
 begin
   if G_IsOldDemoPlaying and hasvanillanodes then
-    result := P_PointInSectorVanilla(x, y)
+    result := TMapLocalRoutines.P_PointInSectorVanilla(x, y)
   else
     result := R_PointInSubSector(x, y).sector;
 end;

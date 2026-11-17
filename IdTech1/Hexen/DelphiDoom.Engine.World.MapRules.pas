@@ -1228,13 +1228,25 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapLocalRoutines = class sealed
+  public
+    class function PIT_ThrustStompThing(thing: Pmobj_t): boolean; static;
+    class function PTR_PuzzleItemTraverse(intr: Pintercept_t): boolean; static;
+    class function PTR_BounceTraverse(intr: Pintercept_t): boolean; static;
+  end;
+
 //==============================================================================
 // PIT_ThrustStompThing
 //
 // MOVEMENT ITERATOR FUNCTIONS
 //
 //==============================================================================
-function PIT_ThrustStompThing(thing: Pmobj_t): boolean;
+class function TMapLocalRoutines.PIT_ThrustStompThing(thing: Pmobj_t): boolean;
 var
   blockdist: fixed_t;
 begin
@@ -1301,7 +1313,7 @@ begin
   // stomp on any things contacted
   for bx := xl to xh do
     for by := yl to yh do
-      P_BlockThingsIterator(bx, by, PIT_ThrustStompThing);
+      P_BlockThingsIterator(bx, by, TMapLocalRoutines.PIT_ThrustStompThing);
 end;
 
 //
@@ -1320,7 +1332,7 @@ var
 // PTR_PuzzleItemTraverse
 //
 //==============================================================================
-function PTR_PuzzleItemTraverse(intr: Pintercept_t): boolean;
+class function TMapLocalRoutines.PTR_PuzzleItemTraverse(intr: Pintercept_t): boolean;
 var
   mobj: Pmobj_t;
   sound: integer;
@@ -1412,7 +1424,7 @@ begin
   y1 := player.mo.y;
   x2 := x1 + USERANGEINT * finecosine[angle];
   y2 := y1 + USERANGEINT * finesine[angle];
-  P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_PuzzleItemTraverse);
+  P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES or PT_ADDTHINGS, TMapLocalRoutines.PTR_PuzzleItemTraverse);
   result := PuzzleActivated;
 end;
 
@@ -1421,7 +1433,7 @@ end;
 // PTR_BounceTraverse
 //
 //==============================================================================
-function PTR_BounceTraverse(intr: Pintercept_t): boolean;
+class function TMapLocalRoutines.PTR_BounceTraverse(intr: Pintercept_t): boolean;
 var
   li: Pline_t;
 
@@ -1499,7 +1511,7 @@ begin
     leady := mo.y - mo.radius;
 
   TMapSlide.BestFrac := FRACUNIT + 1;
-  P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy, PT_ADDLINES, PTR_BounceTraverse);
+  P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy, PT_ADDLINES, TMapLocalRoutines.PTR_BounceTraverse);
 
   side := P_PointOnLineSide(mo.x, mo.y, TMapSlide.BestLine);
   lineangle := R_PointToAngle2(0, 0, TMapSlide.BestLine.dx, TMapSlide.BestLine.dy);

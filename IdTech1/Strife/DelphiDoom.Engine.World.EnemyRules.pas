@@ -846,6 +846,20 @@ end;
 // but some can be made preaware
 //
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterLocalActions = class sealed
+  public
+    class procedure P_WakeUpThing(puncher: Pmobj_t; bystander: Pmobj_t); static;
+    class function P_CheckMissileRange(actor: Pmobj_t): boolean; static;
+    class function P_CheckRobotRange(actor: Pmobj_t): boolean; static;
+    class procedure P_NewRandomDir(actor: Pmobj_t); static;
+    class procedure P_DeathExplode(actor: Pmobj_t; damage: integer); static;
+  end;
+
 //==============================================================================
 //
 // P_WakeUpThing
@@ -854,7 +868,7 @@ end;
 // Wakes up an mobj.nearby when somebody has been punched.
 //
 //==============================================================================
-procedure P_WakeUpThing(puncher: Pmobj_t; bystander: Pmobj_t);
+class procedure TMonsterLocalActions.P_WakeUpThing(puncher: Pmobj_t; bystander: Pmobj_t);
 begin
   if bystander.flags and MF_NODIALOG = 0 then
   begin
@@ -904,7 +918,7 @@ begin
     if (rover.health > 0) and (rover._type >= Ord(MT_GUARD1)) and (rover._type <= Ord(MT_PGUARD)) and
        (P_CheckSight(rover, puncher) or P_CheckSight(rover, punchee)) then
     begin
-      P_WakeUpThing(puncher, rover);
+      TMonsterLocalActions.P_WakeUpThing(puncher, rover);
       rover.flags := rover.flags or MF_NODIALOG;
     end;
     rover := rover.snext;
@@ -918,7 +932,7 @@ begin
     if (rover.health > 0) and (rover._type >= Ord(MT_GUARD1)) and (rover._type <= Ord(MT_PGUARD)) and
        (P_CheckSight(rover, puncher) or P_CheckSight(rover, punchee)) then
     begin
-      P_WakeUpThing(puncher, rover);
+      TMonsterLocalActions.P_WakeUpThing(puncher, rover);
       rover.flags := rover.flags or MF_NODIALOG;
     end;
     rover := rover.sprev;
@@ -997,7 +1011,7 @@ end;
 // to considered distance for all monsters.
 //
 //==============================================================================
-function P_CheckMissileRange(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
@@ -1112,7 +1126,7 @@ end;
 // villsa [STRIFE] New function
 //
 //==============================================================================
-function P_CheckRobotRange(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_CheckRobotRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
@@ -1154,7 +1168,7 @@ end;
 // Shockingly similar to the RandomWalk pointer in Eternity :)
 //
 //==============================================================================
-procedure P_NewRandomDir(actor: Pmobj_t);
+class procedure TMonsterLocalActions.P_NewRandomDir(actor: Pmobj_t);
 var
   dir: integer;
   omovedir: integer;
@@ -1483,7 +1497,7 @@ begin
   // try moving
   if (actor.movecount < 0) or not P_Move(actor) then
   begin
-    P_NewRandomDir(actor);
+    TMonsterLocalActions.P_NewRandomDir(actor);
     actor.movecount := actor.movecount + 5;
   end;
 end;
@@ -1651,7 +1665,7 @@ begin
     nomissile := false;
     if not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
-    else if not P_CheckMissileRange(actor) then
+    else if not TMonsterLocalActions.P_CheckMissileRange(actor) then
       nomissile := true;
     if not nomissile then
     begin
@@ -2080,13 +2094,13 @@ begin
 
   actor.z := actor.z + (8 * FRACUNIT);
 
-  if P_CheckRobotRange(actor) then
+  if TMonsterLocalActions.P_CheckRobotRange(actor) then
   begin
     A_FaceTarget(actor);
     actor.angle := actor.angle - (ANG90 div 8);
     TMobjRoutines.P_SpawnFacingMissile(actor, actor.target, Ord(MT_C_FLAME));
   end
-  else if P_CheckMissileRange(actor) then
+  else if TMonsterLocalActions.P_CheckMissileRange(actor) then
   begin
     A_FaceTarget(actor);
     actor.z := actor.z + (16 * FRACUNIT);
@@ -2175,7 +2189,7 @@ begin
   A_FaceTarget(actor);
 
   // if not in "robot" range, shoot grenades.
-  if not P_CheckRobotRange(actor) then
+  if not TMonsterLocalActions.P_CheckRobotRange(actor) then
     P_SetMobjState(actor, S_ROB3_14); // 1061
 
   if actor.z <> actor.target.z then
@@ -3349,7 +3363,7 @@ end;
 // villsa [STRIFE] new codepointer
 //
 //==============================================================================
-procedure P_DeathExplode(actor: Pmobj_t; damage: integer);
+class procedure TMonsterLocalActions.P_DeathExplode(actor: Pmobj_t; damage: integer);
 begin
   P_RadiusAttack(actor, actor.target, damage);
   if actor.target <> nil then
@@ -3364,7 +3378,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_DeathExplode5(actor: Pmobj_t);
 begin
-  P_DeathExplode(actor, 192);
+  TMonsterLocalActions.P_DeathExplode(actor, 192);
 end;
 
 //==============================================================================
@@ -3376,7 +3390,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_DeathExplode1(actor: Pmobj_t);
 begin
-  P_DeathExplode(actor, 128);
+  TMonsterLocalActions.P_DeathExplode(actor, 128);
 end;
 
 //==============================================================================
@@ -3388,7 +3402,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_DeathExplode2(actor: Pmobj_t);
 begin
-  P_DeathExplode(actor, 64);
+  TMonsterLocalActions.P_DeathExplode(actor, 64);
 end;
 
 //==============================================================================
@@ -3400,7 +3414,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_DeathExplode3(actor: Pmobj_t);
 begin
-  P_DeathExplode(actor, 32);
+  TMonsterLocalActions.P_DeathExplode(actor, 32);
 end;
 
 //==============================================================================

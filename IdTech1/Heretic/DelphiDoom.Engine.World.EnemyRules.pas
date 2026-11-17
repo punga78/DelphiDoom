@@ -846,12 +846,26 @@ begin
 
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMonsterLocalActions = class sealed
+  public
+    class function P_CheckMissileRange(actor: Pmobj_t): boolean; static;
+    class function P_UpdateChicken(actor: Pmobj_t; tics: integer): boolean; static;
+    class procedure P_SnakeAttack(actor: Pmobj_t; missiletype: integer); static;
+    class procedure P_DropItem(source: Pmobj_t; _type: integer; special: integer; chance: integer); static;
+    class procedure P_SpawnTeleGlitter(actor: Pmobj_t; _type: integer); static;
+  end;
+
 //==============================================================================
 //
 // P_CheckMissileRange
 //
 //==============================================================================
-function P_CheckMissileRange(actor: Pmobj_t): boolean;
+class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
@@ -1156,7 +1170,7 @@ begin
     nomissile := false;
     if (TGameSession.GameSkill < sk_nightmare) and not TGameSession.FastParm and (actor.movecount <> 0) then
       nomissile := true
-    else if not P_CheckMissileRange(actor) then
+    else if not TMonsterLocalActions.P_CheckMissileRange(actor) then
       nomissile := true;
     if not nomissile then
     begin
@@ -1435,7 +1449,7 @@ end;
 // Returns true if the chicken morphs.
 //
 //==============================================================================
-function P_UpdateChicken(actor: Pmobj_t; tics: integer): boolean;
+class function TMonsterLocalActions.P_UpdateChicken(actor: Pmobj_t; tics: integer): boolean;
 var
   fog: Pmobj_t;
   x: fixed_t;
@@ -1487,7 +1501,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_ChicAttack(actor: Pmobj_t);
 begin
-  if P_UpdateChicken(actor, 18) then
+  if TMonsterLocalActions.P_UpdateChicken(actor, 18) then
     exit;
 
   if actor.target = nil then
@@ -1505,7 +1519,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_ChicLook(actor: Pmobj_t);
 begin
-  if P_UpdateChicken(actor, 10) then
+  if TMonsterLocalActions.P_UpdateChicken(actor, 10) then
     exit;
 
   A_Look(actor);
@@ -1518,7 +1532,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_ChicChase(actor: Pmobj_t);
 begin
-  if P_UpdateChicken(actor, 3) then
+  if TMonsterLocalActions.P_UpdateChicken(actor, 3) then
     exit;
 
   TMonsterBaseActions.A_Chase(actor);
@@ -1531,7 +1545,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_ChicPain(actor: Pmobj_t);
 begin
-  if P_UpdateChicken(actor, 10) then
+  if TMonsterLocalActions.P_UpdateChicken(actor, 10) then
     exit;
 
   A_Pain(actor);
@@ -2324,7 +2338,7 @@ end;
 // PROC A_SnakeAttack
 //
 //==============================================================================
-procedure P_SnakeAttack(actor: Pmobj_t; missiletype: integer);
+class procedure TMonsterLocalActions.P_SnakeAttack(actor: Pmobj_t; missiletype: integer);
 begin
   if actor.target = nil then
   begin
@@ -2345,7 +2359,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SnakeAttack(actor: Pmobj_t);
 begin
-  P_SnakeAttack(actor, Ord(MT_SNAKEPRO_A));
+  TMonsterLocalActions.P_SnakeAttack(actor, Ord(MT_SNAKEPRO_A));
 end;
 
 //==============================================================================
@@ -2355,7 +2369,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SnakeAttack2(actor: Pmobj_t);
 begin
-  P_SnakeAttack(actor, Ord(MT_SNAKEPRO_B));
+  TMonsterLocalActions.P_SnakeAttack(actor, Ord(MT_SNAKEPRO_B));
 end;
 
 //==============================================================================
@@ -2480,7 +2494,7 @@ end;
 // PROC P_DropItem
 //
 //==============================================================================
-procedure P_DropItem(source: Pmobj_t; _type: integer; special: integer; chance: integer);
+class procedure TMonsterLocalActions.P_DropItem(source: Pmobj_t; _type: integer; special: integer; chance: integer);
 var
   mo: Pmobj_t;
 begin
@@ -2509,30 +2523,30 @@ begin
     Ord(MT_MUMMYLEADER),
     Ord(MT_MUMMYGHOST),
     Ord(MT_MUMMYLEADERGHOST):
-      P_DropItem(actor, Ord(MT_AMGWNDWIMPY), 3, 84);
+      TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMGWNDWIMPY), 3, 84);
     Ord(MT_KNIGHT),
     Ord(MT_KNIGHTGHOST):
-      P_DropItem(actor, Ord(MT_AMCBOWWIMPY), 5, 84);
+      TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMCBOWWIMPY), 5, 84);
     Ord(MT_WIZARD):
       begin
-        P_DropItem(actor, Ord(MT_AMBLSRWIMPY), 10, 84);
-        P_DropItem(actor, Ord(MT_ARTITOMEOFPOWER), 0, 4);
+        TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMBLSRWIMPY), 10, 84);
+        TMonsterLocalActions.P_DropItem(actor, Ord(MT_ARTITOMEOFPOWER), 0, 4);
       end;
     Ord(MT_HEAD):
       begin
-        P_DropItem(actor, Ord(MT_AMBLSRWIMPY), 10, 84);
-        P_DropItem(actor, Ord(MT_ARTIEGG), 0, 51);
+        TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMBLSRWIMPY), 10, 84);
+        TMonsterLocalActions.P_DropItem(actor, Ord(MT_ARTIEGG), 0, 51);
       end;
     Ord(MT_BEAST):
-      P_DropItem(actor, Ord(MT_AMCBOWWIMPY), 10, 84);
+      TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMCBOWWIMPY), 10, 84);
     Ord(MT_CLINK):
-      P_DropItem(actor, Ord(MT_AMSKRDWIMPY), 20, 84);
+      TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMSKRDWIMPY), 20, 84);
     Ord(MT_SNAKE):
-      P_DropItem(actor, Ord(MT_AMPHRDWIMPY), 5, 84);
+      TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMPHRDWIMPY), 5, 84);
     Ord(MT_MINOTAUR):
       begin
-        P_DropItem(actor, Ord(MT_ARTISUPERHEAL), 0, 51);
-        P_DropItem(actor, Ord(MT_AMPHRDWIMPY), 10, 84);
+        TMonsterLocalActions.P_DropItem(actor, Ord(MT_ARTISUPERHEAL), 0, 51);
+        TMonsterLocalActions.P_DropItem(actor, Ord(MT_AMPHRDWIMPY), 10, 84);
       end;
   end;
 end;
@@ -2839,7 +2853,7 @@ end;
 // PROC A_SpawnTeleGlitter
 //
 //==============================================================================
-procedure P_SpawnTeleGlitter(actor: Pmobj_t; _type: integer);
+class procedure TMonsterLocalActions.P_SpawnTeleGlitter(actor: Pmobj_t; _type: integer);
 var
   mo: Pmobj_t;
   LX, LY: fixed_t;
@@ -2859,7 +2873,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SpawnTeleGlitter(actor: Pmobj_t);
 begin
-  P_SpawnTeleGlitter(actor, Ord(MT_TELEGLITTER));
+  TMonsterLocalActions.P_SpawnTeleGlitter(actor, Ord(MT_TELEGLITTER));
 end;
 
 //==============================================================================
@@ -2869,7 +2883,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SpawnTeleGlitter2(actor: Pmobj_t);
 begin
-  P_SpawnTeleGlitter(actor, Ord(MT_TELEGLITTER2));
+  TMonsterLocalActions.P_SpawnTeleGlitter(actor, Ord(MT_TELEGLITTER2));
 end;
 
 //==============================================================================

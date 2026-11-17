@@ -21,7 +21,8 @@ param(
   [string[]]$Exclude = @(),
   [string[]]$CallerDirs = @(),
   [string]$Root = '',
-  [switch]$CallersOnly
+  [switch]$CallersOnly,
+  [switch]$ImplOnly
 )
 $ErrorActionPreference = 'Stop'
 if ($Root -eq '') { $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path }
@@ -72,7 +73,79 @@ $implementation = -1
 for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match '^implementation\s*$') { $implementation = $i; break } }
 if ($implementation -lt 0) { throw "implementation non trovata" }
 
-if (-not $CallersOnly) {
+if ($ImplOnly) {
+  # le routine libere che esistono SOLO nell'implementazione (nessuna dichiarazione nell'interfaccia): la classe sta
+  # nell'implementazione, prima della prima routine convertita, e le chiama solo questa unit
+  $inInterface = @{}
+  for ($i = 0; $i -lt $implementation; $i++) { if ($lines[$i] -match '^(procedure|function)\s+(\w+)\b') { $inInterface[$Matches[2]] = $true } }
+  $all = New-Object System.Collections.Generic.List[string]
+  for ($j = $implementation; $j -lt $lines.Count; $j++) {
+    if ($lines[$j] -match '^(procedure|function)\s+(\w+)\b') {
+      $n = $Matches[2]
+      if (-not $inInterface.ContainsKey($n) -and ($Exclude -notcontains $n) -and ($Names.Count -eq 0 -or $Names -contains $n) -and -not $all.Contains($n)) { $all.Add($n) }
+    }
+  }
+  if ($all.Count -eq 0) { throw "Nessuna routine solo-implementazione da convertire" }
+  $script:NameRegex = New-Object Text.RegularExpressions.Regex(('(?<![\w.])(' + ($all -join '|') + ')\b'))
+  $script:NameProbe = '\b(' + ($all -join '|') + ')\b'
+  $impl = New-Object System.Collections.Generic.List[string]
+  $classBody = New-Object System.Collections.Generic.List[string]
+  $firstHeader = -1
+  $inConverted = $false
+  $j = $implementation
+  while ($j -lt $lines.Count) {
+    $l = $lines[$j]
+    if (-not $inConverted -and $l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
+      $inConverted = $true
+      if ($firstHeader -lt 0) {
+        # il commento di intestazione che precede resta sopra la classe? No: la classe va prima del banner della routine
+        $firstHeader = $impl.Count
+        while ($firstHeader -gt 0 -and $impl[$firstHeader - 1] -match '^//') { $firstHeader-- }
+      }
+      $decl = New-Object System.Collections.Generic.List[string]
+      $k = $j
+      $decl.Add($lines[$k])
+      while ($true) {
+        $joined = ($decl -join ' ') -replace '//.*$', ''
+        $balance = ($joined.ToCharArray() | Where-Object { $_ -eq '(' }).Count - ($joined.ToCharArray() | Where-Object { $_ -eq ')' }).Count
+        if ($balance -le 0 -and $decl[$decl.Count - 1] -match ';\s*(//.*)?$') { break }
+        $k++
+        $decl.Add($lines[$k])
+      }
+      foreach ($d in $decl) { $classBody.Add('    ' + ($d -replace '^(procedure|function)\s+', 'class $1 ')) }
+      $classBody[$classBody.Count - 1] = ($classBody[$classBody.Count - 1] -replace ';\s*(//.*)?$', '; static;')
+      $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)))
+      for ($m = $j + 1; $m -le $k; $m++) { $impl.Add($lines[$m]) }
+      $j = $k + 1
+      continue
+    }
+    if ($inConverted) {
+      $impl.Add($l)
+      if ($l -match '^end;\s*(//.*)?$') { $inConverted = $false }
+      $j++
+      continue
+    }
+    if ($l -match '^\s*(//|\{\$I\b)') { $impl.Add($l); $j++; continue }
+    $impl.Add((Convert-CodeLine $l))
+    $j++
+  }
+  $classText = New-Object System.Collections.Generic.List[string]
+  $classText.Add('type')
+  $classText.Add('  /// <summary>')
+  $classText.Add('  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines')
+  $classText.Add('  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before')
+  $classText.Add('  /// </summary>')
+  $classText.Add("  $Class = class sealed")
+  $classText.Add('  public')
+  foreach ($c in $classBody) { $classText.Add($c) }
+  $classText.Add('  end;')
+  $classText.Add('')
+  $impl.InsertRange($firstHeader, $classText)
+  $head = (($lines[0..($implementation - 1)]) -join $nl)
+  $text = $head + $nl + ($impl -join $nl)
+  Write-Source $path $text $src.Bom
+}
+elseif (-not $CallersOnly) {
 # 1) le dichiarazioni dell'interfaccia
 $selected = New-Object System.Collections.Generic.List[string]
 $classBody = New-Object System.Collections.Generic.List[string]
