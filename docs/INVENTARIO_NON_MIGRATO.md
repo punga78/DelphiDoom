@@ -116,7 +116,7 @@ Gia' fatti (non sono voci): `TVideoPreserveTables`, `TVideoScreenLayout`, `TVide
 
 ### 3.4 #247: renderer software (fasi 3-5)
 
-Gia' fatti (non sono voci): `TRendererSpriteDefs`, `TRendererSubsectorGridBuilder`, `TRendererLumpRanges`/`TRendererSpriteTableBuilder`, `TRendererTextureMappingBuilder`, `TRendererProfiles`/`TRendererPrecachePlanner`, selettore e hash PK3, `TRendererMonitorAspect`, `TRendererFake3DAngles`, `TRendererViewTables`, quattro `sorter` dei vissprite, `R_SetRenderingFunctions` come tabella generata (`TEngineRendererFunctionTable`, 1060 -> 14.740 byte di `r_main`), colonne MT e span come metodi statici (`TRendererColumnDrawers` e le altre: 68 routine x 4 giochi, `r_col_fz` 13, Hexen `fog` 8, span 5x4, flat 5x4, 28 colonne MT di `r_sprite`, `R_MapPlane`/`R_MapPlaneAngle`), `r_diher` e tre `.inc` in copia unica. Il renderer e' gia' **in copia unica** in `IdTech1\Base` (71 unit `r_*`, circa 65.000 righe, circa 790 righe di `{$IF}` di gioco) e 73 `.inc` (circa 28.500 righe, oggi 76).
+Gia' fatti (non sono voci): `TRendererSpriteDefs`, `TRendererSubsectorGridBuilder`, `TRendererLumpRanges`/`TRendererSpriteTableBuilder`, `TRendererTextureMappingBuilder`, `TRendererProfiles`/`TRendererPrecachePlanner`, selettore e hash PK3, `TRendererMonitorAspect`, `TRendererFake3DAngles`, `TRendererViewTables`, quattro `sorter` dei vissprite, `R_SetRenderingFunctions` come tabella generata (`TEngineRendererFunctionTable`; la routine era di 1060 righe e `r_main` e' passato da 19.648 a 14.740 byte), colonne MT e span come metodi statici (`TRendererColumnDrawers` e le altre: 68 routine x 4 giochi, `r_col_fz` 13, Hexen `fog` 8, span 5x4, flat 5x4, 28 colonne MT di `r_sprite`, `R_MapPlane`/`R_MapPlaneAngle`), `r_diher` e tre `.inc` in copia unica. Il renderer e' gia' **in copia unica** in `IdTech1\Base` (71 unit `r_*`, circa 65.000 righe, circa 790 righe di `{$IF}` di gioco) e 73 `.inc` (circa 28.500 righe, oggi 76).
 
 | ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
 |---|---|---|---|---|---|---|---|
@@ -192,7 +192,7 @@ Gia' fatti (non sono voci): `TRendererSpriteDefs`, `TRendererSubsectorGridBuilde
 |---|---|---|---|---|---|---|---|
 | A35 | `IdTech1\Common\d_delphi.pas` (6811 righe, 22 `asm` a `:1874`): ogni funzione con equivalente nella RTL o in `<Modulo>\` si sostituisce, il resto in unit piccole | 5, 13.3 | "Dopo la fase 2"; `d_delphi` ha 22.809 righe di `Common` nel piano, oggi la cartella ha 6811 | C/F | XL | da provare | **MF** (a fine #185) |
 | A36 | Cancellare le facciate senza chiamanti (`docs\FACCIATE.md`, 1453 righe) e i globali rimasti come alias | 5 | Si cancellano a fine fetta, non prima (par. 2.1); molte facciate servono ancora a `Doom32`/`GLDoom32` | F | L | 0 | **MF** (a fine #185) |
-| A37 | `CLAUDE.md`: la sezione "codice storico per scelta" non c'e' piu' in radice (0 occorrenze); resta la sezione "Codice esistente" | 5 | Da ritoccare all'ultimo giro, quando "tutto a classi" e' vero | F | XS | 0 | **MF** (a fine #185) |
+| A37 | Regola "codice storico per scelta": in `CLAUDE.md` e' gia' sostituita (riga 271 la dichiara superata; resta la sezione "Codice esistente"), ma `docs\PENDING_ISSUES.md:39` ("Restano codice storico, per scelta documentata") e `:243` la affermano ancora | 5 | Da ritoccare all'ultimo giro, quando "tutto a classi" e' vero | F | XS | 0 | **MF** (a fine #185) |
 | A38 | Win64 per il motore (#40/#43/#44) | 5, 13.3 riga 5 | **Gia' soddisfatta** (par. 2 punto 5): 33 progetti su 33, corpus 44/44 uguale a Win32 e Win64 | - | XS | 0 | **CM** |
 
 ### 3.6 Riferimento: fase 4 (OpenGL, #177 e figlie #248, #249, #250)
@@ -219,7 +219,7 @@ Il corpo dell'issue ha **cinque spunte di fase** e quattro **regole**. Una spunt
 | **2. Logica di gioco in un mondo solo** | **no** | par. 10, 11, 13.1 | Figlie **#244 `[ ]`** (esito: tutte voci **CM**, si chiude con motivo) e **#245 `[ ]`** (C4, C6, C12, C13 da fare; C10 salvataggi in R2; C1-C3, C5, C7-C9, C11, C14 **CM**). Senza figlia: 2b (A10), 2d `p_common` (A13), 2e (A23-A26), 2g (A21-A22), 2i (A27), 2j (A28-A30), `d_main`/`deh_main` (A31-A32) e i residui "duplicati con ragione" (A14-A20, A33) |
 | **3. Renderer software** | **no** | par. 13.5-13.8 | Figlia **#247 `[ ]`**: E1, E5, E6, E8, E9, E11-E13 (caldo, `MC`), E7, E10, E14 (freddo, `MF`); E3, E4, E15-E17 `CM` per il par. 13.8/13.6; E18-E19 in R2 |
 | **4. Renderer OpenGL** | **no** | par. 4 fase 4, `OPENGL_PIANO.md` | Figlie **#177**, #248, #249, #250 aperte (3.6): prerequisito formale, non analizzato qui |
-| **5. Chiusura** | **no** (due voci gia' vere) | par. 4 fase 5, 13.3 | Win64 (A38) e sezione "codice storico per scelta" (A37, nessuna occorrenza in `CLAUDE.md`) sono soddisfatte; mancano `d_delphi` (A35) e le facciate/alias (A36) |
+| **5. Chiusura** | **no** (una voce gia' vera, una a meta') | par. 4 fase 5, 13.3 | Win64 (A38) e' soddisfatta solo in `CLAUDE.md` la sezione "codice storico per scelta" (A37: `docs\PENDING_ISSUES.md:39` e `:243` la dicono ancora); mancano `d_delphi` (A35) e le facciate/alias (A36) |
 
 ### 4.2 Regole dell'issue
 
