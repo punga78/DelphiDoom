@@ -57,6 +57,30 @@ type
     class function MissileBlocked(mo: Pmobj_t): boolean; static;
     /// <summary>P_ExplodeMissile of Rad-X: a missile that can damage walls damages the line that MissileBlocked remembered</summary>
     class procedure MissileExploded(mo: Pmobj_t); static;
+    /// <summary>
+    ///   True while a thing that has bounced on the floor or on the ceiling is moved in z (a missile
+    ///   that bounced does not explode in that tic); false at the start of every vertical movement
+    /// </summary>
+    class var Bouncing: Boolean;
+    /// <summary>P_ZMovement, after the height is adjusted: a new vertical movement starts</summary>
+    class procedure BeginZMovement; static;
+    /// <summary>
+    ///   P_ZMovement of Rad-X, the thing is at or under the floor: the bounce on the floor (and the end of
+    ///   a bouncing missile on a sky floor); false when the missile exploded and the movement is over
+    /// </summary>
+    class function FloorBounce(mo: Pmobj_t): boolean; static;
+    /// <summary>
+    ///   P_ZMovement of Rad-X, the thing is above the ceiling: the bounce on the ceiling; false when the
+    ///   missile exploded and the movement is over
+    /// </summary>
+    class function CeilingBounce(mo: Pmobj_t): boolean; static;
+    /// <summary>
+    ///   P_XYMovement of Rad-X, a thing with MF3_EX_WALLBOUNCE was blocked: it bounces, skims, or the
+    ///   missile explodes or is removed (Removed: the movement is over). Always true
+    /// </summary>
+    class function WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean; static;
+    /// <summary>The missile of the last WallBounce has been removed</summary>
+    class var Removed: Boolean;
   end;
 
 implementation
@@ -67,6 +91,7 @@ uses
   m_rnd,
   radix_physics,
   radix_walls,
+  DelphiDoom.Engine.World.RadixBounce,
   DelphiDoom.Radix.Physics.Damage;
 
 class function TPhysicsExtension.PlayerDamage(target, inflictor: Pmobj_t; damage: integer): integer;
@@ -101,6 +126,26 @@ begin
   FHitLine := nil;
   if LLine <> nil then
     RX_MissileHitsLine(mo, LLine);
+end;
+
+class procedure TPhysicsExtension.BeginZMovement;
+begin
+  Bouncing := False;
+end;
+
+class function TPhysicsExtension.FloorBounce(mo: Pmobj_t): boolean;
+begin
+  result := TRadixBounceEngine.FloorBounce(mo, Bouncing);
+end;
+
+class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
+begin
+  result := TRadixBounceEngine.CeilingBounce(mo, Bouncing);
+end;
+
+class function TPhysicsExtension.WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean;
+begin
+  result := TRadixBounceEngine.WallBounce(mo, xmove, ymove, Removed);
 end;
 
 end.

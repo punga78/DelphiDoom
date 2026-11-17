@@ -35,6 +35,10 @@ type
     const
       /// <summary>The game has physics of its own: the callers test it before calling the methods</summary>
       Enabled = False;
+      /// <summary>A thing bounced in the vertical movement (never, here: a constant, so that the tests of it are not compiled)</summary>
+      Bouncing = False;
+      /// <summary>The missile of the last WallBounce has been removed (never, here)</summary>
+      Removed = False;
 
     /// <summary>
     ///   TInterGameRules.DamageMobj: what is left of a hit to a player (the damage of the hit, before
@@ -62,6 +66,18 @@ type
     ///   the damage of the missile
     /// </summary>
     class procedure MissileExploded(mo: Pmobj_t); static; inline;
+    /// <summary>TMobjGameRules.AfterZAdjust: a new vertical movement starts</summary>
+    class procedure BeginZMovement; static; inline;
+    /// <summary>TMobjGameRules.ZHitFloor: the bounce on the floor; false when the missile exploded</summary>
+    class function FloorBounce(mo: Pmobj_t): boolean; static; inline;
+    /// <summary>TMobjGameRules.ZHitCeiling: the bounce on the ceiling; false when the missile exploded</summary>
+    class function CeilingBounce(mo: Pmobj_t): boolean; static; inline;
+    /// <summary>
+    ///   TMobjGameRules.BlockedMove: a thing with MF3_EX_WALLBOUNCE was blocked; true when the game
+    ///   has done all of it (the bounce, or the explosion of the missile), Removed tells that the
+    ///   missile has been removed and the movement is over
+    /// </summary>
+    class function WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean; static; inline;
   end;
 
 implementation
@@ -86,6 +102,25 @@ end;
 
 class procedure TPhysicsExtension.MissileExploded(mo: Pmobj_t);
 begin
+end;
+
+class procedure TPhysicsExtension.BeginZMovement;
+begin
+end;
+
+class function TPhysicsExtension.FloorBounce(mo: Pmobj_t): boolean;
+begin
+  result := true;
+end;
+
+class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
+begin
+  result := true;
+end;
+
+class function TPhysicsExtension.WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean;
+begin
+  result := false;
 end;
 
 end.

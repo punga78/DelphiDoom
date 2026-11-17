@@ -369,6 +369,9 @@ end;
 //==============================================================================
 class procedure TMobjGameRules.AfterZAdjust(mo: Pmobj_t);
 begin
+  // a game with the physics of its own: a new vertical movement, nothing has bounced yet (Radix)
+  if TPhysicsExtension.Enabled then
+    TPhysicsExtension.BeginZMovement;
 end;
 
 //==============================================================================
@@ -414,7 +417,14 @@ begin
   player := Pplayer_t(mo.player);
     // hit the floor
 
-    if mo.flags3_ex and MF3_EX_FLOORBOUNCE <> 0 then
+    // a game with the physics of its own: the bounce of Rad-X, which keeps the speed of a missile
+    // and does not explode it when it bounced (Radix)
+    if TPhysicsExtension.Enabled then
+    begin
+      if not TPhysicsExtension.FloorBounce(mo) then
+        exit;
+    end
+    else if mo.flags3_ex and MF3_EX_FLOORBOUNCE <> 0 then
     begin
       // villsa [STRIFE] affect reactiontime
       // momz is also shifted by 1
@@ -501,7 +511,8 @@ begin
       if not correct_lost_soul_bounce and (mo.flags and MF_SKULLFLY <> 0) then
         mo.momz := -mo.momz;
 
-    if (mo.flags and MF_MISSILE <> 0) and (mo.flags and MF_NOCLIP = 0) then
+    if (mo.flags and MF_MISSILE <> 0) and (mo.flags and MF_NOCLIP = 0) and
+       not (TPhysicsExtension.Enabled and TPhysicsExtension.Bouncing) then
     begin
       P_ExplodeMissile(mo);
       exit;
@@ -570,7 +581,13 @@ end;
 class procedure TMobjGameRules.ZHitCeiling(mo: Pmobj_t; ceilz: fixed_t);
 begin
     // hit the ceiling
-    if mo.momz > 0 then
+    // a game with the physics of its own: the bounce of Rad-X (Radix)
+    if TPhysicsExtension.Enabled then
+    begin
+      if not TPhysicsExtension.CeilingBounce(mo) then
+        exit;
+    end
+    else if mo.momz > 0 then
     begin
       if mo.flags3_ex and MF3_EX_CEILINGBOUNCE <> 0 then
         mo.momz := -mo.momz div 2
@@ -583,7 +600,8 @@ begin
     if mo.flags and MF_SKULLFLY <> 0 then // JVAL: 20200308 - SOS - This is wrong, the momz has been already set to zero!!
       mo.momz := -mo.momz; // the skull slammed into something
 
-    if (mo.flags and MF_MISSILE <> 0) and (mo.flags and MF_NOCLIP = 0) then
+    if (mo.flags and MF_MISSILE <> 0) and (mo.flags and MF_NOCLIP = 0) and
+       not (TPhysicsExtension.Enabled and TPhysicsExtension.Bouncing) then
     begin
       P_ExplodeMissile(mo);
       exit;
@@ -1256,6 +1274,14 @@ begin
   begin
     P_ExplodeMissile(mo);
     TPhysicsExtension.MissileExploded(mo);
+  end
+  // a game with the physics of its own: the bounce on walls of Rad-X (a count of bounces, a
+  // factor, a wall that can be shot is not a mirror, a missile that did not bounce); it does all
+  // of it, also the explosion and the removal (result tells whether the missile has been removed)
+  else if TPhysicsExtension.Enabled and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and
+          TPhysicsExtension.WallBounce(mo, xmove, ymove) then
+  begin
+    result := TPhysicsExtension.Removed;
   end
   // JVAL: 20211121 - New bounce on walls mechanics
   else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (TMapCheck.BounceLine <> nil) then
