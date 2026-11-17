@@ -14,7 +14,8 @@ unit DelphiDoom.Q3Host.Factory;
 interface
 
 uses
-  DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf;
+  DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf,
+  DelphiDoom.Q3Host.Bot.Intf;
 
 type
   /// <summary>
@@ -36,6 +37,8 @@ type
     ServerCommands: IQ3HostServerCommands;
     /// <summary>The real time calls</summary>
     Calendar: IQ3HostCalendar;
+    /// <summary>The BOTLIB calls of qagame (phase 2d): registered when Bot.Files is given</summary>
+    Bot: TQ3HostBotServices;
   end;
 
   /// <summary>The only place that knows the classes of the host</summary>
@@ -61,7 +64,8 @@ implementation
 uses
   DelphiDoom.Q3Host.SyscallHost, DelphiDoom.Q3Host.CommonSyscalls, DelphiDoom.Q3Host.CvarSyscalls,
   DelphiDoom.Q3Host.FileSyscalls, DelphiDoom.Q3Host.MiscSyscalls, DelphiDoom.Q3Host.CollisionSyscalls,
-  DelphiDoom.Q3Host.GameSyscalls, DelphiDoom.Q3Host.GameWorld, DelphiDoom.Q3Host.EntityTokens;
+  DelphiDoom.Q3Host.GameSyscalls, DelphiDoom.Q3Host.GameWorld, DelphiDoom.Q3Host.EntityTokens,
+  DelphiDoom.Q3Host.Bot.Factory;
 
 class function TQ3HostFactory.CreateHost(AModule: TQ3Module; const AConsole: IQ3HostConsole;
   const ATime: IQ3HostTime): IQ3SyscallHost;
@@ -111,6 +115,7 @@ begin
         LHost.Own(LTokens);
         TQ3GameSyscalls.Register(Result.Registry, LWorld, AServices.State, AServices.ServerCommands,
           AServices.ClipMap, LTokens, AServices.CVars);
+        TQ3BotFactory.Register(LHost, LWorld, AServices.ClipMap, AConsole, AServices.CVars, AServices.Bot);
       end;
   end;
 end;

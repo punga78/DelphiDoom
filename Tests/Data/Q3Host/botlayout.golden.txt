@@ -1,0 +1,171 @@
+sizeof bot_entitystate_t 112
+sizeof bot_input_t 40
+sizeof bot_goal_t 56
+sizeof bot_initmove_t 68
+sizeof bot_moveresult_t 52
+sizeof bot_avoidspot_t 20
+sizeof aas_trace_t 36
+sizeof aas_entityinfo_t 140
+sizeof aas_areainfo_t 52
+sizeof aas_clientmove_t 84
+sizeof aas_altroutegoal_t 24
+sizeof aas_predictroute_t 36
+sizeof bot_match_t 328
+sizeof bot_matchvariable_t 8
+sizeof bot_consolemessage_t 276
+sizeof weaponinfo_t 552
+sizeof projectileinfo_t 208
+sizeof pc_token_t 1040
+bot_entitystate_t.type 0
+bot_entitystate_t.flags 4
+bot_entitystate_t.origin 8
+bot_entitystate_t.angles 20
+bot_entitystate_t.old_origin 32
+bot_entitystate_t.mins 44
+bot_entitystate_t.maxs 56
+bot_entitystate_t.groundent 68
+bot_entitystate_t.solid 72
+bot_entitystate_t.modelindex 76
+bot_entitystate_t.modelindex2 80
+bot_entitystate_t.frame 84
+bot_entitystate_t.event 88
+bot_entitystate_t.eventParm 92
+bot_entitystate_t.powerups 96
+bot_entitystate_t.weapon 100
+bot_entitystate_t.legsAnim 104
+bot_entitystate_t.torsoAnim 108
+bot_input_t.thinktime 0
+bot_input_t.dir 4
+bot_input_t.speed 16
+bot_input_t.viewangles 20
+bot_input_t.actionflags 32
+bot_input_t.weapon 36
+bot_goal_t.origin 0
+bot_goal_t.areanum 12
+bot_goal_t.mins 16
+bot_goal_t.maxs 28
+bot_goal_t.entitynum 40
+bot_goal_t.number 44
+bot_goal_t.flags 48
+bot_goal_t.iteminfo 52
+bot_initmove_t.origin 0
+bot_initmove_t.velocity 12
+bot_initmove_t.viewoffset 24
+bot_initmove_t.entitynum 36
+bot_initmove_t.client 40
+bot_initmove_t.thinktime 44
+bot_initmove_t.presencetype 48
+bot_initmove_t.viewangles 52
+bot_initmove_t.or_moveflags 64
+bot_moveresult_t.failure 0
+bot_moveresult_t.type 4
+bot_moveresult_t.blocked 8
+bot_moveresult_t.blockentity 12
+bot_moveresult_t.traveltype 16
+bot_moveresult_t.flags 20
+bot_moveresult_t.weapon 24
+bot_moveresult_t.movedir 28
+bot_moveresult_t.ideal_viewangles 40
+aas_trace_t.startsolid 0
+aas_trace_t.fraction 4
+aas_trace_t.endpos 8
+aas_trace_t.ent 20
+aas_trace_t.lastarea 24
+aas_trace_t.area 28
+aas_trace_t.planenum 32
+aas_entityinfo_t.valid 0
+aas_entityinfo_t.type 4
+aas_entityinfo_t.flags 8
+aas_entityinfo_t.ltime 12
+aas_entityinfo_t.update_time 16
+aas_entityinfo_t.number 20
+aas_entityinfo_t.origin 24
+aas_entityinfo_t.angles 36
+aas_entityinfo_t.old_origin 48
+aas_entityinfo_t.lastvisorigin 60
+aas_entityinfo_t.mins 72
+aas_entityinfo_t.maxs 84
+aas_entityinfo_t.groundent 96
+aas_entityinfo_t.solid 100
+aas_entityinfo_t.modelindex 104
+aas_entityinfo_t.modelindex2 108
+aas_entityinfo_t.frame 112
+aas_entityinfo_t.event 116
+aas_entityinfo_t.eventParm 120
+aas_entityinfo_t.powerups 124
+aas_entityinfo_t.weapon 128
+aas_entityinfo_t.legsAnim 132
+aas_entityinfo_t.torsoAnim 136
+aas_areainfo_t.contents 0
+aas_areainfo_t.flags 4
+aas_areainfo_t.presencetype 8
+aas_areainfo_t.cluster 12
+aas_areainfo_t.mins 16
+aas_areainfo_t.maxs 28
+aas_areainfo_t.center 40
+aas_clientmove_t.endpos 0
+aas_clientmove_t.endarea 12
+aas_clientmove_t.velocity 16
+aas_clientmove_t.trace 28
+aas_clientmove_t.presencetype 64
+aas_clientmove_t.stopevent 68
+aas_clientmove_t.endcontents 72
+aas_clientmove_t.time 76
+aas_clientmove_t.frames 80
+aas_altroutegoal_t.origin 0
+aas_altroutegoal_t.areanum 12
+aas_altroutegoal_t.starttraveltime 16
+aas_altroutegoal_t.goaltraveltime 18
+aas_altroutegoal_t.extratraveltime 20
+aas_predictroute_t.endpos 0
+aas_predictroute_t.endarea 12
+aas_predictroute_t.stopevent 16
+aas_predictroute_t.endcontents 20
+aas_predictroute_t.endtravelflags 24
+aas_predictroute_t.numareas 28
+aas_predictroute_t.time 32
+bot_match_t.string 0
+bot_match_t.type 256
+bot_match_t.subtype 260
+bot_match_t.variables 264
+bot_matchvariable_t.offset 0
+bot_matchvariable_t.length 4
+bot_consolemessage_t.handle 0
+bot_consolemessage_t.time 4
+bot_consolemessage_t.type 8
+bot_consolemessage_t.message 12
+bot_consolemessage_t.prev 268
+bot_consolemessage_t.next 272
+weaponinfo_t.valid 0
+weaponinfo_t.number 4
+weaponinfo_t.name 8
+weaponinfo_t.model 88
+weaponinfo_t.level 168
+weaponinfo_t.weaponindex 172
+weaponinfo_t.flags 176
+weaponinfo_t.projectile 180
+weaponinfo_t.numprojectiles 260
+weaponinfo_t.hspread 264
+weaponinfo_t.vspread 268
+weaponinfo_t.speed 272
+weaponinfo_t.acceleration 276
+weaponinfo_t.recoil 280
+weaponinfo_t.offset 292
+weaponinfo_t.angleoffset 304
+weaponinfo_t.extrazvelocity 316
+weaponinfo_t.ammoamount 320
+weaponinfo_t.ammoindex 324
+weaponinfo_t.activate 328
+weaponinfo_t.reload 332
+weaponinfo_t.spinup 336
+weaponinfo_t.spindown 340
+weaponinfo_t.proj 344
+pc_token_t.type 0
+pc_token_t.subtype 4
+pc_token_t.intvalue 8
+pc_token_t.floatvalue 12
+pc_token_t.string 16
+const MAX_MESSAGE_SIZE 256
+const MAX_MATCHVARIABLES 8
+const MAX_STRINGFIELD 80
+const MAX_TOKENLENGTH 1024
