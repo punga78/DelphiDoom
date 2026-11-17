@@ -1,0 +1,69 @@
+# idGameLocal::SpawnMapEntities, InhibitEntitySpawn and MapPopulate
+inittypes
+def worldspawn spawnclass idWorldspawn
+def info_player_start spawnclass idPlayerStart
+def func_door spawnclass idDoor thinks 2
+def func_door_mp spawnclass idItem
+def item_medkit spawnclass idItem
+def item_medkit_small spawnclass idItem
+def weapon_bfg spawnclass idItem
+def func_item spawnclass idItem
+def trigger_multi spawnclass idTrigger_Multi
+newmap
+# no map file
+spawnmap
+# a map without entities
+mapnew
+spawnmap
+# the first entity is not the world
+mapent classname func_door name door0
+spawnmap
+newmap
+mapclear
+mapnew
+mapent classname worldspawn name world
+mapent classname info_player_start name start1 origin 0\x200\x2064
+mapent classname func_door name door1
+mapent classname func_door name door2 not_medium 1
+mapent classname func_door name door3 not_easy 1
+mapent classname func_door name door4 not_hard 1
+mapent classname item_medkit name kit1
+mapent classname item_medkit_small name kit2
+mapent classname weapon_bfg name bfg1
+mapent classname func_item name item1 not_multiplayer 1
+mapent classname trigger_multi name trig1
+mapent classname unknown_thing name ghost
+# skill 1 (medium): door2 is inhibited
+spawnmap
+state
+# skill 0 (easy): door3 is inhibited
+newmap
+cvar skill 0
+spawnmap
+state
+# skill 2 and 3 (hard, nightmare: no medkits)
+newmap
+cvar skill 2
+spawnmap
+newmap
+cvar skill 3
+populate
+state
+# multiplayer
+newmap
+cvar skill 1
+cvar multiplayer 1
+populate
+state
+cvar multiplayer 0
+inhibit classname func_door not_easy 1
+inhibit classname func_door not_hard 1
+inhibit classname item_medkit
+inhibit classname ITEM_MEDKIT_SMALL
+cvar skill 1
+inhibit classname func_door not_medium 1
+inhibit classname func_door not_hard 1
+inhibit classname item_medkit
+cvar skill 0
+inhibit classname func_door not_easy 1
+inhibit

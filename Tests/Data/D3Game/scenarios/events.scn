@@ -1,0 +1,33 @@
+# idEventDef: numbering in order of definition, duplicates, lookup; the event maps of the classes
+events
+event remove
+event <immediateremove>
+event activate
+event hide
+event ping
+event nothing
+inittypes
+responds idClass remove
+responds idClass activate
+responds idClass hide
+responds idEntity hide
+responds idEntity open
+responds idMover open
+responds idMover hide
+responds idMover show
+responds idDoor activate
+responds idDoor hide
+responds idDoor open
+responds idDoor ping
+responds idPlat open
+responds idPlat activate
+responds idLight hide
+responds idLight show
+responds idItem show
+responds idItem hide
+responds idItem open
+responds idTrigger_Multi ping
+responds idWorldspawn ping
+responds idDebugHelper hide
+responds idDebugHelper nothing
+responds idDoor <immediateremove>

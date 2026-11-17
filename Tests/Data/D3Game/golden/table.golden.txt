@@ -1,0 +1,212 @@
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD def func_door spawnclass idDoor
+CMD def func_light spawnclass idLight
+CMD newmap
+CMD state
+STATE num_entities=32 firstFree=32 spawnCount=1 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+SPAWNLIST 
+ACTIVELIST 
+CMD spawndef classname func_door name a
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity a 32
+SPAWN idMover a
+SPAWN idDoor a
+RET 1 ent=32
+CMD spawndef classname func_door name b
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity b 33
+SPAWN idMover b
+SPAWN idDoor b
+RET 1 ent=33
+CMD spawndef classname func_door name c
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity c 34
+SPAWN idMover c
+SPAWN idDoor c
+RET 1 ent=34
+CMD spawndef classname func_door name d
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity d 35
+SPAWN idMover d
+SPAWN idDoor d
+RET 1 ent=35
+CMD state
+STATE num_entities=36 firstFree=36 spawnCount=5 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=a class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=0 number=32
+ENT 33 name=b class=idDoor def=func_door spawnId=2 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=c class=idDoor def=func_door spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=d class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=35
+SPAWNLIST  32 33 34 35
+ACTIVELIST  32 33 34 35
+CMD remove 33
+CALL idEvent.CancelEvents
+REMOVED 33
+CMD state
+STATE num_entities=36 firstFree=33 spawnCount=5 mapSpawnCount=0 toDeactivate=1 time=0 frame=0 inCinematic=0
+ENT 32 name=a class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=0 number=32
+ENT 34 name=c class=idDoor def=func_door spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=d class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=35
+SPAWNLIST  32 34 35
+ACTIVELIST  32 34 35
+CMD spawndef classname func_door name e
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity e 33
+SPAWN idMover e
+SPAWN idDoor e
+RET 1 ent=33
+CMD remove 32
+CALL idEvent.CancelEvents
+REMOVED 32
+CMD remove 34
+CALL idEvent.CancelEvents
+REMOVED 34
+CMD spawndef classname func_door name f
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity f 32
+SPAWN idMover f
+SPAWN idDoor f
+RET 1 ent=32
+CMD spawndef classname func_door name g
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity g 34
+SPAWN idMover g
+SPAWN idDoor g
+RET 1 ent=34
+CMD spawndef classname func_door name h
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity h 36
+SPAWN idMover h
+SPAWN idDoor h
+RET 1 ent=36
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=9 mapSpawnCount=0 toDeactivate=3 time=0 frame=0 inCinematic=0
+ENT 32 name=f class=idDoor def=func_door spawnId=6 think=1 active=1 cinematic=0 health=0 number=32
+ENT 33 name=e class=idDoor def=func_door spawnId=5 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=g class=idDoor def=func_door spawnId=7 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=d class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=35
+ENT 36 name=h class=idDoor def=func_door spawnId=8 think=1 active=1 cinematic=0 health=0 number=36
+SPAWNLIST  35 33 32 34 36
+ACTIVELIST  35 33 32 34 36
+CMD remove 99
+NOTFOUND
+CMD remove 33
+CALL idEvent.CancelEvents
+REMOVED 33
+CMD remove 33
+NOTFOUND
+CMD spawndef classname func_light name w spawn_entnum 4094
+CTOR idLight
+CALL program.SetEntity w 4094
+RET 1 ent=4094
+CMD spawndef classname func_light name low spawn_entnum 3
+CTOR idLight
+CALL program.SetEntity low 3
+RET 1 ent=3
+CMD spawndef classname func_light name far spawn_entnum 100
+CTOR idLight
+CALL program.SetEntity far 100
+RET 1 ent=100
+CMD spawndef classname func_light name taken spawn_entnum 100
+CTOR idLight
+CALL program.SetEntity taken 100
+RET 1 ent=100
+CMD state
+STATE num_entities=40 firstFree=33 spawnCount=13 mapSpawnCount=0 toDeactivate=4 time=0 frame=0 inCinematic=0
+ENT 3 name=low class=idLight def=func_light spawnId=10 think=0 active=0 cinematic=0 health=0 number=3
+ENT 32 name=f class=idDoor def=func_door spawnId=6 think=1 active=1 cinematic=0 health=0 number=32
+ENT 34 name=g class=idDoor def=func_door spawnId=7 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=d class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=35
+ENT 36 name=h class=idDoor def=func_door spawnId=8 think=1 active=1 cinematic=0 health=0 number=36
+ENT 100 name=taken class=idLight def=func_light spawnId=12 think=0 active=0 cinematic=0 health=0 number=100
+ENT 4094 name=w class=idLight def=func_light spawnId=9 think=0 active=0 cinematic=0 health=0 number=4094
+SPAWNLIST  35 32 34 36 4094 3 100 100
+ACTIVELIST  35 32 34 36
+CMD find w
+FOUND 4094
+CMD find far
+FOUND -1
+CMD setname 4094 world2
+CALL program.SetEntity w -1
+CALL program.SetEntity world2 4094
+CMD find w
+FOUND -1
+CMD find world2
+FOUND 4094
+CMD setname 100 far
+CALL program.SetEntity taken -1
+ERROR Multiple entities named 'far'
+THROW Multiple entities named 'far'
+CMD setname 100 far
+CALL program.SetEntity far -1
+CALL program.SetEntity far 100
+CMD setname 35 far
+CALL program.SetEntity d -1
+ERROR Multiple entities named 'far'
+THROW Multiple entities named 'far'
+CMD setname 35 FAR
+CALL program.SetEntity far -1
+CALL program.SetEntity FAR 35
+CMD find far
+FOUND 100
+CMD find FAR
+FOUND 35
+CMD setname 100
+CALL program.SetEntity far -1
+CMD find far
+FOUND -1
+CMD state
+STATE num_entities=40 firstFree=33 spawnCount=13 mapSpawnCount=0 toDeactivate=4 time=0 frame=0 inCinematic=0
+ENT 3 name=low class=idLight def=func_light spawnId=10 think=0 active=0 cinematic=0 health=0 number=3
+ENT 32 name=f class=idDoor def=func_door spawnId=6 think=1 active=1 cinematic=0 health=0 number=32
+ENT 34 name=g class=idDoor def=func_door spawnId=7 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=FAR class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=35
+ENT 36 name=h class=idDoor def=func_door spawnId=8 think=1 active=1 cinematic=0 health=0 number=36
+ENT 100 name= class=idLight def=func_light spawnId=12 think=0 active=0 cinematic=0 health=0 number=100
+ENT 4094 name=world2 class=idLight def=func_light spawnId=9 think=0 active=0 cinematic=0 health=0 number=4094
+SPAWNLIST  35 32 34 36 4094 3 100 100
+ACTIVELIST  35 32 34 36
+CMD newmap
+CMD state
+STATE num_entities=32 firstFree=32 spawnCount=1 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+SPAWNLIST 
+ACTIVELIST 
+CMD spawndef classname func_door name a
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity a 32
+SPAWN idMover a
+SPAWN idDoor a
+RET 1 ent=32
+CMD state
+STATE num_entities=33 firstFree=33 spawnCount=2 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=a class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=0 number=32
+SPAWNLIST  32
+ACTIVELIST  32
+CMD newmap
+CMD fill idLight 4062
+FILLED 4062
+CMD find fill0
+FOUND 32
+CMD find fill4061
+FOUND 4093
+CMD fill idLight 2
+ERROR no free entities
+FILLED 0
+THROW no free entities
+CMD remove 40
+CALL idEvent.CancelEvents
+REMOVED 40
+CMD fill idLight 2
+ERROR Multiple entities named 'fill0'
+FILLED 0
+THROW Multiple entities named 'fill0'

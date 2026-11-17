@@ -1,0 +1,200 @@
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD def info_player_start spawnclass idPlayerStart
+CMD def func_door spawnclass idDoor speed 2 health 50 thinks 4
+CMD def func_door_mp spawnclass idItem
+CMD def func_item spawnclass idItem
+CMD def trigger_multi spawnclass idTrigger_Multi
+CMD def worldspawn spawnclass idWorldspawn
+CMD def noclass_def foo bar
+CMD def badclass spawnclass idNothing
+CMD def abstract_def spawnclass idBinder
+CMD def script_def spawnfunc my_spawn_func
+CMD def script_missing spawnfunc no_such
+CMD def debug_def spawnclass idDebugHelper
+CMD def func_plat spawnclass idPlat
+CMD def light_def spawnclass idLight cinematic 1 health 9
+CMD func my_spawn_func
+CMD newmap
+CMD state
+STATE num_entities=32 firstFree=32 spawnCount=1 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+SPAWNLIST 
+ACTIVELIST 
+CMD spawndef classname func_door name door1 origin 0\\x200\\x2064
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door1 32
+SPAWN idMover door1
+SPAWN idDoor door1
+RET 1 ent=32
+CMD spawndef classname func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity idDoor_func_door_33 33
+SPAWN idMover idDoor_func_door_33
+SPAWN idDoor idDoor_func_door_33
+RET 1 ent=33
+CMD spawndef classname info_player_start name start1
+CTOR idPlayerStart
+CALL program.SetEntity start1 34
+SPAWN idPlayerStart start1
+RET 1 ent=34
+CMD spawndef classname func_door name door2 health 7
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door2 35
+SPAWN idMover door2
+SPAWN idDoor door2
+RET 1 ent=35
+CMD spawndef classname light_def
+CTOR idLight
+CALL program.SetEntity idLight_light_def_36 36
+RET 1 ent=36
+CMD spawndef classname unknown_thing name x
+WARNING Unknown classname 'unknown_thing' on 'x'.
+RET 0 ent=-1
+CMD spawndef classname unknown_thing
+WARNING Unknown classname 'unknown_thing'.
+RET 0 ent=-1
+CMD spawndef classname noclass_def
+WARNING noclass_def doesn't include a spawnfunc or spawnclass.
+RET 0 ent=-1
+CMD spawndef classname noclass_def name named_noclass
+WARNING noclass_def doesn't include a spawnfunc or spawnclass on 'named_noclass'.
+RET 0 ent=-1
+CMD spawndef classname badclass
+WARNING Could not spawn 'badclass'.  Class 'idNothing' not found.
+RET 0 ent=-1
+CMD spawndef classname badclass name b1
+WARNING Could not spawn 'badclass'.  Class 'idNothing' not found on 'b1'.
+RET 0 ent=-1
+CMD spawndef classname abstract_def
+ERROR Cannot instanciate abstract class idBinder.
+THROW Cannot instanciate abstract class idBinder.
+CMD spawndef classname script_def
+CALL idThread my_spawn_func
+CALL idThread.DelayedStart 0
+RET 1 ent=-1
+CMD spawndef classname script_missing
+WARNING Could not spawn 'script_missing'.  Script function 'no_such' not found.
+RET 0 ent=-1
+CMD spawndef classname debug_def
+CTOR idDebugHelper
+SPAWN idDebugHelper
+RET 1 ent=-1
+CMD spawndef classname func_door name door1
+CTOR idMover
+CTOR idDoor
+ERROR Multiple entities named 'door1'
+THROW Multiple entities named 'door1'
+CMD spawndef classname func_door name DOOR1
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity DOOR1 38
+SPAWN idMover DOOR1
+SPAWN idDoor DOOR1
+RET 1 ent=38
+CMD spawndef classname func_item name NULL
+CTOR idItem
+ERROR Cannot name entity 'NULL'.  'NULL' is reserved for script.
+THROW Cannot name entity 'NULL'.  'NULL' is reserved for script.
+CMD spawndef classname func_item name null_entity
+CTOR idItem
+ERROR Cannot name entity 'null_entity'.  'null_entity' is reserved for script.
+THROW Cannot name entity 'null_entity'.  'null_entity' is reserved for script.
+CMD state
+STATE num_entities=41 firstFree=41 spawnCount=10 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=door1 class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=50 number=32
+ENT 33 name=idDoor_func_door_33 class=idDoor def=func_door spawnId=2 think=1 active=1 cinematic=0 health=50 number=33
+ENT 34 name=start1 class=idPlayerStart def=info_player_start spawnId=3 think=0 active=0 cinematic=0 health=0 number=34
+ENT 35 name=door2 class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=7 number=35
+ENT 36 name=idLight_light_def_36 class=idLight def=light_def spawnId=5 think=0 active=0 cinematic=1 health=9 number=36
+ENT 37 name=door1 class=idDoor def=func_door spawnId=6 think=0 active=0 cinematic=0 health=0 number=37
+ENT 38 name=DOOR1 class=idDoor def=func_door spawnId=7 think=1 active=1 cinematic=0 health=50 number=38
+ENT 39 name=NULL class=idItem def=func_item spawnId=8 think=0 active=0 cinematic=0 health=0 number=39
+ENT 40 name=null_entity class=idItem def=func_item spawnId=9 think=0 active=0 cinematic=0 health=0 number=40
+SPAWNLIST  32 33 34 35 36 37 38 39 40
+ACTIVELIST  32 33 35 38
+CMD find door1
+FOUND 32
+CMD find DOOR1
+FOUND 38
+CMD find Door1
+FOUND -1
+CMD find door2
+FOUND 35
+CMD find nothing
+FOUND -1
+CMD find
+FOUND -1
+CMD finddef -1 func_door
+FOUND 32
+CMD finddef 32 func_door
+FOUND 33
+CMD finddef 33 func_door
+FOUND 35
+CMD finddef 34 func_door
+FOUND 35
+CMD finddef -1 info_player_start
+FOUND 34
+CMD finddef -1 light_def
+FOUND 36
+CMD finddef -1 nothing
+FOUND -1
+CMD spawntype idDoor name door9 thinks 1
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door9 41
+SPAWN idMover door9
+SPAWN idDoor door9
+RET ent=41
+CMD spawntype idPlat
+CTOR idMover
+CTOR idPlat
+CALL program.SetEntity idPlat__42 42
+SPAWN idMover idPlat__42
+RET ent=42
+CMD spawntype idDebugHelper
+ERROR Attempted to spawn non-entity class 'idDebugHelper'
+THROW Attempted to spawn non-entity class 'idDebugHelper'
+CMD spawntype idBinder
+ERROR Cannot instanciate abstract class idBinder.
+THROW Cannot instanciate abstract class idBinder.
+CMD spawntype idEntity
+ERROR Cannot instanciate abstract class idEntity.
+THROW Cannot instanciate abstract class idEntity.
+CMD spawntype idClass
+ERROR Attempted to spawn non-entity class 'idClass'
+THROW Attempted to spawn non-entity class 'idClass'
+CMD spawntype nothing
+CLASS null
+CMD cvar multiplayer 1
+CMD spawndef classname func_door name mpdoor
+CTOR idItem
+CALL program.SetEntity mpdoor 43
+SPAWN idItem mpdoor
+RET 1 ent=43
+CMD spawndef classname func_item name mpitem
+CTOR idItem
+CALL program.SetEntity mpitem 44
+SPAWN idItem mpitem
+RET 1 ent=44
+CMD cvar multiplayer 0
+CMD state
+STATE num_entities=45 firstFree=45 spawnCount=14 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=door1 class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=50 number=32
+ENT 33 name=idDoor_func_door_33 class=idDoor def=func_door spawnId=2 think=1 active=1 cinematic=0 health=50 number=33
+ENT 34 name=start1 class=idPlayerStart def=info_player_start spawnId=3 think=0 active=0 cinematic=0 health=0 number=34
+ENT 35 name=door2 class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=7 number=35
+ENT 36 name=idLight_light_def_36 class=idLight def=light_def spawnId=5 think=0 active=0 cinematic=1 health=9 number=36
+ENT 37 name=door1 class=idDoor def=func_door spawnId=6 think=0 active=0 cinematic=0 health=0 number=37
+ENT 38 name=DOOR1 class=idDoor def=func_door spawnId=7 think=1 active=1 cinematic=0 health=50 number=38
+ENT 39 name=NULL class=idItem def=func_item spawnId=8 think=0 active=0 cinematic=0 health=0 number=39
+ENT 40 name=null_entity class=idItem def=func_item spawnId=9 think=0 active=0 cinematic=0 health=0 number=40
+ENT 41 name=door9 class=idDoor def=*unknown* spawnId=10 think=1 active=1 cinematic=0 health=0 number=41
+ENT 42 name=idPlat__42 class=idPlat def=*unknown* spawnId=11 think=1 active=1 cinematic=0 health=0 number=42
+ENT 43 name=mpdoor class=idItem def=func_door_mp spawnId=12 think=0 active=0 cinematic=0 health=0 number=43
+ENT 44 name=mpitem class=idItem def=func_item spawnId=13 think=0 active=0 cinematic=0 health=0 number=44
+SPAWNLIST  32 33 34 35 36 37 38 39 40 41 42 43 44
+ACTIVELIST  32 33 35 38 41 42

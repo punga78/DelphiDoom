@@ -1,0 +1,215 @@
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD def func_door spawnclass idDoor thinks 2
+CMD def func_plat spawnclass idPlat thinks 3
+CMD def trigger_multi spawnclass idTrigger_Multi
+CMD def light_def spawnclass idLight cinematic 1
+CMD def func_light spawnclass idLight
+CMD newmap
+CMD msec 16
+CMD spawndef classname func_door name d1
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity d1 32
+SPAWN idMover d1
+SPAWN idDoor d1
+RET 1 ent=32
+CMD spawndef classname func_plat name p1
+CTOR idMover
+CTOR idPlat
+CALL program.SetEntity p1 33
+SPAWN idMover p1
+RET 1 ent=33
+CMD spawndef classname trigger_multi name t1
+CTOR idTrigger_Multi
+CALL program.SetEntity t1 34
+SPAWN idTrigger_Multi t1
+RET 1 ent=34
+CMD spawndef classname light_def name l1
+CTOR idLight
+CALL program.SetEntity l1 35
+RET 1 ent=35
+CMD spawndef classname func_light name l2
+CTOR idLight
+CALL program.SetEntity l2 36
+RET 1 ent=36
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  32 33 34
+CMD frame
+THINK idMover d1 1
+THINK idMover p1 1
+THINK t1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=16 frame=1 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  32 33 34
+CMD frame
+THINK idMover d1 2
+THINK idMover p1 2
+THINK t1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=32 frame=2 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  33 34
+CMD frame
+THINK idMover p1 3
+THINK t1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=48 frame=3 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34
+CMD frame
+THINK t1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=64 frame=4 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34
+CMD isactive 36
+RET 0
+CMD active 36 1
+CMD isactive 36
+RET 1
+CMD active 36 8
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=64 frame=4 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=9 active=1 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34 36
+CMD inactive 36 1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=64 frame=4 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=8 active=1 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34 36
+CMD inactive 36 8
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=1 time=64 frame=4 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=1 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34 36
+CMD frame
+THINK t1
+THINK l2
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=80 frame=5 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34
+CMD inactive 36 8
+CMD active 36 0
+CMD active 32 1
+CMD inactive 32 1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=1 time=80 frame=5 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=1 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34 32
+CMD active 32 1
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=80 frame=5 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=1 active=1 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34 32
+CMD frame
+THINK t1
+THINK idMover d1 3
+CMD state
+STATE num_entities=37 firstFree=37 spawnCount=6 mapSpawnCount=0 toDeactivate=0 time=96 frame=6 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=t1 class=idTrigger_Multi def=trigger_multi spawnId=3 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=0 active=0 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 34 35 36
+ACTIVELIST  34
+CMD cinematic 1
+CMD active 35 1
+CMD frame
+CALL physics.UpdateTime 112
+THINK l1
+CMD cinematic 0
+CMD frame
+THINK t1
+THINK l1
+CMD remove 34
+CALL idEvent.CancelEvents
+REMOVED 34
+CMD state
+STATE num_entities=37 firstFree=34 spawnCount=6 mapSpawnCount=0 toDeactivate=1 time=128 frame=8 inCinematic=0
+ENT 32 name=d1 class=idDoor def=func_door spawnId=1 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=p1 class=idPlat def=func_plat spawnId=2 think=0 active=0 cinematic=0 health=0 number=33
+ENT 35 name=l1 class=idLight def=light_def spawnId=4 think=1 active=1 cinematic=1 health=0 number=35
+ENT 36 name=l2 class=idLight def=func_light spawnId=5 think=0 active=0 cinematic=0 health=0 number=36
+SPAWNLIST  32 33 35 36
+ACTIVELIST  35
+CMD frame
+THINK l1
+CMD remove 35
+CALL idEvent.CancelEvents
+REMOVED 35
+CMD remove 32
+CALL idEvent.CancelEvents
+REMOVED 32
+CMD remove 33
+CALL idEvent.CancelEvents
+REMOVED 33
+CMD remove 36
+CALL idEvent.CancelEvents
+REMOVED 36
+CMD state
+STATE num_entities=37 firstFree=32 spawnCount=6 mapSpawnCount=0 toDeactivate=1 time=144 frame=9 inCinematic=0
+SPAWNLIST 
+ACTIVELIST 
+CMD frame

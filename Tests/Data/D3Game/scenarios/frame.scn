@@ -1,0 +1,62 @@
+# the think loop of idGameLocal::RunFrame and the activity of idEntity (BecomeActive, BecomeInactive)
+inittypes
+def func_door spawnclass idDoor thinks 2
+def func_plat spawnclass idPlat thinks 3
+def trigger_multi spawnclass idTrigger_Multi
+def light_def spawnclass idLight cinematic 1
+def func_light spawnclass idLight
+newmap
+msec 16
+spawndef classname func_door name d1
+spawndef classname func_plat name p1
+spawndef classname trigger_multi name t1
+spawndef classname light_def name l1
+spawndef classname func_light name l2
+state
+# the movers stop after their think counts: the deactivation is counted and done at the end of the frame
+frame
+state
+frame
+state
+frame
+state
+frame
+state
+# activity by hand
+isactive 36
+active 36 1
+isactive 36
+active 36 8
+state
+inactive 36 1
+state
+inactive 36 8
+state
+frame
+state
+inactive 36 8
+active 36 0
+# an entity that stops thinking and starts again in the same frame count
+active 32 1
+inactive 32 1
+state
+active 32 1
+state
+frame
+state
+# in a cinematic only the entities that are in it think; the others only update their time
+cinematic 1
+active 35 1
+frame
+cinematic 0
+frame
+# removing an active entity takes it out of both lists
+remove 34
+state
+frame
+remove 35
+remove 32
+remove 33
+remove 36
+state
+frame

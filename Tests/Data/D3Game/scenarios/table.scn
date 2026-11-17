@@ -1,0 +1,56 @@
+# the entity table: numbers from MAX_CLIENTS, spawn ids, free index after a removal, spawn_entnum, the names hash
+inittypes
+def func_door spawnclass idDoor
+def func_light spawnclass idLight
+newmap
+state
+spawndef classname func_door name a
+spawndef classname func_door name b
+spawndef classname func_door name c
+spawndef classname func_door name d
+state
+remove 33
+state
+spawndef classname func_door name e
+remove 32
+remove 34
+spawndef classname func_door name f
+spawndef classname func_door name g
+spawndef classname func_door name h
+state
+remove 99
+remove 33
+remove 33
+# spawn_entnum puts an entity where the caller says; num_entities grows by one only
+spawndef classname func_light name w spawn_entnum 4094
+spawndef classname func_light name low spawn_entnum 3
+spawndef classname func_light name far spawn_entnum 100
+spawndef classname func_light name taken spawn_entnum 100
+state
+find w
+find far
+setname 4094 world2
+find w
+find world2
+setname 100 far
+setname 100 far
+setname 35 far
+setname 35 FAR
+find far
+find FAR
+setname 100
+find far
+state
+# a new map starts again
+newmap
+state
+spawndef classname func_door name a
+state
+# no free entities
+newmap
+fill idLight 4062
+find fill0
+find fill4061
+fill idLight 2
+remove 40
+fill idLight 2

@@ -1,0 +1,72 @@
+CMD events
+EVENTS 7
+EVENT 0 <immediateremove> format= args=0
+EVENT 1 remove format= args=0
+EVENT 2 activate format=e args=1
+EVENT 3 hide format= args=0
+EVENT 4 show format= args=0
+EVENT 5 open format= args=0
+EVENT 6 ping format=d args=1
+CMD event remove
+EVENT 1 remove
+CMD event <immediateremove>
+EVENT 0 <immediateremove>
+CMD event activate
+EVENT 2 activate
+CMD event hide
+EVENT 3 hide
+CMD event ping
+EVENT 6 ping
+CMD event nothing
+EVENT null
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD responds idClass remove
+RET 1
+CMD responds idClass activate
+RET 0
+CMD responds idClass hide
+RET 0
+CMD responds idEntity hide
+RET 1
+CMD responds idEntity open
+RET 0
+CMD responds idMover open
+RET 1
+CMD responds idMover hide
+RET 1
+CMD responds idMover show
+RET 0
+CMD responds idDoor activate
+RET 1
+CMD responds idDoor hide
+RET 1
+CMD responds idDoor open
+RET 1
+CMD responds idDoor ping
+RET 0
+CMD responds idPlat open
+RET 1
+CMD responds idPlat activate
+RET 0
+CMD responds idLight hide
+RET 1
+CMD responds idLight show
+RET 0
+CMD responds idItem show
+RET 1
+CMD responds idItem hide
+RET 1
+CMD responds idItem open
+RET 0
+CMD responds idTrigger_Multi ping
+RET 1
+CMD responds idWorldspawn ping
+RET 0
+CMD responds idDebugHelper hide
+RET 0
+CMD responds idDebugHelper nothing
+NOTFOUND
+CMD responds idDoor <immediateremove>
+RET 1
