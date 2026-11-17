@@ -14,7 +14,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Scanner.Q3.Types, DelphiDoom.Scanner.Q3.Intf, DelphiDoom.Scanner.Q3.Source,
-  DelphiDoom.Scanner.Q3.ScriptLoader.Intf, DelphiDoom.Scanner.Q3.GlobalDefines;
+  DelphiDoom.Scanner.Q3.ScriptLoader.Intf, DelphiDoom.Scanner.Q3.GlobalDefines, DelphiDoom.Scanner.Q3.Define;
 
 type
   /// <summary>
@@ -45,6 +45,16 @@ type
     function SourceFileAndLine(const AHandle: Integer; out AFileName: AnsiString; out ALine: Integer): Boolean;
     /// <summary>PC_CheckOpenSourceHandles: an error in the log for every source that is still open</summary>
     procedure CheckOpen;
+    /// <summary>
+    ///   PC_AddGlobalDefine: a define from text ("NAME value" or "NAME(a, b) text") that every source opened
+    ///   from now on gets. False (and the warning in the log) if the text is not a define. The sources that are
+    ///   already open do not get it, as in the C: the copy is made when a source is loaded
+    /// </summary>
+    function AddGlobalDefine(const AText: AnsiString): Boolean;
+    /// <summary>PC_RemoveGlobalDefine (see TQ3GlobalDefines.Remove for the difference from the C)</summary>
+    function RemoveGlobalDefine(const AName: AnsiString): Boolean;
+    /// <summary>PC_RemoveAllGlobalDefines</summary>
+    procedure RemoveAllGlobalDefines;
   end;
 
 implementation
@@ -126,6 +136,27 @@ begin
   if FSources[AHandle].CurrentScript <> nil then
     ALine := FSources[AHandle].CurrentScript.Line;
   Result := True;
+end;
+
+function TQ3SourceHandles.AddGlobalDefine(const AText: AnsiString): Boolean;
+var
+  LDefine: TQ3Define;
+begin
+  LDefine := TQ3Source.DefineFromString(AText, FLoader, FLog, FNow);
+  if LDefine = nil then
+    Exit(False);
+  FGlobalDefines.Add(LDefine);
+  Result := True;
+end;
+
+function TQ3SourceHandles.RemoveGlobalDefine(const AName: AnsiString): Boolean;
+begin
+  Result := FGlobalDefines.Remove(AName);
+end;
+
+procedure TQ3SourceHandles.RemoveAllGlobalDefines;
+begin
+  FGlobalDefines.Clear;
 end;
 
 procedure TQ3SourceHandles.CheckOpen;

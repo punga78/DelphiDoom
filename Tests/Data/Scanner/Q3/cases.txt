@@ -91,3 +91,5 @@ pc|inc_sub|inc_sub.txt
 pc|inc_path|inc_path.txt|inc=sub
 pc|inc_path_none|inc_path.txt
 pc|stringize_expand|pc_stringize2.txt|nv=2
+
+seq|handles||ops=seq_globals.ops

@@ -1,0 +1,26 @@
+load|seq_a.txt
+gdef|MISSIONPACK 1
+gdef|GADD(a, b) a + b
+gdef|BAD(
+gdef|
+load|seq_a.txt
+read|1|0
+read|2|0
+where|2
+rmall
+load|seq_a.txt
+read|3|3
+read|3|0
+free|2
+free|2
+where|2
+load|seq_a.txt
+gdef|MISSIONPACK 2
+gdef|MISSIONPACK 3
+load|seq_a.txt
+read|4|0
+free|0
+free|99
+read|77|1
+load|nowhere.txt
+rmall
