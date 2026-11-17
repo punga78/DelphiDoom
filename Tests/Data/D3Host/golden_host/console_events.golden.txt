@@ -1,0 +1,378 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD coninit
+ADDCMD clear 2
+ADDCMD conDump 2
+CMD cmds map maplist quit
+CMD argcomp map e1m1 e1m2
+CMD exec bind f1 say f1
+MODFLAGS set 64
+CMD exec bind f2 _attack
+MODFLAGS set 64
+CMD conframe 5000
+CMD evms 7000
+CMD conevent 1 104 1 0
+RET 0
+CMD conevent 2 104 0 0
+RET 0
+CMD conactive
+RET 0
+CMD conevent 1 96 0 0
+RET 1
+CMD conactive
+RET 0
+CMD conevent 1 96 1 0
+CVARSETB ui_chat 1
+RET 1
+CMD conactive
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conevent 2 96 0 0
+RET 1
+CMD conevent 2 126 0 0
+RET 1
+CMD conevent 2 104 0 0
+RET 1
+CMD conevent 2 105 0 0
+RET 1
+CMD conevent 1 97 0 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=0,0
+CONFIELD hi
+CONFIELDCURSOR 2 0
+CMD conevent 1 13 1 0
+PRINTF ]hi\n
+BUFTEXT append hi
+BUFTEXT append \n
+SESSION update 1
+RET 1
+CMD conevent 3 5 5 0
+RET 0
+CMD conevent 4 1 1 0
+RET 0
+CMD conevent 5 1 1 0
+RET 0
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=1,1
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+CMD conevent 2 109 0 0
+RET 1
+CMD conevent 2 97 0 0
+RET 1
+CMD conevent 2 112 0 0
+RET 1
+CMD conevent 1 9 1 0
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=1,1
+CONFIELD map
+CONFIELDCURSOR 3 0
+HIST 0 hi
+CMD conevent 1 9 1 0
+RET 1
+CMD conevent 1 13 1 0
+PRINTF ]maplist\n
+BUFTEXT append maplist
+BUFTEXT append \n
+SESSION update 1
+RET 1
+CMD conevent 2 120 0 0
+RET 1
+CMD conevent 1 174 1 0
+PRINTF ]x\n
+BUFTEXT append x
+BUFTEXT append \n
+SESSION update 1
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,3
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 133 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 133 1 0
+RET 1
+CMD conevent 1 133 1 0
+RET 1
+CMD conevent 1 133 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,0
+CONFIELD hi
+CONFIELDCURSOR 2 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 134 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,1
+CONFIELD maplist
+CONFIELDCURSOR 3 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 134 1 0
+RET 1
+CMD conevent 1 134 1 0
+RET 1
+CMD conevent 1 134 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,3
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD prelim 141 1
+CMD conevent 1 112 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 110 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=0 x=0 display=0 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,3
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 80 1 0
+RET 1
+CMD prelim 141 0
+CMD conevent 1 149 1 0
+BUFTEXT append say f1
+BUFTEXT append \n
+RET 1
+CMD conevent 1 150 1 0
+RET 1
+CMD conevent 1 160 1 0
+RET 1
+CMD conevent 1 161 1 0
+RET 1
+CMD conprint a\\nb\\nc\\nd\\ne\\nf\\ng\\nh\\n
+CMD context
+CONSOLE catching=1 current=8 x=0 display=8 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 146 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=6 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 146 1 0
+RET 1
+CMD conevent 1 146 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=2 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 145 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=4 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 196 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=2 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 195 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=4 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD prelim 141 1
+CMD conevent 1 147 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=0 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 148 1 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=8 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 1 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 147 1 0
+RET 1
+CMD prelim 141 0
+CMD conevent 1 147 1 0
+RET 1
+CMD conevent 1 135 1 0
+RET 1
+CMD conevent 1 108 1 0
+RET 1
+CMD conshow 1
+CONLINE 8                                                                               
+CONCOLOR 8 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CMD prelim 141 1
+CMD conevent 1 108 1 0
+RET 1
+CMD prelim 141 0
+CMD conshow 1
+CONLINE 8                                                                               
+CONCOLOR 8 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CMD conevent 1 96 1 0
+SYS grabmouse 1
+CVARSETB ui_chat 0
+RET 1
+CMD conactive
+RET 0
+CMD context
+CONSOLE catching=0 current=8 x=0 display=8 lastKey=7000 nextKey=200 frac=0.000 final=0.000 fracTime=5000 history=3,2
+CONFIELD x
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conevent 1 126 1 0
+CVARSETB ui_chat 1
+RET 1
+CMD conactive
+RET 1
+CMD prelim 142 1
+CMD conevent 1 96 1 0
+SYS grabmouse 1
+CVARSETB ui_chat 0
+RET 1
+CMD context
+CONSOLE catching=0 current=8 x=0 display=8 lastKey=7000 nextKey=200 frac=0.000 final=0.000 fracTime=5000 history=3,2
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD prelim 142 0
+CMD conevent 1 96 1 1
+RET 1
+CMD conactive
+RET 0
+CMD conevent 1 97 1 1
+RET 1
+CMD conevent 2 97 0 1
+RET 1
+CMD conevent 3 1 1 1
+RET 0
+CMD consolekey 120 121
+CMD conevent 1 120 1 0
+CVARSETB ui_chat 1
+RET 1
+CMD conevent 2 121 0 0
+RET 1
+CMD context
+CONSOLE catching=1 current=8 x=0 display=8 lastKey=7000 nextKey=200 frac=0.000 final=0.500 fracTime=5000 history=3,2
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conclose
+CMD context
+CONSOLE catching=0 current=8 x=0 display=8 lastKey=7000 nextKey=200 frac=0.000 final=0.000 fracTime=5000 history=3,2
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conactive
+RET 0
+CMD conevent 1 96 1 0
+RET 0
+CMD conevent 1 13 1 0
+RET 0
+CMD conevent 1 13 1 0
+RET 0
+CMD conevent 2 49 0 0
+RET 0
+CMD conevent 1 13 1 0
+RET 0
+CMD conevent 2 50 0 0
+RET 0
+CMD conevent 1 13 1 0
+RET 0
+CMD conevent 2 51 0 0
+RET 0
+CMD conevent 1 13 1 0
+RET 0
+CMD conevent 1 133 1 0
+RET 0
+CMD conevent 1 133 1 0
+RET 0
+CMD conevent 1 133 1 0
+RET 0
+CMD conevent 1 133 1 0
+RET 0
+CMD context
+CONSOLE catching=0 current=8 x=0 display=8 lastKey=7000 nextKey=200 frac=0.000 final=0.000 fracTime=5000 history=3,2
+CONFIELD 
+CONFIELDCURSOR 0 0
+HIST 0 hi
+HIST 1 maplist
+HIST 2 x
+CMD conshutdown
+RMCMD clear
+RMCMD conDump
+CMD exec clear
+NOCMD clear
+CMD keyshutdown

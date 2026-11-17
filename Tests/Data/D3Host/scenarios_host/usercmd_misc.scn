@@ -1,0 +1,84 @@
+# idUsercmdGen: not initialized, inhibit, clear, new map, direct usercmd, the table of commands, the buffer of tics, errors
+keyinit
+exec bind w _forward
+exec bind space _impulse5
+exec bind enter _impulse7
+exec bind tab _impulse63
+exec bind f12 _impulse64
+ticnum 5
+keyq 119 1
+ucint
+uctic 6
+ucdirect
+ucbutton 5
+ucinit
+ucint
+uctic 6
+keyq 32 1
+ucint
+uctic 6
+ucstate
+keyq 32 0
+keyq 32 1
+ucint
+uctic 6
+ucstate
+keyq 32 0
+ucinhibit 0 1
+ucstate
+keyq 13 1
+ucint
+uctic 6
+keyq 13 0
+ucinhibit 1 1
+ucinhibit 0 0
+ucstate
+ucinhibit 1 0
+ucstate
+keyq 119 1
+ucint
+uctic 6
+ucclear
+ucbutton 5
+uckey 119
+keyq 119 1
+ucdirect
+ucbutton 5
+ucangles
+ucstate
+keyq 9 1
+ucdirect
+ucstate
+ucnewmap
+ucstate
+ucnames
+ucdata _forward
+ucdata _FORWARD
+ucdata _impulse63
+ucdata _impulse64
+ucdata
+ucdata nothing
+ucbutton -1
+ucbutton 0
+ucbutton 5
+ucbutton 100
+ucbutton 79
+uckey -1
+uckey 254
+uckey 255
+uckey 119
+ticnum 70
+uctic 70
+uctic 71
+uctic 72
+uctic 7
+uctic 6
+ticnum 5
+ucint
+uctic 6
+uctic 70
+uctic 6
+ucshutdown
+ucint
+ucdirect
+keyshutdown

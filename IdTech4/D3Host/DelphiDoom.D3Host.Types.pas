@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Doom 3 host library - constants, events, shared state           }
 {                                                                              }
@@ -100,7 +100,25 @@ type
     FErrorEntered: Integer;
     FRefreshOnPrint: Boolean;
     FEditors: Integer;
+    FTicNumber: Integer;
+    FFrameTime: Integer;
+    FFrameNumber: Integer;
+    FTimeGameFrame: Integer;
+    FTimeGameDraw: Integer;
+    FTimeFrontend: Integer;
+    FTimeBackend: Integer;
   public
+    /// <summary>time_gameFrame, time_gameDraw, time_frontend, time_backend: set by the game and the renderer, shown by com_speeds</summary>
+    property TimeGameFrame: Integer read FTimeGameFrame write FTimeGameFrame;
+    property TimeGameDraw: Integer read FTimeGameDraw write FTimeGameDraw;
+    property TimeFrontend: Integer read FTimeFrontend write FTimeFrontend;
+    property TimeBackend: Integer read FTimeBackend write FTimeBackend;
+    /// <summary>com_ticNumber: the async tics so far</summary>
+    property TicNumber: Integer read FTicNumber write FTicNumber;
+    /// <summary>com_frameTime: com_ticNumber * USERCMD_MSEC at the start of the frame</summary>
+    property FrameTime: Integer read FFrameTime write FFrameTime;
+    /// <summary>com_frameNumber</summary>
+    property FrameNumber: Integer read FFrameNumber write FFrameNumber;
     /// <summary>0, ERP_DROP, ERP_FATAL...</summary>
     property ErrorEntered: Integer read FErrorEntered write FErrorEntered;
     /// <summary>update the screen every print (dmap)</summary>
@@ -119,7 +137,77 @@ type
     class function Limit(const AText: AnsiString): AnsiString; static;
   end;
 
+  /// <summary>atoi and atof of the C library, which the cvars of the original use to read their text</summary>
+  TD3CNumbers = class
+  public
+    /// <summary>atoi: leading blanks, a sign, the digits; 0 if there are none</summary>
+    class function Atoi(const AText: AnsiString): Integer; static;
+    /// <summary>atof for the plain decimal form (blanks, sign, digits, point, digits, exponent); 0 if there are none</summary>
+    class function Atof(const AText: AnsiString): Double; static;
+  end;
+
 implementation
+
+class function TD3CNumbers.Atoi(const AText: AnsiString): Integer;
+var
+  LIndex: Integer;
+  LNegative: Boolean;
+  LValue: Int64;
+begin
+  LIndex := 1;
+  while (LIndex <= Length(AText)) and (AText[LIndex] in [' ', #9, #10, #11, #12, #13]) do
+    Inc(LIndex);
+  LNegative := False;
+  if (LIndex <= Length(AText)) and (AText[LIndex] in ['+', '-']) then
+  begin
+    LNegative := AText[LIndex] = '-';
+    Inc(LIndex);
+  end;
+  LValue := 0;
+  while (LIndex <= Length(AText)) and (AText[LIndex] in ['0'..'9']) do
+  begin
+    LValue := (LValue * 10 + Ord(AText[LIndex]) - Ord('0')) and $FFFFFFFF;
+    Inc(LIndex);
+  end;
+  if LNegative then
+    LValue := -LValue;
+  Result := Integer(LValue and $FFFFFFFF);
+end;
+
+class function TD3CNumbers.Atof(const AText: AnsiString): Double;
+var
+  LIndex: Integer;
+  LEnd: Integer;
+  LText: string;
+  LValue: Double;
+begin
+  LIndex := 1;
+  while (LIndex <= Length(AText)) and (AText[LIndex] in [' ', #9, #10, #11, #12, #13]) do
+    Inc(LIndex);
+  LEnd := LIndex;
+  if (LEnd <= Length(AText)) and (AText[LEnd] in ['+', '-']) then
+    Inc(LEnd);
+  while (LEnd <= Length(AText)) and (AText[LEnd] in ['0'..'9']) do
+    Inc(LEnd);
+  if (LEnd <= Length(AText)) and (AText[LEnd] = '.') then
+  begin
+    Inc(LEnd);
+    while (LEnd <= Length(AText)) and (AText[LEnd] in ['0'..'9']) do
+      Inc(LEnd);
+  end;
+  if (LEnd <= Length(AText)) and (AText[LEnd] in ['e', 'E']) then
+  begin
+    Inc(LEnd);
+    if (LEnd <= Length(AText)) and (AText[LEnd] in ['+', '-']) then
+      Inc(LEnd);
+    while (LEnd <= Length(AText)) and (AText[LEnd] in ['0'..'9']) do
+      Inc(LEnd);
+  end;
+  LText := string(Copy(AText, LIndex, LEnd - LIndex));
+  if not TryStrToFloat(LText, LValue, TFormatSettings.Invariant) then
+    LValue := 0;
+  Result := LValue;
+end;
 
 class function TD3SysEvent.Make(AType, AValue, AValue2: Integer): TD3SysEvent;
 begin

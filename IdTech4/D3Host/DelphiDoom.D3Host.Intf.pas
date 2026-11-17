@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Doom 3 host library - contracts                                 }
 {                                                                              }
@@ -128,6 +128,18 @@ type
   ID3FatalErrorSink = interface
     ['{2E96D5B1-A4C8-4F30-87D2-B01C7F3A5E49}']
     procedure FatalError(const AText: AnsiString);
+  end;
+
+  /// <summary>Error of idCommonLocal: raises ED3HostException for a drop, or leaves the program for a fatal error</summary>
+  ID3ErrorReporter = interface
+    ['{6D3F8A12-C095-4B7E-A1D4-0E92B5F7C386}']
+    procedure Error(const AText: AnsiString);
+  end;
+
+  /// <summary>Warning of idCommonLocal: prints "WARNING:" and remembers the text</summary>
+  ID3WarningSink = interface
+    ['{B9E4172C-5A08-4D3F-8C61-F27D0A93E5B4}']
+    procedure Warning(const AText: AnsiString);
   end;
 
   /// <summary>The printing of idCommonLocal (VPrintf, Printf, DPrintf); every text is already formatted</summary>

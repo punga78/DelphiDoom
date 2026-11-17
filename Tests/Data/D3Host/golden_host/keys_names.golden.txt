@@ -1,0 +1,261 @@
+CMD s2k a
+RET 97
+CMD s2k Z
+RET 90
+CMD s2k ;
+RET 59
+CMD s2k tab
+RET 9
+CMD s2k TAB
+RET 9
+CMD s2k Enter
+RET 13
+CMD s2k mouse1
+RET 187
+CMD s2k MWHEELUP
+RET 196
+CMD s2k kp_5
+RET 169
+CMD s2k KP_NUMLOCK
+RET 182
+CMD s2k semicolon
+RET 59
+CMD s2k APOSTROPHE
+RET 39
+CMD s2k printscreen
+RET 252
+CMD s2k rightalt
+RET 253
+CMD s2k 0x41
+RET 65
+CMD s2k 0x7f
+RET 127
+CMD s2k 0xzz
+RET 0
+CMD s2k 0x4
+RET -1
+CMD s2k nosuchkey
+RET -1
+CMD s2k
+RET -1
+CMD k2s -1 0
+RETS <KEY NOT FOUND>
+CMD k2s 256 0
+RETS <OUT OF RANGE>
+CMD k2s -5 1
+RETS <OUT OF RANGE>
+CMD k2s 0 0
+RETS 0x00
+CMD k2s 31 0
+RETS 0x1f
+CMD k2s 32 0
+RETS SPACE
+CMD k2s 33 0
+RETS !
+CMD k2s 34 0
+RETS 0x22
+CMD k2s 59 0
+RETS SEMICOLON
+CMD k2s 39 0
+RETS APOSTROPHE
+CMD k2s 65 0
+RETS A
+CMD k2s 126 0
+RETS ~
+CMD k2s 127 0
+RETS BACKSPACE
+CMD k2s 127 1
+RETS <#str_07022>
+CMD k2s 9 0
+RETS TAB
+CMD k2s 9 1
+RETS <#str_07018>
+CMD k2s 140 0
+RETS ALT
+CMD k2s 140 1
+RETS <#str_07027>
+CMD k2s 253 0
+RETS RIGHTALT
+CMD k2s 253 1
+RETS <#str_07027>
+CMD k2s 161 0
+RETS 0xa1
+CMD k2s 161 1
+RETS \xA1
+CMD k2s 200 0
+RETS JOY4
+CMD k2s 255 0
+RETS 0xff
+CMD k2s 255 1
+RETS \xFF
+CMD k2s 129 0
+RETS CAPSLOCK
+CMD k2s 130 1
+RETS <#str_07035>
+CMD k2s 187 1
+RETS <#str_07054>
+CMD k2s 128 0
+RETS COMMAND
+CMD argkeyname bind
+COMP bind *
+COMP bind ,
+COMP bind -
+COMP bind =
+COMP bind .
+COMP bind /
+COMP bind [
+COMP bind \\
+COMP bind ]
+COMP bind 1
+COMP bind 2
+COMP bind 3
+COMP bind 4
+COMP bind 5
+COMP bind 6
+COMP bind 7
+COMP bind 8
+COMP bind 9
+COMP bind 0
+COMP bind a
+COMP bind b
+COMP bind c
+COMP bind d
+COMP bind e
+COMP bind f
+COMP bind g
+COMP bind h
+COMP bind i
+COMP bind j
+COMP bind k
+COMP bind l
+COMP bind m
+COMP bind n
+COMP bind o
+COMP bind p
+COMP bind q
+COMP bind r
+COMP bind s
+COMP bind t
+COMP bind u
+COMP bind v
+COMP bind w
+COMP bind x
+COMP bind y
+COMP bind z
+COMP bind TAB
+COMP bind ENTER
+COMP bind ESCAPE
+COMP bind SPACE
+COMP bind BACKSPACE
+COMP bind UPARROW
+COMP bind DOWNARROW
+COMP bind LEFTARROW
+COMP bind RIGHTARROW
+COMP bind ALT
+COMP bind RIGHTALT
+COMP bind CTRL
+COMP bind SHIFT
+COMP bind LWIN
+COMP bind RWIN
+COMP bind MENU
+COMP bind COMMAND
+COMP bind CAPSLOCK
+COMP bind SCROLL
+COMP bind PRINTSCREEN
+COMP bind F1
+COMP bind F2
+COMP bind F3
+COMP bind F4
+COMP bind F5
+COMP bind F6
+COMP bind F7
+COMP bind F8
+COMP bind F9
+COMP bind F10
+COMP bind F11
+COMP bind F12
+COMP bind INS
+COMP bind DEL
+COMP bind PGDN
+COMP bind PGUP
+COMP bind HOME
+COMP bind END
+COMP bind MOUSE1
+COMP bind MOUSE2
+COMP bind MOUSE3
+COMP bind MOUSE4
+COMP bind MOUSE5
+COMP bind MOUSE6
+COMP bind MOUSE7
+COMP bind MOUSE8
+COMP bind MWHEELUP
+COMP bind MWHEELDOWN
+COMP bind JOY1
+COMP bind JOY2
+COMP bind JOY3
+COMP bind JOY4
+COMP bind JOY5
+COMP bind JOY6
+COMP bind JOY7
+COMP bind JOY8
+COMP bind JOY9
+COMP bind JOY10
+COMP bind JOY11
+COMP bind JOY12
+COMP bind JOY13
+COMP bind JOY14
+COMP bind JOY15
+COMP bind JOY16
+COMP bind JOY17
+COMP bind JOY18
+COMP bind JOY19
+COMP bind JOY20
+COMP bind JOY21
+COMP bind JOY22
+COMP bind JOY23
+COMP bind JOY24
+COMP bind JOY25
+COMP bind JOY26
+COMP bind JOY27
+COMP bind JOY28
+COMP bind JOY29
+COMP bind JOY30
+COMP bind JOY31
+COMP bind JOY32
+COMP bind AUX1
+COMP bind AUX2
+COMP bind AUX3
+COMP bind AUX4
+COMP bind AUX5
+COMP bind AUX6
+COMP bind AUX7
+COMP bind AUX8
+COMP bind AUX9
+COMP bind AUX10
+COMP bind AUX11
+COMP bind AUX12
+COMP bind AUX13
+COMP bind AUX14
+COMP bind AUX15
+COMP bind AUX16
+COMP bind KP_HOME
+COMP bind KP_UPARROW
+COMP bind KP_PGUP
+COMP bind KP_LEFTARROW
+COMP bind KP_5
+COMP bind KP_RIGHTARROW
+COMP bind KP_END
+COMP bind KP_DOWNARROW
+COMP bind KP_PGDN
+COMP bind KP_ENTER
+COMP bind KP_INS
+COMP bind KP_DEL
+COMP bind KP_SLASH
+COMP bind KP_MINUS
+COMP bind KP_PLUS
+COMP bind KP_NUMLOCK
+COMP bind KP_STAR
+COMP bind KP_EQUALS
+COMP bind PAUSE
+COMP bind SEMICOLON
+COMP bind APOSTROPHE

@@ -1,0 +1,96 @@
+# idEditField::AutoComplete: one match, several matches that cycle, arguments, variables, no match
+keyinit
+cmds map maplist mapcycle bind quit Map_Extra
+cvarnames m_pitch m_yaw sensitivity
+argcomp map e1m1 e1m2 e2m1
+argcomp quit now later
+cvarargcomp m_pitch 0.022 0.03
+fwidth 40
+fbuf qu
+fauto
+fshow
+fauto
+fshow
+fclear
+fbuf quit
+fauto
+fshow
+fclear
+fbuf quit n
+fauto
+fshow
+fclear
+fbuf map
+fauto
+fshow
+fauto
+fshow
+fauto
+fshow
+fauto
+fshow
+fauto
+fshow
+fauto
+fshow
+fclear
+fbuf map e1
+fauto
+fshow
+fclear
+fbuf map zzz
+fauto
+fshow
+fclear
+fbuf zzz
+fauto
+fshow
+fclear
+fauto
+fshow
+fbuf m_
+fauto
+fshow
+fauto
+fshow
+fbuf m_pitch 0
+fauto
+fshow
+fbuf ma
+fauto
+fshow
+fkey 135
+fshow
+fclearauto
+fshow
+fbuf ma
+fauto
+fchar 120
+fshow
+fbuf ma
+fauto
+fkey 144
+fshow
+fbuf ma
+fauto
+fkey 147
+fshow
+fbuf ma
+fauto
+fkey 148
+fshow
+fbuf ma
+fauto
+fkey 136
+fshow
+fbuf ma
+fauto
+fkey 130
+fshow
+fbuf sens
+fauto
+fshow
+fbuf SENS
+fauto
+fshow
+keyshutdown

@@ -1,0 +1,152 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD exec bind w _forward
+MODFLAGS set 64
+CMD exec bind space _impulse5
+MODFLAGS set 64
+CMD exec bind enter _impulse7
+MODFLAGS set 64
+CMD exec bind tab _impulse63
+MODFLAGS set 64
+CMD exec bind f12 _impulse64
+MODFLAGS set 64
+CMD ticnum 5
+CMD keyq 119 1
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=0 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=0
+CMD ucdirect
+UCDIRECT frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=0
+CMD ucbutton 5
+RET 1
+CMD ucinit
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=6
+CMD keyq 32 1
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=1 seq=6
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=1 impulse=5 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD keyq 32 0
+CMD keyq 32 1
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=6
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=5 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD keyq 32 0
+CMD ucinhibit 0 1
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=5 inhibit=1 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD keyq 13 1
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=6
+CMD keyq 13 0
+CMD ucinhibit 1 1
+CMD ucinhibit 0 0
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=5 inhibit=2 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ucinhibit 1 0
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=5 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD keyq 119 1
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=6
+CMD ucclear
+CMD ucbutton 5
+RET 0
+CMD uckey 119
+RET 0
+CMD keyq 119 1
+CMD ucdirect
+UCDIRECT frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=0
+CMD ucbutton 5
+RET 1
+CMD ucangles
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=5 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD keyq 9 1
+CMD ucdirect
+UCDIRECT frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=0
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=5 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ucnewmap
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ucnames
+NUM 89
+NAME0 _moveUp
+NAMEN 
+NAMEBAD 
+CMD ucdata _forward
+RET 5
+CMD ucdata _FORWARD
+RET 5
+CMD ucdata _impulse63
+RET 88
+CMD ucdata _impulse64
+RET 0
+CMD ucdata
+RET 0
+CMD ucdata nothing
+RET 0
+CMD ucbutton -1
+RET -1
+CMD ucbutton 0
+RET 0
+CMD ucbutton 5
+RET 0
+CMD ucbutton 100
+RET -1
+CMD ucbutton 79
+RET 0
+CMD uckey -1
+RET -1
+CMD uckey 254
+RET -1
+CMD uckey 255
+RET -1
+CMD uckey 119
+RET 0
+CMD ticnum 70
+CMD uctic 70
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=6
+CMD uctic 71
+UCTIC frame=0 time=0 dup=0 buttons=0 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=0
+CMD uctic 72
+ERROR idUsercmdGenLocal::TicCmd ticNumber > com_ticNumber
+THROW idUsercmdGenLocal::TicCmd ticNumber > com_ticNumber
+CMD uctic 7
+UCTIC frame=0 time=0 dup=0 buttons=0 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=0
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=5 flags=0 seq=6
+CMD ticnum 5
+CMD ucint
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=6
+CMD uctic 70
+ERROR idUsercmdGenLocal::TicCmd ticNumber > com_ticNumber
+THROW idUsercmdGenLocal::TicCmd ticNumber > com_ticNumber
+CMD uctic 6
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=6
+CMD ucshutdown
+CMD ucint
+CMD ucdirect
+UCDIRECT frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=0
+CMD keyshutdown

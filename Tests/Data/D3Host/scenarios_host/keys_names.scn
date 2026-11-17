@@ -1,0 +1,51 @@
+# the names of the keys: StringToKeyNum, KeyNumToString (localized or not), the completion of the key names
+s2k a
+s2k Z
+s2k ;
+s2k tab
+s2k TAB
+s2k Enter
+s2k mouse1
+s2k MWHEELUP
+s2k kp_5
+s2k KP_NUMLOCK
+s2k semicolon
+s2k APOSTROPHE
+s2k printscreen
+s2k rightalt
+s2k 0x41
+s2k 0x7f
+s2k 0xzz
+s2k 0x4
+s2k nosuchkey
+s2k
+k2s -1 0
+k2s 256 0
+k2s -5 1
+k2s 0 0
+k2s 31 0
+k2s 32 0
+k2s 33 0
+k2s 34 0
+k2s 59 0
+k2s 39 0
+k2s 65 0
+k2s 126 0
+k2s 127 0
+k2s 127 1
+k2s 9 0
+k2s 9 1
+k2s 140 0
+k2s 140 1
+k2s 253 0
+k2s 253 1
+k2s 161 0
+k2s 161 1
+k2s 200 0
+k2s 255 0
+k2s 255 1
+k2s 129 0
+k2s 130 1
+k2s 187 1
+k2s 128 0
+argkeyname bind

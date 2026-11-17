@@ -1,0 +1,134 @@
+# idUsercmdGen from the mouse: deltas, smoothing, sensitivity, strafing, mouse look, the wheel, the buttons, the joystick
+keyinit
+ucinit
+exec bind mouse1 _attack
+exec bind mouse2 +zoom
+exec bind mwheelup _impulse3
+exec bind e _strafe
+exec bind q _mlook
+exec bind mouse3 _button1
+ticnum 100
+mouseq 8 10
+mouseq 9 -4
+ucint
+uctic 101
+ucmouse
+ucstate
+ticnum 101
+ucint
+uctic 102
+ucstate
+ticnum 102
+mouseq 8 3
+ucint
+uctic 103
+ticnum 103
+mouseq 8 -7
+mouseq 9 9
+ucint
+uctic 104
+ucstate
+cvar m_smooth 4
+cvar m_strafeSmooth 2
+ticnum 104
+mouseq 8 8
+mouseq 9 8
+ucint
+uctic 105
+ticnum 105
+mouseq 8 4
+ucint
+uctic 106
+ticnum 106
+ucint
+uctic 107
+ucstate
+cvar m_smooth 0
+cvar m_strafeSmooth 100
+ticnum 107
+mouseq 8 6
+ucint
+uctic 108
+ucstate
+cvar m_smooth 1
+cvar m_strafeSmooth 4
+cvar sensitivity 2.5
+cvar m_yaw 0.1
+cvar m_pitch 0.05
+ticnum 108
+mouseq 8 12
+mouseq 9 -12
+ucint
+uctic 109
+ucstate
+cvar in_freeLook 0
+ticnum 109
+mouseq 8 20
+mouseq 9 20
+ucint
+uctic 110
+ucstate
+keyq 113 1
+ticnum 110
+mouseq 8 -20
+mouseq 9 20
+ucint
+uctic 111
+ucstate
+keyq 113 0
+cvar in_freeLook 1
+keyq 101 1
+ticnum 111
+mouseq 8 15
+mouseq 9 -15
+ucint
+uctic 112
+ucstate
+ticnum 112
+mouseq 8 400
+mouseq 9 400
+ucint
+uctic 113
+keyq 101 0
+ticnum 113
+mouseq 8 1200
+ucint
+uctic 114
+ucstate
+ticnum 114
+mouseq 9 -1500
+ucint
+uctic 115
+mouseq 0 1
+ucint
+ucmouse
+mouseq 0 0
+mouseq 2 1
+ucint
+ucmouse
+uckey 187
+uckey 189
+ucbutton 1
+mouseq 2 0
+ucint
+ucmouse
+mouseq 10 2
+ucint
+ucmouse
+ucstate
+mouseq 10 -1
+mouseq 1 1
+ucint
+ucmouse
+uckey 188
+uckey 195
+uckey 196
+mouseq 7 1
+mouseq 3 5
+ucint
+ucmouse
+mouseq 1 0
+mouseq 7 0
+ucint
+ucmouse
+keyshutdown

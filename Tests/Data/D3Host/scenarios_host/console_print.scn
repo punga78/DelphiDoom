@@ -1,0 +1,44 @@
+# idConsole::Print: lines, colors, tabs, carriage return, word wrap at 78 columns, the notify times, the clear
+coninit
+conframe 1000
+conprint hello world\n
+conshow 2
+context
+contimes
+conframe 2000
+conprint ^1red ^2green ^7white ^3yellow^0 black ^9default ^ plain\n
+conshow 2
+contimes
+conprint tab\there\tx\ty\n
+conshow 2
+conprint aaaa\rbb\n
+conshow 2
+conprint a long word without any blank that goes past the end of the line: 0123456789012345678901234567890123456789012345678901234567890123456789\n
+conshow 3
+conprint one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen\n
+conshow 3
+conprint 123456789012345678901234567890123456789012345678901234567890123456789012345678
+conshow 2
+conprint X\n
+conshow 3
+conprint abc\ndef\n\n\nghi\n
+conshow 6
+conprint 12345678901234567890123456789012345678901234567890123456789012345678901234\tabc\n
+conshow 3
+conprint \xe9\xfc caf\xe9 \xe9\xe9\xe9\xe9 12345678901234567890123456789012345678901234567890123456789012345678\xe9 word\n
+conshow 3
+context
+conclear
+conshow 2
+context
+conprint after clear\n
+conshow 2
+context
+exec nothing
+keyinit
+coninit
+exec clear
+exec conDump
+conprint last\n
+conshow 1
+conshutdown

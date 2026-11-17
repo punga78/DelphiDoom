@@ -1,0 +1,410 @@
+CMD ret startupcmds 0
+CMD init +set developer 1 +map test
+CALL idlib.Init
+CALL ClearWarnings DOOM 3 initialization
+CALL ParseCommandLine +set|developer|1|+map|test
+CALL cmd.Init
+CALL cvar.Init
+STARTUPVAR win_outputDebugString 0
+CALL cvar.RegisterStaticVars
+PRINTF DOOM 3 harness 1.0\n
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+ADDCMD clear 2
+ADDCMD conDump 2
+CALL sys.Init
+CALL sys.InitNetworking
+STARTUPVAR (null) 0
+SYS AlreadyRunning 0
+CALL InitSIMD
+CALL InitCommands
+CALL files.Init
+CALL decl.Init
+CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec fail
+OPENW config.spec fs_savepath
+CLOSE config.spec
+CALL SetMachineSpec
+CALL Com_ExecMachineSpec_f
+CALL render.Init
+CALL InitLanguageDict
+CALL PrintLoadingMessage <#str_04344>
+CALL events.Init
+CALL PrintLoadingMessage <#str_04345>
+BUFTEXT append exec editor.cfg\n
+BUFTEXT append exec default.cfg\n
+CALL SafeMode -> 0
+BUFTEXT append exec DoomConfig.cfg\n
+BUFTEXT append exec autoexec.cfg\n
+BUFTEXT append reloadLanguage\n
+BUFEXEC
+STARTUPVAR (null) 0
+MODFLAGS clear 64
+CALL sys.DoPreferences
+CALL PrintLoadingMessage <#str_04346>
+CALL sound.Init
+CALL PrintLoadingMessage <#str_04347>
+CALL net.Init
+CALL PrintLoadingMessage <#str_04348>
+CALL InitRenderSystem
+CALL PrintLoadingMessage <#str_04349>
+CALL ui.Init
+CALL PrintLoadingMessage <#str_04350>
+CALL LoadGameDLL
+CALL PrintLoadingMessage <#str_04351>
+CALL session.Init
+CALL SetMachineSpec
+CALL Com_ExecMachineSpec_f
+CVARSETI s_numberOfSpeakers 6
+BUFTEXT now s_restart\n
+BUFEXEC
+CALL AddStartupCommands -> 0
+SESSION startmenu 1
+PRINTF --- Common Initialization Complete ---\n
+CALL PrintWarnings
+CALL ClearCommandLine
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=0 lastTic=0 lastlib=0
+CMD shutdown
+NET server.Kill
+NET client.Shutdown
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 0
+CALL sys.Shutdown
+RMCMD clear
+RMCMD conDump
+CALL cvar.Shutdown
+CALL cmd.Shutdown
+CALL ClearWarnings DOOM 3 shutdown
+MEMLEAKTEST doom
+CALL idlib.ShutDown
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0
+CMD ret startupcmds 1
+CMD ret specfile 1
+CMD dedicated 0
+CMD init
+CALL idlib.Init
+CALL ClearWarnings DOOM 3 initialization
+CALL ParseCommandLine 
+CALL cmd.Init
+CALL cvar.Init
+STARTUPVAR win_outputDebugString 0
+CALL cvar.RegisterStaticVars
+PRINTF DOOM 3 harness 1.0\n
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+ADDCMD clear 2
+ADDCMD conDump 2
+CALL sys.Init
+CALL sys.InitNetworking
+STARTUPVAR (null) 0
+SYS AlreadyRunning 0
+CALL InitSIMD
+CALL InitCommands
+CALL files.Init
+CALL decl.Init
+CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
+CALL render.Init
+CALL InitLanguageDict
+CALL PrintLoadingMessage <#str_04344>
+CALL events.Init
+CALL PrintLoadingMessage <#str_04345>
+BUFTEXT append exec editor.cfg\n
+BUFTEXT append exec default.cfg\n
+CALL SafeMode -> 0
+BUFTEXT append exec DoomConfig.cfg\n
+BUFTEXT append exec autoexec.cfg\n
+BUFTEXT append reloadLanguage\n
+BUFEXEC
+STARTUPVAR (null) 0
+MODFLAGS clear 64
+CALL sys.DoPreferences
+CALL PrintLoadingMessage <#str_04346>
+CALL sound.Init
+CALL PrintLoadingMessage <#str_04347>
+CALL net.Init
+CALL PrintLoadingMessage <#str_04348>
+CALL InitRenderSystem
+CALL PrintLoadingMessage <#str_04349>
+CALL ui.Init
+CALL PrintLoadingMessage <#str_04350>
+CALL LoadGameDLL
+CALL PrintLoadingMessage <#str_04351>
+CALL session.Init
+CALL AddStartupCommands -> 1
+PRINTF --- Common Initialization Complete ---\n
+CALL PrintWarnings
+CALL ClearCommandLine
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0
+CMD ret specfile 0
+CMD initgame
+CALL files.Init
+CALL decl.Init
+CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec fail
+OPENW config.spec fs_savepath
+CLOSE config.spec
+CALL SetMachineSpec
+CALL Com_ExecMachineSpec_f
+CALL render.Init
+CALL InitLanguageDict
+CALL PrintLoadingMessage <#str_04344>
+CALL events.Init
+CALL PrintLoadingMessage <#str_04345>
+BUFTEXT append exec editor.cfg\n
+BUFTEXT append exec default.cfg\n
+CALL SafeMode -> 0
+BUFTEXT append exec DoomConfig.cfg\n
+BUFTEXT append exec autoexec.cfg\n
+BUFTEXT append reloadLanguage\n
+BUFEXEC
+STARTUPVAR (null) 0
+MODFLAGS clear 64
+CALL sys.DoPreferences
+CALL PrintLoadingMessage <#str_04346>
+CALL sound.Init
+CALL PrintLoadingMessage <#str_04347>
+CALL net.Init
+CALL PrintLoadingMessage <#str_04348>
+CALL InitRenderSystem
+CALL PrintLoadingMessage <#str_04349>
+CALL ui.Init
+CALL PrintLoadingMessage <#str_04350>
+CALL LoadGameDLL
+CALL PrintLoadingMessage <#str_04351>
+CALL session.Init
+CALL SetMachineSpec
+CALL Com_ExecMachineSpec_f
+CVARSETI s_numberOfSpeakers 6
+BUFTEXT now s_restart\n
+BUFEXEC
+CMD ret specfile 1
+CMD dedicated 1
+CMD initgame
+CALL files.Init
+CALL decl.Init
+CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
+CALL render.Init
+CALL InitLanguageDict
+CALL PrintLoadingMessage <#str_04344>
+CALL events.Init
+CALL PrintLoadingMessage <#str_04345>
+BUFTEXT append exec editor.cfg\n
+BUFTEXT append exec default.cfg\n
+CALL SafeMode -> 0
+BUFTEXT append exec DoomConfig.cfg\n
+BUFTEXT append exec autoexec.cfg\n
+BUFTEXT append reloadLanguage\n
+BUFEXEC
+STARTUPVAR (null) 0
+MODFLAGS clear 64
+CALL sys.DoPreferences
+CALL PrintLoadingMessage <#str_04346>
+CALL sound.Init
+CALL PrintLoadingMessage <#str_04347>
+CALL net.Init
+NET server.InitPort
+CVARSETB s_noSound 1
+CALL PrintLoadingMessage <#str_04349>
+CALL ui.Init
+CALL PrintLoadingMessage <#str_04350>
+CALL LoadGameDLL
+CALL PrintLoadingMessage <#str_04351>
+CALL session.Init
+CMD dedicated 0
+CMD ret safemode 1
+CMD initgame
+CALL files.Init
+CALL decl.Init
+CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
+CALL render.Init
+CALL InitLanguageDict
+CALL PrintLoadingMessage <#str_04344>
+CALL events.Init
+CALL PrintLoadingMessage <#str_04345>
+BUFTEXT append exec editor.cfg\n
+BUFTEXT append exec default.cfg\n
+CALL SafeMode -> 1
+BUFTEXT append exec autoexec.cfg\n
+BUFTEXT append reloadLanguage\n
+BUFEXEC
+STARTUPVAR (null) 0
+MODFLAGS clear 64
+CALL sys.DoPreferences
+CALL PrintLoadingMessage <#str_04346>
+CALL sound.Init
+CALL PrintLoadingMessage <#str_04347>
+CALL net.Init
+CALL PrintLoadingMessage <#str_04348>
+CALL InitRenderSystem
+CALL PrintLoadingMessage <#str_04349>
+CALL ui.Init
+CALL PrintLoadingMessage <#str_04350>
+CALL LoadGameDLL
+CALL PrintLoadingMessage <#str_04351>
+CALL session.Init
+CMD ret safemode 0
+CMD ret already 1
+CMD init
+CALL idlib.Init
+CALL ClearWarnings DOOM 3 initialization
+CALL ParseCommandLine 
+CALL cmd.Init
+CALL cvar.Init
+STARTUPVAR win_outputDebugString 0
+CALL cvar.RegisterStaticVars
+PRINTF DOOM 3 harness 1.0\n
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+ADDCMD clear 2
+ADDCMD conDump 2
+CALL sys.Init
+CALL sys.InitNetworking
+STARTUPVAR (null) 0
+SYS AlreadyRunning 1
+SYSQUIT
+EXIT quit
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0
+CMD ret already 0
+CMD fail sys.InitNetworking
+CMD init a b
+CALL idlib.Init
+CALL ClearWarnings DOOM 3 initialization
+CALL ParseCommandLine a|b
+CALL cmd.Init
+CALL cvar.Init
+STARTUPVAR win_outputDebugString 0
+CALL cvar.RegisterStaticVars
+PRINTF DOOM 3 harness 1.0\n
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+ADDCMD clear 2
+ADDCMD conDump 2
+CALL sys.Init
+CALL sys.InitNetworking
+SYSERR Error during initialization
+EXIT error
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0
+CMD fail none
+CMD fail decl.Init
+CMD init
+CALL idlib.Init
+CALL ClearWarnings DOOM 3 initialization
+CALL ParseCommandLine 
+CALL cmd.Init
+CALL cvar.Init
+STARTUPVAR win_outputDebugString 0
+CALL cvar.RegisterStaticVars
+PRINTF DOOM 3 harness 1.0\n
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+ADDCMD clear 2
+ADDCMD conDump 2
+CALL sys.Init
+CALL sys.InitNetworking
+STARTUPVAR (null) 0
+SYS AlreadyRunning 0
+CALL InitSIMD
+CALL InitCommands
+CALL files.Init
+CALL decl.Init
+SYSERR Error during initialization
+EXIT error
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0
+CMD fail none
+CMD initcmd +set test blah +map test
+CALL idlib.Init
+CALL ClearWarnings DOOM 3 initialization
+CALL ParseCommandLine +set|test|blah|+map|test
+CALL cmd.Init
+CALL cvar.Init
+STARTUPVAR win_outputDebugString 0
+CALL cvar.RegisterStaticVars
+PRINTF DOOM 3 harness 1.0\n
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+ADDCMD clear 2
+ADDCMD conDump 2
+CALL sys.Init
+CALL sys.InitNetworking
+STARTUPVAR (null) 0
+SYS AlreadyRunning 0
+CALL InitSIMD
+CALL InitCommands
+CALL files.Init
+CALL decl.Init
+CALL CheckToolMode
+OPENX OS:fs_savepath/config.spec ok
+CLOSE OS:fs_savepath/config.spec
+CALL render.Init
+CALL InitLanguageDict
+CALL PrintLoadingMessage <#str_04344>
+CALL events.Init
+CALL PrintLoadingMessage <#str_04345>
+BUFTEXT append exec editor.cfg\n
+BUFTEXT append exec default.cfg\n
+CALL SafeMode -> 0
+BUFTEXT append exec DoomConfig.cfg\n
+BUFTEXT append exec autoexec.cfg\n
+BUFTEXT append reloadLanguage\n
+BUFEXEC
+STARTUPVAR (null) 0
+MODFLAGS clear 64
+CALL sys.DoPreferences
+CALL PrintLoadingMessage <#str_04346>
+CALL sound.Init
+CALL PrintLoadingMessage <#str_04347>
+CALL net.Init
+CALL PrintLoadingMessage <#str_04348>
+CALL InitRenderSystem
+CALL PrintLoadingMessage <#str_04349>
+CALL ui.Init
+CALL PrintLoadingMessage <#str_04350>
+CALL LoadGameDLL
+CALL PrintLoadingMessage <#str_04351>
+CALL session.Init
+CALL AddStartupCommands -> 1
+PRINTF --- Common Initialization Complete ---\n
+CALL PrintWarnings
+CALL ClearCommandLine
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=1 shutting=1 lastTic=0 lastlib=0

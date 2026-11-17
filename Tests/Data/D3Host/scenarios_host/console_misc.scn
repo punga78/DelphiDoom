@@ -1,0 +1,74 @@
+# idConsole: the dump to a file, the scroll with the clock, the display fraction, the history that wraps
+keyinit
+coninit
+conframe 100
+conprint first line\n
+conprint   indented line with trailing blanks   \n
+conprint \n
+conprint caf\xe9\n
+conprint last\n
+exec conDump
+exec conDump log
+exec conDump dump.txt
+exec conDump a.b
+condump direct
+conclear
+condump empty
+conprint only\n
+condump one
+conframe 2000
+evms 1000
+conevent 1 96 1 0
+conscroll
+context
+conupdate
+context
+conframe 2300
+conupdate
+context
+conframe 5000
+conupdate
+context
+conevent 1 96 1 0
+conframe 6000
+conupdate
+context
+conframe 9000
+conupdate
+context
+cvar con_speed 0
+conevent 1 96 1 0
+conframe 9500
+conupdate
+context
+cvar con_speed 3
+conprint p1\np2\np3\np4\np5\np6\np7\np8\np9\n
+conevent 1 96 1 0
+conevent 1 146 1 0
+context
+evms 1100
+conscroll
+context
+isdown 146
+prelim 146 1
+evms 1190
+conscroll
+context
+evms 1250
+conscroll
+context
+conevent 1 145 1 0
+evms 2000
+conscroll
+context
+prelim 146 0
+prelim 145 1
+conscroll
+context
+prelim 145 0
+conscroll
+context
+conclose
+context
+contimes
+conshutdown

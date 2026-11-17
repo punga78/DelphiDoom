@@ -1,0 +1,72 @@
+# idCommonLocal::Frame, GUIFrame, SingleAsyncTic and Async: the frame, the tics, the timescale
+keyinit
+ucinit
+ticnum 0
+time 1000
+frame
+state
+cvar com_speeds 1
+frame
+cvar com_speeds 0
+cvar com_forceGenericSIMD 1
+frame
+frame
+cvar com_forceGenericSIMD 0
+ret net 1
+frame
+dedicated 1
+frame
+dedicated 0
+ret net 0
+ret fpuempty 0
+frame
+ret fpuempty 1
+fail session.Frame
+frame
+state
+fail none
+guiframe 1 1
+guiframe 0 0
+state
+singletic
+time 1016
+cvar com_asyncInput 1
+singletic
+cvar com_asyncSound 3
+time 1033
+singletic
+cvar com_asyncSound 0
+singletic
+cvar com_asyncSound 1
+state
+# Async: the first call, the tics that catch up, the skip limit, the timescale
+cvar com_asyncInput 0
+time 2000
+async
+state
+time 2040
+async
+state
+time 2500
+async
+state
+cvar timescale 2
+time 2600
+async
+state
+cvar timescale 0.001
+time 2700
+async
+state
+cvar timescale 1
+cvar com_preciseTic 0
+time 3000
+async
+state
+cvar com_preciseTic 1
+cvar timescale 1
+time 3020
+async
+shutdown
+async
+state

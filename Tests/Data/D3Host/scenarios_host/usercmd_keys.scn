@@ -1,0 +1,221 @@
+# idUsercmdGen from the keyboard: movement, buttons, impulses, run toggles, angles
+keyinit
+ucinit
+exec bind w _forward
+exec bind s _back
+exec bind a _moveLeft
+exec bind d _moveRight
+exec bind e _strafe
+exec bind shift _speed
+exec bind mouse1 _attack
+exec bind space _moveUp
+exec bind ctrl _moveDown
+exec bind leftarrow _left
+exec bind rightarrow _right
+exec bind uparrow _lookUp
+exec bind downarrow _lookDown
+exec bind 1 _impulse1
+exec bind 2 _impulse2
+exec bind tab _showScores
+exec bind q _mlook
+exec bind z _zoom
+exec bind f1 _button0
+exec bind f2 _button5
+exec bind f3 _impulse19
+exec bind x nosuchaction
+ticnum 10
+ucint
+uctic 11
+keyq 119 1
+ucint
+uctic 11
+ucbutton 5
+uckey 119
+keyq 119 1
+ucint
+uctic 11
+keyq 115 1
+ucint
+uctic 11
+keyq 119 0
+ucint
+uctic 11
+keyq 115 0
+keyq 115 0
+ucint
+uctic 11
+keyq 97 1
+keyq 100 1
+ucint
+uctic 11
+keyq 97 0
+keyq 100 0
+keyq 101 1
+keyq 100 1
+ucint
+uctic 11
+keyq 100 0
+keyq 101 0
+keyq 32 1
+keyq 141 1
+ucint
+uctic 11
+keyq 32 0
+keyq 141 0
+keyq 187 1
+keyq 9 1
+keyq 113 1
+ucint
+uctic 11
+keyq 187 0
+keyq 9 0
+keyq 113 0
+keyq 122 1
+keyq 112 1
+keyq 113 1
+keyq 117 1
+ucint
+uctic 11
+ucstate
+ticnum 11
+keyq 49 1
+ucint
+uctic 12
+keyq 49 0
+ucint
+uctic 12
+keyq 50 1
+keyq 49 1
+ucint
+uctic 12
+ucstate
+ticnum 12
+keyq 50 0
+keyq 49 0
+keyq 135 1
+ucint
+uctic 13
+ticnum 13
+ucint
+uctic 14
+ticnum 14
+keyq 135 0
+keyq 136 1
+ucint
+uctic 15
+ticnum 15
+keyq 136 0
+keyq 133 1
+ucint
+uctic 16
+ticnum 16
+keyq 133 0
+keyq 134 1
+ucint
+uctic 17
+ucstate
+ticnum 17
+keyq 134 0
+keyq 142 1
+keyq 135 1
+ucint
+uctic 18
+ucstate
+ticnum 18
+keyq 142 0
+keyq 135 0
+keyq 101 1
+keyq 135 1
+ucint
+uctic 19
+ticnum 19
+keyq 101 0
+keyq 135 0
+keyq 112 1
+keyq 113 1
+ucint
+uctic 20
+ticnum 20
+keyq 112 0
+keyq 113 0
+keyq 148 1
+keyq 148 0
+keyq 114 1
+ucint
+uctic 21
+keyq 114 0
+cvar in_alwaysRun 1
+ret net 1
+ticnum 21
+ucint
+uctic 22
+keyq 142 1
+ucint
+uctic 22
+keyq 142 0
+ucint
+uctic 22
+ret net 0
+ticnum 22
+ucint
+uctic 23
+cvar in_alwaysRun 0
+cvar in_toggleRun 1
+ret net 1
+keyq 142 1
+ucint
+uctic 23
+keyq 142 0
+ucint
+uctic 23
+keyq 142 1
+ucint
+uctic 23
+keyq 142 0
+ucint
+uctic 23
+ucstate
+cvar in_toggleRun 0
+ret net 0
+cvar in_toggleCrouch 1
+keyq 141 1
+ucint
+uctic 23
+keyq 141 0
+ucint
+uctic 23
+keyq 141 1
+ucint
+uctic 23
+keyq 141 0
+ucint
+uctic 23
+cvar in_toggleCrouch 0
+cvar in_toggleZoom 1
+keyq 122 1
+ucint
+uctic 23
+keyq 122 0
+ucint
+uctic 23
+ucstate
+cvar in_toggleZoom 0
+cvar in_freeLook 0
+keyq 113 1
+ucint
+uctic 23
+keyq 113 0
+ucint
+uctic 23
+cvar in_freeLook 1
+cvar in_yawspeed 100
+cvar in_anglespeedkey 2.5
+keyq 135 1
+keyq 142 1
+ucint
+uctic 23
+ucstate
+keyq 135 0
+keyq 142 0
+ucint
+keyshutdown

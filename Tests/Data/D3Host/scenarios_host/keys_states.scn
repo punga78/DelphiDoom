@@ -1,0 +1,40 @@
+# key states, bindings that run, the keys that the locale names, the usercmd actions of the bindings
+keyinit
+exec bind a say a
+exec bind mouse1 _attack
+exec bind b ""
+execbinding 97
+execbinding 98
+execbinding 187
+execbinding 99
+isdown 97
+prelim 97 1
+isdown 97
+prelim 98 1
+prelim 97 0
+isdown 97
+isdown 98
+isdown -1
+clearstates
+isdown 98
+overstrike
+overstrike 1
+overstrike
+overstrike 0
+exec bind c "weapon next"
+exec bind d weapon_next
+keysfrom weapon next
+keysfrom WEAPON NEXT
+exec bind e weapon next
+keysfrom weapon next
+keysfrom nothing bound
+keysfrom
+bindfrom c
+bindfrom nosuchkey
+bindfrom e
+bindfrom 0x41
+bindfrom
+exec bind kp_enter "say kp"
+bindfrom kp_enter
+keysfrom say kp
+keyshutdown

@@ -1,0 +1,137 @@
+# idEditField: typing, backspace, cursor keys, home and end, scroll, insert and overstrike, paste
+# keys: left 135, right 136, ctrl 141, shift 142, ins 143, del 144, home 147, end 148, kp_ins 175, caps 130
+keyinit
+fwidth 10
+fshow
+fchar 104
+fchar 101
+fchar 108
+fchar 108
+fchar 111
+fshow
+fchar 8
+fchar 127
+fshow
+fchar 1
+fshow
+fchar 5
+fshow
+fchar 4
+fchar 3
+fshow
+fbuf hello world and more text
+fshow
+fkey 135
+fkey 135
+fshow
+fkey 136
+fshow
+fkey 147
+fshow
+fkey 148
+fshow
+fkey 144
+fshow
+fkey 135
+fkey 144
+fshow
+fkey 147
+fkey 144
+fkey 144
+fshow
+prelim 141 1
+fkey 136
+fshow
+fkey 136
+fshow
+fkey 135
+fshow
+fkey 135
+fshow
+prelim 141 0
+fcursor 5
+fchar 33
+fshow
+overstrike 1
+fcursor 2
+fchar 90
+fchar 90
+fshow
+overstrike 0
+fkey 143
+fshow
+fkey 143
+fshow
+prelim 142 1
+fkey 143
+fshow
+fkey 175
+fshow
+prelim 142 0
+fkey 100
+fclear
+fshow
+fchar 9
+fchar 31
+fchar 32
+fchar 97
+fshow
+fclear
+clipboard pasted text
+fchar 22
+fshow
+fclear
+clipboard none
+fchar 22
+fshow
+clipboard shifted
+prelim 142 1
+fkey 143
+fshow
+prelim 142 0
+prelim 141 1
+fkey 97
+fshow
+fkey 101
+fshow
+prelim 141 0
+fbuf one two  three
+fcursor 0
+prelim 141 1
+fkey 136
+fshow
+fkey 136
+fshow
+fkey 136
+fshow
+fkey 136
+fshow
+fkey 135
+fshow
+fkey 135
+fshow
+fkey 135
+fshow
+fkey 135
+fshow
+fkey 135
+fshow
+prelim 141 0
+fwidth 4
+fbuf 123456789
+fchar 120
+fshow
+fkey 147
+fshow
+fkey 130
+fshow
+fclear
+clipboard caf\xe9 \xff!
+fchar 22
+fshow
+fclear
+fchar 233
+fchar 255
+fchar 128
+fshow
+keyshutdown

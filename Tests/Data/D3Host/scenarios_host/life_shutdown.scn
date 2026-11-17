@@ -1,0 +1,20 @@
+# idCommonLocal::Shutdown, ShutdownGame and Quit
+keyinit
+ret soundworld 1
+shutdowngame 0
+ret soundworld 0
+shutdowngame 1
+fail session.Shutdown
+shutdowngame 0
+fail none
+shutdown
+state
+errorentered 0
+quit
+errorentered 2
+quit
+fail none
+fail files.Shutdown
+shutdown
+fail none
+state

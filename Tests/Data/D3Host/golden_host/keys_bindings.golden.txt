@@ -1,0 +1,380 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD exec bind
+PRINTF bind <key> [command] : attach a command to a key\n
+CMD exec bind a
+PRINTF \"a\" is not bound\n
+CMD exec bind a +attack
+MODFLAGS set 64
+CMD exec bind a
+PRINTF \"a\" = \"+ attack\"\n
+CMD exec bind nosuchkey +attack
+PRINTF \"nosuchkey\" isn't a valid key\n
+CMD exec bind b \"say hello\" there
+MODFLAGS set 64
+CMD exec bind b
+PRINTF \"b\" = \"say hello there\"\n
+CMD exec bind mouse1 _attack
+MODFLAGS set 64
+CMD exec bind mouse2 _MOVEUP
+MODFLAGS set 64
+CMD exec bind space _impulse12
+MODFLAGS set 64
+CMD exec bind \\ quit
+MODFLAGS set 64
+CMD exec bind enter jump
+MODFLAGS set 64
+CMD exec listBinds
+PRINTF ENTER \"jump\"\n
+PRINTF SPACE \"_impulse12\"\n
+PRINTF \\ \"quit\"\n
+PRINTF a \"+ attack\"\n
+PRINTF b \"say hello there\"\n
+PRINTF MOUSE1 \"_attack\"\n
+PRINTF MOUSE2 \"_MOVEUP\"\n
+CMD exec unbind
+PRINTF unbind <key> : remove commands from a key\n
+CMD exec unbind a
+MODFLAGS set 64
+CMD exec unbind a
+MODFLAGS set 64
+CMD exec unbind nosuchkey
+PRINTF \"nosuchkey\" isn't a valid key\n
+CMD exec unbind _attack
+MODFLAGS set 64
+CMD exec unbind nosuchcommand
+PRINTF \"nosuchcommand\" isn't a valid key\n
+CMD exec listBinds
+PRINTF ENTER \"jump\"\n
+PRINTF SPACE \"_impulse12\"\n
+PRINTF \\ \"quit\"\n
+PRINTF b \"say hello there\"\n
+PRINTF MOUSE2 \"_MOVEUP\"\n
+CMD writebinds
+FW bindings unbindall\n
+FW bindings bind \"ENTER\" \"jump\"\n
+FW bindings bind \"SPACE\" \"_impulse12\"\n
+FW bindings bind \"\\\" \"quit\"\n
+FW bindings bind \"b\" \"say hello there\"\n
+FW bindings bind \"MOUSE2\" \"_MOVEUP\"\n
+CMD getbinding 98
+RETS say hello there
+CMD getbinding -1
+RETS 
+CMD getbinding 200
+RETS 
+CMD action 98
+RET 0
+CMD action 189
+RET 0
+CMD action 32
+RET 37
+CMD action 255
+RET 0
+CMD numbinds say hello there
+RET 1
+CMD numbinds QUIT
+RET 1
+CMD numbinds
+RET 0
+CMD numbinds nothing
+RET 0
+CMD isbound 98 SAY HELLO THERE
+RET 1
+CMD isbound 98 other
+RET 0
+CMD isbound -1 x
+RET 0
+CMD isbound 300 x
+RET 0
+CMD exec bindunbindtwo
+PRINTF bindunbindtwo <keynum> [command]\n
+CMD exec bindunbindtwo 97 say hello there
+MODFLAGS set 64
+CMD exec bindunbindtwo 99 say hello there
+MODFLAGS set 64
+CMD exec bindunbindtwo 100 say hello there
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+CMD exec listBinds
+PRINTF ENTER \"jump\"\n
+PRINTF SPACE \"_impulse12\"\n
+PRINTF \\ \"quit\"\n
+PRINTF b \"say hello there\"\n
+PRINTF d \"say\"\n
+PRINTF MOUSE2 \"_MOVEUP\"\n
+CMD unbindb say hello there
+MODFLAGS set 64
+RET 1
+CMD unbindb nothing
+RET 0
+CMD unbindb
+RET 0
+CMD exec bindunbindtwo x
+PRINTF bindunbindtwo <keynum> [command]\n
+CMD exec unbindall
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+MODFLAGS set 64
+CMD exec listBinds
+CMD writebinds
+FW bindings unbindall\n
+CMD keyshutdown

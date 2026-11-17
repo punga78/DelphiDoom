@@ -1,0 +1,255 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD cmds map maplist mapcycle bind quit Map_Extra
+CMD cvarnames m_pitch m_yaw sensitivity
+CMD argcomp map e1m1 e1m2 e2m1
+CMD argcomp quit now later
+CMD cvarargcomp m_pitch 0.022 0.03
+CMD fwidth 40
+CMD fbuf qu
+CMD fauto
+CMD fshow
+FIELD cursor=5 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF quit 
+FCOMP qu 
+FMATCH quit
+CMD fauto
+CMD fshow
+FIELD cursor=5 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF quit 
+FCOMP quit 
+FMATCH quit
+CMD fclear
+CMD fbuf quit
+CMD fauto
+CMD fshow
+FIELD cursor=5 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF quit 
+FCOMP quit 
+FMATCH quit
+CMD fclear
+CMD fbuf quit n
+CMD fauto
+CMD fshow
+FIELD cursor=6 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF quit n
+FCOMP quit n
+FMATCH quit
+CMD fclear
+CMD fbuf map
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=0
+FBUF map
+FCOMP map
+FMATCH map
+CMD fauto
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=1
+FBUF maplist
+FCOMP map
+FMATCH maplist
+CMD fauto
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=2
+FBUF mapcycle
+FCOMP map
+FMATCH mapcycle
+CMD fauto
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=3
+FBUF Map_Extra
+FCOMP map
+FMATCH Map_Extra
+CMD fauto
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=0
+FBUF map
+FCOMP map
+FMATCH map
+CMD fauto
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=1
+FBUF maplist
+FCOMP map
+FMATCH maplist
+CMD fclear
+CMD fbuf map e1
+CMD fauto
+CMD fshow
+FIELD cursor=6 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF map e1
+FCOMP map e1
+FMATCH map
+CMD fclear
+CMD fbuf map zzz
+CMD fauto
+CMD fshow
+FIELD cursor=7 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF map zzz
+FCOMP map zzz
+FMATCH map
+CMD fclear
+CMD fbuf zzz
+CMD fauto
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF zzz
+FCOMP zzz
+FMATCH 
+CMD fclear
+CMD fauto
+CMD fshow
+FIELD cursor=0 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF 
+FCOMP 
+FMATCH 
+CMD fbuf m_
+CMD fauto
+PRINTF ]m_\n
+PRINTF     m_pitch^7 = \"0.022\"\n
+PRINTF     m_yaw^7 = \"0.022\"\n
+CMD fshow
+FIELD cursor=2 scroll=0 width=40 len=2 valid=1 match=2 index=0
+FBUF m_
+FCOMP m_
+FMATCH m_
+CMD fauto
+CMD fshow
+FIELD cursor=2 scroll=0 width=40 len=2 valid=1 match=2 index=1
+FBUF m_yaw
+FCOMP m_
+FMATCH m_yaw
+CMD fbuf m_pitch 0
+CMD fauto
+CMD fshow
+FIELD cursor=9 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF m_pitch 0
+FCOMP m_pitch 0
+FMATCH m_pitch
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fkey 135
+CMD fshow
+FIELD cursor=2 scroll=0 width=40 len=2 valid=1 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fclearauto
+CMD fshow
+FIELD cursor=2 scroll=0 width=40 len=0 valid=0 match=4 index=0
+FBUF ma
+FCOMP ma
+FMATCH map
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fchar 120
+CMD fshow
+FIELD cursor=4 scroll=0 width=40 len=3 valid=1 match=4 index=0
+FBUF mapx
+FCOMP ma
+FMATCH map
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fkey 144
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=0 valid=0 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fkey 147
+CMD fshow
+FIELD cursor=0 scroll=0 width=40 len=0 valid=0 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fkey 148
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=0 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fkey 136
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=3 valid=1 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fbuf ma
+CMD fauto
+PRINTF ]map\n
+PRINTF     map\n
+PRINTF     maplist\n
+PRINTF     mapcycle\n
+PRINTF     Map_Extra\n
+CMD fkey 130
+CMD fshow
+FIELD cursor=3 scroll=0 width=40 len=0 valid=0 match=4 index=0
+FBUF map
+FCOMP ma
+FMATCH map
+CMD fbuf sens
+CMD fauto
+CMD fshow
+FIELD cursor=12 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF sensitivity 
+FCOMP sens 
+FMATCH sensitivity
+CMD fbuf SENS
+CMD fauto
+CMD fshow
+FIELD cursor=12 scroll=0 width=40 len=0 valid=0 match=0 index=0
+FBUF sensitivity 
+FCOMP SENS 
+FMATCH sensitivity
+CMD keyshutdown

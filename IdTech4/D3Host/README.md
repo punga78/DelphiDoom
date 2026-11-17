@@ -25,4 +25,25 @@ LHost.EventLoop.Init; LHost.EventLoop.RunEventLoop;
 | `ParseCommandLine`, `SafeMode`, `CheckToolMode`, `StartupVariable`, `AddStartupCommands` | `TD3CommandLine` |
 | `idEventLoop` | `TD3EventLoop` |
 
+Dalla fase 2a-2c (ondata 10) la libreria ha anche:
+
+| C++ | Pascal |
+|---|---|
+| `idKeyInput`, nomi dei tasti | `TD3KeyInput`, `TD3KeyNames` |
+| `idEditField` (senza `Draw`) | `TD3EditField` |
+| `idUsercmdGen` (senza dispositivi) | `TD3UsercmdGen` |
+| `idConsoleLocal` (senza disegno) | `TD3Console` |
+| `idCommonLocal::Init`/`Shutdown`/`InitGame`/`ShutdownGame`/`Frame`/`GUIFrame`/`SingleAsyncTic`/`Async`/`Quit` | `TD3Lifecycle` |
+| (non e' `idSessionLocal`) sessione minima: mappa in corso o niente | `TD3Session` |
+
+```pascal
+LKeys := TD3KeyInput.Create(LCommands, LBuffer, LPrinter, LKeyText, LCVarServices);
+LUsercmd := TD3UsercmdGen.Create(LState, LCVarValues, LKeys, LDevices, LAsync, LErrors, LDebug);
+LKeys.SetUsercmd(LUsercmd);                      // si conoscono: il riferimento e' [weak]
+LLife := TD3Lifecycle.Create(LState, LServices, 'DOOM 3', 'version');
+LLife.Init([]);                                  // poi Async a 60 Hz e Frame a ogni fotogramma
+```
+
+Parita' col C++ vero: 15 scenari in `Tests\Data\D3Host\scenarios_host` (`Tools\Verifica\255\Build-Harness-Host.ps1`), zero differenze a Win32 e Win64; la prova senza dati (mappa, decl e script sintetici girati dal ciclo) non ha golden. Test: `Tests\DelphiDoom.Tests.D3Host` (44).
+
 Dettagli (decisioni, difetti del C++ conservati, parita' con il C++ vero, cosa resta): [CLAUDE.md](CLAUDE.md).

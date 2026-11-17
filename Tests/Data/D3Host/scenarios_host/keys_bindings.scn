@@ -1,0 +1,51 @@
+# binding keys to commands: bind, unbind, unbindall, bindunbindtwo, listBinds, the writing of the bindings
+keyinit
+exec bind
+exec bind a
+exec bind a +attack
+exec bind a
+exec bind nosuchkey +attack
+exec bind b "say hello" there
+exec bind b
+exec bind mouse1 _attack
+exec bind mouse2 _MOVEUP
+exec bind space _impulse12
+exec bind \ quit
+exec bind enter jump
+exec listBinds
+exec unbind
+exec unbind a
+exec unbind a
+exec unbind nosuchkey
+exec unbind _attack
+exec unbind nosuchcommand
+exec listBinds
+writebinds
+getbinding 98
+getbinding -1
+getbinding 200
+action 98
+action 189
+action 32
+action 255
+numbinds say hello there
+numbinds QUIT
+numbinds
+numbinds nothing
+isbound 98 SAY HELLO THERE
+isbound 98 other
+isbound -1 x
+isbound 300 x
+exec bindunbindtwo
+exec bindunbindtwo 97 say hello there
+exec bindunbindtwo 99 say hello there
+exec bindunbindtwo 100 say hello there
+exec listBinds
+unbindb say hello there
+unbindb nothing
+unbindb
+exec bindunbindtwo x
+exec unbindall
+exec listBinds
+writebinds
+keyshutdown
