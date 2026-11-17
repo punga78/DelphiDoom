@@ -1,0 +1,2 @@
+baseoa/net finished | server_calls=15039 cgame_calls=6421 snapshots=10 draws=190 scenes=30 phase=Active chat=True datagrams=14 fragments=2
+missionpack/net finished | server_calls=14039 cgame_calls=8473 snapshots=10 draws=770 scenes=40 phase=Active chat=True datagrams=14 fragments=2

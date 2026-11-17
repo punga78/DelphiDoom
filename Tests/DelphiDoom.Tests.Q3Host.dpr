@@ -145,6 +145,7 @@ uses
   DelphiDoom.Tests.Q3Host.ClientReach in 'Source\DelphiDoom.Tests.Q3Host.ClientReach.pas',
   DelphiDoom.Tests.Q3Host.LoopRig in 'Source\DelphiDoom.Tests.Q3Host.LoopRig.pas',
   DelphiDoom.Tests.Q3Host.LocalLoop in 'Source\DelphiDoom.Tests.Q3Host.LocalLoop.pas',
+  DelphiDoom.Tests.Q3Host.NetworkLoop in 'Source\DelphiDoom.Tests.Q3Host.NetworkLoop.pas',
   DelphiDoom.Tests.Q3Host.ClientMessageSink in 'Source\DelphiDoom.Tests.Q3Host.ClientMessageSink.pas';
 
 var

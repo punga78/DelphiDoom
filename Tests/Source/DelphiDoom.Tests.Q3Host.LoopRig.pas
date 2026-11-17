@@ -12,7 +12,8 @@ unit DelphiDoom.Tests.Q3Host.LoopRig;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Net.LoopbackTransport,
+  System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Net.Transport.Intf,
+  DelphiDoom.Net.LoopbackTransport,
   DelphiDoom.Q3Host.ServerNetwork, DelphiDoom.Q3Host.ClientNetwork, DelphiDoom.Q3Host.Server, DelphiDoom.Q3Host.Server.Intf, DelphiDoom.Qvm.Types, DelphiDoom.Qvm.Intf, DelphiDoom.Wad.Fs.Intf, DelphiDoom.Console.Q3.Factory,
   DelphiDoom.Scanner.Q3.GlobalDefines, DelphiDoom.Scanner.Q3.SourceHandles, DelphiDoom.Net.Q3.Types,
   DelphiDoom.Net.Q3.Intf, DelphiDoom.Net.Q3.EntityStateCodec, DelphiDoom.Net.Q3.PlayerStateCodec,
@@ -119,6 +120,21 @@ type
     property OutOfBand: TStringList read FOutOfBand;
   end;
 
+  /// <summary>An INetTransport that counts what is sent through it (and how many datagrams are fragments)</summary>
+  TQ3CountingTransport = class(TInterfacedObject, INetTransport)
+  strict private
+    FInner: INetTransport;
+    FSent: Integer;
+    FFragments: Integer;
+  public
+    constructor Create(const AInner: INetTransport);
+    function NodeCount: Integer;
+    procedure Send(ANode: Integer; const AData: TBytes);
+    function Receive(out ANode: Integer; out AData: TBytes): Boolean;
+    property Sent: Integer read FSent;
+    property Fragments: Integer read FFragments;
+  end;
+
   /// <summary>
   ///   A server and a client in the same process, one qagame and one cgame on the files of OpenArena: the client
   ///   connects, gets the gamestate, enters the world and plays frames (a command and a packet, the game, the
@@ -136,6 +152,8 @@ type
     FWire: TNetLoopbackPair;
     FServerNet: TQ3ServerNetwork;
     FServerNetIntf: IQ3ServerOutput;
+    FCounting: TQ3CountingTransport;
+    FCountingIntf: INetTransport;
     FClientNet: TQ3ClientNetwork;
     FSlot: Integer;
     FMessageNumber: Integer;
@@ -154,8 +172,17 @@ type
     destructor Destroy; override;
     /// <summary>The server loads the map, the client connects and gets the gamestate, cgame starts</summary>
     procedure Connect(const AMap: AnsiString);
+    /// <summary>
+    ///   Only the connection on the network, with the protocol the client says it speaks: what the server answers
+    ///   out of band ("print" lines) comes back
+    /// </summary>
+    function ConnectOnNetwork(const AMap: AnsiString; AProtocol: Integer): TArray<AnsiString>;
     /// <summary>One frame of the client and of the server</summary>
     procedure Frame;
+    /// <summary>The datagrams that the server sent and how many of them are fragments of a long message</summary>
+    function DatagramsFromServer: Integer;
+    function FragmentsFromServer: Integer;
+    property ClientNetwork: TQ3ClientNetwork read FClientNet;
     /// <summary>The client sends a command for the server (a reliable client command, "say hello")</summary>
     procedure ClientCommand(const AText: AnsiString);
     /// <summary>True if the client has received a server command that starts with the text</summary>
@@ -245,6 +272,33 @@ begin
     AConsole.CVars.Get(AnsiString(NAMES[LIndex]), AnsiString(VALUES[LIndex]), 0);
 end;
 
+{ TQ3CountingTransport }
+
+constructor TQ3CountingTransport.Create(const AInner: INetTransport);
+begin
+  inherited Create;
+  FInner := AInner;
+end;
+
+function TQ3CountingTransport.NodeCount: Integer;
+begin
+  Result := FInner.NodeCount;
+end;
+
+procedure TQ3CountingTransport.Send(ANode: Integer; const AData: TBytes);
+begin
+  Inc(FSent);
+  // FRAGMENT_BIT: the high bit of the first four bytes (and not the connectionless marker -1)
+  if (Length(AData) >= 4) and ((AData[3] and $80) <> 0) and not ((AData[0] = $FF) and (AData[1] = $FF)) then
+    Inc(FFragments);
+  FInner.Send(ANode, AData);
+end;
+
+function TQ3CountingTransport.Receive(out ANode: Integer; out AData: TBytes): Boolean;
+begin
+  Result := FInner.Receive(ANode, AData);
+end;
+
 { TQ3MemoryOutput }
 
 constructor TQ3MemoryOutput.Create;
@@ -317,7 +371,9 @@ begin
   if FNetwork then
   begin
     FWire := TNetLoopbackPair.Create;
-    FServerNet := TQ3ServerNetwork.Create(FServerSide.Server, FWire.Left, FConsole.Arguments, FClient.Coder, True);
+    FCounting := TQ3CountingTransport.Create(FWire.Left);
+    FCountingIntf := FCounting;
+    FServerNet := TQ3ServerNetwork.Create(FServerSide.Server, FCountingIntf, FConsole.Arguments, FClient.Coder, True);
     FServerNetIntf := FServerNet;
     FServerSide.Server.SetOutput(FServerNetIntf);
     FClientNet := TQ3ClientNetwork.Create(FWire.Right, 1, True, FClient.State, FClient.Parser, FClient.Writer,
@@ -332,6 +388,8 @@ begin
   FClientNet.Free;
   FServerNetIntf := nil;
   FServerNet := nil;
+  FCountingIntf := nil;
+  FCounting := nil;
   FWire.Free;
   FServerSide.Free;
   FOutputIntf := nil;
@@ -424,10 +482,17 @@ begin
     end;
     Assert.AreEqual(Ord(TQ3ClientConnection.Connected), Ord(FClientNet.Connection), 'connected');
     FSlot := 0;
-    // the first packet of the client: its serverId is not the server's, so the gamestate comes back
+    // the first packet of the client: its serverId is not the server's, so the gamestate comes back; it is longer
+    // than a datagram: the other fragments go with the frames of the server
     FClientNet.SendPacket;
     FServerNet.Poll;
-    FClientNet.Poll;
+    for LTry := 1 to 60 do
+    begin
+      FClientNet.Poll;
+      if FClient.State.ConfigString(1) <> '' then
+        Break;
+      Server.Frame(50);
+    end;
     FMessageNumber := FClientNet.ServerMessageSequence;
   end
   else
@@ -440,6 +505,30 @@ begin
   Assert.AreEqual(Ord(TQ3ServerClientPhase.Primed), Ord(Server.ClientPhase[FSlot]), 'primed');
   FClient.InitCgame(FMessageNumber);
   FCgameStarted := True;
+end;
+
+function TQ3LoopSession.ConnectOnNetwork(const AMap: AnsiString; AProtocol: Integer): TArray<AnsiString>;
+var
+  LTry: Integer;
+begin
+  Server.SpawnServer(AMap, True);
+  FClientNet.Connect('\name\Tester\cl_guid\0123456789ABCDEF0123456789ABCDEF', AProtocol, 1234);
+  for LTry := 1 to 10 do
+  begin
+    FServerNet.Poll;
+    FClientNet.Poll;
+  end;
+  Result := FClientNet.Prints;
+end;
+
+function TQ3LoopSession.DatagramsFromServer: Integer;
+begin
+  Result := FCounting.Sent;
+end;
+
+function TQ3LoopSession.FragmentsFromServer: Integer;
+begin
+  Result := FCounting.Fragments;
 end;
 
 procedure TQ3LoopSession.Resync;
