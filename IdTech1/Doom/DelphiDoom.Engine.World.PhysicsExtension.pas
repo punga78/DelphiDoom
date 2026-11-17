@@ -72,6 +72,8 @@ type
     class function FloorBounce(mo: Pmobj_t): boolean; static; inline;
     /// <summary>TMobjGameRules.ZHitCeiling: the bounce on the ceiling; false when the missile exploded</summary>
     class function CeilingBounce(mo: Pmobj_t): boolean; static; inline;
+    /// <summary>TMapGameRules.CheckThingContact: the damage of a missile or of a skull (the alternate one for some)</summary>
+    class function ThingDamage(th: Pmobj_t): integer; static; inline;
     /// <summary>TMapGameRules.NoClipSkipsThings, in P_CheckPosition: the base planes of the sector may be moved (a sky)</summary>
     class procedure AdjustCheckedPlanes; static; inline;
     /// <summary>TMobjGameRules.CeilingLimit, in P_ZMovement: how far a thing can rise past the ceiling of its sector</summary>
@@ -120,6 +122,11 @@ end;
 class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
 begin
   result := true;
+end;
+
+class function TPhysicsExtension.ThingDamage(th: Pmobj_t): integer;
+begin
+  result := th.info.damage;
 end;
 
 class procedure TPhysicsExtension.AdjustCheckedPlanes;

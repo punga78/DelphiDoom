@@ -369,7 +369,7 @@ begin
     exit;
 
   rnd := (P_Random mod 3) + 1;
-  RX_DamageLine(pDiff(line, @lines[0], SizeOf(line_t)), mo.info.damage * rnd);
+  RX_DamageLine(pDiff(line, @lines[0], SizeOf(line_t)), RX_ThingDamage(mo) * rnd);
 end;
 
 end.

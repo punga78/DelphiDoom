@@ -79,6 +79,8 @@ type
     ///   missile explodes or is removed (Removed: the movement is over). Always true
     /// </summary>
     class function WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean; static;
+    /// <summary>P_GetThingDamage of Rad-X: the damage of a missile or of a skull</summary>
+    class function ThingDamage(th: Pmobj_t): integer; static;
     /// <summary>
     ///   P_CheckPosition, after the base planes of the sector are set: a missile or a thing that flies
     ///   through skies (THRUSKY) may go past a sky ceiling and below a sky floor
@@ -97,6 +99,7 @@ uses
   g_game,
   m_rnd,
   radix_physics,
+  radix_pickups,
   radix_walls,
   DelphiDoom.Engine.World.RadixBounce,
   DelphiDoom.Engine.World.RadixSky,
@@ -149,6 +152,11 @@ end;
 class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
 begin
   result := TRadixBounceEngine.CeilingBounce(mo, Bouncing);
+end;
+
+class function TPhysicsExtension.ThingDamage(th: Pmobj_t): integer;
+begin
+  result := RX_ThingDamage(th);
 end;
 
 class procedure TPhysicsExtension.AdjustCheckedPlanes;

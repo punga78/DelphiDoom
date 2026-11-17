@@ -41,6 +41,7 @@ interface
 
 uses
   d_player,
+  p_mobj_h,
   DelphiDoom.Radix.ActorProperties;
 
 //==============================================================================
@@ -95,6 +96,16 @@ function RX_ActorCanDamageWalls(const mobjtype: integer): boolean;
 //==============================================================================
 procedure RX_ActorSkyFlight(const mobjtype: integer; out thrusky, preventthrusky: boolean);
 
+//==============================================================================
+//
+// RX_ThingDamage
+// P_GetThingDamage of Rad-X: the damage of a missile (or of a skull): the one of
+// its definition, or its alternate one (MF3_EX_USEALTDAMAGE) with the option
+// "vanilla player weapon damage" (-radixaltdamage), never in a demo
+//
+//==============================================================================
+function RX_ThingDamage(const th: Pmobj_t): integer;
+
 implementation
 
 uses
@@ -111,12 +122,12 @@ uses
   p_local,
   p_maputl,
   p_mobj,
-  p_mobj_h,
   p_setup,
   p_tick,
   s_sound,
   radix_playerstate,
   DelphiDoom.Radix.Physics.Contact,
+  DelphiDoom.Radix.Physics.Damage,
   DelphiDoom.Radix.Pilot.Rules;
 
 const
@@ -124,6 +135,9 @@ const
   // "-radixblockspecies": the actors with MF3_EX_DONTBLOCKSPECIES do not get MF3_EX_THRUSPECIES of the
   // engine (they do by default)
   THRUSPECIES_OPTION = '-radixblockspecies';
+  // "-radixaltdamage": the option "Player weapon damage" of Rad-X (g_vanillaplayerweapondamage): the
+  // missiles with USEALTDAMAGE do their alternate damage. The menu of Radix has no variable for it yet
+  ALTDAMAGE_OPTION = '-radixaltdamage';
 
   neutronlevelmessages: array[0..MAXNEUTRONCANNONLEVEL - 1] of string = (
     '',
@@ -144,6 +158,7 @@ var
   // the Radix part of each mobjinfo; hasinfo tells the ones that have one
   radixmobjinfo: array of TRadixActorInfo;
   radixmobjhasinfo: array of boolean;
+  altdamageoption: boolean = false;
 
 //==============================================================================
 //
@@ -172,6 +187,7 @@ begin
   // On, as in Rad-X, now that the damage to the craft is the scale of P_DamageMobj of Rad-X (the
   // option turns it off, for the comparison)
   thruspecies := M_CheckParm(THRUSPECIES_OPTION) = 0;
+  altdamageoption := M_CheckParm(ALTDAMAGE_OPTION) > 0;
 
   SetLength(radixmobjinfo, nummobjtypes);
   SetLength(radixmobjhasinfo, nummobjtypes);
@@ -213,6 +229,24 @@ begin
     exit;
   if radixmobjhasinfo[mobjtype] then
     result := radixmobjinfo[mobjtype].TouchDamage;
+end;
+
+//==============================================================================
+//
+// RX_ThingDamage
+//
+//==============================================================================
+function RX_ThingDamage(const th: Pmobj_t): integer;
+begin
+  result := th.info.damage;
+  if not altdamageoption then
+    exit;
+  if (th._type < 0) or (th._type >= Length(radixmobjhasinfo)) then
+    exit;
+  if radixmobjhasinfo[th._type] then
+    result := TRadixDamageRules.ThingDamage(th.info.damage, radixmobjinfo[th._type].AltDamage,
+      TRadixActorFlag.UseAltDamage in radixmobjinfo[th._type].Flags, true,
+      TGameSession.DemoPlayback or TGameSession.DemoRecording);
 end;
 
 //==============================================================================

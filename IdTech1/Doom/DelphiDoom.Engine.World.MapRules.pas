@@ -661,7 +661,10 @@ begin
 
     if doslam then
     begin
-      damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
+      if TPhysicsExtension.Enabled then
+        damage := ((P_Random mod 8) + 1) * TPhysicsExtension.ThingDamage(TMapCheck.Thing)
+      else
+        damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
       P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing, damage);
 
       TMapCheck.Thing.flags := TMapCheck.Thing.flags and not MF_SKULLFLY;
@@ -799,6 +802,8 @@ begin
       damage := TMapCheck.Thing.info.damage
     else if TMapCheck.Thing.flags3_ex and MF3_EX_STRIFEDAMAGE <> 0 then
       damage := ((P_Random mod 4) + 1) * TMapCheck.Thing.info.damage
+    else if TPhysicsExtension.Enabled then
+      damage := ((P_Random mod 8) + 1) * TPhysicsExtension.ThingDamage(TMapCheck.Thing)
     else
       damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
     P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);
