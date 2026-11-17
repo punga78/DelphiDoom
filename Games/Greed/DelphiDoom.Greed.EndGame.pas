@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the end of an episode                            }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): EndGame1, EndGame2 and      }
+{  Port of xGreed (Jim Valavanis): EndGame1, EndGame2 and                       }
 {  EndGame3 of utils.pas                                                        }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

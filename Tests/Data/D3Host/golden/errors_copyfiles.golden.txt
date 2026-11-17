@@ -1,0 +1,14 @@
+CMD opengl 1
+CMD cvar fs_copyfiles 1
+CVARSET fs_copyfiles 1
+CMD time 2000
+CMD error fatal because of fs_copyfiles
+CLIP fatal because of fs_copyfiles
+SESSION stop
+CON ********************\nERROR: fatal because of fs_copyfiles\n********************\n
+SYS ********************\nERROR: fatal because of fs_copyfiles\n********************\n
+SHUTDOWN
+SYSERR fatal because of fs_copyfiles
+EXIT error
+CMD state
+STATE err=1 refresh=0 editors=0

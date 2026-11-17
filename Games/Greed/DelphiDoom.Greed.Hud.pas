@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the status bar and the head up display           }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): display.pas, and the parts  }
+{  Port of xGreed (Jim Valavanis): display.pas, and the parts                   }
 {  of UpdateView of raven.pas that draw the status bar, the displays, the       }
 {  rear view box and the holo suit (DrawHolo)                                   }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

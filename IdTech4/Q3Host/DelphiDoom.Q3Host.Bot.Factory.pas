@@ -14,7 +14,7 @@ unit DelphiDoom.Q3Host.Bot.Factory;
 interface
 
 uses
-  DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.SyscallHost, DelphiDoom.Q3Host.Services.Intf,
+  DelphiDoom.Console.Q3.Intf, DelphiDoom.Scanner.Q3.SourceHandles, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.SyscallHost, DelphiDoom.Q3Host.Services.Intf,
   DelphiDoom.Q3Host.GameWorld, DelphiDoom.Q3Host.Bot.Intf;
 
 type
@@ -31,7 +31,7 @@ type
     /// </summary>
     class procedure Register(const AHost: TQ3SyscallHost; const AWorld: TQ3GameWorld;
       const AClipMap: IQ3HostClipMap; const AConsole: IQ3HostConsole; const ACVars: IQ3CVarSystem;
-      const AServices: TQ3HostBotServices); static;
+      const AServices: TQ3HostBotServices; const ASources: TQ3SourceHandles = nil); static;
   end;
 
 implementation
@@ -40,11 +40,11 @@ uses
   DelphiDoom.Console.Q3.CVar, DelphiDoom.Console.Q3.Types, DelphiDoom.Q3Host.Bot.Bsp, DelphiDoom.Q3Host.Bot.Botlib,
   DelphiDoom.Q3Host.Bot.Registrar, DelphiDoom.Q3Host.Bot.CoreSyscalls, DelphiDoom.Q3Host.Bot.AasSyscalls,
   DelphiDoom.Q3Host.Bot.EaSyscalls, DelphiDoom.Q3Host.Bot.ChatSyscalls, DelphiDoom.Q3Host.Bot.GoalSyscalls,
-  DelphiDoom.Q3Host.Bot.MoveSyscalls;
+  DelphiDoom.Q3Host.Bot.MoveSyscalls, DelphiDoom.Q3Host.ClientPrecompilerSyscalls, DelphiDoom.Q3Host.Types;
 
 class procedure TQ3BotFactory.Register(const AHost: TQ3SyscallHost; const AWorld: TQ3GameWorld;
   const AClipMap: IQ3HostClipMap; const AConsole: IQ3HostConsole; const ACVars: IQ3CVarSystem;
-  const AServices: TQ3HostBotServices);
+  const AServices: TQ3HostBotServices; const ASources: TQ3SourceHandles);
 var
   LCVar: TQ3CVar;
   LEnabled: Boolean;
@@ -66,6 +66,9 @@ begin
   TQ3BotChatSyscalls.Register(LRegistrar);
   TQ3BotGoalSyscalls.Register(LRegistrar);
   TQ3BotMoveSyscalls.Register(LRegistrar);
+  // the sources of botlib are the ones of the client (one table, as botlib_export has)
+  if Assigned(ASources) then
+    TQ3PrecompilerSyscalls.Register(TQ3Module.Game, AHost.GetRegistry, ASources);
 end;
 
 end.

@@ -1,0 +1,16 @@
+CMD cvar logFile 1
+CVARSET logFile 1
+CMD openfail 1
+CMD printf this print asks for the log\\n
+CON this print asks for the log\n
+SYS this print asks for the log\n
+OPENW qconsole.log fs_savepath fail
+FATALERR failed to open log file 'qconsole.log'\n
+SHUTDOWN
+SYSERR failed to open log file 'qconsole.log'\n
+EXIT error
+CMD state
+STATE err=1 refresh=0 editors=0
+CMD printf and it does not try again\\n
+CON and it does not try again\n
+SYS and it does not try again\n

@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the renderer assets read from the archive        }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): RF_PreloadGraphics and the   }
+{  Port of xGreed (Jim Valavanis): RF_PreloadGraphics and the                    }
 {  lump cache of d_disk.pas, with the lumps read when they are first needed     }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

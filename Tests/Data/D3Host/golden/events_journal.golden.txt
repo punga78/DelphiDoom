@@ -1,0 +1,80 @@
+CMD cvar com_journal 1
+CVARSET com_journal 1
+CMD time 500
+CMD evinit
+CON Journaling events\n
+SYS Journaling events\n
+SESSION pacifier
+OPENW journal.dat fs_savepath ok
+OPENW journaldata.dat fs_savepath ok
+CMD evlevel
+RET 1
+CMD evsys 1 65 1
+CMD evsys 5 0 0 say hello\\n
+CMD evsys 3 7 -8
+CMD evsys 1 66 0
+CMD evrun 1
+BUFEXEC
+GETEV 1 65 1 0
+FWB journal.dat 0100000041000000010000000000000000000000
+KEY 65 1
+SESSION event 1 65 1 0
+BUFEXEC
+GETEV 5 0 0 11
+FWB journal.dat 0500000000000000000000000B00000000000000
+FWB journal.dat 7361792068656C6C6F0A00
+BUFTEXT append say hello\n
+BUFTEXT append \n
+BUFEXEC
+GETEV 3 7 -8 0
+FWB journal.dat 0300000007000000F8FFFFFF0000000000000000
+SESSION event 3 7 -8 0
+BUFEXEC
+GETEV 1 66 0 0
+FWB journal.dat 0100000042000000000000000000000000000000
+KEY 66 0
+SESSION event 1 66 0 0
+BUFEXEC
+GETEV 0 0 0 0
+FWB journal.dat 0000000000000000000000000000000000000000
+RET 0
+CMD evshutdown
+CLOSE journal.dat
+CLOSE journaldata.dat
+CMD cvar com_journal 2
+CVARSET com_journal 2
+CMD evinit
+CON Replaying journaled events\n
+SYS Replaying journaled events\n
+SESSION pacifier
+OPENR journal.dat ok
+OPENR journaldata.dat ok
+CMD evlevel
+RET 2
+CMD evrun 1
+BUFEXEC
+KEY 65 1
+SESSION event 1 65 1 0
+BUFEXEC
+BUFTEXT append say hello\n
+BUFTEXT append \n
+BUFEXEC
+SESSION event 3 7 -8 0
+BUFEXEC
+KEY 66 0
+SESSION event 1 66 0 0
+BUFEXEC
+RET 0
+CMD evget
+FATALERR Error reading from journal file
+SHUTDOWN
+SYSERR Error reading from journal file
+EXIT error
+CMD evrun 0
+SYS FATAL: recursed fatal error:\nError reading from journal file\n
+SYS Error reading from journal file\n
+SYSQUIT
+EXIT quit
+CMD evshutdown
+CLOSE journal.dat
+CLOSE journaldata.dat

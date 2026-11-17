@@ -1,0 +1,72 @@
+CMD printf hello world\\n
+CON hello world\n
+SYS hello world\n
+SESSION pacifier
+CMD printf ^1red ^2green ^7white\\n
+CON ^1red ^2green ^7white\n
+SYS red green white\n
+SESSION pacifier
+CMD printf no newline
+CON no newline
+SYS no newline
+SESSION pacifier
+CMD cvars 0
+CMD printf lost while the cvar system is not started\\n
+CMD dprintf also lost\\n
+CMD cvars 1
+CMD dprintf hidden without developer\\n
+CMD cvar developer 1
+CVARSET developer 1
+CMD dprintf shown with developer\\n
+CON ^1shown with developer\n
+SYS shown with developer\n
+SESSION pacifier
+CMD refresh 1
+CMD dprintf the refresh is off inside dprintf\\n
+CON ^1the refresh is off inside dprintf\n
+SYS the refresh is off inside dprintf\n
+SESSION pacifier
+CMD state
+STATE err=0 refresh=1 editors=0
+CMD printf refresh is back\\n
+CON refresh is back\n
+SYS refresh is back\n
+SESSION update
+SESSION pacifier
+CMD refresh 0
+CMD cvar com_timestampPrints 1
+CVARSET com_timestampPrints 1
+CMD time 123456
+CMD printf seconds\\n
+CON [123]seconds\n
+SYS [123]seconds\n
+SESSION pacifier
+CMD cvar com_timestampPrints 2
+CVARSET com_timestampPrints 2
+CMD time 7890
+CMD printf milliseconds\\n
+CON [7890]milliseconds\n
+SYS [7890]milliseconds\n
+SESSION pacifier
+CMD cvar com_timestampPrints 0
+CVARSET com_timestampPrints 0
+CMD redirect 20
+CMD printf first\\n
+CMD printf second line\\n
+CMD printf third line is longer\\n
+REDIRECT first\nsecond line\n
+CMD endredirect
+REDIRECT third line is longer\n
+CMD printf after the redirection\\n
+CON after the redirection\n
+SYS after the redirection\n
+SESSION pacifier
+CMD redirect 0
+CMD printf not redirected\\n
+CON not redirected\n
+SYS not redirected\n
+SESSION pacifier
+CMD rep 3 printf 0123456789
+CON 012345678901234567890123456789
+SYS 012345678901234567890123456789
+SESSION pacifier

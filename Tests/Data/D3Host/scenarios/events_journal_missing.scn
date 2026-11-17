@@ -1,0 +1,8 @@
+# a journal that cannot be opened is turned off, and also said when none was asked for
+cvar com_journal 2
+evinit
+evlevel
+cvar com_journal 1
+openfail 1
+evinit
+evlevel

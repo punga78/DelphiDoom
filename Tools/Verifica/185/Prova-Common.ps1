@@ -107,17 +107,20 @@ function Invoke-Prova {
   param(
     [string]$Root, [string]$Base, [string[]]$Games, [string]$Unit, [string[]]$BaseFiles, [hashtable]$Extra = @{},
     [string]$RulesUnit, [string]$Class, [object[]]$Expansions, [hashtable]$NotTextual = @{},
-    [hashtable]$Methods = @{}, [hashtable]$Alias = @{}, [hashtable]$Maps = @{}
+    [hashtable]$Methods = @{}, [hashtable]$Alias = @{}, [hashtable]$Maps = @{},
+    [hashtable]$OldPaths = @{}   # gioco -> percorso (nel commit Base) della vecchia unit, quando non e' IdTech1/<Gioco>/<unit>.pas
   )
   $baseSets = foreach ($f in $BaseFiles) { [pscustomobject]@{ Name = ($f -replace '\.pas$', ''); Routines = (Get-Routines ([IO.File]::ReadAllLines((Join-Path $Root $f)))) } }
   $extraSets = @{}
   foreach ($k in $Extra.Keys) { $extraSets[$k] = Get-Routines ([IO.File]::ReadAllLines((Join-Path $Root $Extra[$k]))) }
   $bad = 0
   foreach ($game in $Games) {
-    $oldLines = @(& git -C $Root show "${Base}:$game/$Unit.pas")
-    if ($LASTEXITCODE -ne 0) { throw "git show ${Base}:$game/$Unit.pas" }
+    $oldPath = "IdTech1/$game/$Unit.pas"
+    if ($OldPaths.ContainsKey($game)) { $oldPath = $OldPaths[$game] }
+    $oldLines = @(& git -C $Root show "${Base}:$oldPath")
+    if ($LASTEXITCODE -ne 0) { throw "git show ${Base}:$oldPath" }
     $oldRoutines = Get-Routines $oldLines
-    $gameRoutines = Get-Routines ([IO.File]::ReadAllLines((Join-Path $Root "$game\$RulesUnit")))
+    $gameRoutines = Get-Routines ([IO.File]::ReadAllLines((Join-Path $Root "IdTech1\$game\$RulesUnit")))
 
     $expand = {
       param([string]$text)

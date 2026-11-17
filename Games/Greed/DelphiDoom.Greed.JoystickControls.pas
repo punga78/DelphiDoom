@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the joystick among the commands of the game      }
-{  An extension: xGreed (Jim Valavanis, GPL v2 or later) keeps the settings of  }
+{  An extension: xGreed (Jim Valavanis) keeps the settings of                   }
 {  the joystick of the DOS game (SC.joystick, SC.joybut1, SC.joybut2, jcenx,    }
 {  jceny, xsense, ysense of protos_h.pas and modplay.pas) but never reads one   }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

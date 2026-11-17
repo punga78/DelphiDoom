@@ -1,0 +1,6 @@
+# fs_copyfiles (automated scripts) makes every error fatal, even with a renderer
+opengl 1
+cvar fs_copyfiles 1
+time 2000
+error fatal because of fs_copyfiles
+state

@@ -568,6 +568,8 @@ uses
   DelphiDoom.Palette.ScreenPalette,
   DelphiDoom.Video.PreserveTables,
   DelphiDoom.Video.ScreenLayout,
+  DelphiDoom.Video.TileGrid,
+  DelphiDoom.Video.PageLayout,
   DelphiDoom.Video.Stretch,
   DelphiDoom.Video.ScreenOps,
   DelphiDoom.Video.PatchPainter,
@@ -3005,7 +3007,7 @@ begin
       exit;
     end;
   p := W_CacheLumpName(pagename, PU_STATIC);
-  bigpatch := (p.width > 320) or (p.height > 200);
+  bigpatch := TVideoPageLayout.IsOversized(p.width, p.height);
   if bigpatch then
   begin
     oldscreen := screens[SCN_TMP];
@@ -3019,7 +3021,7 @@ begin
 
     V_DrawPatch(0, 0, SCN_TMP, p, false);
 
-    if (p.width > SCREENWIDTH) or (p.height > SCREENHEIGHT) then
+    if TVideoPageLayout.NeedsDownscale(p.width, p.height, SCREENWIDTH, SCREENHEIGHT) then
     begin
       V_ScaleBuffer8(pointer(screens[SCN_TMP]), p.width, p.height, SCREENWIDTH, SCREENHEIGHT);
       screendimentions[SCN_TMP].width := SCREENWIDTH;
@@ -3039,7 +3041,7 @@ begin
     V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);
   end;
   {$IFDEF DOOM}
-  if (p.width <> 426) or (p.height <> 200) then
+  if TVideoPageLayout.NeedsStretch(p.width, p.height) then
   {$ENDIF}
   V_FullScreenStretch;
   Z_ChangeTag(p, PU_CACHE);
@@ -3315,8 +3317,7 @@ var
   isflat: boolean;
   src: packed array[0..4095] of byte;
   ovr: TOverlayDrawer;
-  x, y: integer;
-  xstart, ystart: integer;
+  tile: TVideoTilePosition;
   p: Ppatch_t;
   patchbytes: TArray<Byte>;
 begin
@@ -3347,26 +3348,9 @@ begin
         begin
           ovr := PS_CreateOverlayDrawer;
 
-          if p.leftoffset = 0 then
-            xstart := 0
-          else
-            xstart := -p.width;
-          if p.topoffset = 0 then
-            ystart := 0
-          else
-            ystart := -p.height;
-
-          x := xstart;
-          while x < 320 do
-          begin
-            y := ystart;
-            while y < 200 do
-            begin
-              ovr.AddPatch($FF, lumpname, x, y);
-              y := y + p.height;
-            end;
-            x := x + p.width;
-          end;
+          // the positions of the copies of the patch on the 320x200 page are TVideoTileGrid (Framework\Video)
+          for tile in TVideoTileGrid.Positions(p.width, p.height, p.leftoffset, p.topoffset, 320, 200) do
+            ovr.AddPatch($FF, lumpname, tile.X, tile.Y);
 
           ovr.DrawDrawers;
           memcpy(@screens[dstscn, 0], ovr.overlayscreen, 320 * 200);

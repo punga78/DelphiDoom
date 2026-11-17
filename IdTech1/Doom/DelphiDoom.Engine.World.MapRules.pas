@@ -285,6 +285,11 @@ end;
 
 class function TMapGameRules.NoClipSkipsThings(const AFlags: integer): boolean;
 begin
+  // a game with the physics of its own: this is the first rule that P_CheckPosition asks after it
+  // has set the planes of the sector, so the planes are moved here (Radix: missiles and things
+  // that fly through a sky)
+  if TPhysicsExtension.Enabled then
+    TPhysicsExtension.AdjustCheckedPlanes;
   result := AFlags and MF_NOCLIP <> 0;
 end;
 
@@ -550,6 +555,9 @@ end;
 class function TMapGameRules.IgnoresCeilingFit(thing: Pmobj_t): boolean;
 begin
   result := thing.flags and MF_TELEPORT <> 0;
+  // a game with the physics of its own: a craft that slides on floors and ceilings (Radix)
+  if TPhysicsExtension.Enabled then
+    result := result or TPhysicsExtension.SlidesOnPlanes(thing);
 end;
 
 class function TMapGameRules.FlightBlocked(thing: Pmobj_t): boolean;
@@ -565,6 +573,8 @@ end;
 class function TMapGameRules.IgnoresStepHeight(thing: Pmobj_t): boolean;
 begin
   result := thing.flags and MF_TELEPORT <> 0;
+  if TPhysicsExtension.Enabled then
+    result := result or TPhysicsExtension.SlidesOnPlanes(thing);
 end;
 
 class function TMapGameRules.MissileStepTooHigh(thing: Pmobj_t): boolean;
@@ -575,6 +585,8 @@ end;
 class function TMapGameRules.IgnoresDropoff(thing: Pmobj_t): boolean;
 begin
   result := false;
+  if TPhysicsExtension.Enabled then
+    result := TPhysicsExtension.SlidesOnPlanes(thing);
 end;
 
 class function TMapGameRules.CannotLeaveFloorPic(thing: Pmobj_t): boolean;
@@ -656,7 +668,10 @@ begin
 
     if doslam then
     begin
-      damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
+      if TPhysicsExtension.Enabled then
+        damage := ((P_Random mod 8) + 1) * TPhysicsExtension.ThingDamage(TMapCheck.Thing)
+      else
+        damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
       P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing, damage);
 
       TMapCheck.Thing.flags := TMapCheck.Thing.flags and not MF_SKULLFLY;
@@ -794,6 +809,8 @@ begin
       damage := TMapCheck.Thing.info.damage
     else if TMapCheck.Thing.flags3_ex and MF3_EX_STRIFEDAMAGE <> 0 then
       damage := ((P_Random mod 4) + 1) * TMapCheck.Thing.info.damage
+    else if TPhysicsExtension.Enabled then
+      damage := ((P_Random mod 8) + 1) * TPhysicsExtension.ThingDamage(TMapCheck.Thing)
     else
       damage := ((P_Random mod 8) + 1) * TMapCheck.Thing.info.damage;
     P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);

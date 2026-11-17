@@ -1,0 +1,16 @@
+# the log file: opened at the first print, flushed, closed
+cvar logFile 1
+printf before
+printf the first line goes to the log\n
+printf ^2second line, with color\n
+cvar logFileName x
+cvar logFileName
+printf same file\n
+closelog
+printf log closed\n
+cvar logFile 2
+cvar logFileName mylog.txt
+printf now with flush after each print\n
+files 0
+closelog
+printf the file system is gone\n

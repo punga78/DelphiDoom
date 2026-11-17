@@ -1,0 +1,4 @@
+# FatalError and what it does with r_fullscreen
+cvar r_fullscreen 1
+fatal the fatal error
+state

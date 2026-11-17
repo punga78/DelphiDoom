@@ -43,6 +43,26 @@ type
     Down);
 
   /// <summary>
+  ///   What the bounces of a thing need to know and change in the vertical movement (P_ZMovement of
+  ///   Rad-X): the three bounce flags, the count of a thing with limited bounces, its vertical
+  ///   momentum and reaction time. Bouncing is set by an impact that bounced (a missile that bounced
+  ///   does not explode in that tic)
+  /// </summary>
+  TRadixBounceState = record
+    Missile: Boolean;
+    FloorBounce: Boolean;
+    CeilingBounce: Boolean;
+    WallBounce: Boolean;
+    /// <summary>A_LimitBounceControl was run (MF3_EX_LIMITBOUNCECONTROL)</summary>
+    Limited: Boolean;
+    /// <summary>The bounces left (only meaningful when Limited)</summary>
+    Count: Integer;
+    MomentumZ: Integer;
+    ReactionTime: Integer;
+    Bouncing: Boolean;
+  end;
+
+  /// <summary>
   ///   The bounces of the things of Radix: what Rad-X changed in the movement of Doom. A count
   ///   can limit the bounces (A_LimitBounceControl), a factor scales the momentum after a wall
   ///   (A_WallBounceFactor), a missile keeps its vertical speed, a wall that can be shot is
@@ -92,6 +112,23 @@ type
       ACeilingIsSky: Boolean): TRadixMissileSkim; static;
     /// <summary>The 16.16 product, rounded down as FixedMul of the engine</summary>
     class function FixedMul(AFirst, ASecond: Integer): Integer; static;
+    /// <summary>
+    ///   P_ResolveBounceBehaviour: a bounce is taken away from a thing with a limited count and when
+    ///   none is left it loses its three bounce flags
+    /// </summary>
+    class procedure Resolve(var AState: TRadixBounceState); static;
+    /// <summary>
+    ///   The thing is at or under the floor (P_ZMovement). A thing with FloorBounce that does not lie
+    ///   on a sky floor bounces (a liquid floor ends its bounces), a missile on a sky floor
+    ///   explodes. False when the missile explodes and the movement is over
+    /// </summary>
+    class function FloorImpact(var AState: TRadixBounceState; AFloorIsSky, ALiquidFloor: Boolean): Boolean; static;
+    /// <summary>
+    ///   The thing is above the ceiling (P_ZMovement). Going up it bounces when it has CeilingBounce
+    ///   and the ceiling is not a sky, otherwise a missile explodes and the rest stops. False when
+    ///   the missile explodes and the movement is over
+    /// </summary>
+    class function CeilingImpact(var AState: TRadixBounceState; ACeilingIsSky: Boolean): Boolean; static;
   end;
 
 implementation
@@ -183,6 +220,62 @@ end;
 class function TRadixBounceRules.FloorEndsBounces(ALiquidFloor: Boolean): Boolean;
 begin
   Result := ALiquidFloor;
+end;
+
+class procedure TRadixBounceRules.Resolve(var AState: TRadixBounceState);
+begin
+  if CountDown(AState.Limited, AState.Count) then
+  begin
+    AState.FloorBounce := False;
+    AState.CeilingBounce := False;
+    AState.WallBounce := False;
+  end;
+end;
+
+class function TRadixBounceRules.FloorImpact(var AState: TRadixBounceState; AFloorIsSky,
+  ALiquidFloor: Boolean): Boolean;
+begin
+  Result := True;
+  case FloorHit(AState.FloorBounce, AState.Missile, AFloorIsSky) of
+    TRadixPlaneHit.Bounce:
+      begin
+        AState.MomentumZ := PlaneMomentum(AState.MomentumZ, AState.Missile);
+        AState.ReactionTime := AState.ReactionTime div 2;
+        if FloorEndsBounces(ALiquidFloor) then
+        begin
+          AState.FloorBounce := False;
+          AState.Bouncing := False;
+          AState.Count := 0;
+        end
+        else
+        begin
+          Resolve(AState);
+          AState.Bouncing := True;
+        end;
+      end;
+    TRadixPlaneHit.Explode:
+      Result := False;
+  end;
+end;
+
+class function TRadixBounceRules.CeilingImpact(var AState: TRadixBounceState; ACeilingIsSky: Boolean): Boolean;
+begin
+  Result := True;
+  if AState.MomentumZ > 0 then
+  begin
+    if CeilingHit(AState.CeilingBounce, ACeilingIsSky) = TRadixPlaneHit.Bounce then
+    begin
+      AState.MomentumZ := PlaneMomentum(AState.MomentumZ, AState.Missile);
+      Resolve(AState);
+    end
+    else
+    begin
+      if AState.Missile then
+        Exit(False);
+      AState.MomentumZ := 0;
+    end;
+    AState.Bouncing := True;
+  end;
 end;
 
 class function TRadixBounceRules.MissileSkim(AFloorBounce, ACeilingBounce, AOnFloor, AOnCeiling, AFloorIsSky,

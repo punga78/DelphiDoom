@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the colour 255 of the pictures of the monsters   }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the loop of                 }
+{  Port of xGreed (Jim Valavanis): the loop of                                  }
 {  DemandLoadMonster of spawn.pas                                               }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

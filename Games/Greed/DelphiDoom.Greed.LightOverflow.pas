@@ -4,6 +4,10 @@
 {  map (a defect of sprites.pas, MoveSprites: reallight[mapspot + i * MAPCOLS   }
 {  + j] without a check), for who wants the game with its defect                }
 {                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
+{                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}

@@ -133,6 +133,7 @@
     'IdTech4\Aas' = 'IdTech4'
     'IdTech4\Qvm' = 'IdTech4'
     'IdTech4\Q3Host' = 'IdTech4'
+    'IdTech4\D3Host' = 'IdTech4'
     'IdTech4\Pmove' = 'IdTech4'
     'IdTech4\NetQ3' = 'IdTech4'
     'IdTech4\DoomScript' = 'IdTech4'

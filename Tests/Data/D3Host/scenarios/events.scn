@@ -1,0 +1,22 @@
+# the event loop: no journal
+evinit
+evlevel
+time 1000
+evinit
+evms
+time 1250
+evms
+evget
+evsys 1 65 1
+evsys 1 65 0
+evsys 2 97 0
+evsys 3 4 -5
+evsys 5 0 0 map e1m1\n
+evsys 4 2 100
+evget
+evrun 1
+evrun 0
+evsys 5 0 0 quit
+evrun 1
+evget
+evshutdown

@@ -1,0 +1,4 @@
+baseoa/cgame served=1293 finished | shaders=235 models=87 scenes=1 draws=53 sounds=216
+baseoa/ui served=2210 finished | shaders=243 draws=897 scenes=3
+missionpack/cgame served=2900 finished | shaders=246 models=96 scenes=1 draws=45 sounds=394
+missionpack/ui served=33476 finished | shaders=422 draws=912 scenes=0

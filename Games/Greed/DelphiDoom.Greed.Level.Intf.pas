@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - what the rules of the level ask of the game      }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the calls of CheckItems,    }
+{  Port of xGreed (Jim Valavanis): the calls of CheckItems,                     }
 {  CheckHere, TimeUpdate, EndLevel, WarpAnim and Special_Code of raven.pas to   }
 {  display.pas, d_ints.pas, d_disk.pas, d_video.pas, utils.pas and event.pas    }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

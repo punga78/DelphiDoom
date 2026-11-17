@@ -1,0 +1,10 @@
+CMD cvar r_fullscreen 1
+CVARSET r_fullscreen 1
+CMD fatal the fatal error
+BUFTEXT now vid_restart partial windowed\n
+FATALERR the fatal error
+SHUTDOWN
+SYSERR the fatal error
+EXIT error
+CMD state
+STATE err=1 refresh=0 editors=0

@@ -2,8 +2,12 @@
 {                                                                              }
 {  DelphiDoom: greed library - the light of the level on the weapon and on the  }
 {  heat sensor                                                                  }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the choice of the color     }
+{  Port of xGreed (Jim Valavanis): the choice of the color                      }
 {  table of VI_DrawMaskedPicToBuffer2 of d_video.pas                            }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

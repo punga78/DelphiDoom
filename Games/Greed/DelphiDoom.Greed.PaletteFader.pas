@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the fades of the palette, a step for each call   }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): VI_FillPalette, VI_FadeOut  }
+{  Port of xGreed (Jim Valavanis): VI_FillPalette, VI_FadeOut                   }
 {  and VI_FadeIn of d_video.pas and the approx_zero of I_SetPalette             }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

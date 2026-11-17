@@ -1,0 +1,32 @@
+# Printf, DPrintf and the redirection of the text
+printf hello world\n
+printf ^1red ^2green ^7white\n
+printf no newline
+cvars 0
+printf lost while the cvar system is not started\n
+dprintf also lost\n
+cvars 1
+dprintf hidden without developer\n
+cvar developer 1
+dprintf shown with developer\n
+refresh 1
+dprintf the refresh is off inside dprintf\n
+state
+printf refresh is back\n
+refresh 0
+cvar com_timestampPrints 1
+time 123456
+printf seconds\n
+cvar com_timestampPrints 2
+time 7890
+printf milliseconds\n
+cvar com_timestampPrints 0
+redirect 20
+printf first\n
+printf second line\n
+printf third line is longer\n
+endredirect
+printf after the redirection\n
+redirect 0
+printf not redirected\n
+rep 3 printf 0123456789

@@ -42,6 +42,15 @@ type
     /// </summary>
     class function InPatrolRange(ALimited: Boolean; ADistance, APatrolRange: Integer): Boolean; static;
     /// <summary>
+    ///   The "max target range" (map units, 0 = no limit) that the engine already has in mobjinfo
+    ///   (P_LookForPlayers refuses a player farther than that) for an enemy with a limited patrol range.
+    ///   Rad-X compared the distance (16.16) with the raw ACTORDEF number, so its ranges (4096, 1024)
+    ///   were a fraction of a map unit and the two enemies that have them never saw a pilot; the
+    ///   ranges are map units here, as the exporter of the fork wrote them (range * FRACUNIT). A
+    ///   limited enemy with no range keeps no limit (in Rad-X it saw nobody)
+    /// </summary>
+    class function MaxTargetRange(ALimited: Boolean; APatrolRangeUnits: Integer): Integer; static;
+    /// <summary>
     ///   True when a line stops a missile (the walls that can be shot): a one sided line always;
     ///   a two sided one when the missile does not fit in its opening, which goes from the higher
     ///   floor to the lower ceiling of its two sectors (the panel under an opening is a target)
@@ -82,6 +91,14 @@ end;
 class function TRadixContactRules.InPatrolRange(ALimited: Boolean; ADistance, APatrolRange: Integer): Boolean;
 begin
   Result := not ALimited or (ADistance <= APatrolRange);
+end;
+
+class function TRadixContactRules.MaxTargetRange(ALimited: Boolean; APatrolRangeUnits: Integer): Integer;
+begin
+  if ALimited and (APatrolRangeUnits > 0) then
+    Result := APatrolRangeUnits
+  else
+    Result := 0;
 end;
 
 class function TRadixContactRules.LineStopsMissile(ATwoSided: Boolean; AMissileZ, AMissileHeight, AFrontFloor,
