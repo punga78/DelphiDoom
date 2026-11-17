@@ -1,0 +1,40 @@
+# idClass: instances by name, abstract classes, CallSpawn (a spawn function is called once per class that has its own),
+# the event callbacks through the event map, deletion
+inittypes
+create idDoor
+create idBinder
+create idEntity
+create idClass
+create nothing
+create idDebugHelper
+create idPlat
+create idLight
+spawnobj idDebugHelper
+spawnobj idDoor
+spawnobj idPlat
+spawnobj idLight
+spawnobj idItem
+spawnobj idBinder
+spawnobj nothing
+callevent obj 0 activate
+callevent obj 0 hide
+callevent obj 0 open
+callevent obj 0 show
+callevent obj 0 ping
+callevent obj 0 remove
+callevent obj 6 hide
+callevent obj 6 open
+callevent obj 7 hide
+callevent obj 5 hide
+callevent obj 99 hide
+callevent obj 0 nothing
+callevent obj 6 <immediateremove>
+destroy 0
+destroy 0
+destroy 7
+state
+# before Init CreateInstance by name uses the slow lookup too
+shutdowntypes
+create idDoor
+inittypes
+create idDoor

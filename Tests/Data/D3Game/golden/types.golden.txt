@@ -1,0 +1,214 @@
+CMD getclass idDoor
+CLASS idDoor super=idMover typeNum=0 lastChild=0
+CMD getclass nonexistent
+CLASS null
+CMD getclass IDDOOR
+CLASS null
+CMD gettype 0
+TYPE idBinder
+CMD dumptypes
+TYPE idBinder super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idClass super=NULL superPtr=(none) typeNum=0 lastChild=0 free=0 map=0
+TYPE idDebugHelper super=idClass superPtr=idClass typeNum=0 lastChild=0 free=0 map=0
+TYPE idDoor super=idMover superPtr=idMover typeNum=0 lastChild=0 free=0 map=0
+TYPE idEntity super=idClass superPtr=idClass typeNum=0 lastChild=0 free=0 map=0
+TYPE idItem super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idLight super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idMover super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idPlat super=idMover superPtr=idMover typeNum=0 lastChild=0 free=0 map=0
+TYPE idPlayerStart super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idTrigger_Multi super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idWorldspawn super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+INIT initialized=0 types=0 typenums=0 bits=0
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD dumptypes
+TYPE idBinder super=idEntity superPtr=idEntity typeNum=11 lastChild=11 free=0 map=1
+TYPE idClass super=NULL superPtr=(none) typeNum=0 lastChild=11 free=1 map=1
+TYPE idDebugHelper super=idClass superPtr=idClass typeNum=1 lastChild=1 free=0 map=1
+TYPE idDoor super=idMover superPtr=idMover typeNum=10 lastChild=10 free=1 map=1
+TYPE idEntity super=idClass superPtr=idClass typeNum=2 lastChild=11 free=1 map=1
+TYPE idItem super=idEntity superPtr=idEntity typeNum=7 lastChild=7 free=1 map=1
+TYPE idLight super=idEntity superPtr=idEntity typeNum=6 lastChild=6 free=0 map=1
+TYPE idMover super=idEntity superPtr=idEntity typeNum=8 lastChild=10 free=1 map=1
+TYPE idPlat super=idMover superPtr=idMover typeNum=9 lastChild=9 free=0 map=1
+TYPE idPlayerStart super=idEntity superPtr=idEntity typeNum=5 lastChild=5 free=0 map=1
+TYPE idTrigger_Multi super=idEntity superPtr=idEntity typeNum=4 lastChild=4 free=1 map=1
+TYPE idWorldspawn super=idEntity superPtr=idEntity typeNum=3 lastChild=3 free=0 map=1
+INIT initialized=1 types=12 typenums=12 bits=4
+CMD list
+PRINT Classname                Superclass               Type   Subclasses\n
+PRINT ----------------------------------------------------------------------\n
+PRINT idBinder                 idEntity                     11      0\n
+PRINT idClass                  NULL                          0     11\n
+PRINT idDebugHelper            idClass                       1      0\n
+PRINT idDoor                   idMover                      10      0\n
+PRINT idEntity                 idClass                       2      9\n
+PRINT idItem                   idEntity                      7      0\n
+PRINT idLight                  idEntity                      6      0\n
+PRINT idMover                  idEntity                      8      2\n
+PRINT idPlat                   idMover                       9      0\n
+PRINT idPlayerStart            idEntity                      5      0\n
+PRINT idTrigger_Multi          idEntity                      4      0\n
+PRINT idWorldspawn             idEntity                      3      0\n
+PRINT ...12 classes
+CMD numtypes
+RET 12
+CMD typenumbits
+RET 4
+CMD getclass idClass
+CLASS idClass super=NULL typeNum=0 lastChild=11
+CMD getclass idEntity
+CLASS idEntity super=idClass typeNum=2 lastChild=11
+CMD getclass idMover
+CLASS idMover super=idEntity typeNum=8 lastChild=10
+CMD getclass idDoor
+CLASS idDoor super=idMover typeNum=10 lastChild=10
+CMD getclass idPlat
+CLASS idPlat super=idMover typeNum=9 lastChild=9
+CMD getclass idLight
+CLASS idLight super=idEntity typeNum=6 lastChild=6
+CMD getclass idItem
+CLASS idItem super=idEntity typeNum=7 lastChild=7
+CMD getclass idDebugHelper
+CLASS idDebugHelper super=idClass typeNum=1 lastChild=1
+CMD getclass idBinder
+CLASS idBinder super=idEntity typeNum=11 lastChild=11
+CMD getclass idZzz
+CLASS null
+CMD getclass IDDOOR
+CLASS null
+CMD gettype 0
+TYPE idClass
+CMD gettype 1
+TYPE idDebugHelper
+CMD gettype 2
+TYPE idEntity
+CMD gettype 3
+TYPE idWorldspawn
+CMD gettype 4
+TYPE idTrigger_Multi
+CMD gettype 5
+TYPE idPlayerStart
+CMD gettype 6
+TYPE idLight
+CMD gettype 7
+TYPE idItem
+CMD gettype 8
+TYPE idMover
+CMD gettype 9
+TYPE idPlat
+CMD gettype 10
+TYPE idDoor
+CMD gettype 11
+TYPE idBinder
+CMD gettype -1
+TYPE null
+CMD gettype 99
+TYPE null
+CMD super idDoor
+SUPER idMover
+CMD super idMover
+SUPER idEntity
+CMD super idEntity
+SUPER idClass
+CMD super idClass
+SUPER (none)
+CMD super idPlat
+SUPER idMover
+CMD istype idDoor idDoor
+RET 1
+CMD istype idDoor idMover
+RET 1
+CMD istype idDoor idEntity
+RET 1
+CMD istype idDoor idClass
+RET 1
+CMD istype idDoor idItem
+RET 0
+CMD istype idMover idDoor
+RET 0
+CMD istype idPlat idMover
+RET 1
+CMD istype idPlat idDoor
+RET 0
+CMD istype idPlat idEntity
+RET 1
+CMD istype idLight idEntity
+RET 1
+CMD istype idLight idMover
+RET 0
+CMD istype idDebugHelper idEntity
+RET 0
+CMD istype idDebugHelper idClass
+RET 1
+CMD istype idBinder idEntity
+RET 1
+CMD istype idClass idEntity
+RET 0
+CMD istype idEntity idClass
+RET 1
+CMD evshare idClass
+EVSHARE idClass shared=0 free=1 hasMap=1
+CMD evshare idEntity
+EVSHARE idEntity shared=0 free=1 hasMap=1
+CMD evshare idMover
+EVSHARE idMover shared=0 free=1 hasMap=1
+CMD evshare idDoor
+EVSHARE idDoor shared=0 free=1 hasMap=1
+CMD evshare idPlat
+EVSHARE idPlat shared=1 free=0 hasMap=1
+CMD evshare idLight
+EVSHARE idLight shared=1 free=0 hasMap=1
+CMD evshare idItem
+EVSHARE idItem shared=0 free=1 hasMap=1
+CMD evshare idDebugHelper
+EVSHARE idDebugHelper shared=1 free=0 hasMap=1
+CMD evshare idWorldspawn
+EVSHARE idWorldspawn shared=1 free=0 hasMap=1
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...already initialized\n
+CMD numtypes
+RET 12
+CMD shutdowntypes
+CMD dumptypes
+TYPE idBinder super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idClass super=NULL superPtr=(none) typeNum=0 lastChild=0 free=1 map=0
+TYPE idDebugHelper super=idClass superPtr=idClass typeNum=0 lastChild=0 free=0 map=0
+TYPE idDoor super=idMover superPtr=idMover typeNum=0 lastChild=0 free=1 map=0
+TYPE idEntity super=idClass superPtr=idClass typeNum=0 lastChild=0 free=1 map=0
+TYPE idItem super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=1 map=0
+TYPE idLight super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idMover super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=1 map=0
+TYPE idPlat super=idMover superPtr=idMover typeNum=0 lastChild=0 free=0 map=0
+TYPE idPlayerStart super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+TYPE idTrigger_Multi super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=1 map=0
+TYPE idWorldspawn super=idEntity superPtr=idEntity typeNum=0 lastChild=0 free=0 map=0
+INIT initialized=0 types=0 typenums=0 bits=4
+CMD numtypes
+RET 0
+CMD getclass idDoor
+CLASS idDoor super=idMover typeNum=0 lastChild=0
+CMD gettype 3
+TYPE null
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 672 bytes for event callbacks\n
+CMD dumptypes
+TYPE idBinder super=idEntity superPtr=idEntity typeNum=11 lastChild=11 free=0 map=1
+TYPE idClass super=NULL superPtr=(none) typeNum=0 lastChild=11 free=1 map=1
+TYPE idDebugHelper super=idClass superPtr=idClass typeNum=1 lastChild=1 free=0 map=1
+TYPE idDoor super=idMover superPtr=idMover typeNum=10 lastChild=10 free=1 map=1
+TYPE idEntity super=idClass superPtr=idClass typeNum=2 lastChild=11 free=1 map=1
+TYPE idItem super=idEntity superPtr=idEntity typeNum=7 lastChild=7 free=1 map=1
+TYPE idLight super=idEntity superPtr=idEntity typeNum=6 lastChild=6 free=0 map=1
+TYPE idMover super=idEntity superPtr=idEntity typeNum=8 lastChild=10 free=1 map=1
+TYPE idPlat super=idMover superPtr=idMover typeNum=9 lastChild=9 free=0 map=1
+TYPE idPlayerStart super=idEntity superPtr=idEntity typeNum=5 lastChild=5 free=0 map=1
+TYPE idTrigger_Multi super=idEntity superPtr=idEntity typeNum=4 lastChild=4 free=1 map=1
+TYPE idWorldspawn super=idEntity superPtr=idEntity typeNum=3 lastChild=3 free=0 map=1
+INIT initialized=1 types=12 typenums=12 bits=4
+CMD getclass idDoor
+CLASS idDoor super=idMover typeNum=10 lastChild=10

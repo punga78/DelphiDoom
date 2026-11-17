@@ -1,0 +1,377 @@
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD def worldspawn spawnclass idWorldspawn
+CMD def info_player_start spawnclass idPlayerStart
+CMD def func_door spawnclass idDoor thinks 2
+CMD def func_door_mp spawnclass idItem
+CMD def item_medkit spawnclass idItem
+CMD def item_medkit_small spawnclass idItem
+CMD def weapon_bfg spawnclass idItem
+CMD def func_item spawnclass idItem
+CMD def trigger_multi spawnclass idTrigger_Multi
+CMD newmap
+CMD spawnmap
+PRINT Spawning entities\n
+PRINT No mapfile present\n
+CMD mapnew
+CMD spawnmap
+PRINT Spawning entities\n
+CALL SetSkill 1
+ERROR ...no entities
+THROW ...no entities
+CMD mapent classname func_door name door0
+CMD spawnmap
+PRINT Spawning entities\n
+CALL SetSkill 1
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door0 4094
+SPAWN idMover door0
+SPAWN idDoor door0
+ERROR Problem spawning world entity
+THROW Problem spawning world entity
+CMD newmap
+CMD mapclear
+CMD mapnew
+CMD mapent classname worldspawn name world
+CMD mapent classname info_player_start name start1 origin 0\\x200\\x2064
+CMD mapent classname func_door name door1
+CMD mapent classname func_door name door2 not_medium 1
+CMD mapent classname func_door name door3 not_easy 1
+CMD mapent classname func_door name door4 not_hard 1
+CMD mapent classname item_medkit name kit1
+CMD mapent classname item_medkit_small name kit2
+CMD mapent classname weapon_bfg name bfg1
+CMD mapent classname func_item name item1 not_multiplayer 1
+CMD mapent classname trigger_multi name trig1
+CMD mapent classname unknown_thing name ghost
+CMD spawnmap
+PRINT Spawning entities\n
+CALL SetSkill 1
+CTOR idWorldspawn
+CALL program.SetEntity world 4094
+SPAWN idWorldspawn world
+CALL CacheDictionaryMedia info_player_start
+CTOR idPlayerStart
+CALL program.SetEntity start1 32
+SPAWN idPlayerStart start1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door1 33
+SPAWN idMover door1
+SPAWN idDoor door1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door3 34
+SPAWN idMover door3
+SPAWN idDoor door3
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door4 35
+SPAWN idMover door4
+SPAWN idDoor door4
+CALL CacheDictionaryMedia item_medkit
+CTOR idItem
+CALL program.SetEntity kit1 36
+SPAWN idItem kit1
+CALL CacheDictionaryMedia item_medkit_small
+CTOR idItem
+CALL program.SetEntity kit2 37
+SPAWN idItem kit2
+CALL CacheDictionaryMedia weapon_bfg
+CTOR idItem
+CALL program.SetEntity bfg1 38
+SPAWN idItem bfg1
+CALL CacheDictionaryMedia func_item
+CTOR idItem
+CALL program.SetEntity item1 39
+SPAWN idItem item1
+CALL CacheDictionaryMedia trigger_multi
+CTOR idTrigger_Multi
+CALL program.SetEntity trig1 40
+SPAWN idTrigger_Multi trig1
+CALL CacheDictionaryMedia unknown_thing
+WARNING Unknown classname 'unknown_thing' on 'ghost'.
+PRINT ...11 entities spawned, 1 inhibited\n\n
+CMD state
+STATE num_entities=41 firstFree=41 spawnCount=11 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=start1 class=idPlayerStart def=info_player_start spawnId=2 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=door1 class=idDoor def=func_door spawnId=3 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=door3 class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=door4 class=idDoor def=func_door spawnId=5 think=1 active=1 cinematic=0 health=0 number=35
+ENT 36 name=kit1 class=idItem def=item_medkit spawnId=6 think=0 active=0 cinematic=0 health=0 number=36
+ENT 37 name=kit2 class=idItem def=item_medkit_small spawnId=7 think=0 active=0 cinematic=0 health=0 number=37
+ENT 38 name=bfg1 class=idItem def=weapon_bfg spawnId=8 think=0 active=0 cinematic=0 health=0 number=38
+ENT 39 name=item1 class=idItem def=func_item spawnId=9 think=0 active=0 cinematic=0 health=0 number=39
+ENT 40 name=trig1 class=idTrigger_Multi def=trigger_multi spawnId=10 think=1 active=1 cinematic=0 health=0 number=40
+ENT 4094 name=world class=idWorldspawn def=worldspawn spawnId=1 think=0 active=0 cinematic=0 health=0 number=4094
+SPAWNLIST  4094 32 33 34 35 36 37 38 39 40
+ACTIVELIST  33 34 35 40
+CMD newmap
+CMD cvar skill 0
+CMD spawnmap
+PRINT Spawning entities\n
+CALL SetSkill 0
+CTOR idWorldspawn
+CALL program.SetEntity world 4094
+SPAWN idWorldspawn world
+CALL CacheDictionaryMedia info_player_start
+CTOR idPlayerStart
+CALL program.SetEntity start1 32
+SPAWN idPlayerStart start1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door1 33
+SPAWN idMover door1
+SPAWN idDoor door1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door2 34
+SPAWN idMover door2
+SPAWN idDoor door2
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door4 35
+SPAWN idMover door4
+SPAWN idDoor door4
+CALL CacheDictionaryMedia item_medkit
+CTOR idItem
+CALL program.SetEntity kit1 36
+SPAWN idItem kit1
+CALL CacheDictionaryMedia item_medkit_small
+CTOR idItem
+CALL program.SetEntity kit2 37
+SPAWN idItem kit2
+CALL CacheDictionaryMedia weapon_bfg
+CTOR idItem
+CALL program.SetEntity bfg1 38
+SPAWN idItem bfg1
+CALL CacheDictionaryMedia func_item
+CTOR idItem
+CALL program.SetEntity item1 39
+SPAWN idItem item1
+CALL CacheDictionaryMedia trigger_multi
+CTOR idTrigger_Multi
+CALL program.SetEntity trig1 40
+SPAWN idTrigger_Multi trig1
+CALL CacheDictionaryMedia unknown_thing
+WARNING Unknown classname 'unknown_thing' on 'ghost'.
+PRINT ...11 entities spawned, 1 inhibited\n\n
+CMD state
+STATE num_entities=41 firstFree=41 spawnCount=11 mapSpawnCount=0 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=start1 class=idPlayerStart def=info_player_start spawnId=2 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=door1 class=idDoor def=func_door spawnId=3 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=door2 class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=door4 class=idDoor def=func_door spawnId=5 think=1 active=1 cinematic=0 health=0 number=35
+ENT 36 name=kit1 class=idItem def=item_medkit spawnId=6 think=0 active=0 cinematic=0 health=0 number=36
+ENT 37 name=kit2 class=idItem def=item_medkit_small spawnId=7 think=0 active=0 cinematic=0 health=0 number=37
+ENT 38 name=bfg1 class=idItem def=weapon_bfg spawnId=8 think=0 active=0 cinematic=0 health=0 number=38
+ENT 39 name=item1 class=idItem def=func_item spawnId=9 think=0 active=0 cinematic=0 health=0 number=39
+ENT 40 name=trig1 class=idTrigger_Multi def=trigger_multi spawnId=10 think=1 active=1 cinematic=0 health=0 number=40
+ENT 4094 name=world class=idWorldspawn def=worldspawn spawnId=1 think=0 active=0 cinematic=0 health=0 number=4094
+SPAWNLIST  4094 32 33 34 35 36 37 38 39 40
+ACTIVELIST  33 34 35 40
+CMD newmap
+CMD cvar skill 2
+CMD spawnmap
+PRINT Spawning entities\n
+CALL SetSkill 2
+CTOR idWorldspawn
+CALL program.SetEntity world 4094
+SPAWN idWorldspawn world
+CALL CacheDictionaryMedia info_player_start
+CTOR idPlayerStart
+CALL program.SetEntity start1 32
+SPAWN idPlayerStart start1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door1 33
+SPAWN idMover door1
+SPAWN idDoor door1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door2 34
+SPAWN idMover door2
+SPAWN idDoor door2
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door3 35
+SPAWN idMover door3
+SPAWN idDoor door3
+CALL CacheDictionaryMedia item_medkit
+CTOR idItem
+CALL program.SetEntity kit1 36
+SPAWN idItem kit1
+CALL CacheDictionaryMedia item_medkit_small
+CTOR idItem
+CALL program.SetEntity kit2 37
+SPAWN idItem kit2
+CALL CacheDictionaryMedia weapon_bfg
+CTOR idItem
+CALL program.SetEntity bfg1 38
+SPAWN idItem bfg1
+CALL CacheDictionaryMedia func_item
+CTOR idItem
+CALL program.SetEntity item1 39
+SPAWN idItem item1
+CALL CacheDictionaryMedia trigger_multi
+CTOR idTrigger_Multi
+CALL program.SetEntity trig1 40
+SPAWN idTrigger_Multi trig1
+CALL CacheDictionaryMedia unknown_thing
+WARNING Unknown classname 'unknown_thing' on 'ghost'.
+PRINT ...11 entities spawned, 1 inhibited\n\n
+CMD newmap
+CMD cvar skill 3
+CMD populate
+PRINT Spawning entities\n
+CALL SetSkill 3
+CTOR idWorldspawn
+CALL program.SetEntity world 4094
+SPAWN idWorldspawn world
+CALL CacheDictionaryMedia info_player_start
+CTOR idPlayerStart
+CALL program.SetEntity start1 32
+SPAWN idPlayerStart start1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door1 33
+SPAWN idMover door1
+SPAWN idDoor door1
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door2 34
+SPAWN idMover door2
+SPAWN idDoor door2
+CALL CacheDictionaryMedia func_door
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity door3 35
+SPAWN idMover door3
+SPAWN idDoor door3
+CALL CacheDictionaryMedia weapon_bfg
+CTOR idItem
+CALL program.SetEntity bfg1 36
+SPAWN idItem bfg1
+CALL CacheDictionaryMedia func_item
+CTOR idItem
+CALL program.SetEntity item1 37
+SPAWN idItem item1
+CALL CacheDictionaryMedia trigger_multi
+CTOR idTrigger_Multi
+CALL program.SetEntity trig1 38
+SPAWN idTrigger_Multi trig1
+CALL CacheDictionaryMedia unknown_thing
+WARNING Unknown classname 'unknown_thing' on 'ghost'.
+PRINT ...9 entities spawned, 3 inhibited\n\n
+CALL SpreadLocations
+CALL RandomizeInitialSpawns
+PRINT ==== Processing events ====\n
+CALL idEvent.ServiceEvents
+CMD state
+STATE num_entities=39 firstFree=39 spawnCount=9 mapSpawnCount=40 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=start1 class=idPlayerStart def=info_player_start spawnId=2 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=door1 class=idDoor def=func_door spawnId=3 think=1 active=1 cinematic=0 health=0 number=33
+ENT 34 name=door2 class=idDoor def=func_door spawnId=4 think=1 active=1 cinematic=0 health=0 number=34
+ENT 35 name=door3 class=idDoor def=func_door spawnId=5 think=1 active=1 cinematic=0 health=0 number=35
+ENT 36 name=bfg1 class=idItem def=weapon_bfg spawnId=6 think=0 active=0 cinematic=0 health=0 number=36
+ENT 37 name=item1 class=idItem def=func_item spawnId=7 think=0 active=0 cinematic=0 health=0 number=37
+ENT 38 name=trig1 class=idTrigger_Multi def=trigger_multi spawnId=8 think=1 active=1 cinematic=0 health=0 number=38
+ENT 4094 name=world class=idWorldspawn def=worldspawn spawnId=1 think=0 active=0 cinematic=0 health=0 number=4094
+SPAWNLIST  4094 32 33 34 35 36 37 38
+ACTIVELIST  33 34 35 38
+CMD newmap
+CMD cvar skill 1
+CMD cvar multiplayer 1
+CMD populate
+CALL cvar.SetBool r_skipSpecular 0
+PRINT Spawning entities\n
+CALL SetSkill 1
+CTOR idWorldspawn
+CALL program.SetEntity world 4094
+SPAWN idWorldspawn world
+CALL CacheDictionaryMedia info_player_start
+CTOR idPlayerStart
+CALL program.SetEntity start1 32
+SPAWN idPlayerStart start1
+CALL CacheDictionaryMedia func_door
+CTOR idItem
+CALL program.SetEntity door1 33
+SPAWN idItem door1
+CALL CacheDictionaryMedia func_door
+CTOR idItem
+CALL program.SetEntity door2 34
+SPAWN idItem door2
+CALL CacheDictionaryMedia func_door
+CTOR idItem
+CALL program.SetEntity door3 35
+SPAWN idItem door3
+CALL CacheDictionaryMedia func_door
+CTOR idItem
+CALL program.SetEntity door4 36
+SPAWN idItem door4
+CALL CacheDictionaryMedia item_medkit
+CTOR idItem
+CALL program.SetEntity kit1 37
+SPAWN idItem kit1
+CALL CacheDictionaryMedia item_medkit_small
+CTOR idItem
+CALL program.SetEntity kit2 38
+SPAWN idItem kit2
+CALL CacheDictionaryMedia trigger_multi
+CTOR idTrigger_Multi
+CALL program.SetEntity trig1 39
+SPAWN idTrigger_Multi trig1
+CALL CacheDictionaryMedia unknown_thing
+WARNING Unknown classname 'unknown_thing' on 'ghost'.
+PRINT ...10 entities spawned, 2 inhibited\n\n
+CALL SpreadLocations
+CALL RandomizeInitialSpawns
+PRINT ==== Processing events ====\n
+CALL idEvent.ServiceEvents
+CMD state
+STATE num_entities=40 firstFree=40 spawnCount=10 mapSpawnCount=41 toDeactivate=0 time=0 frame=0 inCinematic=0
+ENT 32 name=start1 class=idPlayerStart def=info_player_start spawnId=2 think=0 active=0 cinematic=0 health=0 number=32
+ENT 33 name=door1 class=idItem def=func_door_mp spawnId=3 think=0 active=0 cinematic=0 health=0 number=33
+ENT 34 name=door2 class=idItem def=func_door_mp spawnId=4 think=0 active=0 cinematic=0 health=0 number=34
+ENT 35 name=door3 class=idItem def=func_door_mp spawnId=5 think=0 active=0 cinematic=0 health=0 number=35
+ENT 36 name=door4 class=idItem def=func_door_mp spawnId=6 think=0 active=0 cinematic=0 health=0 number=36
+ENT 37 name=kit1 class=idItem def=item_medkit spawnId=7 think=0 active=0 cinematic=0 health=0 number=37
+ENT 38 name=kit2 class=idItem def=item_medkit_small spawnId=8 think=0 active=0 cinematic=0 health=0 number=38
+ENT 39 name=trig1 class=idTrigger_Multi def=trigger_multi spawnId=9 think=1 active=1 cinematic=0 health=0 number=39
+ENT 4094 name=world class=idWorldspawn def=worldspawn spawnId=1 think=0 active=0 cinematic=0 health=0 number=4094
+SPAWNLIST  4094 32 33 34 35 36 37 38 39
+ACTIVELIST  39
+CMD cvar multiplayer 0
+CMD inhibit classname func_door not_easy 1
+RET 0
+CMD inhibit classname func_door not_hard 1
+RET 0
+CMD inhibit classname item_medkit
+RET 0
+CMD inhibit classname ITEM_MEDKIT_SMALL
+RET 0
+CMD cvar skill 1
+CMD inhibit classname func_door not_medium 1
+RET 1
+CMD inhibit classname func_door not_hard 1
+RET 0
+CMD inhibit classname item_medkit
+RET 0
+CMD cvar skill 0
+CMD inhibit classname func_door not_easy 1
+RET 1
+CMD inhibit
+RET 0

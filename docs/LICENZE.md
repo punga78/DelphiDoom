@@ -46,7 +46,7 @@ Licenza dichiarata dal repository: quella con cui il codice nostro e' distribuit
 
 | Componente | Unit uniformate | Gia' uniformi | Da verificare |
 |---|---|---|---|
-| Doom 3 (`Framework\{Audio, Compression, Console, Geometry, IdLib, Imaging, MathCore, Models, Scanner, Texture, Wad}`, `IdTech1\Net`, `IdTech4\{Aas, Collision, Decl, DoomScript, Gui, MapFile}`) | 494 | 9 (`IdTech4\D3Host`) | 17 + 2 + 7 + 6 + 3 (e 63 file di `Tests\Source`) |
+| Doom 3 (`Framework\{Audio, Compression, Console, Geometry, IdLib, Imaging, MathCore, Models, Scanner, Texture, Wad}`, `IdTech1\Net`, `IdTech4\{Aas, Collision, Decl, DoomScript, Gui, MapFile}`) | 494 | 9 (`IdTech4\D3Host`) + 6 (`IdTech4\D3Game`: Types, Errors, ClassBase, ClassSystem, Entity, Local) | 17 + 2 + 7 + 6 + 3 (e 63 file di `Tests\Source`) |
 | OpenXcom (`Games\Xcom*`, `Games\OpenXcom`) | 574 | 0 | 12 rovinate + 4 miste + 36 senza derivazione dichiarata + 1 |
 | `Games\Greed` (tornata precedente) | 169 | - | - |
 - **`Framework\PascalScript`**: nessun testo di licenza uniforme nelle unit.

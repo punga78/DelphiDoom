@@ -1,0 +1,77 @@
+# idTypeInfo and idClass: registration in any order, Init, numbering, lookups, Shutdown
+# before Init: the slow lookup through the sorted list
+getclass idDoor
+getclass nonexistent
+getclass IDDOOR
+gettype 0
+dumptypes
+inittypes
+dumptypes
+list
+numtypes
+typenumbits
+getclass idClass
+getclass idEntity
+getclass idMover
+getclass idDoor
+getclass idPlat
+getclass idLight
+getclass idItem
+getclass idDebugHelper
+getclass idBinder
+getclass idZzz
+getclass IDDOOR
+gettype 0
+gettype 1
+gettype 2
+gettype 3
+gettype 4
+gettype 5
+gettype 6
+gettype 7
+gettype 8
+gettype 9
+gettype 10
+gettype 11
+gettype -1
+gettype 99
+super idDoor
+super idMover
+super idEntity
+super idClass
+super idPlat
+istype idDoor idDoor
+istype idDoor idMover
+istype idDoor idEntity
+istype idDoor idClass
+istype idDoor idItem
+istype idMover idDoor
+istype idPlat idMover
+istype idPlat idDoor
+istype idPlat idEntity
+istype idLight idEntity
+istype idLight idMover
+istype idDebugHelper idEntity
+istype idDebugHelper idClass
+istype idBinder idEntity
+istype idClass idEntity
+istype idEntity idClass
+evshare idClass
+evshare idEntity
+evshare idMover
+evshare idDoor
+evshare idPlat
+evshare idLight
+evshare idItem
+evshare idDebugHelper
+evshare idWorldspawn
+inittypes
+numtypes
+shutdowntypes
+dumptypes
+numtypes
+getclass idDoor
+gettype 3
+inittypes
+dumptypes
+getclass idDoor

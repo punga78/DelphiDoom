@@ -1,0 +1,120 @@
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 336 bytes for event callbacks\n
+CMD create idDoor
+CTOR idMover
+CTOR idDoor
+OBJ obj=0 class=idDoor
+CMD create idBinder
+ERROR Cannot instanciate abstract class idBinder.
+THROW Cannot instanciate abstract class idBinder.
+CMD create idEntity
+ERROR Cannot instanciate abstract class idEntity.
+THROW Cannot instanciate abstract class idEntity.
+CMD create idClass
+ERROR Cannot instanciate abstract class idClass.
+THROW Cannot instanciate abstract class idClass.
+CMD create nothing
+OBJ null
+CMD create idDebugHelper
+CTOR idDebugHelper
+OBJ obj=1 class=idDebugHelper
+CMD create idPlat
+CTOR idMover
+CTOR idPlat
+OBJ obj=2 class=idPlat
+CMD create idLight
+CTOR idLight
+OBJ obj=3 class=idLight
+CMD spawnobj idDebugHelper
+CTOR idDebugHelper
+SPAWN idDebugHelper
+OBJ obj=4 class=idDebugHelper
+CMD spawnobj idDoor
+CTOR idMover
+CTOR idDoor
+CALL program.SetEntity idDoor__0 0
+SPAWN idMover idDoor__0
+SPAWN idDoor idDoor__0
+OBJ obj=5 class=idDoor
+CMD spawnobj idPlat
+CTOR idMover
+CTOR idPlat
+CALL program.SetEntity idPlat__1 1
+SPAWN idMover idPlat__1
+OBJ obj=6 class=idPlat
+CMD spawnobj idLight
+CTOR idLight
+CALL program.SetEntity idLight__2 2
+OBJ obj=7 class=idLight
+CMD spawnobj idItem
+CTOR idItem
+CALL program.SetEntity idItem__3 3
+SPAWN idItem idItem__3
+OBJ obj=8 class=idItem
+CMD spawnobj idBinder
+ERROR Cannot instanciate abstract class idBinder.
+THROW Cannot instanciate abstract class idBinder.
+CMD spawnobj nothing
+OBJ null
+CMD callevent obj 0 activate
+RESPONDS 1
+EVENT idDoor.Activate 
+CMD callevent obj 0 hide
+RESPONDS 1
+EVENT idDoor.Hide 
+CMD callevent obj 0 open
+RESPONDS 1
+EVENT idMover.Open 
+CMD callevent obj 0 show
+RESPONDS 0
+CMD callevent obj 0 ping
+RESPONDS 0
+CMD callevent obj 0 remove
+RESPONDS 1
+CALL PostEventMS <immediateremove>
+CMD callevent obj 6 hide
+RESPONDS 1
+EVENT idEntity.Hide idPlat__1
+CMD callevent obj 6 open
+RESPONDS 1
+EVENT idMover.Open idPlat__1
+CMD callevent obj 7 hide
+RESPONDS 1
+EVENT idEntity.Hide idLight__2
+CMD callevent obj 5 hide
+RESPONDS 1
+EVENT idDoor.Hide idDoor__0
+CMD callevent obj 99 hide
+NOTFOUND
+CMD callevent obj 0 nothing
+NOTFOUND
+CMD callevent obj 6 <immediateremove>
+RESPONDS 1
+CALL idEvent.CancelEvents
+CMD destroy 0
+CALL idEvent.CancelEvents
+DESTROYED 0
+CMD destroy 0
+NOTFOUND
+CMD destroy 7
+CALL idEvent.CancelEvents
+DESTROYED 7
+CMD state
+STATE num_entities=4 firstFree=4 spawnCount=5 mapSpawnCount=0 toDeactivate=1 time=0 frame=0 inCinematic=0
+ENT 0 name=idDoor__0 class=idDoor def=*unknown* spawnId=1 think=1 active=1 cinematic=0 health=0 number=0
+ENT 3 name=idItem__3 class=idItem def=*unknown* spawnId=4 think=0 active=0 cinematic=0 health=0 number=3
+SPAWNLIST  0 3
+ACTIVELIST  0
+CMD shutdowntypes
+CMD create idDoor
+CTOR idMover
+CTOR idDoor
+OBJ obj=9 class=idDoor
+CMD inittypes
+PRINT Initializing class hierarchy\n
+PRINT ...12 classes, 672 bytes for event callbacks\n
+CMD create idDoor
+CTOR idMover
+CTOR idDoor
+OBJ obj=10 class=idDoor

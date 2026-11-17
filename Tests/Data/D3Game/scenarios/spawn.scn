@@ -1,0 +1,64 @@
+# idGameLocal::SpawnEntityDef and SpawnEntityType: the entityDef, spawnclass, spawnfunc, defaults, names, errors
+inittypes
+def info_player_start spawnclass idPlayerStart
+def func_door spawnclass idDoor speed 2 health 50 thinks 4
+def func_door_mp spawnclass idItem
+def func_item spawnclass idItem
+def trigger_multi spawnclass idTrigger_Multi
+def worldspawn spawnclass idWorldspawn
+def noclass_def foo bar
+def badclass spawnclass idNothing
+def abstract_def spawnclass idBinder
+def script_def spawnfunc my_spawn_func
+def script_missing spawnfunc no_such
+def debug_def spawnclass idDebugHelper
+def func_plat spawnclass idPlat
+def light_def spawnclass idLight cinematic 1 health 9
+func my_spawn_func
+newmap
+state
+spawndef classname func_door name door1 origin 0\x200\x2064
+spawndef classname func_door
+spawndef classname info_player_start name start1
+spawndef classname func_door name door2 health 7
+spawndef classname light_def
+spawndef classname unknown_thing name x
+spawndef classname unknown_thing
+spawndef classname noclass_def
+spawndef classname noclass_def name named_noclass
+spawndef classname badclass
+spawndef classname badclass name b1
+spawndef classname abstract_def
+spawndef classname script_def
+spawndef classname script_missing
+spawndef classname debug_def
+spawndef classname func_door name door1
+spawndef classname func_door name DOOR1
+spawndef classname func_item name NULL
+spawndef classname func_item name null_entity
+state
+find door1
+find DOOR1
+find Door1
+find door2
+find nothing
+find
+finddef -1 func_door
+finddef 32 func_door
+finddef 33 func_door
+finddef 34 func_door
+finddef -1 info_player_start
+finddef -1 light_def
+finddef -1 nothing
+spawntype idDoor name door9 thinks 1
+spawntype idPlat
+spawntype idDebugHelper
+spawntype idBinder
+spawntype idEntity
+spawntype idClass
+spawntype nothing
+cvar multiplayer 1
+spawndef classname func_door name mpdoor
+spawndef classname func_item name mpitem
+cvar multiplayer 0
+state
