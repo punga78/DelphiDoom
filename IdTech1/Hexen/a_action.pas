@@ -37,351 +37,360 @@ uses
   p_mobj_h,
   doomdef;
 
-//==============================================================================
-//
-// A_PotteryExplode
-//
-//==============================================================================
-procedure A_PotteryExplode(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PotteryChooseBit
-//
-//==============================================================================
-procedure A_PotteryChooseBit(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PotteryCheck
-//
-//==============================================================================
-procedure A_PotteryCheck(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CorpseBloodDrip
-//
-//==============================================================================
-procedure A_CorpseBloodDrip(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CorpseExplode
-//
-//==============================================================================
-procedure A_CorpseExplode(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LeafSpawn
-//
-//==============================================================================
-procedure A_LeafSpawn(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LeafThrust
-//
-//==============================================================================
-procedure A_LeafThrust(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LeafCheck
-//
-//==============================================================================
-procedure A_LeafCheck(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BridgeOrbit
-//
-//==============================================================================
-procedure A_BridgeOrbit(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BridgeInit
-//
-//==============================================================================
-procedure A_BridgeInit(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BridgeRemove
-//
-//==============================================================================
-procedure A_BridgeRemove(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_HideThing
-//
-//==============================================================================
-procedure A_HideThing(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnHideThing
-//
-//==============================================================================
-procedure A_UnHideThing(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetShootable
-//
-//==============================================================================
-procedure A_SetShootable(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetShootable
-//
-//==============================================================================
-procedure A_UnSetShootable(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetAltShadow
-//
-//==============================================================================
-procedure A_SetAltShadow(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ContMobjSound
-//
-//==============================================================================
-procedure A_ContMobjSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ESound
-//
-//==============================================================================
-procedure A_ESound(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_Summon
-//
-//==============================================================================
-procedure A_Summon(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FogSpawn
-//
-//==============================================================================
-procedure A_FogSpawn(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FogMove
-//
-//==============================================================================
-procedure A_FogMove(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PoisonBagInit
-//
-//==============================================================================
-procedure A_PoisonBagInit(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PoisonBagCheck
-//
-//==============================================================================
-procedure A_PoisonBagCheck(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PoisonBagDamage
-//
-//==============================================================================
-procedure A_PoisonBagDamage(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PoisonShroom
-//
-//==============================================================================
-procedure A_PoisonShroom(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckThrowBomb
-//
-//==============================================================================
-procedure A_CheckThrowBomb(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LocalQuake
-//
-//==============================================================================
-function A_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// A_Quake
-//
-//==============================================================================
-procedure A_Quake(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TeloSpawn
-//
-//==============================================================================
-procedure A_TeloSpawn(actor: Pmobj_t; typ: integer);
-
-//==============================================================================
-//
-// A_TeloSpawnA
-//
-//==============================================================================
-procedure A_TeloSpawnA(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TeloSpawnB
-//
-//==============================================================================
-procedure A_TeloSpawnB(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TeloSpawnC
-//
-//==============================================================================
-procedure A_TeloSpawnC(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TeloSpawnD
-//
-//==============================================================================
-procedure A_TeloSpawnD(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckTeleRing
-//
-//==============================================================================
-procedure A_CheckTeleRing(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_SpawnDirt
-//
-//==============================================================================
-procedure P_SpawnDirt(actor: Pmobj_t; radius: fixed_t);
-
-//==============================================================================
-//
-// A_ThrustInitUp
-//
-//==============================================================================
-procedure A_ThrustInitUp(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustInitDn
-//
-//==============================================================================
-procedure A_ThrustInitDn(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustRaise
-//
-//==============================================================================
-procedure A_ThrustRaise(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustLower
-//
-//==============================================================================
-procedure A_ThrustLower(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustBlock
-//
-//==============================================================================
-procedure A_ThrustBlock(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustImpale
-//
-//==============================================================================
-procedure A_ThrustImpale(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SoAExplode
-//
-//==============================================================================
-procedure A_SoAExplode(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BellReset1
-//
-//==============================================================================
-procedure A_BellReset1(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BellReset2
-//
-//==============================================================================
-procedure A_BellReset2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FlameCheck
-//
-//==============================================================================
-procedure A_FlameCheck(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BatSpawnInit
-//
-//==============================================================================
-procedure A_BatSpawnInit(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BatSpawn
-//
-//==============================================================================
-procedure A_BatSpawn(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BatMove
-//
-//==============================================================================
-procedure A_BatMove(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TreeDeath
-//
-//==============================================================================
-procedure A_TreeDeath(actor: Pmobj_t);
-
 var
   localQuakeHappening: array[0..MAXPLAYERS - 1] of integer;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  THexenActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_PotteryExplode
+    //
+    //==============================================================================
+    class procedure A_PotteryExplode(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PotteryChooseBit
+    //
+    //==============================================================================
+    class procedure A_PotteryChooseBit(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PotteryCheck
+    //
+    //==============================================================================
+    class procedure A_PotteryCheck(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CorpseBloodDrip
+    //
+    //==============================================================================
+    class procedure A_CorpseBloodDrip(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CorpseExplode
+    //
+    //==============================================================================
+    class procedure A_CorpseExplode(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LeafSpawn
+    //
+    //==============================================================================
+    class procedure A_LeafSpawn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LeafThrust
+    //
+    //==============================================================================
+    class procedure A_LeafThrust(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LeafCheck
+    //
+    //==============================================================================
+    class procedure A_LeafCheck(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BridgeOrbit
+    //
+    //==============================================================================
+    class procedure A_BridgeOrbit(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BridgeInit
+    //
+    //==============================================================================
+    class procedure A_BridgeInit(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BridgeRemove
+    //
+    //==============================================================================
+    class procedure A_BridgeRemove(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_HideThing
+    //
+    //==============================================================================
+    class procedure A_HideThing(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnHideThing
+    //
+    //==============================================================================
+    class procedure A_UnHideThing(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetShootable
+    //
+    //==============================================================================
+    class procedure A_SetShootable(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetShootable
+    //
+    //==============================================================================
+    class procedure A_UnSetShootable(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetAltShadow
+    //
+    //==============================================================================
+    class procedure A_SetAltShadow(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ContMobjSound
+    //
+    //==============================================================================
+    class procedure A_ContMobjSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ESound
+    //
+    //==============================================================================
+    class procedure A_ESound(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Summon
+    //
+    //==============================================================================
+    class procedure A_Summon(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FogSpawn
+    //
+    //==============================================================================
+    class procedure A_FogSpawn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FogMove
+    //
+    //==============================================================================
+    class procedure A_FogMove(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PoisonBagInit
+    //
+    //==============================================================================
+    class procedure A_PoisonBagInit(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PoisonBagCheck
+    //
+    //==============================================================================
+    class procedure A_PoisonBagCheck(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PoisonBagDamage
+    //
+    //==============================================================================
+    class procedure A_PoisonBagDamage(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PoisonShroom
+    //
+    //==============================================================================
+    class procedure A_PoisonShroom(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckThrowBomb
+    //
+    //==============================================================================
+    class procedure A_CheckThrowBomb(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LocalQuake
+    //
+    //==============================================================================
+    class function A_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // A_Quake
+    //
+    //==============================================================================
+    class procedure A_Quake(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TeloSpawn
+    //
+    //==============================================================================
+    class procedure A_TeloSpawn(actor: Pmobj_t; typ: integer); static;
+
+    //==============================================================================
+    //
+    // A_TeloSpawnA
+    //
+    //==============================================================================
+    class procedure A_TeloSpawnA(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TeloSpawnB
+    //
+    //==============================================================================
+    class procedure A_TeloSpawnB(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TeloSpawnC
+    //
+    //==============================================================================
+    class procedure A_TeloSpawnC(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TeloSpawnD
+    //
+    //==============================================================================
+    class procedure A_TeloSpawnD(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckTeleRing
+    //
+    //==============================================================================
+    class procedure A_CheckTeleRing(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_SpawnDirt
+    //
+    //==============================================================================
+    class procedure P_SpawnDirt(actor: Pmobj_t; radius: fixed_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustInitUp
+    //
+    //==============================================================================
+    class procedure A_ThrustInitUp(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustInitDn
+    //
+    //==============================================================================
+    class procedure A_ThrustInitDn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustRaise
+    //
+    //==============================================================================
+    class procedure A_ThrustRaise(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustLower
+    //
+    //==============================================================================
+    class procedure A_ThrustLower(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustBlock
+    //
+    //==============================================================================
+    class procedure A_ThrustBlock(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustImpale
+    //
+    //==============================================================================
+    class procedure A_ThrustImpale(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SoAExplode
+    //
+    //==============================================================================
+    class procedure A_SoAExplode(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BellReset1
+    //
+    //==============================================================================
+    class procedure A_BellReset1(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BellReset2
+    //
+    //==============================================================================
+    class procedure A_BellReset2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FlameCheck
+    //
+    //==============================================================================
+    class procedure A_FlameCheck(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BatSpawnInit
+    //
+    //==============================================================================
+    class procedure A_BatSpawnInit(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BatSpawn
+    //
+    //==============================================================================
+    class procedure A_BatSpawn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BatMove
+    //
+    //==============================================================================
+    class procedure A_BatMove(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TreeDeath
+    //
+    //==============================================================================
+    class procedure A_TreeDeath(actor: Pmobj_t); static;
+  end;
+
 
 implementation
 
@@ -422,7 +431,7 @@ uses
 // A_PotteryExplode
 //
 //==============================================================================
-procedure A_PotteryExplode(actor: Pmobj_t);
+class procedure THexenActions.A_PotteryExplode(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   i: integer;
@@ -459,7 +468,7 @@ end;
 // A_PotteryChooseBit
 //
 //==============================================================================
-procedure A_PotteryChooseBit(actor: Pmobj_t);
+class procedure THexenActions.A_PotteryChooseBit(actor: Pmobj_t);
 begin
   P_SetMobjState(actor, statenum_t(actor.info.deathstate + (P_Random mod 5) + 1));
   actor.tics := 256 + (P_Random * 2);
@@ -470,7 +479,7 @@ end;
 // A_PotteryCheck
 //
 //==============================================================================
-procedure A_PotteryCheck(actor: Pmobj_t);
+class procedure THexenActions.A_PotteryCheck(actor: Pmobj_t);
 var
   i: integer;
   pmo: Pmobj_t;
@@ -527,7 +536,7 @@ end;
 // A_CorpseBloodDrip
 //
 //==============================================================================
-procedure A_CorpseBloodDrip(actor: Pmobj_t);
+class procedure THexenActions.A_CorpseBloodDrip(actor: Pmobj_t);
 begin
   if P_Random <= 128 then
     P_SpawnMobj(actor.x, actor.y, actor.z + actor.height div 2, Ord(MT_CORPSEBLOODDRIP));
@@ -538,7 +547,7 @@ end;
 // A_CorpseExplode
 //
 //==============================================================================
-procedure A_CorpseExplode(actor: Pmobj_t);
+class procedure THexenActions.A_CorpseExplode(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   i: integer;
@@ -572,7 +581,7 @@ end;
 // A_LeafSpawn
 //
 //==============================================================================
-procedure A_LeafSpawn(actor: Pmobj_t);
+class procedure THexenActions.A_LeafSpawn(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   i: integer;
@@ -602,7 +611,7 @@ end;
 // A_LeafThrust
 //
 //==============================================================================
-procedure A_LeafThrust(actor: Pmobj_t);
+class procedure THexenActions.A_LeafThrust(actor: Pmobj_t);
 begin
   if P_Random <= 96 then
     actor.momz := actor.momz + _SHL(P_Random, 9) + FRACUNIT;
@@ -613,7 +622,7 @@ end;
 // A_LeafCheck
 //
 //==============================================================================
-procedure A_LeafCheck(actor: Pmobj_t);
+class procedure THexenActions.A_LeafCheck(actor: Pmobj_t);
 begin
   inc(actor.special1);
   if actor.special1 >= 20 then
@@ -716,7 +725,7 @@ const
 //    args[0]   angle of ball
 //
 //==============================================================================
-procedure A_BridgeOrbit(actor: Pmobj_t);
+class procedure THexenActions.A_BridgeOrbit(actor: Pmobj_t);
 begin
   if actor.target.special1 <> 0 then
     P_SetMobjState(actor, S_NULL);
@@ -732,7 +741,7 @@ end;
 // A_BridgeInit
 //
 //==============================================================================
-procedure A_BridgeInit(actor: Pmobj_t);
+class procedure THexenActions.A_BridgeInit(actor: Pmobj_t);
 var
   startangle: byte;
   ball1, ball2, ball3: Pmobj_t;
@@ -768,7 +777,7 @@ end;
 // A_BridgeRemove
 //
 //==============================================================================
-procedure A_BridgeRemove(actor: Pmobj_t);
+class procedure THexenActions.A_BridgeRemove(actor: Pmobj_t);
 begin
   actor.special1 := 1; // Removing the bridge
   actor.flags := actor.flags and not MF_SOLID;
@@ -780,7 +789,7 @@ end;
 // A_HideThing
 //
 //==============================================================================
-procedure A_HideThing(actor: Pmobj_t);
+class procedure THexenActions.A_HideThing(actor: Pmobj_t);
 begin
   actor.flags2 := actor.flags2 or MF2_DONTDRAW;
 end;
@@ -790,7 +799,7 @@ end;
 // A_UnHideThing
 //
 //==============================================================================
-procedure A_UnHideThing(actor: Pmobj_t);
+class procedure THexenActions.A_UnHideThing(actor: Pmobj_t);
 begin
   actor.flags2 := actor.flags2 and not MF2_DONTDRAW;
 end;
@@ -800,7 +809,7 @@ end;
 // A_SetShootable
 //
 //==============================================================================
-procedure A_SetShootable(actor: Pmobj_t);
+class procedure THexenActions.A_SetShootable(actor: Pmobj_t);
 begin
   actor.flags2 := actor.flags2 and not MF2_NONSHOOTABLE;
   actor.flags := actor.flags or MF_SHOOTABLE;
@@ -811,7 +820,7 @@ end;
 // A_UnSetShootable
 //
 //==============================================================================
-procedure A_UnSetShootable(actor: Pmobj_t);
+class procedure THexenActions.A_UnSetShootable(actor: Pmobj_t);
 begin
   actor.flags2 := actor.flags2 or MF2_NONSHOOTABLE;
   actor.flags := actor.flags and not MF_SHOOTABLE;
@@ -822,7 +831,7 @@ end;
 // A_SetAltShadow
 //
 //==============================================================================
-procedure A_SetAltShadow(actor: Pmobj_t);
+class procedure THexenActions.A_SetAltShadow(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_SHADOW;
   actor.flags := actor.flags or MF_ALTSHADOW;
@@ -839,7 +848,7 @@ end;
 // A_ContMobjSound
 //
 //==============================================================================
-procedure A_ContMobjSound(actor: Pmobj_t);
+class procedure THexenActions.A_ContMobjSound(actor: Pmobj_t);
 begin
   case actor._type of
     Ord(MT_SERPENTFX):
@@ -856,7 +865,7 @@ end;
 // PROC A_ESound
 //
 //==============================================================================
-procedure A_ESound(mo: Pmobj_t);
+class procedure THexenActions.A_ESound(mo: Pmobj_t);
 var
   sound: integer;
 begin
@@ -873,7 +882,7 @@ end;
 // Summon Minotaur -- see p_enemy for variable descriptions
 //
 //==============================================================================
-procedure A_Summon(actor: Pmobj_t);
+class procedure THexenActions.A_Summon(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   master: Pmobj_t;
@@ -924,7 +933,7 @@ end;
 //    special2   Internal:  Index into floatbob table
 //
 //==============================================================================
-procedure A_FogSpawn(actor: Pmobj_t);
+class procedure THexenActions.A_FogSpawn(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   delta: byte;
@@ -965,7 +974,7 @@ end;
 // A_FogMove
 //
 //==============================================================================
-procedure A_FogMove(actor: Pmobj_t);
+class procedure THexenActions.A_FogMove(actor: Pmobj_t);
 var
   speed: integer;
   angle: angle_t;
@@ -1001,7 +1010,7 @@ end;
 // A_PoisonBagInit
 //
 //==============================================================================
-procedure A_PoisonBagInit(actor: Pmobj_t);
+class procedure THexenActions.A_PoisonBagInit(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1023,7 +1032,7 @@ end;
 // A_PoisonBagCheck
 //
 //==============================================================================
-procedure A_PoisonBagCheck(actor: Pmobj_t);
+class procedure THexenActions.A_PoisonBagCheck(actor: Pmobj_t);
 begin
   dec(actor.special1); // JVAL SOS
   if actor.special1 = 0 then
@@ -1035,11 +1044,11 @@ end;
 // A_PoisonBagDamage
 //
 //==============================================================================
-procedure A_PoisonBagDamage(actor: Pmobj_t);
+class procedure THexenActions.A_PoisonBagDamage(actor: Pmobj_t);
 var
   bobIndex: integer;
 begin
-  A_Explode(actor);
+  THexenMonsterActions.A_Explode(actor);
 
   bobIndex := actor.special2;
   actor.z := actor.z + _SHR(FloatBobOffsets[bobIndex], 4);
@@ -1051,7 +1060,7 @@ end;
 // A_PoisonShroom
 //
 //==============================================================================
-procedure A_PoisonShroom(actor: Pmobj_t);
+class procedure THexenActions.A_PoisonShroom(actor: Pmobj_t);
 begin
   actor.tics := 128 + 2 * P_Random;
 end;
@@ -1061,7 +1070,7 @@ end;
 // A_CheckThrowBomb
 //
 //==============================================================================
-procedure A_CheckThrowBomb(actor: Pmobj_t);
+class procedure THexenActions.A_CheckThrowBomb(actor: Pmobj_t);
 begin
   if (abs(actor.momx) < 3 * FRACUNIT div 2) and (abs(actor.momy) < 3 * FRACUNIT div 2) and
      (actor.momz < 2 * FRACUNIT) and
@@ -1091,7 +1100,7 @@ end;
 //    args[4]    TID of map thing for focus of quake
 //
 //==============================================================================
-function A_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean;
+class function THexenActions.A_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean;
 var
   focus, target: Pmobj_t;
   lastfound: integer;
@@ -1122,7 +1131,7 @@ end;
 // A_Quake
 //
 //==============================================================================
-procedure A_Quake(actor: Pmobj_t);
+class procedure THexenActions.A_Quake(actor: Pmobj_t);
 var
   an: angle_t;
   player: Pplayer_t;
@@ -1181,7 +1190,7 @@ const
 // A_TeloSpawn
 //
 //==============================================================================
-procedure A_TeloSpawn(actor: Pmobj_t; typ: integer);
+class procedure THexenActions.A_TeloSpawn(actor: Pmobj_t; typ: integer);
 var
   mo: Pmobj_t;
 begin
@@ -1202,7 +1211,7 @@ end;
 // A_TeloSpawnA
 //
 //==============================================================================
-procedure A_TeloSpawnA(actor: Pmobj_t);
+class procedure THexenActions.A_TeloSpawnA(actor: Pmobj_t);
 begin
   A_TeloSpawn(actor, Ord(MT_TELOTHER_FX2));
 end;
@@ -1212,7 +1221,7 @@ end;
 // A_TeloSpawnB
 //
 //==============================================================================
-procedure A_TeloSpawnB(actor: Pmobj_t);
+class procedure THexenActions.A_TeloSpawnB(actor: Pmobj_t);
 begin
   A_TeloSpawn(actor, Ord(MT_TELOTHER_FX3));
 end;
@@ -1222,7 +1231,7 @@ end;
 // A_TeloSpawnC
 //
 //==============================================================================
-procedure A_TeloSpawnC(actor: Pmobj_t);
+class procedure THexenActions.A_TeloSpawnC(actor: Pmobj_t);
 begin
   A_TeloSpawn(actor, Ord(MT_TELOTHER_FX4));
 end;
@@ -1232,7 +1241,7 @@ end;
 // A_TeloSpawnD
 //
 //==============================================================================
-procedure A_TeloSpawnD(actor: Pmobj_t);
+class procedure THexenActions.A_TeloSpawnD(actor: Pmobj_t);
 begin
   A_TeloSpawn(actor, Ord(MT_TELOTHER_FX5));
 end;
@@ -1242,7 +1251,7 @@ end;
 // A_CheckTeleRing
 //
 //==============================================================================
-procedure A_CheckTeleRing(actor: Pmobj_t);
+class procedure THexenActions.A_CheckTeleRing(actor: Pmobj_t);
 begin
   dec(actor.special1);
   if actor.special1 <= 0 then
@@ -1255,7 +1264,7 @@ end;
 // Dirt stuff
 //
 //==============================================================================
-procedure P_SpawnDirt(actor: Pmobj_t; radius: fixed_t);
+class procedure THexenActions.P_SpawnDirt(actor: Pmobj_t; radius: fixed_t);
 var
   x, y, z: fixed_t;
   dtype: mobjtype_t;
@@ -1292,7 +1301,7 @@ end;
 //    args[1]    0 := normal,   1 := bloody
 //
 //==============================================================================
-procedure A_ThrustInitUp(actor: Pmobj_t);
+class procedure THexenActions.A_ThrustInitUp(actor: Pmobj_t);
 begin
   actor.special2 := 5;    // Raise speed
   actor.args[0] := 1;    // Mark as up
@@ -1307,7 +1316,7 @@ end;
 // A_ThrustInitDn
 //
 //==============================================================================
-procedure A_ThrustInitDn(actor: Pmobj_t);
+class procedure THexenActions.A_ThrustInitDn(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1325,9 +1334,9 @@ end;
 // A_ThrustRaise
 //
 //==============================================================================
-procedure A_ThrustRaise(actor: Pmobj_t);
+class procedure THexenActions.A_ThrustRaise(actor: Pmobj_t);
 begin
-  if A_RaiseMobj(actor) then
+  if THexenMonsterActions.A_RaiseMobj(actor) then
   begin  // Reached it's target height
     actor.args[0] := 1;
     if actor.args[1] <> 0 then
@@ -1354,9 +1363,9 @@ end;
 // A_ThrustLower
 //
 //==============================================================================
-procedure A_ThrustLower(actor: Pmobj_t);
+class procedure THexenActions.A_ThrustLower(actor: Pmobj_t);
 begin
-  if A_SinkMobj(actor) then
+  if THexenMonsterActions.A_SinkMobj(actor) then
   begin
     actor.args[0] := 0;
     if actor.args[1] <> 0 then
@@ -1371,7 +1380,7 @@ end;
 // A_ThrustBlock
 //
 //==============================================================================
-procedure A_ThrustBlock(actor: Pmobj_t);
+class procedure THexenActions.A_ThrustBlock(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_SOLID;
 end;
@@ -1381,7 +1390,7 @@ end;
 // A_ThrustImpale
 //
 //==============================================================================
-procedure A_ThrustImpale(actor: Pmobj_t);
+class procedure THexenActions.A_ThrustImpale(actor: Pmobj_t);
 begin
   // Impale all shootables in radius
   PIT_ThrustSpike(actor);
@@ -1392,7 +1401,7 @@ end;
 // A_SoAExplode - Suit of Armor Explode
 //
 //==============================================================================
-procedure A_SoAExplode(actor: Pmobj_t);
+class procedure THexenActions.A_SoAExplode(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   i: integer;
@@ -1430,7 +1439,7 @@ end;
 // A_BellReset1
 //
 //==============================================================================
-procedure A_BellReset1(actor: Pmobj_t);
+class procedure THexenActions.A_BellReset1(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_NOGRAVITY;
   actor.height := actor.height * 4;
@@ -1441,7 +1450,7 @@ end;
 // A_BellReset2
 //
 //==============================================================================
-procedure A_BellReset2(actor: Pmobj_t);
+class procedure THexenActions.A_BellReset2(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_SHOOTABLE;
   actor.flags := actor.flags and not MF_CORPSE;
@@ -1453,7 +1462,7 @@ end;
 // A_FlameCheck
 //
 //==============================================================================
-procedure A_FlameCheck(actor: Pmobj_t);
+class procedure THexenActions.A_FlameCheck(actor: Pmobj_t);
 begin
   dec(actor.args[0]);
   if actor.args[0] <= 0 then // Called every 8 tics // JVAL SOS
@@ -1477,7 +1486,7 @@ end;
 //  args[4]   turn amount per move (in degrees)
 //
 //==============================================================================
-procedure A_BatSpawnInit(actor: Pmobj_t);
+class procedure THexenActions.A_BatSpawnInit(actor: Pmobj_t);
 begin
   actor.special1 := 0;  // Frequency count
 end;
@@ -1487,7 +1496,7 @@ end;
 // A_BatSpawn
 //
 //==============================================================================
-procedure A_BatSpawn(actor: Pmobj_t);
+class procedure THexenActions.A_BatSpawn(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   delta: integer;
@@ -1518,7 +1527,7 @@ end;
 // A_BatMove
 //
 //==============================================================================
-procedure A_BatMove(actor: Pmobj_t);
+class procedure THexenActions.A_BatMove(actor: Pmobj_t);
 var
   newangle: angle_t;
   speed: fixed_t;
@@ -1552,7 +1561,7 @@ end;
 // A_TreeDeath
 //
 //==============================================================================
-procedure A_TreeDeath(actor: Pmobj_t);
+class procedure THexenActions.A_TreeDeath(actor: Pmobj_t);
 begin
   if actor.flags2 and MF2_FIREDAMAGE = 0 then
   begin

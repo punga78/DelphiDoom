@@ -2370,7 +2370,7 @@ begin
   if (mobj.flags and MF_COUNTKILL <> 0) and
      (mobj.flags and MF_CORPSE <> 0) then
   begin
-    A_DeQueueCorpse(mobj);
+    THexenMonsterActions.A_DeQueueCorpse(mobj);
   end;
 
   if mobj.tid <> 0 then

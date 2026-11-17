@@ -43,388 +43,10 @@ const
 
 //==============================================================================
 //
-// P_SetPspriteNF
-//
-//==============================================================================
-procedure P_SetPspriteNF(player: Pplayer_t; position: integer; stnum: statenum_t);
-
-//==============================================================================
-//
-// P_CheckMana
-//
-//==============================================================================
-function P_CheckMana(player: Pplayer_t): boolean;
-
-//==============================================================================
-//
 // P_FireWeapon
 //
 //==============================================================================
 procedure P_FireWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_ActivateMorphWeapon
-//
-//==============================================================================
-procedure P_ActivateMorphWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_PostMorphWeapon
-//
-//==============================================================================
-procedure P_PostMorphWeapon(player: Pplayer_t; weapon: weapontype_t);
-
-//==============================================================================
-//
-// A_WeaponReady
-//
-//==============================================================================
-procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_AdjustPlayerAngle
-//
-//==============================================================================
-procedure P_AdjustPlayerAngle(pmo: Pmobj_t);
-
-//==============================================================================
-//
-// A_SnoutAttack
-//
-//==============================================================================
-procedure A_SnoutAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FHammerAttack
-//
-//==============================================================================
-procedure A_FHammerAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FHammerThrow
-//
-//==============================================================================
-procedure A_FHammerThrow(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FSwordAttack
-//
-//==============================================================================
-procedure A_FSwordAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FSwordAttack2
-//
-//==============================================================================
-procedure A_FSwordAttack2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FSwordFlames
-//
-//==============================================================================
-procedure A_FSwordFlames(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_MWandAttack
-//
-//==============================================================================
-procedure A_MWandAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_LightningReady
-//
-//==============================================================================
-procedure A_LightningReady(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_LightningClip
-//
-//==============================================================================
-procedure A_LightningClip(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LightningZap
-//
-//==============================================================================
-procedure A_LightningZap(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_MLightningAttack2
-//
-//==============================================================================
-procedure A_MLightningAttack2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_MLightningAttack
-//
-//==============================================================================
-procedure A_MLightningAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_ZapMimic
-//
-//==============================================================================
-procedure A_ZapMimic(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LastZap
-//
-//==============================================================================
-procedure A_LastZap(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LightningRemove
-//
-//==============================================================================
-procedure A_LightningRemove(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_MStaffSpawn
-//
-//==============================================================================
-procedure P_MStaffSpawn(pmo: Pmobj_t; angle: angle_t);
-
-//==============================================================================
-//
-// A_MStaffAttack
-//
-//==============================================================================
-procedure A_MStaffAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_MStaffPalette
-//
-//==============================================================================
-procedure A_MStaffPalette(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_MStaffWeave
-//
-//==============================================================================
-procedure A_MStaffWeave(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_MStaffTrack
-//
-//==============================================================================
-procedure A_MStaffTrack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_MStaffSpawn2
-//
-//==============================================================================
-procedure P_MStaffSpawn2(actor: Pmobj_t; angle: angle_t);
-
-//==============================================================================
-//
-// A_MStaffAttack2
-//
-//==============================================================================
-procedure A_MStaffAttack2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FPunchAttack
-//
-//==============================================================================
-procedure A_FPunchAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FAxeAttack
-//
-//==============================================================================
-procedure A_FAxeAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CMaceAttack
-//
-//==============================================================================
-procedure A_CMaceAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CStaffCheck
-//
-//==============================================================================
-procedure A_CStaffCheck(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CStaffAttack
-//
-//==============================================================================
-procedure A_CStaffAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CStaffInitBlink
-//
-//==============================================================================
-procedure A_CStaffInitBlink(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CStaffCheckBlink
-//
-//==============================================================================
-procedure A_CStaffCheckBlink(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CFlameAttack
-//
-//==============================================================================
-procedure A_CFlameAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CFlamePuff
-//
-//==============================================================================
-procedure A_CFlamePuff(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CFlameMissile
-//
-//==============================================================================
-procedure A_CFlameMissile(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CFlameRotate
-//
-//==============================================================================
-procedure A_CFlameRotate(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolyAttack3
-//
-//==============================================================================
-procedure A_CHolyAttack3(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolyAttack2
-//
-//==============================================================================
-procedure A_CHolyAttack2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolyAttack
-//
-//==============================================================================
-procedure A_CHolyAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CHolyPalette
-//
-//==============================================================================
-procedure A_CHolyPalette(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_CHolyFindTarget
-//
-//==============================================================================
-procedure P_CHolyFindTarget(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_CHolySeekerMissile
-//
-//==============================================================================
-procedure P_CHolySeekerMissile(actor: Pmobj_t; thresh: angle_t; turnMax: angle_t);
-
-//==============================================================================
-//
-// A_CHolyWeave
-//
-//==============================================================================
-procedure A_CHolyWeave(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolySeek
-//
-//==============================================================================
-procedure A_CHolySeek(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_CHolyTailFollow
-//
-//==============================================================================
-procedure P_CHolyTailFollow(actor: Pmobj_t; dist: fixed_t);
-
-//==============================================================================
-//
-// P_CHolyTailRemove
-//
-//==============================================================================
-procedure P_CHolyTailRemove(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolyTail
-//
-//==============================================================================
-procedure A_CHolyTail(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolyCheckScream
-//
-//==============================================================================
-procedure A_CHolyCheckScream(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CHolySpawnPuff
-//
-//==============================================================================
-procedure A_CHolySpawnPuff(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FireConePL1
-//
-//==============================================================================
-procedure A_FireConePL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_ShedShard
-//
-//==============================================================================
-procedure A_ShedShard(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -472,6 +94,393 @@ type
     /// <summary>What A_ReFire does when the player does not fire again: the check of the ammo, or of the mana</summary>
     class procedure CheckSupplies(const player: Pplayer_t); static;
   end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  THexenWeaponActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_SetPspriteNF
+    //
+    //==============================================================================
+    class procedure P_SetPspriteNF(player: Pplayer_t; position: integer; stnum: statenum_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckMana
+    //
+    //==============================================================================
+    class function P_CheckMana(player: Pplayer_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_ActivateMorphWeapon
+    //
+    //==============================================================================
+    class procedure P_ActivateMorphWeapon(player: Pplayer_t); static;
+
+    //==============================================================================
+    //
+    // P_PostMorphWeapon
+    //
+    //==============================================================================
+    class procedure P_PostMorphWeapon(player: Pplayer_t; weapon: weapontype_t); static;
+
+    //==============================================================================
+    //
+    // A_WeaponReady
+    //
+    //==============================================================================
+    class procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_AdjustPlayerAngle
+    //
+    //==============================================================================
+    class procedure P_AdjustPlayerAngle(pmo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SnoutAttack
+    //
+    //==============================================================================
+    class procedure A_SnoutAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FHammerAttack
+    //
+    //==============================================================================
+    class procedure A_FHammerAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FHammerThrow
+    //
+    //==============================================================================
+    class procedure A_FHammerThrow(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FSwordAttack
+    //
+    //==============================================================================
+    class procedure A_FSwordAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FSwordAttack2
+    //
+    //==============================================================================
+    class procedure A_FSwordAttack2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FSwordFlames
+    //
+    //==============================================================================
+    class procedure A_FSwordFlames(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MWandAttack
+    //
+    //==============================================================================
+    class procedure A_MWandAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_LightningReady
+    //
+    //==============================================================================
+    class procedure A_LightningReady(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_LightningClip
+    //
+    //==============================================================================
+    class procedure A_LightningClip(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LightningZap
+    //
+    //==============================================================================
+    class procedure A_LightningZap(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MLightningAttack2
+    //
+    //==============================================================================
+    class procedure A_MLightningAttack2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MLightningAttack
+    //
+    //==============================================================================
+    class procedure A_MLightningAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_ZapMimic
+    //
+    //==============================================================================
+    class procedure A_ZapMimic(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LastZap
+    //
+    //==============================================================================
+    class procedure A_LastZap(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LightningRemove
+    //
+    //==============================================================================
+    class procedure A_LightningRemove(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_MStaffSpawn
+    //
+    //==============================================================================
+    class procedure P_MStaffSpawn(pmo: Pmobj_t; angle: angle_t); static;
+
+    //==============================================================================
+    //
+    // A_MStaffAttack
+    //
+    //==============================================================================
+    class procedure A_MStaffAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_MStaffPalette
+    //
+    //==============================================================================
+    class procedure A_MStaffPalette(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_MStaffWeave
+    //
+    //==============================================================================
+    class procedure A_MStaffWeave(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MStaffTrack
+    //
+    //==============================================================================
+    class procedure A_MStaffTrack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_MStaffSpawn2
+    //
+    //==============================================================================
+    class procedure P_MStaffSpawn2(actor: Pmobj_t; angle: angle_t); static;
+
+    //==============================================================================
+    //
+    // A_MStaffAttack2
+    //
+    //==============================================================================
+    class procedure A_MStaffAttack2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FPunchAttack
+    //
+    //==============================================================================
+    class procedure A_FPunchAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FAxeAttack
+    //
+    //==============================================================================
+    class procedure A_FAxeAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CMaceAttack
+    //
+    //==============================================================================
+    class procedure A_CMaceAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CStaffCheck
+    //
+    //==============================================================================
+    class procedure A_CStaffCheck(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CStaffAttack
+    //
+    //==============================================================================
+    class procedure A_CStaffAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CStaffInitBlink
+    //
+    //==============================================================================
+    class procedure A_CStaffInitBlink(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CStaffCheckBlink
+    //
+    //==============================================================================
+    class procedure A_CStaffCheckBlink(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CFlameAttack
+    //
+    //==============================================================================
+    class procedure A_CFlameAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CFlamePuff
+    //
+    //==============================================================================
+    class procedure A_CFlamePuff(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CFlameMissile
+    //
+    //==============================================================================
+    class procedure A_CFlameMissile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CFlameRotate
+    //
+    //==============================================================================
+    class procedure A_CFlameRotate(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyAttack3
+    //
+    //==============================================================================
+    class procedure A_CHolyAttack3(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyAttack2
+    //
+    //==============================================================================
+    class procedure A_CHolyAttack2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyAttack
+    //
+    //==============================================================================
+    class procedure A_CHolyAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyPalette
+    //
+    //==============================================================================
+    class procedure A_CHolyPalette(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_CHolyFindTarget
+    //
+    //==============================================================================
+    class procedure P_CHolyFindTarget(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CHolySeekerMissile
+    //
+    //==============================================================================
+    class procedure P_CHolySeekerMissile(actor: Pmobj_t; thresh: angle_t; turnMax: angle_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyWeave
+    //
+    //==============================================================================
+    class procedure A_CHolyWeave(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolySeek
+    //
+    //==============================================================================
+    class procedure A_CHolySeek(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CHolyTailFollow
+    //
+    //==============================================================================
+    class procedure P_CHolyTailFollow(actor: Pmobj_t; dist: fixed_t); static;
+
+    //==============================================================================
+    //
+    // P_CHolyTailRemove
+    //
+    //==============================================================================
+    class procedure P_CHolyTailRemove(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyTail
+    //
+    //==============================================================================
+    class procedure A_CHolyTail(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolyCheckScream
+    //
+    //==============================================================================
+    class procedure A_CHolyCheckScream(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CHolySpawnPuff
+    //
+    //==============================================================================
+    class procedure A_CHolySpawnPuff(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FireConePL1
+    //
+    //==============================================================================
+    class procedure A_FireConePL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_ShedShard
+    //
+    //==============================================================================
+    class procedure A_ShedShard(actor: Pmobj_t); static;
+  end;
+
 
 implementation
 
@@ -526,7 +535,7 @@ uses
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_SetPspriteNF(player: Pplayer_t; position: integer; stnum: statenum_t);
+class procedure THexenWeaponActions.P_SetPspriteNF(player: Pplayer_t; position: integer; stnum: statenum_t);
 var
   psp: Ppspdef_t;
   state: Pstate_t;
@@ -602,7 +611,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-function P_CheckMana(player: Pplayer_t): boolean;
+class function THexenWeaponActions.P_CheckMana(player: Pplayer_t): boolean;
 var
   mana: manatype_t;
   count: integer;
@@ -658,7 +667,7 @@ end;
 //==============================================================================
 function P_CheckAmmo(player: Pplayer_t): boolean;
 begin
-  result := P_CheckMana(player);
+  result := THexenWeaponActions.P_CheckMana(player);
 end;
 
 //---------------------------------------------------------------------------
@@ -672,7 +681,7 @@ procedure P_FireWeapon(player: Pplayer_t);
 var
   attackState: statenum_t;
 begin
-  if not P_CheckMana(player) then
+  if not THexenWeaponActions.P_CheckMana(player) then
     exit;
 
   P_SetMobjState(player.mo, PStateAttack[Ord(player._class)]);
@@ -701,7 +710,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ActivateMorphWeapon(player: Pplayer_t);
+class procedure THexenWeaponActions.P_ActivateMorphWeapon(player: Pplayer_t);
 begin
   player.pendingweapon := WP_NOCHANGE;
   player.psprites[Ord(ps_weapon)].sy := WEAPONTOP;
@@ -716,7 +725,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_PostMorphWeapon(player: Pplayer_t; weapon: weapontype_t);
+class procedure THexenWeaponActions.P_PostMorphWeapon(player: Pplayer_t; weapon: weapontype_t);
 begin
   player.pendingweapon := WP_NOCHANGE;
   player.readyweapon := weapon;
@@ -733,7 +742,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
 begin
@@ -790,7 +799,7 @@ const
 // P_AdjustPlayerAngle
 //
 //==============================================================================
-procedure P_AdjustPlayerAngle(pmo: Pmobj_t);
+class procedure THexenWeaponActions.P_AdjustPlayerAngle(pmo: Pmobj_t);
 var
   angle: angle_t;
   diff: angle_t;
@@ -813,7 +822,7 @@ end;
 // A_SnoutAttack
 //
 //==============================================================================
-procedure A_SnoutAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_SnoutAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -857,7 +866,7 @@ end;
 // A_FHammerAttack
 //
 //==============================================================================
-procedure A_FHammerAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_FHammerAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   d_an: angle_t;
@@ -936,7 +945,7 @@ end;
 // A_FHammerThrow
 //
 //==============================================================================
-procedure A_FHammerThrow(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_FHammerThrow(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
@@ -954,7 +963,7 @@ end;
 // A_FSwordAttack
 //
 //==============================================================================
-procedure A_FSwordAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_FSwordAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   pmo: Pmobj_t;
 begin
@@ -974,7 +983,7 @@ end;
 // A_FSwordAttack2
 //
 //==============================================================================
-procedure A_FSwordAttack2(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_FSwordAttack2(actor: Pmobj_t);
 var
   angle: angle_t;
 begin
@@ -992,7 +1001,7 @@ end;
 // A_FSwordFlames
 //
 //==============================================================================
-procedure A_FSwordFlames(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_FSwordFlames(actor: Pmobj_t);
 var
   i: integer;
   LX, LY, LZ: fixed_t;
@@ -1012,7 +1021,7 @@ end;
 // A_MWandAttack
 //
 //==============================================================================
-procedure A_MWandAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_MWandAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
@@ -1029,7 +1038,7 @@ end;
 // A_LightningReady
 //
 //==============================================================================
-procedure A_LightningReady(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_LightningReady(player: Pplayer_t; psp: Ppspdef_t);
 begin
   A_WeaponReady(player, psp);
   if P_Random < 160 then
@@ -1048,7 +1057,7 @@ const
 // A_LightningClip
 //
 //==============================================================================
-procedure A_LightningClip(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_LightningClip(actor: Pmobj_t);
 var
   cMo: Pmobj_t;
   target: Pmobj_t;
@@ -1107,7 +1116,7 @@ end;
 // A_LightningZap
 //
 //==============================================================================
-procedure A_LightningZap(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_LightningZap(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   deltaZ: fixed_t;
@@ -1152,7 +1161,7 @@ end;
 // A_MLightningAttack2
 //
 //==============================================================================
-procedure A_MLightningAttack2(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_MLightningAttack2(actor: Pmobj_t);
 var
   fmo, cmo: Pmobj_t;
 begin
@@ -1181,7 +1190,7 @@ end;
 // A_MLightningAttack
 //
 //==============================================================================
-procedure A_MLightningAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_MLightningAttack(player: Pplayer_t; psp: Ppspdef_t);
 begin
   A_MLightningAttack2(player.mo);
   player.mana[Ord(MANA_2)] := player.mana[Ord(MANA_2)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
@@ -1192,7 +1201,7 @@ end;
 // A_ZapMimic
 //
 //==============================================================================
-procedure A_ZapMimic(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_ZapMimic(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1217,7 +1226,7 @@ end;
 // A_LastZap
 //
 //==============================================================================
-procedure A_LastZap(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_LastZap(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1234,7 +1243,7 @@ end;
 // A_LightningRemove
 //
 //==============================================================================
-procedure A_LightningRemove(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_LightningRemove(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -1251,7 +1260,7 @@ end;
 // P_MStaffSpawn
 //
 //==============================================================================
-procedure P_MStaffSpawn(pmo: Pmobj_t; angle: angle_t);
+class procedure THexenWeaponActions.P_MStaffSpawn(pmo: Pmobj_t; angle: angle_t);
 var
   mo: Pmobj_t;
 begin
@@ -1268,7 +1277,7 @@ end;
 // A_MStaffAttack
 //
 //==============================================================================
-procedure A_MStaffAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_MStaffAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   pmo: Pmobj_t;
@@ -1302,7 +1311,7 @@ end;
 // A_MStaffPalette
 //
 //==============================================================================
-procedure A_MStaffPalette(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_MStaffPalette(player: Pplayer_t; psp: Ppspdef_t);
 var
   pl: integer;
   palette, pal: PByteArray;
@@ -1329,7 +1338,7 @@ end;
 // A_MStaffWeave
 //
 //==============================================================================
-procedure A_MStaffWeave(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_MStaffWeave(actor: Pmobj_t);
 var
   newX, newY: fixed_t;
   weaveXY, weaveZ: integer;
@@ -1358,7 +1367,7 @@ end;
 // A_MStaffTrack
 //
 //==============================================================================
-procedure A_MStaffTrack(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_MStaffTrack(actor: Pmobj_t);
 begin
   if (actor.special1 = 0) and (P_Random < 50) then
     actor.special1 := NativeInt(P_RoughMonsterSearch(actor, 10));
@@ -1370,7 +1379,7 @@ end;
 // P_MStaffSpawn2 - for use by mage class boss
 //
 //==============================================================================
-procedure P_MStaffSpawn2(actor: Pmobj_t; angle: angle_t);
+class procedure THexenWeaponActions.P_MStaffSpawn2(actor: Pmobj_t; angle: angle_t);
 var
   mo: Pmobj_t;
 begin
@@ -1387,7 +1396,7 @@ end;
 // A_MStaffAttack2 - for use by mage class boss
 //
 //==============================================================================
-procedure A_MStaffAttack2(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_MStaffAttack2(actor: Pmobj_t);
 var
   angle: angle_t;
 begin
@@ -1403,7 +1412,7 @@ end;
 // A_FPunchAttack
 //
 //==============================================================================
-procedure A_FPunchAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_FPunchAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -1500,7 +1509,7 @@ end;
 // A_FAxeAttack
 //
 //==============================================================================
-procedure A_FAxeAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_FAxeAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   d_an: angle_t;
@@ -1584,7 +1593,7 @@ end;
 // A_CMaceAttack
 //
 //==============================================================================
-procedure A_CMaceAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CMaceAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   d_an: angle_t;
@@ -1630,7 +1639,7 @@ end;
 // A_CStaffCheck
 //
 //==============================================================================
-procedure A_CStaffCheck(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CStaffCheck(player: Pplayer_t; psp: Ppspdef_t);
 var
   pmo: Pmobj_t;
   damage: integer;
@@ -1694,7 +1703,7 @@ end;
 // A_CStaffAttack
 //
 //==============================================================================
-procedure A_CStaffAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CStaffAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
   pmo: Pmobj_t;
@@ -1715,7 +1724,7 @@ end;
 // A_CStaffInitBlink
 //
 //==============================================================================
-procedure A_CStaffInitBlink(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CStaffInitBlink(player: Pplayer_t; psp: Ppspdef_t);
 begin
   player.mo.special1 := _SHR1(P_Random) + 20;
 end;
@@ -1725,7 +1734,7 @@ end;
 // A_CStaffCheckBlink
 //
 //==============================================================================
-procedure A_CStaffCheckBlink(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CStaffCheckBlink(player: Pplayer_t; psp: Ppspdef_t);
 begin
   if player.mo.special1 > 0 then
     dec(player.mo.special1);
@@ -1749,7 +1758,7 @@ const
 // A_CFlameAttack
 //
 //==============================================================================
-procedure A_CFlameAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CFlameAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
@@ -1769,9 +1778,9 @@ end;
 // A_CFlamePuff
 //
 //==============================================================================
-procedure A_CFlamePuff(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CFlamePuff(actor: Pmobj_t);
 begin
-  A_UnHideThing(actor);
+  THexenActions.A_UnHideThing(actor);
   actor.momx := 0;
   actor.momy := 0;
   actor.momz := 0;
@@ -1783,14 +1792,14 @@ end;
 // A_CFlameMissile
 //
 //==============================================================================
-procedure A_CFlameMissile(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CFlameMissile(actor: Pmobj_t);
 var
   i: integer;
   an: angle_t;
   dist: fixed_t;
   mo: Pmobj_t;
 begin
-  A_UnHideThing(actor);
+  THexenActions.A_UnHideThing(actor);
   S_StartSound(actor, Ord(SFX_CLERIC_FLAME_EXPLODE));
   if (BlockingMobj <> nil) and (BlockingMobj.flags and MF_SHOOTABLE <> 0) then
   begin // Hit something, so spawn the flame circle around the thing
@@ -1845,7 +1854,7 @@ const
 // A_CFlameRotate
 //
 //==============================================================================
-procedure A_CFlameRotate(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CFlameRotate(actor: Pmobj_t);
 var
   an: angle_t;
 begin
@@ -1862,7 +1871,7 @@ end;
 //   Spawns the spirits
 //
 //==============================================================================
-procedure A_CHolyAttack3(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolyAttack3(actor: Pmobj_t);
 begin
   P_SpawnMissile(actor, actor.target, Ord(MT_HOLY_MISSILE));
   S_StartSound(actor, Ord(SFX_CHOLY_FIRE));
@@ -1875,7 +1884,7 @@ end;
 //   Spawns the spirits
 //
 //==============================================================================
-procedure A_CHolyAttack2(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolyAttack2(actor: Pmobj_t);
 var
   i, j: integer;
   mo: Pmobj_t;
@@ -1936,7 +1945,7 @@ end;
 // A_CHolyAttack
 //
 //==============================================================================
-procedure A_CHolyAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CHolyAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   palette, pal: PByteArray;
 begin
@@ -1963,7 +1972,7 @@ end;
 // A_CHolyPalette
 //
 //==============================================================================
-procedure A_CHolyPalette(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_CHolyPalette(player: Pplayer_t; psp: Ppspdef_t);
 var
   pl: integer;
   palette, pal: PByteArray;
@@ -1989,7 +1998,7 @@ end;
 // P_CHolyFindTarget
 //
 //==============================================================================
-procedure P_CHolyFindTarget(actor: Pmobj_t);
+class procedure THexenWeaponActions.P_CHolyFindTarget(actor: Pmobj_t);
 var
   target: Pmobj_t;
 begin
@@ -2009,7 +2018,7 @@ end;
 //    Similar to P_SeekerMissile, but seeks to a random Z on the target
 //
 //==============================================================================
-procedure P_CHolySeekerMissile(actor: Pmobj_t; thresh: angle_t; turnMax: angle_t);
+class procedure THexenWeaponActions.P_CHolySeekerMissile(actor: Pmobj_t; thresh: angle_t; turnMax: angle_t);
 var
   dir: integer;
   dist: integer;
@@ -2087,7 +2096,7 @@ end;
 // A_CHolyWeave
 //
 //==============================================================================
-procedure A_CHolyWeave(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolyWeave(actor: Pmobj_t);
 var
   newX, newY: fixed_t;
   weaveXY, weaveZ: integer;
@@ -2113,7 +2122,7 @@ end;
 // A_CHolySeek
 //
 //==============================================================================
-procedure A_CHolySeek(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolySeek(actor: Pmobj_t);
 begin
   dec(actor.health);
   if actor.health <= 0 then
@@ -2140,7 +2149,7 @@ end;
 // P_CHolyTailFollow
 //
 //==============================================================================
-procedure P_CHolyTailFollow(actor: Pmobj_t; dist: fixed_t);
+class procedure THexenWeaponActions.P_CHolyTailFollow(actor: Pmobj_t; dist: fixed_t);
 var
   child: Pmobj_t;
   an: angle_t;
@@ -2179,7 +2188,7 @@ end;
 // P_CHolyTailRemove
 //
 //==============================================================================
-procedure P_CHolyTailRemove(actor: Pmobj_t);
+class procedure THexenWeaponActions.P_CHolyTailRemove(actor: Pmobj_t);
 var
   child: Pmobj_t;
 begin
@@ -2194,7 +2203,7 @@ end;
 // A_CHolyTail
 //
 //==============================================================================
-procedure A_CHolyTail(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolyTail(actor: Pmobj_t);
 var
   parent: Pmobj_t;
 begin
@@ -2221,7 +2230,7 @@ end;
 // A_CHolyCheckScream
 //
 //==============================================================================
-procedure A_CHolyCheckScream(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolyCheckScream(actor: Pmobj_t);
 begin
   A_CHolySeek(actor);
   if P_Random < 20 then
@@ -2236,7 +2245,7 @@ end;
 // A_CHolySpawnPuff
 //
 //==============================================================================
-procedure A_CHolySpawnPuff(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_CHolySpawnPuff(actor: Pmobj_t);
 begin
   P_SpawnMobj(actor.x, actor.y, actor.z, Ord(MT_HOLY_MISSILE_PUFF));
 end;
@@ -2258,7 +2267,7 @@ const
 // A_FireConePL1
 //
 //==============================================================================
-procedure A_FireConePL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THexenWeaponActions.A_FireConePL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -2308,7 +2317,7 @@ end;
 // A_ShedShard
 //
 //==============================================================================
-procedure A_ShedShard(actor: Pmobj_t);
+class procedure THexenWeaponActions.A_ShedShard(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   spawndir: integer;
@@ -2461,7 +2470,7 @@ end;
 //==============================================================================
 class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
 begin
-  P_CheckMana(player);
+  THexenWeaponActions.P_CheckMana(player);
 end;
 
 end.

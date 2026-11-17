@@ -1824,7 +1824,7 @@ begin
       TGameSession.Players[i].plinetarget := P_FindMobjFromKey(NativeInt(TGameSession.Players[i].plinetarget));
 
   P_CreateTIDList;
-  P_InitCreatureCorpseQueue(true); // true := scan for corpses
+  THexenMonsterActions.P_InitCreatureCorpseQueue(true); // true := scan for corpses
 end;
 
 //==============================================================================

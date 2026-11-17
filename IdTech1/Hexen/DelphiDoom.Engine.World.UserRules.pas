@@ -348,7 +348,7 @@ begin
   pmo := player.mo;
   if (pmo.momx + pmo.momy = 0) and (P_Random < 64) then
   begin // Snout sniff
-    P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
+    THexenWeaponActions.P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
     S_StartSound(pmo, Ord(SFX_PIG_ACTIVE1)); // snort
     exit;
   end;
@@ -474,7 +474,7 @@ begin
                      z + TELEFOGHEIGHT,
                      Ord(MT_TFOG));
   S_StartSound(fog, Ord(SFX_TELEPORT));
-  P_PostMorphWeapon(player, weapon);
+  THexenWeaponActions.P_PostMorphWeapon(player, weapon);
   result := true;
 end;
 

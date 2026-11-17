@@ -794,7 +794,7 @@ begin
 
     120: // Quake Tremor
       begin
-        result := A_LocalQuake(args, mo);
+        result := THexenActions.A_LocalQuake(args, mo);
       end;
 
     129: // UsePuzzleItem

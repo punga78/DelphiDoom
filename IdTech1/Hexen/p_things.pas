@@ -558,7 +558,7 @@ begin
     result := true;
     if mobj._type = Ord(MT_BRIDGE) then
     begin
-      A_BridgeRemove(mobj);
+      THexenActions.A_BridgeRemove(mobj);
       exit;
     end;
     P_RemoveMobj(mobj);

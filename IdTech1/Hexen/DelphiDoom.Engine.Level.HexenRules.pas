@@ -259,7 +259,7 @@ end;
 procedure THexenLevelRules.AfterMapThingsSpawned;
 begin
   P_CreateTIDList;
-  P_InitCreatureCorpseQueue(False); // false = do NOT scan for corpses
+  THexenMonsterActions.P_InitCreatureCorpseQueue(False); // false = do NOT scan for corpses
 end;
 
 procedure THexenLevelRules.AfterThingsLoaded;

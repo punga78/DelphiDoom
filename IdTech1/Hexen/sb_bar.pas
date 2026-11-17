@@ -392,7 +392,7 @@ begin
   if not SB_CmdCheckPlayerStatus then
     exit;
 
-  count := P_Massacre;
+  count := THexenMonsterActions.P_Massacre;
   CPlayer._message := itoa(count) + ' ' + TXT_CHEATMASSACRE;
 end;
 
@@ -471,7 +471,7 @@ begin
     CPlayer.armorpoints[i] := 0;
 
   PlayerClass[TGameSession.ConsolePlayer] := pclass_t(_class);
-  P_PostMorphWeapon(CPlayer, WP_FIRST);
+  THexenWeaponActions.P_PostMorphWeapon(CPlayer, WP_FIRST);
   SB_SetClassData;
 end;
 

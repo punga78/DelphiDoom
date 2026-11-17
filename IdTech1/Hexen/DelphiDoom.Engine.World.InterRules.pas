@@ -476,7 +476,7 @@ begin
   if oldFlags2 and MF2_FLY <> 0 then
     beast.flags2 := beast.flags2 or MF2_FLY;
   player.morphTics := MORPHTICS;
-  P_ActivateMorphWeapon(player);
+  THexenWeaponActions.P_ActivateMorphWeapon(player);
   result := true;
 end;
 
