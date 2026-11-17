@@ -1,0 +1,2 @@
+baseoa/loop finished in done | server_calls=10109 cgame_calls=5339 snapshots=10 entities=11 last_message=11 draws=245 scenes=20
+missionpack/loop finished in done | server_calls=9299 cgame_calls=8062 snapshots=10 entities=6 last_message=11 draws=825 scenes=40
