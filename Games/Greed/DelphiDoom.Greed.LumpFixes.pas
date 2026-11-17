@@ -1,7 +1,11 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the corrections of the data of the game          }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): FixLump of g_fixlump.pas    }
+{  Port of xGreed (Jim Valavanis): FixLump of g_fixlump.pas                     }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

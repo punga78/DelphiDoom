@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - what the player picks up and the warps           }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): FindWarpDestination,        }
+{  Port of xGreed (Jim Valavanis): FindWarpDestination,                         }
 {  CheckItems and CheckWarps of raven.pas                                       }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

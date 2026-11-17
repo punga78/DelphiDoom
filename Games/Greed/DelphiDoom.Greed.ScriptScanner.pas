@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the words of the script of a map                 }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the methods of              }
+{  Port of xGreed (Jim Valavanis): the methods of                               }
 {  TScriptEngine of scriptengine.pas that event.pas uses                        }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

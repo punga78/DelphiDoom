@@ -6,6 +6,10 @@ Port in classi di **xGreed**, il source port Delphi di Jim Valavanis (2020-2022;
 
 Non e' un gioco del motore Doom: ha il suo eseguibile (`Games\Greed\Greed32.dpr`, composition root `Games\Greed\DelphiDoom.Greed.Composition.pas`, `Tools\build.bat Games\Greed\Greed32`, output `bin\Greed`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration`. Riusa `Framework\Video` (`IPaletteConverter`), `Framework\Png` (`TPngClient`), `Framework\Platform` (`IFileStore`) e `Framework\MathCore` (`TCrc32`).
 
+## Licenza: decisione dell'utente (2026-11-17)
+
+**xGreed: GPL v2**, scelta dell'utente (valida finche' il repository e' un fork): le intestazioni delle unit di Games\Greed sono quelle standard del repository (GPL v2 o successive) con la nota *port di xGreed (Valavanis) e del motore Raven 3D (c) 1996 Softdisk Publishing; l'utente dichiara di rilasciarlo GPL v2 o successive; il diritto sulle parti derivate dal codice Softdisk non e' verificato*. Tutti i componenti: [docs\LICENZE.md](../../docs/LICENZE.md). Lo stato dei fatti qui sotto resta valido: la dichiarazione non sostituisce il consenso dei detentori dei diritti.
+
 ## Licenza: stato esatto (2026-11-14) — NON risolta
 
 Cosa dice il sorgente che abbiamo (`Reference\xGreed`, 45 file `.pas`, verificato file per file):
@@ -100,4 +104,4 @@ Il `GREED.BLO` del gioco completo (19.726.074 byte, forniti dall'utente: `Refere
 
 Stato dopo la chiusura della #175 (2026-11-14, dettagli e numeri in `CLAUDE.md`, sezione "Chiusura della #175"): specchietto (`RearView`), mouse, joystick (estensione: xGreed non lo legge), partite registrate (formato nuovo `GRDM`: nell'originale la registrazione e' un resto senza effetto), rete (portata dal commento di `net.pas`, che in xGreed e' vuoto), salva/carica confrontati con l'originale e Win64 sono fatti.
 
-Resta: la licenza (sopra); l'HUD dei frag e i menu di rete; lo specchietto sul giocatore nemico in rete; `DrawHolo`; la mappa dei tasti configurabile (`ckeys`, `bt_*`); la misura delle prestazioni di `MoveSprites` su una macchina scarica; la demo 1.016 ha mappe a 35 piani che il gioco non legge. Non verificato: l'ascolto dell'audio, un joystick vero, la rete tra macchine diverse, `Greed32` a 64 bit in finestra.
+Resta: la licenza (sopra); l'HUD dei frag e i menu di rete; lo specchietto sul giocatore nemico in rete; la misura delle prestazioni di `MoveSprites` su una macchina scarica; la demo 1.016 ha mappe a 35 piani che il gioco non legge. Non verificato: l'ascolto dell'audio, un joystick vero, la rete tra macchine diverse, `Greed32` a 64 bit in finestra.

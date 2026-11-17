@@ -1,10 +1,14 @@
 {******************************************************************************}
 {                                                                              }
 {  Greed32: the mouse of the system as the game wants it, inside the window     }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): lbuttondown, rbuttondown    }
+{  Port of xGreed (Jim Valavanis): lbuttondown, rbuttondown                     }
 {  and mbuttondown of d_ints.pas (set by the window procedure of i_main.pas),   }
 {  getcursorposfunc, setcursorposfunc, I_WindowWidth, I_WindowHeight and the    }
 {  test of the window in the foreground of INT_ReadControls                     }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

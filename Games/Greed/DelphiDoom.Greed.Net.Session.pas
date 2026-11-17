@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the net game: the session                        }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): net.pas (NetInit,           }
+{  Port of xGreed (Jim Valavanis): net.pas (NetInit,                            }
 {  NetWaitStart, NetGetData, SpawnNewPlayer and the Net* senders), from the     }
 {  code that xGreed keeps in a comment after "end."                             }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

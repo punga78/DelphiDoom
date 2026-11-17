@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the renderer of the view as the game uses it     }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): RF_RenderView with the      }
+{  Port of xGreed (Jim Valavanis): RF_RenderView with the                       }
 {  globals that the game writes (reallight, the translation tables, colormaps,  }
 {  backdrop) and DemandLoadMonster of spawn.pas                                 }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

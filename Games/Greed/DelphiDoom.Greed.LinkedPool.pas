@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - a pool of objects in a doubly linked list        }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): RF_ClearWorld, RF_GetSprite,}
+{  Port of xGreed (Jim Valavanis): RF_ClearWorld, RF_GetSprite,                 }
 {  RF_RemoveSprite, RF_GetElevator and RF_RemoveElevator of r_public.pas        }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

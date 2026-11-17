@@ -202,6 +202,8 @@ uses
   DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas',
   DelphiDoom.Tests.GameHost.Fakes in 'Source\DelphiDoom.Tests.GameHost.Fakes.pas',
   DelphiDoom.Tests.Greed.HostKeys in 'Source\DelphiDoom.Tests.Greed.HostKeys.pas',
+  DelphiDoom.Tests.Greed.ScanCodes in 'Source\DelphiDoom.Tests.Greed.ScanCodes.pas',
+  DelphiDoom.Tests.Greed.KeyBindings in 'Source\DelphiDoom.Tests.Greed.KeyBindings.pas',
   DelphiDoom.Tests.Greed.RearView in 'Source\DelphiDoom.Tests.Greed.RearView.pas',
   DelphiDoom.Tests.Greed.Demo in 'Source\DelphiDoom.Tests.Greed.Demo.pas',
   DelphiDoom.Greed.Mouse.Intf in '..\Games\Greed\DelphiDoom.Greed.Mouse.Intf.pas',

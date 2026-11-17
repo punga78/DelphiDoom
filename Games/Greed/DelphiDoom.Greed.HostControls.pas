@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Greed32 - the keys of the window as the commands of the game     }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the default keys of         }
+{  Port of xGreed (Jim Valavanis): the default keys of                          }
 {  d_ints.pas (scanbuttons) and the keys that ControlMovement reads             }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -13,7 +17,7 @@ interface
 
 uses
   Winapi.Windows, System.SysUtils, DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState,
-  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.KeyLatch;
+  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.KeyLatch, DelphiDoom.Greed.KeyBindings.Intf;
 
 type
   /// <summary>
@@ -26,7 +30,9 @@ type
   ///   zoom of the map. The letters and the digits that go down between two readings are the characters typed
   ///   (the secret codes). A key that goes down and up between two readings of the controls is seen by the next
   ///   reading (TGameHostKeyLatch): the original, which asks Windows for the keys every two tics, loses it.
-  ///   The mouse is not read here: TGreedMouseControls adds it to these keys
+  ///   The 19 buttons of the game (the first 19 commands) take the keys that xGreed.ini chose when the object
+  ///   has bindings (IGreedKeyBindings); without them they are the keys above. The mouse is not read here:
+  ///   TGreedMouseControls adds it to these keys
   /// </summary>
   TGreedHostControls = class(TInterfacedObject, IGreedCommandSource)
   strict private
@@ -37,10 +43,14 @@ type
       FLatch: TGameHostKeyLatch;
       FWasDown: array[FIRST_TYPED..LAST_TYPED] of Boolean;
       FTyped: string;
-    class function KeyOf(ACommand: TGreedCommand): Integer; static;
+      FBindings: IGreedKeyBindings;
+    class function DefaultKeyOf(ACommand: TGreedCommand): Integer; static;
+    function KeyOf(ACommand: TGreedCommand): Integer;
   public
     /// <summary>EArgumentNilException if AKeys is nil</summary>
-    constructor Create(const AKeys: IGameHostKeyState);
+    constructor Create(const AKeys: IGameHostKeyState); overload;
+    /// <summary>EArgumentNilException if AKeys or ABindings is nil</summary>
+    constructor Create(const AKeys: IGameHostKeyState; const ABindings: IGreedKeyBindings); overload;
     destructor Destroy; override;
     procedure BeginReading;
     function IsPressed(ACommand: TGreedCommand): Boolean;
@@ -61,13 +71,29 @@ begin
   FLatch := TGameHostKeyLatch.Create(AKeys);
 end;
 
+constructor TGreedHostControls.Create(const AKeys: IGameHostKeyState; const ABindings: IGreedKeyBindings);
+begin
+  Create(AKeys);
+  if not Assigned(ABindings) then
+    raise EArgumentNilException.Create('ABindings');
+  FBindings := ABindings;
+end;
+
 destructor TGreedHostControls.Destroy;
 begin
   FLatch.Free;
   inherited Destroy;
 end;
 
-class function TGreedHostControls.KeyOf(ACommand: TGreedCommand): Integer;
+function TGreedHostControls.KeyOf(ACommand: TGreedCommand): Integer;
+begin
+  if Assigned(FBindings) and FBindings.IsBindable(ACommand) then
+    Result := FBindings.VirtualKeyOf(ACommand)
+  else
+    Result := DefaultKeyOf(ACommand);
+end;
+
+class function TGreedHostControls.DefaultKeyOf(ACommand: TGreedCommand): Integer;
 begin
   case ACommand of
     gcNorth: Result := VK_UP;
