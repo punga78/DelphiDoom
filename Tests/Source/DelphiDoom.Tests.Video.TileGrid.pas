@@ -88,15 +88,15 @@ var
   LPoints: TArray<TVideoTilePosition>;
 begin
   LPoints := TVideoTileGrid.Positions(160, 100, 0, 0, 320, 200);
-  Assert.AreEqual(4, Length(LPoints));
+  Assert.AreEqual<Integer>(4, Length(LPoints));
   Assert.AreEqual('0,0;0,100;160,0;160,100;', Describe(LPoints));
 end;
 
 procedure TTestVideoTileGrid.DovrebbeDareUnaListaVuotaSeLaPatchNonHaDimensione;
 begin
-  Assert.AreEqual(0, Length(TVideoTileGrid.Positions(0, 64, 0, 0, 320, 200)));
-  Assert.AreEqual(0, Length(TVideoTileGrid.Positions(64, 0, 0, 0, 320, 200)));
-  Assert.AreEqual(0, Length(TVideoTileGrid.Positions(-3, 64, 1, 1, 320, 200)));
+  Assert.AreEqual<Integer>(0, Length(TVideoTileGrid.Positions(0, 64, 0, 0, 320, 200)));
+  Assert.AreEqual<Integer>(0, Length(TVideoTileGrid.Positions(64, 0, 0, 0, 320, 200)));
+  Assert.AreEqual<Integer>(0, Length(TVideoTileGrid.Positions(-3, 64, 1, 1, 320, 200)));
 end;
 
 procedure TTestVideoTileGrid.DovrebbeRiprodurreIlCicloDelVecchioCodice;
