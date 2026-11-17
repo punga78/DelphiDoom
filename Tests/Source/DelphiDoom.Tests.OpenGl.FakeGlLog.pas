@@ -33,10 +33,17 @@ type
     FSavedEnable: Pointer;
     FSavedDisable: Pointer;
     FSavedBlendFunc: Pointer;
+    FSavedLoadIdentity: Pointer;
+    FSavedOrtho: Pointer;
+    FSavedGetIntegerv: Pointer;
+    FSavedFinish: Pointer;
+    FSavedFlush: Pointer;
     FInstalled: Boolean;
   public
     /// <summary>The lines written by the calls since the last Clear</summary>
     class var Lines: TStringList;
+    /// <summary>The four values glGetIntegerv(GL_VIEWPORT) gives</summary>
+    class var Viewport: array[0..3] of Integer;
     /// <summary>Installs the fakes; the calls go to Lines</summary>
     procedure Install;
     /// <summary>Gives the real variables back</summary>
@@ -54,6 +61,11 @@ uses
 function Bits(const AValue: Single): string;
 begin
   Result := IntToHex(PCardinal(@AValue)^, 8);
+end;
+
+function BitsD(const AValue: Double): string;
+begin
+  Result := IntToHex(PInt64(@AValue)^, 16);
 end;
 
 procedure FakePushMatrix; stdcall;
@@ -121,6 +133,34 @@ begin
   TFakeGlLog.Lines.Add('glBlendFunc ' + IntToHex(sfactor, 4) + ' ' + IntToHex(dfactor, 4));
 end;
 
+procedure FakeLoadIdentity; stdcall;
+begin
+  TFakeGlLog.Lines.Add('glLoadIdentity');
+end;
+
+procedure FakeOrtho(left, right, bottom, top, zNear, zFar: GLdouble); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glOrtho ' + BitsD(left) + ' ' + BitsD(right) + ' ' + BitsD(bottom) + ' ' +
+    BitsD(top) + ' ' + BitsD(zNear) + ' ' + BitsD(zFar));
+end;
+
+procedure FakeGetIntegerv(pname: GLenum; params: PGLint); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glGetIntegerv ' + IntToHex(pname, 4));
+  if pname = GL_VIEWPORT then
+    Move(TFakeGlLog.Viewport, params^, SizeOf(TFakeGlLog.Viewport));
+end;
+
+procedure FakeFinish; stdcall;
+begin
+  TFakeGlLog.Lines.Add('glFinish');
+end;
+
+procedure FakeFlush; stdcall;
+begin
+  TFakeGlLog.Lines.Add('glFlush');
+end;
+
 { TFakeGlLog }
 
 procedure TFakeGlLog.Install;
@@ -142,6 +182,11 @@ begin
   FSavedEnable := @glEnable;
   FSavedDisable := @glDisable;
   FSavedBlendFunc := @glBlendFunc;
+  FSavedLoadIdentity := @glLoadIdentity;
+  FSavedOrtho := @glOrtho;
+  FSavedGetIntegerv := @glGetIntegerv;
+  FSavedFinish := @glFinish;
+  FSavedFlush := @glFlush;
   glPushMatrix := @FakePushMatrix;
   glPopMatrix := @FakePopMatrix;
   glTranslatef := @FakeTranslatef;
@@ -155,6 +200,11 @@ begin
   glEnable := @FakeEnable;
   glDisable := @FakeDisable;
   glBlendFunc := @FakeBlendFunc;
+  glLoadIdentity := @FakeLoadIdentity;
+  glOrtho := @FakeOrtho;
+  glGetIntegerv := @FakeGetIntegerv;
+  glFinish := @FakeFinish;
+  glFlush := @FakeFlush;
   FInstalled := True;
   Clear;
 end;
@@ -176,6 +226,11 @@ begin
   glEnable := FSavedEnable;
   glDisable := FSavedDisable;
   glBlendFunc := FSavedBlendFunc;
+  glLoadIdentity := FSavedLoadIdentity;
+  glOrtho := FSavedOrtho;
+  glGetIntegerv := FSavedGetIntegerv;
+  glFinish := FSavedFinish;
+  glFlush := FSavedFlush;
   FInstalled := False;
 end;
 
