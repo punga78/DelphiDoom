@@ -1460,6 +1460,7 @@ uses
   DelphiDoom.Actions.Names in '..\Actions\DelphiDoom.Actions.Names.pas',
   DelphiDoom.Actions.Registry in '..\Actions\DelphiDoom.Actions.Registry.pas',
   DelphiDoom.Actions.Factory in '..\Actions\DelphiDoom.Actions.Factory.pas',
+  DelphiDoom.Actions.Mbf21Flags in '..\Actions\DelphiDoom.Actions.Mbf21Flags.pas',
   deh_base in '..\Base\deh_base.pas',
   p_animdefs in '..\Base\p_animdefs.pas',
   p_easyslope in '..\Base\p_easyslope.pas',

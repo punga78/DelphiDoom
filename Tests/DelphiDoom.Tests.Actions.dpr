@@ -19,6 +19,8 @@ uses
   DelphiDoom.Actions.Names in '..\IdTech1\Actions\DelphiDoom.Actions.Names.pas',
   DelphiDoom.Actions.Registry in '..\IdTech1\Actions\DelphiDoom.Actions.Registry.pas',
   DelphiDoom.Actions.Factory in '..\IdTech1\Actions\DelphiDoom.Actions.Factory.pas',
+  DelphiDoom.Actions.Mbf21Flags in '..\IdTech1\Actions\DelphiDoom.Actions.Mbf21Flags.pas',
+  DelphiDoom.Tests.Actions.Mbf21Flags in 'Source\DelphiDoom.Tests.Actions.Mbf21Flags.pas',
   DelphiDoom.Tests.Actions.Names in 'Source\DelphiDoom.Tests.Actions.Names.pas',
   DelphiDoom.Tests.Actions.Registry in 'Source\DelphiDoom.Tests.Actions.Registry.pas';
 

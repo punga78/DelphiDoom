@@ -1420,6 +1420,7 @@ uses
   DelphiDoom.Actions.Names in '..\Actions\DelphiDoom.Actions.Names.pas',
   DelphiDoom.Actions.Registry in '..\Actions\DelphiDoom.Actions.Registry.pas',
   DelphiDoom.Actions.Factory in '..\Actions\DelphiDoom.Actions.Factory.pas',
+  DelphiDoom.Actions.Mbf21Flags in '..\Actions\DelphiDoom.Actions.Mbf21Flags.pas',
   deh_base in '..\Base\deh_base.pas',
   r_sprite in '..\Base\r_sprite.pas',
   r_tallcolumn in '..\Base\r_tallcolumn.pas',
