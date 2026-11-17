@@ -705,6 +705,7 @@ uses
   DelphiDoom.MapInfo.IntermissionPlanner in '..\MapInfo\DelphiDoom.MapInfo.IntermissionPlanner.pas',
   DelphiDoom.Serializer.SaveGameName in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameName.pas',
   DelphiDoom.Serializer.SaveGameHeader in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameHeader.pas',
+  DelphiDoom.Serializer.SaveGameSessionBlock in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameSessionBlock.pas',
   DelphiDoom.Serializer.SaveGameVersions in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameVersions.pas',
   DelphiDoom.Input.KeyboardLayout in '..\..\Framework\Input\DelphiDoom.Input.KeyboardLayout.pas',
   DelphiDoom.Input.EventScaling in '..\..\Framework\Input\DelphiDoom.Input.EventScaling.pas',

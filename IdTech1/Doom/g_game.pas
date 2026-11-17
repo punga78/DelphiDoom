@@ -627,6 +627,7 @@ uses
   p_setup,
   p_saveg,
   DelphiDoom.Serializer.SaveGameHeader,
+  DelphiDoom.Serializer.SaveGameSessionBlock,
   DelphiDoom.Serializer.SaveGameVersions,
   p_tick,
   p_local,
@@ -2238,7 +2239,9 @@ end;
 procedure G_DoLoadGame;
 var
   len: integer;
-  i: integer;
+  LSkill: Byte;
+  LEpisode: Byte;
+  LMap: Byte;
 begin
   TGameSession.GameAction := ga_nothing;
 
@@ -2264,23 +2267,14 @@ begin
 
   P_UnArchiveScreenShot;
 
-  TGameSession.GameSkill := skill_t(save_p[0]);
-  defaultskill := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  TGameSession.GameEpisode := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  TGameSession.GameMap := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
+  TSaveGameSessionBlock.Read(System.PByte(save_p), True, LSkill, LEpisode, LMap, TGameSession.PlayerInGame);
+  TGameSession.GameSkill := skill_t(LSkill);
+  defaultskill := LSkill;
+  TGameSession.GameEpisode := LEpisode;
+  TGameSession.GameMap := LMap;
+  save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, True));
 
   gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
-
-  for i := 0 to MAXPLAYERS - 1 do
-  begin
-    TGameSession.PlayerInGame[i] := save_p[0] <> 0;
-    save_p := PByteArray(NativeInt(save_p) + 1);
-  end;
 
   // load a base level
   G_InitNew(TGameSession.GameSkill, TGameSession.GameEpisode, TGameSession.GameMap);
@@ -2341,7 +2335,6 @@ procedure G_DoSaveGameInFile(name: string);
 var
   description: string;
   len: integer;
-  i: integer;
   maxsize: integer;
 begin
   name := G_GetSaveName(name);
@@ -2368,20 +2361,9 @@ begin
   save_p := PByteArray(NativeInt(save_p) + SAVEVERSIONSIZE);
   P_ArchiveScreenShot;
 
-  save_p[0] := Ord(TGameSession.GameSkill);
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  save_p[0] := TGameSession.GameEpisode;
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  save_p[0] := TGameSession.GameMap;
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  for i := 0 to MAXPLAYERS - 1 do
-  begin
-    save_p[0] := intval(TGameSession.PlayerInGame[i]);
-    save_p := PByteArray(NativeInt(save_p) + 1);
-  end;
+  TSaveGameSessionBlock.Write(System.PByte(save_p), Ord(TGameSession.GameSkill), TGameSession.GameEpisode,
+    TGameSession.GameMap, True, TGameSession.PlayerInGame);
+  save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, True));
 
   TSaveGameHeader.WriteLevelTime(System.PByte(save_p), P_World.Time.LevelTime^);
   save_p := PByteArray(NativeInt(save_p) + 3);
