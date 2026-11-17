@@ -11,7 +11,23 @@ unit gl_defs;
 
 interface
 
+uses
+  dglOpenGL,
+  m_fixed;
+
+type
+  gld_camera_t = record
+    position: TGLVectorf3;
+    rotation: TGLVectorf3;
+  end;
+  Pgld_camera_t = ^gld_camera_t;
+
+const
+  MAP_COEFF = 128.0;
+  MAP_SCALE = MAP_COEFF * FRACUNIT;
+
 var
+  camera: gld_camera_t;
   use_fog: boolean = false;
   fog_density: integer = 100;
   use_white_fog: boolean = true;

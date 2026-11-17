@@ -11,6 +11,9 @@ unit m_fixed;
 
 interface
 
+type
+  fixed_t = integer;
+
 const
   FRACBITS = 16;
   FRACUNIT = 1 shl FRACBITS;

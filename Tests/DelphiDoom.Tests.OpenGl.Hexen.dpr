@@ -24,8 +24,18 @@ uses
   gl_defs in 'Shim\OpenGlGame\gl_defs.pas',
   r_colormaps in 'Shim\OpenGlGame\r_colormaps.pas',
   r_data in 'Shim\OpenGlGame\r_data.pas',
+  p_mobj_h in 'Shim\OpenGlGame\p_mobj_h.pas',
+  p_tick in 'Shim\OpenGlGame\p_tick.pas',
+  DelphiDoom.GameState.Intf in '..\IdTech1\GameState\DelphiDoom.GameState.Intf.pas',
+  DelphiDoom.DynLights.Types in '..\IdTech1\DynLights\DelphiDoom.DynLights.Types.pas',
+  DelphiDoom.DynLights.Intf in '..\IdTech1\DynLights\DelphiDoom.DynLights.Intf.pas',
+  r_dynlights in 'Shim\OpenGlGame\r_dynlights.pas',
+  gl_shadows in 'Shim\OpenGlGame\gl_shadows.pas',
+  DelphiDoom.Engine.GlScene.Types in 'Shim\OpenGlGame\DelphiDoom.Engine.GlScene.Types.pas',
   DelphiDoom.Tests.OpenGl.FakeGlLog in 'Source\DelphiDoom.Tests.OpenGl.FakeGlLog.pas',
   DelphiDoom.Engine.GlScene.Fog in '..\IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlScene.Fog.pas',
+  DelphiDoom.Engine.GlScene.LightMarker in '..\IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightMarker.pas',
+  DelphiDoom.Tests.OpenGl.SceneLightMarker in 'Source\DelphiDoom.Tests.OpenGl.SceneLightMarker.pas',
   DelphiDoom.Tests.OpenGl.SceneFog in 'Source\DelphiDoom.Tests.OpenGl.SceneFog.pas';
 
 var
