@@ -1,0 +1,79 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD exec bind a say a
+MODFLAGS set 64
+CMD exec bind mouse1 _attack
+MODFLAGS set 64
+CMD exec bind b \"\"
+MODFLAGS set 64
+CMD execbinding 97
+BUFTEXT append say a
+BUFTEXT append \n
+RET 1
+CMD execbinding 98
+RET 1
+CMD execbinding 187
+RET 0
+CMD execbinding 99
+RET 1
+CMD isdown 97
+RET 0
+CMD prelim 97 1
+CMD isdown 97
+RET 1
+CMD prelim 98 1
+CMD prelim 97 0
+CMD isdown 97
+RET 0
+CMD isdown 98
+RET 1
+CMD isdown -1
+RET 0
+CMD clearstates
+CMD isdown 98
+RET 0
+CMD overstrike
+RET 0
+CMD overstrike 1
+RET 1
+CMD overstrike
+RET 1
+CMD overstrike 0
+RET 0
+CMD exec bind c \"weapon next\"
+MODFLAGS set 64
+CMD exec bind d weapon_next
+MODFLAGS set 64
+CMD keysfrom weapon next
+RETS c
+CMD keysfrom WEAPON NEXT
+RETS c
+CMD exec bind e weapon next
+MODFLAGS set 64
+CMD keysfrom weapon next
+RETS c<#str_07183>e
+CMD keysfrom nothing bound
+RETS <#str_07133>
+CMD keysfrom
+RETS <#str_07133>
+CMD bindfrom c
+RETS weapon next
+CMD bindfrom nosuchkey
+RETS (null)
+CMD bindfrom e
+RETS weapon next
+CMD bindfrom 0x41
+RETS 
+CMD bindfrom
+RETS (null)
+CMD exec bind kp_enter \"say kp\"
+MODFLAGS set 64
+CMD bindfrom kp_enter
+RETS say kp
+CMD keysfrom say kp
+RETS <#str_07119>
+CMD keyshutdown

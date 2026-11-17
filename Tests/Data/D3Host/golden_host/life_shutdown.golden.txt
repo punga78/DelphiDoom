@@ -1,0 +1,116 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD ret soundworld 1
+CMD shutdowngame 0
+SOUND stopall
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 0
+CMD ret soundworld 0
+CMD shutdowngame 1
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 1
+CMD fail session.Shutdown
+CMD shutdowngame 0
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+THROW injected failure
+CMD fail none
+CMD shutdown
+NET server.Kill
+NET client.Shutdown
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 0
+CALL sys.Shutdown
+RMCMD clear
+RMCMD conDump
+CALL cvar.Shutdown
+CALL cmd.Shutdown
+CALL ClearWarnings DOOM 3 shutdown
+CALL idlib.ShutDown
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=0 shutting=1 lastTic=0 lastlib=0
+CMD errorentered 0
+CMD quit
+NET server.Kill
+NET client.Shutdown
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 0
+CALL sys.Shutdown
+RMCMD clear
+RMCMD conDump
+CALL cvar.Shutdown
+CALL cmd.Shutdown
+CALL ClearWarnings DOOM 3 shutdown
+CALL idlib.ShutDown
+SYSQUIT
+EXIT quit
+CMD errorentered 2
+CMD quit
+SYSQUIT
+EXIT quit
+CMD fail none
+CMD fail files.Shutdown
+CMD shutdown
+NET server.Kill
+NET client.Shutdown
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 0
+THROW injected failure
+CMD fail none
+CMD state
+STATE tic=0 frameTime=0 frame=0 fully=0 shutting=1 lastTic=0 lastlib=0

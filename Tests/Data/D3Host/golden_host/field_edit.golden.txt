@@ -1,0 +1,305 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD fwidth 10
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF 
+FCOMP 
+FMATCH 
+CMD fchar 104
+CMD fchar 101
+CMD fchar 108
+CMD fchar 108
+CMD fchar 111
+CMD fshow
+FIELD cursor=5 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF hello
+FCOMP 
+FMATCH 
+CMD fchar 8
+CMD fchar 127
+CMD fshow
+FIELD cursor=3 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF hel
+FCOMP 
+FMATCH 
+CMD fchar 1
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF hel
+FCOMP 
+FMATCH 
+CMD fchar 5
+CMD fshow
+FIELD cursor=3 scroll=-7 width=10 len=0 valid=0 match=0 index=0
+FBUF hel
+FCOMP 
+FMATCH 
+CMD fchar 4
+CMD fchar 3
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF 
+FCOMP 
+FMATCH 
+CMD fbuf hello world and more text
+CMD fshow
+FIELD cursor=25 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more text
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fkey 135
+CMD fshow
+FIELD cursor=23 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more text
+FCOMP 
+FMATCH 
+CMD fkey 136
+CMD fshow
+FIELD cursor=24 scroll=15 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more text
+FCOMP 
+FMATCH 
+CMD fkey 147
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more text
+FCOMP 
+FMATCH 
+CMD fkey 148
+CMD fshow
+FIELD cursor=25 scroll=16 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more text
+FCOMP 
+FMATCH 
+CMD fkey 144
+CMD fshow
+FIELD cursor=25 scroll=16 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more text
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fkey 144
+CMD fshow
+FIELD cursor=24 scroll=16 width=10 len=0 valid=0 match=0 index=0
+FBUF hello world and more tex
+FCOMP 
+FMATCH 
+CMD fkey 147
+CMD fkey 144
+CMD fkey 144
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llo world and more tex
+FCOMP 
+FMATCH 
+CMD prelim 141 1
+CMD fkey 136
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llo world and more tex
+FCOMP 
+FMATCH 
+CMD fkey 136
+CMD fshow
+FIELD cursor=10 scroll=1 width=10 len=0 valid=0 match=0 index=0
+FBUF llo world and more tex
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=4 scroll=1 width=10 len=0 valid=0 match=0 index=0
+FBUF llo world and more tex
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llo world and more tex
+FCOMP 
+FMATCH 
+CMD prelim 141 0
+CMD fcursor 5
+CMD fchar 33
+CMD fshow
+FIELD cursor=6 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llo w!orld and more tex
+FCOMP 
+FMATCH 
+CMD overstrike 1
+RET 1
+CMD fcursor 2
+CMD fchar 90
+CMD fchar 90
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llZZw!orld and more tex
+FCOMP 
+FMATCH 
+CMD overstrike 0
+RET 0
+CMD fkey 143
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llZZw!orld and more tex
+FCOMP 
+FMATCH 
+CMD fkey 143
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llZZw!orld and more tex
+FCOMP 
+FMATCH 
+CMD prelim 142 1
+CMD fkey 143
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llZZw!orld and more tex
+FCOMP 
+FMATCH 
+CMD fkey 175
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF llZZw!orld and more tex
+FCOMP 
+FMATCH 
+CMD prelim 142 0
+CMD fkey 100
+CMD fclear
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF 
+FCOMP 
+FMATCH 
+CMD fchar 9
+CMD fchar 31
+CMD fchar 32
+CMD fchar 97
+CMD fshow
+FIELD cursor=2 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF  a
+FCOMP 
+FMATCH 
+CMD fclear
+CMD clipboard pasted text
+CMD fchar 22
+CMD fshow
+FIELD cursor=11 scroll=2 width=10 len=0 valid=0 match=0 index=0
+FBUF pasted text
+FCOMP 
+FMATCH 
+CMD fclear
+CMD clipboard none
+CMD fchar 22
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF 
+FCOMP 
+FMATCH 
+CMD clipboard shifted
+CMD prelim 142 1
+CMD fkey 143
+CMD fshow
+FIELD cursor=7 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF shifted
+FCOMP 
+FMATCH 
+CMD prelim 142 0
+CMD prelim 141 1
+CMD fkey 97
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF shifted
+FCOMP 
+FMATCH 
+CMD fkey 101
+CMD fshow
+FIELD cursor=7 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF shifted
+FCOMP 
+FMATCH 
+CMD prelim 141 0
+CMD fbuf one two  three
+CMD fcursor 0
+CMD prelim 141 1
+CMD fkey 136
+CMD fshow
+FIELD cursor=4 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 136
+CMD fshow
+FIELD cursor=9 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 136
+CMD fshow
+FIELD cursor=14 scroll=5 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 136
+CMD fshow
+FIELD cursor=14 scroll=5 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=9 scroll=5 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=4 scroll=4 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD fkey 135
+CMD fshow
+FIELD cursor=0 scroll=0 width=10 len=0 valid=0 match=0 index=0
+FBUF one two  three
+FCOMP 
+FMATCH 
+CMD prelim 141 0
+CMD fwidth 4
+CMD fbuf 123456789
+CMD fchar 120
+CMD fshow
+FIELD cursor=10 scroll=1 width=4 len=0 valid=0 match=0 index=0
+FBUF 123456789x
+FCOMP 
+FMATCH 
+CMD fkey 147
+CMD fshow
+FIELD cursor=0 scroll=0 width=4 len=0 valid=0 match=0 index=0
+FBUF 123456789x
+FCOMP 
+FMATCH 
+CMD fkey 130
+CMD fshow
+FIELD cursor=0 scroll=0 width=4 len=0 valid=0 match=0 index=0
+FBUF 123456789x
+FCOMP 
+FMATCH 
+CMD keyshutdown

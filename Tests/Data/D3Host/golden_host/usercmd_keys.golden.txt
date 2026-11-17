@@ -1,0 +1,315 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD ucinit
+CMD exec bind w _forward
+MODFLAGS set 64
+CMD exec bind s _back
+MODFLAGS set 64
+CMD exec bind a _moveLeft
+MODFLAGS set 64
+CMD exec bind d _moveRight
+MODFLAGS set 64
+CMD exec bind e _strafe
+MODFLAGS set 64
+CMD exec bind shift _speed
+MODFLAGS set 64
+CMD exec bind mouse1 _attack
+MODFLAGS set 64
+CMD exec bind space _moveUp
+MODFLAGS set 64
+CMD exec bind ctrl _moveDown
+MODFLAGS set 64
+CMD exec bind leftarrow _left
+MODFLAGS set 64
+CMD exec bind rightarrow _right
+MODFLAGS set 64
+CMD exec bind uparrow _lookUp
+MODFLAGS set 64
+CMD exec bind downarrow _lookDown
+MODFLAGS set 64
+CMD exec bind 1 _impulse1
+MODFLAGS set 64
+CMD exec bind 2 _impulse2
+MODFLAGS set 64
+CMD exec bind tab _showScores
+MODFLAGS set 64
+CMD exec bind q _mlook
+MODFLAGS set 64
+CMD exec bind z _zoom
+MODFLAGS set 64
+CMD exec bind f1 _button0
+MODFLAGS set 64
+CMD exec bind f2 _button5
+MODFLAGS set 64
+CMD exec bind f3 _impulse19
+MODFLAGS set 64
+CMD exec bind x nosuchaction
+MODFLAGS set 64
+CMD ticnum 10
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 119 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD ucbutton 5
+RET 1
+CMD uckey 119
+RET 1
+CMD keyq 119 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 115 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 119 0
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=-127 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 115 0
+CMD keyq 115 0
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 97 1
+CMD keyq 100 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 97 0
+CMD keyq 100 0
+CMD keyq 101 1
+CMD keyq 100 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=127 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 100 0
+CMD keyq 101 0
+CMD keyq 32 1
+CMD keyq 141 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 32 0
+CMD keyq 141 0
+CMD keyq 187 1
+CMD keyq 9 1
+CMD keyq 113 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=9 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD keyq 187 0
+CMD keyq 9 0
+CMD keyq 113 0
+CMD keyq 122 1
+CMD keyq 112 1
+CMD keyq 113 1
+CMD keyq 117 1
+CMD ucint
+CMD uctic 11
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=0 flags=0 seq=11
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=1,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ticnum 11
+CMD keyq 49 1
+CMD ucint
+CMD uctic 12
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=1 flags=1 seq=12
+CMD keyq 49 0
+CMD ucint
+CMD uctic 12
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=1 flags=1 seq=12
+CMD keyq 50 1
+CMD keyq 49 1
+CMD ucint
+CMD uctic 12
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,0,0 mx=0 my=0 impulse=1 flags=1 seq=12
+CMD ucstate
+UCSTATE view=0.0000,0.0000,0.0000 flags=1 impulse=1 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=1,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ticnum 12
+CMD keyq 50 0
+CMD keyq 49 0
+CMD keyq 135 1
+CMD ucint
+CMD uctic 13
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,408,0 mx=0 my=0 impulse=1 flags=1 seq=13
+CMD ticnum 13
+CMD ucint
+CMD uctic 14
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,816,0 mx=0 my=0 impulse=1 flags=1 seq=14
+CMD ticnum 14
+CMD keyq 135 0
+CMD keyq 136 1
+CMD ucint
+CMD uctic 15
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,408,0 mx=0 my=0 impulse=1 flags=1 seq=15
+CMD ticnum 15
+CMD keyq 136 0
+CMD keyq 133 1
+CMD ucint
+CMD uctic 16
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=-408,408,0 mx=0 my=0 impulse=1 flags=1 seq=16
+CMD ticnum 16
+CMD keyq 133 0
+CMD keyq 134 1
+CMD ucint
+CMD uctic 17
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,408,0 mx=0 my=0 impulse=1 flags=1 seq=17
+CMD ucstate
+UCSTATE view=0.0000,2.2400,0.0000 flags=1 impulse=1 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=1,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ticnum 17
+CMD keyq 134 0
+CMD keyq 142 1
+CMD keyq 135 1
+CMD ucint
+CMD uctic 18
+UCTIC frame=0 time=0 dup=0 buttons=6 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=18
+CMD ucstate
+UCSTATE view=0.0000,5.6000,0.0000 flags=1 impulse=1 inhibit=0 init=1 run=1,0 crouch=0,0 zoom=1,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD ticnum 18
+CMD keyq 142 0
+CMD keyq 135 0
+CMD keyq 101 1
+CMD keyq 135 1
+CMD ucint
+CMD uctic 19
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=-127 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=19
+CMD ticnum 19
+CMD keyq 101 0
+CMD keyq 135 0
+CMD keyq 112 1
+CMD keyq 113 1
+CMD ucint
+CMD uctic 20
+UCTIC frame=0 time=0 dup=0 buttons=4 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=20
+CMD ticnum 20
+CMD keyq 112 0
+CMD keyq 113 0
+CMD keyq 148 1
+CMD keyq 148 0
+CMD keyq 114 1
+CMD ucint
+CMD uctic 21
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=21
+CMD keyq 114 0
+CMD cvar in_alwaysRun 1
+CVARSET in_alwaysRun 1
+CMD ret net 1
+CMD ticnum 21
+CMD ucint
+CMD uctic 22
+UCTIC frame=0 time=0 dup=0 buttons=22 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=22
+CMD keyq 142 1
+CMD ucint
+CMD uctic 22
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=22
+CMD keyq 142 0
+CMD ucint
+CMD uctic 22
+UCTIC frame=0 time=0 dup=0 buttons=22 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=22
+CMD ret net 0
+CMD ticnum 22
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD cvar in_alwaysRun 0
+CVARSET in_alwaysRun 0
+CMD cvar in_toggleRun 1
+CVARSET in_toggleRun 1
+CMD ret net 1
+CMD keyq 142 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=22 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 142 0
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=22 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 142 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 142 0
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD ucstate
+UCSTATE view=0.0000,5.6000,0.0000 flags=1 impulse=1 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=1,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD cvar in_toggleRun 0
+CVARSET in_toggleRun 0
+CMD ret net 0
+CMD cvar in_toggleCrouch 1
+CVARSET in_toggleCrouch 1
+CMD keyq 141 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=-127 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 141 0
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=-127 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 141 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 141 0
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=20 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD cvar in_toggleCrouch 0
+CVARSET in_toggleCrouch 0
+CMD cvar in_toggleZoom 1
+CVARSET in_toggleZoom 1
+CMD keyq 122 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 122 0
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD ucstate
+UCSTATE view=0.0000,5.6000,0.0000 flags=1 impulse=1 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD cvar in_toggleZoom 0
+CVARSET in_toggleZoom 0
+CMD cvar in_freeLook 0
+CVARSET in_freeLook 0
+CMD keyq 113 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD keyq 113 0
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=0 fwd=0 right=0 up=0 angles=0,1019,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD cvar in_freeLook 1
+CVARSET in_freeLook 1
+CMD cvar in_yawspeed 100
+CVARSET in_yawspeed 100
+CMD cvar in_anglespeedkey 2.5
+CVARSET in_anglespeedkey 2.5
+CMD keyq 135 1
+CMD keyq 142 1
+CMD ucint
+CMD uctic 23
+UCTIC frame=0 time=0 dup=0 buttons=18 fwd=0 right=0 up=0 angles=0,1748,0 mx=0 my=0 impulse=1 flags=1 seq=23
+CMD ucstate
+UCSTATE view=0.0000,9.6000,0.0000 flags=1 impulse=1 inhibit=0 init=1 run=1,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=0,0 down=0 button=0 dx=0 dy=0
+CMD keyq 135 0
+CMD keyq 142 0
+CMD ucint
+CMD keyshutdown

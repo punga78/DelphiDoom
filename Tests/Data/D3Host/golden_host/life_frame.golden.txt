@@ -1,0 +1,333 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD ucinit
+CMD ticnum 0
+CMD time 1000
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+SESSION update 0
+CMD state
+STATE tic=0 frameTime=0 frame=1 fully=0 shutting=0 lastTic=0 lastlib=1
+CMD cvar com_speeds 1
+CVARSET com_speeds 1
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+SESSION update 0
+PRINTF frame:1 all:1000 gfr:  0 rf:  0 bk:  0\n
+CMD cvar com_speeds 0
+CVARSET com_speeds 0
+CMD cvar com_forceGenericSIMD 1
+CVARSET com_forceGenericSIMD 1
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+CALL InitSIMD
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+SESSION update 0
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+SESSION update 0
+CMD cvar com_forceGenericSIMD 0
+CVARSET com_forceGenericSIMD 0
+CMD ret net 1
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+CALL InitSIMD
+EVENTS run 1
+NET RunFrame
+SESSION guiframeevents
+SESSION update 0
+CMD dedicated 1
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+EVENTS run 1
+NET RunFrame
+CMD dedicated 0
+CMD ret net 0
+CMD ret fpuempty 0
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+SESSION update 0
+PRINTF FPU state\n
+FATALERROR idCommon::Frame: the FPU stack is not empty at the end of the frame\n
+EXIT fatal
+CMD ret fpuempty 1
+CMD fail session.Frame
+CMD frame
+CALL sys.GenerateEvents
+CALL WriteConfiguration
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+CMD state
+STATE tic=0 frameTime=0 frame=7 fully=0 shutting=0 lastTic=0 lastlib=7
+CMD fail none
+CMD guiframe 1 1
+CALL sys.GenerateEvents
+EVENTS run 1
+NET RunFrame
+CALL session.Frame
+SESSION update 0
+CMD guiframe 0 0
+CALL sys.GenerateEvents
+EVENTS run 0
+CALL session.Frame
+SESSION update 0
+CMD state
+STATE tic=0 frameTime=0 frame=7 fully=0 shutting=0 lastTic=0 lastlib=7
+CMD singletic
+SYS enter
+SOUND asyncupdate 1000
+SYS leave
+CMD time 1016
+CMD cvar com_asyncInput 1
+CVARSET com_asyncInput 1
+CMD singletic
+SYS enter
+SOUND asyncupdate 1016
+SYS leave
+CMD cvar com_asyncSound 3
+CVARSET com_asyncSound 3
+CMD time 1033
+CMD singletic
+SYS enter
+SOUND asyncupdatewrite 1033
+SYS leave
+CMD cvar com_asyncSound 0
+CVARSET com_asyncSound 0
+CMD singletic
+SYS enter
+SYS leave
+CMD cvar com_asyncSound 1
+CVARSET com_asyncSound 1
+CMD state
+STATE tic=4 frameTime=0 frame=7 fully=0 shutting=0 lastTic=0 lastlib=7
+ASYNC 3 ms=1033 delta=0 consumed=0
+ASYNC 2 ms=1033 delta=17 consumed=0
+ASYNC 1 ms=1016 delta=16 consumed=0
+ASYNC 0 ms=1000 delta=1000 consumed=0
+CMD cvar com_asyncInput 0
+CVARSET com_asyncInput 0
+CMD time 2000
+CMD async
+SYS enter
+SOUND asyncupdate 2000
+SYS leave
+CMD state
+STATE tic=5 frameTime=0 frame=7 fully=0 shutting=0 lastTic=2000 lastlib=7
+ASYNC 4 ms=2000 delta=967 consumed=0
+ASYNC 3 ms=1033 delta=0 consumed=0
+ASYNC 2 ms=1033 delta=17 consumed=0
+ASYNC 1 ms=1016 delta=16 consumed=0
+CMD time 2040
+CMD async
+SYS enter
+SOUND asyncupdate 2040
+SYS leave
+SYS enter
+SOUND asyncupdate 2040
+SYS leave
+CMD state
+STATE tic=7 frameTime=0 frame=7 fully=0 shutting=0 lastTic=2032 lastlib=7
+ASYNC 6 ms=2040 delta=0 consumed=0
+ASYNC 5 ms=2040 delta=40 consumed=0
+ASYNC 4 ms=2000 delta=967 consumed=0
+ASYNC 3 ms=1033 delta=0 consumed=0
+CMD time 2500
+CMD async
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+SYS enter
+SOUND asyncupdate 2500
+SYS leave
+CMD state
+STATE tic=17 frameTime=0 frame=7 fully=0 shutting=0 lastTic=2500 lastlib=7
+ASYNC 16 ms=2500 delta=0 consumed=0
+ASYNC 15 ms=2500 delta=0 consumed=0
+ASYNC 14 ms=2500 delta=0 consumed=0
+ASYNC 13 ms=2500 delta=0 consumed=0
+CMD cvar timescale 2
+CVARSET timescale 2
+CMD time 2600
+CMD async
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+SYS enter
+SOUND asyncupdate 2600
+SYS leave
+CMD state
+STATE tic=29 frameTime=0 frame=7 fully=0 shutting=0 lastTic=2596 lastlib=7
+ASYNC 28 ms=2600 delta=0 consumed=0
+ASYNC 27 ms=2600 delta=0 consumed=0
+ASYNC 26 ms=2600 delta=0 consumed=0
+ASYNC 25 ms=2600 delta=0 consumed=0
+CMD cvar timescale 0.001
+CVARSET timescale 0.001
+CMD time 2700
+CMD async
+CMD state
+STATE tic=29 frameTime=0 frame=7 fully=0 shutting=0 lastTic=2596 lastlib=7
+ASYNC 28 ms=2600 delta=0 consumed=0
+ASYNC 27 ms=2600 delta=0 consumed=0
+ASYNC 26 ms=2600 delta=0 consumed=0
+ASYNC 25 ms=2600 delta=0 consumed=0
+CMD cvar timescale 1
+CVARSET timescale 1
+CMD cvar com_preciseTic 0
+CVARSET com_preciseTic 0
+CMD time 3000
+CMD async
+SYS enter
+SOUND asyncupdate 3000
+SYS leave
+CMD state
+STATE tic=30 frameTime=0 frame=7 fully=0 shutting=0 lastTic=2596 lastlib=7
+ASYNC 29 ms=3000 delta=400 consumed=0
+ASYNC 28 ms=2600 delta=0 consumed=0
+ASYNC 27 ms=2600 delta=0 consumed=0
+ASYNC 26 ms=2600 delta=0 consumed=0
+CMD cvar com_preciseTic 1
+CVARSET com_preciseTic 1
+CMD cvar timescale 1
+CVARSET timescale 1
+CMD time 3020
+CMD async
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+SYS enter
+SOUND asyncupdate 3020
+SYS leave
+CMD shutdown
+NET server.Kill
+NET client.Shutdown
+SOUND clearbuffer
+NET client.Shutdown
+CALL session.Shutdown
+CALL ui.Shutdown
+CALL sound.Shutdown
+CALL net.Shutdown
+CALL events.Shutdown
+CALL render.Shutdown
+CALL decl.Shutdown
+CALL UnloadGameDLL
+CALL CloseLogFile
+CALL files.Shutdown 0
+CALL sys.Shutdown
+RMCMD clear
+RMCMD conDump
+CALL cvar.Shutdown
+CALL cmd.Shutdown
+CALL ClearWarnings DOOM 3 shutdown
+CALL idlib.ShutDown
+CMD async
+CMD state
+STATE tic=40 frameTime=0 frame=7 fully=0 shutting=1 lastTic=3020 lastlib=7
+ASYNC 39 ms=3020 delta=0 consumed=0
+ASYNC 38 ms=3020 delta=0 consumed=0
+ASYNC 37 ms=3020 delta=0 consumed=0
+ASYNC 36 ms=3020 delta=0 consumed=0

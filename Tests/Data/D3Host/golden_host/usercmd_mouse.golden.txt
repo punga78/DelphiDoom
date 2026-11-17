@@ -1,0 +1,208 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD ucinit
+CMD exec bind mouse1 _attack
+MODFLAGS set 64
+CMD exec bind mouse2 +zoom
+MODFLAGS set 64
+CMD exec bind mwheelup _impulse3
+MODFLAGS set 64
+CMD exec bind e _strafe
+MODFLAGS set 64
+CMD exec bind q _mlook
+MODFLAGS set 64
+CMD exec bind mouse3 _button1
+MODFLAGS set 64
+CMD ticnum 100
+CMD mouseq 8 10
+CMD mouseq 9 -4
+CMD ucint
+CMD uctic 101
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=-80,-200,0 mx=10 my=-4 impulse=0 flags=0 seq=101
+CMD ucmouse
+MOUSE 10 -4 0 0
+CMD ucstate
+UCSTATE view=-0.4400,-1.1000,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=10,-4 down=0 button=0 dx=0 dy=0
+CMD ticnum 101
+CMD ucint
+CMD uctic 102
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=-80,-200,0 mx=10 my=-4 impulse=0 flags=0 seq=102
+CMD ucstate
+UCSTATE view=-0.4400,-1.1000,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=10,-4 down=0 button=0 dx=0 dy=0
+CMD ticnum 102
+CMD mouseq 8 3
+CMD ucint
+CMD uctic 103
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=-80,-260,0 mx=13 my=-4 impulse=0 flags=0 seq=103
+CMD ticnum 103
+CMD mouseq 8 -7
+CMD mouseq 9 9
+CMD ucint
+CMD uctic 104
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=100,-120,0 mx=6 my=5 impulse=0 flags=0 seq=104
+CMD ucstate
+UCSTATE view=0.5500,-0.6600,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=6,5 down=0 button=0 dx=0 dy=0
+CMD cvar m_smooth 4
+CVARSET m_smooth 4
+CMD cvar m_strafeSmooth 2
+CVARSET m_strafeSmooth 2
+CMD ticnum 104
+CMD mouseq 8 8
+CMD mouseq 9 8
+CMD ucint
+CMD uctic 105
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=185,-140,0 mx=14 my=13 impulse=0 flags=0 seq=105
+CMD ticnum 105
+CMD mouseq 8 4
+CMD ucint
+CMD uctic 106
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=270,-180,0 mx=18 my=13 impulse=0 flags=0 seq=106
+CMD ticnum 106
+CMD ucint
+CMD uctic 107
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=355,-205,0 mx=18 my=13 impulse=0 flags=0 seq=107
+CMD ucstate
+UCSTATE view=1.9525,-1.1275,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=18,13 down=0 button=0 dx=0 dy=0
+CMD cvar m_smooth 0
+CVARSET m_smooth 0
+CMD cvar m_strafeSmooth 100
+CVARSET m_strafeSmooth 100
+CMD ticnum 107
+CMD mouseq 8 6
+CMD ucint
+CMD uctic 108
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=355,-325,0 mx=24 my=13 impulse=0 flags=0 seq=108
+CMD ucstate
+UCSTATE view=1.9525,-1.7875,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=24,13 down=0 button=0 dx=0 dy=0
+CMD cvar m_smooth 1
+CVARSET m_smooth 1
+CMD cvar m_strafeSmooth 4
+CVARSET m_strafeSmooth 4
+CMD cvar sensitivity 2.5
+CVARSET sensitivity 2.5
+CMD cvar m_yaw 0.1
+CVARSET m_yaw 0.1
+CMD cvar m_pitch 0.05
+CVARSET m_pitch 0.05
+CMD ticnum 108
+CMD mouseq 8 12
+CMD mouseq 9 -12
+CMD ucint
+CMD uctic 109
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=82,-872,0 mx=36 my=1 impulse=0 flags=0 seq=109
+CMD ucstate
+UCSTATE view=0.4525,-4.7875,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=36,1 down=0 button=0 dx=0 dy=0
+CMD cvar in_freeLook 0
+CVARSET in_freeLook 0
+CMD ticnum 109
+CMD mouseq 8 20
+CMD mouseq 9 20
+CMD ucint
+CMD uctic 110
+UCTIC frame=0 time=0 dup=0 buttons=0 fwd=-12 right=0 up=0 angles=82,-1782,0 mx=56 my=21 impulse=0 flags=0 seq=110
+CMD ucstate
+UCSTATE view=0.4525,-9.7875,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=56,21 down=0 button=0 dx=0 dy=0
+CMD keyq 113 1
+CMD ticnum 110
+CMD mouseq 8 -20
+CMD mouseq 9 20
+CMD ucint
+CMD uctic 111
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=537,-872,0 mx=36 my=41 impulse=0 flags=0 seq=111
+CMD ucstate
+UCSTATE view=2.9525,-4.7875,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=36,41 down=0 button=0 dx=0 dy=0
+CMD keyq 113 0
+CMD cvar in_freeLook 1
+CVARSET in_freeLook 1
+CMD keyq 101 1
+CMD ticnum 111
+CMD mouseq 8 15
+CMD mouseq 9 -15
+CMD ucint
+CMD uctic 112
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=-20 right=42 up=0 angles=537,-872,0 mx=51 my=26 impulse=0 flags=0 seq=112
+CMD ucstate
+UCSTATE view=2.9525,-4.7875,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=51,26 down=0 button=0 dx=0 dy=0
+CMD ticnum 112
+CMD mouseq 8 400
+CMD mouseq 9 400
+CMD ucint
+CMD uctic 113
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=-90 right=88 up=0 angles=537,-872,0 mx=451 my=426 impulse=0 flags=0 seq=113
+CMD keyq 101 0
+CMD ticnum 113
+CMD mouseq 8 1200
+CMD ucint
+DEBUGPRINT idUsercmdGenLocal::MouseMove: Ignoring ridiculous mouse delta.\n
+CMD uctic 114
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=537,-872,0 mx=1651 my=426 impulse=0 flags=0 seq=114
+CMD ucstate
+UCSTATE view=2.9525,-4.7875,0.0000 flags=0 impulse=0 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=1651,426 down=0 button=0 dx=0 dy=0
+CMD ticnum 114
+CMD mouseq 9 -1500
+CMD ucint
+DEBUGPRINT idUsercmdGenLocal::MouseMove: Ignoring ridiculous mouse delta.\n
+CMD uctic 115
+UCTIC frame=0 time=0 dup=0 buttons=16 fwd=0 right=0 up=0 angles=537,-872,0 mx=1651 my=-1074 impulse=0 flags=0 seq=115
+CMD mouseq 0 1
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 187 1
+CMD mouseq 0 0
+CMD mouseq 2 1
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 189 1
+CMD uckey 187
+RET 0
+CMD uckey 189
+RET 1
+CMD ucbutton 1
+RET 0
+CMD mouseq 2 0
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 189 0
+CMD mouseq 10 2
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 196 1
+CMD ucstate
+UCSTATE view=2.9525,-4.7875,0.0000 flags=0 impulse=3 inhibit=0 init=1 run=0,0 crouch=0,0 zoom=0,0
+UCSTATE mouse=1651,-1074 down=1 button=196 dx=0 dy=0
+CMD mouseq 10 -1
+CMD mouseq 1 1
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 188 1
+CMD uckey 188
+RET 1
+CMD uckey 195
+RET 0
+CMD uckey 196
+RET 0
+CMD mouseq 7 1
+CMD mouseq 3 5
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 190 1
+CMD mouseq 1 0
+CMD mouseq 7 0
+CMD ucint
+CMD ucmouse
+MOUSE 1651 -1074 194 0
+CMD keyshutdown

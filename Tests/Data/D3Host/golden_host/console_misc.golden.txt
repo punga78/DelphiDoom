@@ -1,0 +1,185 @@
+CMD keyinit
+ADDCMD bind 2
+ADDCMD bindunbindtwo 2
+ADDCMD unbind 2
+ADDCMD unbindall 2
+ADDCMD listBinds 2
+CMD coninit
+ADDCMD clear 2
+ADDCMD conDump 2
+CMD conframe 100
+CMD conprint first line\\n
+CMD conprint   indented line with trailing blanks   \\n
+CMD conprint \\n
+CMD conprint caf\\xe9\\n
+CMD conprint last\\n
+CMD exec conDump
+PRINTF usage: conDump <filename>\n
+CMD exec conDump log
+PRINTF Dumped console text to log.txt.\n
+OPENW log.txt fs_savepath
+FW log.txt first line\r\n
+FW log.txt   indented line with trailing blanks\r\n
+FW log.txt \r\n
+FW log.txt caf\r\n
+FW log.txt last\r\n
+FW log.txt \r\n
+CLOSE log.txt
+CMD exec conDump dump.txt
+PRINTF Dumped console text to dump.txt.\n
+OPENW dump.txt fs_savepath
+FW dump.txt first line\r\n
+FW dump.txt   indented line with trailing blanks\r\n
+FW dump.txt \r\n
+FW dump.txt caf\r\n
+FW dump.txt last\r\n
+FW dump.txt \r\n
+CLOSE dump.txt
+CMD exec conDump a.b
+PRINTF Dumped console text to a.b.\n
+OPENW a.b fs_savepath
+FW a.b first line\r\n
+FW a.b   indented line with trailing blanks\r\n
+FW a.b \r\n
+FW a.b caf\r\n
+FW a.b last\r\n
+FW a.b \r\n
+CLOSE a.b
+CMD condump direct
+OPENW direct fs_savepath
+FW direct first line\r\n
+FW direct   indented line with trailing blanks\r\n
+FW direct \r\n
+FW direct caf\r\n
+FW direct last\r\n
+FW direct \r\n
+CLOSE direct
+CMD conclear
+CMD condump empty
+OPENW empty fs_savepath
+CLOSE empty
+CMD conprint only\\n
+CMD condump one
+OPENW one fs_savepath
+FW one only\r\n
+FW one \r\n
+CLOSE one
+CMD conframe 2000
+CMD evms 1000
+CMD conevent 1 96 1 0
+CVARSETB ui_chat 1
+RET 1
+CMD conscroll
+CMD context
+CONSOLE catching=1 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=2000 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conupdate
+CMD context
+CONSOLE catching=1 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.000 final=0.500 fracTime=2000 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conframe 2300
+CMD conupdate
+CMD context
+CONSOLE catching=1 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.500 final=0.500 fracTime=2300 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conframe 5000
+CMD conupdate
+CMD context
+CONSOLE catching=1 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.500 final=0.500 fracTime=2300 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conevent 1 96 1 0
+SYS grabmouse 1
+CVARSETB ui_chat 0
+RET 1
+CMD conframe 6000
+CMD conupdate
+CMD context
+CONSOLE catching=0 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=5000 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conframe 9000
+CMD conupdate
+CMD context
+CONSOLE catching=0 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=5000 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD cvar con_speed 0
+CVARSET con_speed 0
+CMD conevent 1 96 1 0
+CVARSETB ui_chat 1
+RET 1
+CMD conframe 9500
+CMD conupdate
+CMD context
+CONSOLE catching=1 current=6 x=0 display=6 lastKey=-1 nextKey=200 frac=0.500 final=0.500 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD cvar con_speed 3
+CVARSET con_speed 3
+CMD conprint p1\\np2\\np3\\np4\\np5\\np6\\np7\\np8\\np9\\n
+CMD conevent 1 96 1 0
+SYS grabmouse 1
+CVARSETB ui_chat 0
+RET 1
+CMD conevent 1 146 1 0
+RET 0
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD evms 1100
+CMD conscroll
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD isdown 146
+RET 0
+CMD prelim 146 1
+CMD evms 1190
+CMD conscroll
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD evms 1250
+CMD conscroll
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conevent 1 145 1 0
+RET 0
+CMD evms 2000
+CMD conscroll
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD prelim 146 0
+CMD prelim 145 1
+CMD conscroll
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD prelim 145 0
+CMD conscroll
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conclose
+CMD context
+CONSOLE catching=0 current=15 x=0 display=15 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=9500 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD contimes
+TIMES 0 0 0 0
+CMD conshutdown
+RMCMD clear
+RMCMD conDump

@@ -1,0 +1,34 @@
+# idCommonLocal::Init and InitGame: the order of the systems, the startup commands, an early exit, an exception
+ret startupcmds 0
+init +set developer 1 +map test
+state
+shutdown
+state
+ret startupcmds 1
+ret specfile 1
+dedicated 0
+init
+state
+ret specfile 0
+initgame
+ret specfile 1
+dedicated 1
+initgame
+dedicated 0
+ret safemode 1
+initgame
+ret safemode 0
+ret already 1
+init
+state
+ret already 0
+fail sys.InitNetworking
+init a b
+state
+fail none
+fail decl.Init
+init
+state
+fail none
+initcmd +set test blah +map test
+state
