@@ -83,6 +83,15 @@ uses
   DelphiDoom.Q3Host.ClientState in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientState.pas',
   DelphiDoom.Q3Host.ClientMessageSink in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientMessageSink.pas',
   DelphiDoom.Q3Host.ServerSnapshots in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ServerSnapshots.pas',
+  DelphiDoom.Q3Host.Server.Intf in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Server.Intf.pas',
+  DelphiDoom.Q3Host.Server in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Server.pas',
+  DelphiDoom.Q3Host.ClientPacketWriter in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientPacketWriter.pas',
+  DelphiDoom.Q3Host.NetTransportAdapter in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.NetTransportAdapter.pas',
+  DelphiDoom.Q3Host.ServerNetwork in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ServerNetwork.pas',
+  DelphiDoom.Q3Host.ClientNetwork in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientNetwork.pas',
+  DelphiDoom.Net.Q3.HashKey in '..\IdTech4\NetQ3\DelphiDoom.Net.Q3.HashKey.pas',
+  DelphiDoom.Net.Q3.PacketCrypt in '..\IdTech4\NetQ3\DelphiDoom.Net.Q3.PacketCrypt.pas',
+  DelphiDoom.Net.LoopbackTransport in '..\Framework\NetTransport\DelphiDoom.Net.LoopbackTransport.pas',
   DelphiDoom.Q3Host.ClientKeys in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientKeys.pas',
   DelphiDoom.Q3Host.UiNetAddress in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.UiNetAddress.pas',
   DelphiDoom.Q3Host.UiLanServers in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.UiLanServers.pas',
@@ -134,6 +143,7 @@ uses
   DelphiDoom.Tests.Q3Host.ClientSound in 'Source\DelphiDoom.Tests.Q3Host.ClientSound.pas',
   DelphiDoom.Tests.Q3Host.ClientRoq in 'Source\DelphiDoom.Tests.Q3Host.ClientRoq.pas',
   DelphiDoom.Tests.Q3Host.ClientReach in 'Source\DelphiDoom.Tests.Q3Host.ClientReach.pas',
+  DelphiDoom.Tests.Q3Host.LoopRig in 'Source\DelphiDoom.Tests.Q3Host.LoopRig.pas',
   DelphiDoom.Tests.Q3Host.LocalLoop in 'Source\DelphiDoom.Tests.Q3Host.LocalLoop.pas',
   DelphiDoom.Tests.Q3Host.ClientMessageSink in 'Source\DelphiDoom.Tests.Q3Host.ClientMessageSink.pas';
 

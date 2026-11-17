@@ -15,7 +15,8 @@ interface
 
 uses
   DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf,
-  DelphiDoom.Q3Host.Bot.Intf, DelphiDoom.Q3Host.Client.Services, DelphiDoom.Q3Host.GameWorld;
+  DelphiDoom.Q3Host.Bot.Intf, DelphiDoom.Q3Host.Client.Services, DelphiDoom.Q3Host.GameWorld,
+  DelphiDoom.Q3Host.EntityTokens;
 
 type
   /// <summary>
@@ -46,6 +47,11 @@ type
     ///   (the snapshots): the host of qagame uses it and does not own it. nil: the host makes its own
     /// </summary>
     World: TQ3GameWorld;
+    /// <summary>
+    ///   The entity string reader of the server game (CM_EntityString parse point), when the server has to rewind it
+    ///   for a map_restart; the host uses it and does not own it. nil: the host makes its own
+    /// </summary>
+    Tokens: TQ3EntityTokens;
   end;
 
   /// <summary>The only place that knows the classes of the host</summary>
@@ -71,7 +77,7 @@ implementation
 uses
   DelphiDoom.Q3Host.SyscallHost, DelphiDoom.Q3Host.CommonSyscalls, DelphiDoom.Q3Host.CvarSyscalls,
   DelphiDoom.Q3Host.FileSyscalls, DelphiDoom.Q3Host.MiscSyscalls, DelphiDoom.Q3Host.CollisionSyscalls,
-  DelphiDoom.Q3Host.GameSyscalls, DelphiDoom.Q3Host.EntityTokens,
+  DelphiDoom.Q3Host.GameSyscalls,
   DelphiDoom.Q3Host.Bot.Factory;
 
 class function TQ3HostFactory.CreateHost(AModule: TQ3Module; const AConsole: IQ3HostConsole;
@@ -124,8 +130,13 @@ begin
           LWorld := TQ3GameWorld.Create(AServices.ClipMap, AConsole);
           LHost.Own(LWorld);
         end;
-        LTokens := TQ3EntityTokens.Create(AServices.ClipMap);
-        LHost.Own(LTokens);
+        if Assigned(AServices.Tokens) then
+          LTokens := AServices.Tokens
+        else
+        begin
+          LTokens := TQ3EntityTokens.Create(AServices.ClipMap);
+          LHost.Own(LTokens);
+        end;
         TQ3GameSyscalls.Register(Result.Registry, LWorld, AServices.State, AServices.ServerCommands,
           AServices.ClipMap, LTokens, AServices.CVars);
         TQ3BotFactory.Register(LHost, LWorld, AServices.ClipMap, AConsole, AServices.CVars, AServices.Bot,

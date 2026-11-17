@@ -28,8 +28,8 @@ uses
   DelphiDoom.Q3Host.GameWorld;
 
 type
-  /// <summary>The state of a client slot of the server (clientState_t: CS_FREE, CS_CONNECTED, CS_PRIMED, CS_ACTIVE)</summary>
-  TQ3ServerClientPhase = (Free, Connected, Primed, Active);
+  /// <summary>The state of a client slot of the server (clientState_t: CS_FREE, CS_ZOMBIE, CS_CONNECTED, CS_PRIMED, CS_ACTIVE)</summary>
+  TQ3ServerClientPhase = (Free, Zombie, Connected, Primed, Active);
 
   /// <summary>
   ///   The part of the server that talks to the clients, without the network: the server commands of each client
@@ -112,6 +112,8 @@ type
     procedure SetTime(ATime: Integer);
     /// <summary>The server is in the game state (sv.state SS_GAME): from now on a configstring change is sent</summary>
     procedure StartGame;
+    /// <summary>sv.state == SS_GAME || sv.restarting: a configstring change is sent to the clients</summary>
+    procedure SetBroadcast(AValue: Boolean);
     /// <summary>
     ///   SV_SetConfigstring when the game runs: "cs index text" (or the bcs0/1/2 chunks of a long one) for every
     ///   client that is primed or active
@@ -144,8 +146,34 @@ type
     { IQ3HostServerCommands }
     /// <summary>SV_SendServerCommand: -1 is every client that is primed or active</summary>
     procedure Send(AClient: Integer; const AText: AnsiString);
-    /// <summary>SV_DropClient, the part that matters here: the slot is free and the reason is kept</summary>
+    /// <summary>SV_DropClient, the part that is here: the slot becomes a zombie (CS_ZOMBIE: it still gets the
+    /// disconnect command) and the reason is kept; TQ3Server.DropClient is the whole function</summary>
     procedure Drop(AClient: Integer; const AReason: AnsiString);
+    /// <summary>SV_CheckTimeouts: a zombie slot is free again</summary>
+    procedure FreeZombie(AClient: Integer);
+    /// <summary>
+    ///   The level changed (SV_SpawnServer): the world and the clipmap are new, the baselines, the entity marks and
+    ///   the frames are cleared and the clients that were in the game go back to CS_CONNECTED (the gamestate is
+    ///   sent again); the server commands and the sequences of the clients stay as in svs.clients
+    /// </summary>
+    procedure ChangeLevel(const AWorld: TQ3GameWorld; const AClipMap: IQ3HostClipMap);
+    /// <summary>client->reliableCommands[ index &amp; 63 ]</summary>
+    function ServerCommand(AClient, AIndex: Integer): AnsiString;
+    /// <summary>client->netchan.outgoingSequence</summary>
+    function OutgoingSequence(AClient: Integer): Integer;
+    /// <summary>
+    ///   SV_BuildClientSnapshot alone: what a bot reads (bots are never sent a snapshot). The numbers of the
+    ///   entities of the frame in the order of the snapshot come from FrameEntityNumbers
+    /// </summary>
+    procedure BuildClientSnapshot(const AMemory: IQvmMemory; AClient: Integer);
+    function FrameEntityNumbers(AClient: Integer): TArray<Integer>;
+    /// <summary>client->lastClientCommand</summary>
+    function LastClientCommand(AClient: Integer): Integer;
+    /// <summary>
+    ///   The message that a client in CS_ZOMBIE gets: the commands it did not acknowledge (the disconnect among
+    ///   them) and svc_EOF, with no snapshot (the C writes a snapshot of the frame it last had)
+    /// </summary>
+    function WriteCommandsOnly(AClient: Integer; out AMessageNumber: Integer): TBytes;
     function DropReason(AClient: Integer): string;
     property Time: Integer read FTime;
     property ChecksumFeed: Integer read FChecksumFeed write FChecksumFeed;
@@ -229,6 +257,11 @@ begin
   FRunning := True;
 end;
 
+procedure TQ3ServerSnapshots.SetBroadcast(AValue: Boolean);
+begin
+  FRunning := AValue;
+end;
+
 procedure TQ3ServerSnapshots.CreateBaselines(const AMemory: IQvmMemory);
 var
   LNumber, LAddress: Integer;
@@ -281,8 +314,93 @@ end;
 procedure TQ3ServerSnapshots.Drop(AClient: Integer; const AReason: AnsiString);
 begin
   CheckClient(AClient);
-  FClients[AClient].Phase := TQ3ServerClientPhase.Free;
+  FClients[AClient].Phase := TQ3ServerClientPhase.Zombie;
   FClients[AClient].DropReason := string(AReason);
+end;
+
+procedure TQ3ServerSnapshots.FreeZombie(AClient: Integer);
+begin
+  CheckClient(AClient);
+  if FClients[AClient].Phase = TQ3ServerClientPhase.Zombie then
+    FClients[AClient].Phase := TQ3ServerClientPhase.Free;
+end;
+
+procedure TQ3ServerSnapshots.ChangeLevel(const AWorld: TQ3GameWorld; const AClipMap: IQ3HostClipMap);
+var
+  LIndex, LFrame: Integer;
+begin
+  if not Assigned(AWorld) then
+    raise EArgumentNilException.Create('AWorld');
+  FWorld := AWorld;
+  FClipMap := AClipMap;
+  FRunning := False;
+  FillChar(FBaselines, SizeOf(FBaselines), 0);
+  FillChar(FSnapshotMarks, SizeOf(FSnapshotMarks), 0);
+  FSnapshotCounter := 0;
+  for LIndex := 0 to MAX_CLIENTS - 1 do
+  begin
+    if FClients[LIndex].Phase > TQ3ServerClientPhase.Connected then
+      FClients[LIndex].Phase := TQ3ServerClientPhase.Connected;
+    FClients[LIndex].DeltaMessage := -1;
+    for LFrame := 0 to Q3_PACKET_BACKUP - 1 do
+    begin
+      FClients[LIndex].Frames[LFrame].AreaBytes := 0;
+      FClients[LIndex].Frames[LFrame].Entities := nil;
+    end;
+  end;
+end;
+
+function TQ3ServerSnapshots.ServerCommand(AClient, AIndex: Integer): AnsiString;
+begin
+  CheckClient(AClient);
+  Result := FClients[AClient].Commands[AIndex and (Q3_MAX_RELIABLE_COMMANDS - 1)];
+end;
+
+function TQ3ServerSnapshots.OutgoingSequence(AClient: Integer): Integer;
+begin
+  CheckClient(AClient);
+  Result := FClients[AClient].OutgoingSequence;
+end;
+
+procedure TQ3ServerSnapshots.BuildClientSnapshot(const AMemory: IQvmMemory; AClient: Integer);
+begin
+  CheckClient(AClient);
+  BuildSnapshot(AMemory, AClient);
+end;
+
+function TQ3ServerSnapshots.LastClientCommand(AClient: Integer): Integer;
+begin
+  CheckClient(AClient);
+  Result := FClients[AClient].LastClientCommand;
+end;
+
+function TQ3ServerSnapshots.WriteCommandsOnly(AClient: Integer; out AMessageNumber: Integer): TBytes;
+var
+  LMessage: TQ3Message;
+begin
+  CheckClient(AClient);
+  LMessage := NewMessage;
+  try
+    LMessage.WriteLong(FClients[AClient].LastClientCommand);
+    WriteCommands(FClients[AClient], LMessage);
+    Result := Finish(LMessage);
+  finally
+    LMessage.Free;
+  end;
+  AMessageNumber := FClients[AClient].OutgoingSequence;
+  Inc(FClients[AClient].OutgoingSequence);
+end;
+
+function TQ3ServerSnapshots.FrameEntityNumbers(AClient: Integer): TArray<Integer>;
+var
+  LFrame: PFrame;
+  LIndex: Integer;
+begin
+  CheckClient(AClient);
+  LFrame := @FClients[AClient].Frames[FClients[AClient].OutgoingSequence and (Q3_PACKET_BACKUP - 1)];
+  SetLength(Result, Length(LFrame^.Entities));
+  for LIndex := 0 to High(Result) do
+    Result[LIndex] := LFrame^.Entities[LIndex].Number;
 end;
 
 function TQ3ServerSnapshots.DropReason(AClient: Integer): string;
