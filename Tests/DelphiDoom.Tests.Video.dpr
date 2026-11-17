@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the video library (DUnitX)                         }
 {                                                                              }
@@ -23,6 +23,8 @@ uses
   DelphiDoom.Palette.ScreenPalette in '..\Framework\Palette\DelphiDoom.Palette.ScreenPalette.pas',
   DelphiDoom.Video.PreserveTables in '..\Framework\Video\DelphiDoom.Video.PreserveTables.pas',
   DelphiDoom.Video.ScreenLayout in '..\Framework\Video\DelphiDoom.Video.ScreenLayout.pas',
+  DelphiDoom.Video.TileGrid in '..\Framework\Video\DelphiDoom.Video.TileGrid.pas',
+  DelphiDoom.Video.PageLayout in '..\Framework\Video\DelphiDoom.Video.PageLayout.pas',
   DelphiDoom.Video.BlitSlices in '..\Framework\Video\DelphiDoom.Video.BlitSlices.pas',
   DelphiDoom.Video.Stretch in '..\Framework\Video\DelphiDoom.Video.Stretch.pas',
   DelphiDoom.Video.ScreenOps in '..\Framework\Video\DelphiDoom.Video.ScreenOps.pas',
@@ -44,6 +46,8 @@ uses
   DelphiDoom.CommandLine.Intf in '..\Framework\CommandLine\DelphiDoom.CommandLine.Intf.pas',
   DelphiDoom.Video.ScreenSizeResolver in '..\Framework\Video\DelphiDoom.Video.ScreenSizeResolver.pas',
   DelphiDoom.Tests.Video.PreserveTables in 'Source\DelphiDoom.Tests.Video.PreserveTables.pas',
+  DelphiDoom.Tests.Video.TileGrid in 'Source\DelphiDoom.Tests.Video.TileGrid.pas',
+  DelphiDoom.Tests.Video.PageLayout in 'Source\DelphiDoom.Tests.Video.PageLayout.pas',
   DelphiDoom.Tests.Video.BlitSlices in 'Source\DelphiDoom.Tests.Video.BlitSlices.pas',
   DelphiDoom.Tests.Video.ModeChanger in 'Source\DelphiDoom.Tests.Video.ModeChanger.pas',
   DelphiDoom.Tests.Video.StandardResolutions in 'Source\DelphiDoom.Tests.Video.StandardResolutions.pas',

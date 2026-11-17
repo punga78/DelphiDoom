@@ -22,8 +22,8 @@
 //
 // DESCRIPTION:
 //  Plats (i.e. elevator platforms) code, raising/lowering.
-//  One copy for Doom and Strife (Heretic keeps IdTech1\Heretic\p_plats: its sectors have
-//  a single specialdata, no toggle platforms and procedures instead of functions).
+//  One copy for Doom, Heretic and Strife: what differs (the field of the sector that
+//  holds the thinker, the toggle platforms, the search of the sectors) is TSpecGameRules.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -36,7 +36,6 @@ unit p_plats;
 interface
 
 uses
-  DelphiDoom.Engine.World.SectorSearch,
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,
@@ -130,7 +129,7 @@ var
   state: TPlatState;
 begin
   // Activate all <type> plats that are in_stasis
-  if _type = toggleUpDn then
+  if TSpecGameRules.PlatIsToggle(_type) then
   begin
     P_ActivateInStasis(line.tag);
     result := 1;
@@ -145,12 +144,12 @@ begin
   kind := PlatKindOf(_type);
 
   secnum := -1;
-  while P_FindSectorFromLineTag2(line, secnum) >= 0 do
+  while TSpecGameRules.PlatNextSector(line, secnum) do
   begin
     sec := @sectors[secnum];
 
     // don't start a second floor function if already moving
-    if P_SectorActive(floor_special, sec) then
+    if TSpecGameRules.PlatSectorBusy(sec) then
       continue;
 
     // Find lowest & highest floors around sector
@@ -160,7 +159,7 @@ begin
 
     plat._type := _type;
     plat.sector := sec;
-    plat.sector.floordata := plat;
+    TSpecGameRules.PlatAttach(plat.sector, plat);
     plat.thinker._function.acp1 := @T_PlatRaise;
     plat.crush := false;
     plat.tag := line.tag;
@@ -263,7 +262,7 @@ begin
   for i := 0 to P_World.ActivePlats.Capacity - 1 do
     if plat = Pplat_t(P_World.ActivePlats[i]) then
     begin
-      Pplat_t(P_World.ActivePlats[i]).sector.floordata := nil;
+      TSpecGameRules.PlatDetach(Pplat_t(P_World.ActivePlats[i]).sector);
       P_RemoveThinker(@Pplat_t(P_World.ActivePlats[i]).thinker);
       P_World.ActivePlats.Release(i);
       exit;

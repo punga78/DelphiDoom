@@ -82,7 +82,7 @@ function Get-Routines {
 
 $perGame = [ordered]@{}
 foreach ($game in $Games) {
-  $path = Join-Path $root "$game\$Unit.pas"
+  $path = Join-Path $root "IdTech1\$game\$Unit.pas"
   if (Test-Path $path) { $perGame[$game] = Get-Routines $path }
 }
 if ($perGame.Count -eq 0) { throw "Nessuna copia di $Unit.pas in: $($Games -join ', ')" }

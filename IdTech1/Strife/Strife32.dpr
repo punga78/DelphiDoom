@@ -416,6 +416,8 @@ uses
   DelphiDoom.Palette.ScreenPalette in '..\..\Framework\Palette\DelphiDoom.Palette.ScreenPalette.pas',
   DelphiDoom.Video.PreserveTables in '..\..\Framework\Video\DelphiDoom.Video.PreserveTables.pas',
   DelphiDoom.Video.ScreenLayout in '..\..\Framework\Video\DelphiDoom.Video.ScreenLayout.pas',
+  DelphiDoom.Video.TileGrid in '..\..\Framework\Video\DelphiDoom.Video.TileGrid.pas',
+  DelphiDoom.Video.PageLayout in '..\..\Framework\Video\DelphiDoom.Video.PageLayout.pas',
   DelphiDoom.Video.Stretch in '..\..\Framework\Video\DelphiDoom.Video.Stretch.pas',
   DelphiDoom.Video.ScreenOps in '..\..\Framework\Video\DelphiDoom.Video.ScreenOps.pas',
   DelphiDoom.Video.PatchPainter in '..\..\Framework\Video\DelphiDoom.Video.PatchPainter.pas',
