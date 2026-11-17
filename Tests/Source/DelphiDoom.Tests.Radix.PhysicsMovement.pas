@@ -63,6 +63,8 @@ type
     [TestCase('cosa qualunque', 'True,False,False,False,0')]
     [TestCase('non e cielo', 'False,True,True,False,0')]
     procedure DovrebbeLasciarPassareOltreIlCielo(ASky, AMissile, AThruSky, APrevent: Boolean; AExpected: Integer);
+    [Test]
+    procedure IlSuperamentoDelCieloDovrebbeEssereQuelloDiPSectorJumpDelFork;
   end;
 
 implementation
@@ -128,6 +130,77 @@ procedure TTestRadixPhysicsMovement.DovrebbeLasciarPassareOltreIlCielo(ASky, AMi
   AExpected: Integer);
 begin
   Assert.AreEqual(AExpected, TRadixMovementRules.SkyOverhead(ASky, AMissile, AThruSky, APrevent));
+end;
+
+type
+  // what P_SectorJumpOverhead and P_SectorJumpUnderhead of Rad-X read of a sector and of a thing
+  TForkSector = record
+    MidSector: Boolean;
+    MidFloor, MidCeiling: Integer;
+    CeilingIsSky, FloorIsSky: Boolean;
+  end;
+  TForkThing = record
+    Z: Integer;
+    Missile, ThruSky, PreventThruSky: Boolean;
+  end;
+
+// P_SectorJumpOverhead of Rad-X (p_map.pas), without the offset of the players under sloped ceilings
+function ForkOverhead(const ASector: TForkSector; const AThing: TForkThing): Integer;
+begin
+  Result := 0;
+  if ASector.MidSector then
+    if AThing.Z < ASector.MidFloor then
+      Exit;
+  if ASector.CeilingIsSky then
+    if AThing.Missile or AThing.ThruSky then
+      if not AThing.PreventThruSky then
+      begin
+        Result := 64 * 65536;
+        Exit;
+      end;
+end;
+
+// P_SectorJumpUnderhead of Rad-X (p_map.pas), without the offset of the players under sloped floors
+function ForkUnderhead(const ASector: TForkSector; const AThing: TForkThing): Integer;
+begin
+  Result := 0;
+  if ASector.MidSector then
+    if AThing.Z >= ASector.MidCeiling then
+      Exit;
+  if ASector.FloorIsSky then
+    if AThing.Missile or AThing.ThruSky then
+      if not AThing.PreventThruSky then
+      begin
+        Result := 64 * 65536;
+        Exit;
+      end;
+end;
+
+procedure TTestRadixPhysicsMovement.IlSuperamentoDelCieloDovrebbeEssereQuelloDiPSectorJumpDelFork;
+var
+  LIteration: Integer;
+  LSector: TForkSector;
+  LThing: TForkThing;
+begin
+  RandSeed := 169010;
+  for LIteration := 1 to 20000 do
+  begin
+    LSector.MidSector := Random(3) = 0;
+    LSector.MidFloor := Random(400) - 200;
+    LSector.MidCeiling := LSector.MidFloor + Random(200);
+    LSector.CeilingIsSky := Random(2) = 1;
+    LSector.FloorIsSky := Random(2) = 1;
+    LThing.Z := Random(600) - 300;
+    LThing.Missile := Random(2) = 1;
+    LThing.ThruSky := Random(2) = 1;
+    LThing.PreventThruSky := Random(3) = 0;
+    Assert.AreEqual(ForkOverhead(LSector, LThing),
+      TRadixMovementRules.SectorSkyOffset(True, LSector.MidSector, LThing.Z, LSector.MidFloor, LSector.CeilingIsSky,
+        LThing.Missile, LThing.ThruSky, LThing.PreventThruSky), 'soffitto ' + IntToStr(LIteration));
+    Assert.AreEqual(ForkUnderhead(LSector, LThing),
+      TRadixMovementRules.SectorSkyOffset(False, LSector.MidSector, LThing.Z, LSector.MidCeiling, LSector.FloorIsSky,
+        LThing.Missile, LThing.ThruSky, LThing.PreventThruSky), 'pavimento ' + IntToStr(LIteration));
+  end;
 end;
 
 initialization

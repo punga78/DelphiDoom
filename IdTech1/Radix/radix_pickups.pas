@@ -41,6 +41,7 @@ interface
 
 uses
   d_player,
+  p_mobj_h,
   DelphiDoom.Radix.ActorProperties;
 
 //==============================================================================
@@ -86,6 +87,25 @@ function RX_ActorTouchDamage(const mobjtype: integer): integer;
 //==============================================================================
 function RX_ActorCanDamageWalls(const mobjtype: integer): boolean;
 
+//==============================================================================
+//
+// RX_ActorSkyFlight
+// MF3_EX_THRUSKY and MF3_EX_PREVENTTHRYSKY of Rad-X: whether a thing of this kind
+// flies through a sky (a missile always does, unless it has PREVENTTHRYSKY)
+//
+//==============================================================================
+procedure RX_ActorSkyFlight(const mobjtype: integer; out thrusky, preventthrusky: boolean);
+
+//==============================================================================
+//
+// RX_ThingDamage
+// P_GetThingDamage of Rad-X: the damage of a missile (or of a skull): the one of
+// its definition, or its alternate one (MF3_EX_USEALTDAMAGE) with the option
+// "vanilla player weapon damage" (-radixaltdamage), never in a demo
+//
+//==============================================================================
+function RX_ThingDamage(const th: Pmobj_t): integer;
+
 implementation
 
 uses
@@ -102,11 +122,12 @@ uses
   p_local,
   p_maputl,
   p_mobj,
-  p_mobj_h,
   p_setup,
   p_tick,
   s_sound,
   radix_playerstate,
+  DelphiDoom.Radix.Physics.Contact,
+  DelphiDoom.Radix.Physics.Damage,
   DelphiDoom.Radix.Pilot.Rules;
 
 const
@@ -114,6 +135,9 @@ const
   // "-radixblockspecies": the actors with MF3_EX_DONTBLOCKSPECIES do not get MF3_EX_THRUSPECIES of the
   // engine (they do by default)
   THRUSPECIES_OPTION = '-radixblockspecies';
+  // "-radixaltdamage": the option "Player weapon damage" of Rad-X (g_vanillaplayerweapondamage): the
+  // missiles with USEALTDAMAGE do their alternate damage. The menu of Radix has no variable for it yet
+  ALTDAMAGE_OPTION = '-radixaltdamage';
 
   neutronlevelmessages: array[0..MAXNEUTRONCANNONLEVEL - 1] of string = (
     '',
@@ -134,6 +158,7 @@ var
   // the Radix part of each mobjinfo; hasinfo tells the ones that have one
   radixmobjinfo: array of TRadixActorInfo;
   radixmobjhasinfo: array of boolean;
+  altdamageoption: boolean = false;
 
 //==============================================================================
 //
@@ -154,6 +179,7 @@ procedure RX_InitActors;
 var
   i: integer;
   thruspecies: boolean;
+  patrol: integer;
 begin
   if radix_actors = nil then
     I_Error('RX_InitActors(): RX_ConfigureActors() was not called');
@@ -161,6 +187,7 @@ begin
   // On, as in Rad-X, now that the damage to the craft is the scale of P_DamageMobj of Rad-X (the
   // option turns it off, for the comparison)
   thruspecies := M_CheckParm(THRUSPECIES_OPTION) = 0;
+  altdamageoption := M_CheckParm(ALTDAMAGE_OPTION) > 0;
 
   SetLength(radixmobjinfo, nummobjtypes);
   SetLength(radixmobjhasinfo, nummobjtypes);
@@ -179,6 +206,13 @@ begin
       // other. Rad-X let any two things with the flag through (TRadixContactRules.PassesSpecies)
       if thruspecies and (TRadixActorFlag.DontBlockSpecies in radixmobjinfo[i].Flags) then
         mobjinfo[i].flags3_ex := mobjinfo[i].flags3_ex or MF3_EX_THRUSPECIES;
+      // MF3_EX_LIMITPATROLRANGE / PatrolRange of Rad-X (P_LookForPlayers): a limit on the distance
+      // of the pilot an enemy can pick is what "max target range" of the engine already is, so
+      // P_LookForPlayers needs no change (TRadixContactRules.MaxTargetRange)
+      patrol := TRadixContactRules.MaxTargetRange(TRadixActorFlag.LimitPatrolRange in radixmobjinfo[i].Flags,
+        radixmobjinfo[i].PatrolRange);
+      if patrol > 0 then
+        mobjinfo[i].maxtargetrange := patrol;
     end;
   end;
 end;
@@ -195,6 +229,42 @@ begin
     exit;
   if radixmobjhasinfo[mobjtype] then
     result := radixmobjinfo[mobjtype].TouchDamage;
+end;
+
+//==============================================================================
+//
+// RX_ThingDamage
+//
+//==============================================================================
+function RX_ThingDamage(const th: Pmobj_t): integer;
+begin
+  result := th.info.damage;
+  if not altdamageoption then
+    exit;
+  if (th._type < 0) or (th._type >= Length(radixmobjhasinfo)) then
+    exit;
+  if radixmobjhasinfo[th._type] then
+    result := TRadixDamageRules.ThingDamage(th.info.damage, radixmobjinfo[th._type].AltDamage,
+      TRadixActorFlag.UseAltDamage in radixmobjinfo[th._type].Flags, true,
+      TGameSession.DemoPlayback or TGameSession.DemoRecording);
+end;
+
+//==============================================================================
+//
+// RX_ActorSkyFlight
+//
+//==============================================================================
+procedure RX_ActorSkyFlight(const mobjtype: integer; out thrusky, preventthrusky: boolean);
+begin
+  thrusky := false;
+  preventthrusky := false;
+  if (mobjtype < 0) or (mobjtype >= Length(radixmobjhasinfo)) then
+    exit;
+  if radixmobjhasinfo[mobjtype] then
+  begin
+    thrusky := TRadixActorFlag.ThruSky in radixmobjinfo[mobjtype].Flags;
+    preventthrusky := TRadixActorFlag.PreventThruSky in radixmobjinfo[mobjtype].Flags;
+  end;
 end;
 
 //==============================================================================

@@ -92,6 +92,16 @@ type
     [TestCase('zero', '0,65536,0')]
     [TestCase('grande senza traboccare', '2147418112,65536,2147418112')]
     procedure IlProdottoFixedDovrebbeArrotondareInGiu(AFirst, ASecond, AExpected: Integer);
+    [Test]
+    procedure UnPavimentoDovrebbeFarRimbalzareComeNelFork;
+    [Test]
+    procedure UnSoffittoDovrebbeFarRimbalzareComeNelFork;
+    [Test]
+    procedure PavimentoESoffittoNelloStessoTicDovrebberoDividereIlRimbalzo;
+    [Test]
+    procedure UnMissileCheRimbalzaSulPavimentoNonDovrebbeEsplodere;
+    [Test]
+    procedure UnaCosaConRimbalziLimitatiDovrebbePerdereITreFlagAllUltimo;
   end;
 
 implementation
@@ -201,6 +211,242 @@ end;
 procedure TTestRadixPhysicsBounce.IlProdottoFixedDovrebbeArrotondareInGiu(AFirst, ASecond, AExpected: Integer);
 begin
   Assert.AreEqual(AExpected, TRadixBounceRules.FixedMul(AFirst, ASecond));
+end;
+
+const
+  // the flags of Rad-X (p_mobj_h.pas)
+  FORK_FLOORBOUNCE = 1;
+  FORK_CEILINGBOUNCE = 2;
+  FORK_WALLBOUNCE = 4;
+  FORK_BOUNCE = FORK_FLOORBOUNCE or FORK_CEILINGBOUNCE or FORK_WALLBOUNCE;
+  FORK_LIMITBOUNCECONTROL = 256;
+
+type
+  // the fields of mobj_t that the vertical bounces of P_ZMovement of Rad-X read and write
+  TForkMobj = record
+    Flags3: Integer;
+    MomentumZ: Integer;
+    ReactionTime: Integer;
+    BounceCount: Integer;
+    Missile: Boolean;
+  end;
+
+// P_ResolveBounceBehaviour of Rad-X, as it is in p_mobj.pas
+procedure ForkResolveBounce(var AMobj: TForkMobj);
+begin
+  if AMobj.Flags3 and FORK_LIMITBOUNCECONTROL <> 0 then
+  begin
+    if AMobj.BounceCount > 0 then
+      Dec(AMobj.BounceCount);
+    if AMobj.BounceCount = 0 then
+      AMobj.Flags3 := AMobj.Flags3 and not FORK_BOUNCE;
+  end;
+end;
+
+// P_ZMovement of Rad-X, the floor: "if mo.z <= mo.floorz then" up to the splash. True: a missile exploded
+function ForkFloor(var AMobj: TForkMobj; AFloorIsSky, ALiquid: Boolean; var ABouncing: Boolean): Boolean;
+begin
+  Result := False;
+  if (AMobj.Flags3 and FORK_FLOORBOUNCE <> 0) and not AFloorIsSky then
+  begin
+    if AMobj.Missile then
+      AMobj.MomentumZ := -AMobj.MomentumZ
+    else
+      AMobj.MomentumZ := -AMobj.MomentumZ div 2;
+    AMobj.ReactionTime := AMobj.ReactionTime div 2;
+    if ALiquid then
+    begin
+      AMobj.Flags3 := AMobj.Flags3 and not FORK_FLOORBOUNCE;
+      ABouncing := False;
+      AMobj.BounceCount := 0;
+    end
+    else
+    begin
+      ForkResolveBounce(AMobj);
+      ABouncing := True;
+    end;
+  end
+  else if AMobj.Missile and (AMobj.Flags3 and FORK_FLOORBOUNCE <> 0) and AFloorIsSky then
+    Result := True;
+end;
+
+// P_ZMovement of Rad-X, the ceiling: "if mo.z + mo.height > ceilz then" up to "mo.z := ceilz - mo.height". True: a missile exploded
+function ForkCeiling(var AMobj: TForkMobj; ACeilingIsSky: Boolean; var ABouncing: Boolean): Boolean;
+begin
+  Result := False;
+  if AMobj.MomentumZ > 0 then
+  begin
+    if (AMobj.Flags3 and FORK_CEILINGBOUNCE <> 0) and not ACeilingIsSky then
+    begin
+      if AMobj.Missile then
+        AMobj.MomentumZ := -AMobj.MomentumZ
+      else
+        AMobj.MomentumZ := -AMobj.MomentumZ div 2;
+      ForkResolveBounce(AMobj);
+    end
+    else
+    begin
+      if AMobj.Missile then
+      begin
+        Result := True;
+        Exit;
+      end;
+      AMobj.MomentumZ := 0;
+    end;
+    ABouncing := True;
+  end;
+end;
+
+function RandomForkMobj: TForkMobj;
+begin
+  Result.Flags3 := Random(8) or (Random(2) * FORK_LIMITBOUNCECONTROL);
+  Result.MomentumZ := Random(2000001) - 1000000;
+  if Random(5) = 0 then
+    Result.MomentumZ := 0;
+  Result.ReactionTime := Random(40) - 5;
+  Result.BounceCount := Random(7) - 2;
+  Result.Missile := Random(2) = 1;
+end;
+
+function StateOf(const AMobj: TForkMobj): TRadixBounceState;
+begin
+  Result := Default(TRadixBounceState);
+  Result.Missile := AMobj.Missile;
+  Result.FloorBounce := AMobj.Flags3 and FORK_FLOORBOUNCE <> 0;
+  Result.CeilingBounce := AMobj.Flags3 and FORK_CEILINGBOUNCE <> 0;
+  Result.WallBounce := AMobj.Flags3 and FORK_WALLBOUNCE <> 0;
+  Result.Limited := AMobj.Flags3 and FORK_LIMITBOUNCECONTROL <> 0;
+  Result.Count := AMobj.BounceCount;
+  Result.MomentumZ := AMobj.MomentumZ;
+  Result.ReactionTime := AMobj.ReactionTime;
+end;
+
+procedure CompareWithFork(const AFork: TForkMobj; const AState: TRadixBounceState; const AMessage: string);
+var
+  LFlags: Integer;
+begin
+  LFlags := AFork.Flags3 and not FORK_BOUNCE;
+  if AState.FloorBounce then
+    LFlags := LFlags or FORK_FLOORBOUNCE;
+  if AState.CeilingBounce then
+    LFlags := LFlags or FORK_CEILINGBOUNCE;
+  if AState.WallBounce then
+    LFlags := LFlags or FORK_WALLBOUNCE;
+  Assert.AreEqual(AFork.Flags3, LFlags, AMessage + ': flags');
+  Assert.AreEqual(AFork.MomentumZ, AState.MomentumZ, AMessage + ': momz');
+  Assert.AreEqual(AFork.ReactionTime, AState.ReactionTime, AMessage + ': reactiontime');
+  if AState.Limited then
+    Assert.AreEqual(AFork.BounceCount, AState.Count, AMessage + ': count');
+end;
+
+procedure TTestRadixPhysicsBounce.UnPavimentoDovrebbeFarRimbalzareComeNelFork;
+var
+  LIteration: Integer;
+  LFork: TForkMobj;
+  LState: TRadixBounceState;
+  LSky, LLiquid, LForkBouncing, LForkExploded, LResult: Boolean;
+begin
+  RandSeed := 169001;
+  for LIteration := 1 to 20000 do
+  begin
+    LFork := RandomForkMobj;
+    LSky := Random(2) = 1;
+    LLiquid := Random(2) = 1;
+    LState := StateOf(LFork);
+    LForkBouncing := False;
+    LForkExploded := ForkFloor(LFork, LSky, LLiquid, LForkBouncing);
+    LResult := TRadixBounceRules.FloorImpact(LState, LSky, LLiquid);
+    Assert.AreEqual(not LForkExploded, LResult, 'esplosione');
+    Assert.AreEqual(LForkBouncing, LState.Bouncing, 'rimbalza');
+    CompareWithFork(LFork, LState, 'pavimento ' + IntToStr(LIteration));
+  end;
+end;
+
+procedure TTestRadixPhysicsBounce.UnSoffittoDovrebbeFarRimbalzareComeNelFork;
+var
+  LIteration: Integer;
+  LFork: TForkMobj;
+  LState: TRadixBounceState;
+  LSky, LForkBouncing, LForkExploded, LResult: Boolean;
+begin
+  RandSeed := 169002;
+  for LIteration := 1 to 20000 do
+  begin
+    LFork := RandomForkMobj;
+    LSky := Random(2) = 1;
+    LState := StateOf(LFork);
+    LForkBouncing := False;
+    LForkExploded := ForkCeiling(LFork, LSky, LForkBouncing);
+    LResult := TRadixBounceRules.CeilingImpact(LState, LSky);
+    Assert.AreEqual(not LForkExploded, LResult, 'esplosione');
+    Assert.AreEqual(LForkBouncing, LState.Bouncing, 'rimbalza');
+    CompareWithFork(LFork, LState, 'soffitto ' + IntToStr(LIteration));
+  end;
+end;
+
+procedure TTestRadixPhysicsBounce.PavimentoESoffittoNelloStessoTicDovrebberoDividereIlRimbalzo;
+var
+  LIteration: Integer;
+  LFork: TForkMobj;
+  LState: TRadixBounceState;
+  LFloorSky, LCeilingSky, LLiquid, LForkBouncing, LForkExploded, LResult: Boolean;
+begin
+  // a thing between a floor and a ceiling that are near: both impacts of one P_ZMovement
+  RandSeed := 169003;
+  for LIteration := 1 to 20000 do
+  begin
+    LFork := RandomForkMobj;
+    LFloorSky := Random(2) = 1;
+    LCeilingSky := Random(2) = 1;
+    LLiquid := Random(2) = 1;
+    LState := StateOf(LFork);
+    LForkBouncing := False;
+    LForkExploded := ForkFloor(LFork, LFloorSky, LLiquid, LForkBouncing);
+    LResult := TRadixBounceRules.FloorImpact(LState, LFloorSky, LLiquid);
+    Assert.AreEqual(not LForkExploded, LResult);
+    if not LForkExploded then
+    begin
+      LForkExploded := ForkCeiling(LFork, LCeilingSky, LForkBouncing);
+      LResult := TRadixBounceRules.CeilingImpact(LState, LCeilingSky);
+      Assert.AreEqual(not LForkExploded, LResult);
+      // the missile that has not bounced explodes at the end of the tic
+      Assert.AreEqual(LForkBouncing, LState.Bouncing, 'rimbalza');
+    end;
+    CompareWithFork(LFork, LState, 'entrambi ' + IntToStr(LIteration));
+  end;
+end;
+
+procedure TTestRadixPhysicsBounce.UnMissileCheRimbalzaSulPavimentoNonDovrebbeEsplodere;
+var
+  LState: TRadixBounceState;
+begin
+  LState := Default(TRadixBounceState);
+  LState.Missile := True;
+  LState.FloorBounce := True;
+  LState.MomentumZ := -655360;
+  Assert.IsTrue(TRadixBounceRules.FloorImpact(LState, False, False));
+  Assert.IsTrue(LState.Bouncing);
+  Assert.AreEqual(655360, LState.MomentumZ, 'tiene la velocita''');
+  LState := Default(TRadixBounceState);
+  LState.Missile := True;
+  LState.FloorBounce := True;
+  Assert.IsFalse(TRadixBounceRules.FloorImpact(LState, True, False), 'sul cielo esplode');
+end;
+
+procedure TTestRadixPhysicsBounce.UnaCosaConRimbalziLimitatiDovrebbePerdereITreFlagAllUltimo;
+var
+  LState: TRadixBounceState;
+begin
+  LState := Default(TRadixBounceState);
+  LState.FloorBounce := True;
+  LState.CeilingBounce := True;
+  LState.WallBounce := True;
+  LState.Limited := True;
+  LState.Count := 2;
+  TRadixBounceRules.Resolve(LState);
+  Assert.IsTrue(LState.FloorBounce and LState.CeilingBounce and LState.WallBounce);
+  TRadixBounceRules.Resolve(LState);
+  Assert.IsFalse(LState.FloorBounce or LState.CeilingBounce or LState.WallBounce, 'al secondo rimbalzo finiscono');
 end;
 
 initialization

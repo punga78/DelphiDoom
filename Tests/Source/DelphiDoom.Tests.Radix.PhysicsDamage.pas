@@ -51,6 +51,8 @@ type
     [TestCase('danno negativo', 'True,20,-3,True,True,0')]
     procedure DovrebbeDareIlDannoDaContatto(AShootable: Boolean; AHealth, ATouchDamage: Integer; AWhenTouched,
       AToucherIsPlayer: Boolean; AExpected: Integer);
+    [Test]
+    procedure IlDannoDiUnaCosaDovrebbeEssereQuelloDiPGetThingDamageDelFork;
   end;
 
 implementation
@@ -90,6 +92,35 @@ procedure TTestRadixPhysicsDamage.DovrebbeDareIlDannoDaContatto(AShootable: Bool
 begin
   Assert.AreEqual(AExpected, TRadixDamageRules.TouchDamage(AShootable, AHealth, ATouchDamage, AWhenTouched,
     AToucherIsPlayer));
+end;
+
+// P_GetThingDamage of Rad-X (g_gameplay.pas)
+function ForkThingDamage(ADemo, AVanillaOption, AUseAltDamage: Boolean; ADamage, AAltDamage: Integer): Integer;
+begin
+  if ADemo then
+    Result := ADamage
+  else if AVanillaOption and AUseAltDamage then
+    Result := AAltDamage
+  else
+    Result := ADamage;
+end;
+
+procedure TTestRadixPhysicsDamage.IlDannoDiUnaCosaDovrebbeEssereQuelloDiPGetThingDamageDelFork;
+var
+  LIteration, LDamage, LAltDamage: Integer;
+  LDemo, LOption, LUseAlt: Boolean;
+begin
+  RandSeed := 169020;
+  for LIteration := 1 to 20000 do
+  begin
+    LDemo := Random(2) = 1;
+    LOption := Random(2) = 1;
+    LUseAlt := Random(2) = 1;
+    LDamage := Random(100);
+    LAltDamage := Random(100);
+    Assert.AreEqual(ForkThingDamage(LDemo, LOption, LUseAlt, LDamage, LAltDamage),
+      TRadixDamageRules.ThingDamage(LDamage, LAltDamage, LUseAlt, LOption, LDemo));
+  end;
 end;
 
 initialization

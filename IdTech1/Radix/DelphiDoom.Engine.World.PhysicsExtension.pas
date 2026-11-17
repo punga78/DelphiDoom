@@ -57,6 +57,45 @@ type
     class function MissileBlocked(mo: Pmobj_t): boolean; static;
     /// <summary>P_ExplodeMissile of Rad-X: a missile that can damage walls damages the line that MissileBlocked remembered</summary>
     class procedure MissileExploded(mo: Pmobj_t); static;
+    /// <summary>
+    ///   True while a thing that has bounced on the floor or on the ceiling is moved in z (a missile
+    ///   that bounced does not explode in that tic); false at the start of every vertical movement
+    /// </summary>
+    class var Bouncing: Boolean;
+    /// <summary>P_ZMovement, after the height is adjusted: a new vertical movement starts</summary>
+    class procedure BeginZMovement; static;
+    /// <summary>
+    ///   P_ZMovement of Rad-X, the thing is at or under the floor: the bounce on the floor (and the end of
+    ///   a bouncing missile on a sky floor); false when the missile exploded and the movement is over
+    /// </summary>
+    class function FloorBounce(mo: Pmobj_t): boolean; static;
+    /// <summary>
+    ///   P_ZMovement of Rad-X, the thing is above the ceiling: the bounce on the ceiling; false when the
+    ///   missile exploded and the movement is over
+    /// </summary>
+    class function CeilingBounce(mo: Pmobj_t): boolean; static;
+    /// <summary>
+    ///   P_XYMovement of Rad-X, a thing with MF3_EX_WALLBOUNCE was blocked: it bounces, skims, or the
+    ///   missile explodes or is removed (Removed: the movement is over). Always true
+    /// </summary>
+    class function WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean; static;
+    /// <summary>
+    ///   P_TryMove of Rad-X: a player with floorslidetics (A_PlayerFloorSlide) does not check the heights of
+    ///   the place it goes to. The check that the ceiling and the floor leave room for the height of
+    ///   the craft stays (P_TryMove of the engine does it before the rules are asked)
+    /// </summary>
+    class function SlidesOnPlanes(thing: Pmobj_t): boolean; static;
+    /// <summary>P_GetThingDamage of Rad-X: the damage of a missile or of a skull</summary>
+    class function ThingDamage(th: Pmobj_t): integer; static;
+    /// <summary>
+    ///   P_CheckPosition, after the base planes of the sector are set: a missile or a thing that flies
+    ///   through skies (THRUSKY) may go past a sky ceiling and below a sky floor
+    /// </summary>
+    class procedure AdjustCheckedPlanes; static;
+    /// <summary>P_ZMovement: how far a thing can rise past the ceiling of its sector (a sky)</summary>
+    class function CeilingOffset(mo: Pmobj_t): fixed_t; static;
+    /// <summary>The missile of the last WallBounce has been removed</summary>
+    class var Removed: Boolean;
   end;
 
 implementation
@@ -66,7 +105,12 @@ uses
   g_game,
   m_rnd,
   radix_physics,
+  radix_pickups,
+  radix_playerstate,
+  DelphiDoom.Radix.Physics.Impact,
   radix_walls,
+  DelphiDoom.Engine.World.RadixBounce,
+  DelphiDoom.Engine.World.RadixSky,
   DelphiDoom.Radix.Physics.Damage;
 
 class function TPhysicsExtension.PlayerDamage(target, inflictor: Pmobj_t; damage: integer): integer;
@@ -101,6 +145,48 @@ begin
   FHitLine := nil;
   if LLine <> nil then
     RX_MissileHitsLine(mo, LLine);
+end;
+
+class procedure TPhysicsExtension.BeginZMovement;
+begin
+  Bouncing := False;
+end;
+
+class function TPhysicsExtension.FloorBounce(mo: Pmobj_t): boolean;
+begin
+  result := TRadixBounceEngine.FloorBounce(mo, Bouncing);
+end;
+
+class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
+begin
+  result := TRadixBounceEngine.CeilingBounce(mo, Bouncing);
+end;
+
+class function TPhysicsExtension.SlidesOnPlanes(thing: Pmobj_t): boolean;
+begin
+  result := false;
+  if thing.player <> nil then
+    result := not TRadixCraftImpactRules.ChecksHeights(RX_PlayerState(Pplayer_t(thing.player)).floorslidetics);
+end;
+
+class function TPhysicsExtension.ThingDamage(th: Pmobj_t): integer;
+begin
+  result := RX_ThingDamage(th);
+end;
+
+class procedure TPhysicsExtension.AdjustCheckedPlanes;
+begin
+  TRadixSkyEngine.AdjustCheckedPlanes;
+end;
+
+class function TPhysicsExtension.CeilingOffset(mo: Pmobj_t): fixed_t;
+begin
+  result := TRadixSkyEngine.Offset(mo, Psubsector_t(mo.subsector).sector, true);
+end;
+
+class function TPhysicsExtension.WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean;
+begin
+  result := TRadixBounceEngine.WallBounce(mo, xmove, ymove, Removed);
 end;
 
 end.
