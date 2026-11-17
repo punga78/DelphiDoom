@@ -285,6 +285,11 @@ end;
 
 class function TMapGameRules.NoClipSkipsThings(const AFlags: integer): boolean;
 begin
+  // a game with the physics of its own: this is the first rule that P_CheckPosition asks after it
+  // has set the planes of the sector, so the planes are moved here (Radix: missiles and things
+  // that fly through a sky)
+  if TPhysicsExtension.Enabled then
+    TPhysicsExtension.AdjustCheckedPlanes;
   result := AFlags and MF_NOCLIP <> 0;
 end;
 

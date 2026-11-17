@@ -571,6 +571,9 @@ end;
 class function TMobjGameRules.CeilingLimit(mo: Pmobj_t): fixed_t;
 begin
   result := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector);
+  // a game with the physics of its own: a missile may go past a sky ceiling (Radix)
+  if TPhysicsExtension.Enabled then
+    result := result + TPhysicsExtension.CeilingOffset(mo);
 end;
 
 //==============================================================================

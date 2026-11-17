@@ -79,6 +79,13 @@ type
     ///   missile explodes or is removed (Removed: the movement is over). Always true
     /// </summary>
     class function WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean; static;
+    /// <summary>
+    ///   P_CheckPosition, after the base planes of the sector are set: a missile or a thing that flies
+    ///   through skies (THRUSKY) may go past a sky ceiling and below a sky floor
+    /// </summary>
+    class procedure AdjustCheckedPlanes; static;
+    /// <summary>P_ZMovement: how far a thing can rise past the ceiling of its sector (a sky)</summary>
+    class function CeilingOffset(mo: Pmobj_t): fixed_t; static;
     /// <summary>The missile of the last WallBounce has been removed</summary>
     class var Removed: Boolean;
   end;
@@ -92,6 +99,7 @@ uses
   radix_physics,
   radix_walls,
   DelphiDoom.Engine.World.RadixBounce,
+  DelphiDoom.Engine.World.RadixSky,
   DelphiDoom.Radix.Physics.Damage;
 
 class function TPhysicsExtension.PlayerDamage(target, inflictor: Pmobj_t; damage: integer): integer;
@@ -141,6 +149,16 @@ end;
 class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
 begin
   result := TRadixBounceEngine.CeilingBounce(mo, Bouncing);
+end;
+
+class procedure TPhysicsExtension.AdjustCheckedPlanes;
+begin
+  TRadixSkyEngine.AdjustCheckedPlanes;
+end;
+
+class function TPhysicsExtension.CeilingOffset(mo: Pmobj_t): fixed_t;
+begin
+  result := TRadixSkyEngine.Offset(mo, Psubsector_t(mo.subsector).sector, true);
 end;
 
 class function TPhysicsExtension.WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean;

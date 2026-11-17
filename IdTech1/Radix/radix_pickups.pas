@@ -86,6 +86,15 @@ function RX_ActorTouchDamage(const mobjtype: integer): integer;
 //==============================================================================
 function RX_ActorCanDamageWalls(const mobjtype: integer): boolean;
 
+//==============================================================================
+//
+// RX_ActorSkyFlight
+// MF3_EX_THRUSKY and MF3_EX_PREVENTTHRYSKY of Rad-X: whether a thing of this kind
+// flies through a sky (a missile always does, unless it has PREVENTTHRYSKY)
+//
+//==============================================================================
+procedure RX_ActorSkyFlight(const mobjtype: integer; out thrusky, preventthrusky: boolean);
+
 implementation
 
 uses
@@ -204,6 +213,24 @@ begin
     exit;
   if radixmobjhasinfo[mobjtype] then
     result := radixmobjinfo[mobjtype].TouchDamage;
+end;
+
+//==============================================================================
+//
+// RX_ActorSkyFlight
+//
+//==============================================================================
+procedure RX_ActorSkyFlight(const mobjtype: integer; out thrusky, preventthrusky: boolean);
+begin
+  thrusky := false;
+  preventthrusky := false;
+  if (mobjtype < 0) or (mobjtype >= Length(radixmobjhasinfo)) then
+    exit;
+  if radixmobjhasinfo[mobjtype] then
+  begin
+    thrusky := TRadixActorFlag.ThruSky in radixmobjinfo[mobjtype].Flags;
+    preventthrusky := TRadixActorFlag.PreventThruSky in radixmobjinfo[mobjtype].Flags;
+  end;
 end;
 
 //==============================================================================

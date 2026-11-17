@@ -74,6 +74,16 @@ type
     ///   flies through the sky, unless it is forbidden to (MF3_EX_PREVENTTHRYSKY); 0 otherwise
     /// </summary>
     class function SkyOverhead(APlaneIsSky, AMissile, AThruSky, APreventThruSky: Boolean): Integer; static;
+    /// <summary>
+    ///   P_SectorJumpOverhead (ACeiling) or P_SectorJumpUnderhead of Rad-X without the offset of the
+    ///   players under a sloped plane: how far past the ceiling (or below the floor) of a sector a thing can
+    ///   go. A sector with a middle sector (3D floors) gives nothing to a thing that is not on the side
+    ///   of the middle sector that the plane belongs to
+    /// </summary>
+    /// <param name="AHasMiddleSector">The sector has a 3D floor</param>
+    /// <param name="AMiddleLimit">The floor of the middle sector for a ceiling, its ceiling for a floor</param>
+    class function SectorSkyOffset(ACeiling, AHasMiddleSector: Boolean; AThingZ, AMiddleLimit: Integer;
+      APlaneIsSky, AMissile, AThruSky, APreventThruSky: Boolean): Integer; static;
   end;
 
 implementation
@@ -158,6 +168,19 @@ begin
     Result := THRU_SKY_OFFSET
   else
     Result := 0;
+end;
+
+class function TRadixMovementRules.SectorSkyOffset(ACeiling, AHasMiddleSector: Boolean; AThingZ, AMiddleLimit: Integer;
+  APlaneIsSky, AMissile, AThruSky, APreventThruSky: Boolean): Integer;
+begin
+  if AHasMiddleSector then
+  begin
+    if ACeiling and (AThingZ < AMiddleLimit) then
+      Exit(0);
+    if not ACeiling and (AThingZ >= AMiddleLimit) then
+      Exit(0);
+  end;
+  Result := SkyOverhead(APlaneIsSky, AMissile, AThruSky, APreventThruSky);
 end;
 
 end.

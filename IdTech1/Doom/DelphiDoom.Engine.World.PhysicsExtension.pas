@@ -72,6 +72,10 @@ type
     class function FloorBounce(mo: Pmobj_t): boolean; static; inline;
     /// <summary>TMobjGameRules.ZHitCeiling: the bounce on the ceiling; false when the missile exploded</summary>
     class function CeilingBounce(mo: Pmobj_t): boolean; static; inline;
+    /// <summary>TMapGameRules.NoClipSkipsThings, in P_CheckPosition: the base planes of the sector may be moved (a sky)</summary>
+    class procedure AdjustCheckedPlanes; static; inline;
+    /// <summary>TMobjGameRules.CeilingLimit, in P_ZMovement: how far a thing can rise past the ceiling of its sector</summary>
+    class function CeilingOffset(mo: Pmobj_t): fixed_t; static; inline;
     /// <summary>
     ///   TMobjGameRules.BlockedMove: a thing with MF3_EX_WALLBOUNCE was blocked; true when the game
     ///   has done all of it (the bounce, or the explosion of the missile), Removed tells that the
@@ -116,6 +120,15 @@ end;
 class function TPhysicsExtension.CeilingBounce(mo: Pmobj_t): boolean;
 begin
   result := true;
+end;
+
+class procedure TPhysicsExtension.AdjustCheckedPlanes;
+begin
+end;
+
+class function TPhysicsExtension.CeilingOffset(mo: Pmobj_t): fixed_t;
+begin
+  result := 0;
 end;
 
 class function TPhysicsExtension.WallBounce(mo: Pmobj_t; var xmove, ymove: fixed_t): boolean;
