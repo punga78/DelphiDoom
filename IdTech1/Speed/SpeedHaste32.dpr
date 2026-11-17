@@ -433,6 +433,7 @@ uses
   DelphiDoom.Video.ModeChanger.Intf in '..\..\Framework\Video\DelphiDoom.Video.ModeChanger.Intf.pas',
   DelphiDoom.Video.ModeChanger in '..\..\Framework\Video\DelphiDoom.Video.ModeChanger.pas',
   DelphiDoom.Video.StandardResolutions in '..\..\Framework\Video\DelphiDoom.Video.StandardResolutions.pas',
+  DelphiDoom.Video.DisplayModeClamp in '..\..\Framework\Video\DelphiDoom.Video.DisplayModeClamp.pas',
   DelphiDoom.GameState.Intf in '..\GameState\DelphiDoom.GameState.Intf.pas',
   DelphiDoom.Engine.GameContext in '..\Base\DelphiDoom.Engine.GameContext.pas',
   DelphiDoom.Audio.Types in '..\..\Framework\Audio\DelphiDoom.Audio.Types.pas',
