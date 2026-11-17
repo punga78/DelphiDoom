@@ -83,6 +83,12 @@ type
     ///   and ioquake3 do
     /// </summary>
     LegacyBitComplement: Boolean;
+    /// <summary>
+    ///   OP_BLOCK_COPY as the interpreter of ioquake3 (the engine OpenArena runs on) does it: no check that
+    ///   source, destination and count are multiples of four, the bytes are copied. Quake III 1.32 stops
+    ///   with "OP_BLOCK_COPY not dword aligned" (False, the default)
+    /// </summary>
+    UnalignedBlockCopy: Boolean;
     /// <summary>64 MB of data, no limit of instructions, 64 nested calls</summary>
     class function Default: TQvmLimits; static;
   end;
@@ -120,6 +126,7 @@ begin
   Result.InstructionLimit := 0;
   Result.MaxCallDepth := 64;
   Result.LegacyBitComplement := False;
+  Result.UnalignedBlockCopy := False;
 end;
 
 end.

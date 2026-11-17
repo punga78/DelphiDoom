@@ -189,6 +189,7 @@ var
   LStage, LResult, LName, LMessage: string;
   LFrame, LStart, LBotlib, LDistinct, LErrors: Integer;
   LText: string;
+  LLimits: TQvmLimits;
 begin
   // the info strings of the server (the missionpack game asks for the server info) are written by the net library
   LConsole := TQ3Console.Create(nil, nil, nil, TQ3ConsoleInfoWriter.Create);
@@ -233,7 +234,10 @@ begin
     if GetEnvironmentVariable('DELPHIDOOM_Q3_BOTS_PRINT') <> '' then
       LCounting.Trace := LPrinted.Texts;
     Assert.IsTrue(AFiles.ReadFile('vm/qagame.qvm', LData), 'qagame');
-    LMachine := TQvmFactory.CreateMachine('botreach', LData, LKeeper);
+    // OpenArena runs on ioquake3: a bot's qagame copies a literal that does not start on a dword
+    LLimits := TQvmLimits.Default;
+    LLimits.UnalignedBlockCopy := True;
+    LMachine := TQvmFactory.CreateMachine('botreach', LData, LKeeper, LLimits);
     LStage := 'init';
     LResult := 'finished';
     try

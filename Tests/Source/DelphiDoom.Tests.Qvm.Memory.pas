@@ -72,6 +72,8 @@ type
     [Test]
     procedure LaCopiaABlocchiNonAllineataDovrebbeEssereSegnalata;
     [Test]
+    procedure LaCopiaABlocchiNonAllineataDovrebbeCopiareIByteSeIlProfiloIoquake3;
+    [Test]
     procedure LaCopiaABlocchiCheSuperaLaFineDovrebbeEssereTagliataComeNellOriginale;
     [Test]
     procedure LaCopiaABlocchiConContoNegativoNonDovrebbeMaiUscireDallaMemoria;
@@ -386,6 +388,24 @@ begin
   Assert.IsTrue(FMemory.BlockCopy(200, 102, 16) = TQvmBlockCopyResult.NotAligned);
   Assert.IsTrue(FMemory.BlockCopy(200, 100, 6) = TQvmBlockCopyResult.NotAligned);
   Assert.AreEqual(0, FMemory.ReadInt32(200));
+end;
+
+procedure TTestQvmMemory.LaCopiaABlocchiNonAllineataDovrebbeCopiareIByteSeIlProfiloIoquake3;
+var
+  LIndex: Integer;
+begin
+  // the qagame of OpenArena: an array initializer copied from a literal that does not start on a dword
+  FMemory.UnalignedBlockCopy := True;
+  for LIndex := 0 to 31 do
+    FMemory.WriteByte(101 + LIndex, Byte(LIndex + 1));
+  Assert.IsTrue(FMemory.BlockCopy(200, 101, 32) = TQvmBlockCopyResult.Copied);
+  Assert.AreEqual<Integer>(1, FMemory.ReadByte(200));
+  Assert.AreEqual<Integer>(32, FMemory.ReadByte(231));
+  Assert.AreEqual<Integer>(0, FMemory.ReadByte(232));
+  // odd count and odd destination too
+  Assert.IsTrue(FMemory.BlockCopy(301, 101, 6) = TQvmBlockCopyResult.Copied);
+  Assert.AreEqual<Integer>(6, FMemory.ReadByte(306));
+  Assert.AreEqual<Integer>(0, FMemory.ReadByte(307));
 end;
 
 procedure TTestQvmMemory.LaCopiaABlocchiCheSuperaLaFineDovrebbeEssereTagliataComeNellOriginale;

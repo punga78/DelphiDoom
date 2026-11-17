@@ -15,7 +15,7 @@ interface
 
 uses
   DelphiDoom.Console.Q3.Intf, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf,
-  DelphiDoom.Q3Host.Bot.Intf, DelphiDoom.Q3Host.Client.Services;
+  DelphiDoom.Q3Host.Bot.Intf, DelphiDoom.Q3Host.Client.Services, DelphiDoom.Q3Host.GameWorld;
 
 type
   /// <summary>
@@ -41,6 +41,11 @@ type
     Bot: TQ3HostBotServices;
     /// <summary>The client services of cgame and ui (phase 2c): state, keys, sound, renderer, parser, server lists</summary>
     Client: TQ3HostClientServices;
+    /// <summary>
+    ///   The world of the server game (sv_world.c), when the server wants to read the entities the game located
+    ///   (the snapshots): the host of qagame uses it and does not own it. nil: the host makes its own
+    /// </summary>
+    World: TQ3GameWorld;
   end;
 
   /// <summary>The only place that knows the classes of the host</summary>
@@ -66,7 +71,7 @@ implementation
 uses
   DelphiDoom.Q3Host.SyscallHost, DelphiDoom.Q3Host.CommonSyscalls, DelphiDoom.Q3Host.CvarSyscalls,
   DelphiDoom.Q3Host.FileSyscalls, DelphiDoom.Q3Host.MiscSyscalls, DelphiDoom.Q3Host.CollisionSyscalls,
-  DelphiDoom.Q3Host.GameSyscalls, DelphiDoom.Q3Host.GameWorld, DelphiDoom.Q3Host.EntityTokens,
+  DelphiDoom.Q3Host.GameSyscalls, DelphiDoom.Q3Host.EntityTokens,
   DelphiDoom.Q3Host.Bot.Factory;
 
 class function TQ3HostFactory.CreateHost(AModule: TQ3Module; const AConsole: IQ3HostConsole;
@@ -112,8 +117,13 @@ begin
     TQ3Module.Game:
       if Assigned(AServices.State) and Assigned(AServices.ServerCommands) and Assigned(AServices.CVars) then
       begin
-        LWorld := TQ3GameWorld.Create(AServices.ClipMap, AConsole);
-        LHost.Own(LWorld);
+        if Assigned(AServices.World) then
+          LWorld := AServices.World
+        else
+        begin
+          LWorld := TQ3GameWorld.Create(AServices.ClipMap, AConsole);
+          LHost.Own(LWorld);
+        end;
         LTokens := TQ3EntityTokens.Create(AServices.ClipMap);
         LHost.Own(LTokens);
         TQ3GameSyscalls.Register(Result.Registry, LWorld, AServices.State, AServices.ServerCommands,

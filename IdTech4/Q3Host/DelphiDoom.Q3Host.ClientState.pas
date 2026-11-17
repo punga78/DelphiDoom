@@ -53,6 +53,8 @@ type
     FSensitivity: Single;
     FDemoPlaying: Boolean;
     FOnSystemInfoChanged: TProc;
+    FConnectedClientNumber: Integer;
+    FChecksumFeed: Integer;
     function StringAt(AIndex: Integer): AnsiString;
   public
     constructor Create(const AArguments: IQ3CommandArguments);
@@ -76,6 +78,34 @@ type
     function ConfigString(AIndex: Integer): AnsiString;
     /// <summary>The server command that arrived (clc.serverCommandSequence goes up by one); the number it got</summary>
     function AddServerCommand(const AText: AnsiString): Integer;
+    /// <summary>
+    ///   CL_ClearState: memset( &cl, 0 ): the game state, the snapshots, the entities and the user commands are
+    ///   forgotten (clc, the server commands and the reliable commands the client sent, stay)
+    /// </summary>
+    procedure ClearState;
+    /// <summary>
+    ///   CL_ParseCommandString: the command of sequence ASequence is stored when it is newer than the last one seen
+    ///   (the sequence becomes ASequence, which may jump over lost commands); False for one already seen
+    /// </summary>
+    function StoreServerCommand(ASequence: Integer; const AText: AnsiString): Boolean;
+    /// <summary>The "a gamestate always marks a server command sequence" of CL_ParseGamestate</summary>
+    procedure SetServerCommandSequence(ASequence: Integer);
+    /// <summary>
+    ///   svc_configstring of a gamestate (CL_ParseGamestate): the string is appended to the data of the game
+    ///   state, empty ones included, so the layout is the one of the C
+    /// </summary>
+    procedure GamestateConfigString(AIndex: Integer; const AValue: AnsiString);
+    /// <summary>clc.clientNum and clc.checksumFeed, read at the end of a gamestate; CL_SystemInfoChanged follows</summary>
+    procedure GamestateEnd(AClientNumber, AChecksumFeed: Integer);
+    /// <summary>
+    ///   A parsed snapshot as AddSnapshot does it, but the entities go to the slot the parser of the messages gave
+    ///   them (cl.parseEntitiesNum of the parser, which also counts the entities of dropped snapshots)
+    /// </summary>
+    procedure AddParsedSnapshot(const ASnapshot: TQ3ClientSnapshot; const AEntities: TBytes);
+    /// <summary>clc.clientNum</summary>
+    property ConnectedClientNumber: Integer read FConnectedClientNumber;
+    /// <summary>clc.checksumFeed</summary>
+    property ChecksumFeed: Integer read FChecksumFeed;
     /// <summary>
     ///   A parsed snapshot: its entities (ASnapshot.NumEntities entityState_t in AEntities) go into the circular
     ///   buffer, the snapshot into the ring at its message number, and it becomes the current one (cl.snap)
@@ -250,6 +280,64 @@ begin
   FServerCommands[Result and (Q3_MAX_RELIABLE_COMMANDS - 1)] := Copy(AText, 1, Q3_MAX_STRING_CHARS - 1);
 end;
 
+procedure TQ3ClientState.ClearState;
+begin
+  FillChar(FOffsets, SizeOf(FOffsets), 0);
+  FillChar(FData, SizeOf(FData), 0);
+  FDataCount := 0;
+  FillChar(FSnapshots, SizeOf(FSnapshots), 0);
+  FillChar(FSnapshot, SizeOf(FSnapshot), 0);
+  FillChar(FCommands, SizeOf(FCommands), 0);
+  FCommandNumber := 0;
+  FParseEntitiesNum := 0;
+  FillChar(FParseEntities[0], Length(FParseEntities), 0);
+  FUserCmdValue := 0;
+  FSensitivity := 0;
+end;
+
+function TQ3ClientState.StoreServerCommand(ASequence: Integer; const AText: AnsiString): Boolean;
+begin
+  // see if we have already executed stored it off
+  if FServerCommandSequence >= ASequence then
+    Exit(False);
+  FServerCommandSequence := ASequence;
+  FServerCommands[ASequence and (Q3_MAX_RELIABLE_COMMANDS - 1)] := Copy(AText, 1, Q3_MAX_STRING_CHARS - 1);
+  Result := True;
+end;
+
+procedure TQ3ClientState.SetServerCommandSequence(ASequence: Integer);
+begin
+  FServerCommandSequence := ASequence;
+end;
+
+procedure TQ3ClientState.GamestateConfigString(AIndex: Integer; const AValue: AnsiString);
+var
+  LLength: Integer;
+begin
+  if (AIndex < 0) or (AIndex >= Q3_MAX_CONFIGSTRINGS) then
+    raise EQ3HostException.Create(SConfigstringRange);
+  // leave a 0 at the beginning for uninitialized configstrings
+  if FDataCount = 0 then
+    FDataCount := 1;
+  LLength := Length(AValue);
+  if LLength + 1 + FDataCount > Q3_MAX_GAMESTATE_CHARS then
+    raise EQ3HostException.Create(SGameStateOverflow);
+  FOffsets[AIndex] := FDataCount;
+  if LLength > 0 then
+    Move(AValue[1], FData[FDataCount], LLength);
+  FData[FDataCount + LLength] := 0;
+  Inc(FDataCount, LLength + 1);
+end;
+
+procedure TQ3ClientState.GamestateEnd(AClientNumber, AChecksumFeed: Integer);
+begin
+  FConnectedClientNumber := AClientNumber;
+  FChecksumFeed := AChecksumFeed;
+  // CL_SystemInfoChanged
+  if Assigned(FOnSystemInfoChanged) then
+    FOnSystemInfoChanged();
+end;
+
 function TQ3ClientState.GetServerCommand(ANumber: Integer): Boolean;
 var
   LText, LCommand: AnsiString;
@@ -346,6 +434,28 @@ begin
       FillChar(FParseEntities[LSlot * Q3_ENTITYSTATE_SIZE], Q3_ENTITYSTATE_SIZE, 0);
   end;
   Inc(FParseEntitiesNum, ASnapshot.NumEntities);
+  LSnapshot.Valid := True;
+  FSnapshots[LSnapshot.MessageNum and Q3_PACKET_MASK] := LSnapshot;
+  FSnapshot := LSnapshot;
+end;
+
+procedure TQ3ClientState.AddParsedSnapshot(const ASnapshot: TQ3ClientSnapshot; const AEntities: TBytes);
+var
+  LSnapshot: TQ3ClientSnapshot;
+  LIndex, LSlot: Integer;
+begin
+  LSnapshot := ASnapshot;
+  for LIndex := 0 to ASnapshot.NumEntities - 1 do
+  begin
+    LSlot := (ASnapshot.ParseEntitiesNum + LIndex) and (Q3_MAX_PARSE_ENTITIES - 1);
+    if (LIndex + 1) * Q3_ENTITYSTATE_SIZE <= Length(AEntities) then
+      Move(AEntities[LIndex * Q3_ENTITYSTATE_SIZE], FParseEntities[LSlot * Q3_ENTITYSTATE_SIZE],
+        Q3_ENTITYSTATE_SIZE)
+    else
+      FillChar(FParseEntities[LSlot * Q3_ENTITYSTATE_SIZE], Q3_ENTITYSTATE_SIZE, 0);
+  end;
+  // cl.parseEntitiesNum is the one of the parser, which counts the entities of every snapshot it read
+  FParseEntitiesNum := ASnapshot.ParseEntitiesNum + ASnapshot.NumEntities;
   LSnapshot.Valid := True;
   FSnapshots[LSnapshot.MessageNum and Q3_PACKET_MASK] := LSnapshot;
   FSnapshot := LSnapshot;

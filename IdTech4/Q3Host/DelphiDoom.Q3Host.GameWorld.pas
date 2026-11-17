@@ -59,6 +59,7 @@ type
       OFFSET_LINKED = 416;
       OFFSET_LINKCOUNT = 420;
       OFFSET_SVFLAGS = 424;
+      OFFSET_SINGLECLIENT = 428;
       OFFSET_BMODEL = 432;
       OFFSET_MINS = 436;
       OFFSET_MAXS = 448;
@@ -112,6 +113,15 @@ type
     constructor Create(const AClipMap: IQ3HostClipMap; const AConsole: IQ3HostConsole);
     /// <summary>SV_LocateGameData</summary>
     procedure LocateGameData(AEntities, AEntityCount, AEntitySize, AClients, AClientSize: Integer);
+    /// <summary>
+    ///   The address of the sharedEntity_t of an entity in the data of the program (SV_GentityNum); the number
+    ///   must be below EntityCount
+    /// </summary>
+    function EntityAddressOf(ANumber: Integer): Integer;
+    /// <summary>The address of the playerState_t of a client (SV_GameClientNum): the gclient_t starts with it</summary>
+    function ClientAddressOf(AClient: Integer): Integer;
+    /// <summary>sv.num_entities</summary>
+    property EntityCount: Integer read FEntityCount;
     /// <summary>SV_ClearWorld: the sector tree of the map; also done by itself when the map changed</summary>
     procedure ClearWorld;
     /// <summary>SV_LinkEntity</summary>
@@ -269,6 +279,17 @@ begin
   FEntitySize := AEntitySize;
   FClients := AClients;
   FClientSize := AClientSize;
+end;
+
+
+function TQ3GameWorld.EntityAddressOf(ANumber: Integer): Integer;
+begin
+  Result := EntityAddress(ANumber);
+end;
+
+function TQ3GameWorld.ClientAddressOf(AClient: Integer): Integer;
+begin
+  Result := FClients + FClientSize * AClient;
 end;
 
 // SV_CreateworldSector: a uniformly subdivided tree for the size of the world

@@ -102,6 +102,7 @@ begin
     FJumpTargets := LImage.JumpTargets;
     FCode := TQvmCode.Create(LImage.Code, LImage.InstructionCount, string(FName));
     FMemory := TQvmMemory.Create(LImage);
+    FMemory.UnalignedBlockCopy := ALimits.UnalignedBlockCopy;
   finally
     LImage.Free;
   end;
