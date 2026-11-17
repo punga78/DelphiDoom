@@ -470,7 +470,7 @@ begin
 
   if (TGameSession.GameState = GS_LEVEL) and (plyr.mo <> nil) then
   begin
-    P_Massacre;
+    TStrifeMonsterActions.P_Massacre;
     plyr._message := STSTR_MASSACRE;
   end;
 end;

@@ -1289,7 +1289,7 @@ begin
         if EV_DoDoor(line, vld_open) <> 0 then
         begin
           P_ChangeSwitchTexture(line, false);
-          P_FreePrisoners;
+          TStrifeMonsterActions.P_FreePrisoners;
         end;
       end;
 
@@ -1299,7 +1299,7 @@ begin
         if EV_DoCeiling(line, lowerAndCrush) <> 0 then
         begin
           P_ChangeSwitchTexture(line, false);
-          P_DestroyConverter;
+          TStrifeMonsterActions.P_DestroyConverter;
         end;
       end;
 

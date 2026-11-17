@@ -1619,7 +1619,7 @@ begin
           MT_TOKEN_ALARM: // Alarm token - particularly from the Oracle.
             begin
               P_NoiseAlert(player.mo, player.mo);
-              A_AlertSpectreC(dialogtalker); // BUG: assumes in a dialog o_O
+              TStrifeMonsterActions.A_AlertSpectreC(dialogtalker); // BUG: assumes in a dialog o_O
             end;
 
           MT_TOKEN_DOOR1: // Door special 1

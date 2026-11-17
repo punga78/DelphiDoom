@@ -881,10 +881,10 @@ begin
       thing.flags4_ex := thing.flags4_ex or MF4_EX_DONTGIB;
     end
     else if thing.flags4_ex and MF4_EX_DONTGIB = 0 then
-      A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
+      TStrifeMonsterActions.A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
   end
   else
-    A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
+    TStrifeMonsterActions.A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
 
   thing.flags := thing.flags and not MF_SOLID;
   thing.height := 0;

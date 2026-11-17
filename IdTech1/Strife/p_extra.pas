@@ -439,7 +439,7 @@ end;
 //==============================================================================
 procedure A_FastChase(actor: Pmobj_t);
 begin
-  P_DoChase(actor, true);
+  TStrifeMonsterActions.P_DoChase(actor, true);
 end;
 
 //==============================================================================
