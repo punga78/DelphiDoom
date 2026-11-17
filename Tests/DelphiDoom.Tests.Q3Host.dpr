@@ -46,6 +46,19 @@ uses
   DelphiDoom.Q3Host.Arguments in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Arguments.pas',
   DelphiDoom.Q3Host.SyscallHost in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.SyscallHost.pas',
   DelphiDoom.Q3Host.CommonSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.CommonSyscalls.pas',
+  DelphiDoom.Q3Host.Services.Intf in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Services.Intf.pas',
+  DelphiDoom.Q3Host.CvarSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.CvarSyscalls.pas',
+  DelphiDoom.Q3Host.FileSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.FileSyscalls.pas',
+  DelphiDoom.Q3Host.GameFiles in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.GameFiles.pas',
+  DelphiDoom.Q3Host.ClipMap in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClipMap.pas',
+  DelphiDoom.Q3Host.MapLoader in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.MapLoader.pas',
+  DelphiDoom.Q3Host.TraceMemory in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.TraceMemory.pas',
+  DelphiDoom.Q3Host.EntityTokens in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.EntityTokens.pas',
+  DelphiDoom.Q3Host.CollisionSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.CollisionSyscalls.pas',
+  DelphiDoom.Q3Host.ServerState in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ServerState.pas',
+  DelphiDoom.Q3Host.GameWorld in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.GameWorld.pas',
+  DelphiDoom.Q3Host.GameSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.GameSyscalls.pas',
+  DelphiDoom.Q3Host.MiscSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.MiscSyscalls.pas',
   DelphiDoom.Q3Host.Factory in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Factory.pas',
   DelphiDoom.Tests.Shared.Fnv in 'Source\DelphiDoom.Tests.Shared.Fnv.pas',
   DelphiDoom.Tests.Shared.Files in 'Source\DelphiDoom.Tests.Shared.Files.pas',
@@ -58,7 +71,14 @@ uses
   DelphiDoom.Tests.Q3Host.Catalog in 'Source\DelphiDoom.Tests.Q3Host.Catalog.pas',
   DelphiDoom.Tests.Q3Host.Math in 'Source\DelphiDoom.Tests.Q3Host.Math.pas',
   DelphiDoom.Tests.Q3Host.Host in 'Source\DelphiDoom.Tests.Q3Host.Host.pas',
-  DelphiDoom.Tests.Q3Host.Init in 'Source\DelphiDoom.Tests.Q3Host.Init.pas';
+  DelphiDoom.Tests.Q3Host.Init in 'Source\DelphiDoom.Tests.Q3Host.Init.pas',
+  DelphiDoom.Tests.Q3Host.Services in 'Source\DelphiDoom.Tests.Q3Host.Services.pas',
+  DelphiDoom.Tests.Q3Host.Layout in 'Source\DelphiDoom.Tests.Q3Host.Layout.pas',
+  DelphiDoom.Tests.Q3Host.Cvars in 'Source\DelphiDoom.Tests.Q3Host.Cvars.pas',
+  DelphiDoom.Tests.Q3Host.Files in 'Source\DelphiDoom.Tests.Q3Host.Files.pas',
+  DelphiDoom.Tests.Q3Host.GameWorld in 'Source\DelphiDoom.Tests.Q3Host.GameWorld.pas',
+  DelphiDoom.Tests.Q3Host.Reach in 'Source\DelphiDoom.Tests.Q3Host.Reach.pas',
+  DelphiDoom.Tests.Q3Host.Coverage in 'Source\DelphiDoom.Tests.Q3Host.Coverage.pas';
 
 var
   Runner: ITestRunner;

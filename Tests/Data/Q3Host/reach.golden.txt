@@ -1,0 +1,6 @@
+baseoa/qagame served=15389 finished
+baseoa/cgame served=5 stop=CG_R_REGISTERSHADER in init
+baseoa/ui served=864 stop=UI_GETGLCONFIG in init
+missionpack/qagame served=11277 finished
+missionpack/cgame served=5 stop=CG_R_REGISTERSHADER in init
+missionpack/ui served=110 stop=UI_GETGLCONFIG in init

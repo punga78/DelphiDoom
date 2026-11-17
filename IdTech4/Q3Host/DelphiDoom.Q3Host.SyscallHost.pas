@@ -30,9 +30,12 @@ type
     FModule: TQ3Module;
     FHandlers: TDictionary<Integer, TQ3SyscallHandler>;
     FFallback: IQvmHost;
+    FOwned: TObjectList<TObject>;
   public
     constructor Create(AModule: TQ3Module);
     destructor Destroy; override;
+    /// <summary>The host frees the object when it goes away, after its handlers (the world of the server game)</summary>
+    procedure Own(AObject: TObject);
     function SystemCall(const AMachine: IQvmMachine; const AArguments: TQvmSystemCallArguments): Integer;
     procedure Register(ANumber: Integer; const AHandler: TQ3SyscallHandler);
     function IsRegistered(ANumber: Integer): Boolean;
@@ -59,8 +62,17 @@ end;
 
 destructor TQ3SyscallHost.Destroy;
 begin
+  // the handlers first: they may use what the host owns
   FHandlers.Free;
+  FOwned.Free;
   inherited Destroy;
+end;
+
+procedure TQ3SyscallHost.Own(AObject: TObject);
+begin
+  if not Assigned(FOwned) then
+    FOwned := TObjectList<TObject>.Create(True);
+  FOwned.Add(AObject);
 end;
 
 procedure TQ3SyscallHost.Register(ANumber: Integer; const AHandler: TQ3SyscallHandler);

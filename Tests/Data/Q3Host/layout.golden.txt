@@ -1,0 +1,56 @@
+sizeof sharedEntity_t 516
+sizeof entityState_t 208
+sizeof entityShared_t 308
+sizeof trace_t 56
+sizeof cplane_t 20
+sizeof vmCvar_t 272
+sizeof usercmd_t 24
+sizeof qtime_t 36
+entityState_t.number 0
+entityState_t.eFlags 8
+entityState_t.origin 92
+entityState_t.angles 116
+entityState_t.modelindex 160
+entityState_t.solid 176
+sharedEntity_t.s 0
+sharedEntity_t.r 208
+entityShared_t.linked 208
+entityShared_t.linkcount 212
+entityShared_t.svFlags 216
+entityShared_t.singleClient 220
+entityShared_t.bmodel 224
+entityShared_t.mins 228
+entityShared_t.maxs 240
+entityShared_t.contents 252
+entityShared_t.absmin 256
+entityShared_t.absmax 268
+entityShared_t.currentOrigin 280
+entityShared_t.currentAngles 292
+entityShared_t.ownerNum 304
+trace_t.allsolid 0
+trace_t.startsolid 4
+trace_t.fraction 8
+trace_t.endpos 12
+trace_t.plane 24
+trace_t.surfaceFlags 44
+trace_t.contents 48
+trace_t.entityNum 52
+cplane_t.dist 12
+cplane_t.type 16
+cplane_t.signbits 17
+vmCvar_t.handle 0
+vmCvar_t.modificationCount 4
+vmCvar_t.value 8
+vmCvar_t.integer 12
+vmCvar_t.string 16
+qtime_t.tm_sec 0
+qtime_t.tm_isdst 32
+const MAX_GENTITIES 1024
+const ENTITYNUM_NONE 1023
+const ENTITYNUM_WORLD 1022
+const MAX_CONFIGSTRINGS 1024
+const MAX_CLIENTS 64
+const SOLID_BMODEL 16777215
+const SVF_CAPSULE 1024
+const SVF_BOT 8
+const MAX_CVAR_VALUE_STRING 256
