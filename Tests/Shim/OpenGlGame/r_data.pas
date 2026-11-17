@@ -13,6 +13,7 @@ interface
 
 var
   LevelUseFog: boolean = False;
+  firstspritelump: integer = 0;
 
 implementation
 

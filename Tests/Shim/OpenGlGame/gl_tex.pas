@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: test shim of gl_tex for the per-game OpenGL scene tests          }
 {                                                                              }
@@ -21,14 +21,44 @@ var
   /// <summary>The filter gld_GetCurrTexFiltering gives</summary>
   ShimTexFilter: gl_filter_t = FLT_LINEAR;
 
+/// <summary>The texture gld_RegisterPatch and gld_RegisterFlat give (nil: the lump has no texture)</summary>
+  ShimTexture: PGLTexture = nil;
+
 procedure gld_InitPalettedTextures;
+function gld_RegisterPatch(lump: integer; cm: integer; const unload: boolean = true): PGLTexture;
+procedure gld_BindPatch(gltexture: PGLTexture; cm: integer);
+function gld_RegisterFlat(lump: integer; mipmap: boolean; flat: integer): PGLTexture;
+procedure gld_BindFlat(gltexture: PGLTexture; const ripple: integer);
 function gld_GetCurrTexFiltering: gl_filter_t;
 procedure gld_SetCurrTexFiltering(const flt: gl_filter_t);
 
 implementation
 
 uses
+  System.SysUtils,
   d_delphi;
+
+function gld_RegisterPatch(lump: integer; cm: integer; const unload: boolean): PGLTexture;
+begin
+  ShimEvent('gld_RegisterPatch ' + IntToStr(lump) + ' ' + IntToStr(cm) + ' ' + BoolToStr(unload, True));
+  Result := ShimTexture;
+end;
+
+procedure gld_BindPatch(gltexture: PGLTexture; cm: integer);
+begin
+  ShimEvent('gld_BindPatch ' + BoolToStr(Assigned(gltexture), True) + ' ' + IntToStr(cm));
+end;
+
+function gld_RegisterFlat(lump: integer; mipmap: boolean; flat: integer): PGLTexture;
+begin
+  ShimEvent('gld_RegisterFlat ' + IntToStr(lump) + ' ' + BoolToStr(mipmap, True) + ' ' + IntToStr(flat));
+  Result := ShimTexture;
+end;
+
+procedure gld_BindFlat(gltexture: PGLTexture; const ripple: integer);
+begin
+  ShimEvent('gld_BindFlat ' + BoolToStr(Assigned(gltexture), True) + ' ' + IntToStr(ripple));
+end;
 
 procedure gld_InitPalettedTextures;
 begin

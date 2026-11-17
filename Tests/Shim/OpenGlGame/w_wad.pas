@@ -18,6 +18,7 @@ var
 
 function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer;
 function W_TextLumpNum(const lump: integer): string;
+function W_GetNumForName(const name: string): integer;
 
 implementation
 
@@ -32,6 +33,12 @@ begin
     Result := ShimGlGammaLump
   else
     Result := -1;
+end;
+
+function W_GetNumForName(const name: string): integer;
+begin
+  ShimEvent('W_GetNumForName ' + name);
+  Result := 100 + Length(name);
 end;
 
 function W_TextLumpNum(const lump: integer): string;

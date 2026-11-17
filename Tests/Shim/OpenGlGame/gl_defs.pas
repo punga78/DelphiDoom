@@ -13,8 +13,26 @@ unit gl_defs;
 interface
 
 uses
+  d_delphi,
   dglOpenGL,
-  m_fixed;
+  m_fixed,
+  r_draw;
+
+type
+  GLTexture = record
+    width, height: integer;
+    leftoffset, topoffset: integer;
+    tex_width, tex_height: integer;
+    realtexwidth, realtexheight: integer;
+  end;
+  PGLTexture = ^GLTexture;
+
+const
+  CR_DEFAULT = CR_LIMIT;
+  VPT_STRETCH = 1;
+  VPT_FLIP = 2;
+  VPT_TRANS = 4;
+  VPT_NOUNLOAD = 8;
 
 type
   gld_camera_t = record
@@ -34,6 +52,7 @@ var
   fog_density: integer = 100;
   use_white_fog: boolean = true;
   white_fog_density: integer = 200;
+  tran_filter_pct: integer = 66;
 
   gl_screensync: boolean = true;
   gl_texture_filter_anisotropic: boolean = false;

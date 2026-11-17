@@ -293,6 +293,16 @@ begin
   TFakeGlLog.Lines.Add('glVertex2f ' + Bits(x) + ' ' + Bits(y));
 end;
 
+procedure FakeTexCoord2f(s, t: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glTexCoord2f ' + Bits(s) + ' ' + Bits(t));
+end;
+
+procedure FakeVertex2i(x, y: GLint); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glVertex2i ' + IntToStr(x) + ' ' + IntToStr(y));
+end;
+
 procedure FakeColor3f(red, green, blue: GLfloat); stdcall;
 begin
   TFakeGlLog.Lines.Add('glColor3f ' + Bits(red) + ' ' + Bits(green) + ' ' + Bits(blue));
@@ -390,6 +400,8 @@ begin
   Hook(@@glBindTexture, @FakeBindTexture);
   Hook(@@glVertex2f, @FakeVertex2f);
   Hook(@@glColor3f, @FakeColor3f);
+  Hook(@@glTexCoord2f, @FakeTexCoord2f);
+  Hook(@@glVertex2i, @FakeVertex2i);
   FInstalled := True;
   Clear;
 end;

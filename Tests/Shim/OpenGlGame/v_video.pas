@@ -13,6 +13,9 @@ interface
 const
   GAMMASIZE = 5;
 
+var
+  statusbarstretch: boolean = true;
+
 implementation
 
 end.
