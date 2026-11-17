@@ -319,7 +319,7 @@ var
 procedure F_StartFinale;
 begin
   TGameSession.GameAction := ga_nothing;
-  gamestate := GS_FINALE;
+  TGameSession.GameState := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
   wipegamestate := -1;
@@ -571,7 +571,7 @@ begin
       end;
     SLIDE_EXITHACK: // state -99: super hack state
       begin
-        gamestate := GS_LEVEL;
+        TGameSession.GameState := GS_LEVEL;
         P_DialogStartP1();
       end;
     SLIDE_HACKHACK: // state -9: unknown bizarre unused state
@@ -681,7 +681,7 @@ begin
   viewactive := false;
   amstate := am_inactive;
   castnum := 0;
-  gamestate := GS_FINALE;
+  TGameSession.GameState := GS_FINALE;
   caststate := @states[mobjinfo[Ord(castorder[castnum]._type)].seestate];
   casttics := caststate.tics;
   if casttics > 50 then

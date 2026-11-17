@@ -210,7 +210,7 @@ var
 function SB_CmdCheckPlayerStatus: boolean;
 begin
   if (CPlayer = nil) or (CPlayer.mo = nil) or (CPlayer.mo = nil) or
-     (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
+     (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -1464,7 +1464,7 @@ begin
     sb_palette := -1;
   end;
 
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     CPlayer := @players[TGameSession.ConsolePlayer];
     if CPlayer.poisoncount > 0 then

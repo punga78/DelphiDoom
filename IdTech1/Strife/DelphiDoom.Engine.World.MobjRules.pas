@@ -1356,7 +1356,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
+  result := (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

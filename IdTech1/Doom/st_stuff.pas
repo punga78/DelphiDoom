@@ -651,7 +651,7 @@ var
 //==============================================================================
 function ST_CmdCheckPlayerStatus: boolean;
 begin
-  if (plyr = nil) or (plyr.mo = nil) or (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
+  if (plyr = nil) or (plyr.mo = nil) or (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -701,7 +701,7 @@ begin
   if not ST_CmdCheckPlayerStatus then
     exit;
 
-  if (gamestate = GS_LEVEL) and (plyr.mo <> nil) then
+  if (TGameSession.GameState = GS_LEVEL) and (plyr.mo <> nil) then
   begin
     P_Massacre;
     plyr._message := STSTR_MASSACRE;

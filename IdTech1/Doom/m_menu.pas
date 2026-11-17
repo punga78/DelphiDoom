@@ -2119,7 +2119,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   M_SetupNextMenu(@SaveDef);
@@ -2133,7 +2133,7 @@ end;
 //==============================================================================
 procedure M_StartSound(origin: pointer; sfx_id: integer);
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
     exit;
   S_StartSound(origin, sfx_id);
 end;
@@ -2188,7 +2188,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   if quickSaveSlot < 0 then
@@ -4393,7 +4393,7 @@ var
   i: integer;
   palette: PByteArray;
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
   begin
     result := false;
     exit;

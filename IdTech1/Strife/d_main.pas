@@ -882,7 +882,7 @@ var
   oldvideomode: videomode_t;
 {$ENDIF}
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
   begin
     D_EndoomScreen.Draw;
     {$IFNDEF OPENGL}
@@ -906,7 +906,7 @@ begin
   if setsizeneeded then
   begin
     R_ExecuteSetViewSize;
-    oldgamestate := -1; // force background redraw
+    TGameSession.OldGameState := -1; // force background redraw
     borderdrawcount := 3;
   end;
 {$IFNDEF OPENGL}
@@ -919,7 +919,7 @@ begin
 
 {$IFNDEF OPENGL}
   // save the current screen if about to wipe
-  if Ord(gamestate) <> wipegamestate then
+  if Ord(TGameSession.GameState) <> wipegamestate then
   begin
     wipe := true;
     fade_StartScreen;
@@ -928,11 +928,11 @@ begin
     wipe := false;
 {$ENDIF}
 
-  if (gamestate = GS_LEVEL) and (TGameSession.GameTic <> 0) then
+  if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
     HU_Erase;
 
   // do buffered drawing
-  case gamestate of
+  case TGameSession.GameState of
     GS_LEVEL:
       begin
         if TGameSession.GameTic <> 0 then
@@ -957,7 +957,7 @@ begin
   end;
 
   // draw the view directly
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
   {$IFNDEF OPENGL}
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
@@ -970,7 +970,7 @@ begin
     if TGameSession.GameTic <> 0 then
       drawhu := true;
   end
-  else if Ord(gamestate) <> oldgamestate then
+  else if Ord(TGameSession.GameState) <> TGameSession.OldGameState then
   begin
   // clean up border stuff
     palette := V_ReadPalette(PU_STATIC);
@@ -984,10 +984,10 @@ begin
   end;
 
   // see if the border needs to be initially drawn
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
 {$IFNDEF OPENGL}
-    if needsbackscreen or (oldgamestate <> Ord(GS_LEVEL)) then
+    if needsbackscreen or (TGameSession.OldGameState <> Ord(GS_LEVEL)) then
     begin
       viewactivestate := false; // view was not active
       R_FillBackScreen;         // draw the pattern into the back screen
@@ -1018,8 +1018,8 @@ begin
   menuactivestate := menuactive;
   viewactivestate := viewactive;
   inhelpscreensstate := inhelpscreens;
-  oldgamestate := Ord(gamestate);
-  wipegamestate := Ord(gamestate);
+  TGameSession.OldGameState := Ord(TGameSession.GameState);
+  wipegamestate := Ord(TGameSession.GameState);
 
   // draw pause pic
   if TGameSession.Paused then
@@ -1035,7 +1035,7 @@ begin
   if drawhu then
     HU_Drawer;
 
-  if (gamestate = GS_LEVEL) and (TGameSession.GameTic <> 0) then
+  if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
   begin
     if ST_DrawExternal then
       popupactivestate := true
@@ -1135,7 +1135,7 @@ begin
   HU_DoFPSStuff;
   if firstinterpolation then
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
@@ -1143,7 +1143,7 @@ begin
       D_RenderPlayerView(@players[displayplayer]);
     end;
   end;
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
     if amstate = am_overlay then
       AM_Drawer;
   D_DisplayHU;
@@ -1278,7 +1278,7 @@ end;
 //==============================================================================
 procedure D_AdvanceDemo;
 begin
-  if gamestate <> GS_ENDOOM then
+  if TGameSession.GameState <> GS_ENDOOM then
     advancedemo := true;
 end;
 
@@ -1307,7 +1307,7 @@ begin
       begin
         menuactive := false;
         pagetic := 3 * TICRATE;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := DEH_GetString('PANEL7');
         S_StartMusic(Ord(mus_fast));
         if isdemoversion then
@@ -1319,7 +1319,7 @@ begin
     -3: // show Velocity logo for demo version
       begin
         pagetic := 6 * TICRATE;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := DEH_GetString('vellogo');
         demosequence := -5; // exit
         exit;
@@ -1327,7 +1327,7 @@ begin
     -2: // title screen
       begin
         pagetic := 6 * TICRATE;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := DEH_GetString('TITLEPIC');
         S_StartMusic(Ord(mus_logo));
         demosequence := -1; // start intro cinematic
@@ -1336,7 +1336,7 @@ begin
     -1: // start of intro cinematic
       begin
         pagetic := 10;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := char8tostring(W_GetNameForNum(D_Panel0Lump));
         S_StartSound(nil, Ord(sfx_rb2act));
         wipegamestate := -1;
@@ -1344,14 +1344,14 @@ begin
     0: // Rogue logo
       begin
         pagetic := 4 * TICRATE;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := DEH_GetString('RGELOGO');
         wipegamestate := -1;
       end;
     1:
       begin
         pagetic := 7 * TICRATE;               // The comet struck our planet without
-        gamestate := GS_DEMOSCREEN;           // warning.We lost our paradise in a
+        TGameSession.GameState := GS_DEMOSCREEN;           // warning.We lost our paradise in a
         pagename := DEH_GetString('PANEL1');  // single, violent stroke.
         S_StartVoice(DEH_GetString('pro1'));
         S_StartMusic(Ord(mus_intro));
@@ -1359,14 +1359,14 @@ begin
     2:
       begin
         pagetic := 9 * TICRATE;               // The impact released a virus which
-        gamestate := GS_DEMOSCREEN;           // swept through the land and killed
+        TGameSession.GameState := GS_DEMOSCREEN;           // swept through the land and killed
         pagename := DEH_GetString('PANEL2');  // millions. They turned out to be
         S_StartVoice(DEH_GetString('pro2'));  // the lucky ones...
       end;
     3:
       begin
         pagetic := 12 * TICRATE;              // For those that did not die became
-        gamestate := GS_DEMOSCREEN;           // mutations of humanity. Some became
+        TGameSession.GameState := GS_DEMOSCREEN;           // mutations of humanity. Some became
         pagename := DEH_GetString('PANEL3');  // fanatics who heard the voice of a
         S_StartVoice(DEH_GetString('pro3'));  // malignant God in their heads, and
       end;                                    // called themselves the Order.
@@ -1374,27 +1374,27 @@ begin
       begin
         pagetic := 11 * TICRATE;            // Those of us who were deaf to this
         pagename := DEH_GetString('PANEL4');// voice suffer horribly and are
-        gamestate := GS_DEMOSCREEN;         // forced to serve these ruthless
+        TGameSession.GameState := GS_DEMOSCREEN;         // forced to serve these ruthless
         S_StartVoice(DEH_GetString('pro4'));// psychotics, who wield weapons more
       end;                                  // powerful than anything we can muster.
     5:
       begin
         pagetic := 10 * TICRATE;            // They destroy our women and children,
-        gamestate := GS_DEMOSCREEN;         // so that we must hide them underground,
+        TGameSession.GameState := GS_DEMOSCREEN;         // so that we must hide them underground,
         pagename := DEH_GetString('PANEL5');// and live like animals in constant
         S_StartVoice(DEH_GetString('pro5'));// fear for our lives.
       end;
     6:                                      // But there are whispers of discontent.
       begin
         pagetic := 16 * TICRATE;            // If we organize, can we defeat our
-        gamestate := GS_DEMOSCREEN;         // masters? Weapons are being stolen,
+        TGameSession.GameState := GS_DEMOSCREEN;         // masters? Weapons are being stolen,
         pagename := DEH_GetString('PANEL6');// soldiers are being trained. A
         S_StartVoice(DEH_GetString('pro6'));// Movement is born! Born of lifelong
       end;                                  // STRIFE!
     7: // titlepic again - unused...
       begin
         pagetic := 9 * TICRATE;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := DEH_GetString('TITLEPIC');
         wipegamestate := -1;
       end;
@@ -1407,13 +1407,13 @@ begin
     9: // velocity logo? - unused...
       begin
         pagetic := 6 * TICRATE;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := DEH_GetString('vellogo');
         wipegamestate := -1;
       end;
     10: // credits
       begin
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagetic := 12 * TICRATE;
         pagename := DEH_GetString('CREDIT');
         wipegamestate := -1;

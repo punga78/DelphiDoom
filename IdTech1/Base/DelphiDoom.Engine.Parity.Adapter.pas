@@ -245,7 +245,7 @@ begin
   if FStateSource <> nil then
     FStateSource.Publish(TGameSession.GameTic);
   // -autosave: the save is done at the start of the next tic, with the state of the end of this one
-  if FOptions.AutoSave and not FSaved and (TGameSession.GameTic >= FOptions.AutoSaveTic) and (gamestate = GS_LEVEL) then
+  if FOptions.AutoSave and not FSaved and (TGameSession.GameTic >= FOptions.AutoSaveTic) and (TGameSession.GameState = GS_LEVEL) then
   begin
     FSaved := True;
     G_SaveGameNow(FOptions.AutoSaveSlot, 'AUTOSAVE');

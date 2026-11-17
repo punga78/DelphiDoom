@@ -443,14 +443,14 @@ procedure I_StartUpdate;
 begin
   if not wipe then
   begin
-    if Ord(gamestate) <> wipegamestate then
+    if Ord(TGameSession.GameState) <> wipegamestate then
       {$IFNDEF HEXEN}
-      if gamestate <> GS_ENDOOM then
+      if TGameSession.GameState <> GS_ENDOOM then
       {$ENDIF}
       begin
         wipe := true;
         {$IFDEF STRIFE}fade_StartScreen{$ELSE}wipe_StartScreen{$ENDIF};
-        wipegamestate := Ord(gamestate);
+        wipegamestate := Ord(TGameSession.GameState);
       end;
   end;
 //  else
@@ -485,7 +485,7 @@ begin
     I_GetWindowPosition(windowxpos, windowypos);
 
   {$IFNDEF HEXEN}
-  if (gamestate = GS_ENDOOM) or enterendoom then
+  if (TGameSession.GameState = GS_ENDOOM) or enterendoom then
   begin
     enterendoom := true;
     gl_frameender.FinishEndoom;

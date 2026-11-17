@@ -182,6 +182,7 @@ procedure A_OverlayDrawCenterText(actor: Pmobj_t);
 implementation
 
 uses
+  g_game,
   d_delphi,
   doomdef,
   i_system,
@@ -259,7 +260,7 @@ end;
 //==============================================================================
 procedure OVR_Drawer;
 begin
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
     overlay.FlashToScreen;
 end;
 
@@ -272,7 +273,7 @@ end;
 //==============================================================================
 function OVR_OverlayHeight: Integer;
 begin
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
     Result := overlay.GetOverlayHeight
   else
     Result := 0;

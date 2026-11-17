@@ -543,7 +543,7 @@ begin
 
   briefingactive := true;
   // the ticker and the drawer of this state are the ones of Radix (radix_intermission)
-  gamestate := GS_INTERMISSION;
+  TGameSession.GameState := GS_INTERMISSION;
   wipegamestate := -1; // force a wipe
 end;
 
@@ -569,7 +569,7 @@ begin
   briefingactive := false;
   FreeAndNil(briefing);
   wipegamestate := -1;
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
 end;
 
 //==============================================================================

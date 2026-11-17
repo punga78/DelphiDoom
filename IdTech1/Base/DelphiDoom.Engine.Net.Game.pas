@@ -398,7 +398,7 @@ begin
         Exit;
       end;
 
-      if (gamestate = GS_LEVEL) and (oldgamestate = Ord(GS_LEVEL)) then
+      if (TGameSession.GameState = GS_LEVEL) and (TGameSession.OldGameState = Ord(GS_LEVEL)) then
       begin
         if interpolate then
         begin
@@ -461,7 +461,7 @@ begin
     end;
 
     // Update display, next frame, with current state.
-    if not didinterpolations or (Ord(gamestate) <> wipegamestate) then
+    if not didinterpolations or (Ord(TGameSession.GameState) <> wipegamestate) then
     begin
       firstinterpolation := true;
       D_Display;

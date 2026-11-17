@@ -469,7 +469,7 @@ begin
   playerx := 0;
   playery := 0;
 
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     // find player to center on initially
     pnum := TGameSession.ConsolePlayer;

@@ -158,6 +158,10 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>Level, intermission, finale or demo screen</summary>
+    class var GameState: gamestate_t;
+    /// <summary>The game state of the last frame drawn</summary>
+    class var OldGameState: integer;
     /// <summary>The tic of the game in progress</summary>
     class var GameTic: integer;
     /// <summary>The action the game loop does at the start of the next tic</summary>
@@ -1195,7 +1199,7 @@ begin
   if wipegamestate = Ord(GS_LEVEL) then
     wipegamestate := -1;  // force a wipe
 
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
@@ -1214,7 +1218,7 @@ begin
       if players[i].mo = nil then
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         D_StartTitle;
         exit;
       end;
@@ -1265,7 +1269,7 @@ begin
   end;
 
   // allow spy mode changes even during the demo
-  if (gamestate = GS_LEVEL) and (ev._type = ev_keydown) and
+  if (TGameSession.GameState = GS_LEVEL) and (ev._type = ev_keydown) and
      (ev.data1 = KEY_F12) and (singledemo or (TGameSession.DeathMatch = 0)) then
   begin
   // spy mode
@@ -1280,7 +1284,7 @@ begin
 
   // any other key pops up menu if in demos
   if (TGameSession.GameAction = ga_nothing) and not singledemo and
-     (TGameSession.DemoPlayback or (gamestate = GS_DEMOSCREEN)) then
+     (TGameSession.DemoPlayback or (TGameSession.GameState = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
@@ -1294,7 +1298,7 @@ begin
     exit;
   end;
 
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     if HU_Responder(ev) then
     begin
@@ -1313,7 +1317,7 @@ begin
     end;
   end;
 
-  if gamestate = GS_FINALE then
+  if TGameSession.GameState = GS_FINALE then
   begin
     if F_Responder(ev) then
     begin
@@ -1796,7 +1800,7 @@ end;
 procedure G_DoTeleportNewMap;
 begin
   SV_MapTeleport(LeaveMap, LeavePosition);
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
   TGameSession.GameAction := ga_nothing;
   RebornPosition := LeavePosition;
 end;
@@ -1843,7 +1847,7 @@ begin
     TGameSession.GameAction := ga_victory
   else
   begin
-    gamestate := GS_INTERMISSION;
+    TGameSession.GameState := GS_INTERMISSION;
     IN_Start;
   end;
 end;
@@ -1855,7 +1859,7 @@ end;
 //==============================================================================
 procedure G_DoWorldDone;
 begin
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
   G_DoLoadLevel;
   TGameSession.GameAction := ga_nothing;
   viewactive := true;
@@ -1971,7 +1975,7 @@ procedure G_CmdSaveGame(const sname: string; const description: string);
 var
   slot: integer;
 begin
-  if not TGameSession.UserGame or (gamestate <> GS_LEVEL) then
+  if not TGameSession.UserGame or (TGameSession.GameState <> GS_LEVEL) then
   begin
     printf('You can''t save if you aren''t playing!'#13#10);
     exit;
@@ -2266,7 +2270,7 @@ begin
   end;
 
   // do main actions
-  case gamestate of
+  case TGameSession.GameState of
     GS_LEVEL:
       begin
         P_Ticker;
@@ -2334,6 +2338,7 @@ end;
 
 initialization
 
+  TGameSession.OldGameState := -1;
   mousebuttons := PBooleanArray(@mousearray[0]);
   joybuttons := PBooleanArray(@joyarray[0]);
 

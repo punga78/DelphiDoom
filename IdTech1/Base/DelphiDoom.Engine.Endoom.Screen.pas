@@ -69,6 +69,7 @@ type
 implementation
 
 uses
+  g_game,
   doomdef,
   DelphiDoom.Endoom.Types,
   v_data,
@@ -204,7 +205,7 @@ begin
     Exit;
   end;
 
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
   begin
     Result := FSession.AcceptsKey;
     if Result then

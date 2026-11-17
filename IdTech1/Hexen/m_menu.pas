@@ -1736,7 +1736,7 @@ begin
   KeyBindingsInfo[Ord(kb_weapon1)].text := 'WEAPON 2';
   KeyBindingsInfo[Ord(kb_weapon2)].text := 'WEAPON 3';
   KeyBindingsInfo[Ord(kb_weapon3)].text := 'WEAPON 4';
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
     case players[TGameSession.ConsolePlayer]._class of
       PCLASS_FIGHTER:
         begin
@@ -2092,7 +2092,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   M_SetupNextMenu(@SaveDef);
@@ -2129,7 +2129,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   if quickSaveSlot < 0 then

@@ -21,6 +21,7 @@ procedure OVR_RegisterCommands;
 implementation
 
 uses
+  g_game,
   d_delphi,
   c_cmds,
   doomdef,
@@ -43,7 +44,7 @@ var
   msg: string;
   tmp1: string;
 begin
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
   begin
     printf('Overlay drawer is available only when playing the game'#13#10);
     Exit;
@@ -92,7 +93,7 @@ var
   tmp1: string;
   tmp2: string;
 begin
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
   begin
     printf('Overlay drawer is available only when playing the game'#13#10);
     Exit;
@@ -166,7 +167,7 @@ var
   red, green, blue: byte;
   sc: TScriptScanner;
 begin
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
   begin
     printf('Overlay drawer is available only when playing the game'#13#10);
     Exit;
@@ -218,7 +219,7 @@ var
   red, green, blue: byte;
   sc: TScriptScanner;
 begin
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
   begin
     printf('Overlay drawer is available only when playing the game'#13#10);
     Exit;
@@ -270,7 +271,7 @@ var
   patchname: string;
   sc: TScriptScanner;
 begin
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
   begin
     printf('Overlay drawer is available only when playing the game'#13#10);
     Exit;
@@ -314,7 +315,7 @@ var
   patchname: string;
   sc: TScriptScanner;
 begin
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
   begin
     printf('Overlay drawer is available only when playing the game'#13#10);
     Exit;

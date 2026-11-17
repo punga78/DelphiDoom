@@ -854,7 +854,7 @@ var
   oldvideomode: videomode_t;
 {$ENDIF}
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
   begin
     D_EndoomScreen.Draw;
     {$IFNDEF OPENGL}
@@ -878,7 +878,7 @@ begin
   if setsizeneeded then
   begin
     R_ExecuteSetViewSize;
-    oldgamestate := -1; // force background redraw
+    TGameSession.OldGameState := -1; // force background redraw
     borderdrawcount := 3;
   end;
 {$IFNDEF OPENGL}
@@ -891,7 +891,7 @@ begin
 
 {$IFNDEF OPENGL}
   // save the current screen if about to wipe
-  if Ord(gamestate) <> wipegamestate then
+  if Ord(TGameSession.GameState) <> wipegamestate then
   begin
     wipe := true;
     wipe_StartScreen;
@@ -900,11 +900,11 @@ begin
     wipe := false;
 {$ENDIF}
 
-  if (gamestate = GS_LEVEL) and (TGameSession.GameTic <> 0) then
+  if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
     HU_Erase;
 
   // do buffered drawing
-  case gamestate of
+  case TGameSession.GameState of
     GS_LEVEL:
       begin
         if TGameSession.GameTic <> 0 then
@@ -923,7 +923,7 @@ begin
   end;
 
   // draw the view directly
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
   {$IFNDEF OPENGL}
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
@@ -937,7 +937,7 @@ begin
     if TGameSession.GameTic <> 0 then
       drawhu := true;
   end
-  else if Ord(gamestate) <> oldgamestate then
+  else if Ord(TGameSession.GameState) <> TGameSession.OldGameState then
   begin
   // clean up border stuff
     palette := V_ReadPalette(PU_STATIC);
@@ -947,10 +947,10 @@ begin
   end;
 
   // see if the border needs to be initially drawn
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
 {$IFNDEF OPENGL}
-    if needsbackscreen or (oldgamestate <> Ord(GS_LEVEL)) then
+    if needsbackscreen or (TGameSession.OldGameState <> Ord(GS_LEVEL)) then
     begin
       viewactivestate := false; // view was not active
       R_FillBackScreen;         // draw the pattern into the back screen
@@ -978,8 +978,8 @@ begin
   menuactivestate := menuactive;
   viewactivestate := viewactive;
   inhelpscreensstate := inhelpscreens;
-  oldgamestate := Ord(gamestate);
-  wipegamestate := Ord(gamestate);
+  TGameSession.OldGameState := Ord(TGameSession.GameState);
+  wipegamestate := Ord(TGameSession.GameState);
 
   // draw pause pic
   if TGameSession.Paused then
@@ -1085,7 +1085,7 @@ begin
   HU_DoFPSStuff;
   if firstinterpolation then
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
@@ -1093,7 +1093,7 @@ begin
       D_RenderPlayerView(@players[displayplayer]);
     end;
   end;
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
     if amstate = am_overlay then
       AM_Drawer;
   D_DisplayHU;
@@ -1230,7 +1230,7 @@ end;
 //==============================================================================
 procedure D_AdvanceDemo;
 begin
-  if gamestate <> GS_ENDOOM then
+  if TGameSession.GameState <> GS_ENDOOM then
     advancedemo := true;
 end;
 
@@ -1255,14 +1255,14 @@ begin
     0:
       begin
         pagetic := 210;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_TITLE;
         S_StartMusic(Ord(mus_titl));
       end;
     1:
       begin
         pagetic := 140;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_TITLE;
       end;
     2:
@@ -1272,7 +1272,7 @@ begin
     3:
       begin
         pagetic := 200;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_CREDIT;
       end;
     4:
@@ -1282,7 +1282,7 @@ begin
     5:
       begin
         pagetic := 200;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         if gamemode = shareware then
           pagename := pg_ORDER
         else

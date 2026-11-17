@@ -210,7 +210,7 @@ var
   mus_changed: boolean;
 begin
   TGameSession.GameAction := ga_nothing;
-  gamestate := GS_FINALE;
+  TGameSession.GameState := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
   mus_changed := false;

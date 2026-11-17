@@ -166,7 +166,7 @@ begin
       LView.Speed := P_AproxDistance(players[TGameSession.ConsolePlayer].mo.momx, players[TGameSession.ConsolePlayer].mo.momy);
     end;
     // only a script that fights asks for the enemies: the automatic pilot never searches the level
-    if LView.Alive and (gamestate = GS_LEVEL) and (APilot.EnemyRange > 0) then
+    if LView.Alive and (TGameSession.GameState = GS_LEVEL) and (APilot.EnemyRange > 0) then
       FindEnemy(players[TGameSession.ConsolePlayer].mo, APilot.EnemyRange, LView);
   end;
   LCommand := APilot.NextCommand(LView);

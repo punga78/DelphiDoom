@@ -206,7 +206,7 @@ begin
     exit;
   end;
 
-  if (gamestate = GS_LEVEL) and (players[TGameSession.ConsolePlayer].mo <> nil) then
+  if (TGameSession.GameState = GS_LEVEL) and (players[TGameSession.ConsolePlayer].mo <> nil) then
   begin
     if players[TGameSession.ConsolePlayer].health > 0 then
     begin
