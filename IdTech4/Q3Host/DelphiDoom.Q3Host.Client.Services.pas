@@ -34,6 +34,8 @@ type
     Lan: IQ3HostLan;
     CdKey: TQ3ClientCdKey;
     Sources: TQ3SourceHandles;
+    /// <summary>CG_ACOS, which needs no service: off by default, so a host without client services keeps the calls it had</summary>
+    Math: Boolean;
   end;
 
   /// <summary>Registers the groups of calls of cgame and ui that have their services</summary>
@@ -48,13 +50,15 @@ implementation
 uses
   DelphiDoom.Q3Host.ClientStateSyscalls, DelphiDoom.Q3Host.KeySyscalls, DelphiDoom.Q3Host.SoundSyscalls,
   DelphiDoom.Q3Host.CinematicSyscalls, DelphiDoom.Q3Host.RendererSyscalls, DelphiDoom.Q3Host.PrecompilerSyscalls,
-  DelphiDoom.Q3Host.LanSyscalls, DelphiDoom.Q3Host.CdKeySyscalls;
+  DelphiDoom.Q3Host.LanSyscalls, DelphiDoom.Q3Host.CdKeySyscalls, DelphiDoom.Q3Host.ClientMathSyscalls;
 
 class procedure TQ3ClientGroups.Register(AModule: TQ3Module; const ARegistry: IQ3SyscallRegistry;
   const AServices: TQ3HostClientServices; const ACVars: IQ3CVarSystem);
 begin
   if AModule = TQ3Module.Game then
     Exit;
+  if (AModule = TQ3Module.CGame) and AServices.Math then
+    TQ3ClientMathSyscalls.Register(ARegistry);
   if (AModule = TQ3Module.CGame) and Assigned(AServices.State) then
     TQ3ClientStateSyscalls.RegisterCGame(ARegistry, AServices.State);
   if AModule = TQ3Module.Ui then

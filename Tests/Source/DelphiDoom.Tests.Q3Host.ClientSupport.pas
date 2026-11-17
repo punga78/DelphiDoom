@@ -391,6 +391,7 @@ begin
   FServices.Lan := FLan;
   FServices.CdKey := FCdKey;
   FServices.Sources := FSources;
+  FServices.Math := True;
 
   LServices := Default(TQ3HostServices);
   LServices.CVars := FConsole.CVars;

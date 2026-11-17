@@ -138,7 +138,7 @@ begin
   FRig.State.ConfigstringModified(5, 'abc');
   FRig.State.ConfigstringModified(2, 'x');
   LState := FRig.State.GameState;
-  Assert.AreEqual(Q3_GAMESTATE_SIZE, Length(LState));
+  Assert.AreEqual<Integer>(Q3_GAMESTATE_SIZE, Length(LState));
   // the strings are rebuilt in the order of the indexes after the first zero: x at 1, abc at 3
   Assert.AreEqual(1, PInteger(@LState[2 * 4])^);
   Assert.AreEqual(3, PInteger(@LState[5 * 4])^);
@@ -336,7 +336,7 @@ begin
   Assert.AreEqual($5A, Integer(LSnapshot.AreaMask[31]));
   Assert.AreEqual(7, Integer(LSnapshot.PlayerState[140]));
   Assert.AreEqual(2, LSnapshot.NumEntities);
-  Assert.AreEqual(2 * Q3_ENTITYSTATE_SIZE, Length(LSnapshot.Entities));
+  Assert.AreEqual<Integer>(2 * Q3_ENTITYSTATE_SIZE, Length(LSnapshot.Entities));
   Assert.AreEqual($10, Integer(LSnapshot.Entities[0]));
   Assert.AreEqual($11, Integer(LSnapshot.Entities[Q3_ENTITYSTATE_SIZE]));
   Assert.AreEqual(7, FRig.State.ClientNumber);
@@ -387,7 +387,7 @@ begin
   AddSnapshot(1, 300, 1);
   Assert.IsTrue(FRig.State.TryGetSnapshot(1, LSnapshot));
   Assert.AreEqual(Q3_MAX_ENTITIES_IN_SNAPSHOT, LSnapshot.NumEntities);
-  Assert.AreEqual(Q3_MAX_ENTITIES_IN_SNAPSHOT * Q3_ENTITYSTATE_SIZE, Length(LSnapshot.Entities));
+  Assert.AreEqual<Integer>(Q3_MAX_ENTITIES_IN_SNAPSHOT * Q3_ENTITYSTATE_SIZE, Length(LSnapshot.Entities));
 end;
 
 procedure TTestQ3ClientState.IComandiDellUtenteDovrebberoSeguireLeRegoleDelBuffer;

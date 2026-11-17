@@ -49,6 +49,8 @@ type
     [Test]
     procedure IlParserDovrebbeUsareLaStessaTabellaPerCgameEUi;
     [Test]
+    procedure CgAcosDovrebbeDareLeRisposteDelC;
+    [Test]
     procedure LeTrappeSenzaGestoreDovrebberoEssereQuelleDelGolden;
   end;
 
@@ -111,7 +113,7 @@ begin
   Assert.AreEqual(2, FRig.Renderer.CallCount('RegisterShader'));
   Assert.AreEqual(3, FRig.Renderer.CallCount('RegisterShaderNoMip'));
   Assert.AreEqual('gfx/misc/tracer', FRig.Renderer.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER)[0]);
-  Assert.AreEqual(3, Length(FRig.Renderer.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER)));
+  Assert.AreEqual<Integer>(3, Length(FRig.Renderer.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER)));
 end;
 
 procedure TTestQ3ClientServices.RegisterFontDiCgameDovrebbeCancellareAncheLaScena;
@@ -389,6 +391,33 @@ begin
   Put(2, BUFFER, 'ui/shared.txt');
   Assert.AreEqual(LHandle, FRig.Call(TQ3Module.Ui, [UI_PC_LOAD_SOURCE, BUFFER]));
   Assert.AreEqual(1, FRig.Call(TQ3Module.Ui, [UI_PC_SOURCE_FILE_AND_LINE, LHandle, 6200, 6300]));
+end;
+
+procedure TTestQ3ClientServices.CgAcosDovrebbeDareLeRisposteDelC;
+var
+  LLines: TStringList;
+  LLine: string;
+  LInput, LExpected, LActual: Cardinal;
+  LCount: Integer;
+begin
+  // Q_acos of the real common.c on gcc: the float in, the bits of the answer out
+  LLines := TTestFiles.Lines(TTestFiles.DataFile('Q3Host', 'acos.golden.txt'));
+  try
+    LCount := 0;
+    for LLine in LLines do
+    begin
+      if Trim(LLine) = '' then
+        Continue;
+      LInput := Cardinal(StrToInt64('$' + Copy(LLine, 1, 8)));
+      LExpected := Cardinal(StrToInt64('$' + Copy(LLine, 10, 8)));
+      LActual := Cardinal(FRig.Call(TQ3Module.CGame, [CG_ACOS, Integer(LInput)]));
+      Assert.AreEqual(IntToHex(LExpected, 8), IntToHex(LActual, 8), 'acos of ' + IntToHex(LInput, 8));
+      Inc(LCount);
+    end;
+    Assert.IsTrue(LCount > 4000);
+  finally
+    LLines.Free;
+  end;
 end;
 
 procedure TTestQ3ClientServices.LeTrappeSenzaGestoreDovrebberoEssereQuelleDelGolden;

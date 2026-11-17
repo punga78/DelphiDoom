@@ -178,6 +178,7 @@ begin
       LClientServices.Lan := LLan;
       LClientServices.CdKey := LCdKey;
       LClientServices.Sources := LSources;
+      LClientServices.Math := True;
 
       // 1. the server game: GAME_INIT, a client that connects and begins, three frames
       LServices := LBase;

@@ -69,6 +69,8 @@ uses
   DelphiDoom.Q3Host.ClientCdKey in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientCdKey.pas',
   DelphiDoom.Q3Host.ClientRecordingRenderer in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientRecordingRenderer.pas',
   DelphiDoom.Q3Host.ClientSoundAdapter in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientSoundAdapter.pas',
+  DelphiDoom.Q3Host.ClientRoqCinematics in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientRoqCinematics.pas',
+  DelphiDoom.Q3Host.ClientMathSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientMathSyscalls.pas',
   DelphiDoom.Q3Host.ScriptFiles in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ScriptFiles.pas',
   DelphiDoom.Q3Host.ScriptLog in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ScriptLog.pas',
   DelphiDoom.Q3Host.ClientStateSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.ClientStateSyscalls.pas',
@@ -105,6 +107,7 @@ uses
   DelphiDoom.Tests.Q3Host.ClientKeys in 'Source\DelphiDoom.Tests.Q3Host.ClientKeys.pas',
   DelphiDoom.Tests.Q3Host.ClientLan in 'Source\DelphiDoom.Tests.Q3Host.ClientLan.pas',
   DelphiDoom.Tests.Q3Host.ClientServices in 'Source\DelphiDoom.Tests.Q3Host.ClientServices.pas',
+  DelphiDoom.Tests.Q3Host.ClientRoq in 'Source\DelphiDoom.Tests.Q3Host.ClientRoq.pas',
   DelphiDoom.Tests.Q3Host.ClientReach in 'Source\DelphiDoom.Tests.Q3Host.ClientReach.pas';
 
 var
