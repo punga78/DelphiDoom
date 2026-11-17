@@ -1019,11 +1019,13 @@ function S_DefaultMusicForMap(const map: integer): integer;
 {$ELSE}
 function S_DefaultMusicForMap(const episode, map: integer): integer;
 {$ENDIF}
+{$IFNDEF HEXEN}
 var
   mapinfomusic: integer;
+{$ENDIF}
 begin
-  mapinfomusic := 0;
 {$IFNDEF HEXEN}
+  mapinfomusic := 0;
   if TGameSession.GameMapInfo <> nil then
     mapinfomusic := TGameSession.GameMapInfo.musicnum;
 {$ENDIF}
