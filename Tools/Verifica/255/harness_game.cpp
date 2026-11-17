@@ -1,4 +1,4 @@
-﻿// Issue #255 (Doom 3, phase 3 "the game without a renderer"): driver of the third parity harness. Written for this
+// Issue #255 (Doom 3, phase 3 "the game without a renderer"): driver of the third parity harness. Written for this
 // repository. It is linked with the REAL idlib and with
 //   the REAL game\gamesys\Class.h and Event.h,
 //   the REAL bodies of game\gamesys\Class.cpp (idTypeInfo, idClass: registration, Init/Shutdown, GetClass, GetType,
@@ -12,7 +12,8 @@
 //     physics-team blocks of the last two are cut out: this harness has no physics),
 // cut out of the source by Build-Harness-Game.ps1, against fakes of the engine that trace every call. The entity
 // classes of the harness (idEntity, idMover, idDoor, ...) are written here: idEntity::Spawn and the destructor are
-// REDUCED versions (they keep the lines of the original that this phase ports, in the same order).
+// REDUCED versions: Build-Harness-Game.ps1 cuts out of the real Entity.cpp and Game_local.cpp only the statements that this
+// phase ports (entity_reduced.inc, newmap_extract.inc, frame_head.inc), in the order of the original.
 //
 // Usage: harness_game.exe <scenario.scn> <golden.txt>
 //
@@ -193,7 +194,7 @@ public:
 	idEditEntities *		editEntities;
 	idMapFileFake *			mapFile;
 	idProgramFake			program;
-	int						time, previousTime, msec, framenum;
+	int						time, previousTime, msec, framenum, realClientTime;
 
 	void					Printf( const char *fmt, ... ) const;
 	void					Warning( const char *fmt, ... ) const;
@@ -356,44 +357,9 @@ END_CLASS
 ABSTRACT_DECLARATION( idEntity, idBinder )
 END_CLASS
 
-// the entity: the lines of idEntity::idEntity, ::Spawn and ::~idEntity that this phase ports, in the order of the original
-idEntity::idEntity() {
-	entityNumber	= ENTITYNUM_NONE;
-	entityDefNumber = -1;
-	spawnNode.SetOwner( this );
-	activeNode.SetOwner( this );
-	thinkFlags		= 0;
-	cinematic		= false;
-	health			= 0;
-}
-idEntity::~idEntity( void ) {
-	if ( thinkFlags ) {
-		BecomeInactive( thinkFlags );
-	}
-	activeNode.Remove();
-	gameLocal.RemoveEntityFromHash( name.c_str(), this );
-	gameLocal.UnregisterEntity( this );
-}
-void idEntity::Spawn( void ) {
-	const char			*temp;
-	const char			*classname;
-
-	gameLocal.RegisterEntity( this );
-
-	spawnArgs.GetString( "classname", NULL, &classname );
-	const idDeclEntityDef *def = gameLocal.FindEntityDef( classname, false );
-	if ( def ) {
-		entityDefNumber = def->Index();
-	}
-
-	cinematic = spawnArgs.GetBool( "cinematic", "0" );
-
-	// every object will have a unique name
-	temp = spawnArgs.GetString( "name", va( "%s_%s_%d", GetClassname(), spawnArgs.GetString( "classname" ), entityNumber ) );
-	SetName( temp );
-
-	health = spawnArgs.GetInt( "health" );
-}
+// the entity: the constructor, Spawn and the destructor of idEntity REDUCED to the statements this phase ports, cut out of the
+// real Entity.cpp by Build-Harness-Game.ps1 (same statements, same order)
+#include "../gamefw/entity_reduced.inc"
 void idEntity::Think( void ) { out( "THINK %s", name.c_str() ); }
 void idEntity::Event_Hide( void ) { out( "EVENT idEntity.Hide %s", name.c_str() ); }
 void idItem::Spawn( void ) { out( "SPAWN idItem %s", name.c_str() ); }
@@ -420,30 +386,8 @@ void idBinder::Spawn( void ) { out( "SPAWN idBinder" ); }
 #include "../gamefw/game_extract.inc"
 
 void idGameLocal::NewMap( void ) {
-	// the entity lines of idGameLocal::InitFromNewMap (Game_local.cpp), before the render world, sound and clip are set up
-	memset( entities, 0, sizeof( entities ) );
-	memset( spawnIds, -1, sizeof( spawnIds ) );
-	spawnCount = INITIAL_SPAWN_COUNT;
-
-	spawnedEntities.Clear();
-	activeEntities.Clear();
-	numEntitiesToDeactivate = 0;
-	sortTeamMasters = false;
-	sortPushers = false;
-
-	// always leave room for the max number of clients,
-	// even if they aren't all used, so numbers inside that
-	// range are NEVER anything but clients
-	num_entities	= MAX_CLIENTS;
-	firstFreeIndex	= MAX_CLIENTS;
-
-	previousTime	= 0;
-	time			= 0;
-	framenum		= 0;
-
-	spawnArgs.Clear();
-	inCinematic = false;
-	entityHash.Clear( 1024, MAX_GENTITIES );
+	// the entity statements of the real idGameLocal::InitFromNewMap and Clear, cut out by Build-Harness-Game.ps1
+#include "../gamefw/newmap_extract.inc"
 }
 
 void idGameLocal::RunFrameThink( void ) {
@@ -452,9 +396,7 @@ void idGameLocal::RunFrameThink( void ) {
 	float		ms;
 	idTimer		timer_singlethink;
 
-	framenum++;
-	previousTime = time;
-	time += msec;
+#include "../gamefw/frame_head.inc"
 
 #include "../gamefw/think_extract.inc"
 }

@@ -98,6 +98,48 @@ if (-not $NoBuild) {
 	if (-not $m.Success) { throw 'think loop not found in Game_local.cpp' }
 	Write-Text (Join-Path $fw 'think_extract.inc') $m.Value
 
+	# idEntity reduced: the constructor, Spawn and the destructor with only the statements this phase ports. Every statement is
+	# cut out of the real Entity.cpp (the script holds the places to look, not the code); what the harness does not have
+	# (render, sound, physics, binding, script object, targets, network) is simply not taken.
+	function Get-Match($text, $pattern, $what) {
+		$m = [regex]::Match($text, $pattern, 'Singleline')
+		if (-not $m.Success) { throw "not found in Entity.cpp: $what" }
+		return $m.Value
+	}
+	function Get-Lines($text, $pattern) {
+		return ([regex]::Matches($text, $pattern) | ForEach-Object { $_.Value }) -join ''
+	}
+	$ctor = Get-Member $e 'idEntity' 'idEntity'
+	$spawn = Get-Member $e 'idEntity' 'Spawn'
+	$dtor = Get-Member $e 'idEntity' '~idEntity'
+	$sb = New-Object System.Text.StringBuilder
+	[void]$sb.Append("idEntity::idEntity() {`n")
+	[void]$sb.Append((Get-Lines $ctor '(?m)^\t(entityNumber|entityDefNumber|thinkFlags|cinematic|health)\s*= [^\n]*\n'))
+	[void]$sb.Append((Get-Lines $ctor '(?m)^\t(spawn|active)Node\.SetOwner\( this \);\n'))
+	[void]$sb.Append("}`n`n")
+	[void]$sb.Append("idEntity::~idEntity( void ) {`n")
+	[void]$sb.Append((Get-Match $dtor '\tif \( thinkFlags \) \{\n.*?\n\t\}\n\tactiveNode\.Remove\(\);\n' 'think flags and activeNode'))
+	[void]$sb.Append((Get-Lines $dtor '(?m)^\tgameLocal\.(RemoveEntityFromHash|UnregisterEntity)\([^\n]*\n'))
+	[void]$sb.Append("}`n`n")
+	[void]$sb.Append("void idEntity::Spawn( void ) {`n`tconst char *temp;`n`tconst char *classname;`n`n")
+	[void]$sb.Append((Get-Match $spawn '\tgameLocal\.RegisterEntity\( this \);.*?\n\t\}\n' 'RegisterEntity to the entityDef'))
+	[void]$sb.Append("`n")
+	[void]$sb.Append((Get-Match $spawn '\tcinematic = [^\n]*\n' 'cinematic'))
+	[void]$sb.Append("`n")
+	[void]$sb.Append((Get-Match $spawn '\t// every object will have a unique name\n.*?\tSetName\( temp \);\n' 'the name'))
+	[void]$sb.Append("`n")
+	[void]$sb.Append((Get-Match $spawn '\thealth = [^\n]*\n' 'health'))
+	[void]$sb.Append("}`n")
+	Write-Text (Join-Path $fw 'entity_reduced.inc') $sb.ToString()
+	# the entity statements of InitFromNewMap and of Clear (the table, the lists, the time), and the time update of RunFrame
+	$init = Get-Between $g '// initialize all entities for this game' '	cinematicMaxSkipTime = 0;'
+	$clear = Get-Member $g 'idGameLocal' 'Clear'
+	$keep = '(?m)^\t(memset\( (entities|spawnIds), [^\n]*|spawnCount\s*= [^\n]*|spawnedEntities\.Clear[^\n]*|activeEntities\.Clear[^\n]*|numEntitiesToDeactivate\s*= [^\n]*|sortTeamMasters\s*= [^\n]*|sortPushers\s*= [^\n]*|num_entities\s*= [^\n]*|firstFreeIndex\s*= [^\n]*|previousTime\s*= [^\n]*|time\s*= [^\n]*|framenum\s*= [^\n]*|spawnArgs\.Clear\(\);|inCinematic\s*= [^\n]*)\n'
+	$sb = New-Object System.Text.StringBuilder
+	[void]$sb.Append((Get-Lines $init $keep))
+	[void]$sb.Append((Get-Lines $clear '(?m)^\tentityHash\.Clear\([^\n]*\n'))
+	Write-Text (Join-Path $fw 'newmap_extract.inc') $sb.ToString()
+	Write-Text (Join-Path $fw 'frame_head.inc') (Get-Match $g '\t\t// update the game time\n.*?\t\trealClientTime = time;\n' 'the time update of RunFrame')
 	Push-Location $Work
 	try {
 		$o = 'obj\harness_harness_game.o'
