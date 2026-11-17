@@ -97,6 +97,7 @@ uses
   DelphiDoom.Tests.Q3Host.GameWorld in 'Source\DelphiDoom.Tests.Q3Host.GameWorld.pas',
   DelphiDoom.Tests.Q3Host.BotLayout in 'Source\DelphiDoom.Tests.Q3Host.BotLayout.pas',
   DelphiDoom.Tests.Q3Host.BotCalls in 'Source\DelphiDoom.Tests.Q3Host.BotCalls.pas',
+  DelphiDoom.Tests.Q3Host.BotReach in 'Source\DelphiDoom.Tests.Q3Host.BotReach.pas',
   DelphiDoom.Tests.Q3Host.Reach in 'Source\DelphiDoom.Tests.Q3Host.Reach.pas',
   DelphiDoom.Tests.Q3Host.Coverage in 'Source\DelphiDoom.Tests.Q3Host.Coverage.pas';
 

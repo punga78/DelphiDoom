@@ -30,8 +30,8 @@ uses
   System.SysUtils, System.Classes, DelphiDoom.Console.Q3.Factory, DelphiDoom.Wad.Fs.Intf, DelphiDoom.Q3Host.Types,
   DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Services.Intf, DelphiDoom.Q3Host.Factory, DelphiDoom.Q3Host.GameFiles,
   DelphiDoom.Q3Host.ClipMap, DelphiDoom.Q3Host.ServerState, DelphiDoom.Q3Host.OpcodeCatalog,
-  DelphiDoom.Tests.Q3Host.Support, DelphiDoom.Tests.Q3Host.Services, DelphiDoom.Tests.Shared.Files,
-  DelphiDoom.Tests.Shared.Golden;
+  DelphiDoom.Tests.Q3Host.Support, DelphiDoom.Tests.Q3Host.Services, DelphiDoom.Tests.Q3Host.BotCalls,
+  DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Golden;
 
 procedure TTestQ3HostCoverage.LeTrappeSenzaGestoreDovrebberoEssereQuelleDelGolden;
 var
@@ -59,6 +59,8 @@ begin
     LServices.State := TQ3HostServerState.Create(LConsole.CVars);
     LServices.ServerCommands := TQ3RecordingServerCommands.Create;
     LServices.Calendar := TQ3FixedCalendar.Create;
+    // the BOTLIB calls of qagame (phase 2d): the files are what registers the group
+    LServices.Bot.Files := TBotTestFiles.Create;
     for LModule := Low(TQ3Module) to High(TQ3Module) do
     begin
       LHost := TQ3HostFactory.CreateHostWithServices(LModule, TQ3RecordingConsole.Create(nil),

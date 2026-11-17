@@ -348,8 +348,9 @@ begin
       end;
     end;
   Assert.AreEqual(137, LBotlib);
-  // the five PC_ calls: no module of Quake III or OpenArena calls them (trap_PC_* is in the .asm of cgame and ui only)
-  Assert.AreEqual(5, LMissing, LMissingNames);
+  // the four PC_ source calls: no module of Quake III or OpenArena calls them (trap_PC_* is in the .asm of cgame and
+  // ui only); PC_AddGlobalDefine is answered, because the missionpack game calls it
+  Assert.AreEqual(4, LMissing, LMissingNames);
   Assert.IsTrue(LMissingNames.Contains('BOTLIB_PC_LOAD_SOURCE'), LMissingNames);
   Assert.IsFalse(FHost.Registry.IsRegistered(BOTLIB_PC_READ_TOKEN));
 end;

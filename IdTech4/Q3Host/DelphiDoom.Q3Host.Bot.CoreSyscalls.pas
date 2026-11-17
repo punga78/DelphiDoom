@@ -104,6 +104,16 @@ begin
       Result := ARegistrar.Lib.UpdateEntity(AArgs[1], @LState);
     end);
 
+  ARegistrar.Add(BOTLIB_PC_ADD_GLOBAL_DEFINE,
+    function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
+    begin
+      // the missionpack game defines MISSIONPACK for the scripts of the bots. The define is accepted (qtrue) and not
+      // kept: the parsers of IdTech4\BotAi (TIdParser) have no global defines, and the files of the bots that
+      // OpenArena ships do not test it
+      TQ3SyscallArguments.Text(AMachine, AArgs[1], 'BOTLIB_PC_ADD_GLOBAL_DEFINE');
+      Result := 1;
+    end);
+
   ARegistrar.Add(BOTLIB_TEST,
     function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
     begin
