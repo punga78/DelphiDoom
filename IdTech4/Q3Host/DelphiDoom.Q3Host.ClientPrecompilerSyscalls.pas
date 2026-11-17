@@ -26,7 +26,7 @@ type
   ///   CG_PC_LOAD_SOURCE, FREE_SOURCE, READ_TOKEN, SOURCE_FILE_AND_LINE and the UI_PC_* twins, on the numbered
   ///   sources of the precompiler of botlib (TQ3SourceHandles of Framework\Scanner: the port of l_precomp.c, equal to
   ///   the C on its golden). The table of sources is the one of botlib and is shared with the bots, as in the C
-  ///   (botlib_export). CG_PC_ADD_GLOBAL_DEFINE and UI_PC_ADD_GLOBAL_DEFINE are not served: the scanner has no
+  ///   (botlib_export): the BOTLIB_PC_* of qagame are registered on it too (TQ3BotFactory), with the same object. CG_PC_ADD_GLOBAL_DEFINE and UI_PC_ADD_GLOBAL_DEFINE are not served: the scanner has no
   ///   PC_DefineFromString and none of the twelve modules of OpenArena calls it
   /// </summary>
   TQ3PrecompilerSyscalls = class
@@ -44,13 +44,11 @@ uses
 class procedure TQ3PrecompilerSyscalls.Register(AModule: TQ3Module; const ARegistry: IQ3SyscallRegistry;
   ASources: TQ3SourceHandles);
 const
-  LOAD: array[TQ3Module] of Integer = (-1, CG_PC_LOAD_SOURCE, UI_PC_LOAD_SOURCE);
-  FREE: array[TQ3Module] of Integer = (-1, CG_PC_FREE_SOURCE, UI_PC_FREE_SOURCE);
-  READ: array[TQ3Module] of Integer = (-1, CG_PC_READ_TOKEN, UI_PC_READ_TOKEN);
-  WHERE: array[TQ3Module] of Integer = (-1, CG_PC_SOURCE_FILE_AND_LINE, UI_PC_SOURCE_FILE_AND_LINE);
+  LOAD: array[TQ3Module] of Integer = (BOTLIB_PC_LOAD_SOURCE, CG_PC_LOAD_SOURCE, UI_PC_LOAD_SOURCE);
+  FREE: array[TQ3Module] of Integer = (BOTLIB_PC_FREE_SOURCE, CG_PC_FREE_SOURCE, UI_PC_FREE_SOURCE);
+  READ: array[TQ3Module] of Integer = (BOTLIB_PC_READ_TOKEN, CG_PC_READ_TOKEN, UI_PC_READ_TOKEN);
+  WHERE: array[TQ3Module] of Integer = (BOTLIB_PC_SOURCE_FILE_AND_LINE, CG_PC_SOURCE_FILE_AND_LINE, UI_PC_SOURCE_FILE_AND_LINE);
 begin
-  if AModule = TQ3Module.Game then
-    Exit;
   ARegistry.Register(LOAD[AModule],
     function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
     begin

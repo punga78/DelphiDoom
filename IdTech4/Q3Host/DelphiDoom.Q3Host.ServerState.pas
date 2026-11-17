@@ -59,6 +59,8 @@ type
     procedure SetUsercmd(AClient: Integer; const ACommand: TBytes);
     /// <summary>A client slot in use (state not CS_FREE)</summary>
     procedure SetClientActive(AClient: Integer; AActive: Boolean);
+    /// <summary>cl->state == CS_ACTIVE (a slot in use)</summary>
+    function IsClientActive(AClient: Integer): Boolean;
     property OnConfigstringChanged: TQ3ConfigstringChanged read FOnConfigstringChanged
       write FOnConfigstringChanged;
   end;
@@ -159,6 +161,12 @@ begin
   CheckClient(AClient, 'SetUsercmd');
   FUsercmds[AClient] := Copy(ACommand, 0, USERCMD_SIZE);
   SetLength(FUsercmds[AClient], USERCMD_SIZE);
+end;
+
+function TQ3HostServerState.IsClientActive(AClient: Integer): Boolean;
+begin
+  CheckClient(AClient, 'IsClientActive');
+  Result := FActive[AClient];
 end;
 
 procedure TQ3HostServerState.SetClientActive(AClient: Integer; AActive: Boolean);

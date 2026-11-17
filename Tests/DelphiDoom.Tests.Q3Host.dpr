@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the Quake III host library (the system calls of   }
 {  qagame, cgame and ui, DUnitX)                                               }
@@ -59,6 +59,24 @@ uses
   DelphiDoom.Q3Host.GameWorld in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.GameWorld.pas',
   DelphiDoom.Q3Host.GameSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.GameSyscalls.pas',
   DelphiDoom.Q3Host.MiscSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.MiscSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.Intf in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Intf.pas',
+  DelphiDoom.Q3Host.Bot.Memory in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Memory.pas',
+  DelphiDoom.Q3Host.Bot.Import in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Import.pas',
+  DelphiDoom.Q3Host.Bot.Files in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Files.pas',
+  DelphiDoom.Q3Host.Bot.EntitySource in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.EntitySource.pas',
+  DelphiDoom.Q3Host.Bot.Bsp in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Bsp.pas',
+  DelphiDoom.Q3Host.Bot.Aas in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Aas.pas',
+  DelphiDoom.Q3Host.Bot.NullRouter in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.NullRouter.pas',
+  DelphiDoom.Q3Host.Bot.Botlib in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Botlib.pas',
+  DelphiDoom.Q3Host.Bot.Server in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Server.pas',
+  DelphiDoom.Q3Host.Bot.Registrar in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Registrar.pas',
+  DelphiDoom.Q3Host.Bot.CoreSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.CoreSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.AasSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.AasSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.EaSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.EaSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.ChatSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.ChatSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.GoalSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.GoalSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.MoveSyscalls in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.MoveSyscalls.pas',
+  DelphiDoom.Q3Host.Bot.Factory in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Bot.Factory.pas',
   DelphiDoom.Q3Host.Client.Types in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Client.Types.pas',
   DelphiDoom.Q3Host.Client.KeyNames in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Client.KeyNames.pas',
   DelphiDoom.Q3Host.Client.Intf in '..\IdTech4\Q3Host\DelphiDoom.Q3Host.Client.Intf.pas',
@@ -100,6 +118,9 @@ uses
   DelphiDoom.Tests.Q3Host.Cvars in 'Source\DelphiDoom.Tests.Q3Host.Cvars.pas',
   DelphiDoom.Tests.Q3Host.Files in 'Source\DelphiDoom.Tests.Q3Host.Files.pas',
   DelphiDoom.Tests.Q3Host.GameWorld in 'Source\DelphiDoom.Tests.Q3Host.GameWorld.pas',
+  DelphiDoom.Tests.Q3Host.BotLayout in 'Source\DelphiDoom.Tests.Q3Host.BotLayout.pas',
+  DelphiDoom.Tests.Q3Host.BotCalls in 'Source\DelphiDoom.Tests.Q3Host.BotCalls.pas',
+  DelphiDoom.Tests.Q3Host.BotReach in 'Source\DelphiDoom.Tests.Q3Host.BotReach.pas',
   DelphiDoom.Tests.Q3Host.Reach in 'Source\DelphiDoom.Tests.Q3Host.Reach.pas',
   DelphiDoom.Tests.Q3Host.Coverage in 'Source\DelphiDoom.Tests.Q3Host.Coverage.pas',
   DelphiDoom.Tests.Q3Host.ClientSupport in 'Source\DelphiDoom.Tests.Q3Host.ClientSupport.pas',

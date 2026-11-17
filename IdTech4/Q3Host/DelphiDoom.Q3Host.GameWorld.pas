@@ -126,6 +126,13 @@ type
       AContentMask: Integer; ACapsule: Boolean): TQ3Trace;
     /// <summary>SV_PointContents</summary>
     function PointContents(const AMemory: IQvmMemory; const APoint: TQ3Vec3; APassEntityNum: Integer): Integer;
+    /// <summary>
+    ///   SV_ClipToEntity: the box moved from the start to the end against one entity only (the bots of the
+    ///   botlib trace against a given entity); fraction 1 and nothing else set if the entity has none of the
+    ///   contents of the mask
+    /// </summary>
+    function ClipToEntity(const AMemory: IQvmMemory; const AStart, AMins, AMaxs, AEnd: TQ3Vec3; AEntityNum,
+      AContentMask: Integer; ACapsule: Boolean): TQ3Trace;
     /// <summary>SV_EntityContact: the box (mins, maxs at the origin) starts inside the entity</summary>
     function EntityContact(const AMemory: IQvmMemory; const AMins, AMaxs: TQ3Vec3; AEntityAddress: Integer;
       ACapsule: Boolean): Boolean;
@@ -680,6 +687,34 @@ begin
     Result := Result or Model.TransformedPointContents(APoint, ClipHandleForEntity(AMemory, LHit),
       ReadVec(AMemory, LHit + OFFSET_ORIGIN), ReadVec(AMemory, LHit + OFFSET_ANGLES));
   end;
+end;
+
+function TQ3GameWorld.ClipToEntity(const AMemory: IQvmMemory; const AStart, AMins, AMaxs, AEnd: TQ3Vec3;
+  AEntityNum, AContentMask: Integer; ACapsule: Boolean): TQ3Trace;
+var
+  LTouch: Integer;
+  LAngles, LZero: TQ3Vec3;
+begin
+  EnsureWorld;
+  LTouch := EntityAddress(AEntityNum);
+  Result := Default(TQ3Trace);
+  // no brushes of a type that is looked for
+  if (AContentMask and AMemory.ReadInt32(LTouch + OFFSET_CONTENTS)) = 0 then
+  begin
+    Result.Fraction := 1.0;
+    Exit;
+  end;
+  LZero[0] := 0;
+  LZero[1] := 0;
+  LZero[2] := 0;
+  LAngles := ReadVec(AMemory, LTouch + OFFSET_CURRENTANGLES);
+  // boxes do not rotate
+  if AMemory.ReadInt32(LTouch + OFFSET_BMODEL) = 0 then
+    LAngles := LZero;
+  Result := Model.TransformedBoxTrace(AStart, AEnd, AMins, AMaxs, ClipHandleForEntity(AMemory, LTouch),
+    AContentMask, ReadVec(AMemory, LTouch + OFFSET_CURRENTORIGIN), LAngles, ACapsule);
+  if Result.Fraction < 1 then
+    Result.EntityNum := AMemory.ReadInt32(LTouch + OFFSET_NUMBER);
 end;
 
 function TQ3GameWorld.EntityContact(const AMemory: IQvmMemory; const AMins, AMaxs: TQ3Vec3;
