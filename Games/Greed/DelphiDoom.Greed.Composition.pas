@@ -140,6 +140,7 @@ uses
   DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState, DelphiDoom.Greed.GameView.Intf,
   DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.GameRendererFactory, DelphiDoom.Greed.Game.Intf,
   DelphiDoom.Greed.Game, DelphiDoom.Greed.GameLoop, DelphiDoom.Greed.HostWindow, DelphiDoom.Greed.HostControls,
+  DelphiDoom.Greed.KeyBindings,
   DelphiDoom.Greed.ScriptControls, DelphiDoom.Greed.PlainView, DelphiDoom.Greed.HudView, DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.GameDump,
   DelphiDoom.Greed.HostAudio, DelphiDoom.Greed.TrackerSongDecoder, DelphiDoom.Greed.DemoArchive,
   DelphiDoom.Greed.Settings, DelphiDoom.Greed.Settings.Intf, DelphiDoom.Greed.SettingsStore,
@@ -1169,6 +1170,14 @@ begin
     // one of the system (a run with a script must give the same program whatever the mouse of the machine does)
     LMouse := CreateScriptMouse(LScript, LScriptMouse);
     LRealMouse := (not LOptions.Headless) and (not LOptions.NoMouse) and (LScript.Count = 0);
+    // the settings: xGreed.ini in the folder of the data of the program, then the volumes asked on the command line
+    LSettings := TGreedSettings.Create;
+    LStore := TGreedSettingsStore.Create(TGreedSaveFolder.Create(ADataFolder), GREED_SETTINGS_FILE);
+    LStore.Load(LSettings, LOptions.Game);
+    if LOptions.MusicVolume >= 0 then
+      LSettings.SetInteger('musicvol', LOptions.MusicVolume);
+    if LOptions.SfxVolume >= 0 then
+      LSettings.SetInteger('sfxvol', LOptions.SfxVolume);
     if LOptions.Headless then
     begin
       LShown := TGreedLastFramePresenter.Create(TGreedNoWindow.Create);
@@ -1195,7 +1204,8 @@ begin
       LShownIntf := LShown;
       LPresenter := LShownIntf;
       LInput := LHostWindow;
-      LSource := TGreedHostControls.Create(LKeys);
+      // the keys of the 19 buttons are the ones of xGreed.ini
+      LSource := TGreedHostControls.Create(LKeys, TGreedKeyBindings.Create(LSettings));
       SetLength(LKeyboards, 1);
       LKeyboards[0] := TGreedHostKeyboard.Create(LKeys);
       if LRealMouse then
@@ -1227,15 +1237,6 @@ begin
     else
       LClock := TClockFactory.CreateClock(nil);
     LTime.RealClock := LClock;
-
-    // the settings: xGreed.ini in the folder of the data of the program, then the volumes asked on the command line
-    LSettings := TGreedSettings.Create;
-    LStore := TGreedSettingsStore.Create(TGreedSaveFolder.Create(ADataFolder), GREED_SETTINGS_FILE);
-    LStore.Load(LSettings, LOptions.Game);
-    if LOptions.MusicVolume >= 0 then
-      LSettings.SetInteger('musicvol', LOptions.MusicVolume);
-    if LOptions.SfxVolume >= 0 then
-      LSettings.SetInteger('sfxvol', LOptions.SfxVolume);
 
     // the sound: the mixer of the game on the PCM output of the host; without a device the game is silent
     LDevice := TGreedPcmMixer.Create(GREED_PCM_DEFAULT_RATE, TGreedTrackerSongDecoder.Create,
