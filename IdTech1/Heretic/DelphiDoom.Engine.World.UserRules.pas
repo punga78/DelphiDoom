@@ -167,7 +167,7 @@ var
 begin
   if player.health > 0 then
   begin // Handle beak movement
-    P_UpdateBeak(player, @player.psprites[ps_weapon]);
+    THereticWeaponActions.P_UpdateBeak(player, @player.psprites[ps_weapon]);
   end;
 
   if player.chickenTics and 15 <> 0 then
@@ -466,7 +466,7 @@ begin
   angle := angle shr ANGLETOFINESHIFT;
   fog := P_SpawnMobj(x + 20 * finecosine[angle], y + 20 * finesine[angle], z + TELEFOGHEIGHT, Ord(MT_TFOG));
   S_StartSound(fog, Ord(sfx_telept));
-  P_PostChickenWeapon(player, weapon);
+  THereticWeaponActions.P_PostChickenWeapon(player, weapon);
   result := true;
 end;
 

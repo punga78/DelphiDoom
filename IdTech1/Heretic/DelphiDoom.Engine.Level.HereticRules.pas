@@ -170,13 +170,13 @@ end;
 procedure THereticLevelRules.BeforeThings;
 begin
   P_InitAmbientSound;
-  P_InitMonsters;
-  P_OpenWeapons;
+  THereticMonsterActions.P_InitMonsters;
+  THereticWeaponActions.P_OpenWeapons;
 end;
 
 procedure THereticLevelRules.AfterThings;
 begin
-  P_CloseWeapons;
+  THereticWeaponActions.P_CloseWeapons;
 end;
 
 procedure THereticLevelRules.BeforeDeathmatchSpawn;

@@ -354,7 +354,7 @@ end;
 //==============================================================================
 procedure A_FastChase(actor: Pmobj_t);
 begin
-  P_DoChase(actor, true);
+  THereticMonsterActions.P_DoChase(actor, true);
 end;
 
 //==============================================================================

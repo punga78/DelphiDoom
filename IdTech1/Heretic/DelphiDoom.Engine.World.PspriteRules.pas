@@ -35,314 +35,6 @@ const
 
 //==============================================================================
 //
-// A_WeaponReady
-//
-//==============================================================================
-procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BeakRaise
-//
-//==============================================================================
-procedure A_BeakRaise(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BeakAttackPL1
-//
-//==============================================================================
-procedure A_BeakAttackPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BeakAttackPL2
-//
-//==============================================================================
-procedure A_BeakAttackPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_StaffAttackPL1
-//
-//==============================================================================
-procedure A_StaffAttackPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_StaffAttackPL2
-//
-//==============================================================================
-procedure A_StaffAttackPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireBlasterPL1
-//
-//==============================================================================
-procedure A_FireBlasterPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireBlasterPL2
-//
-//==============================================================================
-procedure A_FireBlasterPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireGoldWandPL1
-//
-//==============================================================================
-procedure A_FireGoldWandPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireGoldWandPL2
-//
-//==============================================================================
-procedure A_FireGoldWandPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireMacePL1B
-//
-//==============================================================================
-procedure A_FireMacePL1B(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireMacePL1
-//
-//==============================================================================
-procedure A_FireMacePL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_MaceBallImpact
-//
-//==============================================================================
-procedure A_MaceBallImpact(ball: Pmobj_t);
-
-//==============================================================================
-//
-// A_MacePL1Check
-//
-//==============================================================================
-procedure A_MacePL1Check(ball: Pmobj_t);
-
-//==============================================================================
-//
-// A_MaceBallImpact2
-//
-//==============================================================================
-procedure A_MaceBallImpact2(ball: Pmobj_t);
-
-//==============================================================================
-//
-// A_FireMacePL2
-//
-//==============================================================================
-procedure A_FireMacePL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_DeathBallImpact
-//
-//==============================================================================
-procedure A_DeathBallImpact(ball: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpawnRippers
-//
-//==============================================================================
-procedure A_SpawnRippers(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FireCrossbowPL1
-//
-//==============================================================================
-procedure A_FireCrossbowPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireCrossbowPL2
-//
-//==============================================================================
-procedure A_FireCrossbowPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BoltSpark
-//
-//==============================================================================
-procedure A_BoltSpark(bolt: Pmobj_t);
-
-//==============================================================================
-//
-// A_FireSkullRodPL1
-//
-//==============================================================================
-procedure A_FireSkullRodPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FireSkullRodPL2
-//
-//==============================================================================
-procedure A_FireSkullRodPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_SkullRodPL2Seek
-//
-//==============================================================================
-procedure A_SkullRodPL2Seek(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_AddPlayerRain
-//
-//==============================================================================
-procedure A_AddPlayerRain(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SkullRodStorm
-//
-//==============================================================================
-procedure A_SkullRodStorm(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RainImpact
-//
-//==============================================================================
-procedure A_RainImpact(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_HideInCeiling
-//
-//==============================================================================
-procedure A_HideInCeiling(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FirePhoenixPL1
-//
-//==============================================================================
-procedure A_FirePhoenixPL1(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_PhoenixPuff
-//
-//==============================================================================
-procedure A_PhoenixPuff(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_InitPhoenixPL2
-//
-//==============================================================================
-procedure A_InitPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FirePhoenixPL2
-//
-//==============================================================================
-procedure A_FirePhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_ShutdownPhoenixPL2
-//
-//==============================================================================
-procedure A_ShutdownPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_FlameEnd
-//
-//==============================================================================
-procedure A_FlameEnd(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FloatPuff
-//
-//==============================================================================
-procedure A_FloatPuff(puff: Pmobj_t);
-
-//==============================================================================
-//
-// A_GauntletAttack
-//
-//==============================================================================
-procedure A_GauntletAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_BeakReady
-//
-//==============================================================================
-procedure A_BeakReady(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_UpdateBeak
-//
-//==============================================================================
-procedure P_UpdateBeak(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_PostChickenWeapon
-//
-//==============================================================================
-procedure P_PostChickenWeapon(player: Pplayer_t; weapon: weapontype_t);
-
-//==============================================================================
-//
-// P_OpenWeapons
-//
-//==============================================================================
-procedure P_OpenWeapons;
-
-//==============================================================================
-//
-// P_CloseWeapons
-//
-//==============================================================================
-procedure P_CloseWeapons;
-
-//==============================================================================
-//
-// P_RepositionMace
-//
-//==============================================================================
-procedure P_RepositionMace(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_AddMaceSpot
-//
-//==============================================================================
-procedure P_AddMaceSpot(mthing: Pmapthing_t);
-
-//==============================================================================
-//
-// P_ActivateBeak
-//
-//==============================================================================
-procedure P_ActivateBeak(player: Pplayer_t);
-
-//==============================================================================
-//
 // P_CheckAmmo
 //
 //==============================================================================
@@ -426,6 +118,323 @@ type
     class procedure CheckSupplies(const player: Pplayer_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  THereticWeaponActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_WeaponReady
+    //
+    //==============================================================================
+    class procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BeakRaise
+    //
+    //==============================================================================
+    class procedure A_BeakRaise(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BeakAttackPL1
+    //
+    //==============================================================================
+    class procedure A_BeakAttackPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BeakAttackPL2
+    //
+    //==============================================================================
+    class procedure A_BeakAttackPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_StaffAttackPL1
+    //
+    //==============================================================================
+    class procedure A_StaffAttackPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_StaffAttackPL2
+    //
+    //==============================================================================
+    class procedure A_StaffAttackPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireBlasterPL1
+    //
+    //==============================================================================
+    class procedure A_FireBlasterPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireBlasterPL2
+    //
+    //==============================================================================
+    class procedure A_FireBlasterPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireGoldWandPL1
+    //
+    //==============================================================================
+    class procedure A_FireGoldWandPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireGoldWandPL2
+    //
+    //==============================================================================
+    class procedure A_FireGoldWandPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireMacePL1B
+    //
+    //==============================================================================
+    class procedure A_FireMacePL1B(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireMacePL1
+    //
+    //==============================================================================
+    class procedure A_FireMacePL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_MaceBallImpact
+    //
+    //==============================================================================
+    class procedure A_MaceBallImpact(ball: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MacePL1Check
+    //
+    //==============================================================================
+    class procedure A_MacePL1Check(ball: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MaceBallImpact2
+    //
+    //==============================================================================
+    class procedure A_MaceBallImpact2(ball: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FireMacePL2
+    //
+    //==============================================================================
+    class procedure A_FireMacePL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_DeathBallImpact
+    //
+    //==============================================================================
+    class procedure A_DeathBallImpact(ball: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpawnRippers
+    //
+    //==============================================================================
+    class procedure A_SpawnRippers(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FireCrossbowPL1
+    //
+    //==============================================================================
+    class procedure A_FireCrossbowPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireCrossbowPL2
+    //
+    //==============================================================================
+    class procedure A_FireCrossbowPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BoltSpark
+    //
+    //==============================================================================
+    class procedure A_BoltSpark(bolt: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FireSkullRodPL1
+    //
+    //==============================================================================
+    class procedure A_FireSkullRodPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FireSkullRodPL2
+    //
+    //==============================================================================
+    class procedure A_FireSkullRodPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_SkullRodPL2Seek
+    //
+    //==============================================================================
+    class procedure A_SkullRodPL2Seek(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AddPlayerRain
+    //
+    //==============================================================================
+    class procedure A_AddPlayerRain(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SkullRodStorm
+    //
+    //==============================================================================
+    class procedure A_SkullRodStorm(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RainImpact
+    //
+    //==============================================================================
+    class procedure A_RainImpact(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_HideInCeiling
+    //
+    //==============================================================================
+    class procedure A_HideInCeiling(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FirePhoenixPL1
+    //
+    //==============================================================================
+    class procedure A_FirePhoenixPL1(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_PhoenixPuff
+    //
+    //==============================================================================
+    class procedure A_PhoenixPuff(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_InitPhoenixPL2
+    //
+    //==============================================================================
+    class procedure A_InitPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FirePhoenixPL2
+    //
+    //==============================================================================
+    class procedure A_FirePhoenixPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_ShutdownPhoenixPL2
+    //
+    //==============================================================================
+    class procedure A_ShutdownPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_FlameEnd
+    //
+    //==============================================================================
+    class procedure A_FlameEnd(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FloatPuff
+    //
+    //==============================================================================
+    class procedure A_FloatPuff(puff: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_GauntletAttack
+    //
+    //==============================================================================
+    class procedure A_GauntletAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_BeakReady
+    //
+    //==============================================================================
+    class procedure A_BeakReady(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_UpdateBeak
+    //
+    //==============================================================================
+    class procedure P_UpdateBeak(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_PostChickenWeapon
+    //
+    //==============================================================================
+    class procedure P_PostChickenWeapon(player: Pplayer_t; weapon: weapontype_t); static;
+
+    //==============================================================================
+    //
+    // P_OpenWeapons
+    //
+    //==============================================================================
+    class procedure P_OpenWeapons; static;
+
+    //==============================================================================
+    //
+    // P_CloseWeapons
+    //
+    //==============================================================================
+    class procedure P_CloseWeapons; static;
+
+    //==============================================================================
+    //
+    // P_RepositionMace
+    //
+    //==============================================================================
+    class procedure P_RepositionMace(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_AddMaceSpot
+    //
+    //==============================================================================
+    class procedure P_AddMaceSpot(mthing: Pmapthing_t); static;
+
+    //==============================================================================
+    //
+    // P_ActivateBeak
+    //
+    //==============================================================================
+    class procedure P_ActivateBeak(player: Pplayer_t); static;
+  end;
+
+
 implementation
 
 uses
@@ -490,7 +499,7 @@ var
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_OpenWeapons;
+class procedure THereticWeaponActions.P_OpenWeapons;
 begin
   MaceSpotCount := 0;
 end;
@@ -502,7 +511,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_AddMaceSpot(mthing: Pmapthing_t);
+class procedure THereticWeaponActions.P_AddMaceSpot(mthing: Pmapthing_t);
 begin
   if MaceSpotCount = MAX_MACE_SPOTS then
     I_Error('P_AddMaceSpot: Too many mace spots: %d.', [MaceSpotCount]);
@@ -521,7 +530,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_RepositionMace(mo: Pmobj_t);
+class procedure THereticWeaponActions.P_RepositionMace(mo: Pmobj_t);
 var
   spot: integer;
   ss: Psubsector_t;
@@ -546,7 +555,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_CloseWeapons;
+class procedure THereticWeaponActions.P_CloseWeapons;
 var
   spot: integer;
 begin
@@ -705,7 +714,7 @@ end;
 // or after previous attack/fire sequence.
 //
 //==============================================================================
-procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
 var
   newstate: statenum_t;
   angle: integer;
@@ -764,7 +773,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_BeakRaise(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_BeakRaise(player: Pplayer_t; psp: Ppspdef_t);
 begin
   psp.sy := WEAPONTOP;
   P_SetPsprite(player, Ord(ps_weapon), statenum_t(wpnlev1info[Ord(player.readyweapon)].readystate));
@@ -783,7 +792,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_BeakAttackPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_BeakAttackPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -812,7 +821,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_BeakAttackPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_BeakAttackPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -839,7 +848,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_StaffAttackPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_StaffAttackPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -868,7 +877,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_StaffAttackPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_StaffAttackPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -898,7 +907,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireBlasterPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireBlasterPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
   angle: angle_t;
@@ -925,7 +934,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireBlasterPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireBlasterPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
@@ -949,7 +958,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireGoldWandPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireGoldWandPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
   angle: angle_t;
@@ -974,7 +983,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireGoldWandPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireGoldWandPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   i: integer;
   mo: Pmobj_t;
@@ -1009,7 +1018,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireMacePL1B(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireMacePL1B(player: Pplayer_t; psp: Ppspdef_t);
 var
   pmo: Pmobj_t;
   ball: Pmobj_t;
@@ -1045,7 +1054,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireMacePL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireMacePL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   ball: Pmobj_t;
 begin
@@ -1073,7 +1082,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_MacePL1Check(ball: Pmobj_t);
+class procedure THereticWeaponActions.A_MacePL1Check(ball: Pmobj_t);
 var
   angle: angle_t;
 begin
@@ -1099,7 +1108,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_MaceBallImpact(ball: Pmobj_t);
+class procedure THereticWeaponActions.A_MaceBallImpact(ball: Pmobj_t);
 begin
   if (ball.z <= ball.floorz) and (P_HitFloor(ball) <> FLOOR_SOLID) then
   begin // Landed in some sort of liquid
@@ -1130,7 +1139,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_MaceBallImpact2(ball: Pmobj_t);
+class procedure THereticWeaponActions.A_MaceBallImpact2(ball: Pmobj_t);
 var
   tiny: Pmobj_t;
   angle: angle_t;
@@ -1183,7 +1192,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireMacePL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireMacePL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
@@ -1211,7 +1220,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_DeathBallImpact(ball: Pmobj_t);
+class procedure THereticWeaponActions.A_DeathBallImpact(ball: Pmobj_t);
 var
   i: integer;
   target: Pmobj_t;
@@ -1281,7 +1290,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_SpawnRippers(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_SpawnRippers(actor: Pmobj_t);
 var
   i: integer;
   angle: angle_t;
@@ -1307,7 +1316,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireCrossbowPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireCrossbowPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   pmo: Pmobj_t;
 begin
@@ -1325,7 +1334,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireCrossbowPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireCrossbowPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   pmo: Pmobj_t;
 begin
@@ -1349,7 +1358,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_BoltSpark(bolt: Pmobj_t);
+class procedure THereticWeaponActions.A_BoltSpark(bolt: Pmobj_t);
 var
   spark: Pmobj_t;
 begin
@@ -1368,7 +1377,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireSkullRodPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireSkullRodPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
 begin
@@ -1393,7 +1402,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FireSkullRodPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FireSkullRodPL2(player: Pplayer_t; psp: Ppspdef_t);
 begin
   if TGameSession.DeathMatch <> 0 then
     player.ammo[Ord(am_skullrod)] := player.ammo[Ord(am_skullrod)] - USE_SKRD_AMMO_1
@@ -1424,7 +1433,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_SkullRodPL2Seek(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_SkullRodPL2Seek(actor: Pmobj_t);
 begin
   P_SeekerMissile(actor, ANG1 * 10, ANG1 * 30);
 end;
@@ -1436,7 +1445,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_AddPlayerRain(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_AddPlayerRain(actor: Pmobj_t);
 var
   playerNum: integer;
   player: Pplayer_t;
@@ -1482,7 +1491,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_SkullRodStorm(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_SkullRodStorm(actor: Pmobj_t);
 var
   x: fixed_t;
   y: fixed_t;
@@ -1536,7 +1545,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_RainImpact(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_RainImpact(actor: Pmobj_t);
 begin
   if actor.z > actor.floorz then
     P_SetMobjState(actor, statenum_t(Ord(S_RAINAIRXPLR1_1) + actor.special2))
@@ -1551,7 +1560,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_HideInCeiling(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_HideInCeiling(actor: Pmobj_t);
 begin
   actor.z := actor.ceilingz + 4 * FRACUNIT;
 end;
@@ -1563,7 +1572,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FirePhoenixPL1(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FirePhoenixPL1(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
 begin
@@ -1583,7 +1592,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_PhoenixPuff(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_PhoenixPuff(actor: Pmobj_t);
 var
   puff: Pmobj_t;
   angle: angle_t;
@@ -1610,7 +1619,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_InitPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_InitPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
 begin
   player.flamecount := FLAME_THROWER_TICS;
 end;
@@ -1624,7 +1633,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FirePhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_FirePhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
 var
   mo: Pmobj_t;
   pmo: Pmobj_t;
@@ -1668,7 +1677,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_ShutdownPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_ShutdownPhoenixPL2(player: Pplayer_t; psp: Ppspdef_t);
 begin
   player.ammo[Ord(am_phoenixrod)] := player.ammo[Ord(am_phoenixrod)] - USE_PHRD_AMMO_2;
 end;
@@ -1680,7 +1689,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FlameEnd(actor: Pmobj_t);
+class procedure THereticWeaponActions.A_FlameEnd(actor: Pmobj_t);
 begin
   actor.momz := actor.momz + $18000;
 end;
@@ -1692,7 +1701,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_FloatPuff(puff: Pmobj_t);
+class procedure THereticWeaponActions.A_FloatPuff(puff: Pmobj_t);
 begin
   puff.momz := puff.momz + 117964;
 end;
@@ -1704,7 +1713,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_GauntletAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_GauntletAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   angle: angle_t;
   damage: integer;
@@ -1783,7 +1792,7 @@ end;
 // P_UpdateBeak
 //
 //==============================================================================
-procedure P_UpdateBeak(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.P_UpdateBeak(player: Pplayer_t; psp: Ppspdef_t);
 begin
   psp.sy := WEAPONTOP + _SHL(player.chickenPeck, FRACBITS - 1);
 end;
@@ -1795,7 +1804,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure A_BeakReady(player: Pplayer_t; psp: Ppspdef_t);
+class procedure THereticWeaponActions.A_BeakReady(player: Pplayer_t; psp: Ppspdef_t);
 begin
   if player.cmd.buttons and BT_ATTACK <> 0 then
   begin // Chicken beak attack
@@ -1823,7 +1832,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_ActivateBeak(player: Pplayer_t);
+class procedure THereticWeaponActions.P_ActivateBeak(player: Pplayer_t);
 begin
   player.pendingweapon := wp_nochange;
   player.readyweapon := wp_beak;
@@ -1838,7 +1847,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure P_PostChickenWeapon(player: Pplayer_t; weapon: weapontype_t);
+class procedure THereticWeaponActions.P_PostChickenWeapon(player: Pplayer_t; weapon: weapontype_t);
 begin
   if weapon = wp_beak then // Should never happen
     weapon := wp_staff;

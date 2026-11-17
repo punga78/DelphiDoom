@@ -373,7 +373,7 @@ begin
   if not SB_CmdCheckPlayerStatus then
     exit;
 
-  P_Massacre;
+  THereticMonsterActions.P_Massacre;
   CPlayer._message := TXT_CHEATMASSACRE;
 end;
 

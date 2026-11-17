@@ -544,7 +544,7 @@ begin
   if oldFlags2 and MF2_FLY <> 0 then
     chicken.flags2 := chicken.flags2 or MF2_FLY;
   player.chickenTics := CHICKENTICS;
-  P_ActivateBeak(player);
+  THereticWeaponActions.P_ActivateBeak(player);
   result := true;
 end;
 
@@ -1339,7 +1339,7 @@ begin
         begin
           if (target._type = Ord(MT_SORCERER2)) and (P_Random < 96) then
           begin // D'Sparil teleports away
-            P_DSparilTeleport(target);
+            THereticMonsterActions.P_DSparilTeleport(target);
             exit;
           end;
         end;
@@ -1542,7 +1542,7 @@ class procedure TInterGameRules.RepositionSpecial(thing: Pmobj_t);
 begin
   if thing._type = Ord(MT_WMACE) then
   begin // Do random mace placement
-    P_RepositionMace(thing);
+    THereticWeaponActions.P_RepositionMace(thing);
   end;
 end;
 

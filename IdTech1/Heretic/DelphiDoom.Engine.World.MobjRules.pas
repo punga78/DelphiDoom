@@ -862,7 +862,7 @@ begin
   // Check for boss spots
   if mthing._type = 56 then // Monster_BossSpot
   begin
-    P_AddBossSpot(mthing.x * FRACUNIT, mthing.y * FRACUNIT,  ANG1 * mthing.angle);
+    THereticMonsterActions.P_AddBossSpot(mthing.x * FRACUNIT, mthing.y * FRACUNIT,  ANG1 * mthing.angle);
     result := True;
     exit;
   end;
@@ -902,7 +902,7 @@ begin
     Ord(MT_WMACE):
       begin
         if gamemode <> shareware then // Put in the mace spot list
-          P_AddMaceSpot(mthing);
+          THereticWeaponActions.P_AddMaceSpot(mthing);
         result := True;
       end;
   end;
