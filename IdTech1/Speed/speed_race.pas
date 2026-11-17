@@ -684,7 +684,7 @@ begin
   carids := TRacingFactory.CreateGridAssigner(race_random).Assign(aicount, TRacingCarType.Any, [playercar]);
 
   count := 0;
-  if playeringame[TGameSession.ConsolePlayer] and (player.mo <> nil) then
+  if TGameSession.PlayerInGame[TGameSession.ConsolePlayer] and (player.mo <> nil) then
   begin
     SH_NewCar(player.mo, track, playercar, 0, true, state);
     race_controller.AddCar(state);

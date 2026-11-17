@@ -96,7 +96,7 @@ end;
 
 function TEngineScriptPlayers.InGame(const APlayer: Integer): Boolean;
 begin
-  Result := playeringame[APlayer];
+  Result := TGameSession.PlayerInGame[APlayer];
 end;
 
 function TEngineScriptPlayers.KeyCount: Integer;

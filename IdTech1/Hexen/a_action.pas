@@ -501,7 +501,7 @@ begin
   begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
       begin
         continue;
       end;
@@ -1140,7 +1140,7 @@ begin
     for playnum := 0 to MAXPLAYERS - 1 do
     begin
       player := @players[playnum];
-      if not playeringame[playnum] then
+      if not TGameSession.PlayerInGame[playnum] then
         continue;
 
       victim := player.mo;

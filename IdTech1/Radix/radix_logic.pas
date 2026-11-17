@@ -415,7 +415,7 @@ var
   lp: Pradixlevelplayer_t;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] and (players[i].mo <> nil) then
+    if TGameSession.PlayerInGame[i] and (players[i].mo <> nil) then
     begin
       lp := @radixlevelplayers[i];
       if lp.mo <> players[i].mo then

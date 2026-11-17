@@ -201,7 +201,7 @@ var
   mo: Pmobj_t;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       mo := players[i].mo;
       if mo = nil then
@@ -1472,7 +1472,7 @@ begin
   parms := radixsectorbasedgravity_p(@action.params);
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       mo := players[i].mo;
       if mo <> nil then
@@ -2386,7 +2386,7 @@ begin
 
     max_radius := parms.radious_one_third * 3;
     for i := 0 to MAXPLAYERS - 1 do
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         mo := players[i].mo;
         if mo <> nil then
@@ -2530,7 +2530,7 @@ begin
 
   limits := TRadixPilotLimits.Default;
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] and (players[i].mo <> nil) then
+    if TGameSession.PlayerInGame[i] and (players[i].mo <> nil) then
     begin
       p := @players[i];
       if p.playerstate <> PST_LIVE then

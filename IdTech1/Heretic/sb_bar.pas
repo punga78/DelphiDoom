@@ -1298,7 +1298,7 @@ begin
   begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
         temp := temp + CPlayer.frags[i];
     SB_DrINumber(temp, 45, 185);
   end;

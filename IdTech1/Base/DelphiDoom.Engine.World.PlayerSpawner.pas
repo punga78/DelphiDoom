@@ -68,7 +68,7 @@ var
   ss: Psector_t;
 begin
   // not playing?
-  if not playeringame[mthing._type - 1] then
+  if not TGameSession.PlayerInGame[mthing._type - 1] then
   begin
     result := nil;
     exit;

@@ -158,6 +158,8 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>The player slots in use</summary>
+    class var PlayerInGame: array[0..MAXPLAYERS - 1] of boolean;
     /// <summary>Level, intermission, finale or demo screen</summary>
     class var GameState: gamestate_t;
     /// <summary>The game state of the last frame drawn</summary>
@@ -268,7 +270,6 @@ var
 
 
 
-  playeringame: array[0..MAXPLAYERS - 1] of boolean;
   PlayerClass: array[0..MAXPLAYERS - 1] of pclass_t;
 
   displayplayer: integer; // view being displayed
@@ -1203,7 +1204,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] and (players[i].playerstate = PST_DEAD) then
+    if TGameSession.PlayerInGame[i] and (players[i].playerstate = PST_DEAD) then
       players[i].playerstate := PST_REBORN;
     ZeroMemory(@players[i].frags, SizeOf(players[i].frags));
   end;
@@ -1214,7 +1215,7 @@ begin
 
   // JVAL: Prevent erroneous demos
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo = nil then
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
@@ -1277,7 +1278,7 @@ begin
       inc(displayplayer);
       if displayplayer = MAXPLAYERS then
         displayplayer := 0;
-    until not ((not playeringame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
+    until not ((not TGameSession.PlayerInGame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
     result := true;
     exit;
   end;
@@ -1834,7 +1835,7 @@ begin
     exit;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       G_PlayerExitMap(i);
 
   if amstate <> am_inactive then
@@ -2148,7 +2149,7 @@ var
 begin
   // do player reborns if needed
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] and (players[i].playerstate = PST_REBORN) then
+    if TGameSession.PlayerInGame[i] and (players[i].playerstate = PST_REBORN) then
       G_DoReborn(i);
 
   // do things to change the game state
@@ -2199,7 +2200,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       pl := @players[i];
       cmd := @pl.cmd;
@@ -2224,7 +2225,7 @@ begin
   // check for special buttons
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       pl := @players[i];
       if pl.cmd.commands and CM_SAVEGAME <> 0 then
@@ -2329,7 +2330,7 @@ begin
   NetGame := false;
   DeathMatch := 0;
   for i := 1 to MAXPLAYERS - 1 do
-    playeringame[i] := false;
+    TGameSession.PlayerInGame[i] := false;
   RespawnParm := false;
   FastParm := false;
   NoMonsters := false;

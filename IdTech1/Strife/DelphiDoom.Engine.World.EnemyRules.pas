@@ -1308,7 +1308,7 @@ begin
     else
       actor.lastlook := (actor.lastlook + 1) mod MAXPLAYERS;
 
-    if not playeringame[actor.lastlook] then
+    if not TGameSession.PlayerInGame[actor.lastlook] then
       continue;
 
     if (c = 2) or (actor.lastlook = stop) then
@@ -3575,7 +3575,7 @@ begin
   i := 0;
   while i < MAXPLAYERS do
   begin
-    if playeringame[i] and (players[i].health > 0) then
+    if TGameSession.PlayerInGame[i] and (players[i].health > 0) then
       break;
     inc(i);
   end;
@@ -3725,7 +3725,7 @@ begin
   i := 0;
   while i < MAXPLAYERS do
   begin
-    if playeringame[i] and (players[i].health > 0) then
+    if TGameSession.PlayerInGame[i] and (players[i].health > 0) then
       break;
     inc(i);
   end;

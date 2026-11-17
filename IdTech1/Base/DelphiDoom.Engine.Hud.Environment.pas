@@ -115,7 +115,7 @@ end;
 
 function TEngineHudEnvironment.IsInGame(const AIndex: Integer): Boolean;
 begin
-  Result := playeringame[AIndex];
+  Result := TGameSession.PlayerInGame[AIndex];
 end;
 
 function TEngineHudEnvironment.ChatChar(const AIndex: Integer): Byte;

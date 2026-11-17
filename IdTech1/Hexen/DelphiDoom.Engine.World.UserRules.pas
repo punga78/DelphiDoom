@@ -940,7 +940,7 @@ begin
   selections := 0;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       inc(selections);
   i := P_Random mod selections;
   destX := playerstarts[0][i].x * FRACUNIT;

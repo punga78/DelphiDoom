@@ -414,7 +414,7 @@ begin
   LHeader.Seed := M_GetSystemRandomSeed;
   LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
   for i := 0 to MAXPLAYERS - 1 do
-    LHeader.PlayersInGame[i] := playeringame[i];
+    LHeader.PlayersInGame[i] := TGameSession.PlayerInGame[i];
 
   LPosition := System.PByte(demo_p);
   TDemoHeaderCodec.Write(LPosition, TDemoProfiles.Hexen(MAXPLAYERS), LHeader);
@@ -596,9 +596,9 @@ begin
   TGameSession.ConsolePlayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
-    playeringame[i] := LHeader.PlayersInGame[i];
+    TGameSession.PlayerInGame[i] := LHeader.PlayersInGame[i];
 
-  if playeringame[1] then
+  if TGameSession.PlayerInGame[1] then
   begin
     TGameSession.NetGame := true;
     TGameSession.NetDemo := true;

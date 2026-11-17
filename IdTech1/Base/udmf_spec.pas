@@ -532,7 +532,7 @@ begin
     S_StartSound(actor, SND_QUAKE);
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       pmo := players[i].mo;
       dist := P_AproxDistance(actor.x - pmo.x, actor.y - pmo.y);

@@ -6258,7 +6258,7 @@ begin
 
   qtics := actor.state.params.IntVal[0] * FRACUNIT;
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       players[i].quaketics := qtics;
       players[i].quakeintensity := FRACUNIT;
@@ -6802,7 +6802,7 @@ begin
   nearest := MAXINT;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> nil then
         if players[i].mo.health >= 0 then
         begin
@@ -7192,7 +7192,7 @@ begin
     exit;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> actor then
         if P_CheckSight(players[i].mo, actor) then
           exit;
@@ -7225,7 +7225,7 @@ begin
   twodi := actor.state.params.BoolVal[2];
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> actor then
       begin
         dx := players[i].mo.x - actor.x;
@@ -7242,7 +7242,7 @@ begin
       end;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> actor then
         if P_CheckSight(players[i].mo, actor) then
           exit;
@@ -7275,7 +7275,7 @@ begin
   twodi := actor.state.params.BoolVal[2];
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> actor then
       begin
         dx := players[i].mo.x - actor.x;
@@ -9149,7 +9149,7 @@ var
   testintensity: fixed_t;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       dist := P_AproxDistance(actor.x - players[i].mo.x, actor.y - players[i].mo.y);
       dist := P_AproxDistance(actor.z - players[i].mo.z, dist); // 3d distance
@@ -9637,7 +9637,7 @@ begin
   nearest := MAXINT;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if (players[i].mo <> nil) and (players[i].mo <> mo) then
         if players[i].mo.health >= 0 then
         begin

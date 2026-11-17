@@ -288,7 +288,7 @@ begin
     memset(@secretPercent, 0, MAXPLAYERS * SizeOf(integer));
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         if P_World.Totals.Kills <> 0 then
           killPercent[i] := players[i].killcount * 100 div P_World.Totals.Kills;
@@ -310,11 +310,11 @@ begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
       totalFrags[i] := 0;
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         inc(playercount);
         for j := 0 to MAXPLAYERS - 1 do
-          if playeringame[j] then
+          if TGameSession.PlayerInGame[j] then
             totalFrags[i] := totalFrags[i] + players[i].frags[j];
         dSlideX[i] := (43 * posnum * FRACUNIT) div 20;
         dSlideY[i] := (36 * posnum * FRACUNIT) div 20;
@@ -437,7 +437,7 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       player := @players[i];
       if player.cmd.buttons and BT_ATTACK <> 0 then
@@ -901,7 +901,7 @@ begin
   ypos := 50;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       V_DrawPatch(25, ypos, SCN_TMP, W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
       if intertime < 40 then
@@ -959,7 +959,7 @@ begin
   begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         V_DrawPatch(40, ((ypos * FRACUNIT) + dSlideY[i] * intertime) div FRACUNIT,
           SCN_TMP,
@@ -987,7 +987,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       if (intertime < 100) or (i = TGameSession.ConsolePlayer) then
       begin
@@ -1002,7 +1002,7 @@ begin
       kpos := 86;
       for j := 0 to MAXPLAYERS - 1 do
       begin
-        if playeringame[j] then
+        if TGameSession.PlayerInGame[j] then
         begin
           IN_DrawNumber(players[i].frags[j], kpos, ypos + 10, 3);
           kpos := kpos + 43;

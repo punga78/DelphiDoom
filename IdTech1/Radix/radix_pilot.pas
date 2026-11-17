@@ -258,7 +258,7 @@ var
   p: Pplayer_t;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       p := @players[i];
       if p.mo = nil then

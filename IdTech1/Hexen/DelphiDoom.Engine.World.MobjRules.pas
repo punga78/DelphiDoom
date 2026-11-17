@@ -977,7 +977,7 @@ var
 begin
   result := nil;
   // not playing?
-  if not playeringame[mthing._type - 1] then
+  if not TGameSession.PlayerInGame[mthing._type - 1] then
     exit;
 
   p := @players[mthing._type - 1];
@@ -1293,7 +1293,7 @@ begin
     spawnMask := 0;
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         spawnMask := spawnMask or classFlags[Ord(PlayerClass[i])];
       end;

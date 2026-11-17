@@ -125,7 +125,7 @@ begin
     exit;
   end;
 
-  if playeringame[playernum] then
+  if TGameSession.PlayerInGame[playernum] then
     result := players[playernum].mo
   else
     result := nil;
@@ -191,7 +191,7 @@ begin
       if origin.player <> nil then
         if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
           for i := 0 to MAXPLAYERS - 1 do
-            if playeringame[i] then
+            if TGameSession.PlayerInGame[i] then
               if origin.player <> @players[i] then
               begin
                 result := players[i].mo;
@@ -204,7 +204,7 @@ begin
       if origin.flags2_ex and MF2_EX_FRIEND <> 0 then
       {$ENDIF}
         for i := 0 to MAXPLAYERS - 1 do
-          if playeringame[i] then
+          if TGameSession.PlayerInGame[i] then
           begin
             result := players[i].mo;
             exit;

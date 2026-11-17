@@ -1844,7 +1844,7 @@ begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         temp := temp + CPlayer.frags[i];
       end;

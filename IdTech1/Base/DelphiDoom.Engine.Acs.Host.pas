@@ -155,7 +155,7 @@ var
 begin
   Result := 0;
   for LIndex := 0 to MAXPLAYERS - 1 do
-    if playeringame[LIndex] then
+    if TGameSession.PlayerInGame[LIndex] then
       Inc(Result);
 end;
 
@@ -434,7 +434,7 @@ var
   LIndex: Integer;
 begin
   for LIndex := 0 to MAXPLAYERS - 1 do
-    if playeringame[LIndex] then
+    if TGameSession.PlayerInGame[LIndex] then
     begin
       {$IFDEF HEXEN}
       P_SetMessage(@players[LIndex], AText, True);

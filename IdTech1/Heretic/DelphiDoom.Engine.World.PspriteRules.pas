@@ -1446,7 +1446,7 @@ begin
   else
     playerNum := 0;
 
-  if not playeringame[playerNum] then // Player left the game
+  if not TGameSession.PlayerInGame[playerNum] then // Player left the game
     exit;
 
   player := @players[playerNum];
@@ -1499,7 +1499,7 @@ begin
     else
       playerNum := 0;
 
-    if not playeringame[playerNum] then // Player left the game
+    if not TGameSession.PlayerInGame[playerNum] then // Player left the game
       exit;
 
     player := @players[playerNum];

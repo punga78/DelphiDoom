@@ -1003,10 +1003,10 @@ var
 begin
   StreamOutLong(ASEG_PLAYERS);
   for i := 0 to MAXPLAYERS - 1 do
-    StreamOutBoolean(playeringame[i]);
+    StreamOutBoolean(TGameSession.PlayerInGame[i]);
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
     StreamOutByte(Ord(PlayerClass[i]));
     tempPlayer := players[i];
@@ -1047,11 +1047,11 @@ var
 begin
   AssertSegment(ASEG_PLAYERS);
   for i := 0 to MAXPLAYERS - 1 do
-    playeringame[i] := GET_BOOLEAN;
+    TGameSession.PlayerInGame[i] := GET_BOOLEAN;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
     begin
       continue;
     end;
@@ -1820,7 +1820,7 @@ begin
   end;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
 
   P_CreateTIDList;
@@ -2713,7 +2713,7 @@ begin
     // Destroy all freshly spawned players
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
         P_RemoveMobj(players[i].mo);
     end;
   end;
@@ -2722,7 +2722,7 @@ begin
   targetPlayerMobj := nil;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
     players[i] := playerBackup[i];
     P_ClearMessage(@players[i]);
@@ -2799,7 +2799,7 @@ begin
   // Destroy all things touching players
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       P_TeleportMove(players[i].mo, players[i].mo.x, players[i].mo.y);
     end;

@@ -326,7 +326,7 @@ begin
     [Ord(startskill), TGameSession.DeathMatch, startmap{$IFNDEF STRIFE}, startepisode{$ENDIF}]);
 
   for LIndex := 0 to net_numnodes - 1 do
-    playeringame[LIndex] := true;
+    TGameSession.PlayerInGame[LIndex] := true;
 
   printf(' player %d of %d (%d nodes)'#13#10,
     [TGameSession.ConsolePlayer + 1, net_numnodes, net_numnodes]);

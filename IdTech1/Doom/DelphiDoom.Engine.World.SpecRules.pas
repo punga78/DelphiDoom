@@ -1938,7 +1938,7 @@ begin
         2:
           begin
             for i := 0 to MAXPLAYERS - 1 do
-              if playeringame[i] then
+              if TGameSession.PlayerInGame[i] then
                 P_DamageMobj(players[i].mo, nil, nil, 10000);
             G_ExitLevel;
           end;
@@ -1946,7 +1946,7 @@ begin
         3:
           begin
             for i := 0 to MAXPLAYERS - 1 do
-              if playeringame[i] then
+              if TGameSession.PlayerInGame[i] then
                 P_DamageMobj(players[i].mo, nil, nil, 10000);
             G_SecretExitLevel;
           end;

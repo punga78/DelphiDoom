@@ -76,7 +76,7 @@ var
 begin
   LTics := ATics * FRACUNIT;
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
     begin
       players[LPlayer].quaketics := LTics;
       players[LPlayer].quakeintensity := FRACUNIT;
@@ -92,7 +92,7 @@ var
   LIntensity: fixed_t;
 begin
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
     begin
       LDistance := P_AproxDistance(X - players[LPlayer].mo.x, Y - players[LPlayer].mo.y);
       LDistance := P_AproxDistance(Z - players[LPlayer].mo.z, LDistance); // 3d distance

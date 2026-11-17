@@ -435,7 +435,7 @@ begin
   vsz2 := z2;
   vsradius := radius;
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> nil then
         if not PIT_CheckVerticalSight(players[i].mo) then
         begin
@@ -714,7 +714,7 @@ begin
   nearest := MAXINT;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo <> nil then
         if players[i].mo.health >= 0 then
         begin
@@ -791,7 +791,7 @@ begin
   y1 := actor.y - dist;
   y2 := actor.y + dist;
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       pmo := players[i].mo;
       if pmo <> nil then

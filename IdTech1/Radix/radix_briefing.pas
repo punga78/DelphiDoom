@@ -590,7 +590,7 @@ begin
   // fire or use: once for every press
   down := false;
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].cmd.buttons and (BT_ATTACK or BT_USE) <> 0 then
         down := true;
   acts := down and not briefingfiredown;

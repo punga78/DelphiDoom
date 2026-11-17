@@ -294,7 +294,7 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     PADSAVEP;
@@ -461,7 +461,7 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     PADSAVEP;
@@ -1287,7 +1287,7 @@ begin
           end;
 
           for i := 0 to MAXPLAYERS - 1 do
-            if playeringame[i] then
+            if TGameSession.PlayerInGame[i] then
               players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
 
           exit; // end of list

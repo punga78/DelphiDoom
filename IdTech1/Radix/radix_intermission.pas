@@ -142,7 +142,7 @@ begin
   begin
     player := @players[i];
 
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if (player.cmd.buttons and BT_ATTACK <> 0) or (player.cmd.buttons and BT_USE <> 0) then
         G_WorldDone;
   end;

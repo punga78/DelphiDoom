@@ -1499,7 +1499,7 @@ begin
     else
       actor.lastlook := (actor.lastlook + 1) mod MAXPLAYERS;
 
-    if not playeringame[actor.lastlook] then
+    if not TGameSession.PlayerInGame[actor.lastlook] then
       continue;
 
     if (c = 2) or (actor.lastlook = stop) then
@@ -1994,7 +1994,7 @@ begin
   begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
         continue;
       player := @players[i];
       mo := player.mo;

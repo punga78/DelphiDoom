@@ -97,14 +97,14 @@ end;
 
 function TEngineNetServices.IsPlayerInGame(APlayer: Integer): Boolean;
 begin
-  Result := playeringame[APlayer];
+  Result := TGameSession.PlayerInGame[APlayer];
 end;
 
 procedure TEngineNetServices.PlayerLeft(APlayer: Integer);
 var
   LMessage: string;
 begin
-  playeringame[APlayer] := False;
+  TGameSession.PlayerInGame[APlayer] := False;
   LMessage := 'Player 1 left the game';
   LMessage[8] := Chr(Ord(LMessage[8]) + APlayer);
   players[TGameSession.ConsolePlayer]._message := LMessage;

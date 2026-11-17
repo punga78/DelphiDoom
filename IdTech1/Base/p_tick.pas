@@ -333,12 +333,12 @@ begin
   begin
     PS_EventMapStart;
     for i := 0 to MAXPLAYERS - 1 do
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
         PS_EventPlayerEnter(i);
   end;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       P_PlayerThink(@players[i]);
 
 {$IFDEF HEXEN}

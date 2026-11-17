@@ -303,7 +303,7 @@ begin
     lp := @radixlevelplayers[i];
     // the body that the engine has just loaded: with another one the logic would take the
     // pilot for one that is born again and forget its last trigger
-    if (state.LevelPlayers[i].HasBody <> 0) and playeringame[i] then
+    if (state.LevelPlayers[i].HasBody <> 0) and TGameSession.PlayerInGame[i] then
       lp.mo := players[i].mo
     else
       lp.mo := nil;

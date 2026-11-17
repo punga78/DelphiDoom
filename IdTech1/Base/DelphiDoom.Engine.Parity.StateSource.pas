@@ -481,7 +481,7 @@ begin
     FSink.EndObject;
   end;
   for LIndex := 0 to MAXPLAYERS - 1 do
-    if playeringame[LIndex] then
+    if TGameSession.PlayerInGame[LIndex] then
     begin
       FSink.BeginObject(FPlayerCategory, LIndex);
       FFieldIndex := 0;
@@ -491,9 +491,9 @@ begin
 
   // where the first player is and how he is: it makes the logs readable and tells what a demo has visited
   LIndex := 0;
-  while (LIndex < MAXPLAYERS - 1) and not playeringame[LIndex] do
+  while (LIndex < MAXPLAYERS - 1) and not TGameSession.PlayerInGame[LIndex] do
     Inc(LIndex);
-  if playeringame[LIndex] and (players[LIndex].mo <> nil) then
+  if TGameSession.PlayerInGame[LIndex] and (players[LIndex].mo <> nil) then
   begin
     FSink.Scalar('px', players[LIndex].mo.x div FRACUNIT);
     FSink.Scalar('py', players[LIndex].mo.y div FRACUNIT);

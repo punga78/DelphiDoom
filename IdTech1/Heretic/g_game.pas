@@ -219,6 +219,8 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>The player slots in use</summary>
+    class var PlayerInGame: array[0..MAXPLAYERS - 1] of boolean;
     /// <summary>Level, intermission, finale or demo screen</summary>
     class var GameState: gamestate_t;
     /// <summary>The game state of the last frame drawn</summary>
@@ -333,7 +335,6 @@ var
 
   gamemapinfo: Pmapentry_t;
 
-  playeringame: array[0..MAXPLAYERS - 1] of boolean;
 
   displayplayer: integer; // view being displayed
 
@@ -1355,7 +1356,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] and (players[i].playerstate = PST_DEAD) then
+    if TGameSession.PlayerInGame[i] and (players[i].playerstate = PST_DEAD) then
       players[i].playerstate := PST_REBORN;
     ZeroMemory(@players[i].frags, SizeOf(players[i].frags));
   end;
@@ -1383,7 +1384,7 @@ begin
 
   // JVAL: Prevent erroneous demos
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       if players[i].mo = nil then
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
@@ -1452,7 +1453,7 @@ begin
       inc(displayplayer);
       if displayplayer = MAXPLAYERS then
         displayplayer := 0;
-    until not ((not playeringame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
+    until not ((not TGameSession.PlayerInGame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
     result := true;
     exit;
   end;
@@ -1637,7 +1638,7 @@ var
 begin
   // do player reborns if needed
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] and (players[i].playerstate = PST_REBORN) then
+    if TGameSession.PlayerInGame[i] and (players[i].playerstate = PST_REBORN) then
       G_DoReborn(i);
 
   // do things to change the game state
@@ -1674,7 +1675,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       pl := @players[i];
       cmd := @pl.cmd;
@@ -1709,7 +1710,7 @@ begin
   // check for special buttons
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       pl := @players[i];
       if pl.cmd.commands and CM_SAVEGAME <> 0 then
@@ -2042,7 +2043,7 @@ begin
   TGameSession.GameAction := ga_nothing;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
       G_PlayerFinishLevel(@players[i]); // take away cards and stuff
 
   if amstate <> am_inactive then
@@ -2123,7 +2124,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    wminfo.plyr[i]._in := playeringame[i];
+    wminfo.plyr[i]._in := TGameSession.PlayerInGame[i];
     wminfo.plyr[i].skills := players[i].killcount;
     wminfo.plyr[i].sitems := players[i].itemcount;
     wminfo.plyr[i].ssecret := players[i].secretcount;
@@ -2318,7 +2319,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    playeringame[i] := save_p[0] <> 0;
+    TGameSession.PlayerInGame[i] := save_p[0] <> 0;
     save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
@@ -2416,7 +2417,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    save_p[0] := intval(playeringame[i]);
+    save_p[0] := intval(TGameSession.PlayerInGame[i]);
     save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
@@ -2874,7 +2875,7 @@ begin
   LHeader.Seed := M_GetSystemRandomSeed;
   LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
   for i := 0 to MAXPLAYERS - 1 do
-    LHeader.PlayersInGame[i] := playeringame[i];
+    LHeader.PlayersInGame[i] := TGameSession.PlayerInGame[i];
 
   LPosition := System.PByte(demo_p);
   TDemoHeaderCodec.Write(LPosition, TDemoProfiles.Heretic(MAXPLAYERS), LHeader);
@@ -3053,9 +3054,9 @@ begin
   TGameSession.ConsolePlayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
-    playeringame[i] := LHeader.PlayersInGame[i];
+    TGameSession.PlayerInGame[i] := LHeader.PlayersInGame[i];
 
-  if playeringame[1] then
+  if TGameSession.PlayerInGame[1] then
   begin
     TGameSession.NetGame := true;
     TGameSession.NetDemo := true;
@@ -3247,7 +3248,7 @@ begin
   NetGame := false;
   DeathMatch := 0;
   for i := 1 to MAXPLAYERS - 1 do
-    playeringame[i] := false;
+    TGameSession.PlayerInGame[i] := false;
   RespawnParm := false;
   FastParm := false;
   NoMonsters := false;

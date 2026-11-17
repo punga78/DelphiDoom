@@ -473,11 +473,11 @@ begin
   begin
     // find player to center on initially
     pnum := TGameSession.ConsolePlayer;
-    if not playeringame[pnum] then
+    if not TGameSession.PlayerInGame[pnum] then
     begin
       pnum := -1;
       for i := 0 to MAXPLAYERS - 1 do
-        if playeringame[i] then
+        if TGameSession.PlayerInGame[i] then
         begin
           pnum := i;
           break;
@@ -1373,7 +1373,7 @@ begin
     if (TGameSession.DeathMatch <> 0) and not singledemo and (p <> plr) then
       continue;
 
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     // the colors of the other players are a rule of the game (DelphiDoom.Engine.Automap.Rules)

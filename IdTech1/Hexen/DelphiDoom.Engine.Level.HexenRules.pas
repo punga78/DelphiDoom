@@ -272,7 +272,7 @@ begin
 
   LPlayerCount := 0;
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
       Inc(LPlayerCount);
 
   if deathmatch_p < LPlayerCount then

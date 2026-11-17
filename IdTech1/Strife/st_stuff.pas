@@ -1525,7 +1525,7 @@ begin
       V_DrawPatch(28, y, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, 'stcolor' + itoa(pnum + 1), {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
       frags := ST_calcFrags(pnum);
       HUlib_drawYellowText(38, yt, player_names[pnum] + itoa(frags), {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
-      if not playeringame[pnum] then
+      if not TGameSession.PlayerInGame[pnum] then
         HUlib_drawYellowText(28, pnum * 17 + 65, 'X', {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
       y := y + 17;
       yt := yt + 17;
@@ -1539,7 +1539,7 @@ begin
       V_DrawPatch(158, y, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, 'stcolor' + itoa(pnum + 1), {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
       frags := ST_calcFrags(pnum);
       HUlib_drawYellowText(168, yt, player_names[pnum] + itoa(frags), {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
-      if not playeringame[pnum] then
+      if not TGameSession.PlayerInGame[pnum] then
         HUlib_drawYellowText(158, pnum * 17 - 3, 'X', {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
       y := y + 17;
       yt := yt + 17;

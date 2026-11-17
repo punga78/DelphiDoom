@@ -165,12 +165,12 @@ begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
       totalFrags[i] := 0;
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         inc(playercount);
         for j := 0 to MAXPLAYERS - 1 do
         begin
-          if playeringame[j] then
+          if TGameSession.PlayerInGame[j] then
           begin
             totalFrags[i] := totalFrags[i] + players[i].frags[j];
           end;
@@ -320,7 +320,7 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       player := @players[i];
       if player.cmd.buttons and BT_ATTACK <> 0 then
@@ -555,7 +555,7 @@ begin
     begin
       x := FixedInt(xPos);
       bold := (i = TGameSession.ConsolePlayer) or (j = TGameSession.ConsolePlayer);
-      if playeringame[i] and playeringame[j] then
+      if TGameSession.PlayerInGame[i] and TGameSession.PlayerInGame[j] then
       begin
         if bold then
         begin
@@ -581,7 +581,7 @@ begin
       xPos := xPos + xDelta
     end;
     if showTotals and
-       playeringame[i] and
+       TGameSession.PlayerInGame[i] and
        not ( (slaughterboy and (1 shl i) <> 0) and (intertime and 16 <> 0)) then
     begin
       IN_DrNumber(totalFrags[i], TALLY_TOTALS_X, y, 1000);

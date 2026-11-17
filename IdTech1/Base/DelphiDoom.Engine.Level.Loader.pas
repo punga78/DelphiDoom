@@ -373,7 +373,7 @@ begin
     Exit;
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
       FRules.SpawnDeathmatchPlayer(LPlayer);
   FRules.AfterDeathmatchSpawn;
 end;
