@@ -271,7 +271,7 @@ uses
   DelphiDoom.Engine.World.PlayerSpawner in '..\Base\DelphiDoom.Engine.World.PlayerSpawner.pas',
   DelphiDoom.Engine.World.MapThingSpawner in '..\Base\DelphiDoom.Engine.World.MapThingSpawner.pas',
   p_mobj_h in '..\Base\p_mobj_h.pas',
-  p_plats in 'p_plats.pas',
+  p_plats in '..\Base\p_plats.pas',
   p_pspr in '..\Base\p_pspr.pas',
   p_pspr_h in 'p_pspr_h.pas',
   p_saveg in 'p_saveg.pas',

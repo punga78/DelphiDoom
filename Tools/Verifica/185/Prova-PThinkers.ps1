@@ -19,6 +19,7 @@
 #>
 param(
   [string]$Base = '748ee6f2c',
+  [string]$BasePlats = '8d46e9c5f',
   [string[]]$Units = @('p_lights', 'p_plats', 'p_telept')
 )
 $ErrorActionPreference = 'Stop'
@@ -49,12 +50,32 @@ if ($Units -contains 'p_lights') {
 }
 
 if ($Units -contains 'p_plats') {
-  # Doom e Strife: nessuna regola, le due copie erano uguali (Heretic resta nella sua unit)
-  $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Strife') -Unit 'p_plats' `
+  # ondata 9: Doom, Heretic e Strife in IdTech1\Base\p_plats.pas; il vecchio testo e' quello di $BasePlats
+  # (Doom e Strife: la copia di Base di allora; Heretic: IdTech1\Heretic\p_plats.pas)
+  $Expansions = @(
+    @{ F = 'TSpecGameRules.PlatIsToggle(_type)'; Doom = '_type = toggleUpDn'; Strife = '_type = toggleUpDn'
+       Note = 'il ramo dei toggle e'' la regola PlatIsToggle' }
+    @{ F = 'TSpecGameRules.PlatNextSector(line, secnum)'; Doom = 'P_FindSectorFromLineTag2(line, secnum) >= 0'; Strife = 'P_FindSectorFromLineTag2(line, secnum) >= 0'
+       Note = 'la ricerca del settore e'' la regola PlatNextSector' }
+    @{ F = 'TSpecGameRules.PlatSectorBusy(sec)'; Doom = 'P_SectorActive(floor_special, sec)'; Strife = 'P_SectorActive(floor_special, sec)'
+       Note = 'il controllo del settore occupato e'' la regola PlatSectorBusy' }
+    @{ F = 'TSpecGameRules.PlatAttach(plat.sector, plat)'; Doom = 'plat.sector.floordata := plat'; Strife = 'plat.sector.floordata := plat'
+       Note = 'il campo del settore e'' la regola PlatAttach' }
+    @{ F = 'TSpecGameRules.PlatDetach(Pplat_t(P_World.ActivePlats[i]).sector)'
+       Doom = 'Pplat_t(P_World.ActivePlats[i]).sector.floordata := nil'; Strife = 'Pplat_t(P_World.ActivePlats[i]).sector.floordata := nil'
+       Heretic = 'Pplat_t(P_World.ActivePlats[i]).sector.specialdata := nil'
+       Note = 'il campo del settore e'' la regola PlatDetach' }
+  )
+  $NotTextual = @{
+    'Heretic|EV_DoPlat' = 'il ciclo sui settori calcolava il successivo prima del corpo (P_FindSectorFromLineTag con ritorno), ora PlatNextSector lo calcola in testa al giro: stessa sequenza di settori (il corpo non cambia i tag); `sec.specialdata <> nil` e'' PlatSectorBusy, `sec.specialdata := plat` PlatAttach; senza toggle (PlatIsToggle e'' false) resta result := 0 e P_ActivateInStasis solo per perpetualRaise'
+    'Heretic|P_ActivateInStasis' = 'la copia di Base legge Pplat_t(P_World.ActivePlats[i]) in una variabile locale: stesso test e stesse assegnazioni'
+    'Heretic|EV_StopPlat' = 'era una procedura: ora e'' la funzione di Doom (result 1 se ferma una piattaforma); i chiamanti la usano come istruzione e nessuno prende l''indirizzo'
+  }
+  $bad += Invoke-Prova -Root $root -Base $BasePlats -Games @('Doom', 'Heretic', 'Strife') -Unit 'p_plats' `
     -BaseFiles 'IdTech1\Base\p_plats.pas' `
-    -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions @()
+    -OldPaths @{ Doom = 'IdTech1/Base/p_plats.pas'; Strife = 'IdTech1/Base/p_plats.pas' } `
+    -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions -NotTextual $NotTextual
 }
-
 if ($Units -contains 'p_telept') {
   # le routine silenziose di Doom e Strife sono in Base; EV_Teleport (propria di ogni gioco) resta nella unit del gioco
   $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Strife') -Unit 'p_telept' `

@@ -149,6 +149,16 @@ type
     class function SectorSpecialAfterLight(special: integer): integer; static;
     /// <summary>A light thinker is already running on the sector</summary>
     class function LightingBusy(sec: Psector_t): boolean; static;
+    /// <summary>The platform in stasis that a trigger of the toggle type wakes up (Heretic has no toggle platforms)</summary>
+    class function PlatIsToggle(_type: plattype_e): boolean; static;
+    /// <summary>The next sector of the tag of the line, from secnum (-1 to start); false when there are no more</summary>
+    class function PlatNextSector(line: Pline_t; var secnum: integer): boolean; static;
+    /// <summary>A floor thinker is already running on the sector</summary>
+    class function PlatSectorBusy(sec: Psector_t): boolean; static;
+    /// <summary>The platform becomes the thinker of the floor of the sector</summary>
+    class procedure PlatAttach(sec: Psector_t; plat: Pplat_t); static;
+    /// <summary>The sector has no platform any more</summary>
+    class procedure PlatDetach(sec: Psector_t); static;
   end;
 
 implementation
@@ -1463,5 +1473,57 @@ end;
 class function TSpecGameRules.LightingBusy(sec: Psector_t): boolean;
 begin
   result := sec.specialdata <> nil;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.PlatIsToggle
+//
+//==============================================================================
+class function TSpecGameRules.PlatIsToggle(_type: plattype_e): boolean;
+begin
+  // Heretic has no toggle platforms
+  result := false;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.PlatNextSector
+//
+//==============================================================================
+class function TSpecGameRules.PlatNextSector(line: Pline_t; var secnum: integer): boolean;
+begin
+  secnum := P_FindSectorFromLineTag(line, secnum);
+  result := secnum >= 0;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.PlatSectorBusy
+//
+//==============================================================================
+class function TSpecGameRules.PlatSectorBusy(sec: Psector_t): boolean;
+begin
+  result := sec.specialdata <> nil;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.PlatAttach
+//
+//==============================================================================
+class procedure TSpecGameRules.PlatAttach(sec: Psector_t; plat: Pplat_t);
+begin
+  sec.specialdata := plat;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.PlatDetach
+//
+//==============================================================================
+class procedure TSpecGameRules.PlatDetach(sec: Psector_t);
+begin
+  sec.specialdata := nil;
 end;
 end.
