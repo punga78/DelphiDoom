@@ -66,13 +66,13 @@ end;
 
 function TEngineGameContext.IsPaused: Boolean;
 begin
-  Result := paused;
+  Result := TGameSession.Paused;
 end;
 
 function TEngineGameContext.GameTic: Integer;
 begin
   // qualified: inside the class "gametic" would be this very method
-  Result := g_game.gametic;
+  Result := TGameSession.GameTic;
 end;
 
 function TEngineGameContext.Skill: Integer;

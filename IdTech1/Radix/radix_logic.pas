@@ -354,7 +354,7 @@ begin
       if TGameSession.GameMap = TRadixActionRules.LAST_MAP then
         G_ExitLevel // G_DoCompleted ends the episode
       else
-        gameaction := ga_victory;
+        TGameSession.GameAction := ga_victory;
     rekSecretLevel:
       G_SecretExitLevel;
     rekNamedLevel:

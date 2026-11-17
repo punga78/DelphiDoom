@@ -1698,7 +1698,7 @@ begin
     drawkey := true;
     if bindkeyEnter then
       if i = bindkeySlot - start then
-        if (gametic div 18) mod 2 <> 0 then
+        if (TGameSession.GameTic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
       M_WriteWhiteText3(ppos.x, ppos.y, M_KeyToString(KeyBindingsInfo[start + i].pkey^));
@@ -2021,7 +2021,7 @@ begin
   if saveStringEnter <> 0 then
   begin
     i := M_StringWidth(savegamestrings[saveSlot]);
-    if (gametic div 18) mod 2 = 0 then
+    if (TGameSession.GameTic div 18) mod 2 = 0 then
       M_WriteText(LoadDef.x + i, LoadDef.y + LoadDef.itemheight * saveSlot, '[');
   end;
 end;
@@ -2920,7 +2920,7 @@ var
 begin
   V_DrawPatch(88, 0, SCN_TMP, 'M_HTIC', false);
 
-  frame := (gametic div 5) mod 7;
+  frame := (TGameSession.GameTic div 5) mod 7;
   V_DrawPatch(37, 80, SCN_TMP, W_CacheLumpNum(MauloBaseLump + (frame + 2) mod 7, PU_CACHE), false);
   V_DrawPatch(278, 80, SCN_TMP, W_CacheLumpNum(MauloBaseLump + frame, PU_CACHE), false);
 end;
@@ -2996,16 +2996,16 @@ begin
   if opt > 2 then
   begin
     opt := classrnd;
-    if gametic <> classtic then
+    if TGameSession.GameTic <> classtic then
     begin
       inc(classrnd);
       if classrnd > 2 then
         classrnd := 0;
-      classtic := gametic;
+      classtic := TGameSession.GameTic;
     end;
   end;
   V_DrawPatch(174,  8, SCN_TMP, boxLumpName[opt], false);
-  V_DrawPatch(198, 20, SCN_TMP, W_CacheLumpNum(W_GetNumForName(walkLumpName[opt]) + ((gametic div 8) and 3), PU_CACHE), false);
+  V_DrawPatch(198, 20, SCN_TMP, W_CacheLumpNum(W_GetNumForName(walkLumpName[opt]) + ((TGameSession.GameTic div 8) and 3), PU_CACHE), false);
 end;
 
 //==============================================================================

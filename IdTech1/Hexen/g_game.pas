@@ -158,6 +158,12 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>The tic of the game in progress</summary>
+    class var GameTic: integer;
+    /// <summary>The action the game loop does at the start of the next tic</summary>
+    class var GameAction: gameaction_t;
+    /// <summary>The game is paused</summary>
+    class var Paused: boolean;
     /// <summary>A demo is being played back</summary>
     class var DemoPlayback: boolean;
     /// <summary>The demo being played was recorded in a net game</summary>
@@ -193,7 +199,6 @@ type
 var
   sendpause: boolean;        // send a pause event next tic
 
-  paused: boolean;
 
 //
 // controls (have defaults)
@@ -263,7 +268,6 @@ var
   PlayerClass: array[0..MAXPLAYERS - 1] of pclass_t;
 
   displayplayer: integer; // view being displayed
-  gametic: integer;
 
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
@@ -278,7 +282,6 @@ var
   singledemo: boolean; // quit after playing a demo from cmdline
 
 
-  gameaction: gameaction_t;
 
 
 //==============================================================================
@@ -611,7 +614,7 @@ procedure G_DoNewGame;
 begin
   G_FinishedDemoPlayback; // JVAL: remove???
   G_StartNewGame(TempSkill);
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
 end;
 
 var
@@ -628,7 +631,7 @@ begin
   SV_InitBaseSlot;
   SV_ClearRebornSlot;
   G_InitNew(TempSkill, TempEpisode, TempMap);
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
 end;
 
 var
@@ -1187,7 +1190,7 @@ begin
   //  setting one.
   skyflatnum := R_FlatNumForName(SKYFLATNAME);
 
-  levelstarttic := gametic;        // for time calculation
+  levelstarttic := TGameSession.GameTic;        // for time calculation
 
   if wipegamestate = Ord(GS_LEVEL) then
     wipegamestate := -1;  // force a wipe
@@ -1218,7 +1221,7 @@ begin
 
   displayplayer := TGameSession.ConsolePlayer;    // view the guy you are playing
   starttime := I_GetTime;
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   Z_CheckHeap;
 
   // clear cmd building stuff
@@ -1230,7 +1233,7 @@ begin
   sendpause := false;
   sendsave := false;
   sendcmdsave := false;
-  paused := false;
+  TGameSession.Paused := false;
   ZeroMemory(mousebuttons, SizeOf(mousebuttons));
   ZeroMemory(joybuttons, SizeOf(joybuttons));
 end;
@@ -1276,7 +1279,7 @@ begin
   end;
 
   // any other key pops up menu if in demos
-  if (gameaction = ga_nothing) and not singledemo and
+  if (TGameSession.GameAction = ga_nothing) and not singledemo and
      (TGameSession.DemoPlayback or (gamestate = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
@@ -1699,11 +1702,11 @@ begin
   begin
     if SV_RebornSlotAvailable then
     begin // Use the reborn code if the slot is available
-      gameaction := ga_singlereborn;
+      TGameSession.GameAction := ga_singlereborn;
     end
     else
     begin // Start a new game if there's no reborn info
-      gameaction := ga_newgame;
+      TGameSession.GameAction := ga_newgame;
     end;
   end
   else
@@ -1782,7 +1785,7 @@ end;
 //==============================================================================
 procedure G_ScreenShot;
 begin
-  gameaction := ga_screenshot;
+  TGameSession.GameAction := ga_screenshot;
 end;
 
 //==============================================================================
@@ -1794,7 +1797,7 @@ procedure G_DoTeleportNewMap;
 begin
   SV_MapTeleport(LeaveMap, LeavePosition);
   gamestate := GS_LEVEL;
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   RebornPosition := LeavePosition;
 end;
 
@@ -1808,7 +1811,7 @@ end;
 //==============================================================================
 procedure G_Completed(map, position: integer);
 begin
-  gameaction := ga_completed;
+  TGameSession.GameAction := ga_completed;
   LeaveMap := map;
   LeavePosition := position;
 end;
@@ -1822,7 +1825,7 @@ procedure G_DoCompleted;
 var
   i: integer;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   if G_CheckDemoStatus then
     exit;
 
@@ -1837,7 +1840,7 @@ begin
   end;
 
   if (LeaveMap = -1) and (LeavePosition = -1) then
-    gameaction := ga_victory
+    TGameSession.GameAction := ga_victory
   else
   begin
     gamestate := GS_INTERMISSION;
@@ -1854,7 +1857,7 @@ procedure G_DoWorldDone;
 begin
   gamestate := GS_LEVEL;
   G_DoLoadLevel;
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   viewactive := true;
 end;
 
@@ -1868,7 +1871,7 @@ end;
 //==============================================================================
 procedure G_DoSingleReborn;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   SV_LoadGame(SV_GetRebornSlot);
   SB_SetClassData;
 end;
@@ -1890,7 +1893,7 @@ var
 procedure G_LoadGame(slot: integer);
 begin
   GameLoadSlot := slot;
-  gameaction := ga_loadgame;
+  TGameSession.GameAction := ga_loadgame;
 end;
 
 //==============================================================================
@@ -1902,7 +1905,7 @@ end;
 //==============================================================================
 procedure G_DoLoadGame;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   SV_LoadGame(GameLoadSlot);
   if not TGameSession.NetGame then
   begin // Copy the base slot to the reborn slot
@@ -1937,7 +1940,7 @@ end;
 procedure G_DoSaveGame;
 begin
   SV_SaveGame(savegameslot, savedescription);
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   savedescription := '';
   P_SetMessage(@players[TGameSession.ConsolePlayer], GGSAVED, true);
   borderneedsrefresh := true;
@@ -1956,7 +1959,7 @@ procedure G_SaveGameNow(slot: integer; const description: string);
 begin
   savegameslot := slot;
   savedescription := description;
-  gameaction := ga_savegame;
+  TGameSession.GameAction := ga_savegame;
 end;
 
 //==============================================================================
@@ -1998,7 +2001,7 @@ begin
   TempSkill := skill;
   TempEpisode := 1;
   TempMap := P_TranslateMap(map);
-  gameaction := ga_initnew;
+  TGameSession.GameAction := ga_initnew;
 end;
 
 //==============================================================================
@@ -2011,7 +2014,7 @@ begin
   TempSkill := skill;
   TempEpisode := 1;
   TempMap := map;
-  gameaction := ga_initnew;
+  TGameSession.GameAction := ga_initnew;
 end;
 
 //==============================================================================
@@ -2063,9 +2066,9 @@ var
   levelinf: Plevelinfo_t;
   LSpeedChange: TSkillSpeedChange;
 begin
-  if paused then
+  if TGameSession.Paused then
   begin
-    paused := false;
+    TGameSession.Paused := false;
     S_ResumeSound;
   end;
 
@@ -2110,7 +2113,7 @@ begin
   end;
 
   TGameSession.UserGame := true;  // will be set false if a demo
-  paused := false;
+  TGameSession.Paused := false;
   G_FinishedDemoPlayback;
   amstate := am_inactive;
   viewactive := true;
@@ -2145,9 +2148,9 @@ begin
       G_DoReborn(i);
 
   // do things to change the game state
-  while (gameaction <> ga_nothing) do
+  while (TGameSession.GameAction <> ga_nothing) do
   begin
-    case gameaction of
+    case TGameSession.GameAction of
       ga_loadlevel:
         G_DoLoadLevel;
       ga_initnew:
@@ -2177,7 +2180,7 @@ begin
       ga_screenshot:
         begin
           G_Screenshots.Take;
-          gameaction := ga_nothing;
+          TGameSession.GameAction := ga_nothing;
         end;
       ga_leavemap:
         begin
@@ -2188,7 +2191,7 @@ begin
 
   // get commands, check consistancy,
   // and build new consistancy check
-  buf := (gametic div ticdup) mod BACKUPTICS;
+  buf := (TGameSession.GameTic div ticdup) mod BACKUPTICS;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
@@ -2204,7 +2207,7 @@ begin
       if TGameSession.DemoRecording then
         G_WriteDemoTiccmd(cmd);
 
-      if TGameSession.NetGame and not TGameSession.NetDemo and ((gametic mod ticdup) = 0) then
+      if TGameSession.NetGame and not TGameSession.NetDemo and ((TGameSession.GameTic mod ticdup) = 0) then
       begin
         if pl.mo <> nil then
           G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
@@ -2223,15 +2226,15 @@ begin
       if pl.cmd.commands and CM_SAVEGAME <> 0 then
       begin
         savegameslot := Ord(load_end);
-        gameaction := ga_savegame;
+        TGameSession.GameAction := ga_savegame;
       end;
       if pl.cmd.buttons and BT_SPECIAL <> 0 then
       begin
         case pl.cmd.buttons and BT_SPECIALMASK of
           BTS_PAUSE:
             begin
-              paused := not paused;
-              if paused then
+              TGameSession.Paused := not TGameSession.Paused;
+              if TGameSession.Paused then
                 S_PauseSound
               else
                 S_ResumeSound;
@@ -2242,7 +2245,7 @@ begin
                 savedescription := 'NET GAME';
               savegameslot :=
                 _SHR((pl.cmd.buttons and BTS_SAVEMASK), BTS_SAVESHIFT);
-              gameaction := ga_savegame;
+              TGameSession.GameAction := ga_savegame;
             end;
         end;
       end;

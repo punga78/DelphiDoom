@@ -1611,7 +1611,7 @@ begin
     drawkey := true;
     if bindkeyEnter then
       if i = bindkeySlot - start then
-        if (gametic div 18) mod 2 <> 0 then
+        if (TGameSession.GameTic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
       M_WriteWhiteText(m.x + len, m.y + m.itemheight * i, M_KeyToString(M_BindingInfo(start + i).pkey^));
@@ -2048,7 +2048,7 @@ begin
   if saveStringEnter <> 0 then
   begin
     i := M_StringWidth(savegamestrings[saveSlot]);
-    if (gametic div 18) mod 2 = 0 then
+    if (TGameSession.GameTic div 18) mod 2 = 0 then
       M_WriteText(LoadDef.x + i, LoadDef.y + LoadDef.itemheight * saveSlot, '_');
   end;
 end;
@@ -4076,9 +4076,9 @@ begin
   if not TGameSession.NetGame then
   begin
     if gamemode = commercial then
-      M_StartSound(nil, quitsounds2[_SHR(gametic, 2) and 7])
+      M_StartSound(nil, quitsounds2[_SHR(TGameSession.GameTic, 2) and 7])
     else
-      M_StartSound(nil, quitsounds[_SHR(gametic, 2) and 7]);
+      M_StartSound(nil, quitsounds[_SHR(TGameSession.GameTic, 2) and 7]);
     I_WaitVBL(1000);
   end;
   G_Quit;
@@ -4137,7 +4137,7 @@ begin
     sl.Add(endmsg[21]);
   end;
 
-  Result := sl[gametic mod sl.Count];
+  Result := sl[TGameSession.GameTic mod sl.Count];
 
   sl.Free;
 end;

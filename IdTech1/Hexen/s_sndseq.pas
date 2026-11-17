@@ -535,7 +535,7 @@ var
   sndPlaying: boolean;
   parm1, parm2: integer;
 begin
-  if (ActiveSequences = 0) or paused then
+  if (ActiveSequences = 0) or TGameSession.Paused then
     exit; // No sequences currently playing/game is paused
 
   node := SequenceListHead;

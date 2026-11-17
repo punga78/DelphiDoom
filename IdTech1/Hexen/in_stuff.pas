@@ -296,7 +296,7 @@ begin
   if cnt <= 0 then
   begin
     IN_Stop;
-    gameaction := ga_leavemap;
+    TGameSession.GameAction := ga_leavemap;
   end;
 end;
 

@@ -1640,7 +1640,7 @@ begin
     drawkey := true;
     if bindkeyEnter then
       if i = bindkeySlot - start then
-        if (gametic div 18) mod 2 <> 0 then
+        if (TGameSession.GameTic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
       M_WriteWhiteText4(ppos.x + 6, ppos.y, M_KeyToString(KeyBindingsInfo[start + i].pkey^));
@@ -1937,7 +1937,7 @@ begin
   if saveStringEnter <> 0 then
   begin
     i := M_StringWidth(savegamestrings[saveSlot]);
-    if (gametic div 18) mod 2 = 0 then
+    if (TGameSession.GameTic div 18) mod 2 = 0 then
       M_WriteText(LoadDef.x + i, LoadDef.y + LoadDef.itemheight * saveSlot, '[');
   end;
 end;
@@ -2860,7 +2860,7 @@ var
 begin
   V_DrawPatch(88, 0, SCN_TMP, 'M_HTIC', false);
 
-  frame := (gametic div 3) mod 18;
+  frame := (TGameSession.GameTic div 3) mod 18;
   V_DrawPatch(40, 10, SCN_TMP, W_CacheLumpNum(SkullBaseLump + (17 - frame), PU_CACHE), false);
   V_DrawPatch(232, 10, SCN_TMP, W_CacheLumpNum(SkullBaseLump + frame, PU_CACHE), false);
 end;

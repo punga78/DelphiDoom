@@ -920,14 +920,14 @@ begin
     wipe := false;
 {$ENDIF}
 
-  if (gamestate = GS_LEVEL) and (gametic <> 0) then
+  if (gamestate = GS_LEVEL) and (TGameSession.GameTic <> 0) then
     HU_Erase;
 
   // do buffered drawing
   case gamestate of
     GS_LEVEL:
       begin
-        if gametic <> 0 then
+        if TGameSession.GameTic <> 0 then
         begin
           if amstate = am_only then
             AM_Drawer;
@@ -954,14 +954,14 @@ begin
   if gamestate = GS_LEVEL then
   begin
   {$IFNDEF OPENGL}
-    if (amstate <> am_only) and (gametic <> 0) then
+    if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
       D_RenderPlayerView(@players[displayplayer]);
       if amstate = am_overlay then
         AM_Drawer;
     end;
   {$ENDIF}
-    if gametic <> 0 then
+    if TGameSession.GameTic <> 0 then
       drawhu := true;
   end
   else if Ord(gamestate) <> oldgamestate then
@@ -1001,11 +1001,11 @@ begin
           dec(borderdrawcount);
         end;
       end
-      else if R_FullStOn and (gametic <> 0) then
+      else if R_FullStOn and (TGameSession.GameTic <> 0) then
         ST_Drawer(stdo_small, redrawsbar);
     end;
     // the display of a game without the status bar of Doom goes over view, automap and border
-    if gametic <> 0 then
+    if TGameSession.GameTic <> 0 then
       ST_OverlayDrawer;
   end;
 
@@ -1018,7 +1018,7 @@ begin
 {$ENDIF}
 
   // draw pause pic
-  if paused then
+  if TGameSession.Paused then
   begin
     if amstate = am_only then
       y := 4
@@ -1123,7 +1123,7 @@ begin
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
   if gamestate = GS_LEVEL then
   begin
-    if (amstate <> am_only) and (gametic <> 0) then
+    if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
       R_FillBackScreen; // draw the pattern into the back screen
       D_RenderPlayerView(@players[displayplayer]);
@@ -1285,8 +1285,8 @@ begin
   players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
   advancedemo := false;
   TGameSession.UserGame := false; // no save/end game here
-  paused := false;
-  gameaction := ga_nothing;
+  TGameSession.Paused := false;
+  TGameSession.GameAction := ga_nothing;
 
   if gamemode = retail then
     demosequence := (demosequence + 1) mod 7
@@ -1363,7 +1363,7 @@ end;
 //==============================================================================
 procedure D_StartTitle;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   demosequence := -1;
   D_AdvanceDemo;
 end;
@@ -3056,7 +3056,7 @@ begin
     G_LoadGame(filename);
   end;
 
-  if gameaction <> ga_loadgame then
+  if TGameSession.GameAction <> ga_loadgame then
   begin
     if autostart or TGameSession.NetGame then
     begin

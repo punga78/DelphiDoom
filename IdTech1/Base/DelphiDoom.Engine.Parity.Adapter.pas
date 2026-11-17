@@ -243,15 +243,15 @@ begin
   end;
 {$ENDIF}
   if FStateSource <> nil then
-    FStateSource.Publish(g_game.gametic);
+    FStateSource.Publish(TGameSession.GameTic);
   // -autosave: the save is done at the start of the next tic, with the state of the end of this one
-  if FOptions.AutoSave and not FSaved and (g_game.gametic >= FOptions.AutoSaveTic) and (gamestate = GS_LEVEL) then
+  if FOptions.AutoSave and not FSaved and (TGameSession.GameTic >= FOptions.AutoSaveTic) and (gamestate = GS_LEVEL) then
   begin
     FSaved := True;
     G_SaveGameNow(FOptions.AutoSaveSlot, 'AUTOSAVE');
   end;
   // -autoquit: a run with no pilot (a game loaded with -loadgame) ends by itself
-  if (FOptions.AutoQuitTic >= 0) and (g_game.gametic >= FOptions.AutoQuitTic) and not FPilotDone then
+  if (FOptions.AutoQuitTic >= 0) and (TGameSession.GameTic >= FOptions.AutoQuitTic) and not FPilotDone then
   begin
     FPilotDone := True;
     Flush;
@@ -298,7 +298,7 @@ var
   LHeight: Integer;
 begin
   if (FFrameWriter <> nil) and FFrameSource.Capture(LPixels, LBytesPerPixel, LLayout, LPaletteHash) then
-    FFrameWriter.WriteFrame(g_game.gametic, LLayout, LPixels, LBytesPerPixel, LPaletteHash);
+    FFrameWriter.WriteFrame(TGameSession.GameTic, LLayout, LPixels, LBytesPerPixel, LPaletteHash);
   // the step "shot" of a script: this frame, beside the script (the menus stop the tics of the game,
   // so -framedump cannot ask for them)
   if (FPilot <> nil) and (FOptions.AutoScriptFile <> '') then
@@ -311,7 +311,7 @@ begin
         LPixels);
     end;
   end;
-  if (FOptions.FrameDumpTic >= 0) and not FDumped and (g_game.gametic >= FOptions.FrameDumpTic) then
+  if (FOptions.FrameDumpTic >= 0) and not FDumped and (TGameSession.GameTic >= FOptions.FrameDumpTic) then
     DumpFrame;
   // the end of a frame is the time that goes by
   if FClock <> nil then
@@ -322,7 +322,7 @@ procedure TEngineParity.BuildTicCmd(ACommand: Pticcmd_t);
 begin
   if FPilot = nil then
     Exit;
-  if TEngineParityPilotCommand.Apply(FPilot, ACommand, g_game.gametic) then
+  if TEngineParityPilotCommand.Apply(FPilot, ACommand, TGameSession.GameTic) then
     Exit;
   if FPilotDone then
     Exit;

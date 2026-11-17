@@ -768,14 +768,14 @@ var
   th: Pthinker_t;
 begin
   if prevtic > 0 then
-    if gametic = prevtic then
+    if TGameSession.GameTic = prevtic then
       exit;
 
   {$IFDEF DEBUG}
-  I_DevWarning('R_StoreInterpolationData(): - start - fractime = %5.3f, gametic = %d'#13#10, [I_GetFracTime / FRACUNIT, gametic]);
-  I_DevWarning('R_StoreInterpolationData(): - gametic = %d, tick = %d, time = %d'#13#10, [gametic, tick, I_GetTime]);
+  I_DevWarning('R_StoreInterpolationData(): - start - fractime = %5.3f, gametic = %d'#13#10, [I_GetFracTime / FRACUNIT, TGameSession.GameTic]);
+  I_DevWarning('R_StoreInterpolationData(): - gametic = %d, tick = %d, time = %d'#13#10, [TGameSession.GameTic, tick, I_GetTime]);
   {$ENDIF}
-  prevtic := gametic;
+  prevtic := TGameSession.GameTic;
   interpolationcount := counts;
   for i := 0 to NUMISTRUCTS - 1 do
     istructs[i].numitems := 0;
@@ -872,7 +872,7 @@ begin
     th := th.next;
   end;
   {$IFDEF DEBUG}
-  I_DevWarning('R_StoreInterpolationData(): - finished - fractime = %5.3f, gametic = %d'#13#10, [I_GetFracTime / FRACUNIT, gametic]);
+  I_DevWarning('R_StoreInterpolationData(): - finished - fractime = %5.3f, gametic = %d'#13#10, [I_GetFracTime / FRACUNIT, TGameSession.GameTic]);
   {$ENDIF}
 end;
 
@@ -1294,7 +1294,7 @@ begin
     ticfrac := ticfrac + frametime;
   frametime := fractime;
   {$IFDEF DEBUG}
-  I_Warning('R_Interpolate(): fractime = %5.3f, gametic = %d'#13#10, [fractime / FRACUNIT, gametic]);
+  I_Warning('R_Interpolate(): fractime = %5.3f, gametic = %d'#13#10, [fractime / FRACUNIT, TGameSession.GameTic]);
   {$ENDIF}
   if interpolatereducelag then
     ticfrac := FRACUNIT div 2 + ticfrac div 2;

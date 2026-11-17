@@ -209,7 +209,7 @@ procedure F_StartFinale;
 var
   mus_changed: boolean;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   gamestate := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
@@ -409,7 +409,7 @@ begin
     end;
   end
   else
-    gameaction := ga_worlddone; // next level, e.g. MAP07
+    TGameSession.GameAction := ga_worlddone; // next level, e.g. MAP07
 end;
 
 //==============================================================================
@@ -446,7 +446,7 @@ begin
       else if TGameSession.GameMap = 30 then
         F_StartCast
       else
-        gameaction := ga_worlddone;
+        TGameSession.GameAction := ga_worlddone;
     end;
   end;
 

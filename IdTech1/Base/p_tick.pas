@@ -315,7 +315,7 @@ var
 begin
   isgamesuspended := true;
   // run the tic
-  if paused then
+  if TGameSession.Paused then
     exit;
 
   // pause if in menu and at least one tic has been run

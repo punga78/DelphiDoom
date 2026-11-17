@@ -241,7 +241,7 @@ var
   coord: PGLTexcoord;
 begin
 {$IFDEF DEBUG}
-  printf('gametic=%d, frm1=%d, frm2=%d, offset=%2.2f'#13#10, [gametic, frm1, frm2, offset]);
+  printf('gametic=%d, frm1=%d, frm2=%d, offset=%2.2f'#13#10, [TGameSession.GameTic, frm1, frm2, offset]);
 {$ENDIF}
   if (frm1 = frm2) or (frm2 < 0) or (offset < 0.01) then
   begin

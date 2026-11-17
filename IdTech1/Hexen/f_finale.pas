@@ -191,7 +191,7 @@ end;
 //==============================================================================
 procedure F_StartFinale;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   gamestate := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;

@@ -130,7 +130,7 @@ var
 //==============================================================================
 procedure F_StartFinale;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   gamestate := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
@@ -218,7 +218,7 @@ begin
       if finalecount > Length(finaletext) * TEXTSPEED + TEXTWAIT then
       begin
         if gamemapinfo.endpic = '' then
-          gameaction := ga_worlddone  // next level
+          TGameSession.GameAction := ga_worlddone  // next level
         else
         begin
           finalestage := 1;
@@ -231,7 +231,7 @@ begin
 
     if finalestage = 1 then
       if finalecount > TICRATE then
-        gameaction := ga_worlddone; // next level
+        TGameSession.GameAction := ga_worlddone; // next level
 
     result := true;
     exit;
@@ -262,7 +262,7 @@ begin
       using_FMI := false;
   end
   else
-    gameaction := ga_worlddone; // next level, e.g. MAP07
+    TGameSession.GameAction := ga_worlddone; // next level, e.g. MAP07
 end;
 
 //==============================================================================
@@ -455,7 +455,7 @@ begin
     1:
       begin
         menuactive := false;
-        paused := false;
+        TGameSession.Paused := false;
         messageToPrint := 0;
         F_DrawUnderwaterPic;
       end;

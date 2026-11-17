@@ -1719,7 +1719,7 @@ begin
     drawkey := true;
     if bindkeyEnter then
       if i = bindkeySlot - start then
-        if (gametic div 18) mod 2 <> 0 then
+        if (TGameSession.GameTic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
       M_WriteWhiteText(ppos.x, ppos.y, M_KeyToString(KeyBindingsInfo[start + i].pkey^));
@@ -2065,7 +2065,7 @@ begin
   if saveStringEnter <> 0 then
   begin
     i := M_StringWidth(savegamestrings[saveSlot]);
-    if (gametic div 18) mod 2 = 0 then
+    if (TGameSession.GameTic div 18) mod 2 = 0 then
       M_WriteText(LoadDef.x + i, LoadDef.y + LoadDef.itemheight * saveSlot, '_');
   end;
 end;

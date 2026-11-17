@@ -318,7 +318,7 @@ var
 //==============================================================================
 procedure F_StartFinale;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   gamestate := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
@@ -677,7 +677,7 @@ begin
   if finalestage = F_STAGE_CAST then
     exit;
   wipegamestate := -1;    // force a screen wipe
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   viewactive := false;
   amstate := am_inactive;
   castnum := 0;

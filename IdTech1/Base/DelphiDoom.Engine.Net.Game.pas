@@ -175,7 +175,7 @@ begin
   CheckStarted;
   try
     // g_game.gametic: a method of the class could hide the global of the same name
-    FConsistency.Verify(APlayer, g_game.gametic, AReceived, ALocalValue);
+    FConsistency.Verify(APlayer, TGameSession.GameTic, AReceived, ALocalValue);
   except
     on E: ENetException do
       Fail(E);
@@ -447,12 +447,12 @@ begin
         FConsole.Tick;
         interpolationstarttime := FClock.Steps(TICRATE) * $10000; // I_GetFracTime;
         G_Ticker;
-        Inc(g_game.gametic);
+        Inc(TGameSession.GameTic);
 
         // modify command for duplicated tics
         if LDuplicate <> ticdup - 1 then
         begin
-          LBuffer := (g_game.gametic div ticdup) mod BACKUPTICS;
+          LBuffer := (TGameSession.GameTic div ticdup) mod BACKUPTICS;
           for LPlayer := 0 to MAXPLAYERS - 1 do
             ClearDuplicatedCommand(LPlayer, LBuffer);
         end;
@@ -484,7 +484,7 @@ begin
     M_Ticker;
     FConsole.Tick;
     G_Ticker;
-    Inc(g_game.gametic);
+    Inc(TGameSession.GameTic);
     FSync.EndSingleTic;
     firstinterpolation := true;
     D_Display;
