@@ -1,0 +1,248 @@
+# Inventario di cio' che non e' ancora a classi (#185 e figlie #244, #245, #246, #247)
+
+Issue #185 (`refs #185`). Documento di decisione: elenca **in modo esatto** cio' che, a `master` `8d46e9c5f` (2026-11-17), nelle issue #185, #244, #245, #246 e #247 non e' ancora a classi, perche' non lo e', quanto costerebbe e che cosa si propone. Nessun codice e' stato toccato per scriverlo.
+
+## 0. Metodo, scale e legenda
+
+**Metodo.** Letti `docs\PIANO_TUTTO_A_CLASSI.md` (par. 4, 10-13) e le issue con i commenti (`gh issue view <n> --comments`), poi **verificato nel codice** con `grep`/conteggi (nessuna build, nessun gioco avviato): copie per gioco con lo stesso nome in `IdTech1\Doom|Heretic|Hexen|Strife` (elenco con righe e `cmp`), `{$IF}` di gioco in `IdTech1\Base`, variabili globali fuori dalle routine (conteggio approssimato: dichiarazioni nei blocchi `var` fuori dalle routine, `interface` + `implementation`; le `class var` non sono contate), corpo delle routine "storiche" (una routine con 1-3 righe che delega a una classe e' **migrata**: il nome vecchio resta come facciata fino alla fase 5). Le righe `file:riga` sono dell'albero a `8d46e9c5f` e invecchiano.
+
+**Costo** (taglie come i commit di `CLAUDE.md`, applicate al lavoro attivo di un agente, **senza** verifiche a macchina scarica): XS = fino a 25 minuti, S = 1h30, M = 3h (mezza giornata), L = 1 giorno, XL = 2 giorni o piu'. Le stime del piano sono in giorni di agente e qui sono riportate a questa scala.
+
+**C/F.** **C** = calda (percorso per tic, colonna, span, pixel, seg, oggetto, thinker o fotogramma). **F** = fredda (avvio, livello, partita, evento di menu/console, salvataggio).
+
+**Impatto sul codice generato** (dalle fette gia' misurate sul `.map`/disassemblato): *0* = atteso identico (metodo statico di una classe `sealed` **nella stessa unit** della routine, o `class var` nella unit di chi lo scrive: provato a 0 byte, par. 11.16, 13.6); *+1 load* = una variabile che **cambia unit** costa un caricamento in piu' per chi la legge (par. 11.16, 11.21); *+16 B* = routine fredda, la regola del 2026-11-16 (par. 11.22) ammette fino a +16 byte; *+55-60%* = stato come campo del mondo (sonda, par. 11.13); *+3 istruzioni ogni 3 pixel* = `TColumnContext` su Win32 (annullato, par. 13.6); *+10-35%* = puntatore locale al contesto (sonda, par. 11.13).
+
+**Proposta** (una sola per voce):
+
+| Codice | Significato |
+|---|---|
+| **MF** | migrare ora (fredda): costo di codice trascurabile, parita' con golden e prova sul testo, nessuna misura a coppie |
+| **MC** | migrare accettando un costo misurato (calda): si fa con la tecnica a costo zero se possibile; il verdetto vero e' la misura a coppie **a macchina scarica alla fine** (par. 13.4); se la misura fallisce il passo si annulla |
+| **CM** | chiudere motivata: nessuna regola da estrarre o costo provato non accettabile; la ragione e' quella scritta nel piano, non inventata qui |
+| **R2** | spostare in Release 2 (la #252 "un solo eseguibile per gioco" o un lavoro che richiede materiale che oggi manca) |
+
+**Misure di costo gia' disponibili** (da non rifare): sonda `PIT_CheckLine` (A globali 132 B / D record 92 B ma +60% / B campo del mondo +55-60% / C puntatore locale +10-35%), `TMapCheck` dentro `p_map.pas` = 0 B su 38 routine, `R_DrawColumnLowest` (statico stessa unit 19/81 istruzioni uguale, altra unit +2, record globale +3, `TColumnContext` +3 e +16%), 68 coppie di colonne x 4 giochi uguali, `R_SetRenderingFunctions` -4908 byte, misura a coppie del 2026-11-16 (`master` `cb99f3ff1` contro `c6c8903c`: demo1 entro +0,83% nelle quattro combinazioni; demo3 Win64 rifiutata per dispersione, differenza <= +1,79%).
+
+## 1. Sintesi
+
+Conteggi **generati** dalle righe delle tabelle del par. 3 (una proposta per voce). Le voci sono unita' di decisione, non routine: molte raggruppano decine di routine della stessa famiglia.
+
+| Issue / blocco | Voci | Migrare ora (fredda) MF | Migrare con costo misurato (calda) MC | Chiudere motivata CM | Release 2 R2 |
+|---|---:|---:|---:|---:|---:|
+| #244 (p_map nel mondo) | 4 | 0 | 0 | 4 | 0 |
+| #245 (g_game, salvataggi) | 18 | 7 | 1 | 9 | 1 |
+| #246 (fase 1 calda) | 8 | 2 | 3 | 2 | 1 |
+| #247 (renderer software) | 19 | 3 | 8 | 6 | 2 |
+| #185 senza figlia: fase 1 | 9 | 3 | 2 | 3 | 1 |
+| #185 senza figlia: fase 2 | 25 | 8 | 8 | 8 | 1 |
+| #185 senza figlia: fase 5 | 4 | 3 | 0 | 1 | 0 |
+| **Totale (esclusa la fase 4)** | **87** | **26** | **22** | **33** | **6** |
+| Riferimento: fase 4 (#177, fuori conteggio) | 4 | n.a. | n.a. | n.a. | n.a. |
+
+Lettura in tre righe:
+
+- **#244 si chiude senza lavoro** (4 voci su 4 `CM`): lo stato di `p_map` e' gia' in classi a costo zero; nel mondo costerebbe il 55-60% nel punto piu' caldo.
+- **Il residuo piu' grosso non e' in nessuna figlia**: 34 voci di fase 1-2 (9 + 25) contro 49 nelle quattro figlie, ma comprendono le unit piu' grandi (`p_common` 12.505 righe, i menu, `d_main`, le tabelle da circa 184.900 righe); nessuna e' nominata dalle spunte del corpo di #185.
+- **Le voci `MC` (22) sono tutte da decidere alla misura a coppie finale**; le `MF` (26) sono lavoro a rischio basso (parita' con golden e prova sul testo); le `CM` (33) hanno la ragione scritta nel piano; le `R2` (6) dipendono dalla #252 o da materiale mancante (salvataggi vecchi, tabelle).
+
+## 2. Dove il piano, le issue e il codice divergono
+
+1. **#244 non e' "non migrata".** Il corpo di #185 dice ancora "#244 p_map nel mondo (analizzata, non migrata: costo nel percorso caldo, par. 11.13)". Il par. 11.16 e il commento di #244 mostrano lo stato di `p_map` **migrato in classi** (`TMapCheck` `p_map.pas:69`, `TMapSlide` `:160`, `TMapAim` `:136`, `TMapUse` `:107`, `TMapBlast` `:118`, a costo zero); non e' **nel mondo** (campo di `TEngineWorld`: +55-60%). Il par. 11.13 resta nel testo con una nota "superato"; il par. 11.16 non ha l'intestazione `###` (la riga comincia con `: tm* e spechit...`).
+2. **Tabella 13.1 righe 8-9 e 13.4 invecchiate.** La riga 8 ("stadio 2: `tm*`, `spechit`...") e la riga 9 ("`leveltime`/`thinkercap`/`players[]` bloccati") sono superate da 11.16, 11.22 e 11.23: `leveltime`/`thinkercap` sono in `TTickState` (`p_tick.pas`), `Players`/`PlayerInGame`/`GameTic`/`GameState`... sono `class var` di `TGameSession` in ognuno dei quattro `g_game.pas`. Restano **a indirizzo fisso, non nel mondo**. Il par. 13.4 dice che nessuna misura a coppie formale e' stata chiusa: il commento di #185 del 2026-11-16 mostra demo1 entro il 5% nelle quattro combinazioni (demo3 Win64 rifiutata dallo strumento).
+3. **Fette del par. 4 mai citate negli elenchi 13.x:** **2d** (`p_common`, `IdTech1\Base\p_common.pas`: 12.505 righe, 649 routine, 99 `{$IF}` di gioco, nessuna classe), **2b** (servizi del mondo), **2e** per `p_doors`/`p_telept`/`p_extra`/`udmf_*`/`po_man`, **2i** (tabelle), **2j** (menu e barre) non risultano ne' fatte ne' scartate nella tabella 13.1 se non in blocco ("2i, 2j" riga 11 e "thinker rimasti" riga 7).
+4. **Unit per gioco che nessuna fetta possiede.** `d_main` x4 (3143/2813/2705/2965 righe), `deh_main` x4 e `DelphiDoom.Engine.Dehacked.Applier` x4, `d_player`/`doomdef`/`doomstat` x4, `d_check`, `d_englsh`, `d_items`, `dstrings`, `p_uactornames`: la fetta 1e (par. 8) ha trattato solo i `d_*` di `IdTech1\Base`; il par. 12.1 non le censisce. Nessuna e' byte per byte uguale tra i giochi (`cmp` su tutte le coppie: 0 file identici, compreso `DelphiDoom.Engine.Audio.SfxTable.pas`, 118 righe in tutti e quattro ma con contenuti diversi).
+5. **Fase 5, Win64.** Il par. 13.3 riga 5 dice "Win64 per il motore" solo dopo la fase 2; `CLAUDE.md` (stato della #40 al 2026-11-14) dice che tutti i 33 progetti compilano e girano a Win32 e Win64, corpus 44/44 uguale. Voce gia' soddisfatta.
+6. **#246.** Il commento "i_video a classi" e' vero per la regia (`TVideoModeChanger`, `I_InitGraphics` `i_video.pas:453`, 24 righe), non per la conversione del fotogramma: `I_SetPalette64` (`:252`), `I_FinishUpdate8_64` (`:276`), `I_FinishUpdate8_64a` (`:305`), `I_BlitBuffer` (`:329`) sono ancora cicli liberi. `V_Init` ha 50 righe con 3 chiamate a classi (parziale).
+7. **Strumenti.** `Prova-PMap.ps1` e `Prova-PMobj.ps1` puntano a cartelle di prima della #226 e al commit `7bcb9a13` (par. 11.16); i harness `Tools\Verifica\*` fuori da `build.bat` (`HarnessScriptHost`, `harness_save_*.inc`, `plane_parity`, 154/168) usano ancora i nomi globali vecchi (par. 11.22).
+8. **Numeri della fotografia.** Il corpo di #185 dice "`Base\` 181 unit"; oggi `IdTech1\Base` ha 457 `.pas` e 180.252 righe (le unit `DelphiDoom.Engine.*` nuove sono la differenza); le cartelle dei giochi hanno 172 `.pas` e 367.658 righe (Doom 71.881, Heretic 72.392, Hexen 124.892, Strife 98.493), di cui circa 184.900 di tabelle (`info`, `info_h`, `sounddata`).
+9. **Verifiche dichiarate non fatte** nelle tornate recenti (vedi il par. 4): `Prova-Layout.ps1` e la prova dei salvataggi dopo `ondata8-245-5`; `Confronta-Funzioni` e golden dopo `ondata4`/`ondata5` di #247; misura a coppie di tutte le tornate di #246, #247 e #245 dopo `cb99f3ff1`.
+
+## 3. Le voci, per issue
+
+Tutte le tabelle hanno le colonne: **ID**, **voce e dove**, **fetta**, **perche' non migrata** (ragione scritta nel piano o in un `CLAUDE.md`, con il paragrafo), **C/F**, **costo**, **impatto**, **proposta**.
+
+### 3.1 #244: `p_map` nel mondo
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| B1 | Stato di `p_map` posseduto da `TEngineWorld`: oggi `class var` a indirizzo fisso in `TMapCheck` (`p_map.pas:69`), `TMapSlide` (`:160`), `TMapAim` (`:136`), `TMapUse` (`:107`), `TMapBlast` (`:118`); nessuna `property`, nessun metodo | #244, 11.13, 11.16 | Campo del mondo +55-60% (sonda); record in altra unit +60%; la classe dentro `p_map.pas` e' a costo zero ma non e' "nel mondo". Lo stato e' scratch di chiamata (impostato a ogni `P_CheckPosition`), non ha ciclo di vita, non e' nei salvataggi | C | XS (solo decisione) | +55-60% se nel mondo; 0 com'e' | **CM** |
+| B2 | Callback `PIT_*` con contesto esplicito (`PIT_CheckThing` `p_map.pas:826`, `P_TryMove` `:1314`, contratto `ltraverse_t` di `P_BlockLinesIterator` `p_maputl.pas:1024`) | #244, 11.13 | Cambia il contratto del percorso piu' caldo (per linea e per oggetto di ogni cella della blockmap); forma C +10-35% e un registro in meno | C | XL | +10-35% (sonda) | **CM** |
+| B3 | `P_CheckForPushSpecial` (nelle quattro `DelphiDoom.Engine.World.MapRules`, circa 10 righe) | #185 2c-4, 11.5 | `P_ActivateLine` sta in `udmf_spec` (Doom, Heretic, Strife) e in `p_spec` (Hexen), costanti `ULAC_*`/`SPAC_*`: una forma senza `{$IFDEF}` vuole quattro regole, piu' righe della routine | F | XS | 0 | **CM** |
+| B4 | Strumenti `Prova-PMap.ps1`/`Prova-PMobj.ps1` obsoleti (percorsi pre-#226, commit `7bcb9a13`) | 11.16 | Non girano piu'; servono solo se si riaprono `p_map`/`p_mobj` | F | S | 0 | **CM** (ripararli solo se si riapre la famiglia) |
+
+**Esito per #244:** nessuna voce da migrare: l'issue si chiude con la ragione B1-B2 (stato in classi a costo zero; nel mondo costa il 55-60% nel punto piu' caldo del motore).
+
+### 3.2 #245: `g_game`, `bodyque`, totali, salvataggi
+
+Gia' fatti (non sono voci): `bodyque` e totali nel mondo (`TBodyQueue`, `TLevelTotals`), `TActiveSlots`, `TSaveGameHeader`/`TSaveGameVersions`/`TSaveGameSessionBlock`, `IdTech1\Demo`, `TNewGameLimits`/`TSkillSpeed`, `TPlayerRespawn`/`TSpawnSpot`/`TLevelExit`, `TIntermissionPlanner` (Doom, Heretic), `TGameSession` (23 membri, tra cui `Players` e `PlayerInGame`, + `ResetForNewGame`), `TTickState`. I quattro `g_game` hanno 3437/3300/2354/3280 righe e circa 75+45 globali ciascuno (`Doom\g_game.pas`: 75 nell'`interface`, 45 nell'`implementation`).
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| C1 | `G_Ticker` x4 (`Doom\g_game.pas:1629`; 1048 B) | 2h, 11.17 | Regia sui globali (`case` di `gameaction`, giro sui giocatori, `case` di `gamestate`): nulla da estrarre; ogni lettura di `players[]`/`gametic` resterebbe a indirizzo fisso | C | XS | 0 | **CM** |
+| C2 | `G_BuildTiccmd` x4 (`Doom\g_game.pas:955`; 380 righe, 2532 B) | 2h, 11.17 | Legge tasti/mouse e scrive un `ticcmd_t` diverso per gioco; la parte pura e' gia' `TInputEventScaling`/`TKeyboardLayouts` | C | XS | 0 | **CM** |
+| C3 | `G_PlayerReborn` x4 (`Doom\g_game.pas:1847`, `Hexen\g_game.pas:1594`) | 2h, 11.19 | Quasi solo scrittura di campi di `player_t` (quattro record diversi) piu' effetti fuori dal record (Hexen `localQuakeHappening`, Strife `mission_objective`, Heretic `SB_state`): nessuna decisione da testare; coperta a runtime dai golden | F | S | +16 B | **CM** |
+| C4 | `G_DoCompleted` di Hexen (`Hexen\g_game.pas:1831`, hub) e Strife (`Strife\g_game.pas:1918`, salvataggio del hub) | 2h, 11.19-11.20 | Non riempiono `wminfo` come Doom/Heretic: salvataggio del hub, nessun piano `TIntermissionRequest/Plan` | F | M | +16 B | **MF** |
+| C5 | `G_DoCompleted` di Doom/Heretic, resto (`Doom\g_game.pas:1987`): tabelle `pars`/`cpars`, copia per giocatore (`killcount`, `frags`), `WI_Start`/`IN_Start` | 2h, 11.20 | Dati e chiamate del gioco, nessuna decisione | F | S | 0 | **CM** |
+| C6 | `G_DoReborn` di Hexen (`Hexen\g_game.pas:1696`: toglie chiavi e armi, `RebornPosition`) | 2h, 11.19 | Non portata con `TPlayerRespawn`: logica propria dell'hub | F | S | +16 B | **MF** |
+| C7 | Regia di `G_DoLoadGame`/`G_DoSaveGameInFile` (`Doom\g_game.pas:2239/2334`, Heretic, Strife; Hexen `sv_save.pas:2410`) | 2h, 11.15 | Chiama `G_InitNew` e `P_UnArchive*` in un ordine che dipende dal gioco; intestazione e blocco di sessione gia' classi | F | M | +16 B | **CM** |
+| C8 | Corpo di `G_InitNew` (`Doom\g_game.pas:2600`: cicli su `states[]`/`mobjinfo[]`, `PS_NewWorld`, `G_DoLoadLevel`) | 2h, 11.17 | Le tabelle sono del gioco (2i) | F | S | 0 | **CM** |
+| C9 | `G_DeferedPlayDemo` (`Doom\g_game.pas:2939`: cerca nei lump e nei file), `G_CheckDemoStatus` (`:3176`: chiude la partita, scrive il file, `I_Quit`/`I_Error`) | 2h, 11.17 | Regia, non codec (il codec e' `IdTech1\Demo`) | F | S | 0 | **CM** |
+| C10 | `P_Archive*`/`P_UnArchive*` e gli stati dei salvataggi: `Doom\p_saveg.pas:306/1690` (2790 righe), Heretic 2170, Strife 2366, `Hexen\sv_save.pas` 2924, `sv_doom`/`sv_heretic`/`sv_hexen`/`sv_strife` (circa 1425) | 2h, 11.14-11.15 | Il rischio piu' alto della fase 2: byte per byte e a 32/64 bit; i formati vecchi non hanno file con cui provarli (CLAUDE.md "resta aperto"); servirebbe un corpus di salvataggi vecchi | F | XL | 0 per il percorso caldo; verifica pesante | **R2** |
+| C11 | `players[]`, `playeringame[]`, `leveltime`, `thinkercap`, `gametic` come campi di `TEngineWorld` (stadio 2); oggi `TGameSession.Players` (871 sostituzioni, 98 unit), `TTickState` (349), a indirizzo fisso | 2h, 11.15, 11.22-11.23 | +1 load in 91/72/38 unit e campo del mondo +55%; i salvataggi li scrivono; i giri dei thinker vogliono `@thinkercap` costante; vale solo se servono due partite nello stesso processo | C | XL | +1 load (219 occorrenze di `leveltime`, 869 di `players[]`) | **CM** |
+| C12 | Scalari di sessione ancora globali (non in `TGameSession`): `secretexit`, `pistolstart`, `singledemo`, `precache`, `demostarttic`, `gamemapinfo`, `forcecompatibilitymode`/`compatibilitymode`/`oldcompatibilitymode`, `wminfo` (`Doom\g_game.pas:297-499`) | 2h, 11.23 | Non ancora scelti nelle ondate; tutti letti da routine fredde | F | S | +16 B | **MF** |
+| C13 | `displayplayer`, `viewactive` (`g_game`) e `wipegamestate` (`d_main`) | 2h, 11.23 | `wipegamestate` e' letto da `D_Display` per fotogramma (un load in piu'): escluso dalla regola "nessun costo sul caldo"; gli altri due li legge il renderer | C | S | +1 load per fotogramma | **MC** |
+| C14 | Tasti, mouse, joystick e opzioni di gioco in `g_game` (`key_*`, `joyb*`, `usemouse`, `autorunmode`, `allowplayerjumps`...: circa 50 per gioco, `Doom\g_game.pas:303-355, 441-482`) | 2h, 1c | Sono impostazioni legate **per indirizzo** alla tabella di `m_defs` (`TKeyboardLayouts` ha gia' la parte pura); cambiare unit non cambia nulla per chi le usa | F | M | 0 | **CM** |
+| C15 | Difetto conservato: la coda `EnemyCorpses` di Heretic/Hexen non si svuota tra i livelli (puo' chiamare `P_RemoveMobj` su un puntatore vecchio dopo 32 cadaveri) | 2h, 11.14 | Conservato per parita'; `bodyque` di Doom e' svuotata da `TLevelLoader.SpawnThings` | F | XS | 0 (comportamento solo nel caso difettoso) | **MF** (decidere: e' una correzione, con test) |
+| C16 | `TEngineAcsHost.LevelTime` (`IdTech1\Base\DelphiDoom.Engine.Acs.Host.pas`) ora legge davvero il tempo (prima ricorreva su se stesso): manca un test | 2h, 11.22 | Unico punto che puo' cambiare comportamento (solo se l'ACS di Hexen lo chiama) | F | XS | 0 | **MF** |
+| C17 | Strumenti `Tools\Verifica\*` con i nomi vecchi (`HarnessScriptHost`, `harness_save_*.inc`, `plane_parity`, 154/168) | 11.22 | Fuori da `build.bat`: non aggiornati con `gamemap`/`consoleplayer`/`leveltime` | F | S | 0 | **MF** |
+| C18 | Verifiche pendenti: `Prova-Layout.ps1` e prova dei salvataggi dopo `ondata8-245-5`; demo di Hexen e Strife da riregistrare; un caricamento incrociato Doom `f2_map02` a 64 bit scrisse un file vuoto una volta (non riprodotto) | 11.17, 11.23 | Lasciate al coordinatore (nessun gioco avviato nelle ondate) | F | S | 0 | **MF** |
+
+### 3.3 #246: fase 1 calda (`v_video`, `i_video`, `am_map`)
+
+Gia' fatti (non sono voci): `TVideoPreserveTables`, `TVideoScreenLayout`, `TVideoStretch`, `TVideoScreenOps`, `TVideoPatchPainter`, `TVideoRectCopy`, cicli di patch (8 e 32 bit, trasparente, stirata, zoomed), `TVideoBlitSlices`, `TVideoModeChanger`/`IVideoModeHost`, `TVideoStandardResolutions`, `TAutomapShapes`, `TAutomapGameRules`, `TAutomapLineRasterizer`; `V_CopyRect` da 5756 a 4448 byte, `V_CopyRectTransparent*` da 3024 a 2568.
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| D1 | `V_PageDrawer` (`v_video.pas:3054`, 36 righe, 0 chiamate a classi), `V_TileScreen8` (`:3310`, 69 righe, 2 chiamate), `V_DrawPatchFullScreenTMP320x200/426x200` (`:2917`) | 12.3 fetta 5, #246 | "Restano V_PageDrawer/V_TileScreen8" (11.21-12.11): non ancora scelte; pagine a schermo intero e testo del finale | C (tiepida) | M | 0 con metodo statico nella stessa unit | **MC** |
+| D2 | `V_CopyAddRect` (`v_video.pas:1335`, 96 righe, console aperta), `V_CopyCustomScreen` (`:882`), `V_CopyRawDataToScreen` (`:2243`, 27 righe), `V_RemoveTransparency` (`:2277`) | 12.3 | Non riprese nelle tre tornate; copie dei rettangoli di cui le varianti `V_CopyRect*` sono gia' classi | C (console) / F | M | 0 con metodo statico nella stessa unit | **MC** |
+| D3 | `V_Init`/`V_ReInit`/`V_ShutDown` (`v_video.pas:3199/3256/3267`: 50 righe con 3 chiamate a classi) | 12.3 fetta 2 | I calcoli sono in `TVideoScreenLayout`; resta l'assegnazione dei buffer ai globali `screens[]` e il ramo `{$IFDEF OPENGL}` | F | S | +16 B | **CM** |
+| D4 | Conversione 8->32 bit del fotogramma: `I_SetPalette64` (`i_video.pas:252`), `I_FinishUpdate8_64` (`:276`), `I_FinishUpdate8_64a` (`:305`), `I_BlitBuffer` (`:329`, in fili) | 12.3 fetta 6, 12.4 | Cicli per pixel; solo i limiti delle fette sono in `TVideoBlitSlices`; "con la 3 e la 4, con le regole del caldo" | C | M | 0 con metodi statici nella stessa unit | **MC** |
+| D5 | `{$IFDEF OPENGL}` e rami `gld_*` in `v_video` (32 direttive) e nei `V_DrawPatch*` | 12.8, #252 | Le varianti GL restano rami della facciata finche' esistono due eseguibili | F | L | 0 | **R2** |
+| D6 | `AM_Responder` (`am_map.pas:720`, 171 righe, 0 chiamate a classi: tasti e cheat dell'automap) | 12.1, 13.2 riga 7 | Non scelta (le forme sono `TAutomapShapes`); logica di tasti per evento | F | M | +16 B | **MF** |
+| D7 | `{$IF}` di gioco nei cicli di `am_map` (35 direttive; `am_map.pas:1085-1445`) | 12.10 | Gia' ridotte da 129 a 64 con le regole per gioco; il resto e' selezione di costanti/tipi di linea nei cicli per segmento | C | S | 0 (a compilazione) | **CM** |
+| D8 | Golden dell'automap non raggiunti: teleporter, figura grande delle cose di Doom, colori degli altri giocatori, mappa 15 di Strife | 12.11 | Il copione non li esercita | F | S | 0 | **MF** (aggiungere i copioni) |
+
+`am_textured` e' elencato in #247 (E13) perche' il piano lo lega al renderer (3e).
+
+### 3.4 #247: renderer software (fasi 3-5)
+
+Gia' fatti (non sono voci): `TRendererSpriteDefs`, `TRendererSubsectorGridBuilder`, `TRendererLumpRanges`/`TRendererSpriteTableBuilder`, `TRendererTextureMappingBuilder`, `TRendererProfiles`/`TRendererPrecachePlanner`, selettore e hash PK3, `TRendererMonitorAspect`, `TRendererFake3DAngles`, `TRendererViewTables`, quattro `sorter` dei vissprite, `R_SetRenderingFunctions` come tabella generata (`TEngineRendererFunctionTable`; la routine era di 1060 righe e `r_main` e' passato da 19.648 a 14.740 byte), colonne MT e span come metodi statici (`TRendererColumnDrawers` e le altre: 68 routine x 4 giochi, `r_col_fz` 13, Hexen `fog` 8, span 5x4, flat 5x4, 28 colonne MT di `r_sprite`, `R_MapPlane`/`R_MapPlaneAngle`), `r_diher` e tre `.inc` in copia unica. Il renderer e' gia' **in copia unica** in `IdTech1\Base` (71 unit `r_*`, circa 65.000 righe, circa 790 righe di `{$IF}` di gioco) e 73 `.inc` (circa 28.500 righe, oggi 76).
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| E1 | BSP: `r_bsp` (1618 righe, 51 `{$IF}`: `R_AddLine`, `R_Subsector`, `R_RenderBSPNode`, `R_CheckBBox`), `r_cliputils` (92), `r_subsectors` (192) | 3c, 13.5 | "Nessuna routine con costo zero dimostrato" (13.5, 13.6); per nodo e per linea, rischio A | C | L | 0 se metodo statico stessa unit, da provare routine per routine (disassemblato) | **MC** |
+| E2 | `r_clipper` (7132 righe, codice di terzi, 58 `{$IF}`) | 3c | "Non si tocca" (13.5): terzi | C | XL | n.a. | **CM** |
+| E3 | `R_RenderSegLoop*` (varianti `f_RenderSegLoop_*` di `r_segs`, 1979 righe; `r_segs2` 4802; `r_wall8` 672; `r_wall32` 636; 256 varianti da due `.inc`; 41 globali scritti) | 3d, 13.8 | Sono chiamate dirette dentro la stessa unit, non voci di tabella ne' puntatori per pixel: il passo a metodo statico e' a costo zero per costruzione e non migliora nulla di misurabile; la prova richiede quattro build e disassemblato per ognuna | C | XL | 0 | **CM** |
+| E4 | `r_plane` oltre `R_MapPlane` (`R_MakeSpans`, `R_DoDrawPlane`...; 1827 righe, 68 `{$IF}`), `r_visplanes` (132), `r_ripple` | 3e, 13.8 | Stessa ragione di E3 ("fetta di sola coerenza, da fare solo se serve") | C | L | 0 | **CM** |
+| E5 | `r_slopes` (2156 righe; 8 dichiarazioni globali, ma "71 globali letti e 78 scritti" secondo il piano 13.5), `r_3dfloors` (1721 righe, 16 globali nell'`interface`) | 3e/3h | Non toccati nelle tornate (13.6 "non toccati"); `r_slopes` e i `_DBL` di `r_3dfloors` hanno solo la virgola mobile convertita (`TRendererSlopesX87`) | C | L | 0 con `class var` nella unit di chi scrive; +1 load per chi le legge da altra unit | **MC** |
+| E6 | Oggetti: `r_things` (3031 righe, 23 `{$IF}`; `R_ProjectSprite` per oggetto, `R_DrawVisSprite`), `r_sprite` oltre le colonne MT (3265), `r_voxels`, `r_dynlights`, `r_softlights` (1705, un `asm` a `:665`), `r_vislight` | 3g | Per oggetto/colonna; "nessuna routine con costo zero dimostrato" | C | XL | 0 se statici nella stessa unit | **MC** |
+| E7 | `R_ComputeFake3DTables` (`r_fake3d.pas`, 845 righe) | 3h, 13.5 passo 3 | Scrive blocchi della zone da un thread; resta fuori da `TRendererFake3DAngles` | F | M | +16 B | **MF** |
+| E8 | `r_intrpl` (1421 righe, 6 `{$IF}`), `r_depthbuffer` (828), `r_zbuffer` (816), `r_earthquake` (87) | 3h | `r_intrpl` tocca i `mobj`: "dopo la fase 2" (oggi sbloccata); gli altri per fotogramma | C | L | 0 se statici/`class var` nella unit | **MC** |
+| E9 | Vista: `r_main` (2927 righe; 118 globali nell'`interface`, 18 nell'`implementation`): `R_PointOnSide*`, `R_PointToAngle*`, `R_SetupFrame`, `TViewContext` mai fatto; lunghezza focale/`projection` in virgola mobile (x87/SSE) | 3a, 13.5 | Calda; i globali della vista sono letti da ogni unit `r_*`; il ramo x87/SSE resta dove e' | C | L | 0 con `class var` nella unit; +1 load per le altre unit | **MC** |
+| E10 | `R_Init` e il freddo residuo di `r_main`/`r_data`/`r_precalc`/`r_colormaps`/`r_translations`/`r_patch`; `r_pk3textures` (scrittura di `PNAMES0`/`TEXTURE0` e conversioni immagini) | 3b, 13.5 passo 2 | `maptexture_t` ha layout diverso per gioco (non `packed` in Strife); il censimento del freddo di `r_data` non e' stato rifatto dopo la 2a tornata | F | L | +16 B | **MF** |
+| E11 | Caldo di `r_data`/`r_hires`: `R_GetColumn`, `R_ReadDC32Cache`, `R_ReadDS32Cache` (`r_data.pas` 2262 righe, 38 `{$IF}`), `r_hires` (1490, ricalcolo a ogni cambio di palette) | 3b, 13.5 | Per colonna / per palette | C | M | 0 se statici nella stessa unit | **MC** |
+| E12 | Hexen: `r_cache_sky` (73), `r_cache_sky1` (399), `r_cache_sky1_dbl` (399), `r_cache_sky2` (398), 13 `.inc` di nebbia e doppio cielo (`R_ReadDC32SkyCache_Loop*`) | 3f/3h | "Strategia di gioco, regole `sealed`" (13.5): non scelte | C (tiepida) | M | 0 se statici nella stessa unit | **MC** |
+| E13 | `am_textured` (925 righe: `AM_DrawTexturedTriangle` `:289`, `AM_dodrawSubSectors` `:644`, quattro `AM_DrawSeg*` `:120-189`, 11 globali) | 3e, #246 | Per pixel; legge `flats`, colormap e settori come il renderer dei piani: "va con la fetta 3e" | C | XL | 0 se statici nella stessa unit | **MC** |
+| E14 | `{$IF}` di gioco nel freddo dei `r_*` (`r_main` 49, `r_data` 38, `r_defs` 28, `r_sky` 9, `r_hires` 1: circa 125) | 3a/3b | Parte e' gia' `TRendererProfiles`; il resto legge nomi che esistono per un gioco (`customcolormaps`, `ST_Y`, `SB_Y`) | F | L | +16 B | **MF** |
+| E15 | `{$IF}` di gioco nei cicli caldi e nei `.inc` (`r_plane` 68, `r_bsp` 51, `r_draw` 49, `r_things` 23, `r_segs` 19, `R_DrawColorColumnHi_bc.inc` 60, `R_Wall32_BatchFuncs.inc` 36...) | 13.5 | Sono varianti scelte a compilazione: una strategia iniettata costerebbe una chiamata per colonna/span; vietata dalla regola del caldo | C | XL | +1 chiamata per colonna/span | **CM** |
+| E16 | I 76 `.inc` che generano i corpi dei cicli (circa 28.500 righe) | 2.2, 13.5 | "Restano il modo di generare le varianti dei cicli; ridurli e' un obiettivo secondario" | C | XL | 0 | **CM** |
+| E17 | `TColumnContext` (stato di colonna/span `dc_*`/`ds_*` in un record per riferimento) | 3f, 13.6 | **Annullato**: +3 istruzioni ogni 3 pixel (+16%) su Win32; il metodo statico nella stessa unit costa zero | C | L | +16% su Win32 | **CM** |
+| E18 | `{$IFDEF OPENGL}` nei `r_*` e nelle unit di `Base` (44 unit, 419 direttive: `r_main` 60, `r_things` 42, `v_video` 32, `r_plane` 30, `Composition` 25...) | #252 | Il define decide le unit e le strutture dati dei due eseguibili | F/C | XL | 0 | **R2** |
+| E19 | Lavori paralleli del renderer sopra `Framework\Threading` | 3i | "Dopo 3d-3g"; rischio A | C | XL | misura a coppie | **R2** |
+
+### 3.5 #185 senza figlia: fase 1 residua, fase 2 residua, fase 5
+
+**Fase 1 (il freddo rimasto).**
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| A1 | Finestra e avvio: `i_main` (`WindowProc` `i_main.pas:96`, `DoomMain` `:153`), `i_mainwindow` (118 righe), `i_startup` (form VCL, `SUC_Outproc` `:200`), la finestra gemella di `IdTech1\OpenGl\Legacy\gl_main.pas` (791 righe) | 12.1, 13.2 riga 5 | Nessun golden copre fuoco, icona e schermo intero; `Framework\GameHost` ha la finestra ma "non e' quella del motore"; si unisce a `gl_main` | F | L | 0 | **R2** (insieme alla #252) |
+| A2 | `V_DoSetDisplayMode` (`v_displaymode.pas:149`, regia: chiude e riapre venti sottosistemi, tocca `r_*`) | 12.1 | Regia del cambio di modo, fuori perimetro | F | S | +16 B | **CM** |
+| A3 | Difetto di `v_displaymode.pas:133`: `nwidth := MAXHEIGHT` scrive la larghezza al posto dell'altezza | 12.1 | Non toccato "da decidere" | F | XS | cambia il comportamento nel solo ramo difettoso | **MF** (decidere se correggere, con test) |
+| A4 | `hu_stuff` (1172 righe, 61 `{$IF}`, 28+2 globali): font e caricamento, nomi delle mappe, `player_names`, `chat_macros`, `destination_keys`, `chat_on`, `drawfps`, `drawcrosshair`, `amdrawstats`, geometria dei widget, circa 345 righe di dati in `initialization` | 1a | "Resta storico nelle facciate" (commento #185 della fetta 1a); `chat_on` e `message_dontfuckwithme` li scrive `m_menu` | F | M | +16 B | **MF** |
+| A5 | `s_sound` colla fredda: `S_Init` (`s_sound.pas:900`, 73 righe, 0 chiamate a classi), `S_InitSoundDevice`/`S_InitMusicDevice` (`:497/537`), `S_DoChangeMusic` (`:1668`, 127 righe), `S_DefaultMusicForMap` (`:1019`, tabella per gioco) | 12.1, 12.7, 13.2 riga 4 | "Resta nella facciata la colla su `mobj_t`, `sfxinfo_t`, `musicinfo_t`, `players` (una ventina di direttive: materia delle regole per gioco)" | F | L | +16 B | **MF** |
+| A6 | `s_sound` per evento e per tic: `S_StartSoundAtVolume` (`s_sound.pas:1125`, 134 righe, 7 chiamate a classi), `S_StartVoiceAtVolume` (`:1287`), `S_UpdateSounds` (`:1512`, 78 righe, 0 chiamate a classi, 50 `{$IF}` nell'unit) | 12.1 | Stessa colla; l'attenuazione, il canale e il pitch sono gia' `TSfxAttenuation`/`TSfxChannelPicker` | C (tiepida) | M | 0 con metodo statico nella stessa unit | **MC** |
+| A7 | `w_wad` (1249 righe: `W_AddFile` `:534`, `W_Reload` `:652`, `W_RuntimeLoad` `:743`, `W_CacheLumpNum` `:1183`; `lumpinfo[]`, `lumpcache[]`, 17 globali); `w_pak`, `z_zone`, `w_wadreader`, `w_wadwriter`, `v_data`, `i_startup` | 12.1 | "Resta storica per scelta": la cache vive nella zone memory, `W_CacheLumpNum` ha 51 chiamanti e gira per fotogramma; `TLumpCache` esiste ed e' scollegata; gli altri sono gia' facciate o classi | C | XL | +1 load in 51 unit | **CM** |
+| A8 | `m_fixed` in `asm` (`m_fixed.pas:314`, 19 righe `asm`; versione Pascal a Win64) | 1c, 11.0 | La misura del Pascal (+3,4%) fu rifiutata per dispersione del 46%; patch pronta `Tools\Verifica\185\Fetta-1c-m_fixed-pascal.patch`, da rimisurare a macchina scarica | C | S | +3,4% (non confermato) | **MC** |
+| A9 | `asm` storico con ramo Pascal gia' presente: `p_local.pas:274`, `r_mmx.pas:107`, `r_softlights.pas:665`, `d_delphi.pas:1874` (22) | #41, 5 | Ottimizzazione Win32 dichiarata (`{$IFDEF CPUX86}` + Pascal) | C | M | + (Pascal piu' lento a Win32) | **CM** |
+
+**Fase 2 (la logica di gioco in un mondo solo), residuo.**
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| A10 | Servizi del mondo: `p_maputl` (2076 righe, 7+12 globali: `P_BlockLinesIterator` `:1024`, `P_BlockThingsIterator` `:1101`, `P_PathTraverse` `:1668`), `p_sight` (2004, 58 `{$IF}`, `P_CheckSight` `:1418`), `p_slopes` (688), `p_3dfloors` (399) | 2b, 13.1 riga 10 | "Pura forma: il mondo li espone; si fa quando i chiamanti sono gia' sul mondo": mai fatta ne' scartata | C (esposizione) | M | 0 (il mondo inoltra; i chiamanti caldi restano diretti) | **MF** |
+| A11 | `p_setup` (396 righe; 48 globali dell'`interface`: `vertexes` `:82`, `sectors` `:88`, `lines` `:97`...; 19 `{$IF}`), geometria del livello come globali | 2h, 10.3 | Mai trattata come "stadio 2"; letta da tutto il renderer e dalla fisica: +1 load in migliaia di punti; il caricamento e' gia' `TLevelLoader` (#142) | C | XL | +1 load | **CM** |
+| A12 | `p_tick` (393 righe, 9 `{$IF}`; `P_Ticker` `:312`) | 2a/2h | Regia per tic sopra `TThinkerList`/`TTickState` | C | S | 0 | **CM** |
+| A13 | **2d `p_common`** (`IdTech1\Base\p_common.pas`: 12.505 righe, 649 routine `A_*` e funzioni di ACTORDEF, 99 `{$IF}`, nessuna classe) -> registro delle azioni (`IdTech1\Actions` c'e' gia') | 2d, par. 4 riga 2d | **Mai iniziata e mai nominata in 13.1**; e' la piu' grande unit del progetto | C (azioni per stato e per thinker) | XL | 0 se metodi statici nella stessa unit (tecnica 13.6); un registro per puntatore a funzione non cambia la chiamata dallo stato | **MC** |
+| A14 | `A_*` di gioco come procedure libere nelle unit delle regole: Doom 113 (`EnemyRules`) + 33 (`PspriteRules`), Heretic 162, Hexen 290 + 96 (`a_action.pas`), Strife 186 | 2f, 11.7-11.9 | "Restano proprie con la ragione scritta": le azioni di mostro e arma hanno contenuto diverso per gioco (nessuna regola comune); un convertitore meccanico a metodi statici esiste (`Converti-InClasse.ps1`) | C | XL | 0 (statici stessa unit) | **CM** (opzione: **MC** se si vuole "tutto a classi" alla lettera) |
+| A15 | `P_DamageMobj`/`P_KillMobj`/`P_TouchSpecialThing` per gioco (`TInterGameRules.DamageMobj` `Doom\...InterRules.pas:976`, `TouchSpecialThing` `:387`; `P_KillMobj` e' ancora procedura libera `:834`; 1175/1583/2441/1474 righe) | 2f-2, 11.7 | Differenze reali di danno, uccisione e raccolta (par. 11.7) | C | XL | 0 | **CM** |
+| A16 | `p_enemy` proprio: `P_LookForPlayers` (`...EnemyRules.pas:702`), `A_Look` (`:842`), `P_DoChase` (`:918`), `A_Chase` (`:1162`), `P_CheckMeleeRange`, `P_CheckMissileRange` (`:609`), `A_Pain`, `A_Fall`, `P_Massacre` (EnemyRules 3034/3189/6340/4169 righe) | 2f-4, 11.9 | "Restano proprie con la ragione scritta" | C | XL | 0 | **CM** |
+| A17 | `p_pspr` proprio: `P_BringUpWeapon`, `P_CheckAmmo`, `P_FireWeapon`, `A_WeaponReady`, le armi (PspriteRules 984/1916/2467/1042 righe) | 2f-3, 11.8 | Armi diverse per gioco | C | L | 0 | **CM** |
+| A18 | `p_user` proprio: `P_UseArtifact` (`Heretic\...UserRules.pas:278`), `P_PlayerUseArtifact` (`:245`), `P_ArtiTele`, il volo di Heretic e Hexen ("candidato"), `P_DeathThink`/`P_PlayerThink` di Hexen | 2f-1, 11.6 | Duplicate con ragione; il volo e' un candidato scritto a mano nel piano | C | M | 0 | **MC** |
+| A19 | Routine "duplicate con ragione" di `p_mobj`/`p_map`: `P_SpawnMapThing` di Hexen (322 righe), `P_SpawnPlayerMissile` Heretic (83)/Hexen (91), `P_HitFloor` Heretic (72)/Hexen (117), `P_SpawnPuff` x4, `P_SpawnGreenBlood`/`P_SpawnBlueBlood` (`Doom\...MobjRules.pas:877`), `P_BloodSplatter`/`P_RipperBlood` (Heretic `:990/1010`: due comportamenti che differiscono davvero), `P_SpawnMissileAngle`/`P_SPMAngle`, `P_FloorBounceMissile`, `P_BlasterMobjThinker` (`:703`), il resto di `CheckThingContact`, i metodi di Hexen `NightmareRespawn`/`SpawnPlayer`/`SpawnMissile` | 2c-2..2c-4, 11.5 | Tabella di confronto del par. 11.5: il testo differisce davvero; unificarle cambierebbe le demo | C | XL | 0 | **CM** |
+| A20 | `P_SpawnBlood`: Doom e Heretic **identiche** (`Doom\...MobjRules.pas:847`, 24 righe; Strife ha tre differenze di dato) | 2c-4, 11.5 | "Candidata a una prossima fetta": non fatta per non rifare la verifica | C (per colpo) | XS | 0 | **MF** |
+| A21 | `P_CrossSpecialLinePtr` (`Doom\...SpecRules.pas:677`), `P_ShootSpecialLine`, `P_PlayerInSpecialSector`, `P_UseSpecialLine`: i grandi `case` degli special, uno per gioco (SpecRules 2540/1467/1286/2666 righe); `IdTech1\Specials` (registro) **non collegata** | 2g, 11.10 | Il registro degli special al posto del `case` esiste ma non e' collegato (par. 11.10); per attivazione di linea, non per tic | F (evento) | XL | +16 B per routine (cold) | **MF** |
+| A22 | `P_UpdateSpecials` (`SpecRules.pas:2052`, per tic), `P_SpawnSpecials` (`:2164`), `P_InitPicAnims` (`:307`: Doom e Strife uguali, Heretic tabella fissa), `P_ChangeSwitchTexture` (`SwitchRules.pas:97`), routine ACS di Hexen | 2g, 11.10 | `anims`/`lastanim`/tabelle fisse stanno nella unit e le legge `P_UpdateSpecials`: portarle vuol dire spostare dati e routine insieme (2i) | C (per tic) | L | 0 con statici stessa unit | **MC** |
+| A23 | `p_doors` x3 (Doom 397 `:113` `T_VerticalDoor`, Heretic 287, Strife 1338: dialoghi e chiavi) e `p_telept` x3 (`EV_Teleport` `:83`; 213/246/215) | 2e-1, 11.11 | "Restano con la ragione scritta": Strife tre volte Doom; thinker per tic (porte) | C (porte) / F (teletrasporto) | L | 0 | **MC** |
+| A24 | `p_extra` x4 (Doom 1099, Heretic 554, Hexen 502, Strife 778): azioni | 2e-1, 11.11 | "Azioni, fetta a parte" | C | M | 0 | **MC** |
+| A25 | `Heretic\p_floor` (413) e `Heretic\p_plats` (255) | 2e-1, 11.2, 11.11 | `specialdata`, suono d'arresto solo per i gradini, nessun blocco delle scale: ragione scritta | C | M | 0 | **MC** |
+| A26 | `udmf_*` (nove unit di `Base`: `udmf_ceilng`, `_doors`, `_floor`, `_lights`, `_mobj`, `_plats`, `_spec`, `_telept`, `_things`) e `po_man` (polyobject di Hexen, 19 `{$IF}`) | 2e, 10.6 | "`udmf_ceilng`/`udmf_floor` come secondo profilo di `TCeilingMachine`/`TFloorMachine`": solo i `TActiveSlots` sono fatti | C | L | 0 | **MC** |
+| A27 | Tabelle `info`, `info_h`, `sounddata` per gioco: circa 184.900 righe (Doom 26.815, Heretic 32.302, Hexen 74.275, Strife 51.515) | 2i, 13.1 riga 11 | Sono **dati**, non logica: "una sola forma di dati per gioco, caricata all'avvio"; serve un generatore e una prova di uguaglianza con le tabelle di oggi; `states[]`/`mobjinfo[]` si leggono per thinker | F (dati) / C (letture) | XL | 0 se il layout resta; rischio sul percorso di lettura | **R2** |
+| A28 | `m_menu` x4 (7772/7302/7396/7513 righe; `M_Drawer` `Doom\m_menu.pas:5112`, `M_Responder` `:4390`, `M_Init` `:5437`; 120+11 globali) | 2j, 13.1 riga 11 | "Freddo ma quadruplicato": mai iniziato | F | XL | +16 B per routine | **MF** |
+| A29 | `f_finale` x4 (1053/514/425/1119), `wi_stuff` (`Doom\wi_stuff.pas` 2160: `WI_Start` `:2110`, `WI_Drawer` `:2028`; 61 globali), `in_stuff` x2 (1205/666), `Strife\f_fade` (300), `Strife\m_saves` (541) | 2j | Intermissioni e finali: freddo, quadruplicato | F | XL | +16 B per routine | **MF** |
+| A30 | Barre di stato: `st_stuff` x2 (2218/1977; `ST_Drawer` `Doom\st_stuff.pas:1661`, 62+8 globali), `st_lib` x2 (520/279), `sb_bar` x2 (Heretic 1830, Hexen 2098) | 2j | Disegno per fotogramma (ogni widget una `V_DrawPatch`) | C (tiepida) | XL | 0 con statici stessa unit | **MC** |
+| A31 | `d_main` x4 (3143/2813/2705/2965 righe; `D_DoomMain` `Doom\d_main.pas:2295`, 16 KB di codice; `D_Display` `:851`; `D_DoomLoop` `:1154`; 22+39 globali) | **nessuna** (non censita) | Mai assegnata a una fetta; avvio, ciclo e `D_Display` per fotogramma (`wipegamestate`, C13) | F (avvio) / C (`D_Display`) | XL | +16 B nell'avvio (`D_DoomMain` +12 gia' visto) | **MF** |
+| A32 | `deh_main` x4 (1343/1297/1401/1331) e `DelphiDoom.Engine.Dehacked.Applier` x4 (970/967/913/919) | **nessuna** (la 1b ha fatto solo `deh_base`) | I parser sono in `IdTech1\Dehacked`; restano gli adattatori e le liste di token per gioco | F | L | +16 B | **MF** |
+| A33 | Tipi e testi per gioco: `d_player` x4 (908/850/732/940), `doomdef`/`doomstat` x4, `d_check` x3, `d_englsh` x2, `d_items` x2, `dstrings` x2, `h_strings`, `xn_strings`, `p_uactornames` x3, `p_pspr_h` x4, `p_spec_h` x4, `info_h` (`p_mobj_h.pas` ha 133 `{$IF}` di gioco) | 1e (`d_*` di Base), 13.1 | "I tipi restano tipi" (par. 8): record e costanti non sono logica | F | XL | 0 | **CM** |
+| A34 | Test di unita' delle unit delle regole (richiedono un `TEngineWorld` finto con record in memoria) e copertura al 90% delle regole | 13.4 | Oggi coperte dai golden e dalla prova meccanica, non da DUnitX | F | L | 0 | **MF** |
+
+**Fase 5 (chiusura), dopo la fase 2.**
+
+| ID | Voce e dove | Fetta | Perche' non migrata | C/F | Costo | Impatto | Proposta |
+|---|---|---|---|---|---|---|---|
+| A35 | `IdTech1\Common\d_delphi.pas` (6811 righe, 22 `asm` a `:1874`): ogni funzione con equivalente nella RTL o in `<Modulo>\` si sostituisce, il resto in unit piccole | 5, 13.3 | "Dopo la fase 2"; `d_delphi` ha 22.809 righe di `Common` nel piano, oggi la cartella ha 6811 | C/F | XL | da provare | **MF** (a fine #185) |
+| A36 | Cancellare le facciate senza chiamanti (`docs\FACCIATE.md`, 1453 righe) e i globali rimasti come alias | 5 | Si cancellano a fine fetta, non prima (par. 2.1); molte facciate servono ancora a `Doom32`/`GLDoom32` | F | L | 0 | **MF** (a fine #185) |
+| A37 | Regola "codice storico per scelta": in `CLAUDE.md` e' gia' sostituita (riga 271 la dichiara superata; resta la sezione "Codice esistente"), ma `docs\PENDING_ISSUES.md:39` ("Restano codice storico, per scelta documentata") e `:243` la affermano ancora | 5 | Da ritoccare all'ultimo giro, quando "tutto a classi" e' vero | F | XS | 0 | **MF** (a fine #185) |
+| A38 | Win64 per il motore (#40/#43/#44) | 5, 13.3 riga 5 | **Gia' soddisfatta** (par. 2 punto 5): 33 progetti su 33, corpus 44/44 uguale a Win32 e Win64 | - | XS | 0 | **CM** |
+
+### 3.6 Riferimento: fase 4 (OpenGL, #177 e figlie #248, #249, #250)
+
+Fuori dal perimetro di questo inventario (issue #248-#250 sono figlie della #177, non della #185). Qui solo lo stato letto dal codice, **senza proposta**: le tre voci seguono il piano di `docs\OPENGL_PIANO.md`.
+
+| ID | Voce e dove | Fetta | Stato | C/F | Proposta |
+|---|---|---|---|---|---|
+| F1 | #248 facciate di `gl_render` (1338 righe) e `gl_main` (791) in `IdTech1\OpenGl\Legacy` | #177 fetta 12 | Dopo le fette 10 e 11; `gl_*` tuttora 12 unit principali (`gl_tex` 1649, `gl_voxels` 732, `gl_models` 559, `gl_setup` 461, `gl_sky` 376...) | C/F | n.a. |
+| F2 | #249 `gld_SortDlights`/`gld_DrawDLights` a classi (resta Strife) | #177 luci dinamiche | Serve un livello di prova con GLDEFS e luci dinamiche | C | n.a. |
+| F3 | #250 fetta 7 (contesto GL; prove a mano di finestra, schermo intero, Alt+Tab: #239) e fetta 6 (lightmap dei voxel, a ogni tic) | #177 | Serve un livello di prova e la misura a coppie | C/F | n.a. |
+| F4 | Residuo della fetta 4 e fette 10, 6, 7, 11, 12 elencate nel par. 4 di #185 | #177 | Il piano dice "fette 0-11 fatte"; non verificato qui | C/F | n.a. |
+
+## 4. Cosa serve per chiudere #185
+
+Il corpo dell'issue ha **cinque spunte di fase** e quattro **regole**. Una spunta e' soddisfatta solo se le sue figlie lo sono e la regola di verifica e' chiusa.
+
+### 4.1 Spunte di fase
+
+| Spunta | Stato | Riferimento nel piano | Che cosa manca |
+|---|---|---|---|
+| **0. Strumenti di parita'** | **soddisfatta** (`[x]`) | par. 3, 8 | Niente |
+| **1. Finire il freddo** | **no** | par. 12, 13.2 | Figlie: #241 `[x]`, #242 `[x]`, #243 `[x]`, **#246 `[ ]`** (D1, D2, D4, D6, D8; D3, D7 chiudibili con motivo; D5 in #252). Senza figlia: A1-A9 (finestra, `v_displaymode`, `hu_stuff`, colla di `s_sound`, `m_fixed`) |
+| **2. Logica di gioco in un mondo solo** | **no** | par. 10, 11, 13.1 | Figlie **#244 `[ ]`** (esito: tutte voci **CM**, si chiude con motivo) e **#245 `[ ]`** (C4, C6, C12, C13 da fare; C10 salvataggi in R2; C1-C3, C5, C7-C9, C11, C14 **CM**). Senza figlia: 2b (A10), 2d `p_common` (A13), 2e (A23-A26), 2g (A21-A22), 2i (A27), 2j (A28-A30), `d_main`/`deh_main` (A31-A32) e i residui "duplicati con ragione" (A14-A20, A33) |
+| **3. Renderer software** | **no** | par. 13.5-13.8 | Figlia **#247 `[ ]`**: E1, E5, E6, E8, E9, E11-E13 (caldo, `MC`), E7, E10, E14 (freddo, `MF`); E3, E4, E15-E17 `CM` per il par. 13.8/13.6; E18-E19 in R2 |
+| **4. Renderer OpenGL** | **no** | par. 4 fase 4, `OPENGL_PIANO.md` | Figlie **#177**, #248, #249, #250 aperte (3.6): prerequisito formale, non analizzato qui |
+| **5. Chiusura** | **no** (una voce gia' vera, una a meta') | par. 4 fase 5, 13.3 | Win64 (A38) e' soddisfatta solo in `CLAUDE.md` la sezione "codice storico per scelta" (A37: `docs\PENDING_ISSUES.md:39` e `:243` la dicono ancora); mancano `d_delphi` (A35) e le facciate/alias (A36) |
+
+### 4.2 Regole dell'issue
+
+| Regola | Stato | Evidenza o mancanza |
+|---|---|---|
+| **Compatibilita' byte per byte** (salvataggi, demo, rete) | **soddisfatta per le fette fatte, non provata nelle recenti** | Corpus intero 44/44 a 8 e 32 bit (88/88), layout dei salvataggi uguale ai golden e tra 32 e 64 bit, demo riregistrate uguali; mancano le prove dei punti C18 (salvataggi dopo `ondata8-245-5`, demo di Hexen e Strife, caricamento incrociato `f2_map02`), `Confronta-Funzioni`/golden dopo `ondata4`/`ondata5` di #247, rete e deathmatch (il corpus non li esercita) |
+| **Copertura almeno al 90% per libreria** | **non verificato** (sola lettura) | Non misurabile senza `DelphiCodeCoverage`; le unit delle regole e dei grandi `case` non hanno test DUnitX (A34) |
+| **Prestazioni entro il 5% misurate a coppie a macchina scarica** | **parziale** | Chiusa il 2026-11-16 per `master` `cb99f3ff1` (demo1 entro +0,83% nelle quattro combinazioni; demo3 Win64 rifiutata per dispersione, <= +1,79%). **Non misurate** le tornate dopo: #246 (tag `ondata-notte-246-1..7`, `ondata2-246-1..6`), #247 (`ondata-notte-247-1..5`, `ondata2-247-6`, `ondata3-247-1..4`, `ondata4-247-1..4`, `ondata5-247-1..2`), #245 (`ondata6..8-245-*`) |
+| **Nessuna chiamata virtuale o a interfaccia per colonna, span, pixel, seg o thinker** | **soddisfatta** | Tutte le classi del caldo sono `sealed` con metodi statici; `TColumnContext` annullato (E17). Da ricontrollare con `grep` a fine lavoro |
+| **Un passo che non rispetta parita' o prestazioni si annulla** | **in uso** | Annullati: `TColumnContext`, `P_CheckForPushSpecial` in `p_map`, `V_DrawPatchZoomed32` nella prima forma, classe `TMapCheck` in unit separata |
+
+### 4.3 Ordine consigliato per arrivare alla chiusura
+
+1. Chiudere **#244** con motivazione (B1-B4, nessun lavoro).
+2. Fare le voci **MF** di costo XS-S (A3, A20, C15, C16, C17, C18, D8) e quelle **MF** di #245 (C4, C6, C12).
+3. Decidere le grandi non assegnate (A13 `p_common`, A28-A32 menu/avvio/DeHackEd/hud) prima di dichiarare la fase 2 "finita".
+4. Un giro unico di **misura a coppie a macchina scarica** (par. 13.4) per tutte le tornate non misurate, prima di aprire altre fette calde (`MC`).
+5. Fase 5 (A35-A37) solo dopo la 2, la 3 e la 4.
+
+## 5. Decisioni che spettano all'utente
+
+1. **Le fette "duplicate con ragione" (A14-A19, A21 e simili) si migrano a classi (`MC`) oppure si chiudono (`CM`)?** Il piano le lascia con la ragione scritta (azioni di mostro e arma, `P_DamageMobj`, `P_KillMobj`, grandi `case`); oggi sono procedure libere nelle unit delle regole (circa 880 `A_*`). Un convertitore meccanico a metodi statici nella stessa unit esiste (`Converti-InClasse.ps1`) e il costo e' zero per costruzione, quindi "tutto a classi" alla lettera e' possibile, ma e' una conversione di forma che non toglie codice. Dalla risposta dipende se #185 si puo' chiudere entro la Release 1.
+2. **Che cosa fare delle unit che nessuna fetta possiede** (A13 `p_common` 12.505 righe, A31 `d_main` x4, A32 `deh_main`/`Applier` x4, A28-A30 menu, finali e barre di stato, circa 100.000 righe tra tutte): migrarle (XL ciascuna), spostarle in Release 2 o dichiararle storiche per decisione. Non sono nel conto delle spunte del corpo dell'issue e senza una decisione la fase 2 non puo' dirsi finita.
+3. **Salvataggi e tabelle (C10, A27) in Release 2?** Salvataggi (circa 10.300 righe di `p_saveg`/`sv_save`) e tabelle `info`/`sounddata` (circa 184.900 righe) sono i due blocchi piu' rischiosi o piu' vuoti di logica; i formati vecchi dei salvataggi non hanno file di prova e le tabelle sono dati. Spostarli in Release 2 chiude la parte di #185 che si puo' dimostrare.
+4. **Correzioni di difetti conservati (A3, C15)**: `nwidth := MAXHEIGHT` in `v_displaymode.pas:133` e `EnemyCorpses` che non si svuota: correggere (con test) o conservare per parita'.
+5. **La misura a coppie finale**: va fatta a macchina scarica, da sola, dopo le ultime fette calde; senza questa le tornate di #245, #246 e #247 non possono dichiararsi "entro il 5%".
