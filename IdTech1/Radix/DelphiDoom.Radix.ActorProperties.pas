@@ -63,6 +63,11 @@ type
     PickupSound: string;
     TouchDamage: Integer;
     AltDamage: Integer;
+    /// <summary>
+    ///   How far an enemy with LimitPatrolRange looks for a pilot, in map units. ACTORDEF gives map
+    ///   units; the DEHACKED field of Rad-X holds a 16.16 distance and is converted when it is read (the
+    ///   fork compared the raw ACTORDEF number with a 16.16 distance: see TRadixContactRules.MaxTargetRange)
+    /// </summary>
     PatrolRange: Integer;
     /// <summary>The pickup gives something (a pickup with an empty block is taken for nothing)</summary>
     function GivesSomething: Boolean;
@@ -129,6 +134,7 @@ implementation
 
 const
   NOT_SET = -1;
+  FIXED_UNIT = 65536;
   FLAG_NAMES: array[TRadixActorFlag] of string = ('CUSTOMPICKUP', 'THRUSKY', 'NOCRASH',
     'DONTBLOCKSPECIES', 'CANDAMAGEWALLS', 'DAMAGEONPLAYERTOUCH', 'USEALTDAMAGE', 'BOBING',
     'PREVENTTHRYSKY', 'LIMITPATROLRANGE', 'CANSPAWNCHILDREN', 'AMTELEPORTFOG', 'AMFORCEFIELD',
@@ -448,7 +454,7 @@ begin
   else if AKey = 'TOUCH DAMAGE' then
     AInfo.TouchDamage := Number
   else if AKey = 'PATROL RANGE' then
-    AInfo.PatrolRange := Number
+    AInfo.PatrolRange := Number div FIXED_UNIT // a 16.16 distance in the patch, map units here
   else if AKey = 'MISSILE ALT DAMAGE' then
     AInfo.AltDamage := Number
   else

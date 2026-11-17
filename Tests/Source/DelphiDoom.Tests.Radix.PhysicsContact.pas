@@ -58,6 +58,14 @@ type
     procedure UnNemicoDovrebbeCercareSoloNelSuoRaggioDiPattuglia(ALimited: Boolean; ADistance, ARange: Integer;
       AExpected: Boolean);
     [Test]
+    [TestCase('con limite', 'True,4096,4096')]
+    [TestCase('senza flag', 'False,4096,0')]
+    [TestCase('flag senza raggio', 'True,0,0')]
+    [TestCase('flag con raggio negativo', 'True,-5,0')]
+    procedure IlRaggioDiPattugliaDovrebbeDiventareIlLimiteDelMotore(ALimited: Boolean; ARange, AExpected: Integer);
+    [Test]
+    procedure IlLimiteDelMotoreDovrebbeScartareComeIlConfrontoDelFork;
+    [Test]
     // two sided, z, height, front floor, back floor, front ceiling, back ceiling, expected
     [TestCase('a un lato ferma sempre', 'False,500,8,0,0,0,0,True')]
     [TestCase('nell apertura passa', 'True,490,8,352,480,640,512,False')]
@@ -103,6 +111,42 @@ procedure TTestRadixPhysicsContact.UnNemicoDovrebbeCercareSoloNelSuoRaggioDiPatt
   ARange: Integer; AExpected: Boolean);
 begin
   Assert.AreEqual(AExpected, TRadixContactRules.InPatrolRange(ALimited, ADistance, ARange));
+end;
+
+procedure TTestRadixPhysicsContact.IlRaggioDiPattugliaDovrebbeDiventareIlLimiteDelMotore(ALimited: Boolean; ARange,
+  AExpected: Integer);
+begin
+  Assert.AreEqual(AExpected, TRadixContactRules.MaxTargetRange(ALimited, ARange));
+end;
+
+procedure TTestRadixPhysicsContact.IlLimiteDelMotoreDovrebbeScartareComeIlConfrontoDelFork;
+const
+  FRACUNIT = 65536;
+var
+  LIteration, LRangeUnits, LMaxTarget: Integer;
+  LDistance, LForkRange: Int64;
+  LForkSkips, LEngineSkips: Boolean;
+begin
+  RandSeed := 20201117;
+  for LIteration := 1 to 20000 do
+  begin
+    LRangeUnits := 1 + Random(32000);
+    // distances near the range, as well as far
+    LDistance := Int64(LRangeUnits) * FRACUNIT + Random(3 * FRACUNIT) - FRACUNIT - FRACUNIT div 2;
+    if Odd(LIteration) then
+      LDistance := Random(32000) * Int64(FRACUNIT) + Random(FRACUNIT);
+    if LDistance < 0 then
+      LDistance := 0;
+    // P_LookForPlayers of Rad-X: a distance (16.16) above actor.patrolrange is skipped, the
+    // range being a 16.16 number (what A_SetPatrolRange and the DEHACKED field give)
+    LForkRange := Int64(LRangeUnits) * FRACUNIT;
+    LForkSkips := LDistance > LForkRange;
+    // P_LookForPlayers of the engine: maxtargetrange * FRACUNIT, only above 0
+    LMaxTarget := TRadixContactRules.MaxTargetRange(True, LRangeUnits);
+    LEngineSkips := (LMaxTarget > 0) and (LDistance > Int64(LMaxTarget) * FRACUNIT);
+    Assert.AreEqual(LForkSkips, LEngineSkips, Format('range %d distance %d', [LRangeUnits, LDistance]));
+    Assert.AreEqual(not LForkSkips, TRadixContactRules.InPatrolRange(True, Integer(LDistance), Integer(LForkRange)));
+  end;
 end;
 
 procedure TTestRadixPhysicsContact.UnaLineaDovrebbeFermareUnMissileSoloSeNonCiPassa(ATwoSided: Boolean; AZ, AHeight,

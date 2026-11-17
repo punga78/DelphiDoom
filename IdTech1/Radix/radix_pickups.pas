@@ -107,6 +107,7 @@ uses
   p_tick,
   s_sound,
   radix_playerstate,
+  DelphiDoom.Radix.Physics.Contact,
   DelphiDoom.Radix.Pilot.Rules;
 
 const
@@ -154,6 +155,7 @@ procedure RX_InitActors;
 var
   i: integer;
   thruspecies: boolean;
+  patrol: integer;
 begin
   if radix_actors = nil then
     I_Error('RX_InitActors(): RX_ConfigureActors() was not called');
@@ -179,6 +181,13 @@ begin
       // other. Rad-X let any two things with the flag through (TRadixContactRules.PassesSpecies)
       if thruspecies and (TRadixActorFlag.DontBlockSpecies in radixmobjinfo[i].Flags) then
         mobjinfo[i].flags3_ex := mobjinfo[i].flags3_ex or MF3_EX_THRUSPECIES;
+      // MF3_EX_LIMITPATROLRANGE / PatrolRange of Rad-X (P_LookForPlayers): a limit on the distance
+      // of the pilot an enemy can pick is what "max target range" of the engine already is, so
+      // P_LookForPlayers needs no change (TRadixContactRules.MaxTargetRange)
+      patrol := TRadixContactRules.MaxTargetRange(TRadixActorFlag.LimitPatrolRange in radixmobjinfo[i].Flags,
+        radixmobjinfo[i].PatrolRange);
+      if patrol > 0 then
+        mobjinfo[i].maxtargetrange := patrol;
     end;
   end;
 end;

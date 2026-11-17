@@ -217,7 +217,7 @@ begin
   FFields.TryRead(Thing(9), 'A.L.D.S.', '5');
   FFields.TryRead(Thing(9), 'PLASMA BOMB', '6');
   FFields.TryRead(Thing(9), 'TOUCH DAMAGE', '7');
-  FFields.TryRead(Thing(9), 'PATROL RANGE', '8');
+  FFields.TryRead(Thing(9), 'PATROL RANGE', '524288'); // a 16.16 distance: 8 map units
   FFields.TryRead(Thing(9), 'MISSILE ALT DAMAGE', '9');
   Assert.IsTrue(FTable.TryGetByNumber(8, LInfo));
   Assert.AreEqual('RAPID SHIELD REGENERATION', LInfo.PickupMessage);
