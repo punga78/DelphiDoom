@@ -8,7 +8,6 @@ dumptypes
 inittypes
 dumptypes
 list
-info
 numtypes
 typenumbits
 getclass idClass

@@ -1,4 +1,4 @@
-// Issue #255 (Doom 3, phase 3 "the game without a renderer"): driver of the third parity harness. Written for this
+﻿// Issue #255 (Doom 3, phase 3 "the game without a renderer"): driver of the third parity harness. Written for this
 // repository. It is linked with the REAL idlib and with
 //   the REAL game\gamesys\Class.h and Event.h,
 //   the REAL bodies of game\gamesys\Class.cpp (idTypeInfo, idClass: registration, Init/Shutdown, GetClass, GetType,
@@ -512,8 +512,7 @@ static void runCommand( const std::string &cmd, const std::string &rest ) {
 	else if ( cmd == "numtypes" ) out( "RET %d", idClass::GetNumTypes() );
 	else if ( cmd == "typenumbits" ) out( "RET %d", idClass::GetTypeNumBits() );
 	else if ( cmd == "list" ) idClass::ListClasses_f( idCmdArgs() );
-	else if ( cmd == "info" ) idClass::DisplayInfo_f( idCmdArgs() );
-	else if ( cmd == "getclass" ) {
+		else if ( cmd == "getclass" ) {
 		idTypeInfo *t = idClass::GetClass( w[0].c_str() );
 		if ( t ) out( "CLASS %s super=%s typeNum=%d lastChild=%d", t->classname, t->superclass, t->typeNum, t->lastChild ); else out( "CLASS null" );
 	}
@@ -561,7 +560,11 @@ static void runCommand( const std::string &cmd, const std::string &rest ) {
 		const idEventDef *ev = idEventDef::FindEvent( w[2].c_str() );
 		if ( !o || !ev ) { out( "NOTFOUND" ); return; }
 		out( "RESPONDS %d", o->RespondsTo( *ev ) ? 1 : 0 );
-		if ( o->RespondsTo( *ev ) ) { eventCallback_t fn = o->GetType()->eventMap[ev->GetEventNum()]; ( o->*fn )(); }
+		if ( o->RespondsTo( *ev ) ) {
+			eventCallback_t fn = o->GetType()->eventMap[ev->GetEventNum()]; ( o->*fn )();
+			// the immediate remove deletes the object: the list must not give its address again
+			if ( w[0] == "obj" && ev == &EV_Remove ) g_objs[atoi( w[1].c_str() )] = NULL;
+		}
 	}
 	else if ( cmd == "destroy" ) {
 		size_t n = atoi( w[0].c_str() );
@@ -600,12 +603,12 @@ static void runCommand( const std::string &cmd, const std::string &rest ) {
 		idEntity *e = entityAt( w[0] );
 		if ( e ) { delete e; out( "REMOVED %s", w[0].c_str() ); } else out( "NOTFOUND" );
 	}
-	else if ( cmd == "find" ) { idEntity *e = gameLocal.FindEntity( w[0].c_str() ); out( "FOUND %d", e ? e->entityNumber : -1 ); }
+	else if ( cmd == "find" ) { idEntity *e = gameLocal.FindEntity( w.empty() ? "" : w[0].c_str() ); out( "FOUND %d", e ? e->entityNumber : -1 ); }
 	else if ( cmd == "finddef" ) {
 		idEntity *from = atoi( w[0].c_str() ) < 0 ? NULL : entityAt( w[0] );
 		idEntity *e = gameLocal.FindEntityUsingDef( from, w[1].c_str() ); out( "FOUND %d", e ? e->entityNumber : -1 );
 	}
-	else if ( cmd == "setname" ) { idEntity *e = entityAt( w[0] ); if ( e ) e->SetName( w[1].c_str() ); else out( "NOTFOUND" ); }
+	else if ( cmd == "setname" ) { idEntity *e = entityAt( w[0] ); if ( e ) e->SetName( w.size() > 1 ? w[1].c_str() : "" ); else out( "NOTFOUND" ); }
 	else if ( cmd == "active" ) { idEntity *e = entityAt( w[0] ); if ( e ) e->BecomeActive( atoi( w[1].c_str() ) ); else out( "NOTFOUND" ); }
 	else if ( cmd == "inactive" ) { idEntity *e = entityAt( w[0] ); if ( e ) e->BecomeInactive( atoi( w[1].c_str() ) ); else out( "NOTFOUND" ); }
 	else if ( cmd == "isactive" ) { idEntity *e = entityAt( w[0] ); out( "RET %d", e && e->IsActive() ? 1 : 0 ); }

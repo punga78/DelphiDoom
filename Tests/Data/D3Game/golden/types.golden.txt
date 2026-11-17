@@ -53,8 +53,6 @@ PRINT idPlayerStart            idEntity                      5      0\n
 PRINT idTrigger_Multi          idEntity                      4      0\n
 PRINT idWorldspawn             idEntity                      3      0\n
 PRINT ...12 classes
-CMD info
-PRINT Class memory status: 0 bytes allocated in 0 objects\n
 CMD numtypes
 RET 12
 CMD typenumbits

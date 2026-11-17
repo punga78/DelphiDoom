@@ -117,4 +117,4 @@ PRINT ...12 classes, 672 bytes for event callbacks\n
 CMD create idDoor
 CTOR idMover
 CTOR idDoor
-OBJ obj=6 class=idDoor
+OBJ obj=10 class=idDoor
