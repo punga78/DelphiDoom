@@ -31,6 +31,7 @@ type
     FBuffer: TBytes;
     FSize: Integer;
     FMask: Integer;
+    FUnalignedBlockCopy: Boolean;
     function GetBase: PByte; inline;
     procedure RaiseOutOfRange(AAddress: Integer; ALength: NativeInt);
   public
@@ -62,6 +63,8 @@ type
     property Base: PByte read GetBase;
     property Size: Integer read FSize;
     property Mask: Integer read FMask;
+    /// <summary>True: OP_BLOCK_COPY copies bytes whatever the alignment (ioquake3); see TQvmLimits</summary>
+    property UnalignedBlockCopy: Boolean read FUnalignedBlockCopy write FUnalignedBlockCopy;
   end;
 
 implementation
@@ -213,18 +216,26 @@ function TQvmMemory.BlockCopy(ADestination, ASource, ACount: Integer): TQvmBlock
 var
   LSource, LTarget: PInteger;
   LSourceIndex, LTargetIndex, LCount, LIndex: Integer;
+  LAligned: Boolean;
 begin
   // MrE: copy range check
   LSourceIndex := ASource and FMask;
   LTargetIndex := ADestination and FMask;
   LCount := ((LSourceIndex + ACount) and FMask) - LSourceIndex;
   LCount := ((LTargetIndex + LCount) and FMask) - LTargetIndex;
-  if ((LSourceIndex or LTargetIndex or LCount) and 3) <> 0 then
+  LAligned := ((LSourceIndex or LTargetIndex or LCount) and 3) = 0;
+  if not LAligned and not FUnalignedBlockCopy then
     Exit(TQvmBlockCopyResult.NotAligned);
   if LCount <= 0 then
     Exit(TQvmBlockCopyResult.Copied);
   if (LCount > FSize - LSourceIndex) or (LCount > FSize - LTargetIndex) then
     Exit(TQvmBlockCopyResult.OutOfRange);
+  if not LAligned then
+  begin
+    // ioquake3: a plain copy of the bytes
+    Move((GetBase + LSourceIndex)^, (GetBase + LTargetIndex)^, LCount);
+    Exit(TQvmBlockCopyResult.Copied);
+  end;
   LSource := PInteger(GetBase + LSourceIndex);
   LTarget := PInteger(GetBase + LTargetIndex);
   for LIndex := (LCount shr 2) - 1 downto 0 do
