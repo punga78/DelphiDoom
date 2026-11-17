@@ -39,6 +39,10 @@ type
     FSavedFinish: Pointer;
     FSavedFlush: Pointer;
     FInstalled: Boolean;
+    FHookTargets: array of PPointer;
+    FHookSaved: array of Pointer;
+    /// <summary>Puts a fake in a function variable, remembering the real one for Restore</summary>
+    procedure Hook(const ATarget: PPointer; const AFake: Pointer);
   public
     /// <summary>The lines written by the calls since the last Clear</summary>
     class var Lines: TStringList;
@@ -57,6 +61,10 @@ implementation
 uses
   System.SysUtils,
   dglOpenGL;
+
+type
+  TFloatQuad = array[0..3] of Single;
+  PFloatQuad = ^TFloatQuad;
 
 function Bits(const AValue: Single): string;
 begin
@@ -161,6 +169,21 @@ begin
   TFakeGlLog.Lines.Add('glFlush');
 end;
 
+procedure FakeFogf(pname: GLenum; param: GLfloat); stdcall;
+begin
+  TFakeGlLog.Lines.Add('glFogf ' + IntToHex(pname, 4) + ' ' + Bits(param));
+end;
+
+procedure FakeFogfv(pname: GLenum; params: PGLfloat); stdcall;
+var
+  LValues: PFloatQuad;
+begin
+  // GL_FOG_COLOR (the only vector the scene sets) has four floats
+  LValues := PFloatQuad(params);
+  TFakeGlLog.Lines.Add('glFogfv ' + IntToHex(pname, 4) + ' ' + Bits(LValues[0]) + ' ' + Bits(LValues[1]) + ' ' +
+    Bits(LValues[2]) + ' ' + Bits(LValues[3]));
+end;
+
 { TFakeGlLog }
 
 procedure TFakeGlLog.Install;
@@ -205,11 +228,27 @@ begin
   glGetIntegerv := @FakeGetIntegerv;
   glFinish := @FakeFinish;
   glFlush := @FakeFlush;
+  Hook(@@glFogf, @FakeFogf);
+  Hook(@@glFogfv, @FakeFogfv);
   FInstalled := True;
   Clear;
 end;
 
+procedure TFakeGlLog.Hook(const ATarget: PPointer; const AFake: Pointer);
+var
+  LCount: Integer;
+begin
+  LCount := Length(FHookTargets);
+  SetLength(FHookTargets, LCount + 1);
+  SetLength(FHookSaved, LCount + 1);
+  FHookTargets[LCount] := ATarget;
+  FHookSaved[LCount] := ATarget^;
+  ATarget^ := AFake;
+end;
+
 procedure TFakeGlLog.Restore;
+var
+  LIndex: Integer;
 begin
   if not FInstalled then
     Exit;
@@ -231,6 +270,10 @@ begin
   glGetIntegerv := FSavedGetIntegerv;
   glFinish := FSavedFinish;
   glFlush := FSavedFlush;
+  for LIndex := High(FHookTargets) downto 0 do
+    FHookTargets[LIndex]^ := FHookSaved[LIndex];
+  FHookTargets := nil;
+  FHookSaved := nil;
   FInstalled := False;
 end;
 
