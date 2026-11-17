@@ -149,7 +149,7 @@ var
   i: integer;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    RX_ResetPlayerState(@players[i]);
+    RX_ResetPlayerState(@TGameSession.Players[i]);
 end;
 
 //==============================================================================
@@ -304,7 +304,7 @@ begin
     // the body that the engine has just loaded: with another one the logic would take the
     // pilot for one that is born again and forget its last trigger
     if (state.LevelPlayers[i].HasBody <> 0) and TGameSession.PlayerInGame[i] then
-      lp.mo := players[i].mo
+      lp.mo := TGameSession.Players[i].mo
     else
       lp.mo := nil;
     lp.secondaryobjective := state.LevelPlayers[i].SecondaryObjective <> 0;

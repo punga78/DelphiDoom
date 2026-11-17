@@ -436,10 +436,10 @@ begin
   vsradius := radius;
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> nil then
-        if not PIT_CheckVerticalSight(players[i].mo) then
+      if TGameSession.Players[i].mo <> nil then
+        if not PIT_CheckVerticalSight(TGameSession.Players[i].mo) then
         begin
-          result := players[i].mo;
+          result := TGameSession.Players[i].mo;
           exit;
         end;
   result := nil;
@@ -715,14 +715,14 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> nil then
-        if players[i].mo.health >= 0 then
+      if TGameSession.Players[i].mo <> nil then
+        if TGameSession.Players[i].mo.health >= 0 then
         begin
-          distance := P_AproxDistance(players[i].mo.x - actor.x, players[i].mo.y - actor.y);
+          distance := P_AproxDistance(TGameSession.Players[i].mo.x - actor.x, TGameSession.Players[i].mo.y - actor.y);
           if distance < nearest then
           begin
             nearest := distance;
-            dest := players[i].mo;
+            dest := TGameSession.Players[i].mo;
           end;
         end;
 
@@ -793,10 +793,10 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      pmo := players[i].mo;
+      pmo := TGameSession.Players[i].mo;
       if pmo <> nil then
         if IsIntegerInRange(pmo.x, x1, x2) and IsIntegerInRange(pmo.y, y1, y2) then
-          RX_PlayerState(@players[i]).floorslidetics := 2;
+          RX_PlayerState(@TGameSession.Players[i]).floorslidetics := 2;
     end;
 end;
 

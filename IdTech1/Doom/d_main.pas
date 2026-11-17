@@ -956,7 +956,7 @@ begin
   {$IFNDEF OPENGL}
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
-      D_RenderPlayerView(@players[displayplayer]);
+      D_RenderPlayerView(@TGameSession.Players[displayplayer]);
       if amstate = am_overlay then
         AM_Drawer;
     end;
@@ -1126,7 +1126,7 @@ begin
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
       R_FillBackScreen; // draw the pattern into the back screen
-      D_RenderPlayerView(@players[displayplayer]);
+      D_RenderPlayerView(@TGameSession.Players[displayplayer]);
     end;
   end;
   if TGameSession.GameState = GS_LEVEL then
@@ -1187,7 +1187,7 @@ begin
       I_SetNormalCPUPriority;
 {$ENDIF}
 
-    S_UpdateSounds(players[TGameSession.ConsolePlayer].mo);// move positional sounds
+    S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
 
     D_RunNotifications;
 
@@ -1282,7 +1282,7 @@ end;
 //==============================================================================
 procedure D_DoAdvanceDemo;
 begin
-  players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
+  TGameSession.Players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
   advancedemo := false;
   TGameSession.UserGame := false; // no save/end game here
   TGameSession.Paused := false;

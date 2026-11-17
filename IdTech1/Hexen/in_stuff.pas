@@ -172,7 +172,7 @@ begin
         begin
           if TGameSession.PlayerInGame[j] then
           begin
-            totalFrags[i] := totalFrags[i] + players[i].frags[j];
+            totalFrags[i] := totalFrags[i] + TGameSession.Players[i].frags[j];
           end;
         end;
       end;
@@ -264,8 +264,8 @@ begin
   AM_Stop;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    players[i].messageTics := 0;
-    players[i]._message := '';
+    TGameSession.Players[i].messageTics := 0;
+    TGameSession.Players[i]._message := '';
   end;
   S_StopAllSequences;
 end;
@@ -322,7 +322,7 @@ begin
   begin
     if TGameSession.PlayerInGame[i] then
     begin
-      player := @players[i];
+      player := @TGameSession.Players[i];
       if player.cmd.buttons and BT_ATTACK <> 0 then
       begin
         if not player.attackdown then
@@ -559,11 +559,11 @@ begin
       begin
         if bold then
         begin
-          IN_DrNumberBold(players[i].frags[j], x, y, 100);
+          IN_DrNumberBold(TGameSession.Players[i].frags[j], x, y, 100);
         end
         else
         begin
-          IN_DrNumber(players[i].frags[j], x, y, 100);
+          IN_DrNumber(TGameSession.Players[i].frags[j], x, y, 100);
         end;
       end
       else

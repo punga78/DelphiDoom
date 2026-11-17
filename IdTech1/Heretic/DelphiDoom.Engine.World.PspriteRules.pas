@@ -1449,7 +1449,7 @@ begin
   if not TGameSession.PlayerInGame[playerNum] then // Player left the game
     exit;
 
-  player := @players[playerNum];
+  player := @TGameSession.Players[playerNum];
   if player.health <= 0 then  // Player is dead
     exit;
 
@@ -1502,7 +1502,7 @@ begin
     if not TGameSession.PlayerInGame[playerNum] then // Player left the game
       exit;
 
-    player := @players[playerNum];
+    player := @TGameSession.Players[playerNum];
     if player.health <= 0 then  // Player is dead
       exit;
 

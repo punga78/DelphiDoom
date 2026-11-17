@@ -143,9 +143,9 @@ begin
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
   begin
-    players[LPlayer].killcount := 0;
-    players[LPlayer].secretcount := 0;
-    players[LPlayer].itemcount := 0;
+    TGameSession.Players[LPlayer].killcount := 0;
+    TGameSession.Players[LPlayer].secretcount := 0;
+    TGameSession.Players[LPlayer].itemcount := 0;
   end;
 end;
 
@@ -181,7 +181,7 @@ begin
   // a body at the start of the player while the random start is chosen
   LMobj := P_SpawnMobj(playerstarts[0][APlayer].x * FRACUNIT, playerstarts[0][APlayer].y * FRACUNIT, 0,
     Ord(MT_PLAYER_FIGHTER));
-  players[APlayer].mo := LMobj;
+  TGameSession.Players[APlayer].mo := LMobj;
   G_DeathMatchSpawnPlayer(APlayer);
   P_RemoveMobj(LMobj);
 end;

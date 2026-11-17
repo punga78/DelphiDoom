@@ -567,7 +567,7 @@ begin
     Exit;
   if LMobj.player = nil then
     Exit;
-  Result := pDiff(LMobj.player, @players[0], SizeOf(player_t));
+  Result := pDiff(LMobj.player, @TGameSession.Players[0], SizeOf(player_t));
   if (Result < 0) or (Result >= doomdef.MAXPLAYERS) then
     Result := -1
   else if not TGameSession.PlayerInGame[Result] then

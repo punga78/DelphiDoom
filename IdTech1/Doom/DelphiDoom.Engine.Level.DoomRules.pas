@@ -178,12 +178,12 @@ begin
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
   begin
-    players[LPlayer].killcount := 0;
-    players[LPlayer].secretcount := 0;
-    players[LPlayer].itemcount := 0;
-    players[LPlayer].lastsoundstepx := 0;
-    players[LPlayer].lastsoundstepy := 0;
-    players[LPlayer].lastbreath := 0;
+    TGameSession.Players[LPlayer].killcount := 0;
+    TGameSession.Players[LPlayer].secretcount := 0;
+    TGameSession.Players[LPlayer].itemcount := 0;
+    TGameSession.Players[LPlayer].lastsoundstepx := 0;
+    TGameSession.Players[LPlayer].lastsoundstepy := 0;
+    TGameSession.Players[LPlayer].lastbreath := 0;
   end;
 end;
 
@@ -236,7 +236,7 @@ end;
 
 procedure TDoomLevelRules.SpawnDeathmatchPlayer(APlayer: Integer);
 begin
-  players[APlayer].mo := nil;
+  TGameSession.Players[APlayer].mo := nil;
   G_DeathMatchSpawnPlayer(APlayer);
 end;
 

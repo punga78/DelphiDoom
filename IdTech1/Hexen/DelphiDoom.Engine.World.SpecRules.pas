@@ -355,7 +355,7 @@ begin
       begin
         // A puzzle item was found for the line
         P_PlayerRemoveArtifact(player, i);
-        if player = @players[TGameSession.ConsolePlayer] then
+        if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
           if Ord(arti) < arti_firstpuzzitem then
             S_StartSound(nil, Ord(SFX_ARTIFACT_USE))

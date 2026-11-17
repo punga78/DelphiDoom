@@ -308,7 +308,7 @@ begin
 
   if player.cmd.buttons and BT_USE <> 0 then
   begin
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     begin
       palette := V_ReadPalette(PU_STATIC);
       I_SetPalette(palette);
@@ -596,7 +596,7 @@ begin
           speedMo.special1 := 0;
         speedMo.sprite := pmo.sprite;
         speedMo.floorclip := pmo.floorclip;
-        if player = @players[TGameSession.ConsolePlayer] then
+        if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
           speedMo.flags2 := speedMo.flags2 or MF2_DONTDRAW;
         end;
@@ -838,7 +838,7 @@ begin
       else
         player.fixedcolormap := 1;
     end
-    else if (TTickState.LevelTime and 16 = 0) and (player = @players[TGameSession.ConsolePlayer]) then
+    else if (TTickState.LevelTime and 16 = 0) and (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
     begin
       if newtorch <> 0 then
       begin
@@ -1314,7 +1314,7 @@ begin
       if P_UseArtifact(player, arti) then
       begin // Artifact was used - remove it from inventory
         P_PlayerRemoveArtifact(player, i);
-        if player = @players[TGameSession.ConsolePlayer] then
+        if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
           if Ord(arti) < arti_firstpuzzitem then
             S_StartSound(nil, Ord(SFX_ARTIFACT_USE))

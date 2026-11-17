@@ -956,7 +956,7 @@ var
   delta: integer;
   curHealth: integer;
 begin
-  curHealth := players[TGameSession.ConsolePlayer].mo.health;
+  curHealth := TGameSession.Players[TGameSession.ConsolePlayer].mo.health;
   if curHealth < 0 then
     curHealth := 0;
 
@@ -1466,7 +1466,7 @@ begin
 
   if TGameSession.GameState = GS_LEVEL then
   begin
-    CPlayer := @players[TGameSession.ConsolePlayer];
+    CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
     if CPlayer.poisoncount > 0 then
     begin
       palette := _SHR3(CPlayer.poisoncount + 7);
@@ -1914,7 +1914,7 @@ begin
     if DebugSound then
       SB_DrawSoundInfo;
 
-    CPlayer := @players[TGameSession.ConsolePlayer];
+    CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
 
     if amstate = am_only then
     begin

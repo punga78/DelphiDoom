@@ -434,7 +434,7 @@ begin
     i := 0;
     while i < MAXPLAYERS do
     begin
-      if players[i].cmd.buttons <> 0 then
+      if TGameSession.Players[i].cmd.buttons <> 0 then
         break;
       inc(i);
     end;

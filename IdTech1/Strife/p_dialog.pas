@@ -1320,7 +1320,7 @@ begin
     end;
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
       S_StartSound(nil, sound);
     result := true;
     exit;
@@ -1694,7 +1694,7 @@ begin
   end;
 
   // Play sound.
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 
   result := true;
@@ -1955,7 +1955,7 @@ end;
 //==============================================================================
 procedure P_DialogStartP1;
 begin
-  P_DialogStart(@players[0]);
+  P_DialogStart(@TGameSession.Players[0]);
 end;
 
 //==============================================================================
@@ -1998,7 +1998,7 @@ begin
   player.lastdialogtalker := dialogtalker;
 
   // play a sound
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, Ord(sfx_radio));
 
   TMapAim.LineTarget.target := player.mo;           // target the player

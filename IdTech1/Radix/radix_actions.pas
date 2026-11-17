@@ -203,7 +203,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      mo := players[i].mo;
+      mo := TGameSession.Players[i].mo;
       if mo = nil then
         continue;
       if cl - fl <= mo.height then
@@ -961,7 +961,7 @@ begin
     exit;
   end;
 
-  p := @players[radixplayer];
+  p := @TGameSession.Players[radixplayer];
   if p.mo = nil then
     exit;
 
@@ -1052,7 +1052,7 @@ begin
 
   action.suspend := 1;
 
-  p := @players[radixplayer];
+  p := @TGameSession.Players[radixplayer];
   lp := @radixlevelplayers[radixplayer];
   if p.mo = nil then
     exit;
@@ -1396,7 +1396,7 @@ begin
   if not parms.initialized then
   begin
     parms.tics := RX_SoundDuration(TRadixMessages.SOUND_END_OF_LEVEL) + 1;
-    mo := players[radixplayer].mo;
+    mo := TGameSession.Players[radixplayer].mo;
     if mo <> nil then
       RA_Sound(mo.x, mo.y, TRadixMessages.SOUND_END_OF_LEVEL);
     parms.initialized := true;
@@ -1474,7 +1474,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      mo := players[i].mo;
+      mo := TGameSession.Players[i].mo;
       if mo <> nil then
         if RX_SectorIndex(Psubsector_t(mo.subsector).sector) = parms.sector_id then
           mo.momz := TRadixActionRules.GravityMomentum(mo.momz, parms.direction, parms.strength);
@@ -1881,7 +1881,7 @@ var
 begin
   parms := radixscannerjam_p(@action.params);
 
-  RX_PlayerState(@players[radixplayer]).scannerjam := parms.on_off = 1;
+  RX_PlayerState(@TGameSession.Players[radixplayer]).scannerjam := parms.on_off = 1;
 end;
 
 //==============================================================================
@@ -1902,8 +1902,8 @@ begin
   if snd >= 0 then
   begin
     name := RX_SoundName(snd);
-    if (name <> '') and (players[radixplayer].mo <> nil) then
-      S_StartSound(RX_PilotMessageOrigin(radixplayer, @players[radixplayer]), name);
+    if (name <> '') and (TGameSession.Players[radixplayer].mo <> nil) then
+      S_StartSound(RX_PilotMessageOrigin(radixplayer, @TGameSession.Players[radixplayer]), name);
   end;
   nextsoundtime := TTickState.LevelTime + RX_SoundDuration(snd) + 1;
 end;
@@ -1940,7 +1940,7 @@ begin
 
   if TRadixMessages.IsMessage(parms.message_id) then
     if not TRadixMessages.Get(parms.message_id).AutoDisable or (parms.playcount = 0) then  // Avoid repeating some messages
-      if RX_PlayerMessage(@players[radixplayer], parms.message_id) then
+      if RX_PlayerMessage(@TGameSession.Players[radixplayer], parms.message_id) then
       begin
         inc(parms.playcount);
         RA_MessageSound(parms.message_id, parms.nextsoundtime);
@@ -2123,7 +2123,7 @@ begin
   end;
 
   radixlevelplayers[radixplayer].secondaryobjective := true;
-  if RX_PlayerMessage(@players[radixplayer], TRadixMessages.SECONDARY_OBJECTIVE_COMPLETED) then
+  if RX_PlayerMessage(@TGameSession.Players[radixplayer], TRadixMessages.SECONDARY_OBJECTIVE_COMPLETED) then
     RA_MessageSound(TRadixMessages.SECONDARY_OBJECTIVE_COMPLETED, parms.nextsoundtime);
 
   action.suspend := 1; // Disable action;
@@ -2302,7 +2302,7 @@ begin
   parms := radixkillratio_p(@action.params);
 
   runtrigger := TRadixActionRules.KillRatioReached(totalradixkills, P_World.Totals.Kills,
-    players[radixplayer].killcount, parms.percentage);
+    TGameSession.Players[radixplayer].killcount, parms.percentage);
 
   if not runtrigger and (TTickState.LevelTime and 31 = 0) then
   begin
@@ -2388,7 +2388,7 @@ begin
     for i := 0 to MAXPLAYERS - 1 do
       if TGameSession.PlayerInGame[i] then
       begin
-        mo := players[i].mo;
+        mo := TGameSession.Players[i].mo;
         if mo <> nil then
         begin
           maxdist := 0;
@@ -2530,9 +2530,9 @@ begin
 
   limits := TRadixPilotLimits.Default;
   for i := 0 to MAXPLAYERS - 1 do
-    if TGameSession.PlayerInGame[i] and (players[i].mo <> nil) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].mo <> nil) then
     begin
-      p := @players[i];
+      p := @TGameSession.Players[i];
       if p.playerstate <> PST_LIVE then
         continue;
       if RX_SectorIndex(Psubsector_t(p.mo.subsector).sector) <> parms.sector_id then

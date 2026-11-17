@@ -480,7 +480,7 @@ var
 begin
   if not TGameSession.NetGame then
   begin
-    pmo := players[TGameSession.ConsolePlayer].mo;
+    pmo := TGameSession.Players[TGameSession.ConsolePlayer].mo;
     rp := R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
     if rp > pmo.angle then
       check := rp - pmo.angle <= ANG45
@@ -505,7 +505,7 @@ begin
       begin
         continue;
       end;
-      pmo := players[i].mo;
+      pmo := TGameSession.Players[i].mo;
       rp := R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
       if rp > pmo.angle then
         check := rp - pmo.angle <= ANG45
@@ -1139,7 +1139,7 @@ begin
   begin
     for playnum := 0 to MAXPLAYERS - 1 do
     begin
-      player := @players[playnum];
+      player := @TGameSession.Players[playnum];
       if not TGameSession.PlayerInGame[playnum] then
         continue;
 

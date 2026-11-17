@@ -3631,9 +3631,9 @@ begin
   showMessages := 1 - showMessages;
 
   if showMessages = 0 then
-    players[TGameSession.ConsolePlayer]._message := MSGOFF
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGOFF
   else
-    players[TGameSession.ConsolePlayer]._message := MSGON;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGON;
 
   message_dontfuckwithme := true;
 
@@ -3873,17 +3873,17 @@ begin
 
   case detailLevel of
     DL_LOWEST:
-      players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
     DL_LOW:
-      players[TGameSession.ConsolePlayer]._message := DETAILLOW;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOW;
     DL_MEDIUM:
-      players[TGameSession.ConsolePlayer]._message := DETAILMED;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILMED;
     DL_NORMAL:
-      players[TGameSession.ConsolePlayer]._message := DETAILNORM;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILNORM;
     DL_HIRES:
-      players[TGameSession.ConsolePlayer]._message := DETAILHI;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILHI;
     DL_ULTRARES:
-      players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
   end;
 
 end;
@@ -4316,7 +4316,7 @@ begin
           inc(usegamma);
           if usegamma >= GAMMASIZE then
             usegamma := 0;
-          players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
           palette := V_ReadPalette(PU_STATIC);
           I_SetPalette(palette);
           V_SetPalette(palette);

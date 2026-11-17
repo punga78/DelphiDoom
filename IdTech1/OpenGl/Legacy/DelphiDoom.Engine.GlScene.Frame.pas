@@ -214,7 +214,7 @@ begin
   InfinitePerspective(64.0, 320.0 / 200.0 * monitor_relative_aspect, gl_nearclip / 100.0);
 
   if zaxisshift then
-    FPitch := -players[displayplayer].lookdir16 / 32 // JVAL Smooth Look Up/Down
+    FPitch := -TGameSession.Players[displayplayer].lookdir16 / 32 // JVAL Smooth Look Up/Down
   else
     FPitch := 0;
   // JVAL: Correct 2d bsp limitation
@@ -259,7 +259,7 @@ procedure TEngineGlSceneFrame.Finish;
 var
   player: Pplayer_t;
 begin
-  player := @players[displayplayer];
+  player := @TGameSession.Players[displayplayer];
 
   glDisable(GL_POLYGON_SMOOTH);
 

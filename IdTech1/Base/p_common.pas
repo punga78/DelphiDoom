@@ -6260,8 +6260,8 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      players[i].quaketics := qtics;
-      players[i].quakeintensity := FRACUNIT;
+      TGameSession.Players[i].quaketics := qtics;
+      TGameSession.Players[i].quakeintensity := FRACUNIT;
     end;
 end;
 
@@ -6803,14 +6803,14 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> nil then
-        if players[i].mo.health >= 0 then
+      if TGameSession.Players[i].mo <> nil then
+        if TGameSession.Players[i].mo.health >= 0 then
         begin
-          mindist := P_AproxDistance(players[i].mo.x - actor.x, players[i].mo.y - actor.y);
+          mindist := P_AproxDistance(TGameSession.Players[i].mo.x - actor.x, TGameSession.Players[i].mo.y - actor.y);
           if mindist < nearest then
           begin
             nearest := mindist;
-            dest := players[i].mo;
+            dest := TGameSession.Players[i].mo;
           end;
         end;
 
@@ -7193,8 +7193,8 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> actor then
-        if P_CheckSight(players[i].mo, actor) then
+      if TGameSession.Players[i].mo <> actor then
+        if P_CheckSight(TGameSession.Players[i].mo, actor) then
           exit;
 
   offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[0]);
@@ -7226,13 +7226,13 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> actor then
+      if TGameSession.Players[i].mo <> actor then
       begin
-        dx := players[i].mo.x - actor.x;
-        dy := players[i].mo.y - actor.y;
+        dx := TGameSession.Players[i].mo.x - actor.x;
+        dy := TGameSession.Players[i].mo.y - actor.y;
         if twodi then
         begin
-          dz := players[i].mo.z - actor.z;
+          dz := TGameSession.Players[i].mo.z - actor.z;
           range := FixedMul64(dx, dx) + FixedMul64(dy, dy) + FixedMul64(dz, dz);
         end
         else
@@ -7243,8 +7243,8 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> actor then
-        if P_CheckSight(players[i].mo, actor) then
+      if TGameSession.Players[i].mo <> actor then
+        if P_CheckSight(TGameSession.Players[i].mo, actor) then
           exit;
 
   offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[1]);
@@ -7276,13 +7276,13 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo <> actor then
+      if TGameSession.Players[i].mo <> actor then
       begin
-        dx := players[i].mo.x - actor.x;
-        dy := players[i].mo.y - actor.y;
+        dx := TGameSession.Players[i].mo.x - actor.x;
+        dy := TGameSession.Players[i].mo.y - actor.y;
         if twodi then
         begin
-          dz := players[i].mo.z - actor.z;
+          dz := TGameSession.Players[i].mo.z - actor.z;
           range := FixedMul64(dx, dx) + FixedMul64(dy, dy) + FixedMul64(dz, dz);
         end
         else
@@ -8133,7 +8133,7 @@ var
   i: integer;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if p = @players[i] then
+    if p = @TGameSession.Players[i] then
     begin
       result := i;
       exit;
@@ -9151,16 +9151,16 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      dist := P_AproxDistance(actor.x - players[i].mo.x, actor.y - players[i].mo.y);
-      dist := P_AproxDistance(actor.z - players[i].mo.z, dist); // 3d distance
+      dist := P_AproxDistance(actor.x - TGameSession.Players[i].mo.x, actor.y - TGameSession.Players[i].mo.y);
+      dist := P_AproxDistance(actor.z - TGameSession.Players[i].mo.z, dist); // 3d distance
       if dist <= maxdist then
       begin
-        if players[i].quaketics < tics then
-          players[i].quaketics := tics;
+        if TGameSession.Players[i].quaketics < tics then
+          TGameSession.Players[i].quaketics := tics;
         frac := FixedDiv(dist, maxdist) * (FINEANGLES div 4);
         testintensity := FixedMul(finecosine[frac shr ANGLETOFINESHIFT], intensity); // JVAL: 20200508 - Curved
-        if players[i].quakeintensity < testintensity then
-          players[i].quakeintensity := testintensity;
+        if TGameSession.Players[i].quakeintensity < testintensity then
+          TGameSession.Players[i].quakeintensity := testintensity;
       end;
     end;
 end;
@@ -9638,14 +9638,14 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if (players[i].mo <> nil) and (players[i].mo <> mo) then
-        if players[i].mo.health >= 0 then
+      if (TGameSession.Players[i].mo <> nil) and (TGameSession.Players[i].mo <> mo) then
+        if TGameSession.Players[i].mo.health >= 0 then
         begin
-          dist := P_AproxDistance(players[i].mo.x - mo.x, players[i].mo.y - mo.y);
+          dist := P_AproxDistance(TGameSession.Players[i].mo.x - mo.x, TGameSession.Players[i].mo.y - mo.y);
           if dist < nearest then
           begin
             nearest := dist;
-            result := @players[i];
+            result := @TGameSession.Players[i];
           end;
         end;
 end;

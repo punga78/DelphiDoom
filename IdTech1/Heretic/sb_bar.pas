@@ -898,7 +898,7 @@ begin
   if TTickState.LevelTime and 1 <> 0 then
     ChainWiggle := P_Random and 1;
 
-  curHealth := players[TGameSession.ConsolePlayer].mo.health;
+  curHealth := TGameSession.Players[TGameSession.ConsolePlayer].mo.health;
   if curHealth < 0 then
     curHealth := 0;
 
@@ -1503,7 +1503,7 @@ var
   palette: integer;
   pal: PByteArray;
 begin
-  CPlayer := @players[TGameSession.ConsolePlayer];
+  CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
 
   if CPlayer.damagecount <> 0 then
   begin
@@ -1558,7 +1558,7 @@ begin
     if DebugSound then
       SB_DrawSoundInfo;
 
-    CPlayer := @players[TGameSession.ConsolePlayer];
+    CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
     if not R_StOff or (amstate = am_only) then
     begin
       if (viewheight = SCREENHEIGHT) and (amstate <> am_only) then
@@ -1569,7 +1569,7 @@ begin
       else
       begin
         SB_DrawPatch(0, 158, PatchBARBACK);
-        if players[TGameSession.ConsolePlayer].cheats and CF_GODMODE <> 0 then
+        if TGameSession.Players[TGameSession.ConsolePlayer].cheats and CF_GODMODE <> 0 then
         begin
           SB_DrawPatch(16, 167, 'GOD1');
           SB_DrawPatch(287, 167, 'GOD2');

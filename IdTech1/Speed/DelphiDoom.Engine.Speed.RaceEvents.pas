@@ -91,7 +91,7 @@ end;
 
 procedure TEngineSpeedRaceEvents.Say(const AText: string);
 begin
-  players[TGameSession.ConsolePlayer]._message := ShortString(AText);
+  TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(AText);
 end;
 
 procedure TEngineSpeedRaceEvents.Countdown(AStep: TRacingCountdownStep);

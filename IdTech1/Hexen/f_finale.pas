@@ -195,7 +195,7 @@ begin
   TGameSession.GameState := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
-  P_ClearMessage(@players[TGameSession.ConsolePlayer]);
+  P_ClearMessage(@TGameSession.Players[TGameSession.ConsolePlayer]);
 
   FinaleStage := 0;
   FinaleCount := 0;

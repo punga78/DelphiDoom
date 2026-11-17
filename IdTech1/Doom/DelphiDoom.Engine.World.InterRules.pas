@@ -282,7 +282,7 @@ begin
       P_GiveAmmo(player, ammo, 2);
     player.pendingweapon := weapon;
 
-    if (player = @players[TGameSession.ConsolePlayer]) then
+    if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
       S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
@@ -822,7 +822,7 @@ begin
 
   P_RemoveMobj(special);
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 end;
 
@@ -856,22 +856,22 @@ begin
       Pplayer_t(source.player).killcount := Pplayer_t(source.player).killcount + 1;
 
     if target.player <> nil then
-      Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-        Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
+      Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+        Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
   end
   else if not TGameSession.NetGame and (target.flags and MF_COUNTKILL <> 0) then
   begin
     // count all monster deaths,
     // even those caused by other monsters
-    players[0].killcount := players[0].killcount + 1;
+    TGameSession.Players[0].killcount := TGameSession.Players[0].killcount + 1;
   end;
 
   if target.player <> nil then
   begin
     // count environment kills against you
     if source = nil then
-      Pplayer_t(target.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-        Pplayer_t(target.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
+      Pplayer_t(target.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+        Pplayer_t(target.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
 
     target.flags := target.flags and not MF_SOLID;
     Pplayer_t(target.player).playerstate := PST_DEAD;
@@ -886,7 +886,7 @@ begin
 
     P_DropWeapon(target.player);
 
-    if (target.player = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
+    if (target.player = @TGameSession.Players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -910,7 +910,7 @@ begin
     target.tics := 1;
 
   if target.player <> nil then    // JVAL: Script Events
-    PS_EventPlayerDied(pDiff(@players[0], target.player, SizeOf(player_t)), source);
+    PS_EventPlayerDied(pDiff(@TGameSession.Players[0], target.player, SizeOf(player_t)), source);
   PS_EventActorDied(target, source); // JVAL: Script Events
 
   // Drop stuff.

@@ -1233,7 +1233,7 @@ var
   master: Pmobj_t;
 begin
   if actor.miscdata < MAXPLAYERS then
-    master := players[actor.miscdata].mo
+    master := TGameSession.Players[actor.miscdata].mo
   else
     master := nil;
 
@@ -1319,7 +1319,7 @@ begin
     end;
     inc(c);
 
-    player := @players[actor.lastlook];
+    player := @TGameSession.Players[actor.lastlook];
 
     if player.health <= 0 then
       continue;   // dead
@@ -3219,8 +3219,8 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    P_GiveItemToPlayer(@players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST13);
-    players[i]._message := msg;
+    P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST13);
+    TGameSession.Players[i]._message := msg;
   end;
 end;
 
@@ -3242,10 +3242,10 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    P_GiveItemToPlayer(@players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST25);
-    P_GiveItemToPlayer(@players[i], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
-    P_GiveItemToPlayer(@players[i], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
-    players[i]._message := msg;
+    P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST25);
+    P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
+    P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
+    TGameSession.Players[i]._message := msg;
   end;
 end;
 
@@ -3271,8 +3271,8 @@ begin
   quest := _SHLW(1, actor.info.speed - 1);
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    players[i]._message := name;
-    players[i].questflags := players[i].questflags or quest;
+    TGameSession.Players[i]._message := name;
+    TGameSession.Players[i].questflags := TGameSession.Players[i].questflags or quest;
   end;
 end;
 
@@ -3575,7 +3575,7 @@ begin
   i := 0;
   while i < MAXPLAYERS do
   begin
-    if TGameSession.PlayerInGame[i] and (players[i].health > 0) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].health > 0) then
       break;
     inc(i);
   end;
@@ -3613,7 +3613,7 @@ begin
 
     Ord(MT_SPECTRE_B):
       begin
-        P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_BISHOP);
+        P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_BISHOP);
         P_GiveVoiceObjective('VOC74', 'LOG74', 0);
       end;
 
@@ -3641,17 +3641,17 @@ begin
           end;
           th := th.next;
         end;
-        P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_ORACLE);
+        P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_ORACLE);
 
         // Bishop is dead? - verify.
-        if players[0].questflags and QF_QUEST21 <> 0 then
-          P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_QUEST22);
+        if TGameSession.Players[0].questflags and QF_QUEST21 <> 0 then
+          P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_QUEST22);
 
         // Macil is dead?
-        if players[0].questflags and QF_QUEST24 <> 0 then
+        if TGameSession.Players[0].questflags and QF_QUEST24 <> 0 then
         begin
           // Loremaster is dead?
-          if players[0].questflags and QF_QUEST26 <> 0 then
+          if TGameSession.Players[0].questflags and QF_QUEST26 <> 0 then
           begin
             // We wield the complete sigil, blahblah
             P_GiveVoiceObjective('VOC85', 'LOG85', 0);
@@ -3668,8 +3668,8 @@ begin
 
     Ord(MT_SPECTRE_D):
       begin
-        P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_MACIL);
-        if players[0].questflags and QF_QUEST25 <> 0 then // Destroyed converter?
+        P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_MACIL);
+        if TGameSession.Players[0].questflags and QF_QUEST25 <> 0 then // Destroyed converter?
           P_GiveVoiceObjective('VOC106', 'LOG106', 0)
         else
           P_GiveVoiceObjective('VOC79', 'LOG79', 0);
@@ -3677,13 +3677,13 @@ begin
 
     Ord(MT_SPECTRE_E):
       begin
-        P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_LOREMASTER);
+        P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_LOREMASTER);
         if not TGameSession.NetGame then
         begin
-          P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
-          P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
+          P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
+          P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
         end;
-        if players[0].sigiltype = 4 then
+        if TGameSession.Players[0].sigiltype = 4 then
           P_GiveVoiceObjective('VOC85', 'LOG85', 0)
         else
           P_GiveVoiceObjective('VOC83', 'LOG83', 0);
@@ -3725,7 +3725,7 @@ begin
   i := 0;
   while i < MAXPLAYERS do
   begin
-    if TGameSession.PlayerInGame[i] and (players[i].health > 0) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].health > 0) then
       break;
     inc(i);
   end;
@@ -3748,7 +3748,7 @@ begin
 
   // All MT_GUARD8 are dead, give quest token #7 to all players
   for i := 0 to MAXPLAYERS - 1 do
-    P_GiveItemToPlayer(@players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST7);
+    P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST7);
 
   // play voice, give objective
   P_GiveVoiceObjective('VOC14', 'LOG14', 0);
@@ -3813,8 +3813,8 @@ var
   mobj, fog, targ: Pmobj_t;
   fog_x, fog_y: fixed_t;
 begin
-  if actor.target <> players[actor.miscdata].mo then
-    actor.target := players[actor.miscdata].mo;
+  if actor.target <> TGameSession.Players[actor.miscdata].mo then
+    actor.target := TGameSession.Players[actor.miscdata].mo;
 
   mobj := P_SpawnMobj(actor.x, actor.y, ONFLOORZ, Ord(MT_REBEL1));
 

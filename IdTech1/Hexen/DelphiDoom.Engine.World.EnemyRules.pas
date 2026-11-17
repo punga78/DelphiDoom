@@ -1482,7 +1482,7 @@ var
   dist: fixed_t;
   initial: boolean;
 begin
-  if not TGameSession.NetGame and (players[0].health <= 0) then
+  if not TGameSession.NetGame and (TGameSession.Players[0].health <= 0) then
   begin
     result := P_LookForMonsters(actor);
     exit;
@@ -1510,7 +1510,7 @@ begin
     end;
     inc(c);
 
-    player := @players[actor.lastlook];
+    player := @TGameSession.Players[actor.lastlook];
 
     if player.health <= 0 then
       continue;   // dead
@@ -1996,7 +1996,7 @@ begin
     begin
       if not TGameSession.PlayerInGame[i] then
         continue;
-      player := @players[i];
+      player := @TGameSession.Players[i];
       mo := player.mo;
       if mo = master then
         continue;
@@ -5483,7 +5483,7 @@ begin
     p.damagecount := 0;
     p.poisoncount := 0;
     p.bonuscount := 0;
-    if p = @players[TGameSession.ConsolePlayer] then
+    if p = @TGameSession.Players[TGameSession.ConsolePlayer] then
       SB_PaletteFlash(false);
   end
   else if (actor.flags and MF_COUNTKILL <> 0) and (actor.special <> 0) then

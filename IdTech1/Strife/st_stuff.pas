@@ -1451,9 +1451,9 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if i = pnum then // self-frags
-      result := result - players[pnum].frags[i]
+      result := result - TGameSession.Players[pnum].frags[i]
     else
-      result := result + players[pnum].frags[i];
+      result := result + TGameSession.Players[pnum].frags[i];
 end;
 
 //==============================================================================
@@ -1813,7 +1813,7 @@ end;
 //==============================================================================
 procedure ST_InitData;
 begin
-  plyr := @players[TGameSession.ConsolePlayer];
+  plyr := @TGameSession.Players[TGameSession.ConsolePlayer];
 
   st_gamestate := st_firstpersonstate;
   st_statusbarmode := stdo_full;

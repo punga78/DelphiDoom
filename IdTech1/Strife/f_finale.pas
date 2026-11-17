@@ -343,12 +343,12 @@ begin
       begin
         if not TGameSession.NetGame then
         begin
-          if players[0].health <= 0 then      // Bad ending
+          if TGameSession.Players[0].health <= 0 then      // Bad ending
             slideshow_state := SLIDE_BADEND1  // - Humanity goes extinct
           else
           begin
-            if (players[0].questflags and QF_QUEST25 <> 0) and   // Converter destroyed
-               (players[0].questflags and QF_QUEST27 <> 0) then  // Computer destroyed (wtf?!)
+            if (TGameSession.Players[0].questflags and QF_QUEST25 <> 0) and   // Converter destroyed
+               (TGameSession.Players[0].questflags and QF_QUEST27 <> 0) then  // Computer destroyed (wtf?!)
             // Good ending - You get the hot babe.
               slideshow_state := SLIDE_GOODEND1
             else
@@ -635,7 +635,7 @@ begin
     i := 0;
     while i < MAXPLAYERS do
     begin
-      if players[i].cmd.buttons <> 0 then
+      if TGameSession.Players[i].cmd.buttons <> 0 then
         break;
       inc(i);
     end;

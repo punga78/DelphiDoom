@@ -260,7 +260,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      p := @players[i];
+      p := @TGameSession.Players[i];
       if p.mo = nil then
         continue;
       // G_PlayerReborn clears the whole player and a level that ends does not: the flag of the

@@ -140,7 +140,7 @@ begin
   // check for button presses to skip delays
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    player := @players[i];
+    player := @TGameSession.Players[i];
 
     if TGameSession.PlayerInGame[i] then
       if (player.cmd.buttons and BT_ATTACK <> 0) or (player.cmd.buttons and BT_USE <> 0) then

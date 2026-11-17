@@ -486,7 +486,7 @@ begin
 
     if pnum >= 0 then
     begin
-      plr := @players[pnum];
+      plr := @TGameSession.Players[pnum];
       if plr.mo <> nil then
       begin
         hasplayer := true;
@@ -1368,7 +1368,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
     inc(their_color);
-    p := @players[i];
+    p := @TGameSession.Players[i];
 
     if (TGameSession.DeathMatch <> 0) and not singledemo and (p <> plr) then
       continue;

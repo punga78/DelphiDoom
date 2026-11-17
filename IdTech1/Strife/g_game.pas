@@ -218,6 +218,8 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>The player records</summary>
+    class var Players: array[0..MAXPLAYERS - 1] of player_t;
     /// <summary>The player slots in use</summary>
     class var PlayerInGame: array[0..MAXPLAYERS - 1] of boolean;
     /// <summary>Level, intermission, finale or demo screen</summary>
@@ -921,7 +923,7 @@ begin
 
   cmd.consistency := G_NetGame.ExpectedConsistency;
 
-  player := @players[TGameSession.ConsolePlayer];
+  player := @TGameSession.Players[TGameSession.ConsolePlayer];
 
   // villsa [STRIFE] inventory use key
   if gamekeydown[key_invuse] then
@@ -936,7 +938,7 @@ begin
   // villsa [STRIFE] inventory drop key
   if gamekeydown[key_invdrop] then
   begin
-    player := @players[TGameSession.ConsolePlayer];
+    player := @TGameSession.Players[TGameSession.ConsolePlayer];
     if player.numinventory > 0 then
     begin
       cmd.buttons2 := cmd.buttons2 or BT2_INVDROP;
@@ -1078,7 +1080,7 @@ begin
     cmd.buttons := cmd.buttons or BT_ATTACK;
 
   if G_PlayingEngineVersion >= VERSION207 then
-    if players[TGameSession.ConsolePlayer].nextfire > TTickState.LevelTime then
+    if TGameSession.Players[TGameSession.ConsolePlayer].nextfire > TTickState.LevelTime then
       cmd.buttons := cmd.buttons and not BT_ATTACK;
 
   if gamekeydown[key_use] or (usejoystick and joybuttons[joybuse]) then
@@ -1217,7 +1219,7 @@ begin
   cmd.forwardmove := cmd.forwardmove + _forward;
   cmd.sidemove := cmd.sidemove + side;
 
-  if players[TGameSession.ConsolePlayer].playerstate = PST_LIVE then
+  if TGameSession.Players[TGameSession.ConsolePlayer].playerstate = PST_LIVE then
   begin
     if zaxisshift then
     begin
@@ -1237,21 +1239,21 @@ begin
     // allowplayerjumps variable controls if we accept input for jumping
     if allowplayerjumps and (gamekeydown[key_jump] or (usejoystick and joybuttons[joybjump])) then
     begin
-      if players[TGameSession.ConsolePlayer].oldjump <> 0 then
+      if TGameSession.Players[TGameSession.ConsolePlayer].oldjump <> 0 then
         cmd_jump := 1
       else
         cmd_jump := 2
       end
     else
       cmd_jump := 0;
-    players[TGameSession.ConsolePlayer].oldjump := cmd_jump;
+    TGameSession.Players[TGameSession.ConsolePlayer].oldjump := cmd_jump;
     // JVAL: 20211101 - Crouch
     // allowplayercrouch variable controls if we accept input for crouching
     if cmd_jump = 0 then
     begin
       if allowplayercrouch and (gamekeydown[key_crouch] or (usejoystick and joybuttons[joybcrouch])) then
       begin
-        if players[TGameSession.ConsolePlayer].oldcrouch <> 0 then
+        if TGameSession.Players[TGameSession.ConsolePlayer].oldcrouch <> 0 then
           cmd_crouch := 2
         else
           cmd_crouch := 1
@@ -1261,7 +1263,7 @@ begin
     end
     else
       cmd_crouch := 0;
-    players[TGameSession.ConsolePlayer].oldcrouch := cmd_crouch;
+    TGameSession.Players[TGameSession.ConsolePlayer].oldcrouch := cmd_crouch;
 
     cmd.jump_crouch :=
       ((cmd_jump shl CMD_JUMP_SHIFT) and CMD_JUMP_MASK) +
@@ -1355,9 +1357,9 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if TGameSession.PlayerInGame[i] and ((players[i].playerstate = PST_DEAD) or (players[i].health <= 0)) then
-      players[i].playerstate := PST_REBORN;
-    ZeroMemory(@players[i].frags, SizeOf(players[i].frags));
+    if TGameSession.PlayerInGame[i] and ((TGameSession.Players[i].playerstate = PST_DEAD) or (TGameSession.Players[i].health <= 0)) then
+      TGameSession.Players[i].playerstate := PST_REBORN;
+    ZeroMemory(@TGameSession.Players[i].frags, SizeOf(TGameSession.Players[i].frags));
   end;
 
   PS_NewMap;
@@ -1366,7 +1368,7 @@ begin
   // JVAL: Prevent erroneous demos
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      if players[i].mo = nil then
+      if TGameSession.Players[i].mo = nil then
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
         TGameSession.GameState := GS_DEMOSCREEN;
@@ -1564,7 +1566,7 @@ var
 begin
   // do player reborns if needed
   for i := 0 to MAXPLAYERS - 1 do
-    if TGameSession.PlayerInGame[i] and (players[i].playerstate = PST_REBORN) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].playerstate = PST_REBORN) then
       G_DoReborn(i);
 
   // do things to change the game state
@@ -1614,7 +1616,7 @@ begin
   begin
     if TGameSession.PlayerInGame[i] then
     begin
-      pl := @players[i];
+      pl := @TGameSession.Players[i];
       cmd := @pl.cmd;
 
       G_NetGame.GetCommand(i, buf, cmd);
@@ -1631,7 +1633,7 @@ begin
          (((_SHR(TGameSession.GameTic, 5)) and 3) = i) then
       begin
         sprintf(msg, '%s is turbo!', [player_names[i]]);
-        players[TGameSession.ConsolePlayer]._message := msg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := msg;
       end;
 
       if TGameSession.NetGame and not TGameSession.NetDemo and (TGameSession.GameTic mod ticdup = 0) then
@@ -1649,7 +1651,7 @@ begin
   begin
     if TGameSession.PlayerInGame[i] then
     begin
-      pl := @players[i];
+      pl := @TGameSession.Players[i];
       if pl.cmd.commands and CM_SAVEGAME <> 0 then
       begin
         savegameslot := Ord(load_end);
@@ -1715,7 +1717,7 @@ var
   allegiance: integer;
   cheats: integer;
 begin
-  p := @players[player];
+  p := @TGameSession.Players[player];
   memcpy(@frags, @p.frags, SizeOf(frags));
   killcount := p.killcount;
   allegiance := p.allegiance;
@@ -1730,7 +1732,7 @@ begin
   else
     ZeroMemory(p, SizeOf(player_t));
 
-  memcpy(@p.frags, @frags, SizeOf(players[player].frags));
+  memcpy(@p.frags, @frags, SizeOf(TGameSession.Players[player].frags));
   p.killcount := killcount;
   p.allegiance := allegiance;
 
@@ -1866,7 +1868,7 @@ begin
 
   // special handling for post-Sigil map changes
   if not isdemoversion then
-    if players[0].weaponowned[Ord(wp_sigil)] then
+    if TGameSession.Players[0].weaponowned[Ord(wp_sigil)] then
     begin
       if map = 3 then // Front Base -> Abandoned Front Base
         map := 30
@@ -1926,15 +1928,15 @@ begin
       // [STRIFE] restore pw_allmap power from mapstate cache
       if destmap < 40 then
       begin
-        if players[i].mapstate[destmap] then
-          players[i].powers[Ord(pw_allmap)] := 1
+        if TGameSession.Players[i].mapstate[destmap] then
+          TGameSession.Players[i].powers[Ord(pw_allmap)] := 1
         else
-          players[i].powers[Ord(pw_allmap)] := 0;
+          TGameSession.Players[i].powers[Ord(pw_allmap)] := 0;
       end;
 
       // Shadowarmor doesn't persist between maps in netgames
       if TGameSession.NetGame then
-        players[i].powers[Ord(pw_invisibility)] := 0;
+        TGameSession.Players[i].powers[Ord(pw_invisibility)] := 0;
     end;
   end;
 
@@ -1968,12 +1970,12 @@ begin
   if riftdest <> 0 then
   begin
     P_TeleportMove(
-      players[0].mo,
+      TGameSession.Players[0].mo,
       riftSpots[riftdest - 1].x * FRACUNIT,
       riftSpots[riftdest - 1].y * FRACUNIT
     );
-    players[0].mo.angle := riftangle;
-    players[0].mo.health := players[0].health;
+    TGameSession.Players[0].mo.angle := riftangle;
+    TGameSession.Players[0].mo.health := TGameSession.Players[0].health;
   end;
 end;
 
@@ -1987,7 +1989,7 @@ end;
 //==============================================================================
 function G_RiftCheat(riftSpotNum: integer): boolean;
 begin
-  result := P_TeleportMove(players[0].mo,
+  result := P_TeleportMove(TGameSession.Players[0].mo,
                            riftSpots[riftSpotNum - 1].x * FRACUNIT,
                            riftSpots[riftSpotNum - 1].y * FRACUNIT);
 end;
@@ -2015,9 +2017,9 @@ begin
   if TGameSession.DeathMatch = 0 then
   begin
     // Remember Shadowarmor across hub loads
-    if players[0].mo.flags and MF_SHADOW <> 0 then
+    if TGameSession.Players[0].mo.flags and MF_SHADOW <> 0 then
       temp_shadow := true;
-    if players[0].mo.flags and MF_MVIS <> 0 then
+    if TGameSession.Players[0].mo.flags and MF_MVIS <> 0 then
       temp_mvis := true;
   end;
   G_DoLoadGame(false);
@@ -2028,11 +2030,11 @@ begin
   if TGameSession.DeathMatch = 0 then
   begin
     // [STRIFE]: transfer saved powerups
-    players[0].mo.flags := players[0].mo.flags and not (MF_SHADOW or MF_MVIS);
+    TGameSession.Players[0].mo.flags := TGameSession.Players[0].mo.flags and not (MF_SHADOW or MF_MVIS);
     if temp_shadow then
-      players[0].mo.flags := players[0].mo.flags or MF_SHADOW;
+      TGameSession.Players[0].mo.flags := TGameSession.Players[0].mo.flags or MF_SHADOW;
     if temp_mvis then
-      players[0].mo.flags := players[0].mo.flags or MF_MVIS;
+      TGameSession.Players[0].mo.flags := TGameSession.Players[0].mo.flags or MF_MVIS;
 
     // [STRIFE] HUB SAVE
     G_RiftPlayer();
@@ -2388,7 +2390,7 @@ begin
 
   // [STRIFE]: custom message logic
   if path <> savepath then
-    players[TGameSession.ConsolePlayer]._message := GGSAVED;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := GGSAVED;
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
@@ -2480,7 +2482,7 @@ begin
 
   if W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
-    players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
     G_DeferedInitNew(TGameSession.GameSkill, map);
     C_ExecuteCmd('closeconsole', '1');
   end
@@ -2631,7 +2633,7 @@ begin
 
   // force players to be initialized upon first level load
   for i := 0 to MAXPLAYERS - 1 do
-    players[i].playerstate := PST_REBORN;
+    TGameSession.Players[i].playerstate := PST_REBORN;
 
   TGameSession.UserGame := true;  // will be set false if a demo
   TGameSession.Paused := false;
@@ -2671,7 +2673,7 @@ begin
   if compatibility_done then
     exit;
 
-  if players[TGameSession.ConsolePlayer].playerstate = PST_DEAD then
+  if TGameSession.Players[TGameSession.ConsolePlayer].playerstate = PST_DEAD then
   begin
     compatibility_done := true;
     TDemoDeathTrimmer.Trim(System.PByte(demo_p), System.PByte(demoend));

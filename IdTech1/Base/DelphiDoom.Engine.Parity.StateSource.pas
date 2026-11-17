@@ -485,7 +485,7 @@ begin
     begin
       FSink.BeginObject(FPlayerCategory, LIndex);
       FFieldIndex := 0;
-      PutPlayer(players[LIndex]);
+      PutPlayer(TGameSession.Players[LIndex]);
       FSink.EndObject;
     end;
 
@@ -493,11 +493,11 @@ begin
   LIndex := 0;
   while (LIndex < MAXPLAYERS - 1) and not TGameSession.PlayerInGame[LIndex] do
     Inc(LIndex);
-  if TGameSession.PlayerInGame[LIndex] and (players[LIndex].mo <> nil) then
+  if TGameSession.PlayerInGame[LIndex] and (TGameSession.Players[LIndex].mo <> nil) then
   begin
-    FSink.Scalar('px', players[LIndex].mo.x div FRACUNIT);
-    FSink.Scalar('py', players[LIndex].mo.y div FRACUNIT);
-    FSink.Scalar('hp', players[LIndex].health);
+    FSink.Scalar('px', TGameSession.Players[LIndex].mo.x div FRACUNIT);
+    FSink.Scalar('py', TGameSession.Players[LIndex].mo.y div FRACUNIT);
+    FSink.Scalar('hp', TGameSession.Players[LIndex].health);
   end
   else
   begin

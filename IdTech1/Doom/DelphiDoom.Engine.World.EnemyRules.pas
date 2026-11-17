@@ -709,7 +709,7 @@ var
   initial: boolean;
 begin
   if continueafterplayerdeath then
-    if not TGameSession.NetGame and (players[0].health <= 0) then
+    if not TGameSession.NetGame and (TGameSession.Players[0].health <= 0) then
     begin
       result := P_LookForMonsters(actor);
       exit;
@@ -737,7 +737,7 @@ begin
     end;
     inc(c);
 
-    player := @players[actor.lastlook];
+    player := @TGameSession.Players[actor.lastlook];
 
     if player.health <= 0 then
       continue;   // dead
@@ -2200,7 +2200,7 @@ begin
     i := 0;
     while i < MAXPLAYERS do
     begin
-      if TGameSession.PlayerInGame[i] and (players[i].health > 0) then
+      if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].health > 0) then
         break;
       Inc(i);
     end;
@@ -2308,7 +2308,7 @@ begin
   i := 0;
   while i < MAXPLAYERS do
   begin
-    if TGameSession.PlayerInGame[i] and (players[i].health > 0) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].health > 0) then
       break;
     inc(i);
   end;

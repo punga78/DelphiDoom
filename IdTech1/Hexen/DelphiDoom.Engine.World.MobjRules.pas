@@ -980,7 +980,7 @@ begin
   if not TGameSession.PlayerInGame[mthing._type - 1] then
     exit;
 
-  p := @players[mthing._type - 1];
+  p := @TGameSession.Players[mthing._type - 1];
   if p.playerstate = PST_REBORN then
     G_PlayerReborn(mthing._type - 1);
 
@@ -2459,7 +2459,7 @@ end;
 
 class function TMobjGameRules.SummonerRadius: fixed_t;
 begin
-  result := players[TGameSession.ConsolePlayer].mo.info.radius;
+  result := TGameSession.Players[TGameSession.ConsolePlayer].mo.info.radius;
 end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;

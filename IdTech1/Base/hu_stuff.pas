@@ -400,7 +400,7 @@ end;
 //==============================================================================
 procedure HU_CmdPlayerMessage(const parm1, parm2: string);
 begin
-  players[TGameSession.ConsolePlayer]._message := parm1 + ' ' + parm2;
+  TGameSession.Players[TGameSession.ConsolePlayer]._message := parm1 + ' ' + parm2;
 end;
 
 //==============================================================================

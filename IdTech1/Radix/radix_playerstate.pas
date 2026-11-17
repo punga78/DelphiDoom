@@ -142,7 +142,7 @@ uses
 //==============================================================================
 function RX_PlayerState(const p: Pplayer_t): Pradixplayer_t;
 begin
-  result := @radixplayers[pDiff(p, @players[0], SizeOf(player_t))];
+  result := @radixplayers[pDiff(p, @TGameSession.Players[0], SizeOf(player_t))];
 end;
 
 //==============================================================================

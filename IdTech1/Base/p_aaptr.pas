@@ -126,7 +126,7 @@ begin
   end;
 
   if TGameSession.PlayerInGame[playernum] then
-    result := players[playernum].mo
+    result := TGameSession.Players[playernum].mo
   else
     result := nil;
 end;
@@ -192,9 +192,9 @@ begin
         if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
           for i := 0 to MAXPLAYERS - 1 do
             if TGameSession.PlayerInGame[i] then
-              if origin.player <> @players[i] then
+              if origin.player <> @TGameSession.Players[i] then
               begin
-                result := players[i].mo;
+                result := TGameSession.Players[i].mo;
                 exit;
               end;
 
@@ -206,7 +206,7 @@ begin
         for i := 0 to MAXPLAYERS - 1 do
           if TGameSession.PlayerInGame[i] then
           begin
-            result := players[i].mo;
+            result := TGameSession.Players[i].mo;
             exit;
           end;
 

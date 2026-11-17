@@ -1695,7 +1695,7 @@ begin
   // check for button presses to skip delays
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    player := @players[i];
+    player := @TGameSession.Players[i];
 
     if TGameSession.PlayerInGame[i] then
     begin

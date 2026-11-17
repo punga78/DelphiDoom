@@ -1842,7 +1842,7 @@ var
   i: integer;
 begin
   st_firsttime := true;
-  plyr := @players[TGameSession.ConsolePlayer];
+  plyr := @TGameSession.Players[TGameSession.ConsolePlayer];
 
   st_clock := 0;
   st_chatstate := StartChatState;

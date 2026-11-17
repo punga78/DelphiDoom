@@ -784,7 +784,7 @@ begin
   numismobjs := 0;
 
   // Interpolate player
-  player := @players[displayplayer];
+  player := @TGameSession.Players[displayplayer];
 
   R_AddInterpolationItem(@player.lookdir, iinteger, @istructs[IDS_PLAYER]);
   R_AddInterpolationItem(@player.lookdir16, iinteger, @istructs[IDS_PLAYER]); // JVAL Smooth Look Up/Down

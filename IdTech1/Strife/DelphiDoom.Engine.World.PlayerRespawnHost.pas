@@ -72,6 +72,7 @@ type
 implementation
 
 uses
+  g_game,
   System.SysUtils,
   m_fixed,
   tables,
@@ -120,8 +121,8 @@ end;
 
 procedure TPlayerRespawnHost.DetachCorpse(const APlayer: Integer);
 begin
-  if players[APlayer].mo <> nil then
-    players[APlayer].mo.player := nil;
+  if TGameSession.Players[APlayer].mo <> nil then
+    TGameSession.Players[APlayer].mo.player := nil;
 end;
 
 function TPlayerRespawnHost.CheckSpot(const APlayer: Integer; const AKind: TPlayerSpotKind;
@@ -169,17 +170,17 @@ end;
 
 function TPlayerRespawnHost.PlayerHasBody(const APlayer: Integer): Boolean;
 begin
-  Result := players[APlayer].mo <> nil;
+  Result := TGameSession.Players[APlayer].mo <> nil;
 end;
 
 function TPlayerRespawnHost.PlayerBodyX(const APlayer: Integer): Integer;
 begin
-  Result := players[APlayer].mo.x;
+  Result := TGameSession.Players[APlayer].mo.x;
 end;
 
 function TPlayerRespawnHost.PlayerBodyY(const APlayer: Integer): Integer;
 begin
-  Result := players[APlayer].mo.y;
+  Result := TGameSession.Players[APlayer].mo.y;
 end;
 
 procedure TPlayerRespawnHost.BeginPositionTest(const APlayer: Integer);
@@ -200,19 +201,19 @@ begin
   LSubsector := R_PointInSubsector(AX, AY);
   Result := LSubsector.sector.floorheight;
   if LSubsector.sector.midsec >= 0 then
-    if players[APlayer].mo.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then
+    if TGameSession.Players[APlayer].mo.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then
       Result := sectors[LSubsector.sector.midsec].ceilingheight;
 end;
 
 function TPlayerRespawnHost.PositionFree(const APlayer, AX, AY: Integer): Boolean;
 begin
-  Result := P_CheckPosition(players[APlayer].mo, AX, AY);
+  Result := P_CheckPosition(TGameSession.Players[APlayer].mo, AX, AY);
 end;
 
 procedure TPlayerRespawnHost.FlushCorpse(const APlayer: Integer);
 begin
   if not FNeedsCompatibilityMode then
-    P_World.AddPlayerCorpse(players[APlayer].mo);
+    P_World.AddPlayerCorpse(TGameSession.Players[APlayer].mo);
 end;
 
 procedure TPlayerRespawnHost.SpawnFog(const AX, AY, AHeight, AFineAngle: Integer);
@@ -222,7 +223,7 @@ begin
   LFog := P_SpawnMobj(AX + 20 * finecosine[AFineAngle], AY + 20 * finesine[AFineAngle],
     AHeight, Ord(MT_TFOG));
 
-  if players[FConsolePlayer^].viewz <> 1 then
+  if TGameSession.Players[FConsolePlayer^].viewz <> 1 then
     S_StartSound(LFog, Ord(sfx_telept));  // don't start sound on first frame
 end;
 

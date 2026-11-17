@@ -122,7 +122,7 @@ begin
   while mo <> nil do
   begin
     if mo.player <> nil then
-      if mo.player = @players[TGameSession.ConsolePlayer] then
+      if mo.player = @TGameSession.Players[TGameSession.ConsolePlayer] then
       begin
         playeronsector := 1;
         break;

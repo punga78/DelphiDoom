@@ -145,7 +145,7 @@ begin
   if not statelog_open then
     exit;
 
-  p := @players[TGameSession.ConsolePlayer];
+  p := @TGameSession.Players[TGameSession.ConsolePlayer];
   if p.mo = nil then
     exit;
   rp := RX_PlayerState(p);

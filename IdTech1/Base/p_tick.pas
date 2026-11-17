@@ -320,7 +320,7 @@ begin
 
   // pause if in menu and at least one tic has been run
   if not TGameSession.NetGame and menuactive and
-     not TGameSession.DemoPlayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
+     not TGameSession.DemoPlayback and (TGameSession.Players[TGameSession.ConsolePlayer].viewz <> 1) then
     exit;
 
   if not TGameSession.DemoPlayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (TTickState.LevelTime <> 0) then
@@ -339,7 +339,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
-      P_PlayerThink(@players[i]);
+      P_PlayerThink(@TGameSession.Players[i]);
 
 {$IFDEF HEXEN}
   if TimerGame <> 0 then

@@ -75,7 +75,7 @@ begin
   end;
 
   plnum := mthing._type - 1;
-  p := @players[plnum];
+  p := @TGameSession.Players[plnum];
 
   if p.playerstate = PST_REBORN then
     G_PlayerReborn(plnum);
