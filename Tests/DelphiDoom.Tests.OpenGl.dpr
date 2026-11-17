@@ -87,7 +87,15 @@ uses
   DelphiDoom.Tests.OpenGl.CallRecorder in 'Source\DelphiDoom.Tests.OpenGl.CallRecorder.pas',
   DelphiDoom.Tests.OpenGl.HookInstaller in 'Source\DelphiDoom.Tests.OpenGl.HookInstaller.pas',
   DelphiDoom.Tests.OpenGl.Session in 'Source\DelphiDoom.Tests.OpenGl.Session.pas',
-  DelphiDoom.Tests.OpenGl.Thunks in 'Source\DelphiDoom.Tests.OpenGl.Thunks.pas';
+  DelphiDoom.Tests.OpenGl.Thunks in 'Source\DelphiDoom.Tests.OpenGl.Thunks.pas',
+  doomdef in 'Shim\OpenGl\doomdef.pas',
+  gl_defs in 'Shim\OpenGl\gl_defs.pas',
+  gl_main in 'Shim\OpenGl\gl_main.pas',
+  i_system in 'Shim\OpenGl\i_system.pas',
+  DelphiDoom.Engine.Gl2dMode in '..\IdTech1\OpenGl\Legacy\DelphiDoom.Engine.Gl2dMode.pas',
+  DelphiDoom.Engine.GlVSync in '..\IdTech1\OpenGl\Legacy\DelphiDoom.Engine.GlVSync.pas',
+  DelphiDoom.Tests.OpenGl.Gl2dMode in 'Source\DelphiDoom.Tests.OpenGl.Gl2dMode.pas',
+  DelphiDoom.Tests.OpenGl.GlVSync in 'Source\DelphiDoom.Tests.OpenGl.GlVSync.pas';
 
 var
   Runner: ITestRunner;
