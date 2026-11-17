@@ -142,6 +142,7 @@ uses
   DelphiDoom.Automap.Rotation in '..\Automap\DelphiDoom.Automap.Rotation.pas',
   DelphiDoom.Automap.LineRasterizer in '..\Automap\DelphiDoom.Automap.LineRasterizer.pas',
   DelphiDoom.Automap.Shapes in '..\Automap\DelphiDoom.Automap.Shapes.pas',
+  DelphiDoom.Automap.KeyCommands in '..\Automap\DelphiDoom.Automap.KeyCommands.pas',
   DelphiDoom.Automap.View in '..\Automap\DelphiDoom.Automap.View.pas',
   DelphiDoom.Automap.Marks in '..\Automap\DelphiDoom.Automap.Marks.pas',
   DelphiDoom.Automap.Factory in '..\Automap\DelphiDoom.Automap.Factory.pas',
