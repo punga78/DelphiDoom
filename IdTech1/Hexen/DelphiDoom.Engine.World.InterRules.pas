@@ -720,7 +720,7 @@ begin
   end;
 
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
     SB_PaletteFlash(false);
@@ -815,7 +815,7 @@ begin
     end;
   end;
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     SB_PaletteFlash(false);
   end;
@@ -841,7 +841,7 @@ begin
   else
   begin
     P_SetMessage(player, weaponPieceText[Ord(matchClass)], false);
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     begin
       S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
     end;
@@ -954,7 +954,7 @@ begin
   begin
     player.readyArtifact := arti;
   end
-  else if (player = @players[TGameSession.ConsolePlayer]) and slidePointer and (i <= inv_ptr) then
+  else if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) and slidePointer and (i <= inv_ptr) then
   begin
     inc(inv_ptr);
     inc(curpos);
@@ -1136,7 +1136,7 @@ begin
         if TGameSession.NetGame then // Only remove keys in single player game
         begin
           player.bonuscount := player.bonuscount + BONUSADD;
-          if player = @players[TGameSession.ConsolePlayer] then
+          if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           begin
             S_StartSound(nil, sound);
             SB_PaletteFlash(false);
@@ -1487,7 +1487,7 @@ begin
   end;
 
   player.bonuscount := player.bonuscount + BONUSADD;
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, sound);
     SB_PaletteFlash(false);
@@ -1552,16 +1552,16 @@ begin
     begin
       if target = source then
       begin // Self-frag
-        dec(Pplayer_t(target.player).frags[(NativeInt(target.player) - NativeInt(@players[0])) div SizeOf(player_t)]);
-        if cmdfrag and TGameSession.NetGame and source.player = @players[TGameSession.ConsolePlayer] then
+        dec(Pplayer_t(target.player).frags[(NativeInt(target.player) - NativeInt(@TGameSession.Players[0])) div SizeOf(player_t)]);
+        if cmdfrag and TGameSession.NetGame and source.player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin // Send out a frag count packet
           NET_SendFrags(source.player);
         end;
       end
       else
       begin
-        inc(source.player.frags[(NativeInt(target.player) - NativeInt(players)) div SizeOf(player_t)]);
-        if cmdfrag and TGameSession.NetGame and (source.player = @players[TGameSession.ConsolePlayer]) then
+        inc(source.player.frags[(NativeInt(target.player) - NativeInt(TGameSession.Players)) div SizeOf(player_t)]);
+        if cmdfrag and TGameSession.NetGame and (source.player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
         begin // Send out a frag count packet
           NET_SendFrags(source.player);
         end;
@@ -1575,8 +1575,8 @@ begin
 {
     if source = nil then
     begin // Self-frag
-      dec(target.player.frags[(NativeInt(target.player) - NativeInt(players)) div SizeOf(player_t)]);
-      if cmdfrag and TGameSession.NetGame and (target.player = @players[TGameSession.ConsolePlayer]) then
+      dec(target.player.frags[(NativeInt(target.player) - NativeInt(TGameSession.Players)) div SizeOf(player_t)]);
+      if cmdfrag and TGameSession.NetGame and (target.player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
       begin // Send out a frag count packet
         NET_SendFrags(target.player);
       end;
@@ -1598,7 +1598,7 @@ begin
 
     P_DropWeapon(target.player);
 
-    if (pl = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
+    if (pl = @TGameSession.Players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1809,7 +1809,7 @@ begin
   target.tics := target.tics - P_Random and 3;
 
   if target.player <> nil then    // JVAL: Script Events
-    PS_EventPlayerDied(pDiff(@players[0], target.player, SizeOf(player_t)), source);
+    PS_EventPlayerDied(pDiff(@TGameSession.Players[0], target.player, SizeOf(player_t)), source);
   PS_EventActorDied(target, source); // JVAL: Script Events
 
   // Drop stuff.
@@ -2113,7 +2113,7 @@ begin
     player.damagecount := player.damagecount + damage; // add damage after armor / invuln
     if player.damagecount > 100 then
       player.damagecount := 100; // teleport stomp does 10k points...
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     begin
 {    if damage < 100 then
       I_Tactile(40, 10, 40 + damage * 2) // JVAL Force Feedback

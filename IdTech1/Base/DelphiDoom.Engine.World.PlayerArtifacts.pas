@@ -58,7 +58,7 @@ uses
 
 procedure P_PlayerNextArtifact(player: Pplayer_t);
 begin
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     dec(inv_ptr);
     if inv_ptr < 6 then
@@ -85,7 +85,7 @@ var
   i: integer;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if player = @players[i] then
+    if player = @TGameSession.Players[i] then
     begin
       result := i;
       exit;
@@ -120,7 +120,7 @@ begin
 
     TUserGameRules.ClearFreedSlot(player);
     dec(player.inventorySlotNum);
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     begin // Set position markers and get next readyArtifact
       dec(inv_ptr);
       if inv_ptr < 6 then

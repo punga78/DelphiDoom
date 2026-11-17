@@ -1320,7 +1320,7 @@ begin
     end;
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
       S_StartSound(nil, sound);
     result := true;
     exit;
@@ -1673,7 +1673,7 @@ begin
 
           MT_SLIDESHOW: // Slideshow (start a finale)
             begin
-              gameaction := ga_victory;
+              TGameSession.GameAction := ga_victory;
               if TGameSession.GameMap = 10 then
                 P_GiveItemToPlayer(player, Ord(SPR_TOKN), MT_TOKEN_QUEST17);
             end;
@@ -1694,7 +1694,7 @@ begin
   end;
 
   // Play sound.
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 
   result := true;
@@ -1845,7 +1845,7 @@ begin
   dialogplayer.st_update := true;
   M_ClearMenus;
 
-  if (nextdialog >= 0) or (gameaction = ga_victory) then // Macil hack
+  if (nextdialog >= 0) or (TGameSession.GameAction = ga_victory) then // Macil hack
     menuindialog := false
   else
     P_DialogStart(dialogplayer);
@@ -1897,12 +1897,12 @@ begin
 
   // if there's a valid background pic, delay drawing the rest of the menu
   // for a while; otherwise, it will appear immediately
-  if (dialogbgpiclumpnum = -1) or (menupausetime <= gametic) then
+  if (dialogbgpiclumpnum = -1) or (menupausetime <= TGameSession.GameTic) then
   begin
     if menuindialog then
     begin
       // time to pause the game?
-      if menupausetime + 3 < gametic then
+      if menupausetime + 3 < TGameSession.GameTic then
         menupause := true;
     end;
 
@@ -1955,7 +1955,7 @@ end;
 //==============================================================================
 procedure P_DialogStartP1;
 begin
-  P_DialogStart(@players[0]);
+  P_DialogStart(@TGameSession.Players[0]);
 end;
 
 //==============================================================================
@@ -1998,7 +1998,7 @@ begin
   player.lastdialogtalker := dialogtalker;
 
   // play a sound
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, Ord(sfx_radio));
 
   TMapAim.LineTarget.target := player.mo;           // target the player
@@ -2088,7 +2088,7 @@ begin
   M_StartControlPanel;
   menupause := false;
   menuindialog := true;
-  menupausetime := gametic + 17;
+  menupausetime := TGameSession.GameTic + 17;
   currentMenu := @dialogmenu;
 
   if i >= dialogmenu.lastOn then

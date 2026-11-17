@@ -383,7 +383,7 @@ begin
 
     player._message := 'You used the ' + name;
 
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
       S_StartSound(nil, Ord(sfx_itemup));
 
     result := true;

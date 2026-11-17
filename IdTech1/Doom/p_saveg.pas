@@ -311,12 +311,12 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     PADSAVEP;
 
-    dest := P_ReserveRecord(pointer(save_p), TypeInfo(player_t), @players[i]);
+    dest := P_ReserveRecord(pointer(save_p), TypeInfo(player_t), @TGameSession.Players[i]);
     for j := 0 to Ord(NUMPSPRITES) - 1 do
       if dest.psprites[j].state <> nil then
         dest.psprites[j].state := Pstate_t(pDiff(dest.psprites[j].state, @states[0], SizeOf(dest.psprites[j].state^)));
@@ -521,26 +521,26 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     PADSAVEP;
 
     if savegameversion >= VERSION207 then
     begin
-      P_GetRecord(pointer(save_p), TypeInfo(player_t), @players[i]);
+      P_GetRecord(pointer(save_p), TypeInfo(player_t), @TGameSession.Players[i]);
     end
-    else if not P_UnArchiveOldPlayer(@players[i]) then
+    else if not P_UnArchiveOldPlayer(@TGameSession.Players[i]) then
       I_Error('P_UnArchivePlayers(): Unsupported saved game version: %d', [savegameversion]);
 
     // will be set when unarc thinker
-    players[i].mo := nil;
-    players[i]._message := '';
-    players[i].attacker := nil;
+    TGameSession.Players[i].mo := nil;
+    TGameSession.Players[i]._message := '';
+    TGameSession.Players[i].attacker := nil;
 
     for j := 0 to Ord(NUMPSPRITES) - 1 do
-      if players[i].psprites[j].state <> nil then
-        players[i].psprites[j].state := @states[NativeInt(players[i].psprites[j].state)];
+      if TGameSession.Players[i].psprites[j].state <> nil then
+        TGameSession.Players[i].psprites[j].state := @states[NativeInt(TGameSession.Players[i].psprites[j].state)];
 
     // JVAL: 202111224 - Load player history
     if savegameversion >= VERSION207 then
@@ -1736,8 +1736,8 @@ begin
           end;
 
           for i := 0 to MAXPLAYERS - 1 do
-            if playeringame[i] then
-              players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
+            if TGameSession.PlayerInGame[i] then
+              TGameSession.Players[i].plinetarget := P_FindMobjFromKey(NativeInt(TGameSession.Players[i].plinetarget));
 
           exit; // end of list
         end;
@@ -1776,7 +1776,7 @@ begin
 
           if mobj.player <> nil then
           begin
-            mobj.player := @players[NativeInt(mobj.player) - 1];
+            mobj.player := @TGameSession.Players[NativeInt(mobj.player) - 1];
 
             Pplayer_t(mobj.player).mo := mobj;
           end;

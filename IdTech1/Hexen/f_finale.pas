@@ -191,11 +191,11 @@ end;
 //==============================================================================
 procedure F_StartFinale;
 begin
-  gameaction := ga_nothing;
-  gamestate := GS_FINALE;
+  TGameSession.GameAction := ga_nothing;
+  TGameSession.GameState := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
-  P_ClearMessage(@players[TGameSession.ConsolePlayer]);
+  P_ClearMessage(@TGameSession.Players[TGameSession.ConsolePlayer]);
 
   FinaleStage := 0;
   FinaleCount := 0;

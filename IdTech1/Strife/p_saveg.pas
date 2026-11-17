@@ -355,12 +355,12 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     PADSAVEP;
 
-    dest := P_ReserveRecord(pointer(save_p), TypeInfo(player_t), @players[i]);
+    dest := P_ReserveRecord(pointer(save_p), TypeInfo(player_t), @TGameSession.Players[i]);
     for j := 0 to Ord(NUMPSPRITES) - 1 do
       if dest.psprites[j].state <> nil then
         dest.psprites[j].state := Pstate_t(pDiff(dest.psprites[j].state, @states[0], SizeOf(dest.psprites[j].state^)));
@@ -389,7 +389,7 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     PADSAVEP;
@@ -397,149 +397,149 @@ begin
     if savegameversion >= VERSION207 then
     begin
       if userload then
-        P_UnpackRecord(TypeInfo(player_t), save_p, @players[i]);
+        P_UnpackRecord(TypeInfo(player_t), save_p, @TGameSession.Players[i]);
       incp(pointer(save_p), P_RecordDiskSize(TypeInfo(player_t)));
     end
     else if savegameversion >= VERSION206 then
     begin
       if userload then
       begin
-        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @players[i], TypeInfo(player_t206));
+        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @TGameSession.Players[i], TypeInfo(player_t206));
 
         // version 207
-        players[i].oldcrouch := 0;
-        players[i].lastongroundtime := 0;
-        players[i].lastautocrouchtime := 0;
-        players[i].crouchheight := 0;
-        players[i].plinetarget := nil;
-        players[i].pcrosstic := 0;
-        players[i].nextfire := 0;
+        TGameSession.Players[i].oldcrouch := 0;
+        TGameSession.Players[i].lastongroundtime := 0;
+        TGameSession.Players[i].lastautocrouchtime := 0;
+        TGameSession.Players[i].crouchheight := 0;
+        TGameSession.Players[i].plinetarget := nil;
+        TGameSession.Players[i].pcrosstic := 0;
+        TGameSession.Players[i].nextfire := 0;
       end;
       incp(pointer(save_p), P_RecordDiskSize(TypeInfo(player_t206)));
-      P_ClearPlayerHistory(@players[i]);
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
     end
     else if savegameversion >= VERSION204 then
     begin
       if userload then
       begin
-        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @players[i], TypeInfo(player_t205));
+        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @TGameSession.Players[i], TypeInfo(player_t205));
 
-        players[i].nextoof := 0;
-        players[i].lastdialogtalker := nil;
-        if players[i].quaketics > 0 then
-          players[i].quakeintensity := FRACUNIT
+        TGameSession.Players[i].nextoof := 0;
+        TGameSession.Players[i].lastdialogtalker := nil;
+        if TGameSession.Players[i].quaketics > 0 then
+          TGameSession.Players[i].quakeintensity := FRACUNIT
         else
-          players[i].quakeintensity := 0;
+          TGameSession.Players[i].quakeintensity := 0;
 
         // version 207
-        players[i].oldcrouch := 0;
-        players[i].lastongroundtime := 0;
-        players[i].lastautocrouchtime := 0;
-        players[i].crouchheight := 0;
-        players[i].plinetarget := nil;
-        players[i].pcrosstic := 0;
-        players[i].nextfire := 0;
+        TGameSession.Players[i].oldcrouch := 0;
+        TGameSession.Players[i].lastongroundtime := 0;
+        TGameSession.Players[i].lastautocrouchtime := 0;
+        TGameSession.Players[i].crouchheight := 0;
+        TGameSession.Players[i].plinetarget := nil;
+        TGameSession.Players[i].pcrosstic := 0;
+        TGameSession.Players[i].nextfire := 0;
       end;
       incp(pointer(save_p), P_RecordDiskSize(TypeInfo(player_t205)));
-      P_ClearPlayerHistory(@players[i]);
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
     end
     else if savegameversion = VERSION203 then
     begin
       if userload then
       begin
-        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @players[i], TypeInfo(player_t203));
+        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @TGameSession.Players[i], TypeInfo(player_t203));
 
-        players[i].nextoof := 0;
-        players[i].lastdialogtalker := nil;
-        if players[i].quaketics > 0 then
-          players[i].quakeintensity := FRACUNIT
+        TGameSession.Players[i].nextoof := 0;
+        TGameSession.Players[i].lastdialogtalker := nil;
+        if TGameSession.Players[i].quaketics > 0 then
+          TGameSession.Players[i].quakeintensity := FRACUNIT
         else
-          players[i].quakeintensity := 0;
+          TGameSession.Players[i].quakeintensity := 0;
 
         // version 207
-        players[i].oldcrouch := 0;
-        players[i].lastongroundtime := 0;
-        players[i].lastautocrouchtime := 0;
-        players[i].crouchheight := 0;
-        players[i].plinetarget := nil;
-        players[i].pcrosstic := 0;
-        players[i].nextfire := 0;
+        TGameSession.Players[i].oldcrouch := 0;
+        TGameSession.Players[i].lastongroundtime := 0;
+        TGameSession.Players[i].lastautocrouchtime := 0;
+        TGameSession.Players[i].crouchheight := 0;
+        TGameSession.Players[i].plinetarget := nil;
+        TGameSession.Players[i].pcrosstic := 0;
+        TGameSession.Players[i].nextfire := 0;
       end;
       incp(pointer(save_p), P_RecordDiskSize(TypeInfo(player_t203)));
-      P_ClearPlayerHistory(@players[i]);
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
     end
     else if savegameversion = VERSION122 then
     begin
       if userload then
       begin
-        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @players[i], TypeInfo(player_t122));
-        players[i].laddertics := 0;
-        players[i].viewbob := players[i].bob;
-        players[i].slopetics := 0; // JVAL: Slopes
-        players[i].oldviewz := players[i].viewz;
-        players[i].teleporttics := 0;
-        players[i].quaketics := 0;
-        players[i].lookdir16 := players[i].lookdir * 16;
-        Pticcmd_t202(@players[i].cmd)^ := players[i].cmd202;
-        players[i].cmd.lookupdown16 := players[i].cmd.lookupdown * 256;
-        players[i].nextoof := 0;
-        players[i].lastdialogtalker := nil;
-        players[i].quakeintensity := 0;
+        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @TGameSession.Players[i], TypeInfo(player_t122));
+        TGameSession.Players[i].laddertics := 0;
+        TGameSession.Players[i].viewbob := TGameSession.Players[i].bob;
+        TGameSession.Players[i].slopetics := 0; // JVAL: Slopes
+        TGameSession.Players[i].oldviewz := TGameSession.Players[i].viewz;
+        TGameSession.Players[i].teleporttics := 0;
+        TGameSession.Players[i].quaketics := 0;
+        TGameSession.Players[i].lookdir16 := TGameSession.Players[i].lookdir * 16;
+        Pticcmd_t202(@TGameSession.Players[i].cmd)^ := TGameSession.Players[i].cmd202;
+        TGameSession.Players[i].cmd.lookupdown16 := TGameSession.Players[i].cmd.lookupdown * 256;
+        TGameSession.Players[i].nextoof := 0;
+        TGameSession.Players[i].lastdialogtalker := nil;
+        TGameSession.Players[i].quakeintensity := 0;
 
         // version 207
-        players[i].oldcrouch := 0;
-        players[i].lastongroundtime := 0;
-        players[i].lastautocrouchtime := 0;
-        players[i].crouchheight := 0;
-        players[i].plinetarget := nil;
-        players[i].pcrosstic := 0;
-        players[i].nextfire := 0;
+        TGameSession.Players[i].oldcrouch := 0;
+        TGameSession.Players[i].lastongroundtime := 0;
+        TGameSession.Players[i].lastautocrouchtime := 0;
+        TGameSession.Players[i].crouchheight := 0;
+        TGameSession.Players[i].plinetarget := nil;
+        TGameSession.Players[i].pcrosstic := 0;
+        TGameSession.Players[i].nextfire := 0;
       end;
       incp(pointer(save_p), P_RecordDiskSize(TypeInfo(player_t122)));
-      P_ClearPlayerHistory(@players[i]);
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
     end
     else if savegameversion <= VERSION121 then
     begin
       if userload then
       begin
-        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @players[i], TypeInfo(player_t121));
-        players[i].laddertics := 0;
-        players[i].viewbob := players[i].bob;
-        players[i].slopetics := 0; // JVAL: Slopes
-        players[i].oldviewz := players[i].viewz;
-        players[i].teleporttics := 0;
-        players[i].quaketics := 0;
-        players[i].lookdir16 := players[i].lookdir * 16;
-        Pticcmd_t202(@players[i].cmd)^ := players[i].cmd202;
-        players[i].cmd.lookupdown16 := players[i].cmd.lookupdown * 256;
-        players[i].nextoof := 0;
-        players[i].lastdialogtalker := nil;
-        players[i].quakeintensity := 0;
+        P_UnpackRecordPrefix(TypeInfo(player_t), save_p, @TGameSession.Players[i], TypeInfo(player_t121));
+        TGameSession.Players[i].laddertics := 0;
+        TGameSession.Players[i].viewbob := TGameSession.Players[i].bob;
+        TGameSession.Players[i].slopetics := 0; // JVAL: Slopes
+        TGameSession.Players[i].oldviewz := TGameSession.Players[i].viewz;
+        TGameSession.Players[i].teleporttics := 0;
+        TGameSession.Players[i].quaketics := 0;
+        TGameSession.Players[i].lookdir16 := TGameSession.Players[i].lookdir * 16;
+        Pticcmd_t202(@TGameSession.Players[i].cmd)^ := TGameSession.Players[i].cmd202;
+        TGameSession.Players[i].cmd.lookupdown16 := TGameSession.Players[i].cmd.lookupdown * 256;
+        TGameSession.Players[i].nextoof := 0;
+        TGameSession.Players[i].lastdialogtalker := nil;
+        TGameSession.Players[i].quakeintensity := 0;
 
         // version 207
-        players[i].oldcrouch := 0;
-        players[i].lastongroundtime := 0;
-        players[i].lastautocrouchtime := 0;
-        players[i].crouchheight := 0;
-        players[i].plinetarget := nil;
-        players[i].pcrosstic := 0;
-        players[i].nextfire := 0;
+        TGameSession.Players[i].oldcrouch := 0;
+        TGameSession.Players[i].lastongroundtime := 0;
+        TGameSession.Players[i].lastautocrouchtime := 0;
+        TGameSession.Players[i].crouchheight := 0;
+        TGameSession.Players[i].plinetarget := nil;
+        TGameSession.Players[i].pcrosstic := 0;
+        TGameSession.Players[i].nextfire := 0;
       end;
       incp(pointer(save_p), P_RecordDiskSize(TypeInfo(player_t121)));
-      P_ClearPlayerHistory(@players[i]);
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
     end
     else
       I_Error('P_UnArchivePlayers(): Unsupported saved game version: %d', [savegameversion]);
 
     // will be set when unarc thinker
-    players[i].mo := nil;
-    players[i]._message := '';
-    players[i].attacker := nil;
+    TGameSession.Players[i].mo := nil;
+    TGameSession.Players[i]._message := '';
+    TGameSession.Players[i].attacker := nil;
 
     if userload then
       for j := 0 to Ord(NUMPSPRITES) - 1 do
-        if players[i].psprites[j].state <> nil then
-          players[i].psprites[j].state := @states[NativeInt(players[i].psprites[j].state)];
+        if TGameSession.Players[i].psprites[j].state <> nil then
+          TGameSession.Players[i].psprites[j].state := @states[NativeInt(TGameSession.Players[i].psprites[j].state)];
 
     // JVAL: 202111224 - Load player history
     if savegameversion >= VERSION207 then
@@ -1306,12 +1306,12 @@ begin
             end;
 
             for i := 0 to MAXPLAYERS - 1 do
-              if playeringame[i] then
+              if TGameSession.PlayerInGame[i] then
               begin
-                if players[i].lastdialogtalker <> nil then
-                  players[i].lastdialogtalker := P_FindMobjFromKey(NativeInt(players[i].lastdialogtalker));
-                if players[i].plinetarget <> nil then
-                  players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
+                if TGameSession.Players[i].lastdialogtalker <> nil then
+                  TGameSession.Players[i].lastdialogtalker := P_FindMobjFromKey(NativeInt(TGameSession.Players[i].lastdialogtalker));
+                if TGameSession.Players[i].plinetarget <> nil then
+                  TGameSession.Players[i].plinetarget := P_FindMobjFromKey(NativeInt(TGameSession.Players[i].plinetarget));
               end;
           end;
           exit; // end of list
@@ -1356,7 +1356,7 @@ begin
 
           if mobj.player <> nil then
           begin
-            mobj.player := @players[NativeInt(mobj.player) - 1];
+            mobj.player := @TGameSession.Players[NativeInt(mobj.player) - 1];
 
             Pplayer_t(mobj.player).mo := mobj;
           end;

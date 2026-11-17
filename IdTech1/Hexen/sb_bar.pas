@@ -210,7 +210,7 @@ var
 function SB_CmdCheckPlayerStatus: boolean;
 begin
   if (CPlayer = nil) or (CPlayer.mo = nil) or (CPlayer.mo = nil) or
-     (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
+     (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -956,7 +956,7 @@ var
   delta: integer;
   curHealth: integer;
 begin
-  curHealth := players[TGameSession.ConsolePlayer].mo.health;
+  curHealth := TGameSession.Players[TGameSession.ConsolePlayer].mo.health;
   if curHealth < 0 then
     curHealth := 0;
 
@@ -1464,9 +1464,9 @@ begin
     sb_palette := -1;
   end;
 
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
-    CPlayer := @players[TGameSession.ConsolePlayer];
+    CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
     if CPlayer.poisoncount > 0 then
     begin
       palette := _SHR3(CPlayer.poisoncount + 7);
@@ -1844,7 +1844,7 @@ begin
     temp := 0;
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         temp := temp + CPlayer.frags[i];
       end;
@@ -1914,7 +1914,7 @@ begin
     if DebugSound then
       SB_DrawSoundInfo;
 
-    CPlayer := @players[TGameSession.ConsolePlayer];
+    CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
 
     if amstate = am_only then
     begin

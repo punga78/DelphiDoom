@@ -165,14 +165,14 @@ begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
       totalFrags[i] := 0;
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         inc(playercount);
         for j := 0 to MAXPLAYERS - 1 do
         begin
-          if playeringame[j] then
+          if TGameSession.PlayerInGame[j] then
           begin
-            totalFrags[i] := totalFrags[i] + players[i].frags[j];
+            totalFrags[i] := totalFrags[i] + TGameSession.Players[i].frags[j];
           end;
         end;
       end;
@@ -264,8 +264,8 @@ begin
   AM_Stop;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    players[i].messageTics := 0;
-    players[i]._message := '';
+    TGameSession.Players[i].messageTics := 0;
+    TGameSession.Players[i]._message := '';
   end;
   S_StopAllSequences;
 end;
@@ -296,7 +296,7 @@ begin
   if cnt <= 0 then
   begin
     IN_Stop;
-    gameaction := ga_leavemap;
+    TGameSession.GameAction := ga_leavemap;
   end;
 end;
 
@@ -320,9 +320,9 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
-      player := @players[i];
+      player := @TGameSession.Players[i];
       if player.cmd.buttons and BT_ATTACK <> 0 then
       begin
         if not player.attackdown then
@@ -555,15 +555,15 @@ begin
     begin
       x := FixedInt(xPos);
       bold := (i = TGameSession.ConsolePlayer) or (j = TGameSession.ConsolePlayer);
-      if playeringame[i] and playeringame[j] then
+      if TGameSession.PlayerInGame[i] and TGameSession.PlayerInGame[j] then
       begin
         if bold then
         begin
-          IN_DrNumberBold(players[i].frags[j], x, y, 100);
+          IN_DrNumberBold(TGameSession.Players[i].frags[j], x, y, 100);
         end
         else
         begin
-          IN_DrNumber(players[i].frags[j], x, y, 100);
+          IN_DrNumber(TGameSession.Players[i].frags[j], x, y, 100);
         end;
       end
       else
@@ -581,7 +581,7 @@ begin
       xPos := xPos + xDelta
     end;
     if showTotals and
-       playeringame[i] and
+       TGameSession.PlayerInGame[i] and
        not ( (slaughterboy and (1 shl i) <> 0) and (intertime and 16 <> 0)) then
     begin
       IN_DrNumber(totalFrags[i], TALLY_TOTALS_X, y, 1000);

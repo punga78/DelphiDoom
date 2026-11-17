@@ -265,7 +265,7 @@ begin
     P_GiveAmmo(player, ammo, Ord(GetWeaponAmmo[Ord(weapon)]));
     player.pendingweapon := weapon;
 
-    if (player = @players[TGameSession.ConsolePlayer]) then
+    if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
       S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
@@ -305,7 +305,7 @@ begin
   if player.keys[Ord(key)] then
     exit;
 
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     playerkeys := playerkeys or _SHL(1, Ord(key));
 
   player.bonuscount := BONUSADD;
@@ -1081,7 +1081,7 @@ begin
 
   player.bonuscount := player.bonuscount + BONUSADD;
 
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, sound);
     //SB_PaletteFlash; // JVAL Check
@@ -1120,13 +1120,13 @@ begin
     if target.player <> nil then
     begin // Frag stuff
       if target = source then // Self-frag
-        Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-          Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] - 1
+        Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+          Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] - 1
       else
       begin
-        Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-          Pplayer_t(source.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
-        if source.player = @players[TGameSession.ConsolePlayer] then
+        Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+          Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
+        if source.player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           S_StartSound(nil, Ord(sfx_gfrag));
         if Pplayer_t(source.player).chickenTics <> 0 then // Make a super chicken
           P_GivePower(source.player, Ord(pw_weaponlevel2));
@@ -1137,15 +1137,15 @@ begin
   begin
     // count all monster deaths,
     // even those caused by other monsters
-    players[0].killcount := players[0].killcount + 1;
+    TGameSession.Players[0].killcount := TGameSession.Players[0].killcount + 1;
   end;
 
   if target.player <> nil then
   begin
     // count environment kills against you
     if source = nil then
-      Pplayer_t(target.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-        Pplayer_t(target.player).frags[pDiff(target.player, @players[0], SizeOf(players[0]))] - 1;
+      Pplayer_t(target.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+        Pplayer_t(target.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] - 1;
 
     target.flags := target.flags and not MF_SOLID;
     target.flags2 := target.flags2 and not MF2_FLY;
@@ -1165,7 +1165,7 @@ begin
       exit;
     end;
 
-    if (target.player = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
+    if (target.player = @TGameSession.Players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1188,7 +1188,7 @@ begin
 //  if target.tics < 1 then
 //    target.tics := 1;
   if target.player <> nil then    // JVAL: Script Events
-    PS_EventPlayerDied(pDiff(@players[0], target.player, SizeOf(player_t)), source);
+    PS_EventPlayerDied(pDiff(@TGameSession.Players[0], target.player, SizeOf(player_t)), source);
   PS_EventActorDied(target, source); // JVAL: Script Events
 
   // Drop stuff.
@@ -1452,7 +1452,7 @@ begin
     if player.damagecount > 100 then
       player.damagecount := 100;  // teleport stomp does 10k points...
 
-    if player = @players[TGameSession.ConsolePlayer] then
+    if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     begin
       // SB_PaletteFlash; // JVAL: check
     end;

@@ -245,8 +245,8 @@ begin
   begin
     visible := false;
     for i := 0 to MAXPLAYERS - 1 do
-      if playeringame[i] then
-        if P_CheckSight(players[i].mo, actor) then
+      if TGameSession.PlayerInGame[i] then
+        if P_CheckSight(TGameSession.Players[i].mo, actor) then
         begin
           visible := true;
           break;

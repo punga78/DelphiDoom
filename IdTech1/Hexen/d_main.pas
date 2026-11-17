@@ -804,7 +804,7 @@ begin
   if setsizeneeded then
   begin
     R_ExecuteSetViewSize;
-    oldgamestate := -1; // force background redraw
+    TGameSession.OldGameState := -1; // force background redraw
     borderdrawcount := 3;
   end;
 {$IFNDEF OPENGL}
@@ -817,7 +817,7 @@ begin
 
 {$IFNDEF OPENGL}
   // save the current screen if about to wipe
-  if (Ord(gamestate) <> wipegamestate) and ((gamestate = GS_DEMOSCREEN) or (wipegamestate = Ord(GS_DEMOSCREEN))) then
+  if (Ord(TGameSession.GameState) <> wipegamestate) and ((TGameSession.GameState = GS_DEMOSCREEN) or (wipegamestate = Ord(GS_DEMOSCREEN))) then
   begin
     wipe := true;
     wipe_StartScreen;
@@ -826,14 +826,14 @@ begin
     wipe := false;
 {$ENDIF}
 
-  if (gamestate = GS_LEVEL) and (gametic <> 0) then
+  if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
     HU_Erase;
 
   // do buffered drawing
-  case gamestate of
+  case TGameSession.GameState of
     GS_LEVEL:
       begin
-        if gametic <> 0 then
+        if TGameSession.GameTic <> 0 then
         begin
           if amstate = am_only then
             AM_Drawer;
@@ -848,7 +848,7 @@ begin
       D_PageDrawer;
   end;
 
-  if Ord(gamestate) <> oldgamestate then
+  if Ord(TGameSession.GameState) <> TGameSession.OldGameState then
   begin
   // clean up border stuff
     palette := V_ReadPalette(PU_STATIC);
@@ -859,22 +859,22 @@ begin
   end;
 
   // draw the view directly
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
-    if (amstate <> am_only) and (gametic <> 0) then
+    if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
-      D_RenderPlayerView(@players[displayplayer]);
+      D_RenderPlayerView(@TGameSession.Players[displayplayer]);
       if amstate = am_overlay then
         AM_Drawer;
     end;
 
     redrawsbar := true;
-    if gametic <> 0 then
+    if TGameSession.GameTic <> 0 then
       drawhu := true;
 
   // see if the border needs to be initially drawn
 {$IFNDEF OPENGL}
-    if needsbackscreen or (oldgamestate <> Ord(GS_LEVEL)) then
+    if needsbackscreen or (TGameSession.OldGameState <> Ord(GS_LEVEL)) then
     begin
       viewactivestate := false; // view was not active
       R_FillBackScreen;         // draw the pattern into the back screen
@@ -900,11 +900,11 @@ begin
   menuactivestate := menuactive;
   viewactivestate := viewactive;
   inhelpscreensstate := inhelpscreens;
-  oldgamestate := Ord(gamestate);
-  wipegamestate := Ord(gamestate);
+  TGameSession.OldGameState := Ord(TGameSession.GameState);
+  wipegamestate := Ord(TGameSession.GameState);
 
   // draw pause pic
-  if paused then
+  if TGameSession.Paused then
   begin
     if amstate = am_only then
       y := 4
@@ -1013,15 +1013,15 @@ begin
   HU_DoFPSStuff;
   if firstinterpolation then
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
-    if (amstate <> am_only) and (gametic <> 0) then
+    if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
       R_FillBackScreen; // draw the pattern into the back screen
-      D_RenderPlayerView(@players[displayplayer]);
+      D_RenderPlayerView(@TGameSession.Players[displayplayer]);
     end;
   end;
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
     if amstate = am_overlay then
       AM_Drawer;
   D_DisplayHU;
@@ -1077,7 +1077,7 @@ begin
       I_SetNormalCPUPriority;
 {$ENDIF}
 
-    S_UpdateSounds(players[TGameSession.ConsolePlayer].mo);// move positional sounds
+    S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
 
     D_RunNotifications;
 
@@ -1170,11 +1170,11 @@ end;
 //==============================================================================
 procedure D_DoAdvanceDemo;
 begin
-  players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
+  TGameSession.Players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
   advancedemo := false;
   TGameSession.UserGame := false; // no save/end game here
-  paused := false;
-  gameaction := ga_nothing;
+  TGameSession.Paused := false;
+  TGameSession.GameAction := ga_nothing;
 
   demosequence := (demosequence + 1) mod 7;
 
@@ -1182,14 +1182,14 @@ begin
     0:
       begin
         pagetic := 280;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_TITLE;
         S_StartMusic(Ord(mus_hexen));
       end;
     1:
       begin
         pagetic := 210;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_TITLE;
       end;
     2:
@@ -1199,7 +1199,7 @@ begin
     3:
       begin
         pagetic := 200;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_CREDIT;
       end;
     4:
@@ -1209,7 +1209,7 @@ begin
     5:
       begin
         pagetic := 200;
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_CREDIT;
       end;
     6:
@@ -1226,7 +1226,7 @@ end;
 //==============================================================================
 procedure D_StartTitle;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   demosequence := -1;
   D_AdvanceDemo;
 end;
@@ -2623,7 +2623,7 @@ begin
   if (p <> 0) and (p < myargc - 1) then
     G_LoadGame(Ord(myargv[p + 1][1]) - Ord('0'));
 
-  if gameaction <> ga_loadgame then
+  if TGameSession.GameAction <> ga_loadgame then
   begin
     if autostart or TGameSession.NetGame then
     begin

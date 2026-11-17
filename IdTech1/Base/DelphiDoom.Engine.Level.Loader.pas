@@ -206,7 +206,7 @@ begin
     FRandom.SystemSeed := FRandom.NextUnpredictable;
 
   // Initial height of PointOfView will be set by player think.
-  players[TGameSession.ConsolePlayer].viewz := 1;
+  TGameSession.Players[TGameSession.ConsolePlayer].viewz := 1;
 
   // Make sure all sounds are stopped before Z_FreeTags.
   Trace('S_Start');
@@ -373,7 +373,7 @@ begin
     Exit;
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
       FRules.SpawnDeathmatchPlayer(LPlayer);
   FRules.AfterDeathmatchSpawn;
 end;

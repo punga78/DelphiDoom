@@ -385,7 +385,7 @@ begin
     p.itemcount := p.itemcount + 1;
   P_RemoveMobj(special);
   p.bonuscount := p.bonuscount + BONUSADD;
-  if (p = @players[TGameSession.ConsolePlayer]) and (info.PickupSound <> '') then
+  if (p = @TGameSession.Players[TGameSession.ConsolePlayer]) and (info.PickupSound <> '') then
     S_StartSound(nil, info.PickupSound);
 end;
 

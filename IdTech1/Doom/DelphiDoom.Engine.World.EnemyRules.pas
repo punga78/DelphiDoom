@@ -709,7 +709,7 @@ var
   initial: boolean;
 begin
   if continueafterplayerdeath then
-    if not TGameSession.NetGame and (players[0].health <= 0) then
+    if not TGameSession.NetGame and (TGameSession.Players[0].health <= 0) then
     begin
       result := P_LookForMonsters(actor);
       exit;
@@ -726,7 +726,7 @@ begin
     else
       actor.lastlook := (actor.lastlook + 1) and 3;
 
-    if not playeringame[actor.lastlook] then
+    if not TGameSession.PlayerInGame[actor.lastlook] then
       continue;
 
     if (c = 2) or (actor.lastlook = stop) then
@@ -737,7 +737,7 @@ begin
     end;
     inc(c);
 
-    player := @players[actor.lastlook];
+    player := @TGameSession.Players[actor.lastlook];
 
     if player.health <= 0 then
       continue;   // dead
@@ -1448,7 +1448,7 @@ var
   dest: Pmobj_t;
   th: Pmobj_t;
 begin
-  if (gametic - demostarttic) and 3 <> 0 then // [crispy] fix revenant internal demo bug
+  if (TGameSession.GameTic - demostarttic) and 3 <> 0 then // [crispy] fix revenant internal demo bug
     exit;
 
   // spawn a puff of smoke behind the rocket
@@ -2200,7 +2200,7 @@ begin
     i := 0;
     while i < MAXPLAYERS do
     begin
-      if playeringame[i] and (players[i].health > 0) then
+      if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].health > 0) then
         break;
       Inc(i);
     end;
@@ -2308,7 +2308,7 @@ begin
   i := 0;
   while i < MAXPLAYERS do
   begin
-    if playeringame[i] and (players[i].health > 0) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].health > 0) then
       break;
     inc(i);
   end;

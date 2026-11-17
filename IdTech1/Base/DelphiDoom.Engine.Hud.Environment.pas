@@ -115,22 +115,22 @@ end;
 
 function TEngineHudEnvironment.IsInGame(const AIndex: Integer): Boolean;
 begin
-  Result := playeringame[AIndex];
+  Result := TGameSession.PlayerInGame[AIndex];
 end;
 
 function TEngineHudEnvironment.ChatChar(const AIndex: Integer): Byte;
 begin
-  Result := players[AIndex].cmd.chatchar;
+  Result := TGameSession.Players[AIndex].cmd.chatchar;
 end;
 
 procedure TEngineHudEnvironment.ClearChatChar(const AIndex: Integer);
 begin
-  players[AIndex].cmd.chatchar := 0;
+  TGameSession.Players[AIndex].cmd.chatchar := 0;
 end;
 
 procedure TEngineHudEnvironment.AttachConsolePlayer;
 begin
-  FPlayer := @players[TGameSession.ConsolePlayer];
+  FPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
 end;
 
 function TEngineHudEnvironment.ReadMessage: string;

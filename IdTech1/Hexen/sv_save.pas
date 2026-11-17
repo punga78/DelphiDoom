@@ -710,7 +710,7 @@ begin
   mobj.rendervalidcount := 0;
   if mobj.player <> nil then
   begin
-    mobj.player := @players[NativeInt(mobj.player) - 1];
+    mobj.player := @TGameSession.Players[NativeInt(mobj.player) - 1];
     Pplayer_t(mobj.player).mo := mobj;
   end;
   R_InitMobjTranslation(mobj);
@@ -1003,13 +1003,13 @@ var
 begin
   StreamOutLong(ASEG_PLAYERS);
   for i := 0 to MAXPLAYERS - 1 do
-    StreamOutBoolean(playeringame[i]);
+    StreamOutBoolean(TGameSession.PlayerInGame[i]);
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
     StreamOutByte(Ord(PlayerClass[i]));
-    tempPlayer := players[i];
+    tempPlayer := TGameSession.Players[i];
     for j := 0 to Ord(NUMPSPRITES) - 1 do
     begin
       if tempPlayer.psprites[j].state <> nil then
@@ -1047,67 +1047,67 @@ var
 begin
   AssertSegment(ASEG_PLAYERS);
   for i := 0 to MAXPLAYERS - 1 do
-    playeringame[i] := GET_BOOLEAN;
+    TGameSession.PlayerInGame[i] := GET_BOOLEAN;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
     begin
       continue;
     end;
     PlayerClass[i] := pclass_t(GET_BYTE);
     if LOADVERSION <= VERSION141 then
     begin
-      ZeroMemory(@players[i], SizeOf(player_t));
-      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t141));
-      players[i].laddertics := 0;
-      players[i].viewbob := players[i].bob;
-      players[i].slopetics := 0; // JVAL: Slopes
-      players[i].oldviewz := players[i].viewz;
-      players[i].teleporttics := 0;
-      players[i].quaketics := 0;
-      players[i].quakeintensity := 0;
-      players[i].lookdir16 := players[i].lookdir * 16; // JVAL Smooth Look Up/Down
-      Pticcmd_t202(@players[i].cmd)^ := players[i].cmd202;
-      players[i].cmd.lookupdown16 := (players[i].cmd.lookfly and 15) * 256;
-      P_ClearPlayerHistory(@players[i]);
+      ZeroMemory(@TGameSession.Players[i], SizeOf(player_t));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @TGameSession.Players[i], TypeInfo(player_t141));
+      TGameSession.Players[i].laddertics := 0;
+      TGameSession.Players[i].viewbob := TGameSession.Players[i].bob;
+      TGameSession.Players[i].slopetics := 0; // JVAL: Slopes
+      TGameSession.Players[i].oldviewz := TGameSession.Players[i].viewz;
+      TGameSession.Players[i].teleporttics := 0;
+      TGameSession.Players[i].quaketics := 0;
+      TGameSession.Players[i].quakeintensity := 0;
+      TGameSession.Players[i].lookdir16 := TGameSession.Players[i].lookdir * 16; // JVAL Smooth Look Up/Down
+      Pticcmd_t202(@TGameSession.Players[i].cmd)^ := TGameSession.Players[i].cmd202;
+      TGameSession.Players[i].cmd.lookupdown16 := (TGameSession.Players[i].cmd.lookfly and 15) * 256;
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
       incp(saveptr, P_RecordDiskSize(TypeInfo(player_t141)));
     end
     else if LOADVERSION <= VERSION142 then
     begin
-      ZeroMemory(@players[i], SizeOf(player_t));
-      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t142));
-      if players[i].quaketics > 0 then
-        players[i].quakeintensity := FRACUNIT
+      ZeroMemory(@TGameSession.Players[i], SizeOf(player_t));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @TGameSession.Players[i], TypeInfo(player_t142));
+      if TGameSession.Players[i].quaketics > 0 then
+        TGameSession.Players[i].quakeintensity := FRACUNIT
       else
-        players[i].quakeintensity := 0;
-      players[i].lookdir16 := players[i].lookdir * 16; // JVAL Smooth Look Up/Down
-      Pticcmd_t202(@players[i].cmd)^ := players[i].cmd202;
-      players[i].cmd.lookupdown16 := (players[i].cmd.lookfly and 15) * 256;
-      P_ClearPlayerHistory(@players[i]);
+        TGameSession.Players[i].quakeintensity := 0;
+      TGameSession.Players[i].lookdir16 := TGameSession.Players[i].lookdir * 16; // JVAL Smooth Look Up/Down
+      Pticcmd_t202(@TGameSession.Players[i].cmd)^ := TGameSession.Players[i].cmd202;
+      TGameSession.Players[i].cmd.lookupdown16 := (TGameSession.Players[i].cmd.lookfly and 15) * 256;
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
       incp(saveptr, P_RecordDiskSize(TypeInfo(player_t142)));
     end
     else if LOADVERSION <= VERSION205 then
     begin
-      ZeroMemory(@players[i], SizeOf(player_t));
-      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t205));
-      if players[i].quaketics > 0 then
-        players[i].quakeintensity := FRACUNIT
+      ZeroMemory(@TGameSession.Players[i], SizeOf(player_t));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @TGameSession.Players[i], TypeInfo(player_t205));
+      if TGameSession.Players[i].quaketics > 0 then
+        TGameSession.Players[i].quakeintensity := FRACUNIT
       else
-        players[i].quakeintensity := 0;
-      P_ClearPlayerHistory(@players[i]);
+        TGameSession.Players[i].quakeintensity := 0;
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
       incp(saveptr, P_RecordDiskSize(TypeInfo(player_t205)));
     end
     else if LOADVERSION <= VERSION206 then
     begin
-      ZeroMemory(@players[i], SizeOf(player_t));
-      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t206));
-      P_ClearPlayerHistory(@players[i]);
+      ZeroMemory(@TGameSession.Players[i], SizeOf(player_t));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @TGameSession.Players[i], TypeInfo(player_t206));
+      P_ClearPlayerHistory(@TGameSession.Players[i]);
       incp(saveptr, P_RecordDiskSize(TypeInfo(player_t206)));
     end
     else
     begin
-      P_UnpackRecord(TypeInfo(player_t), saveptr, @players[i]);
+      P_UnpackRecord(TypeInfo(player_t), saveptr, @TGameSession.Players[i]);
       incp(saveptr, P_RecordDiskSize(TypeInfo(player_t)));
     end;
     if LOADVERSION >= VERSION207 then
@@ -1115,15 +1115,15 @@ begin
       P_UnpackRecord(TypeInfo(playertracehistory_t), saveptr, @playerhistory[i]);
       incp(saveptr, P_RecordDiskSize(TypeInfo(playertracehistory_t)));
     end;
-    players[i].mo := nil; // Will be set when unarc thinker
-    P_ClearMessage(@players[i]);
-    players[i].attacker := nil;
-    players[i].poisoner := nil;
+    TGameSession.Players[i].mo := nil; // Will be set when unarc thinker
+    P_ClearMessage(@TGameSession.Players[i]);
+    TGameSession.Players[i].attacker := nil;
+    TGameSession.Players[i].poisoner := nil;
     for j := 0 to Ord(NUMPSPRITES) - 1 do
     begin
-      if players[i].psprites[j].state <> nil then
+      if TGameSession.Players[i].psprites[j].state <> nil then
       begin
-        players[i].psprites[j].state := @states[NativeInt(players[i].psprites[j].state)];
+        TGameSession.Players[i].psprites[j].state := @states[NativeInt(TGameSession.Players[i].psprites[j].state)];
       end;
     end;
   end;
@@ -1453,7 +1453,7 @@ begin
   mobj.state := Pstate_t((NativeUInt(mobj.state) - NativeUInt(@states[0])) div SizeOf(state_t));
   if mobj.player <> nil then
   begin
-    mobj.player := pointer((NativeUInt(mobj.player) - NativeUInt(@players[0])) div SizeOf(player_t) + 1);
+    mobj.player := pointer((NativeUInt(mobj.player) - NativeUInt(@TGameSession.Players[0])) div SizeOf(player_t) + 1);
   end;
   if corpse then
   begin
@@ -1820,8 +1820,8 @@ begin
   end;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
-      players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
+    if TGameSession.PlayerInGame[i] then
+      TGameSession.Players[i].plinetarget := P_FindMobjFromKey(NativeInt(TGameSession.Players[i].plinetarget));
 
   P_CreateTIDList;
   P_InitCreatureCorpseQueue(true); // true := scan for corpses
@@ -2599,7 +2599,7 @@ begin
 
   // Save player structs
   for i := 0 to MAXPLAYERS - 1 do
-    playerBackup[i] := players[i];
+    playerBackup[i] := TGameSession.Players[i];
 
   // Load the current map
   SV_LoadMap;
@@ -2612,11 +2612,11 @@ begin
   curpos := 0;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    mobj := players[i].mo;
-    players[i] := playerBackup[i];
-    players[i].mo := mobj;
+    mobj := TGameSession.Players[i].mo;
+    TGameSession.Players[i] := playerBackup[i];
+    TGameSession.Players[i].mo := mobj;
     if i = TGameSession.ConsolePlayer then
-      players[i].readyArtifact := artitype_t(players[i].inventory[inv_ptr]._type);
+      TGameSession.Players[i].readyArtifact := artitype_t(TGameSession.Players[i].inventory[inv_ptr]._type);
   end;
 end;
 
@@ -2684,7 +2684,7 @@ begin
   rClass := randomclass;
   randomclass := false;
   for i := 0 to MAXPLAYERS - 1 do
-    playerBackup[i] := players[i];
+    playerBackup[i] := TGameSession.Players[i];
 
   // Save some globals that get trashed during the load
   inventoryPtr := inv_ptr;
@@ -2713,8 +2713,8 @@ begin
     // Destroy all freshly spawned players
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
-        P_RemoveMobj(players[i].mo);
+      if TGameSession.PlayerInGame[i] then
+        P_RemoveMobj(TGameSession.Players[i].mo);
     end;
   end;
 
@@ -2722,36 +2722,36 @@ begin
   targetPlayerMobj := nil;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
-    players[i] := playerBackup[i];
-    P_ClearMessage(@players[i]);
-    players[i].attacker := nil;
-    players[i].poisoner := nil;
+    TGameSession.Players[i] := playerBackup[i];
+    P_ClearMessage(@TGameSession.Players[i]);
+    TGameSession.Players[i].attacker := nil;
+    TGameSession.Players[i].poisoner := nil;
 
     if TGameSession.NetGame then
     begin
-      if players[i].playerstate = PST_DEAD then
+      if TGameSession.Players[i].playerstate = PST_DEAD then
       begin // In a network game, force all players to be alive
-        players[i].playerstate := PST_REBORN;
+        TGameSession.Players[i].playerstate := PST_REBORN;
       end;
       if TGameSession.DeathMatch = 0 then
       begin // Cooperative net-play, retain keys and weapons
-        oldKeys := players[i].keys;
-        oldPieces := players[i].pieces;
+        oldKeys := TGameSession.Players[i].keys;
+        oldPieces := TGameSession.Players[i].pieces;
         for j := 0 to Ord(NUMWEAPONS) - 1 do
-          oldWeaponowned[j] := players[i].weaponowned[j];
+          oldWeaponowned[j] := TGameSession.Players[i].weaponowned[j];
       end;
     end;
-    playerWasReborn := (players[i].playerstate = PST_REBORN);
+    playerWasReborn := (TGameSession.Players[i].playerstate = PST_REBORN);
     if TGameSession.DeathMatch <> 0 then
     begin
-      memset(@players[i].frags, 0, SizeOf(players[i].frags));
+      memset(@TGameSession.Players[i].frags, 0, SizeOf(TGameSession.Players[i].frags));
       mobj := P_SpawnMobj(playerstarts[0, i].x * FRACUNIT,
                           playerstarts[0][i].y * FRACUNIT,
                           0,
                           Ord(MT_PLAYER_FIGHTER));
-      players[i].mo := mobj;
+      TGameSession.Players[i].mo := mobj;
       G_DeathMatchSpawnPlayer(i);
       P_RemoveMobj(mobj);
     end
@@ -2762,28 +2762,28 @@ begin
 
     if playerWasReborn and TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
     begin // Restore keys and weapons when reborn in co-op
-      players[i].keys := oldKeys;
-      players[i].pieces := oldPieces;
+      TGameSession.Players[i].keys := oldKeys;
+      TGameSession.Players[i].pieces := oldPieces;
       bestWeapon := 0;
       for j := 0 to Ord(NUMWEAPONS) - 1 do
       begin
         if oldWeaponowned[j] then
         begin
           bestWeapon := j;
-          players[i].weaponowned[j] := true;
+          TGameSession.Players[i].weaponowned[j] := true;
         end;
       end;
-      players[i].mana[Ord(MANA_1)] := 25;
-      players[i].mana[Ord(MANA_2)] := 25;
+      TGameSession.Players[i].mana[Ord(MANA_1)] := 25;
+      TGameSession.Players[i].mana[Ord(MANA_2)] := 25;
       if bestWeapon <> 0 then
       begin // Bring up the best weapon
-        players[i].pendingweapon := weapontype_t(bestWeapon);
+        TGameSession.Players[i].pendingweapon := weapontype_t(bestWeapon);
       end;
     end;
 
     if targetPlayerMobj = nil then
     begin // The poor sap
-      targetPlayerMobj := players[i].mo;
+      targetPlayerMobj := TGameSession.Players[i].mo;
     end;
   end;
   randomclass := rClass;
@@ -2799,9 +2799,9 @@ begin
   // Destroy all things touching players
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
-      P_TeleportMove(players[i].mo, players[i].mo.x, players[i].mo.y);
+      P_TeleportMove(TGameSession.Players[i].mo, TGameSession.Players[i].mo.x, TGameSession.Players[i].mo.y);
     end;
   end;
 

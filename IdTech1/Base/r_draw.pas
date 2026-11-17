@@ -200,6 +200,7 @@ var
 implementation
 
 uses
+  g_game,
   am_map,
   DelphiDoom.Palette.ColorRegionLumps,
   m_argv,
@@ -834,7 +835,7 @@ end;
 procedure R_DrawViewBorder;
 begin
   if scaledviewwidth < SCREENWIDTH then
-    if (gamestate = GS_LEVEL) and (amstate <> am_only) then
+    if (TGameSession.GameState = GS_LEVEL) and (amstate <> am_only) then
       V_CopyScreenTransparent(SCN_BG, SCN_FG);
 end;
 

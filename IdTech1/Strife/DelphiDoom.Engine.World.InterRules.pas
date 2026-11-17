@@ -303,7 +303,7 @@ begin
       P_GiveAmmo(player, ammo, 2);
     player.pendingweapon := weapon;
 
-    if (player = @players[TGameSession.ConsolePlayer]) then
+    if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
       S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
@@ -859,7 +859,7 @@ begin
   P_RemoveMobj(special);
   player.bonuscount := player.bonuscount + BONUSADD;
   player._message := pickupmsg;
-  if player = @players[TGameSession.ConsolePlayer] then
+  if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     S_StartSound(nil, sound);
 end;
 
@@ -901,13 +901,13 @@ begin
 
     if target.player <> nil then
     begin
-      p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-        p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
+      p.frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+        p.frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
       if TGameSession.NetGame then
       begin
         sprintf(plrkilledmsg, DEH_GetString('%s killed %s'),
           [player_names[p.allegiance], player_names[Pplayer_t(target.player).allegiance]]);
-        players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
       end;
     end;
   end
@@ -915,7 +915,7 @@ begin
   begin
     // count all monster deaths,
     // even those caused by other monsters
-    players[0].killcount := players[0].killcount + 1;
+    TGameSession.Players[0].killcount := TGameSession.Players[0].killcount + 1;
   end;
 
   p := target.player;
@@ -923,8 +923,8 @@ begin
   begin
     // count environment kills against you
     if source = nil then
-      p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] :=
-        p.frags[pDiff(target.player, @players[0], SizeOf(players[0]))] + 1;
+      p.frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
+        p.frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
 
     if (TGameSession.GameMap = 29) and not TGameSession.NetGame then
     begin
@@ -978,7 +978,7 @@ begin
 
     P_DropWeapon(p);
 
-    if (p = @players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
+    if (p = @TGameSession.Players[TGameSession.ConsolePlayer]) and (amstate = am_only) then
     begin
       // don't die in auto map,
       // switch view prior to dying
@@ -1006,7 +1006,7 @@ begin
     end;
   end;
   if target.player <> nil then    // JVAL: Script Events
-    PS_EventPlayerDied(pDiff(@players[0], target.player, SizeOf(player_t)), source);
+    PS_EventPlayerDied(pDiff(@TGameSession.Players[0], target.player, SizeOf(player_t)), source);
   PS_EventActorDied(target, source); // JVAL: Script Events
 
   // Drop stuff.
@@ -1109,7 +1109,7 @@ begin
             P_GiveVoiceObjective('VOC13', 'LOG13', 0);
 
             item := Ord(MT_COUPLING_BROKEN);
-            players[0].questflags := players[0].questflags or _SHLW(1, mobjinfo[Ord(MT_COUPLING)].speed - 1);
+            TGameSession.Players[0].questflags := TGameSession.Players[0].questflags or _SHLW(1, mobjinfo[Ord(MT_COUPLING)].speed - 1);
           end;
 
         else
@@ -1125,12 +1125,12 @@ begin
       begin
         junk.tag := 222;
         EV_DoDoor(@junk, vld_close);
-        P_NoiseAlert(players[0].mo, players[0].mo);
+        P_NoiseAlert(TGameSession.Players[0].mo, TGameSession.Players[0].mo);
 
         if TGameSession.DeathMatch <> 0 then
         begin
           plrkilledmsg := DEH_GetString('You''re dead!  You set off the alarm.');
-          players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
         end;
 
         exit;
@@ -1158,29 +1158,29 @@ begin
       begin
         for i := 0 to MAXPLAYERS - 1 do
         begin
-          if not P_GiveWeapon(@players[i], wp_sigil, false) then
+          if not P_GiveWeapon(@TGameSession.Players[i], wp_sigil, false) then
           begin
-            inc(players[i].sigiltype);
-            if players[i].sigiltype > 4 then
-              players[i].sigiltype := 4;
+            inc(TGameSession.Players[i].sigiltype);
+            if TGameSession.Players[i].sigiltype > 4 then
+              TGameSession.Players[i].sigiltype := 4;
           end;
 
           // haleyjd 20110225: fixed these two assignments which Watcom munged
           // up in the assembly by pre-incrementing the pointer into players[]
-          players[i].st_update := true;
-          players[i].pendingweapon := wp_sigil;
+          TGameSession.Players[i].st_update := true;
+          TGameSession.Players[i].pendingweapon := wp_sigil;
         end;
         exit;
       end;
 
     Ord(MT_TOKEN_ALARM):
       begin
-        P_NoiseAlert(players[0].mo, players[0].mo);
+        P_NoiseAlert(TGameSession.Players[0].mo, TGameSession.Players[0].mo);
 
         if TGameSession.DeathMatch <> 0 then
         begin
           plrkilledmsg := DEH_GetString('You Fool!  You''ve set off the alarm');
-          players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
           exit;
         end;
       end;

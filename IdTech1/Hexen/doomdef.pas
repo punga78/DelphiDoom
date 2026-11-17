@@ -125,8 +125,6 @@ type
   );
 
 var
-  gamestate: gamestate_t;
-  oldgamestate: integer = -1;
   gamedirectories: TDStringList;
 
 const

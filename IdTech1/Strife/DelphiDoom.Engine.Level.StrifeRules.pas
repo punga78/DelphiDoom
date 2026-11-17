@@ -147,9 +147,9 @@ begin
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
   begin
-    players[LPlayer].allegiance := LPlayer;
-    players[LPlayer].killcount := 0;
-    players[LPlayer].lastbreath := 0;
+    TGameSession.Players[LPlayer].allegiance := LPlayer;
+    TGameSession.Players[LPlayer].killcount := 0;
+    TGameSession.Players[LPlayer].lastbreath := 0;
   end;
 end;
 
@@ -181,7 +181,7 @@ end;
 
 procedure TStrifeLevelRules.SpawnDeathmatchPlayer(APlayer: Integer);
 begin
-  players[APlayer].mo := nil;
+  TGameSession.Players[APlayer].mo := nil;
   G_DeathMatchSpawnPlayer(APlayer);
 end;
 

@@ -419,14 +419,14 @@ begin
     exit;
   end;
 
-  if players[TGameSession.ConsolePlayer].mo = nil then
+  if TGameSession.Players[TGameSession.ConsolePlayer].mo = nil then
     exit;
 
-  angle := players[TGameSession.ConsolePlayer].mo.angle;
+  angle := TGameSession.Players[TGameSession.ConsolePlayer].mo.angle;
   an := angle shr ANGLETOFINESHIFT;
   dist := TMobjGameRules.SummonerRadius + mobjinfo[mobjno].radius + 32 * FRACUNIT;
-  x := players[TGameSession.ConsolePlayer].mo.x + FixedMul(dist, finecosine[an]);
-  y := players[TGameSession.ConsolePlayer].mo.y + FixedMul(dist, finesine[an]);
+  x := TGameSession.Players[TGameSession.ConsolePlayer].mo.x + FixedMul(dist, finecosine[an]);
+  y := TGameSession.Players[TGameSession.ConsolePlayer].mo.y + FixedMul(dist, finesine[an]);
   z := TMobjGameRules.SpawnHeightOfType(mobjno);
 
   mo := P_SpawnMobj(x, y, z, mobjno);

@@ -417,7 +417,7 @@ var
 //==============================================================================
 function ST_CmdCheckPlayerStatus: boolean;
 begin
-  if (plyr = nil) or (plyr.mo = nil) or (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
+  if (plyr = nil) or (plyr.mo = nil) or (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
     printf('You can''t specify the command at this time.'#13#10);
     result := false;
@@ -468,7 +468,7 @@ begin
   if not ST_CmdCheckPlayerStatus then
     exit;
 
-  if (gamestate = GS_LEVEL) and (plyr.mo <> nil) then
+  if (TGameSession.GameState = GS_LEVEL) and (plyr.mo <> nil) then
   begin
     P_Massacre;
     plyr._message := STSTR_MASSACRE;
@@ -1451,9 +1451,9 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if i = pnum then // self-frags
-      result := result - players[pnum].frags[i]
+      result := result - TGameSession.Players[pnum].frags[i]
     else
-      result := result + players[pnum].frags[i];
+      result := result + TGameSession.Players[pnum].frags[i];
 end;
 
 //==============================================================================
@@ -1525,7 +1525,7 @@ begin
       V_DrawPatch(28, y, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, 'stcolor' + itoa(pnum + 1), {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
       frags := ST_calcFrags(pnum);
       HUlib_drawYellowText(38, yt, player_names[pnum] + itoa(frags), {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
-      if not playeringame[pnum] then
+      if not TGameSession.PlayerInGame[pnum] then
         HUlib_drawYellowText(28, pnum * 17 + 65, 'X', {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
       y := y + 17;
       yt := yt + 17;
@@ -1539,7 +1539,7 @@ begin
       V_DrawPatch(158, y, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, 'stcolor' + itoa(pnum + 1), {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
       frags := ST_calcFrags(pnum);
       HUlib_drawYellowText(168, yt, player_names[pnum] + itoa(frags), {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
-      if not playeringame[pnum] then
+      if not TGameSession.PlayerInGame[pnum] then
         HUlib_drawYellowText(158, pnum * 17 - 3, 'X', {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
       y := y + 17;
       yt := yt + 17;
@@ -1813,7 +1813,7 @@ end;
 //==============================================================================
 procedure ST_InitData;
 begin
-  plyr := @players[TGameSession.ConsolePlayer];
+  plyr := @TGameSession.Players[TGameSession.ConsolePlayer];
 
   st_gamestate := st_firstpersonstate;
   st_statusbarmode := stdo_full;

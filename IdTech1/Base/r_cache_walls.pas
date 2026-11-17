@@ -321,7 +321,7 @@ begin
   begin
     if usemultithread then
       if dc32cache[hash][index] <> nil then
-        if dc32cache[hash][index].tic = gametic then
+        if dc32cache[hash][index].tic = TGameSession.GameTic then
         begin
           R_RenderMultiThreadWalls32;
           R_WaitWallsCache32;
@@ -557,7 +557,7 @@ begin
   end;
   dc_mod := dc_texturemod;
   dc_texturefactorbits := ptex.factorbits;
-  dc32cache[hash][index].tic := gametic;
+  dc32cache[hash][index].tic := TGameSession.GameTic;
   dc_source32 := PLongWordArray(dc32cache[hash][index].dc32);
   dc_height := texturecolumnheight[rtex];
 {$IFDEF HEXEN}
@@ -620,7 +620,7 @@ begin
     else
     begin
       if usemultithread then
-        if dc32cache[hash][index].tic = gametic then
+        if dc32cache[hash][index].tic = TGameSession.GameTic then
         begin
           R_RenderMultiThreadWalls32;
           R_WaitWallsCache32;
@@ -987,7 +987,7 @@ begin
     dc32cache[hash][index].UID := UID;
   end;
   dc_texturefactorbits := 0;
-  dc32cache[hash][index].tic := gametic;
+  dc32cache[hash][index].tic := TGameSession.GameTic;
   dc_source32 := PLongWordArray(dc32cache[hash][index].dc32);
   dc_height := texturecolumnheight[rtex];
 end;

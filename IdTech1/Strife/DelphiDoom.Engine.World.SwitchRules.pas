@@ -432,13 +432,13 @@ begin
           breakglass := true;
 
           // give quest flag 29 to player
-          players[0].questflags := players[0].questflags or QF_QUEST29;
+          TGameSession.Players[0].questflags := TGameSession.Players[0].questflags or QF_QUEST29;
 
           // give stamina/accuracy items
           if not TGameSession.NetGame then
           begin
-            P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
-            P_GiveItemToPlayer(@players[0], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
+            P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
+            P_GiveItemToPlayer(@TGameSession.Players[0], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
           end;
 
         end;
@@ -1325,7 +1325,7 @@ begin
     211:
       begin
         // villsa [STRIFE] S1 Play VOC## sound
-        if @players[TGameSession.ConsolePlayer] = thing.player then
+        if @TGameSession.Players[TGameSession.ConsolePlayer] = thing.player then
           if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
           begin
             S_StartVoice('VOC' + itoa(line.tag));

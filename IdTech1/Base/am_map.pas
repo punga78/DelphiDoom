@@ -469,15 +469,15 @@ begin
   playerx := 0;
   playery := 0;
 
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     // find player to center on initially
     pnum := TGameSession.ConsolePlayer;
-    if not playeringame[pnum] then
+    if not TGameSession.PlayerInGame[pnum] then
     begin
       pnum := -1;
       for i := 0 to MAXPLAYERS - 1 do
-        if playeringame[i] then
+        if TGameSession.PlayerInGame[i] then
         begin
           pnum := i;
           break;
@@ -486,7 +486,7 @@ begin
 
     if pnum >= 0 then
     begin
-      plr := @players[pnum];
+      plr := @TGameSession.Players[pnum];
       if plr.mo <> nil then
       begin
         hasplayer := true;
@@ -1368,12 +1368,12 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
     inc(their_color);
-    p := @players[i];
+    p := @TGameSession.Players[i];
 
     if (TGameSession.DeathMatch <> 0) and not singledemo and (p <> plr) then
       continue;
 
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     // the colors of the other players are a rule of the game (DelphiDoom.Engine.Automap.Rules)

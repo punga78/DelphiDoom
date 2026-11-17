@@ -543,7 +543,7 @@ begin
 
   briefingactive := true;
   // the ticker and the drawer of this state are the ones of Radix (radix_intermission)
-  gamestate := GS_INTERMISSION;
+  TGameSession.GameState := GS_INTERMISSION;
   wipegamestate := -1; // force a wipe
 end;
 
@@ -569,7 +569,7 @@ begin
   briefingactive := false;
   FreeAndNil(briefing);
   wipegamestate := -1;
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
 end;
 
 //==============================================================================
@@ -590,8 +590,8 @@ begin
   // fire or use: once for every press
   down := false;
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
-      if players[i].cmd.buttons and (BT_ATTACK or BT_USE) <> 0 then
+    if TGameSession.PlayerInGame[i] then
+      if TGameSession.Players[i].cmd.buttons and (BT_ATTACK or BT_USE) <> 0 then
         down := true;
   acts := down and not briefingfiredown;
   briefingfiredown := down;

@@ -175,7 +175,7 @@ begin
   CheckStarted;
   try
     // g_game.gametic: a method of the class could hide the global of the same name
-    FConsistency.Verify(APlayer, g_game.gametic, AReceived, ALocalValue);
+    FConsistency.Verify(APlayer, TGameSession.GameTic, AReceived, ALocalValue);
   except
     on E: ENetException do
       Fail(E);
@@ -326,7 +326,7 @@ begin
     [Ord(startskill), TGameSession.DeathMatch, startmap{$IFNDEF STRIFE}, startepisode{$ENDIF}]);
 
   for LIndex := 0 to net_numnodes - 1 do
-    playeringame[LIndex] := true;
+    TGameSession.PlayerInGame[LIndex] := true;
 
   printf(' player %d of %d (%d nodes)'#13#10,
     [TGameSession.ConsolePlayer + 1, net_numnodes, net_numnodes]);
@@ -398,7 +398,7 @@ begin
         Exit;
       end;
 
-      if (gamestate = GS_LEVEL) and (oldgamestate = Ord(GS_LEVEL)) then
+      if (TGameSession.GameState = GS_LEVEL) and (TGameSession.OldGameState = Ord(GS_LEVEL)) then
       begin
         if interpolate then
         begin
@@ -447,12 +447,12 @@ begin
         FConsole.Tick;
         interpolationstarttime := FClock.Steps(TICRATE) * $10000; // I_GetFracTime;
         G_Ticker;
-        Inc(g_game.gametic);
+        Inc(TGameSession.GameTic);
 
         // modify command for duplicated tics
         if LDuplicate <> ticdup - 1 then
         begin
-          LBuffer := (g_game.gametic div ticdup) mod BACKUPTICS;
+          LBuffer := (TGameSession.GameTic div ticdup) mod BACKUPTICS;
           for LPlayer := 0 to MAXPLAYERS - 1 do
             ClearDuplicatedCommand(LPlayer, LBuffer);
         end;
@@ -461,7 +461,7 @@ begin
     end;
 
     // Update display, next frame, with current state.
-    if not didinterpolations or (Ord(gamestate) <> wipegamestate) then
+    if not didinterpolations or (Ord(TGameSession.GameState) <> wipegamestate) then
     begin
       firstinterpolation := true;
       D_Display;
@@ -484,7 +484,7 @@ begin
     M_Ticker;
     FConsole.Tick;
     G_Ticker;
-    Inc(g_game.gametic);
+    Inc(TGameSession.GameTic);
     FSync.EndSingleTic;
     firstinterpolation := true;
     D_Display;

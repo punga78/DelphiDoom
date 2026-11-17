@@ -929,10 +929,6 @@ type
     plyr: array[0..MAXPLAYERS - 1] of wbplayerstruct_t;
   end;
 
-var
-// JVAL -> moved from g_game
-  players: array[0..MAXPLAYERS - 1] of player_t;
-
 // JVAL Min and Max values for player.lookdir
 const
   MINLOOKDIR = -110;

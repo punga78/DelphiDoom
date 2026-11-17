@@ -494,7 +494,7 @@ var
   velx, vely, velz: fixed_t;
   mo: Pmobj_t;
 begin
-  pnum := pDiff(p, @players[0], SizeOf(players[0]));
+  pnum := pDiff(p, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]));
   if (pnum < 0) or (pnum >= MAXPLAYERS) then
     exit;
   pmo := p.mo;

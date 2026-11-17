@@ -750,7 +750,7 @@ begin
     if not TGameSession.NetGame and (mthing._type > 1) and (mthing._type <= dogs + 1) then
     begin
       // use secretcount to avoid multiple dogs in case of multiple starts
-      players[mthing._type - 1].secretcount := 1;
+      TGameSession.Players[mthing._type - 1].secretcount := 1;
       mthing._type := mobjinfo[Ord(MT_DOGS)].doomednum;
       if mthing._type <= 0 then
       begin
@@ -1193,7 +1193,7 @@ end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
+  result := (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

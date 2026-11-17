@@ -385,7 +385,7 @@ function SH_ControllerPlayerInput: TRacingPlayerInput;
 var
   cmd: Pticcmd_t;
 begin
-  cmd := @players[TGameSession.ConsolePlayer].cmd;
+  cmd := @TGameSession.Players[TGameSession.ConsolePlayer].cmd;
   Result.AngleTurn := cmd.angleturn;
   Result.ForwardMove := cmd.forwardmove;
   // the transmission is automatic: the gear buttons are not read yet
@@ -536,7 +536,7 @@ begin
   nextai := 0;
   for i := 0 to race_controller.Count - 1 do
     if race_controller.Cars[i].IsPlayer then
-      race_cars[i] := players[TGameSession.ConsolePlayer].mo
+      race_cars[i] := TGameSession.Players[TGameSession.ConsolePlayer].mo
     else if nextai < aicount then
     begin
       race_cars[i] := aicars[nextai];
@@ -677,14 +677,14 @@ begin
     think := think.next;
   end;
 
-  player := @players[TGameSession.ConsolePlayer];
+  player := @TGameSession.Players[TGameSession.ConsolePlayer];
   playercar := SH_ParmInt(CAR_OPTION, speed_car);
   if (playercar < 0) or (playercar >= RACING_CAR_COUNT) then
     playercar := DEFAULT_PLAYER_CAR;
   carids := TRacingFactory.CreateGridAssigner(race_random).Assign(aicount, TRacingCarType.Any, [playercar]);
 
   count := 0;
-  if playeringame[TGameSession.ConsolePlayer] and (player.mo <> nil) then
+  if TGameSession.PlayerInGame[TGameSession.ConsolePlayer] and (player.mo <> nil) then
   begin
     SH_NewCar(player.mo, track, playercar, 0, true, state);
     race_controller.AddCar(state);

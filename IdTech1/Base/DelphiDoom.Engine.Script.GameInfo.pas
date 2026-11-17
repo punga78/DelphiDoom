@@ -76,10 +76,10 @@ var
 begin
   LTics := ATics * FRACUNIT;
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
     begin
-      players[LPlayer].quaketics := LTics;
-      players[LPlayer].quakeintensity := FRACUNIT;
+      TGameSession.Players[LPlayer].quaketics := LTics;
+      TGameSession.Players[LPlayer].quakeintensity := FRACUNIT;
     end;
 end;
 
@@ -92,18 +92,18 @@ var
   LIntensity: fixed_t;
 begin
   for LPlayer := 0 to MAXPLAYERS - 1 do
-    if playeringame[LPlayer] then
+    if TGameSession.PlayerInGame[LPlayer] then
     begin
-      LDistance := P_AproxDistance(X - players[LPlayer].mo.x, Y - players[LPlayer].mo.y);
-      LDistance := P_AproxDistance(Z - players[LPlayer].mo.z, LDistance); // 3d distance
+      LDistance := P_AproxDistance(X - TGameSession.Players[LPlayer].mo.x, Y - TGameSession.Players[LPlayer].mo.y);
+      LDistance := P_AproxDistance(Z - TGameSession.Players[LPlayer].mo.z, LDistance); // 3d distance
       if LDistance <= AMaxDistance then
       begin
-        if players[LPlayer].quaketics < ATics then
-          players[LPlayer].quaketics := ATics;
+        if TGameSession.Players[LPlayer].quaketics < ATics then
+          TGameSession.Players[LPlayer].quaketics := ATics;
         LFraction := FixedDiv(LDistance, AMaxDistance) * (FINEANGLES div 4);
         LIntensity := FixedMul(finecosine[LFraction shr ANGLETOFINESHIFT], AIntensity); // JVAL: 20200508 - Curved
-        if players[LPlayer].quakeintensity < LIntensity then
-          players[LPlayer].quakeintensity := LIntensity;
+        if TGameSession.Players[LPlayer].quakeintensity < LIntensity then
+          TGameSession.Players[LPlayer].quakeintensity := LIntensity;
       end;
     end;
 end;

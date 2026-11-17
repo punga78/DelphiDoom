@@ -708,7 +708,7 @@ end;
 //==============================================================================
 procedure gld_StaticLightAlpha(light: float; alpha: float);
 begin
-  if players[displayplayer].fixedcolormap <> 0 then
+  if TGameSession.Players[displayplayer].fixedcolormap <> 0 then
     glColor4f(1.0, 1.0, 1.0, alpha)
   else
     glColor4f(light, light, light, alpha);
@@ -721,7 +721,7 @@ end;
 //==============================================================================
 procedure gld_StaticLight(light: float);
 begin
-  if players[displayplayer].fixedcolormap <> 0 then
+  if TGameSession.Players[displayplayer].fixedcolormap <> 0 then
     glColor4f(1.0, 1.0, 1.0, 1.0)
   else
     glColor4f(light, light, light, 1.0);

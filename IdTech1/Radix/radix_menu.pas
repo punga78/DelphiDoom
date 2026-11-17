@@ -525,7 +525,7 @@ begin
 
   if info.entering then
     if (info.slot >= 0) and (info.slot < info.numslots) then
-      if (gametic div 18) mod 2 = 0 then
+      if (TGameSession.GameTic div 18) mod 2 = 0 then
         M_WriteSmallText(menu.x + M_SmallStringWidth(info.descriptions[info.slot]),
           menu.y + menu.itemheight * info.slot, '_', SCN_TMP);
 
@@ -623,7 +623,7 @@ begin
 
   if pilotStringEnter then
     if Length(name) < PILOTNAMESIZE then
-      if (gametic div 18) mod 2 = 0 then
+      if (TGameSession.GameTic div 18) mod 2 = 0 then
         M_WriteSmallText(PilotNameDef.x + XPILOT + M_SmallStringWidth(name), PilotNameDef.y + YPILOT, '_', SCN_TMP);
 end;
 

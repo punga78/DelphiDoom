@@ -1078,7 +1078,7 @@ begin
         if (side <> 1) or (line.special = 202) then
           // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective (Tag = VOC/LOG #)
           // must be consoleplayer
-          if thing.player = @players[TGameSession.ConsolePlayer] then
+          if thing.player = @TGameSession.Players[TGameSession.ConsolePlayer] then
             // must have comm unit
             if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
             begin
@@ -1100,7 +1100,7 @@ begin
         // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective if Flamethrower????
         // I don't think this is actually used anywhere o_O
         // must be player 1...
-        if thing.player = @players[0] then
+        if thing.player = @TGameSession.Players[0] then
           // must have comm unit
           if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
             // must have... the flamethrower?!
@@ -1132,7 +1132,7 @@ begin
       begin
         // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective if Quest (Tag/100, Tag%100)
         // must be player 1...
-        if thing.player = @players[0] then
+        if thing.player = @TGameSession.Players[0] then
           // must have comm unit
           if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
             if (line.tag = 0) or
@@ -1153,7 +1153,7 @@ begin
     204:
       begin
         // haleyjd 09/21/10: [STRIFE] W1 Change Music (unused!)
-        if thing.player = @players[0] then
+        if thing.player = @TGameSession.Players[0] then
         begin
           S_ChangeMusic(line.tag, true);
           line.special := 0;
@@ -1495,7 +1495,7 @@ begin
     203:
       begin
         // haleyjd 09/21/10: [STRIFE] WR Change Music
-        if thing.player = @players[0] then
+        if thing.player = @TGameSession.Players[0] then
           S_ChangeMusic(line.tag, true);
       end;
 
@@ -2100,7 +2100,7 @@ begin
       begin
         // SECRET SECTOR
         player._message := MSGSECRETSECTOR;
-        if player = @players[TGameSession.ConsolePlayer] then
+        if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           S_StartSound(nil, Ord(sfx_yeah));
         sector.special := 0;
       end;

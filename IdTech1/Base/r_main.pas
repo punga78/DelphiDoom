@@ -2344,11 +2344,11 @@ begin
   viewy := player.mo.y;
 {$IFDEF HEXEN}
 
-  if (localQuakeHappening[P_GetPlayerNum(player)] <> 0) and not paused then
+  if (localQuakeHappening[P_GetPlayerNum(player)] <> 0) and not TGameSession.Paused then
   begin
     intensity := localQuakeHappening[displayplayer];
-    viewx := viewx + ((P_RandomFromSeed(gametic) mod (intensity * 4)) - intensity * 2) * FRACUNIT;
-    viewy := viewy + ((P_RandomFromSeed(gametic + 1) mod (intensity * 4)) - intensity * 2) * FRACUNIT;
+    viewx := viewx + ((P_RandomFromSeed(TGameSession.GameTic) mod (intensity * 4)) - intensity * 2) * FRACUNIT;
+    viewy := viewy + ((P_RandomFromSeed(TGameSession.GameTic + 1) mod (intensity * 4)) - intensity * 2) * FRACUNIT;
   end;
 
 {$ENDIF}

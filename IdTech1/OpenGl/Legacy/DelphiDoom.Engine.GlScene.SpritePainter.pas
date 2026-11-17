@@ -150,7 +150,7 @@ begin
   // Draw light effects (only if not invulnerability)
   if uselightboost then
     if not lightdeflumppresent then
-      if players[displayplayer].fixedcolormap <> 32 then
+      if TGameSession.Players[displayplayer].fixedcolormap <> 32 then
       // JVAL: Use old color effects only if LIGHTDEF lump not found
         if ASprite.flags and GLS_LIGHT <> 0 then
         begin

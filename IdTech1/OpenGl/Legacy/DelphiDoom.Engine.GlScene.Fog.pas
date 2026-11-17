@@ -61,7 +61,7 @@ var
   LFogColor: array[0..3] of TGLfloat;
 begin
   if use_fog then
-    if players[displayplayer].fixedcolormap = 0 then
+    if TGameSession.Players[displayplayer].fixedcolormap = 0 then
     begin
 {$IFDEF DOOM_OR_STRIFE}
       if customcolormap <> nil then
@@ -127,7 +127,7 @@ var
   LFogColor: array[0..3] of TGLfloat;
 begin
   if use_white_fog then
-    if players[displayplayer].fixedcolormap = 0 then
+    if TGameSession.Players[displayplayer].fixedcolormap = 0 then
     begin
       glFogf(GL_FOG_DENSITY, white_fog_density / 1000.0);
 

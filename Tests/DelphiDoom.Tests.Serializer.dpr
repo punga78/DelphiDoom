@@ -28,6 +28,7 @@ uses
   DelphiDoom.Serializer.SaveGameName in '..\Framework\Serializer\DelphiDoom.Serializer.SaveGameName.pas',
   DelphiDoom.Serializer.SaveGameHeader in '..\Framework\Serializer\DelphiDoom.Serializer.SaveGameHeader.pas',
   DelphiDoom.Serializer.SaveGameVersions in '..\Framework\Serializer\DelphiDoom.Serializer.SaveGameVersions.pas',
+  DelphiDoom.Serializer.SaveGameSessionBlock in '..\Framework\Serializer\DelphiDoom.Serializer.SaveGameSessionBlock.pas',
   DelphiDoom.Tests.Serializer.Fakes in 'Source\DelphiDoom.Tests.Serializer.Fakes.pas',
   DelphiDoom.Tests.Serializer.RecordSerializer in 'Source\DelphiDoom.Tests.Serializer.RecordSerializer.pas',
   DelphiDoom.Tests.Serializer.Golden in 'Source\DelphiDoom.Tests.Serializer.Golden.pas',
@@ -36,7 +37,8 @@ uses
   DelphiDoom.Tests.Serializer.MemoryStream in 'Source\DelphiDoom.Tests.Serializer.MemoryStream.pas',
   DelphiDoom.Tests.Serializer.SaveGameName in 'Source\DelphiDoom.Tests.Serializer.SaveGameName.pas',
   DelphiDoom.Tests.Serializer.SaveGameHeader in 'Source\DelphiDoom.Tests.Serializer.SaveGameHeader.pas',
-  DelphiDoom.Tests.Serializer.SaveGameVersions in 'Source\DelphiDoom.Tests.Serializer.SaveGameVersions.pas';
+  DelphiDoom.Tests.Serializer.SaveGameVersions in 'Source\DelphiDoom.Tests.Serializer.SaveGameVersions.pas',
+  DelphiDoom.Tests.Serializer.SaveGameSessionBlock in 'Source\DelphiDoom.Tests.Serializer.SaveGameSessionBlock.pas';
 
 var
   Runner: ITestRunner;

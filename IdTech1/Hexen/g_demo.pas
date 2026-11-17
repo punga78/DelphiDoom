@@ -216,7 +216,7 @@ begin
     endtime := I_GetTime;
     // The result goes to the log and the program ends like after a single demo: with I_Error it was a
     // message box that waited for a click while the worker threads kept running (#147)
-    printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10, [gametic, endtime - starttime]);
+    printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10, [TGameSession.GameTic, endtime - starttime]);
     TGameSession.TimingDemo := false;
     singledemo := true;
   end;
@@ -414,7 +414,7 @@ begin
   LHeader.Seed := M_GetSystemRandomSeed;
   LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
   for i := 0 to MAXPLAYERS - 1 do
-    LHeader.PlayersInGame[i] := playeringame[i];
+    LHeader.PlayersInGame[i] := TGameSession.PlayerInGame[i];
 
   LPosition := System.PByte(demo_p);
   TDemoHeaderCodec.Write(LPosition, TDemoProfiles.Hexen(MAXPLAYERS), LHeader);
@@ -445,7 +445,7 @@ begin
   begin
     externaldemo := true;
     defdemoname := dmname;
-    gameaction := ga_playdemo;
+    TGameSession.GameAction := ga_playdemo;
     printf('Playing demo %s'#13#10, [defdemoname]);
     result := true;
     exit;
@@ -482,7 +482,7 @@ begin
     if W_CheckNumForName(defdemoname) >= 0 then
     begin
       externaldemo := false;
-      gameaction := ga_playdemo;
+      TGameSession.GameAction := ga_playdemo;
       printf('Playing demo %s'#13#10, [defdemoname]);
       result := true;
       exit;
@@ -541,7 +541,7 @@ var
   LPosition: System.PByte;
   LHeader: TDemoHeader;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   if externaldemo then
     len := G_Files.ReadFile(defdemoname, pointer(demobuffer))
   else
@@ -563,7 +563,7 @@ begin
   begin
     I_Warning('G_DoPlayDemo(): Demo is from an unsupported game version = %d.%.*d' + #13#10,
       [demo_p[0] div 100, 2, demo_p[0] mod 100]);
-    gameaction := ga_nothing;
+    TGameSession.GameAction := ga_nothing;
     exit;
   end
   else if demoversion <> VERSION then
@@ -596,9 +596,9 @@ begin
   TGameSession.ConsolePlayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
-    playeringame[i] := LHeader.PlayersInGame[i];
+    TGameSession.PlayerInGame[i] := LHeader.PlayersInGame[i];
 
-  if playeringame[1] then
+  if TGameSession.PlayerInGame[1] then
   begin
     TGameSession.NetGame := true;
     TGameSession.NetDemo := true;
@@ -630,7 +630,7 @@ begin
   singletics := true;
 
   defdemoname := name;
-  gameaction := ga_playdemo;
+  TGameSession.GameAction := ga_playdemo;
 end;
 
 end.

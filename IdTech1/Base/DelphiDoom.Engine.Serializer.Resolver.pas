@@ -33,6 +33,7 @@ type
 implementation
 
 uses
+  g_game,
   d_player,
   info_h,
   info,
@@ -63,12 +64,12 @@ end;
 
 function TEngineSerializerResolver.PlayerNumber(const APlayer: Pointer): Cardinal;
 begin
-  Result := Cardinal((NativeInt(APlayer) - NativeInt(@players[0])) div SizeOf(player_t)) + 1;
+  Result := Cardinal((NativeInt(APlayer) - NativeInt(@TGameSession.Players[0])) div SizeOf(player_t)) + 1;
 end;
 
 function TEngineSerializerResolver.PlayerByNumber(ANumber: Cardinal): Pointer;
 begin
-  Result := @players[ANumber - 1];
+  Result := @TGameSession.Players[ANumber - 1];
 end;
 
 end.

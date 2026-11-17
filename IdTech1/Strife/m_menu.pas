@@ -1719,7 +1719,7 @@ begin
     drawkey := true;
     if bindkeyEnter then
       if i = bindkeySlot - start then
-        if (gametic div 18) mod 2 <> 0 then
+        if (TGameSession.GameTic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
       M_WriteWhiteText(ppos.x, ppos.y, M_KeyToString(KeyBindingsInfo[start + i].pkey^));
@@ -2065,7 +2065,7 @@ begin
   if saveStringEnter <> 0 then
   begin
     i := M_StringWidth(savegamestrings[saveSlot]);
-    if (gametic div 18) mod 2 = 0 then
+    if (TGameSession.GameTic div 18) mod 2 = 0 then
       M_WriteText(LoadDef.x + i, LoadDef.y + LoadDef.itemheight * saveSlot, '_');
   end;
 end;
@@ -2150,7 +2150,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   // haleyjd 20130301: in 1.31, we can choose a slot again.
@@ -2165,7 +2165,7 @@ end;
 //==============================================================================
 procedure M_StartSound(origin: pointer; sfx_id: integer);
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
     exit;
   S_StartSound(origin, sfx_id);
 end;
@@ -2206,7 +2206,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   if quickSaveSlot < 0 then
@@ -3823,9 +3823,9 @@ begin
   showMessages := 1 - showMessages;
 
   if showMessages = 0 then
-    players[TGameSession.ConsolePlayer]._message := MSGOFF
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGOFF
   else
-    players[TGameSession.ConsolePlayer]._message := MSGON;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGON;
 
   message_dontfuckwithme := true;
 
@@ -4075,17 +4075,17 @@ begin
 
   case detailLevel of
     DL_LOWEST:
-      players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
     DL_LOW:
-      players[TGameSession.ConsolePlayer]._message := DETAILLOW;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOW;
     DL_MEDIUM:
-      players[TGameSession.ConsolePlayer]._message := DETAILMED;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILMED;
     DL_NORMAL:
-      players[TGameSession.ConsolePlayer]._message := DETAILNORM;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILNORM;
     DL_HIRES:
-      players[TGameSession.ConsolePlayer]._message := DETAILHI;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILHI;
     DL_ULTRARES:
-      players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
   end;
 
 end;
@@ -4217,7 +4217,7 @@ var
   i: integer;
   palette: PByteArray;
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
   begin
     result := false;
     exit;
@@ -4519,7 +4519,7 @@ begin
           inc(usegamma);
           if usegamma >= GAMMASIZE then
             usegamma := 0;
-          players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
           palette := V_ReadPalette(PU_STATIC);
           I_SetPalette(palette);
           V_SetPalette(palette);

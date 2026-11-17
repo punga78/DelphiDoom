@@ -1698,7 +1698,7 @@ begin
     drawkey := true;
     if bindkeyEnter then
       if i = bindkeySlot - start then
-        if (gametic div 18) mod 2 <> 0 then
+        if (TGameSession.GameTic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
       M_WriteWhiteText3(ppos.x, ppos.y, M_KeyToString(KeyBindingsInfo[start + i].pkey^));
@@ -1736,8 +1736,8 @@ begin
   KeyBindingsInfo[Ord(kb_weapon1)].text := 'WEAPON 2';
   KeyBindingsInfo[Ord(kb_weapon2)].text := 'WEAPON 3';
   KeyBindingsInfo[Ord(kb_weapon3)].text := 'WEAPON 4';
-  if gamestate = GS_LEVEL then
-    case players[TGameSession.ConsolePlayer]._class of
+  if TGameSession.GameState = GS_LEVEL then
+    case TGameSession.Players[TGameSession.ConsolePlayer]._class of
       PCLASS_FIGHTER:
         begin
           KeyBindingsInfo[Ord(kb_weapon0)].text := 'Spiked Gauntlets';
@@ -2021,7 +2021,7 @@ begin
   if saveStringEnter <> 0 then
   begin
     i := M_StringWidth(savegamestrings[saveSlot]);
-    if (gametic div 18) mod 2 = 0 then
+    if (TGameSession.GameTic div 18) mod 2 = 0 then
       M_WriteText(LoadDef.x + i, LoadDef.y + LoadDef.itemheight * saveSlot, '[');
   end;
 end;
@@ -2092,7 +2092,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   M_SetupNextMenu(@SaveDef);
@@ -2129,7 +2129,7 @@ begin
     exit;
   end;
 
-  if gamestate <> GS_LEVEL then
+  if TGameSession.GameState <> GS_LEVEL then
     exit;
 
   if quickSaveSlot < 0 then
@@ -2920,7 +2920,7 @@ var
 begin
   V_DrawPatch(88, 0, SCN_TMP, 'M_HTIC', false);
 
-  frame := (gametic div 5) mod 7;
+  frame := (TGameSession.GameTic div 5) mod 7;
   V_DrawPatch(37, 80, SCN_TMP, W_CacheLumpNum(MauloBaseLump + (frame + 2) mod 7, PU_CACHE), false);
   V_DrawPatch(278, 80, SCN_TMP, W_CacheLumpNum(MauloBaseLump + frame, PU_CACHE), false);
 end;
@@ -2996,16 +2996,16 @@ begin
   if opt > 2 then
   begin
     opt := classrnd;
-    if gametic <> classtic then
+    if TGameSession.GameTic <> classtic then
     begin
       inc(classrnd);
       if classrnd > 2 then
         classrnd := 0;
-      classtic := gametic;
+      classtic := TGameSession.GameTic;
     end;
   end;
   V_DrawPatch(174,  8, SCN_TMP, boxLumpName[opt], false);
-  V_DrawPatch(198, 20, SCN_TMP, W_CacheLumpNum(W_GetNumForName(walkLumpName[opt]) + ((gametic div 8) and 3), PU_CACHE), false);
+  V_DrawPatch(198, 20, SCN_TMP, W_CacheLumpNum(W_GetNumForName(walkLumpName[opt]) + ((TGameSession.GameTic div 8) and 3), PU_CACHE), false);
 end;
 
 //==============================================================================
@@ -3688,9 +3688,9 @@ begin
   showMessages := 1 - showMessages;
 
   if showMessages = 0 then
-    players[TGameSession.ConsolePlayer]._message := MSGOFF
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGOFF
   else
-    players[TGameSession.ConsolePlayer]._message := MSGON;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGON;
 
   message_dontfuckwithme := true;
 
@@ -3930,17 +3930,17 @@ begin
 
   case detailLevel of
     DL_LOWEST:
-      players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
     DL_LOW:
-      players[TGameSession.ConsolePlayer]._message := DETAILLOW;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOW;
     DL_MEDIUM:
-      players[TGameSession.ConsolePlayer]._message := DETAILMED;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILMED;
     DL_NORMAL:
-      players[TGameSession.ConsolePlayer]._message := DETAILNORM;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILNORM;
     DL_HIRES:
-      players[TGameSession.ConsolePlayer]._message := DETAILHI;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILHI;
     DL_ULTRARES:
-      players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
   end;
 
 end;
@@ -4367,7 +4367,7 @@ begin
           inc(usegamma);
           if usegamma >= GAMMASIZE then
             usegamma := 0;
-          players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
           palette := V_ReadPalette(PU_STATIC);
           I_SetPalette(palette);
           V_SetPalette(palette);

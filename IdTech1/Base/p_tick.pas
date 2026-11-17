@@ -315,12 +315,12 @@ var
 begin
   isgamesuspended := true;
   // run the tic
-  if paused then
+  if TGameSession.Paused then
     exit;
 
   // pause if in menu and at least one tic has been run
   if not TGameSession.NetGame and menuactive and
-     not TGameSession.DemoPlayback and (players[TGameSession.ConsolePlayer].viewz <> 1) then
+     not TGameSession.DemoPlayback and (TGameSession.Players[TGameSession.ConsolePlayer].viewz <> 1) then
     exit;
 
   if not TGameSession.DemoPlayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (TTickState.LevelTime <> 0) then
@@ -333,13 +333,13 @@ begin
   begin
     PS_EventMapStart;
     for i := 0 to MAXPLAYERS - 1 do
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
         PS_EventPlayerEnter(i);
   end;
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
-      P_PlayerThink(@players[i]);
+    if TGameSession.PlayerInGame[i] then
+      P_PlayerThink(@TGameSession.Players[i]);
 
 {$IFDEF HEXEN}
   if TimerGame <> 0 then

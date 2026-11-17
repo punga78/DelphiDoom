@@ -532,24 +532,24 @@ begin
     S_StartSound(actor, SND_QUAKE);
 
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
-      pmo := players[i].mo;
+      pmo := TGameSession.Players[i].mo;
       dist := P_AproxDistance(actor.x - pmo.x, actor.y - pmo.y);
       dist := P_AproxDistance(actor.z - pmo.z, dist); // 3d distance
       if dist <= maxtdist then
       begin
-        if players[i].quaketics < tics then
-          players[i].quaketics := tics;
+        if TGameSession.Players[i].quaketics < tics then
+          TGameSession.Players[i].quaketics := tics;
         frac := FixedDiv(dist, maxtdist) * (FINEANGLES div 4);
         testintensity := FixedMul(finecosine[frac shr ANGLETOFINESHIFT], intensity); // JVAL: 20200508 - Curved
-        if players[i].quakeintensity < testintensity then
-          players[i].quakeintensity := testintensity;
+        if TGameSession.Players[i].quakeintensity < testintensity then
+          TGameSession.Players[i].quakeintensity := testintensity;
       end;
       if (dist < maxddist) and (pmo.z <= pmo.floorz) then
       begin
         if P_Random < 50 then
-          P_DamageMobj(players[i].mo, nil, nil, (1 + (P_Random and 7)));
+          P_DamageMobj(TGameSession.Players[i].mo, nil, nil, (1 + (P_Random and 7)));
         // Thrust player around
         rnd := P_Random;
         an := pmo.angle + ANG1 * rnd;

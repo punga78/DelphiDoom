@@ -96,7 +96,7 @@ end;
 
 function TEngineScriptPlayers.InGame(const APlayer: Integer): Boolean;
 begin
-  Result := playeringame[APlayer];
+  Result := TGameSession.PlayerInGame[APlayer];
 end;
 
 function TEngineScriptPlayers.KeyCount: Integer;
@@ -111,13 +111,13 @@ end;
 function TEngineScriptPlayers.HasKey(const APlayer: Integer; const AKey: Integer): Boolean;
 begin
 {$IFDEF DOOM_OR_STRIFE}
-  Result := players[APlayer].cards[AKey];
+  Result := TGameSession.Players[APlayer].cards[AKey];
 {$ENDIF}
 {$IFDEF HERETIC}
-  Result := players[APlayer].keys[AKey];
+  Result := TGameSession.Players[APlayer].keys[AKey];
 {$ENDIF}
 {$IFDEF HEXEN}
-  Result := players[APlayer].keys and (1 shl AKey) <> 0;
+  Result := TGameSession.Players[APlayer].keys and (1 shl AKey) <> 0;
 {$ENDIF}
 end;
 
@@ -125,16 +125,16 @@ procedure TEngineScriptPlayers.SetKey(const APlayer: Integer; const AKey: Intege
   const AValue: Boolean);
 begin
 {$IFDEF DOOM_OR_STRIFE}
-  players[APlayer].cards[AKey] := AValue;
+  TGameSession.Players[APlayer].cards[AKey] := AValue;
 {$ENDIF}
 {$IFDEF HERETIC}
-  players[APlayer].keys[AKey] := AValue;
+  TGameSession.Players[APlayer].keys[AKey] := AValue;
 {$ENDIF}
 {$IFDEF HEXEN}
   if AValue then
-    players[APlayer].keys := players[APlayer].keys or (1 shl AKey)
+    TGameSession.Players[APlayer].keys := TGameSession.Players[APlayer].keys or (1 shl AKey)
   else
-    players[APlayer].keys := players[APlayer].keys and not (1 shl AKey);
+    TGameSession.Players[APlayer].keys := TGameSession.Players[APlayer].keys and not (1 shl AKey);
 {$ENDIF}
 end;
 
@@ -150,14 +150,14 @@ end;
 procedure TEngineScriptPlayers.UseArtifact(const APlayer: Integer; const AArtifact: Integer);
 begin
 {$IFDEF HERETIC_OR_HEXEN}
-  P_PlayerUseArtifact(@players[APlayer], artitype_t(AArtifact));
+  P_PlayerUseArtifact(@TGameSession.Players[APlayer], artitype_t(AArtifact));
 {$ENDIF}
 end;
 
 function TEngineScriptPlayers.GiveArtifact(const APlayer: Integer; const AArtifact: Integer): Boolean;
 begin
 {$IFDEF HERETIC_OR_HEXEN}
-  Result := P_GiveArtifact(@players[APlayer], artitype_t(AArtifact), nil);
+  Result := P_GiveArtifact(@TGameSession.Players[APlayer], artitype_t(AArtifact), nil);
 {$ELSE}
   Result := False;
 {$ENDIF}
@@ -172,7 +172,7 @@ var
 begin
   Result := 0;
 {$IFDEF HERETIC_OR_HEXEN}
-  LPlayer := @players[APlayer];
+  LPlayer := @TGameSession.Players[APlayer];
   for LSlot := 0 to LPlayer.inventorySlotNum - 1 do
     if LPlayer.inventory[LSlot]._type = AArtifact then
     begin
@@ -189,12 +189,12 @@ end;
 
 function TEngineScriptPlayers.HasWeapon(const APlayer: Integer; const AWeapon: Integer): Boolean;
 begin
-  Result := players[APlayer].weaponowned[AWeapon]{$IFDEF DOOM_OR_HERETIC} <> 0{$ENDIF};
+  Result := TGameSession.Players[APlayer].weaponowned[AWeapon]{$IFDEF DOOM_OR_HERETIC} <> 0{$ENDIF};
 end;
 
 procedure TEngineScriptPlayers.GiveWeapon(const APlayer: Integer; const AWeapon: Integer);
 begin
-  players[APlayer].weaponowned[AWeapon] := {$IFDEF DOOM_OR_HERETIC}1{$ELSE}true{$ENDIF};
+  TGameSession.Players[APlayer].weaponowned[AWeapon] := {$IFDEF DOOM_OR_HERETIC}1{$ELSE}true{$ENDIF};
 end;
 
 function TEngineScriptPlayers.ReserveCount: Integer;
@@ -209,9 +209,9 @@ end;
 function TEngineScriptPlayers.Reserve(const APlayer: Integer; const AKind: Integer): Integer;
 begin
 {$IFDEF HEXEN}
-  Result := players[APlayer].mana[AKind];
+  Result := TGameSession.Players[APlayer].mana[AKind];
 {$ELSE}
-  Result := players[APlayer].ammo[AKind];
+  Result := TGameSession.Players[APlayer].ammo[AKind];
 {$ENDIF}
 end;
 
@@ -219,16 +219,16 @@ procedure TEngineScriptPlayers.SetReserve(const APlayer: Integer; const AKind: I
   const AValue: Integer);
 begin
 {$IFDEF HEXEN}
-  players[APlayer].mana[AKind] := AValue;
+  TGameSession.Players[APlayer].mana[AKind] := AValue;
 {$ELSE}
-  players[APlayer].ammo[AKind] := AValue;
+  TGameSession.Players[APlayer].ammo[AKind] := AValue;
 {$ENDIF}
 end;
 
 function TEngineScriptPlayers.PlayerClass(const APlayer: Integer): Integer;
 begin
 {$IFDEF HEXEN}
-  Result := Ord(players[APlayer]._class);
+  Result := Ord(TGameSession.Players[APlayer]._class);
 {$ELSE}
   Result := 0;
 {$ENDIF}
@@ -236,22 +236,22 @@ end;
 
 function TEngineScriptPlayers.Message(const APlayer: Integer): string;
 begin
-  Result := string(players[APlayer]._message);
+  Result := string(TGameSession.Players[APlayer]._message);
 end;
 
 procedure TEngineScriptPlayers.SetMessage(const APlayer: Integer; const AText: string);
 begin
-  players[APlayer]._message := ShortString(AText);
+  TGameSession.Players[APlayer]._message := ShortString(AText);
 end;
 
 function TEngineScriptPlayers.ExtraLight(const APlayer: Integer): Integer;
 begin
-  Result := players[APlayer].extralight;
+  Result := TGameSession.Players[APlayer].extralight;
 end;
 
 procedure TEngineScriptPlayers.SetExtraLight(const APlayer: Integer; const AValue: Integer);
 begin
-  players[APlayer].extralight := AValue;
+  TGameSession.Players[APlayer].extralight := AValue;
 end;
 
 function TEngineScriptPlayers.PowerCount: Integer;
@@ -261,34 +261,34 @@ end;
 
 function TEngineScriptPlayers.PowerTicks(const APlayer: Integer; const APower: Integer): Integer;
 begin
-  Result := players[APlayer].powers[APower];
+  Result := TGameSession.Players[APlayer].powers[APower];
 end;
 
 procedure TEngineScriptPlayers.SetPowerTicks(const APlayer: Integer; const APower: Integer;
   const ATicks: Integer);
 begin
-  players[APlayer].powers[APower] := ATicks;
+  TGameSession.Players[APlayer].powers[APower] := ATicks;
 end;
 
 function TEngineScriptPlayers.ViewZ(const APlayer: Integer): Integer;
 begin
-  Result := players[APlayer].viewz;
+  Result := TGameSession.Players[APlayer].viewz;
 end;
 
 function TEngineScriptPlayers.ViewHeight(const APlayer: Integer): Integer;
 begin
-  Result := players[APlayer].viewheight;
+  Result := TGameSession.Players[APlayer].viewheight;
 end;
 
 function TEngineScriptPlayers.ActorKey(const APlayer: Integer): Cardinal;
 begin
-  if players[APlayer].mo = nil then
+  if TGameSession.Players[APlayer].mo = nil then
   begin
     Result := ACTOR_INVALID;
     Exit;
   end;
   try
-    Result := players[APlayer].mo.key;
+    Result := TGameSession.Players[APlayer].mo.key;
   except
     Result := ACTOR_INVALID;
   end;
@@ -302,7 +302,7 @@ end;
 function TEngineScriptPlayers.QuestFlags(const APlayer: Integer): Cardinal;
 begin
 {$IFDEF STRIFE}
-  Result := players[APlayer].questflags;
+  Result := TGameSession.Players[APlayer].questflags;
 {$ELSE}
   Result := 0;
 {$ENDIF}
@@ -311,7 +311,7 @@ end;
 procedure TEngineScriptPlayers.SetQuestFlags(const APlayer: Integer; const AFlags: Cardinal);
 begin
 {$IFDEF STRIFE}
-  players[APlayer].questflags := AFlags;
+  TGameSession.Players[APlayer].questflags := AFlags;
 {$ENDIF}
 end;
 
@@ -326,7 +326,7 @@ begin
   LActor := FContext.MobjFromKey(AActorKey);
   if LActor = nil then
     Exit;
-  P_PlayerFaceMobj(@players[APlayer], LActor, ATicks);
+  P_PlayerFaceMobj(@TGameSession.Players[APlayer], LActor, ATicks);
 {$ENDIF}
 end;
 

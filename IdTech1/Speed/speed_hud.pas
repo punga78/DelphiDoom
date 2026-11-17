@@ -369,7 +369,7 @@ procedure SH_HudDrawer;
 var
   car: PRacingCarState;
 begin
-  if (SH_Race = nil) or (SH_Race.PlayerIndex < 0) or (SH_RaceEvents = nil) or (gamestate <> GS_LEVEL) then
+  if (SH_Race = nil) or (SH_Race.PlayerIndex < 0) or (SH_RaceEvents = nil) or (TGameSession.GameState <> GS_LEVEL) then
     exit;
   if not hud_loaded then
     SH_HudLoad;

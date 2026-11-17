@@ -322,7 +322,7 @@ begin
     Dec(FOverlayUpdateTic);
     if FOverlayCreated then
     begin
-      if (gamestate = GS_LEVEL) and (amstate = am_inactive) and not menuactive then
+      if (TGameSession.GameState = GS_LEVEL) and (amstate = am_inactive) and not menuactive then
       begin
         if FFullHudTics > 0 then
         begin

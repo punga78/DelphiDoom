@@ -209,8 +209,8 @@ procedure F_StartFinale;
 var
   mus_changed: boolean;
 begin
-  gameaction := ga_nothing;
-  gamestate := GS_FINALE;
+  TGameSession.GameAction := ga_nothing;
+  TGameSession.GameState := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
   mus_changed := false;
@@ -409,7 +409,7 @@ begin
     end;
   end
   else
-    gameaction := ga_worlddone; // next level, e.g. MAP07
+    TGameSession.GameAction := ga_worlddone; // next level, e.g. MAP07
 end;
 
 //==============================================================================
@@ -434,7 +434,7 @@ begin
     i := 0;
     while i < MAXPLAYERS do
     begin
-      if players[i].cmd.buttons <> 0 then
+      if TGameSession.Players[i].cmd.buttons <> 0 then
         break;
       inc(i);
     end;
@@ -446,7 +446,7 @@ begin
       else if TGameSession.GameMap = 30 then
         F_StartCast
       else
-        gameaction := ga_worlddone;
+        TGameSession.GameAction := ga_worlddone;
     end;
   end;
 

@@ -121,7 +121,7 @@ var
   item: Pplayertrace_t;
 begin
   pid := PlayerToId(p);
-  if (pid < 0) or not playeringame[pid] then
+  if (pid < 0) or not TGameSession.PlayerInGame[pid] then
     exit;
 
   history := @playerhistory[pid];
@@ -165,7 +165,7 @@ var
   history: Pplayertracehistory_t;
 begin
   pid := PlayerToId(p);
-  if (pid < 0) or not playeringame[pid] then
+  if (pid < 0) or not TGameSession.PlayerInGame[pid] then
     exit;
 
   history := @playerhistory[pid];
@@ -238,7 +238,7 @@ begin
       exit;
 
   pid := PlayerToId(p);
-  if (pid < 0) or not playeringame[pid] then
+  if (pid < 0) or not TGameSession.PlayerInGame[pid] then
     exit;
 
   if mo.flags4_ex and MF4_EX_TRACEDEFINED <> 0 then
@@ -344,7 +344,7 @@ var
   rover: integer;
 begin
   pid := PlayerToId(p);
-  if (pid < 0) or not playeringame[pid] then
+  if (pid < 0) or not TGameSession.PlayerInGame[pid] then
   begin
     result := nil;
     exit;

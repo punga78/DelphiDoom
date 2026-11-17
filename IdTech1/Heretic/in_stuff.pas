@@ -288,14 +288,14 @@ begin
     memset(@secretPercent, 0, MAXPLAYERS * SizeOf(integer));
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         if P_World.Totals.Kills <> 0 then
-          killPercent[i] := players[i].killcount * 100 div P_World.Totals.Kills;
+          killPercent[i] := TGameSession.Players[i].killcount * 100 div P_World.Totals.Kills;
         if P_World.Totals.Items <> 0 then
-          bonusPercent[i] := players[i].itemcount* 100 div P_World.Totals.Items;
+          bonusPercent[i] := TGameSession.Players[i].itemcount* 100 div P_World.Totals.Items;
         if P_World.Totals.Secrets <> 0 then
-          secretPercent[i] := players[i].secretcount * 100 div P_World.Totals.Secrets;
+          secretPercent[i] := TGameSession.Players[i].secretcount * 100 div P_World.Totals.Secrets;
       end;
     end;
   end
@@ -310,12 +310,12 @@ begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
       totalFrags[i] := 0;
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         inc(playercount);
         for j := 0 to MAXPLAYERS - 1 do
-          if playeringame[j] then
-            totalFrags[i] := totalFrags[i] + players[i].frags[j];
+          if TGameSession.PlayerInGame[j] then
+            totalFrags[i] := totalFrags[i] + TGameSession.Players[i].frags[j];
         dSlideX[i] := (43 * posnum * FRACUNIT) div 20;
         dSlideY[i] := (36 * posnum * FRACUNIT) div 20;
         inc(posnum);
@@ -437,9 +437,9 @@ var
 begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
-      player := @players[i];
+      player := @TGameSession.Players[i];
       if player.cmd.buttons and BT_ATTACK <> 0 then
       begin
         if not player.attackdown then
@@ -823,7 +823,7 @@ begin
     S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
-  IN_DrawNumber(players[TGameSession.ConsolePlayer].killcount, 200, 65, 3);
+  IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].killcount, 200, 65, 3);
   V_DrawPatch(237, 65, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
   IN_DrawNumber(P_World.Totals.Kills, 248, 65, 3);
 
@@ -836,7 +836,7 @@ begin
     inc(in_sounds);
   end;
 
-  IN_DrawNumber(players[TGameSession.ConsolePlayer].itemcount, 200, 90, 3);
+  IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].itemcount, 200, 90, 3);
   V_DrawPatch(237, 90, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
   IN_DrawNumber(P_World.Totals.Items, 248, 90, 3);
 
@@ -848,7 +848,7 @@ begin
     S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
-  IN_DrawNumber(players[TGameSession.ConsolePlayer].secretcount, 200, 115, 3);
+  IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].secretcount, 200, 115, 3);
   V_DrawPatch(237, 115, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
   IN_DrawNumber(P_World.Totals.Secrets, 248, 115, 3);
 
@@ -901,7 +901,7 @@ begin
   ypos := 50;
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       V_DrawPatch(25, ypos, SCN_TMP, W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
       if intertime < 40 then
@@ -959,7 +959,7 @@ begin
   begin
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         V_DrawPatch(40, ((ypos * FRACUNIT) + dSlideY[i] * intertime) div FRACUNIT,
           SCN_TMP,
@@ -987,7 +987,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       if (intertime < 100) or (i = TGameSession.ConsolePlayer) then
       begin
@@ -1002,9 +1002,9 @@ begin
       kpos := 86;
       for j := 0 to MAXPLAYERS - 1 do
       begin
-        if playeringame[j] then
+        if TGameSession.PlayerInGame[j] then
         begin
-          IN_DrawNumber(players[i].frags[j], kpos, ypos + 10, 3);
+          IN_DrawNumber(TGameSession.Players[i].frags[j], kpos, ypos + 10, 3);
           kpos := kpos + 43;
         end;
       end;
@@ -1063,7 +1063,7 @@ begin
           SCN_TMP,
             patchBEENTHERE, false);
       end;
-      if players[TGameSession.ConsolePlayer].didsecret then
+      if TGameSession.Players[TGameSession.ConsolePlayer].didsecret then
       begin
         V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][8].x, YAHspot[TGameSession.GameEpisode - 1][8].y,
           SCN_TMP,
@@ -1105,7 +1105,7 @@ begin
         SCN_TMP,
           patchBEENTHERE, false);
 
-    if players[TGameSession.ConsolePlayer].didsecret then
+    if TGameSession.Players[TGameSession.ConsolePlayer].didsecret then
       V_DrawPatch(YAHspot[TGameSession.GameEpisode - 1][8].x, YAHspot[TGameSession.GameEpisode - 1][8].y,
         SCN_TMP,
           patchBEENTHERE, false);

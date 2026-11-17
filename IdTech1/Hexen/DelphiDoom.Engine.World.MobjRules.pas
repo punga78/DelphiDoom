@@ -977,10 +977,10 @@ var
 begin
   result := nil;
   // not playing?
-  if not playeringame[mthing._type - 1] then
+  if not TGameSession.PlayerInGame[mthing._type - 1] then
     exit;
 
-  p := @players[mthing._type - 1];
+  p := @TGameSession.Players[mthing._type - 1];
   if p.playerstate = PST_REBORN then
     G_PlayerReborn(mthing._type - 1);
 
@@ -1293,7 +1293,7 @@ begin
     spawnMask := 0;
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         spawnMask := spawnMask or classFlags[Ord(PlayerClass[i])];
       end;
@@ -2459,12 +2459,12 @@ end;
 
 class function TMobjGameRules.SummonerRadius: fixed_t;
 begin
-  result := players[TGameSession.ConsolePlayer].mo.info.radius;
+  result := TGameSession.Players[TGameSession.ConsolePlayer].mo.info.radius;
 end;
 
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
-  result := (gamestate <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
+  result := (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.DemoRecording or TGameSession.NetGame;
 end;
 
 class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;

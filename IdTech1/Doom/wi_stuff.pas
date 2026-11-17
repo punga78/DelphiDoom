@@ -1043,7 +1043,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] and (i <> playernum) then
+    if TGameSession.PlayerInGame[i] and (i <> playernum) then
       result := result + plrs[playernum].frags[i];
   end;
 
@@ -1076,10 +1076,10 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       for j := 0 to MAXPLAYERS - 1 do
-        if playeringame[j] then
+        if TGameSession.PlayerInGame[j] then
           dm_frags[i, j] := 0;
 
       dm_totals[i] := 0;
@@ -1108,10 +1108,10 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         for j := 0 to MAXPLAYERS - 1 do
-          if playeringame[j] then
+          if TGameSession.PlayerInGame[j] then
             dm_frags[i, j] := plrs[i].frags[j];
 
         dm_totals[i] := WI_FragSum(i);
@@ -1131,11 +1131,11 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if playeringame[i] then
+      if TGameSession.PlayerInGame[i] then
       begin
         for j := 0 to MAXPLAYERS - 1 do
         begin
-          if playeringame[j] and (dm_frags[i, j] <> plrs[i].frags[j]) then
+          if TGameSession.PlayerInGame[j] and (dm_frags[i, j] <> plrs[i].frags[j]) then
           begin
             if plrs[i].frags[j] < 0 then
               dm_frags[i, j] := dm_frags[i, j] - 1
@@ -1214,7 +1214,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       WI_DrawPatch(x - p[i].width div 2, DM_MATRIXY - WI_SPACINGY, p[i]);
       WI_DrawPatch(DM_MATRIXX - p[i].width div 2, y, p[i]);
@@ -1244,11 +1244,11 @@ begin
   begin
     x := DM_MATRIXX + DM_SPACINGX;
 
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       for j := 0 to MAXPLAYERS - 1 do
       begin
-        if playeringame[j] then
+        if TGameSession.PlayerInGame[j] then
           WI_DrawNum(x + w, y, dm_frags[i, j], 2);
         x := x + DM_SPACINGX;
       end;
@@ -1290,7 +1290,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     cnt_kills[i] := 0;
@@ -1325,7 +1325,7 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
         continue;
 
       cnt_kills[i] := (plrs[i].skills * 100) div wbs.maxkills;
@@ -1348,7 +1348,7 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
         continue;
 
       cnt_kills[i] := cnt_kills[i] + 2;
@@ -1374,7 +1374,7 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
         continue;
 
       cnt_items[i] := cnt_items[i] + 2;
@@ -1398,7 +1398,7 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
         continue;
 
       cnt_secret[i] := cnt_secret[i] + 2;
@@ -1423,7 +1423,7 @@ begin
 
     for i := 0 to MAXPLAYERS - 1 do
     begin
-      if not playeringame[i] then
+      if not TGameSession.PlayerInGame[i] then
         continue;
 
       cnt_frags[i] := cnt_frags[i] + 1;
@@ -1493,7 +1493,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if not playeringame[i] then
+    if not TGameSession.PlayerInGame[i] then
       continue;
 
     x := NG_STATSX;
@@ -1695,9 +1695,9 @@ begin
   // check for button presses to skip delays
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    player := @players[i];
+    player := @TGameSession.Players[i];
 
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
 
       if player.cmd.buttons and BT_ATTACK <> 0 then

@@ -155,7 +155,7 @@ var
 begin
   Result := 0;
   for LIndex := 0 to MAXPLAYERS - 1 do
-    if playeringame[LIndex] then
+    if TGameSession.PlayerInGame[LIndex] then
       Inc(Result);
 end;
 
@@ -421,7 +421,7 @@ begin
   if (AActivator <> nil) and (Pmobj_t(AActivator).player <> nil) then
     LPlayer := Pmobj_t(AActivator).player
   else
-    LPlayer := @players[TGameSession.ConsolePlayer];
+    LPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
   {$IFDEF HEXEN}
   P_SetMessage(LPlayer, AText, True);
   {$ELSE}
@@ -434,12 +434,12 @@ var
   LIndex: Integer;
 begin
   for LIndex := 0 to MAXPLAYERS - 1 do
-    if playeringame[LIndex] then
+    if TGameSession.PlayerInGame[LIndex] then
     begin
       {$IFDEF HEXEN}
-      P_SetMessage(@players[LIndex], AText, True);
+      P_SetMessage(@TGameSession.Players[LIndex], AText, True);
       {$ELSE}
-      players[LIndex]._message := AText;
+      TGameSession.Players[LIndex]._message := AText;
       {$ENDIF}
     end;
 end;
@@ -447,9 +447,9 @@ end;
 procedure TEngineAcsHost.ShowConsoleMessage(const AText: string);
 begin
   {$IFDEF HEXEN}
-  P_SetMessage(@players[TGameSession.ConsolePlayer], AText, True);
+  P_SetMessage(@TGameSession.Players[TGameSession.ConsolePlayer], AText, True);
   {$ELSE}
-  players[TGameSession.ConsolePlayer]._message := AText;
+  TGameSession.Players[TGameSession.ConsolePlayer]._message := AText;
   {$ENDIF}
 end;
 

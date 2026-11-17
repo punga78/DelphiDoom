@@ -253,7 +253,7 @@ begin
       if P_UseArtifact(player, arti) then
       begin // Artifact was used - remove it from inventory
         P_PlayerRemoveArtifact(player, i);
-        if player = @players[TGameSession.ConsolePlayer] then
+        if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
           S_StartSound(nil, Ord(sfx_artiuse));
           ArtifactFlash := 4;

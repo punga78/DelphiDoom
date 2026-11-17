@@ -220,6 +220,7 @@ function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedu
 implementation
 
 uses
+  g_game,
   d_delphi,
   c_cmds,
   d_main,
@@ -540,7 +541,7 @@ end;
 //==============================================================================
 procedure PS_EventPlayerEnter(playerNO: Integer);
 begin
-  PS_ActorContext.Enter(players[playerNO].mo);
+  PS_ActorContext.Enter(TGameSession.Players[playerNO].mo);
   PS_Manager.Events.ProcPlayerEnter(playerNO);
   PS_ActorContext.Leave;
 end;
@@ -552,7 +553,7 @@ end;
 //==============================================================================
 procedure PS_EventPlayerDied(playerNO: Integer; killer: Pmobj_t);
 begin
-  PS_ActorContext.Enter(players[playerNO].mo);
+  PS_ActorContext.Enter(TGameSession.Players[playerNO].mo);
   PS_Manager.Events.ProcPlayerDied(playerNO, PS_KeyFromMobj(killer));
   PS_ActorContext.Leave;
 end;

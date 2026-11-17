@@ -282,7 +282,7 @@ begin
   result := false;
   if not TRadixMessages.IsMessage(msgid) then
     exit;
-  lp := @radixlevelplayers[pDiff(p, @players[0], SizeOf(player_t))];
+  lp := @radixlevelplayers[pDiff(p, @TGameSession.Players[0], SizeOf(player_t))];
   if not TRadixActionRules.CanShowMessage(lp.messagetime[msgid], TTickState.LevelTime) then
     exit;
   p._message := ShortString(TRadixMessages.Get(msgid).Text);
@@ -354,7 +354,7 @@ begin
       if TGameSession.GameMap = TRadixActionRules.LAST_MAP then
         G_ExitLevel // G_DoCompleted ends the episode
       else
-        gameaction := ga_victory;
+        TGameSession.GameAction := ga_victory;
     rekSecretLevel:
       G_SecretExitLevel;
     rekNamedLevel:
@@ -415,20 +415,20 @@ var
   lp: Pradixlevelplayer_t;
 begin
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] and (players[i].mo <> nil) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].mo <> nil) then
     begin
       lp := @radixlevelplayers[i];
-      if lp.mo <> players[i].mo then
+      if lp.mo <> TGameSession.Players[i].mo then
       begin
         // a new body: what P_SpawnPlayer of Rad-X cleared
-        lp.mo := players[i].mo;
+        lp.mo := TGameSession.Players[i].mo;
         lp.planetranspo_tics := 0;
         radixlogic.ResetPlayer(i);
       end;
       radixplayer := i;
-      radixlogic.PlayerCrosses(i, radixgrid, RX_PosInGrid(players[i].mo));
+      radixlogic.PlayerCrosses(i, radixgrid, RX_PosInGrid(TGameSession.Players[i].mo));
       if lp.planetranspo_tics > 0 then
-        RX_PlaneTranspoMove(@players[i], lp);
+        RX_PlaneTranspoMove(@TGameSession.Players[i], lp);
     end;
 end;
 

@@ -318,8 +318,8 @@ var
 //==============================================================================
 procedure F_StartFinale;
 begin
-  gameaction := ga_nothing;
-  gamestate := GS_FINALE;
+  TGameSession.GameAction := ga_nothing;
+  TGameSession.GameState := GS_FINALE;
   viewactive := false;
   amstate := am_inactive;
   wipegamestate := -1;
@@ -343,12 +343,12 @@ begin
       begin
         if not TGameSession.NetGame then
         begin
-          if players[0].health <= 0 then      // Bad ending
+          if TGameSession.Players[0].health <= 0 then      // Bad ending
             slideshow_state := SLIDE_BADEND1  // - Humanity goes extinct
           else
           begin
-            if (players[0].questflags and QF_QUEST25 <> 0) and   // Converter destroyed
-               (players[0].questflags and QF_QUEST27 <> 0) then  // Computer destroyed (wtf?!)
+            if (TGameSession.Players[0].questflags and QF_QUEST25 <> 0) and   // Converter destroyed
+               (TGameSession.Players[0].questflags and QF_QUEST27 <> 0) then  // Computer destroyed (wtf?!)
             // Good ending - You get the hot babe.
               slideshow_state := SLIDE_GOODEND1
             else
@@ -571,7 +571,7 @@ begin
       end;
     SLIDE_EXITHACK: // state -99: super hack state
       begin
-        gamestate := GS_LEVEL;
+        TGameSession.GameState := GS_LEVEL;
         P_DialogStartP1();
       end;
     SLIDE_HACKHACK: // state -9: unknown bizarre unused state
@@ -635,7 +635,7 @@ begin
     i := 0;
     while i < MAXPLAYERS do
     begin
-      if players[i].cmd.buttons <> 0 then
+      if TGameSession.Players[i].cmd.buttons <> 0 then
         break;
       inc(i);
     end;
@@ -677,11 +677,11 @@ begin
   if finalestage = F_STAGE_CAST then
     exit;
   wipegamestate := -1;    // force a screen wipe
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   viewactive := false;
   amstate := am_inactive;
   castnum := 0;
-  gamestate := GS_FINALE;
+  TGameSession.GameState := GS_FINALE;
   caststate := @states[mobjinfo[Ord(castorder[castnum]._type)].seestate];
   casttics := caststate.tics;
   if casttics > 50 then

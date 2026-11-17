@@ -218,6 +218,20 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>The player records</summary>
+    class var Players: array[0..MAXPLAYERS - 1] of player_t;
+    /// <summary>The player slots in use</summary>
+    class var PlayerInGame: array[0..MAXPLAYERS - 1] of boolean;
+    /// <summary>Level, intermission, finale or demo screen</summary>
+    class var GameState: gamestate_t;
+    /// <summary>The game state of the last frame drawn</summary>
+    class var OldGameState: integer;
+    /// <summary>The tic of the game in progress</summary>
+    class var GameTic: integer;
+    /// <summary>The action the game loop does at the start of the next tic</summary>
+    class var GameAction: gameaction_t;
+    /// <summary>The game is paused</summary>
+    class var Paused: boolean;
     /// <summary>A demo is being played back</summary>
     class var DemoPlayback: boolean;
     /// <summary>The demo being played was recorded in a net game</summary>
@@ -251,7 +265,6 @@ type
 var
   sendpause: boolean;        // send a pause event next tic
 
-  paused: boolean;
 
 //
 // controls (have defaults)
@@ -331,10 +344,8 @@ var
 
   gamemapinfo: Pmapentry_t;
 
-  playeringame: array[0..MAXPLAYERS - 1] of boolean;
 
   displayplayer: integer; // view being displayed
-  gametic: integer;
 
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
@@ -349,7 +360,6 @@ var
   singledemo: boolean; // quit after playing a demo from cmdline
 
 
-  gameaction: gameaction_t;
 
 
 //==============================================================================
@@ -570,6 +580,7 @@ uses
   p_setup,
   p_saveg,
   DelphiDoom.Serializer.SaveGameHeader,
+  DelphiDoom.Serializer.SaveGameSessionBlock,
   DelphiDoom.Serializer.SaveGameVersions,
   p_tick,
   p_local,
@@ -913,7 +924,7 @@ begin
 
   cmd.consistency := G_NetGame.ExpectedConsistency;
 
-  player := @players[TGameSession.ConsolePlayer];
+  player := @TGameSession.Players[TGameSession.ConsolePlayer];
 
   // villsa [STRIFE] inventory use key
   if gamekeydown[key_invuse] then
@@ -928,7 +939,7 @@ begin
   // villsa [STRIFE] inventory drop key
   if gamekeydown[key_invdrop] then
   begin
-    player := @players[TGameSession.ConsolePlayer];
+    player := @TGameSession.Players[TGameSession.ConsolePlayer];
     if player.numinventory > 0 then
     begin
       cmd.buttons2 := cmd.buttons2 or BT2_INVDROP;
@@ -1070,7 +1081,7 @@ begin
     cmd.buttons := cmd.buttons or BT_ATTACK;
 
   if G_PlayingEngineVersion >= VERSION207 then
-    if players[TGameSession.ConsolePlayer].nextfire > TTickState.LevelTime then
+    if TGameSession.Players[TGameSession.ConsolePlayer].nextfire > TTickState.LevelTime then
       cmd.buttons := cmd.buttons and not BT_ATTACK;
 
   if gamekeydown[key_use] or (usejoystick and joybuttons[joybuse]) then
@@ -1209,7 +1220,7 @@ begin
   cmd.forwardmove := cmd.forwardmove + _forward;
   cmd.sidemove := cmd.sidemove + side;
 
-  if players[TGameSession.ConsolePlayer].playerstate = PST_LIVE then
+  if TGameSession.Players[TGameSession.ConsolePlayer].playerstate = PST_LIVE then
   begin
     if zaxisshift then
     begin
@@ -1229,21 +1240,21 @@ begin
     // allowplayerjumps variable controls if we accept input for jumping
     if allowplayerjumps and (gamekeydown[key_jump] or (usejoystick and joybuttons[joybjump])) then
     begin
-      if players[TGameSession.ConsolePlayer].oldjump <> 0 then
+      if TGameSession.Players[TGameSession.ConsolePlayer].oldjump <> 0 then
         cmd_jump := 1
       else
         cmd_jump := 2
       end
     else
       cmd_jump := 0;
-    players[TGameSession.ConsolePlayer].oldjump := cmd_jump;
+    TGameSession.Players[TGameSession.ConsolePlayer].oldjump := cmd_jump;
     // JVAL: 20211101 - Crouch
     // allowplayercrouch variable controls if we accept input for crouching
     if cmd_jump = 0 then
     begin
       if allowplayercrouch and (gamekeydown[key_crouch] or (usejoystick and joybuttons[joybcrouch])) then
       begin
-        if players[TGameSession.ConsolePlayer].oldcrouch <> 0 then
+        if TGameSession.Players[TGameSession.ConsolePlayer].oldcrouch <> 0 then
           cmd_crouch := 2
         else
           cmd_crouch := 1
@@ -1253,7 +1264,7 @@ begin
     end
     else
       cmd_crouch := 0;
-    players[TGameSession.ConsolePlayer].oldcrouch := cmd_crouch;
+    TGameSession.Players[TGameSession.ConsolePlayer].oldcrouch := cmd_crouch;
 
     cmd.jump_crouch :=
       ((cmd_jump shl CMD_JUMP_SHIFT) and CMD_JUMP_MASK) +
@@ -1343,13 +1354,13 @@ begin
   if wipegamestate = Ord(GS_LEVEL) then
     wipegamestate := -1;  // force a wipe
 
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] and ((players[i].playerstate = PST_DEAD) or (players[i].health <= 0)) then
-      players[i].playerstate := PST_REBORN;
-    ZeroMemory(@players[i].frags, SizeOf(players[i].frags));
+    if TGameSession.PlayerInGame[i] and ((TGameSession.Players[i].playerstate = PST_DEAD) or (TGameSession.Players[i].health <= 0)) then
+      TGameSession.Players[i].playerstate := PST_REBORN;
+    ZeroMemory(@TGameSession.Players[i].frags, SizeOf(TGameSession.Players[i].frags));
   end;
 
   PS_NewMap;
@@ -1357,18 +1368,18 @@ begin
 
   // JVAL: Prevent erroneous demos
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
-      if players[i].mo = nil then
+    if TGameSession.PlayerInGame[i] then
+      if TGameSession.Players[i].mo = nil then
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
-        gamestate := GS_DEMOSCREEN;
+        TGameSession.GameState := GS_DEMOSCREEN;
         D_StartTitle;
         exit;
       end;
 
   displayplayer := TGameSession.ConsolePlayer;    // view the guy you are playing
   starttime := I_GetTime;
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   Z_CheckHeap;
   // JVAL: Extra debug check
   if debugmode then
@@ -1383,7 +1394,7 @@ begin
   sendpause := false;
   sendsave := false;
   sendcmdsave := false;
-  paused := false;
+  TGameSession.Paused := false;
   ZeroMemory(mousebuttons, SizeOf(mousebuttons));
   ZeroMemory(joybuttons, SizeOf(joybuttons));
 
@@ -1400,13 +1411,13 @@ function G_Responder(ev: Pevent_t): boolean;
 var
   i: integer;
 begin
-  if gamestate = GS_ENDOOM then
+  if TGameSession.GameState = GS_ENDOOM then
   begin
     result := G_EndoomScreen.Respond(ev);
     exit;
   end;
   // allow spy mode changes even during the demo
-  if (gamestate = GS_LEVEL) and (ev._type = ev_keydown) and
+  if (TGameSession.GameState = GS_LEVEL) and (ev._type = ev_keydown) and
      (ev.data1 = KEY_F12) and (singledemo or (TGameSession.GameSkill = sk_baby)) then
   begin
   // spy mode
@@ -1414,14 +1425,14 @@ begin
       inc(displayplayer);
       if displayplayer = MAXPLAYERS then
         displayplayer := 0;
-    until not ((not playeringame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
+    until not ((not TGameSession.PlayerInGame[displayplayer]) and (displayplayer <> TGameSession.ConsolePlayer));
     result := true;
     exit;
   end;
 
   // any other key pops up menu if in demos
-  if (gameaction = ga_nothing) and not singledemo and
-     (TGameSession.DemoPlayback or (gamestate = GS_DEMOSCREEN)) then
+  if (TGameSession.GameAction = ga_nothing) and not singledemo and
+     (TGameSession.DemoPlayback or (TGameSession.GameState = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
@@ -1438,7 +1449,7 @@ begin
     exit;
   end;
 
-  if gamestate = GS_LEVEL then
+  if TGameSession.GameState = GS_LEVEL then
   begin
     if HU_Responder(ev) then
     begin
@@ -1457,7 +1468,7 @@ begin
     end;
   end;
 
-  if gamestate = GS_FINALE then
+  if TGameSession.GameState = GS_FINALE then
   begin
     if F_Responder(ev) then
     begin
@@ -1556,13 +1567,13 @@ var
 begin
   // do player reborns if needed
   for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] and (players[i].playerstate = PST_REBORN) then
+    if TGameSession.PlayerInGame[i] and (TGameSession.Players[i].playerstate = PST_REBORN) then
       G_DoReborn(i);
 
   // do things to change the game state
-  while (gameaction <> ga_nothing) do
+  while (TGameSession.GameAction <> ga_nothing) do
   begin
-    case gameaction of
+    case TGameSession.GameAction of
       ga_loadlevel:
         G_DoLoadLevel;
       ga_newgame:
@@ -1593,20 +1604,20 @@ begin
       ga_screenshot:
         begin
           G_Screenshots.Take;
-          gameaction := ga_nothing;
+          TGameSession.GameAction := ga_nothing;
         end;
     end;
   end;
 
   // get commands, check consistancy,
   // and build new consistancy check
-  buf := (gametic div ticdup) mod BACKUPTICS;
+  buf := (TGameSession.GameTic div ticdup) mod BACKUPTICS;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
-      pl := @players[i];
+      pl := @TGameSession.Players[i];
       cmd := @pl.cmd;
 
       G_NetGame.GetCommand(i, buf, cmd);
@@ -1619,14 +1630,14 @@ begin
 
       // check for turbo cheats
       if (cmd.forwardmove > TURBOTHRESHOLD) and
-         ((gametic and 31) = 0) and
-         (((_SHR(gametic, 5)) and 3) = i) then
+         ((TGameSession.GameTic and 31) = 0) and
+         (((_SHR(TGameSession.GameTic, 5)) and 3) = i) then
       begin
         sprintf(msg, '%s is turbo!', [player_names[i]]);
-        players[TGameSession.ConsolePlayer]._message := msg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := msg;
       end;
 
-      if TGameSession.NetGame and not TGameSession.NetDemo and (gametic mod ticdup = 0) then
+      if TGameSession.NetGame and not TGameSession.NetDemo and (TGameSession.GameTic mod ticdup = 0) then
       begin
         if pl.mo <> nil then
           G_NetGame.VerifyConsistency(i, cmd.consistency, pl.mo.x)
@@ -1639,21 +1650,21 @@ begin
   // check for special buttons
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
-      pl := @players[i];
+      pl := @TGameSession.Players[i];
       if pl.cmd.commands and CM_SAVEGAME <> 0 then
       begin
         savegameslot := Ord(load_end);
-        gameaction := ga_savegame;
+        TGameSession.GameAction := ga_savegame;
       end;
       if pl.cmd.buttons and BT_SPECIAL <> 0 then
       begin
         case pl.cmd.buttons and BT_SPECIALMASK of
           BTS_PAUSE:
             begin
-              paused := not paused;
-              if paused then
+              TGameSession.Paused := not TGameSession.Paused;
+              if TGameSession.Paused then
                 S_PauseSound
               else
                 S_ResumeSound;
@@ -1664,7 +1675,7 @@ begin
                 savedescription := 'NET GAME';
               savegameslot :=
                 _SHR((pl.cmd.buttons and BTS_SAVEMASK), BTS_SAVESHIFT);
-              gameaction := ga_savegame;
+              TGameSession.GameAction := ga_savegame;
             end;
         end;
       end;
@@ -1672,7 +1683,7 @@ begin
   end;
 
   // do main actions
-  case gamestate of
+  case TGameSession.GameState of
     GS_LEVEL:
       begin
         P_Ticker;
@@ -1707,7 +1718,7 @@ var
   allegiance: integer;
   cheats: integer;
 begin
-  p := @players[player];
+  p := @TGameSession.Players[player];
   memcpy(@frags, @p.frags, SizeOf(frags));
   killcount := p.killcount;
   allegiance := p.allegiance;
@@ -1722,7 +1733,7 @@ begin
   else
     ZeroMemory(p, SizeOf(player_t));
 
-  memcpy(@p.frags, @frags, SizeOf(players[player].frags));
+  memcpy(@p.frags, @frags, SizeOf(TGameSession.Players[player].frags));
   p.killcount := killcount;
   p.allegiance := allegiance;
 
@@ -1760,7 +1771,7 @@ function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
 var
   host: ISpawnSpotHost;
 begin
-  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @gameaction, @G_NeedsCompatibilityMode, nil);
+  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction, @G_NeedsCompatibilityMode, nil);
   result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
 end;
 
@@ -1793,7 +1804,7 @@ procedure G_DeathMatchSpawnPlayer(playernum: integer);
 var
   respawn: TPlayerRespawn;
 begin
-  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @gameaction, @G_NeedsCompatibilityMode, nil));
+  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction, @G_NeedsCompatibilityMode, nil));
   try
     respawn.SpawnDeathMatch(playernum);
   finally
@@ -1815,7 +1826,7 @@ procedure G_DoReborn(playernum: integer);
 var
   respawn: TPlayerRespawn;
 begin
-  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @gameaction, @G_NeedsCompatibilityMode, @G_PrepareReload));
+  respawn := TPlayerRespawn.Create(TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction, @G_NeedsCompatibilityMode, @G_PrepareReload));
   try
     respawn.Respawn(playernum, TGameSession.NetGame, TGameSession.DeathMatch, MAXPLAYERS);
   finally
@@ -1830,7 +1841,7 @@ end;
 //==============================================================================
 procedure G_ScreenShot;
 begin
-  gameaction := ga_screenshot;
+  TGameSession.GameAction := ga_screenshot;
 end;
 
 //
@@ -1854,11 +1865,11 @@ var
 //==============================================================================
 procedure G_RiftExitLevel(map, spot: integer; angle: angle_t);
 begin
-  gameaction := ga_completed;
+  TGameSession.GameAction := ga_completed;
 
   // special handling for post-Sigil map changes
   if not isdemoversion then
-    if players[0].weaponowned[Ord(wp_sigil)] then
+    if TGameSession.Players[0].weaponowned[Ord(wp_sigil)] then
     begin
       if map = 3 then // Front Base -> Abandoned Front Base
         map := 30
@@ -1886,7 +1897,7 @@ begin
     dest := TGameSession.GameMap + 1;
   destmap := dest;
   riftdest := 0;
-  gameaction := ga_completed;
+  TGameSession.GameAction := ga_completed;
 end;
 
 //==============================================================================
@@ -1896,7 +1907,7 @@ end;
 //==============================================================================
 procedure G_StartFinale;
 begin
-  gameaction := ga_victory;
+  TGameSession.GameAction := ga_victory;
 end;
 
 //==============================================================================
@@ -1908,25 +1919,25 @@ procedure G_DoCompleted;
 var
   i: integer;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
 
   // deal with powerup states
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    if playeringame[i] then
+    if TGameSession.PlayerInGame[i] then
     begin
       // [STRIFE] restore pw_allmap power from mapstate cache
       if destmap < 40 then
       begin
-        if players[i].mapstate[destmap] then
-          players[i].powers[Ord(pw_allmap)] := 1
+        if TGameSession.Players[i].mapstate[destmap] then
+          TGameSession.Players[i].powers[Ord(pw_allmap)] := 1
         else
-          players[i].powers[Ord(pw_allmap)] := 0;
+          TGameSession.Players[i].powers[Ord(pw_allmap)] := 0;
       end;
 
       // Shadowarmor doesn't persist between maps in netgames
       if TGameSession.NetGame then
-        players[i].powers[Ord(pw_invisibility)] := 0;
+        TGameSession.Players[i].powers[Ord(pw_invisibility)] := 0;
     end;
   end;
 
@@ -1942,7 +1953,7 @@ begin
   if TGameSession.DeathMatch = 0 then
     G_DoSaveGame(savepathtemp);
 
-  gameaction := ga_worlddone;
+  TGameSession.GameAction := ga_worlddone;
   viewactive := false;
 
 end;
@@ -1960,12 +1971,12 @@ begin
   if riftdest <> 0 then
   begin
     P_TeleportMove(
-      players[0].mo,
+      TGameSession.Players[0].mo,
       riftSpots[riftdest - 1].x * FRACUNIT,
       riftSpots[riftdest - 1].y * FRACUNIT
     );
-    players[0].mo.angle := riftangle;
-    players[0].mo.health := players[0].health;
+    TGameSession.Players[0].mo.angle := riftangle;
+    TGameSession.Players[0].mo.health := TGameSession.Players[0].health;
   end;
 end;
 
@@ -1979,7 +1990,7 @@ end;
 //==============================================================================
 function G_RiftCheat(riftSpotNum: integer): boolean;
 begin
-  result := P_TeleportMove(players[0].mo,
+  result := P_TeleportMove(TGameSession.Players[0].mo,
                            riftSpots[riftSpotNum - 1].x * FRACUNIT,
                            riftSpots[riftSpotNum - 1].y * FRACUNIT);
 end;
@@ -1998,7 +2009,7 @@ begin
   temp_shadow := false;
   temp_mvis := false;
 
-  gamestate := GS_LEVEL;
+  TGameSession.GameState := GS_LEVEL;
   TGameSession.GameMap := destmap;
   gamemapinfo := G_LookupMapinfo(0, TGameSession.GameMap);
 
@@ -2007,9 +2018,9 @@ begin
   if TGameSession.DeathMatch = 0 then
   begin
     // Remember Shadowarmor across hub loads
-    if players[0].mo.flags and MF_SHADOW <> 0 then
+    if TGameSession.Players[0].mo.flags and MF_SHADOW <> 0 then
       temp_shadow := true;
-    if players[0].mo.flags and MF_MVIS <> 0 then
+    if TGameSession.Players[0].mo.flags and MF_MVIS <> 0 then
       temp_mvis := true;
   end;
   G_DoLoadGame(false);
@@ -2020,11 +2031,11 @@ begin
   if TGameSession.DeathMatch = 0 then
   begin
     // [STRIFE]: transfer saved powerups
-    players[0].mo.flags := players[0].mo.flags and not (MF_SHADOW or MF_MVIS);
+    TGameSession.Players[0].mo.flags := TGameSession.Players[0].mo.flags and not (MF_SHADOW or MF_MVIS);
     if temp_shadow then
-      players[0].mo.flags := players[0].mo.flags or MF_SHADOW;
+      TGameSession.Players[0].mo.flags := TGameSession.Players[0].mo.flags or MF_SHADOW;
     if temp_mvis then
-      players[0].mo.flags := players[0].mo.flags or MF_MVIS;
+      TGameSession.Players[0].mo.flags := TGameSession.Players[0].mo.flags or MF_MVIS;
 
     // [STRIFE] HUB SAVE
     G_RiftPlayer();
@@ -2033,7 +2044,7 @@ begin
     M_SaveWorldVars(savepathtemp);
   end;
 
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   viewactive := true;
 end;
 
@@ -2054,12 +2065,12 @@ begin
   temppath := M_SafeFilePath(path, 'current');
 
   if G_Files.ReadFile(temppath, pointer(buffer)) <= 0 then
-    gameaction := ga_newgame
+    TGameSession.GameAction := ga_newgame
   else
   begin
     // haleyjd 20110211: do endian-correct read
     TGameSession.GameMap := buffer[0];
-    gameaction := ga_loadgame;
+    TGameSession.GameAction := ga_loadgame;
     Z_Free(buffer);
   end;
 
@@ -2081,7 +2092,7 @@ var
 procedure G_LoadGame(const name: string);
 begin
   savename := name;
-  gameaction := ga_loadgame;
+  TGameSession.GameAction := ga_loadgame;
 end;
 
 const
@@ -2139,10 +2150,12 @@ end;
 procedure G_DoLoadGame(const userload: boolean);
 var
   len: integer;
-  i: integer;
+  LSkill: Byte;
+  LEpisode: Byte;
+  LMap: Byte;
   savedleveltime: integer;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
 
   if not fexists(loadpath) then
   begin
@@ -2164,20 +2177,13 @@ begin
 
   save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
 
-  TGameSession.GameSkill := skill_t(save_p[0]);
-  defaultskill := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  TGameSession.GameMap := save_p[0];
-  save_p := PByteArray(NativeInt(save_p) + 1);
+  TSaveGameSessionBlock.Read(System.PByte(save_p), False, LSkill, LEpisode, LMap, TGameSession.PlayerInGame);
+  TGameSession.GameSkill := skill_t(LSkill);
+  defaultskill := LSkill;
+  TGameSession.GameMap := LMap;
+  save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, False));
 
   gamemapinfo := G_LookupMapinfo(0, TGameSession.GameMap);
-
-  for i := 0 to MAXPLAYERS - 1 do
-  begin
-    playeringame[i] := save_p[0] <> 0;
-    save_p := PByteArray(NativeInt(save_p) + 1);
-  end;
 
   // get the times
   savedleveltime := TSaveGameHeader.ReadLevelTime(System.PByte(save_p));
@@ -2269,7 +2275,6 @@ procedure G_DoSaveGame(path: string);
 var
   description: string;
   len: integer;
-  i: integer;
   maxsize: integer;
   current_path: string;
   savegame_file: string;
@@ -2310,17 +2315,9 @@ begin
   TSaveGameHeader.WriteVersion(System.PByte(save_p), VERSION, VERSIONSIZE);
   save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
 
-  save_p[0] := Ord(TGameSession.GameSkill);
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  save_p[0] := TGameSession.GameMap;
-  save_p := PByteArray(NativeInt(save_p) + 1);
-
-  for i := 0 to MAXPLAYERS - 1 do
-  begin
-    save_p[0] := intval(playeringame[i]);
-    save_p := PByteArray(NativeInt(save_p) + 1);
-  end;
+  TSaveGameSessionBlock.Write(System.PByte(save_p), Ord(TGameSession.GameSkill), 0,
+    TGameSession.GameMap, False, TGameSession.PlayerInGame);
+  save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, False));
 
   TSaveGameHeader.WriteLevelTime(System.PByte(save_p), P_World.Time.LevelTime^);
   save_p := PByteArray(NativeInt(save_p) + 3);
@@ -2375,12 +2372,12 @@ begin
   G_Files.AppendFile(savegame_file, savebuffer, len);
 
   Z_Free(savebuffer);
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   savedescription := '';
 
   // [STRIFE]: custom message logic
   if path <> savepath then
-    players[TGameSession.ConsolePlayer]._message := GGSAVED;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := GGSAVED;
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
@@ -2403,7 +2400,7 @@ begin
   G_WriteSaveName(slot, description);
   M_ClearSlot;
   M_FromCurr;
-  gameaction := ga_savegame;
+  TGameSession.GameAction := ga_savegame;
 end;
 
 //==============================================================================
@@ -2413,7 +2410,7 @@ end;
 //==============================================================================
 procedure G_CmdSaveGame(const sname: string; const description: string);
 begin
-  if not TGameSession.UserGame or (gamestate <> GS_LEVEL) then
+  if not TGameSession.UserGame or (TGameSession.GameState <> GS_LEVEL) then
   begin
     printf('You can''t save if you aren''t playing!'#13#10);
     exit;
@@ -2450,7 +2447,7 @@ procedure G_DeferedInitNew(skill: skill_t; map: integer);
 begin
   d_skill := skill;
   d_map := map;
-  gameaction := ga_newgame;
+  TGameSession.GameAction := ga_newgame;
 end;
 
 //==============================================================================
@@ -2472,7 +2469,7 @@ begin
 
   if W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
-    players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
     G_DeferedInitNew(TGameSession.GameSkill, map);
     C_ExecuteCmd('closeconsole', '1');
   end
@@ -2491,7 +2488,7 @@ begin
   TGameSession.ResetForNewGame;
   stonecold := false;      // villsa [STRIFE]
   G_InitNew(d_skill, d_map);
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
 end;
 
 //==============================================================================
@@ -2510,9 +2507,9 @@ var
   LEdition: TNewGameEdition;
   LSpeedChange: TSkillSpeedChange;
 begin
-  if paused then
+  if TGameSession.Paused then
   begin
-    paused := false;
+    TGameSession.Paused := false;
     S_ResumeSound;
   end;
 
@@ -2623,10 +2620,10 @@ begin
 
   // force players to be initialized upon first level load
   for i := 0 to MAXPLAYERS - 1 do
-    players[i].playerstate := PST_REBORN;
+    TGameSession.Players[i].playerstate := PST_REBORN;
 
   TGameSession.UserGame := true;  // will be set false if a demo
-  paused := false;
+  TGameSession.Paused := false;
   G_FinishedDemoPlayback;
   amstate := am_inactive;
   viewactive := true;
@@ -2663,7 +2660,7 @@ begin
   if compatibility_done then
     exit;
 
-  if players[TGameSession.ConsolePlayer].playerstate = PST_DEAD then
+  if TGameSession.Players[TGameSession.ConsolePlayer].playerstate = PST_DEAD then
   begin
     compatibility_done := true;
     TDemoDeathTrimmer.Trim(System.PByte(demo_p), System.PByte(demoend));
@@ -2840,7 +2837,7 @@ begin
   LHeader.Seed := M_GetSystemRandomSeed;
   LHeader.ConsolePlayer := TGameSession.ConsolePlayer;
   for i := 0 to MAXPLAYERS - 1 do
-    LHeader.PlayersInGame[i] := playeringame[i];
+    LHeader.PlayersInGame[i] := TGameSession.PlayerInGame[i];
 
   LPosition := System.PByte(demo_p);
   TDemoHeaderCodec.Write(LPosition, TDemoProfiles.Strife(MAXPLAYERS), LHeader);
@@ -2871,7 +2868,7 @@ begin
   begin
     externaldemo := true;
     defdemoname := dmname;
-    gameaction := ga_playdemo;
+    TGameSession.GameAction := ga_playdemo;
     printf('Playing demo %s'#13#10, [defdemoname]);
     result := true;
     exit;
@@ -2908,7 +2905,7 @@ begin
     if W_CheckNumForName(defdemoname) >= 0 then
     begin
       externaldemo := false;
-      gameaction := ga_playdemo;
+      TGameSession.GameAction := ga_playdemo;
       printf('Playing demo %s'#13#10, [defdemoname]);
       result := true;
       exit;
@@ -2971,7 +2968,7 @@ var
   LHeader: TDemoHeader;
   LVersion: byte;
 begin
-  gameaction := ga_nothing;
+  TGameSession.GameAction := ga_nothing;
   if externaldemo then
     len := G_Files.ReadFile(defdemoname, pointer(demobuffer))
   else
@@ -2989,7 +2986,7 @@ begin
   if not TDemoHeaderCodec.ReadVersion(LPosition, LProfile.Magic, LVersion) then
   begin
     I_Warning('G_DoPlayDemo(): Demo is from an unsupported game version' + #13#10);
-    gameaction := ga_nothing;
+    TGameSession.GameAction := ga_nothing;
     exit;
   end;
 
@@ -3000,7 +2997,7 @@ begin
   begin
     I_Warning('G_DoPlayDemo(): Demo is from an unsupported game version = %d.%.*d' + #13#10,
       [demo_p[0] div 100, 2, demo_p[0] mod 100]);
-    gameaction := ga_nothing;
+    TGameSession.GameAction := ga_nothing;
     exit;
   end
   else if demoversion <> VERSION then
@@ -3028,9 +3025,9 @@ begin
   TGameSession.ConsolePlayer := LHeader.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
-    playeringame[i] := LHeader.PlayersInGame[i];
+    TGameSession.PlayerInGame[i] := LHeader.PlayersInGame[i];
 
-  if playeringame[1] then
+  if TGameSession.PlayerInGame[1] then
   begin
     TGameSession.NetGame := true;
     TGameSession.NetDemo := true;
@@ -3078,7 +3075,7 @@ begin
   singletics := true;
 
   defdemoname := name;
-  gameaction := ga_playdemo;
+  TGameSession.GameAction := ga_playdemo;
 end;
 
 (*
@@ -3107,10 +3104,10 @@ begin
     // message box that waited for a click while the worker threads kept running (#147)
     if realtics > 0 then
       printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10'(%3.2ffps)'#13#10,
-        [gametic, realtics, gametic / realtics * TICRATE])
+        [TGameSession.GameTic, realtics, TGameSession.GameTic / realtics * TICRATE])
     else
       printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10,
-        [gametic, realtics]);
+        [TGameSession.GameTic, realtics]);
     TGameSession.TimingDemo := false;
     singledemo := true;
   end;
@@ -3174,7 +3171,7 @@ procedure G_Quit;
 begin
   if displayendscreen then
   begin
-    gamestate := GS_ENDOOM;
+    TGameSession.GameState := GS_ENDOOM;
     S_PauseSound; // Stop music in ENDOOM screen
     printf('E_Init: Initializing ENDSTRF screen.'#13#10);
     G_EndoomScreen.Initialize;
@@ -3244,7 +3241,7 @@ begin
   NetGame := false;
   DeathMatch := 0;
   for i := 1 to MAXPLAYERS - 1 do
-    playeringame[i] := false;
+    TGameSession.PlayerInGame[i] := false;
   RespawnParm := false;
   FastParm := false;
   NoMonsters := false;
@@ -3253,6 +3250,7 @@ end;
 
 initialization
 
+  TGameSession.OldGameState := -1;
   TGameSession.GameSkill := sk_medium;
   forwardmove[0] := $19;
   forwardmove[1] := $32;

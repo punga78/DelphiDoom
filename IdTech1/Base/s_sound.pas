@@ -1169,15 +1169,15 @@ begin
 
   // Check to see if it is audible,
   //  and if not, modify the params
-  if (origin <> nil) and (origin <> players[TGameSession.ConsolePlayer].mo) then
+  if (origin <> nil) and (origin <> TGameSession.Players[TGameSession.ConsolePlayer].mo) then
   begin
-    rc := S_AdjustSoundParams(players[TGameSession.ConsolePlayer].mo, origin,
+    rc := S_AdjustSoundParams(TGameSession.Players[TGameSession.ConsolePlayer].mo, origin,
            @volume,
            @sep,
            @pitch);
 
-    if (origin.x = players[TGameSession.ConsolePlayer].mo.x) and
-       (origin.y = players[TGameSession.ConsolePlayer].mo.y) then
+    if (origin.x = TGameSession.Players[TGameSession.ConsolePlayer].mo.x) and
+       (origin.y = TGameSession.Players[TGameSession.ConsolePlayer].mo.y) then
       sep := NORM_SEP;
 
     if not rc then
@@ -1333,15 +1333,15 @@ begin
 
   // Check to see if it is audible,
   //  and if not, modify the params
-  if (origin <> nil) and (origin <> players[TGameSession.ConsolePlayer].mo) then
+  if (origin <> nil) and (origin <> TGameSession.Players[TGameSession.ConsolePlayer].mo) then
   begin
-    rc := S_AdjustSoundParams(players[TGameSession.ConsolePlayer].mo, origin,
+    rc := S_AdjustSoundParams(TGameSession.Players[TGameSession.ConsolePlayer].mo, origin,
            @volume,
            @sep,
            @pitch);
 
-    if (origin.x = players[TGameSession.ConsolePlayer].mo.x) and
-       (origin.y = players[TGameSession.ConsolePlayer].mo.y) then
+    if (origin.x = TGameSession.Players[TGameSession.ConsolePlayer].mo.x) and
+       (origin.y = TGameSession.Players[TGameSession.ConsolePlayer].mo.y) then
       sep := NORM_SEP;
 
     if not rc then
@@ -1945,7 +1945,7 @@ begin
   // The choice is TSfxChannelPicker of Framework\Audio: a free channel, the one
   // of the same origin, or one that matters less
   choice := TSfxChannelPicker.Pick(PSfxChannelSlot(channels), numChannels, origin,
-    players[TGameSession.ConsolePlayer].mo, sfxinfo.priority, @S_ChannelPriority);
+    TGameSession.Players[TGameSession.ConsolePlayer].mo, sfxinfo.priority, @S_ChannelPriority);
 
   if choice.Channel < 0 then
   begin
