@@ -149,7 +149,7 @@ begin
   LSession := TQ3LoopSession.Create(LFiles, True);
   try
     LPrints := LSession.ConnectOnNetwork('oa_dm1', 67);
-    Assert.AreEqual(1, Length(LPrints));
+    Assert.AreEqual<Integer>(1, Length(LPrints));
     Assert.IsTrue(Pos('Server uses protocol version 68', string(LPrints[0])) > 0, string(LPrints[0]));
     Assert.AreEqual(Ord(TQ3ClientConnection.Challenging), Ord(LSession.ClientNetwork.Connection));
     Assert.AreEqual(0, LSession.Server.ConnectedCount);

@@ -7,3 +7,6 @@ Quarta fetta della issue #225 (2026-11-15): il trasporto UDP e' stato separato d
 **Resta in `IdTech1\Net`** (protocollo di Doom): `Types` (`TNetPacket`, `TNetSetupInfo`, `TNetSyncSettings`, costanti `NCMD_*`), `Intf` (codec, input locale, sincronizzazione, arbitro), `PacketCodec`, `TicSync`, `ConsistencyTracker`, `StartArbiter`, `Factory`, piu' i messaggi a bit di id Tech 4. Chi usa `INetTransport`, `ENetException`, `TNetNodeAddress` o `NET_DEFAULT_PORT` deve avere `DelphiDoom.Net.Transport.*` nei `uses`.
 
 **Prova**: `Tests\DelphiDoom.Tests.Net` (condiviso con `IdTech1\Net`).
+
+
+**Loopback (issue #254, 2026-11-17)**: `DelphiDoom.Net.LoopbackTransport` (`TNetLoopbackPair`): due `INetTransport` che sono i due capi di un filo in memoria (cio' che uno manda l'altro riceve, in ordine, senza perdite; due nodi, 0 e 1). Per un server e un client nello stesso processo (`IdTech4\Q3Host`) e per i test; non apre socket. Solo `System` (strato L0 invariato).
