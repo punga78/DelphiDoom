@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the net game: the buffer of the packets          }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): greedcom.data of            }
+{  Port of xGreed (Jim Valavanis): greedcom.data of                             }
 {  protos_h.pas and the event pointers of net.pas that all point into it        }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

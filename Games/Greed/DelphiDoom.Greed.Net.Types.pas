@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the net game: packets, constants and errors      }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the types of net.pas (the   }
+{  Port of xGreed (Jim Valavanis): the types of net.pas (the                    }
 {  code that xGreed keeps in a comment after "end.") and greedcom_t of          }
 {  protos_h.pas                                                                 }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

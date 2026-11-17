@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the movement of the player against the map       }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): TryDoor, TryMove, ClipMove  }
+{  Port of xGreed (Jim Valavanis): TryDoor, TryMove, ClipMove                   }
 {  and Thrust of raven.pas                                                      }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

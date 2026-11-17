@@ -1,9 +1,13 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the game: all the parts of the logic together    }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): PlayLoop, UpdateView,       }
+{  Port of xGreed (Jim Valavanis): PlayLoop, UpdateView,                        }
 {  InitData and maingame of raven.pas, INT_TimerISR of d_ints.pas, newplayer    }
 {  of utils.pas                                                                 }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

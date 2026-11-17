@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the archive GREED.BLO                            }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): CA_InitFile, CA_*NamedNum,  }
+{  Port of xGreed (Jim Valavanis): CA_InitFile, CA_*NamedNum,                   }
 {  CA_CacheLump and CA_ReadLump of d_disk.pas                                   }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }

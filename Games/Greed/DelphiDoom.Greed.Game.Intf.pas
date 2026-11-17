@@ -1,8 +1,12 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - what the parts of the game ask of each other     }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): the calls between           }
+{  Port of xGreed (Jim Valavanis): the calls between                            }
 {  raven.pas, spawn.pas, sprites.pas, event.pas, utils.pas and modplay.pas      }
+{                                                                              }
+{  xGreed (Jim Valavanis) and Raven 3D engine (c) 1996 Softdisk Publishing:    }
+{  the user declares this port GPL v2 or later; the right on the parts         }
+{  derived from the Softdisk code is not verified (docs\LICENZE.md)            }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
