@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom strategy library - the regions and countries of a point of }
-{  the globe, the activity that goes to them and the soldiers that die         }
+{  DelphiDoom: xcom strategy library - the regions and countries of a point    }
+{  of the globe, the activity that goes to them and the soldiers that die      }
 {  (SavedGame::locateRegion, killSoldier and the loops of GeoscapeState)       }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomStrategy.Geography;

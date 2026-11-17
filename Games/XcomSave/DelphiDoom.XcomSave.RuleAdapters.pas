@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom saved game library - the rules of the ruleset seen as the   }
-{  small interfaces that a saved game asks for (Rules.Intf)                     }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom saved game library - the rules of the ruleset seen as the  }
+{  small interfaces that a saved game asks for (Rules.Intf) Derived from       }
+{  OpenXcom (the OpenXcom Developers), available under the GNU General Public  }
+{  License, version 3 or (at your option) any later version; see               }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomSave.RuleAdapters;

@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom battlescape library - what the battle asks of the screen    }
-{  (the calls of BattlescapeGame and of its steps to BattlescapeState, Map and  }
-{  Camera: warnings, sounds, animations, the camera)                            }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom battlescape library - what the battle asks of the screen   }
+{  (the calls of BattlescapeGame and of its steps to BattlescapeState, Map     }
+{  and Camera: warnings, sounds, animations, the camera) Derived from          }
+{  OpenXcom (the OpenXcom Developers), available under the GNU General Public  }
+{  License, version 3 or (at your option) any later version; see               }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomBattle.View.Intf;

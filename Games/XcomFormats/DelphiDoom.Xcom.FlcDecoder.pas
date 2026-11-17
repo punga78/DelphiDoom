@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom formats library - the FLI and FLC animations (the decoder   }
-{  of FlcPlayer of OpenXcom, without screen, clock and audio device)            }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom formats library - the FLI and FLC animations (the decoder  }
+{  of FlcPlayer of OpenXcom, without screen, clock and audio device) Derived   }
+{  from OpenXcom (the OpenXcom Developers), available under the GNU General    }
+{  Public License, version 3 or (at your option) any later version; see        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Xcom.FlcDecoder;

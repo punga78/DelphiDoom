@@ -2,8 +2,9 @@
 {                                                                              }
 {  DelphiDoom: xcom battlescape library - the drawing routines of the units    }
 {  of UFO: Enemy Unknown (UnitSprite::drawRoutine1..3 and 5..9 of OpenXcom)    }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomBattlescape.UnitSpriteUfo;

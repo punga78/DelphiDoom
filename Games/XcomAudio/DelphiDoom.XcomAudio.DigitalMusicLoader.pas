@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom audio library - the digital formats of the music (a file    }
-{  of the SOUND folder of the mod with the name of the rule and an extension:   }
-{  .flac, .ogg, .mp3 or .wav)                                                   }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom audio library - the digital formats of the music (a file   }
+{  of the SOUND folder of the mod with the name of the rule and an extension:  }
+{  .flac, .ogg, .mp3 or .wav) Derived from OpenXcom (the OpenXcom              }
+{  Developers), available under the GNU General Public License, version 3 or   }
+{  (at your option) any later version; see Games\XcomFormats\README.md for     }
+{  the license of this unit                                                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomAudio.DigitalMusicLoader;

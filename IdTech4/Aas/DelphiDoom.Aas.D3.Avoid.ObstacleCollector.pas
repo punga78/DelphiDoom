@@ -2,14 +2,16 @@
 {                                                                              }
 {  DelphiDoom: Doom 3 AAS navigation - obstacle avoidance, finding obstacles    }
 {                                                                              }
-{  Port of GetObstacles (AI_pathing.cpp), Doom 3 GPL Source Code. The choice of  }
-{  the entities that are obstacles is the game's (IAvoidBody); the boxes, the   }
-{  windings and the walls of the AAS are here.                                  }
-{  Based on the Doom 3 GPL Source Code (id Software). Copyright (C) 1999-2011  }
-{  id Software LLC, a ZeniMax Media company. This unit is derived from the     }
-{  Doom 3 GPL source code and is therefore available under the GNU General     }
-{  Public License, version 3, with the additional terms of the Doom 3 Source   }
-{  Code License (see README.md of Framework\IdLib); the repository as a whole is }
+{  Port of GetObstacles (AI_pathing.cpp), Doom 3 GPL Source Code. The choice   }
+{  of the entities that are obstacles is the game's (IAvoidBody); the boxes,   }
+{  the windings and the walls of the AAS are here. Based on the Doom 3 GPL     }
+{  Source Code (id Software). Copyright (C) 1999-2011 id Software LLC, a       }
+{  ZeniMax Media company. This unit is derived from the Doom 3 GPL source      }
+{  code and is therefore available under the GNU General Public License,       }
+{  version 3 or (at your option) any later version, with the additional terms  }
+{  of the Doom 3 Source Code License (Reference\doom3\COPYING.txt:             }
+{  preservation of legal notices and trademarks, no use of the licensors'      }
+{  names for publicity, warranty disclaimer). The repository as a whole is     }
 {  GPL v2 or later.                                                            }
 {                                                                              }
 {******************************************************************************}

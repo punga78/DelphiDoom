@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom surface library - the colors of the pixels of an 8 bit      }
-{  picture that are a blend and so are no color of its palette (issue 183:      }
-{  smoke, fire and shadows of the battle shown in true color)                   }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom surface library - the colors of the pixels of an 8 bit     }
+{  picture that are a blend and so are no color of its palette (issue 183:     }
+{  smoke, fire and shadows of the battle shown in true color) Derived from     }
+{  OpenXcom (the OpenXcom Developers), available under the GNU General Public  }
+{  License, version 3 or (at your option) any later version; see               }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomSurface.BlendOverlay;

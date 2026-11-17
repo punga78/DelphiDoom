@@ -1,10 +1,11 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom battlescape drawing library - the map of the battlefield    }
-{  (Map: the tiles, the walls, the objects, the units, the smoke and the fire,  }
-{  the cursor and the arrow of the selected unit)                               }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom battlescape drawing library - the map of the battlefield   }
+{  (Map: the tiles, the walls, the objects, the units, the smoke and the       }
+{  fire, the cursor and the arrow of the selected unit) Derived from OpenXcom  }
+{  (the OpenXcom Developers), available under the GNU General Public License,  }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomBattlescape.Map;

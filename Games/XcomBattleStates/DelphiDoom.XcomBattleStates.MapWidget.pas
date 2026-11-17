@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom battlescape states library - the map of the battle as a     }
-{  surface of a state (the InteractiveSurface part of Map and the input of      }
-{  Camera: the cursor of the tiles, the scrolling, the hidden movement)         }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom battlescape states library - the map of the battle as a    }
+{  surface of a state (the InteractiveSurface part of Map and the input of     }
+{  Camera: the cursor of the tiles, the scrolling, the hidden movement)        }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomBattleStates.MapWidget;

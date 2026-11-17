@@ -1,10 +1,12 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom surface library - the 8 x 8 font of SDL_gfx                 }
-{  gfxPrimitivesFontdata of SDL_gfx 2.0.26 (zlib license, Andreas Schiffler):   }
-{  256 characters of 8 rows, one byte per row, the most significant bit is the  }
-{  leftmost pixel. Derived from OpenXcom (the OpenXcom Developers), GPL v3 or   }
-{  later: see Games\XcomFormats\README.md for the license of this unit          }
+{  DelphiDoom: xcom surface library - the 8 x 8 font of SDL_gfx                }
+{  gfxPrimitivesFontdata of SDL_gfx 2.0.26 (zlib license, Andreas Schiffler):  }
+{  256 characters of 8 rows, one byte per row, the most significant bit is     }
+{  the leftmost pixel. Derived from OpenXcom (the OpenXcom Developers),        }
+{  available under the GNU General Public License, version 3 or (at your       }
+{  option) any later version; see Games\XcomFormats\README.md for the license  }
+{  of this unit                                                                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomSurface.GfxFont;

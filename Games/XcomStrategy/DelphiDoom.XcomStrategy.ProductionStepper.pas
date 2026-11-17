@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom strategy library - one hour of a production (Production::  }
-{  step, startItem and the check of the materials)                             }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  step, startItem and the check of the materials) Derived from OpenXcom (the  }
+{  OpenXcom Developers), available under the GNU General Public License,       }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomStrategy.ProductionStepper;

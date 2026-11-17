@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom strategy library - the assembly of the simulation of the   }
-{  geoscape (the one place that knows the concrete classes)                    }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  geoscape (the one place that knows the concrete classes) Derived from       }
+{  OpenXcom (the OpenXcom Developers), available under the GNU General Public  }
+{  License, version 3 or (at your option) any later version; see               }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomStrategy.Factory;

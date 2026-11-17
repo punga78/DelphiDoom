@@ -3,12 +3,14 @@
 {  DelphiDoom: audio library - 3D sound of Doom 3, shared types                }
 {                                                                              }
 {  Port of the data of sound\sound.h, snd_local.h, snd_system.cpp (the cvars   }
-{  and their defaults) and renderer\RenderWorld.h (exitPortal_t).              }
-{  Based on the Doom 3 GPL Source Code (id Software). This unit is derived     }
-{  from it and is therefore available under the GNU General Public License,    }
-{  version 3, with the additional terms of the Doom 3 Source Code License      }
-{  (see Reference\doom3\README.txt and Framework\IdLib\README.md); the repository }
-{  as a whole is GPL v2 or later. Copyright (C) 1999-2011 id Software LLC.     }
+{  and their defaults) and renderer\RenderWorld.h (exitPortal_t). Based on     }
+{  the Doom 3 GPL Source Code (id Software). This unit is derived from it and  }
+{  is therefore available under the GNU General Public License, version 3 or   }
+{  (at your option) any later version, with the additional terms of the Doom   }
+{  3 Source Code License (Reference\doom3\COPYING.txt: preservation of legal   }
+{  notices and trademarks, no use of the licensors' names for publicity,       }
+{  warranty disclaimer). The repository as a whole is GPL v2 or later.         }
+{  Copyright (C) 1999-2011 id Software LLC.                                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Audio.D3.Types;

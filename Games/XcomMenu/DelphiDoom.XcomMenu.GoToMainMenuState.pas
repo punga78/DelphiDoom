@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom menu library - GoToMainMenuState of OpenXcom (the state     }
-{  that sets the scale and opens the main menu)                                 }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom menu library - GoToMainMenuState of OpenXcom (the state    }
+{  that sets the scale and opens the main menu) Derived from OpenXcom (the     }
+{  OpenXcom Developers), available under the GNU General Public License,       }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomMenu.GoToMainMenuState;

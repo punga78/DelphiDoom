@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom engine library - RuleInterface of OpenXcom (the colors and  }
-{  positions of the elements of a menu, from the interfaces.rul of a mod)       }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom engine library - RuleInterface of OpenXcom (the colors     }
+{  and positions of the elements of a menu, from the interfaces.rul of a mod)  }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomEngine.RuleInterface;

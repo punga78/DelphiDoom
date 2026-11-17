@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom engine library - reader of the OpenGL shader files          }
-{  Port of the first half of OpenGL::set_shader of OpenXcom (Engine\OpenGL.cpp):}
-{  the document of the file, without OpenGL                                     }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom engine library - reader of the OpenGL shader files Port    }
+{  of the first half of OpenGL::set_shader of OpenXcom (Engine\OpenGL.cpp):    }
+{  the document of the file, without OpenGL Derived from OpenXcom (the         }
+{  OpenXcom Developers), available under the GNU General Public License,       }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomEngine.ShaderFileReader;

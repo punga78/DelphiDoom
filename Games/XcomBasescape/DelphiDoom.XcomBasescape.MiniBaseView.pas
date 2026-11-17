@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom basescape library - MiniBaseView of OpenXcom (the little    }
-{  maps of the bases at the top right of the basescape)                         }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom basescape library - MiniBaseView of OpenXcom (the little   }
+{  maps of the bases at the top right of the basescape) Derived from OpenXcom  }
+{  (the OpenXcom Developers), available under the GNU General Public License,  }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomBasescape.MiniBaseView;

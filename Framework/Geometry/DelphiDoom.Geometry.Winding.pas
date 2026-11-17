@@ -4,9 +4,13 @@
 {                                                                              }
 {  Port of the used part of idWinding (Winding.h, Winding.cpp) of Doom 3 GPL   }
 {  Source Code. Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media       }
-{  company. Doom 3 Source Code: GNU General Public License version 3 with      }
-{  additional terms. This unit is a derived work (GPL v3). The texture         }
-{  coordinates of idVec5 are not ported: a point is a TGeoVec3.                }
+{  company. This unit is derived from the Doom 3 GPL source code and is        }
+{  therefore available under the GNU General Public License, version 3 or (at  }
+{  your option) any later version, with the additional terms of the Doom 3     }
+{  Source Code License (Reference\doom3\COPYING.txt: preservation of legal     }
+{  notices and trademarks, no use of the licensors' names for publicity,       }
+{  warranty disclaimer). The repository as a whole is GPL v2 or later. The     }
+{  texture coordinates of idVec5 are not ported: a point is a TGeoVec3.        }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Geometry.Winding;

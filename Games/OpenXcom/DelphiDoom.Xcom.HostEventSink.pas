@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: Xcom32 - the events of the window as the events of the game      }
-{  What the SDL event loop gave: SDL 1.2 key codes, modifiers and buttons       }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: Xcom32 - the events of the window as the events of the game     }
+{  What the SDL event loop gave: SDL 1.2 key codes, modifiers and buttons      }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Xcom.HostEventSink;
