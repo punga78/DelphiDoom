@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the Doom 3 host library - parity with the real C++     }
 {  (KeyInput.cpp, EditField.cpp, UsercmdGen.cpp, Console.cpp and the life      }
