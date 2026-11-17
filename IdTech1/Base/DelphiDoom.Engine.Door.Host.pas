@@ -165,7 +165,7 @@ begin
 {$IFDEF HEXEN}
   Result := False;
 {$ELSE}
-  Result := compatibilitymode;
+  Result := TGameSession.CompatibilityMode;
 {$ENDIF}
 end;
 

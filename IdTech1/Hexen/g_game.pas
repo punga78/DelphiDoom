@@ -158,6 +158,16 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>Quit after playing a demo from the command line</summary>
+    class var SingleDemo: boolean;
+    /// <summary>If true, load all the graphics at the start of a level</summary>
+    class var Precache: boolean;
+    /// <summary>Parameters for the world map and the intermission</summary>
+    class var WmInfo: wbstartstruct_t;
+    /// <summary>Compatibility mode of the level in progress</summary>
+    class var CompatibilityMode: boolean;
+    /// <summary>The compatibility mode before a demo changed it</summary>
+    class var OldCompatibilityMode: boolean;
     /// <summary>The player records</summary>
     class var Players: array[0..MAXPLAYERS - 1] of player_t;
     /// <summary>The player slots in use</summary>
@@ -277,16 +287,13 @@ var
   displayplayer: integer; // view being displayed
 
 
-  wminfo: wbstartstruct_t; // parms for world map / intermission
 
 
 
-  precache: boolean = true; // if true, load all graphics at start
 
 
   viewactive: boolean;
 
-  singledemo: boolean; // quit after playing a demo from cmdline
 
 
 
@@ -352,10 +359,6 @@ function G_NeedsCompatibilityMode: boolean;
 //
 //==============================================================================
 function G_PlayingEngineVersion: byte;
-
-var
-  compatibilitymode: boolean = false;
-  oldcompatibilitymode: boolean = false;
 
 type
 //
@@ -1275,7 +1278,7 @@ begin
 
   // allow spy mode changes even during the demo
   if (TGameSession.GameState = GS_LEVEL) and (ev._type = ev_keydown) and
-     (ev.data1 = KEY_F12) and (singledemo or (TGameSession.DeathMatch = 0)) then
+     (ev.data1 = KEY_F12) and (TGameSession.SingleDemo or (TGameSession.DeathMatch = 0)) then
   begin
   // spy mode
     repeat
@@ -1288,7 +1291,7 @@ begin
   end;
 
   // any other key pops up menu if in demos
-  if (TGameSession.GameAction = ga_nothing) and not singledemo and
+  if (TGameSession.GameAction = ga_nothing) and not TGameSession.SingleDemo and
      (TGameSession.DemoPlayback or (TGameSession.GameState = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
@@ -2212,7 +2215,7 @@ end;
 //==============================================================================
 function G_NeedsCompatibilityMode: boolean;
 begin
-  result := compatibilitymode;
+  result := TGameSession.CompatibilityMode;
 end;
 
 //==============================================================================
@@ -2250,6 +2253,7 @@ end;
 
 initialization
 
+  TGameSession.Precache := true;
   TGameSession.OldGameState := -1;
   mousebuttons := PBooleanArray(@mousearray[0]);
   joybuttons := PBooleanArray(@joyarray[0]);

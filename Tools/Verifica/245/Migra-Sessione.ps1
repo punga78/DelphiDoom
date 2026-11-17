@@ -21,6 +21,10 @@ $fields = @{
   demoplayback = 'DemoPlayback'; netdemo = 'NetDemo'; timingdemo = 'TimingDemo'; consoleplayer = 'ConsolePlayer'
   netgame = 'NetGame'; deathmatch = 'DeathMatch'; gamemap = 'GameMap'; gameskill = 'GameSkill'; gameepisode = 'GameEpisode'
   preparingdemoplayback = 'PreparingDemoPlayback'; nomonsters = 'NoMonsters'; fastparm = 'FastParm'; respawnparm = 'RespawnParm'
+  secretexit = 'SecretExit'; pistolstart = 'PistolStart'; singledemo = 'SingleDemo'; precache = 'Precache'
+  demostarttic = 'DemoStartTic'; gamemapinfo = 'GameMapInfo'; wminfo = 'WmInfo'
+  forcecompatibilitymode = 'ForceCompatibilityMode'; compatibilitymode = 'CompatibilityMode'
+  oldcompatibilitymode = 'OldCompatibilityMode'
 }
 $alternation = ($Names | ForEach-Object { [regex]::Escape($_) }) -join '|'
 $pattern = "('(?:[^'\r\n]|'')*')|(//[^\r\n]*)|(\{[^}\r\n]*\})|(?<![\w.])(?:g_game\.)?($alternation)(?![\w])(?!\s*:(?!=))"

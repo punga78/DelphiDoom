@@ -402,13 +402,13 @@ var
   i: integer;
   secCount: integer;
 begin
-  if (gamemapinfo <> nil) and not gamemapinfo.lightning then
+  if (TGameSession.GameMapInfo <> nil) and not TGameSession.GameMapInfo.lightning then
   begin
     LevelHasLightning := false;
     LightningFlash := 0;
     exit;
   end
-  else if gamemapinfo = nil then
+  else if TGameSession.GameMapInfo = nil then
   begin
     LevelHasLightning := false;
     LightningFlash := 0;

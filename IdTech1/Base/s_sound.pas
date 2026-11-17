@@ -1020,8 +1020,8 @@ function S_DefaultMusicForMap(const episode, map: integer): integer;
 {$ENDIF}
 begin
 {$IF DEFINED(HERETIC)}
-  if (gamemapinfo <> nil) and (gamemapinfo.musicnum > 0) then
-    result := gamemapinfo.musicnum
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.musicnum > 0) then
+    result := TGameSession.GameMapInfo.musicnum
   else if episode < 6 then
   // JVAL: Use DEH files to specify new sounds for E4
     result := Ord(mus_e1m1) + (episode - 1) * 9 + map - 1
@@ -1044,16 +1044,16 @@ begin
 {$ELSEIF DEFINED(HEXEN)}
   result := Ord(mus_map01) + map - 1;
 {$ELSEIF DEFINED(STRIFE)}
-  if (gamemapinfo <> nil) and (gamemapinfo.musicnum > 0) then
-    result := gamemapinfo.musicnum
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.musicnum > 0) then
+    result := TGameSession.GameMapInfo.musicnum
   // [STRIFE] Some interesting math here ;)
   else if map <= 31 then
     result := map + 1
   else
     result := map - 30;
 {$ELSE}
-  if (gamemapinfo <> nil) and (gamemapinfo.musicnum > 0) then
-    result := gamemapinfo.musicnum
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.musicnum > 0) then
+    result := TGameSession.GameMapInfo.musicnum
   else if gamemode = commercial then
   begin
     if map = 99 then

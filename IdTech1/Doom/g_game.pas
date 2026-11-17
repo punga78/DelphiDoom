@@ -247,6 +247,26 @@ type
     class var RespawnMonsters: boolean;
     /// <summary>A demo is being recorded</summary>
     class var DemoRecording: boolean;
+    /// <summary>The level ends through the secret exit</summary>
+    class var SecretExit: boolean;
+    /// <summary>Checkparm of -pistolstart: every level starts with the pistol</summary>
+    class var PistolStart: boolean;
+    /// <summary>Quit after playing a demo from the command line</summary>
+    class var SingleDemo: boolean;
+    /// <summary>If true, load all the graphics at the start of a level</summary>
+    class var Precache: boolean;
+    /// <summary>The tic a demo started at</summary>
+    class var DemoStartTic: integer;
+    /// <summary>The UMAPINFO entry of the level in progress</summary>
+    class var GameMapInfo: Pmapentry_t;
+    /// <summary>Parameters for the world map and the intermission</summary>
+    class var WmInfo: wbstartstruct_t;
+    /// <summary>The compatibility mode is forced by the command line</summary>
+    class var ForceCompatibilityMode: boolean;
+    /// <summary>Compatibility mode of the level in progress</summary>
+    class var CompatibilityMode: boolean;
+    /// <summary>The compatibility mode before a demo changed it</summary>
+    class var OldCompatibilityMode: boolean;
     /// <summary>The player records</summary>
     class var Players: array[0..MAXPLAYERS - 1] of player_t;
     /// <summary>The player slots in use</summary>
@@ -357,25 +377,20 @@ var
 
   showdemoplaybackprogress: boolean;
 
-  gamemapinfo: Pmapentry_t;
 
 
   displayplayer: integer; // view being displayed
 
   // https://www.doomworld.com/forum/topic/95719-a_tracer-and-gametic/?do=findComment&comment=1788516
-  demostarttic: integer; // JVAL: Thanks fabian :)
-
-
-  wminfo: wbstartstruct_t; // parms for world map / intermission
 
 
 
-  precache: boolean; // if true, load all graphics at start
+
+
 
 
   viewactive: boolean;
 
-  singledemo: boolean; // quit after playing a demo from cmdline
 
 
 
@@ -437,11 +452,6 @@ function G_LookupMapinfo(const episode, map: integer): Pmapentry_t;
 //==============================================================================
 function G_ValidateMapName(const amap: string; const pepi, pmapnum: PInteger): boolean;
 
-var
-  forcecompatibilitymode: boolean = false;
-  compatibilitymode: boolean = false;
-  oldcompatibilitymode: boolean = false;
-
 type
 //
 // LOAD GAME MENU
@@ -493,10 +503,6 @@ var
   gamekeydown: array[0..NUMKEYS - 1] of boolean;
   mousebuttons: PBooleanArray;
   joybuttons: PBooleanArray;
-
-var
-  secretexit: boolean;
-  pistolstart: boolean;
 
 //==============================================================================
 //
@@ -853,7 +859,7 @@ procedure G_FinishedDemoPlayback;
 begin
   TGameSession.DemoPlayback := false;
   // Restore old compatibility mode
-  compatibilitymode := oldcompatibilitymode;
+  TGameSession.CompatibilityMode := TGameSession.OldCompatibilityMode;
 end;
 
 var
@@ -1367,9 +1373,9 @@ begin
   //  setting one.
   skyflatnum := R_FlatNumForName(SKYFLATNAME);
 
-  if (gamemapinfo <> nil) and (gamemapinfo.skytexture <> '') then
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture <> '') then
   begin
-    skytexture := R_TextureNumForName(gamemapinfo.skytexture);
+    skytexture := R_TextureNumForName(TGameSession.GameMapInfo.skytexture);
     if skytexture < 0 then
       skytexture := R_TextureNumForName('SKY1');
   end
@@ -1402,8 +1408,8 @@ begin
   end;
   skytexture1 := skytexture;
   skytexture2 := -1;
-  if (gamemapinfo <> nil) and (gamemapinfo.skytexture2 <> '') then
-    skytexture2 := R_TextureNumForName(gamemapinfo.skytexture2);
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture2 <> '') then
+    skytexture2 := R_TextureNumForName(TGameSession.GameMapInfo.skytexture2);
   if skytexture2 < 0 then
     skytexture2 := skytexture;
 
@@ -1420,11 +1426,11 @@ begin
   end;
 
   // automatic pistol start when advancing from one level to the next
-  if pistolstart then
+  if TGameSession.PistolStart then
   begin
     if not TGameSession.DemoRecording and not TGameSession.DemoPlayback and not TGameSession.NetGame then
       G_PlayerReborn(0)
-    else if (TGameSession.DemoPlayback or TGameSession.NetDemo) and not singledemo then
+    else if (TGameSession.DemoPlayback or TGameSession.NetDemo) and not TGameSession.SingleDemo then
     begin
       // no-op - silently ignore pistolstart when playing demo from the
       // demo reel
@@ -1490,7 +1496,7 @@ begin
   end;
   // allow spy mode changes even during the demo
   if (TGameSession.GameState = GS_LEVEL) and (ev._type = ev_keydown) and
-     (ev.data1 = KEY_F12) and (singledemo or (TGameSession.DeathMatch = 0)) then
+     (ev.data1 = KEY_F12) and (TGameSession.SingleDemo or (TGameSession.DeathMatch = 0)) then
   begin
   // spy mode
     repeat
@@ -1503,7 +1509,7 @@ begin
   end;
 
   // any other key pops up menu if in demos
-  if (TGameSession.GameAction = ga_nothing) and not singledemo and
+  if (TGameSession.GameAction = ga_nothing) and not TGameSession.SingleDemo and
      (TGameSession.DemoPlayback or (TGameSession.GameState = GS_DEMOSCREEN)) then
   begin
     if (ev._type = ev_keydown) or
@@ -1959,7 +1965,7 @@ end;
 //==============================================================================
 procedure G_ExitLevel;
 begin
-  secretexit := false;
+  TGameSession.SecretExit := false;
   TGameSession.GameAction := ga_completed;
 end;
 
@@ -1973,9 +1979,9 @@ procedure G_SecretExitLevel;
 begin
   // IF NO WOLF3D LEVELS, NO SECRET EXIT!
   if (gamemode = commercial) and (W_CheckNumForName('map31') < 0) then
-    secretexit := false
+    TGameSession.SecretExit := false
   else
-    secretexit := true;
+    TGameSession.SecretExit := true;
   TGameSession.GameAction := ga_completed;
 end;
 
@@ -2013,24 +2019,24 @@ begin
   request.IsCommercial := gamemode = commercial;
   request.IsBfgSecondEdition := customgame = cg_bfg2;
   request.Custom := exitcustom;
-  request.SecretExit := secretexit;
+  request.SecretExit := TGameSession.SecretExit;
   request.Episode := TGameSession.GameEpisode;
   request.Map := TGameSession.GameMap;
   request.ConsoleDidSecret := TGameSession.Players[TGameSession.ConsolePlayer].didsecret;
-  request.PreviousNext := wminfo.next;
-  request.HasMapInfo := gamemapinfo <> nil;
+  request.PreviousNext := TGameSession.WmInfo.next;
+  request.HasMapInfo := TGameSession.GameMapInfo <> nil;
   request.HasEndPicture := false;
   request.NoIntermission := false;
   request.NextSecret := '';
   request.NextMap := '';
   request.MapInfoPartime := 0;
-  if gamemapinfo <> nil then
+  if TGameSession.GameMapInfo <> nil then
   begin
-    request.HasEndPicture := (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-');
-    request.NoIntermission := gamemapinfo.nointermission;
-    request.NextSecret := gamemapinfo.nextsecret;
-    request.NextMap := gamemapinfo.nextmap;
-    request.MapInfoPartime := gamemapinfo.partime;
+    request.HasEndPicture := (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-');
+    request.NoIntermission := TGameSession.GameMapInfo.nointermission;
+    request.NextSecret := TGameSession.GameMapInfo.nextsecret;
+    request.NextMap := TGameSession.GameMapInfo.nextmap;
+    request.MapInfoPartime := TGameSession.GameMapInfo.partime;
   end;
   request.Rules := TMapName.DoomRules;
   plan := TIntermissionPlanner.Plan(request);
@@ -2044,14 +2050,14 @@ begin
     exit;
   end;
 
-  wminfo.didsecret := plan.DidSecret;
-  wminfo.epsd := plan.Epsd;
-  wminfo.nextep := plan.NextEp;
-  wminfo.last := plan.Last;
-  wminfo.next := plan.Next; // 0 biased, unlike gamemap
+  TGameSession.WmInfo.didsecret := plan.DidSecret;
+  TGameSession.WmInfo.epsd := plan.Epsd;
+  TGameSession.WmInfo.nextep := plan.NextEp;
+  TGameSession.WmInfo.last := plan.Last;
+  TGameSession.WmInfo.next := plan.Next; // 0 biased, unlike gamemap
 
-  wminfo.lastmapinfo := gamemapinfo;
-  wminfo.nextmapinfo := nil;
+  TGameSession.WmInfo.lastmapinfo := TGameSession.GameMapInfo;
+  TGameSession.WmInfo.nextmapinfo := nil;
   if plan.EndsWithoutIntermission then
   begin
     TGameSession.GameAction := ga_victory;
@@ -2063,28 +2069,28 @@ begin
       TGameSession.Players[i].didsecret := false;
 
   if plan.PartimeFromMapInfo then
-    wminfo.partime := plan.Partime
+    TGameSession.WmInfo.partime := plan.Partime
   else if gamemode = commercial then
-    wminfo.partime := TICRATE * cpars[TGameSession.GameMap - 1]
+    TGameSession.WmInfo.partime := TICRATE * cpars[TGameSession.GameMap - 1]
   else
-    wminfo.partime := TICRATE * pars[TGameSession.GameEpisode][TGameSession.GameMap];
-  wminfo.nextmapinfo := G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
+    TGameSession.WmInfo.partime := TICRATE * pars[TGameSession.GameEpisode][TGameSession.GameMap];
+  TGameSession.WmInfo.nextmapinfo := G_LookupMapinfo(TGameSession.WmInfo.nextep + 1, TGameSession.WmInfo.next + 1);
 
-  wminfo.maxkills := P_World.Totals.Kills;
-  wminfo.maxitems := P_World.Totals.Items;
-  wminfo.maxsecret := P_World.Totals.Secrets;
-  wminfo.maxfrags := 0;
+  TGameSession.WmInfo.maxkills := P_World.Totals.Kills;
+  TGameSession.WmInfo.maxitems := P_World.Totals.Items;
+  TGameSession.WmInfo.maxsecret := P_World.Totals.Secrets;
+  TGameSession.WmInfo.maxfrags := 0;
 
-  wminfo.pnum := TGameSession.ConsolePlayer;
+  TGameSession.WmInfo.pnum := TGameSession.ConsolePlayer;
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    wminfo.plyr[i]._in := TGameSession.PlayerInGame[i];
-    wminfo.plyr[i].skills := TGameSession.Players[i].killcount;
-    wminfo.plyr[i].sitems := TGameSession.Players[i].itemcount;
-    wminfo.plyr[i].ssecret := TGameSession.Players[i].secretcount;
-    wminfo.plyr[i].stime := TTickState.LevelTime;
-    memcpy(@wminfo.plyr[i].frags, @TGameSession.Players[i].frags, SizeOf(wminfo.plyr[i].frags));
+    TGameSession.WmInfo.plyr[i]._in := TGameSession.PlayerInGame[i];
+    TGameSession.WmInfo.plyr[i].skills := TGameSession.Players[i].killcount;
+    TGameSession.WmInfo.plyr[i].sitems := TGameSession.Players[i].itemcount;
+    TGameSession.WmInfo.plyr[i].ssecret := TGameSession.Players[i].secretcount;
+    TGameSession.WmInfo.plyr[i].stime := TTickState.LevelTime;
+    memcpy(@TGameSession.WmInfo.plyr[i].frags, @TGameSession.Players[i].frags, SizeOf(TGameSession.WmInfo.plyr[i].frags));
   end;
 
   TGameSession.GameState := GS_INTERMISSION;
@@ -2092,9 +2098,9 @@ begin
   amstate := am_inactive;
 
   if statcopy <> nil then
-    memcpy(statcopy, @wminfo, SizeOf(wminfo));
+    memcpy(statcopy, @TGameSession.WmInfo, SizeOf(TGameSession.WmInfo));
 
-  WI_Start(@wminfo);
+  WI_Start(@TGameSession.WmInfo);
 end;
 
 //==============================================================================
@@ -2106,26 +2112,26 @@ procedure G_WorldDone;
 begin
   TGameSession.GameAction := ga_worlddone;
 
-  if secretexit then
+  if TGameSession.SecretExit then
     TGameSession.Players[TGameSession.ConsolePlayer].didsecret := true;
 
-  if gamemapinfo <> nil then
+  if TGameSession.GameMapInfo <> nil then
   begin
-    if (gamemapinfo.intertextsecret[0] <> #0) and secretexit then
+    if (TGameSession.GameMapInfo.intertextsecret[0] <> #0) and TGameSession.SecretExit then
     begin
-      if gamemapinfo.intertextsecret[0] <> '-' then // '-' means that any default intermission was cleared.
+      if TGameSession.GameMapInfo.intertextsecret[0] <> '-' then // '-' means that any default intermission was cleared.
         F_StartFinale;
 
       exit;
     end
-    else if (gamemapinfo.intertext[0] <> #0) and not secretexit then
+    else if (TGameSession.GameMapInfo.intertext[0] <> #0) and not TGameSession.SecretExit then
     begin
-      if gamemapinfo.intertext[0] <> '-' then // '-' means that any default intermission was cleared.
+      if TGameSession.GameMapInfo.intertext[0] <> '-' then // '-' means that any default intermission was cleared.
         F_StartFinale;
 
       exit;
     end
-    else if (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-') then
+    else if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then
     begin
       // game ends without a status screen.
       TGameSession.GameAction := ga_victory;
@@ -2134,7 +2140,7 @@ begin
     // if nothing applied, use the defaults.
   end;
 
-  if (gamemode = commercial) and TLevelProgression.DoomCommercialFinale(secretexit, TGameSession.GameMap) then
+  if (gamemode = commercial) and TLevelProgression.DoomCommercialFinale(TGameSession.SecretExit, TGameSession.GameMap) then
     F_StartFinale;
 end;
 
@@ -2146,9 +2152,9 @@ end;
 procedure G_DoWorldDone;
 begin
   TGameSession.GameState := GS_LEVEL;
-  TGameSession.GameEpisode := wminfo.nextep + 1;
-  TGameSession.GameMap := wminfo.next + 1;
-  gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
+  TGameSession.GameEpisode := TGameSession.WmInfo.nextep + 1;
+  TGameSession.GameMap := TGameSession.WmInfo.next + 1;
+  TGameSession.GameMapInfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
   G_DoLoadLevel;
   TGameSession.GameAction := ga_nothing;
   viewactive := true;
@@ -2274,7 +2280,7 @@ begin
   TGameSession.GameMap := LMap;
   save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, True));
 
-  gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
+  TGameSession.GameMapInfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
 
   // load a base level
   G_InitNew(TGameSession.GameSkill, TGameSession.GameEpisode, TGameSession.GameMap);
@@ -2684,10 +2690,10 @@ begin
   TGameSession.GameEpisode := episode;
   TGameSession.GameMap := map;
   TGameSession.GameSkill := skill;
-  gamemapinfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
+  TGameSession.GameMapInfo := G_LookupMapinfo(TGameSession.GameEpisode, TGameSession.GameMap);
 
   viewactive := true;
-  demostarttic := 0;
+  TGameSession.DemoStartTic := 0;
 
   G_DoLoadLevel;
 end;
@@ -2884,7 +2890,7 @@ begin
   LHeader.Respawn := TGameSession.RespawnParm;
   LHeader.Fast := TGameSession.FastParm;
   LHeader.NoMonsters := TGameSession.NoMonsters;
-  LHeader.Compatibility := compatibilitymode;
+  LHeader.Compatibility := TGameSession.CompatibilityMode;
   LHeader.SpawnRandomMonsters := spawnrandommonsters;
   LHeader.Seed := M_GetSystemRandomSeed;
   // JVAL: Version 205 - Dogs
@@ -3082,11 +3088,11 @@ begin
   TGameSession.FastParm := LHeader.Fast;
   TGameSession.NoMonsters := LHeader.NoMonsters;
 
-  oldcompatibilitymode := compatibilitymode;
+  TGameSession.OldCompatibilityMode := TGameSession.CompatibilityMode;
   if olddemo then
-    compatibilitymode := true // force old compatibility mode
+    TGameSession.CompatibilityMode := true // force old compatibility mode
   else
-    compatibilitymode := LHeader.Compatibility;
+    TGameSession.CompatibilityMode := LHeader.Compatibility;
 
   M_SetSystemRandomSeed(0);
   oldspawnrandommonsters := spawnrandommonsters;
@@ -3113,14 +3119,14 @@ begin
 
   TGameSession.PreparingDemoPlayback := true;
   // don't spend a lot of time in loadlevel if not singledemo
-  precache := singledemo; // JVAL original code: precache := false
+  TGameSession.Precache := TGameSession.SingleDemo; // JVAL original code: precache := false
   G_InitNew(skill, episode, map);
   TGameSession.PreparingDemoPlayback := false;
   spawnrandommonsters := oldspawnrandommonsters;  // Back to default
   dogs := olddogs;
   dog_jumping := olddog_jumping;
-  precache := true;
-  demostarttic := TGameSession.GameTic; // [crispy] fix revenant internal demo bug
+  TGameSession.Precache := true;
+  TGameSession.DemoStartTic := TGameSession.GameTic; // [crispy] fix revenant internal demo bug
   TGameSession.UserGame := false;
   TGameSession.DemoPlayback := true;
   demotickstart := demo_p;
@@ -3189,12 +3195,12 @@ begin
       printf('G_CheckDemoStatus(): timed %d gametics in %d realtics'#13#10,
         [TGameSession.GameTic, realtics]);
     TGameSession.TimingDemo := false;
-    singledemo := true;
+    TGameSession.SingleDemo := true;
   end;
 
   if TGameSession.DemoPlayback then
   begin
-    if singledemo then
+    if TGameSession.SingleDemo then
       I_Quit;
 
     Z_Free(demoBuffer);
@@ -3236,7 +3242,7 @@ end;
 //==============================================================================
 function G_NeedsCompatibilityMode: boolean;
 begin
-  result := compatibilitymode or ((TGameSession.PreparingDemoPlayback or TGameSession.DemoPlayback) and olddemo) or forcecompatibilitymode;
+  result := TGameSession.CompatibilityMode or ((TGameSession.PreparingDemoPlayback or TGameSession.DemoPlayback) and olddemo) or TGameSession.ForceCompatibilityMode;
 end;
 
 //==============================================================================
@@ -3422,7 +3428,7 @@ initialization
   cpars[30] := 120;
   cpars[31] := 30;
 
-  precache := true;
+  TGameSession.Precache := true;
 
   KEY_WEAPONS[0] := @key_weapon0;
   KEY_WEAPONS[1] := @key_weapon1;

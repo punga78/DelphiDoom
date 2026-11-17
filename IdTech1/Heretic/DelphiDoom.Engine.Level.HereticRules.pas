@@ -142,8 +142,8 @@ var
 begin
   P_World.Totals.Clear;
 
-  wminfo.maxfrags := 0;
-  wminfo.partime := 180;
+  TGameSession.WmInfo.maxfrags := 0;
+  TGameSession.WmInfo.partime := 180;
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
   begin

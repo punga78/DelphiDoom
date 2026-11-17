@@ -135,8 +135,8 @@ begin
   viewactive := false;
   amstate := am_inactive;
 
-  if (gamemapinfo <> nil) and (gamemapinfo.intermusicnum > 0) then
-    S_ChangeMusic(gamemapinfo.intermusicnum, true)
+  if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.intermusicnum > 0) then
+    S_ChangeMusic(TGameSession.GameMapInfo.intermusicnum, true)
   else
     S_ChangeMusic(Ord(mus_cptd), true);
 
@@ -175,15 +175,15 @@ begin
 
   using_FMI := false;
 
-  if gamemapinfo <> nil then
+  if TGameSession.GameMapInfo <> nil then
   begin
-    if (gamemapinfo.intertextsecret[0] <> #0) and secretexit and (gamemapinfo.intertextsecret[0] <> '-') then // '-' means that any default intermission was cleared.
-      finaletext := TEngineMapInfoRecords.BigStringToString(gamemapinfo.intertextsecret)
-    else if (gamemapinfo.intertext[0] <> #0) and  not secretexit and (gamemapinfo.intertext[0] <> '-') then // '-' means that any default intermission was cleared.
-      finaletext := TEngineMapInfoRecords.BigStringToString(gamemapinfo.intertext);
+    if (TGameSession.GameMapInfo.intertextsecret[0] <> #0) and TGameSession.SecretExit and (TGameSession.GameMapInfo.intertextsecret[0] <> '-') then // '-' means that any default intermission was cleared.
+      finaletext := TEngineMapInfoRecords.BigStringToString(TGameSession.GameMapInfo.intertextsecret)
+    else if (TGameSession.GameMapInfo.intertext[0] <> #0) and  not TGameSession.SecretExit and (TGameSession.GameMapInfo.intertext[0] <> '-') then // '-' means that any default intermission was cleared.
+      finaletext := TEngineMapInfoRecords.BigStringToString(TGameSession.GameMapInfo.intertext);
 
-    if gamemapinfo.interbackdrop <> '' then
-      finaleflat := gamemapinfo.interbackdrop;
+    if TGameSession.GameMapInfo.interbackdrop <> '' then
+      finaleflat := TGameSession.GameMapInfo.interbackdrop;
 
     if finaleflat = '' then
       finaleflat := bgflatE1; // use a single fallback for all maps.
@@ -217,7 +217,7 @@ begin
       finalecount := finalecount + 3 * TICRATE;
       if finalecount > Length(finaletext) * TEXTSPEED + TEXTWAIT then
       begin
-        if gamemapinfo.endpic = '' then
+        if TGameSession.GameMapInfo.endpic = '' then
           TGameSession.GameAction := ga_worlddone  // next level
         else
         begin
@@ -253,12 +253,12 @@ end;
 //==============================================================================
 procedure FMI_Ticker;
 begin
-  if (gamemapinfo.endpic <> '') and (gamemapinfo.endpic <> '-') then
+  if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then
   begin
     finalecount := 0;
     finalestage := 1;
     wipegamestate := -1;  // force a wipe
-    if gamemapinfo.endpic = '!' then
+    if TGameSession.GameMapInfo.endpic = '!' then
       using_FMI := false;
   end
   else
@@ -482,7 +482,7 @@ begin
     if finalestage = 0 then
       F_TextWrite
     else
-      V_PageDrawer(gamemapinfo.endpic);
+      V_PageDrawer(TGameSession.GameMapInfo.endpic);
     exit;
   end;
 

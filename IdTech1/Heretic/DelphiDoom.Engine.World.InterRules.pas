@@ -1566,7 +1566,7 @@ end;
 //==============================================================================
 class function TInterGameRules.NeedsCompatibility: boolean;
 begin
-  result := compatibilitymode;
+  result := TGameSession.CompatibilityMode;
 end;
 
 //==============================================================================

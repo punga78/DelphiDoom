@@ -1370,7 +1370,7 @@ begin
     inc(their_color);
     p := @TGameSession.Players[i];
 
-    if (TGameSession.DeathMatch <> 0) and not singledemo and (p <> plr) then
+    if (TGameSession.DeathMatch <> 0) and not TGameSession.SingleDemo and (p <> plr) then
       continue;
 
     if not TGameSession.PlayerInGame[i] then
