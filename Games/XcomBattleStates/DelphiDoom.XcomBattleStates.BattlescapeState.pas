@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom battlescape states library - the screen of the battle       }
-{  (BattlescapeState: the map, the panel of the icons, the selected soldier,    }
-{  the timers of the steps and of the animation)                                }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom battlescape states library - the screen of the battle      }
+{  (BattlescapeState: the map, the panel of the icons, the selected soldier,   }
+{  the timers of the steps and of the animation) Derived from OpenXcom (the    }
+{  OpenXcom Developers), available under the GNU General Public License,       }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomBattleStates.BattlescapeState;

@@ -1,7 +1,8 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom formats library - .LBM files (IFF PBM and ILBM)            }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
+{  DelphiDoom: xcom formats library - .LBM files (IFF PBM and ILBM) Derived    }
+{  from OpenXcom (the OpenXcom Developers), available under the GNU General    }
+{  Public License, version 3 or (at your option) any later version; see        }
 {  Games\XcomFormats\README.md for the license of this unit. It follows the    }
 {  behaviour of SDL_image 1.2.12 (IMG_LoadLBM_RW), the loader that OpenXcom    }
 {  uses for the battlescape palettes of TFTD (UFOGRAPH\D0..D3.LBM)             }

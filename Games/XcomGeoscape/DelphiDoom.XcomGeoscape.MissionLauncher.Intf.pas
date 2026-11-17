@@ -1,9 +1,11 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom geoscape library - the way from the geoscape to the battle  }
-{  (what ConfirmLandingState::btnYesClick hands to the BattlescapeGenerator)    }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom geoscape library - the way from the geoscape to the        }
+{  battle (what ConfirmLandingState::btnYesClick hands to the                  }
+{  BattlescapeGenerator) Derived from OpenXcom (the OpenXcom Developers),      }
+{  available under the GNU General Public License, version 3 or (at your       }
+{  option) any later version; see Games\XcomFormats\README.md for the license  }
+{  of this unit                                                                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomGeoscape.MissionLauncher.Intf;

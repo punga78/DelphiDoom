@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom engine library - a surface of lines that are also drawn     }
-{  at the resolution of the window when the screen composes in true color       }
-{  (issue 183)                                                                  }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom engine library - a surface of lines that are also drawn    }
+{  at the resolution of the window when the screen composes in true color      }
+{  (issue 183) Derived from OpenXcom (the OpenXcom Developers), available      }
+{  under the GNU General Public License, version 3 or (at your option) any     }
+{  later version; see Games\XcomFormats\README.md for the license of this      }
+{  unit                                                                        }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomEngine.LineWidget;

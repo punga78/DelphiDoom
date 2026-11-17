@@ -1,9 +1,10 @@
 ﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Xcom32 - shows a folder in the file explorer of Windows         }
-{  (CrossPlatform::openExplorer)                                                }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  (CrossPlatform::openExplorer) Derived from OpenXcom (the OpenXcom           }
+{  Developers), available under the GNU General Public License, version 3 or   }
+{  (at your option) any later version; see Games\XcomFormats\README.md for     }
+{  the license of this unit                                                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Xcom.Win.FolderOpener;

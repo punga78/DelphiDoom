@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom geoscape library - what NewGameState does when OK is        }
-{  clicked (Mod::newSave, the geoscape and the screen of the first base)        }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom geoscape library - what NewGameState does when OK is       }
+{  clicked (Mod::newSave, the geoscape and the screen of the first base)       }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomGeoscape.NewGameStarter;

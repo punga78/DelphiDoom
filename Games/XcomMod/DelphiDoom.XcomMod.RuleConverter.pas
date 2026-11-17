@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom ruleset library - the tables that convert a saved game of   }
-{  the original game (RuleConverter)                                            }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom ruleset library - the tables that convert a saved game of  }
+{  the original game (RuleConverter) Derived from OpenXcom (the OpenXcom       }
+{  Developers), available under the GNU General Public License, version 3 or   }
+{  (at your option) any later version; see Games\XcomFormats\README.md for     }
+{  the license of this unit                                                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomMod.RuleConverter;

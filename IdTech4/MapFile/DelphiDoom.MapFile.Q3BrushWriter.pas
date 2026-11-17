@@ -2,15 +2,17 @@
 {                                                                              }
 {  DelphiDoom: map file library - writing a brush in the format of Quake III   }
 {                                                                              }
-{  Written for this library as the inverse of idMapBrush::ParseQ3 (MapFile.cpp)}
-{  of the Doom 3 GPL Source Code and of the brushes of GtkRadiant for Quake    }
-{  III Arena: three points, the material, shift, rotation, scale and the       }
-{  three numbers of the contents.                                              }
-{  Based on the Doom 3 GPL Source Code (id Software). Copyright (C) 1999-2011  }
-{  id Software LLC, a ZeniMax Media company. This unit is derived from the     }
-{  Doom 3 GPL source code and is therefore available under the GNU General     }
-{  Public License, version 3, with the additional terms of the Doom 3 Source   }
-{  Code License (see README.md of Framework\IdLib); the repository as a whole is }
+{  Written for this library as the inverse of idMapBrush::ParseQ3              }
+{  (MapFile.cpp) of the Doom 3 GPL Source Code and of the brushes of           }
+{  GtkRadiant for Quake III Arena: three points, the material, shift,          }
+{  rotation, scale and the three numbers of the contents. Based on the Doom 3  }
+{  GPL Source Code (id Software). Copyright (C) 1999-2011 id Software LLC, a   }
+{  ZeniMax Media company. This unit is derived from the Doom 3 GPL source      }
+{  code and is therefore available under the GNU General Public License,       }
+{  version 3 or (at your option) any later version, with the additional terms  }
+{  of the Doom 3 Source Code License (Reference\doom3\COPYING.txt:             }
+{  preservation of legal notices and trademarks, no use of the licensors'      }
+{  names for publicity, warranty disclaimer). The repository as a whole is     }
 {  GPL v2 or later.                                                            }
 {                                                                              }
 {******************************************************************************}

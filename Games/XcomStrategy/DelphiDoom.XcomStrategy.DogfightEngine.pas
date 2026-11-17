@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom strategy library - the logic of a dogfight (DogfightState  }
-{  without its window: update, weapons, UFO fire, the end of the combat)        }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  without its window: update, weapons, UFO fire, the end of the combat)       }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomStrategy.DogfightEngine;

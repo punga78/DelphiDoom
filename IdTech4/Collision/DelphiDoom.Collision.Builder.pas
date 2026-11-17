@@ -5,10 +5,14 @@
 {  Port of CollisionModelForMapEntity, ConvertBrush, ConvertBrushSides,        }
 {  ConvertPatch, CreatePatchPolygons, PolygonFromWinding, CreatePolygon and    }
 {  FinishModel of CollisionModel_load.cpp, Doom 3 GPL Source Code. Copyright   }
-{  (C) 1999-2011 id Software LLC, a ZeniMax Media company. Based on the Doom 3 }
-{  GPL Source Code (id Software). Doom 3 Source Code: GNU General Public       }
-{  License version 3 with additional terms. This unit is a derived work        }
-{  (GPL v3).                                                                   }
+{  (C) 1999-2011 id Software LLC, a ZeniMax Media company. Based on the Doom   }
+{  3 GPL Source Code (id Software). This unit is derived from the Doom 3 GPL   }
+{  source code and is therefore available under the GNU General Public         }
+{  License, version 3 or (at your option) any later version, with the          }
+{  additional terms of the Doom 3 Source Code License                          }
+{  (Reference\doom3\COPYING.txt: preservation of legal notices and             }
+{  trademarks, no use of the licensors' names for publicity, warranty          }
+{  disclaimer). The repository as a whole is GPL v2 or later.                  }
 {                                                                              }
 {  The merging of polygons, the internal edges, the removal of polygons that   }
 {  are inside brushes or in solid space of the proc BSP tree are in the units   }

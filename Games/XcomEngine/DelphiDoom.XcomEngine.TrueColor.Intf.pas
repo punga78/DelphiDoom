@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom engine library - the contracts of the composition of the    }
-{  frame in true color (issue 183): the content of the game stays at 8 bits,    }
-{  the last step of the screen can make a picture of colors                     }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom engine library - the contracts of the composition of the   }
+{  frame in true color (issue 183): the content of the game stays at 8 bits,   }
+{  the last step of the screen can make a picture of colors Derived from       }
+{  OpenXcom (the OpenXcom Developers), available under the GNU General Public  }
+{  License, version 3 or (at your option) any later version; see               }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomEngine.TrueColor.Intf;

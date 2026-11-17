@@ -42,8 +42,9 @@
 {  The program has no console: what it says goes to the standard output when    }
 {  there is one (redirected, or the console of the parent)                      }
 {                                                                              }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this program                   }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this program             }
 {                                                                              }
 {******************************************************************************}
 program Xcom32;

@@ -1,11 +1,12 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom surface library - the SDL_gfx primitives that Surface uses  }
-{  (lineColor, filledCircleColor, filledPolygonColor, texturedPolygon,          }
-{  stringColor) on 8 bit surfaces                                               }
-{  Port of the parts of SDL_gfx 2.0.26 (zlib license, Andreas Schiffler) that   }
-{  OpenXcom calls; derived from OpenXcom (the OpenXcom Developers), GPL v3 or   }
-{  later: see Games\XcomFormats\README.md for the license of this unit          }
+{  DelphiDoom: xcom surface library - the SDL_gfx primitives that Surface      }
+{  uses (lineColor, filledCircleColor, filledPolygonColor, texturedPolygon,    }
+{  stringColor) on 8 bit surfaces Port of the parts of SDL_gfx 2.0.26 (zlib    }
+{  license, Andreas Schiffler) that OpenXcom calls; derived from OpenXcom      }
+{  (the OpenXcom Developers), available under the GNU General Public License,  }
+{  version 3 or (at your option) any later version; see                        }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomSurface.Gfx;

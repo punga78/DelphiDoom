@@ -1,10 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom menu library - what the New Battle screen asks of the       }
-{  program: the battle it has set up, the equipment of the craft and where its  }
-{  choices are kept                                                             }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom menu library - what the New Battle screen asks of the      }
+{  program: the battle it has set up, the equipment of the craft and where     }
+{  its choices are kept Derived from OpenXcom (the OpenXcom Developers),       }
+{  available under the GNU General Public License, version 3 or (at your       }
+{  option) any later version; see Games\XcomFormats\README.md for the license  }
+{  of this unit                                                                }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomMenu.NewBattle.Intf;

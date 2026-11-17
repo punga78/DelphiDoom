@@ -1,9 +1,10 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom engine library - the virtual files of the mods for the      }
-{  ruleset (FileMap of OpenXcom seen through IXcomModFiles)                     }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  DelphiDoom: xcom engine library - the virtual files of the mods for the     }
+{  ruleset (FileMap of OpenXcom seen through IXcomModFiles) Derived from       }
+{  OpenXcom (the OpenXcom Developers), available under the GNU General Public  }
+{  License, version 3 or (at your option) any later version; see               }
+{  Games\XcomFormats\README.md for the license of this unit                    }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomEngine.FileMapModFiles;

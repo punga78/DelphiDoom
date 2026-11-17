@@ -1,10 +1,11 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom surface library - the SDL 1.2 operations OpenXcom relies on  }
-{  on 8 bit surfaces (SDL_BlitSurface with a color key, SDL_FillRect)           }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit; the SDL behavior   }
-{  is rewritten from the documented behavior of SDL 1.2.15                      }
+{  DelphiDoom: xcom surface library - the SDL 1.2 operations OpenXcom relies   }
+{  on on 8 bit surfaces (SDL_BlitSurface with a color key, SDL_FillRect)       }
+{  Derived from OpenXcom (the OpenXcom Developers), available under the GNU    }
+{  General Public License, version 3 or (at your option) any later version;    }
+{  see Games\XcomFormats\README.md for the license of this unit; the SDL       }
+{  behavior is rewritten from the documented behavior of SDL 1.2.15            }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomSurface.Sdl;

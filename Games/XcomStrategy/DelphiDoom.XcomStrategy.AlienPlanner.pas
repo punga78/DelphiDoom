@@ -1,11 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom strategy library - what the aliens do as the time goes on: }
-{  their missions, the sites, the bases and the search for the XCOM bases      }
+{  DelphiDoom: xcom strategy library - what the aliens do as the time goes     }
+{  on: their missions, the sites, the bases and the search for the XCOM bases  }
 {  (the alien parts of GeoscapeState::time10Minutes, time30Minutes and         }
-{  time1Day)                                                                   }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Games\XcomFormats\README.md for the license of this unit                     }
+{  time1Day) Derived from OpenXcom (the OpenXcom Developers), available under  }
+{  the GNU General Public License, version 3 or (at your option) any later     }
+{  version; see Games\XcomFormats\README.md for the license of this unit       }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.XcomStrategy.AlienPlanner;

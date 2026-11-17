@@ -7,9 +7,11 @@
 {  LLC, a ZeniMax Media company.                                               }
 {                                                                              }
 {  This unit is derived from the Doom 3 GPL source code and is therefore       }
-{  available under the GNU General Public License, version 3 or later, with    }
-{  the additional terms of the Doom 3 Source Code License (see README.md of    }
-{  Framework\IdLib); the repository as a whole is GPL v2 or later.             }
+{  available under the GNU General Public License, version 3 or (at your       }
+{  option) any later version, with the additional terms of the Doom 3 Source   }
+{  Code License (Reference\doom3\COPYING.txt: preservation of legal notices    }
+{  and trademarks, no use of the licensors' names for publicity, warranty      }
+{  disclaimer). The repository as a whole is GPL v2 or later.                  }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.DoomScript.Thread;
