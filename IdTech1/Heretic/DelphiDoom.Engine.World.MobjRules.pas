@@ -236,13 +236,6 @@ function P_SpawnMissileAngle(source: Pmobj_t; _type: integer; angle: angle_t; mo
 
 //==============================================================================
 //
-// P_SpawnBlood
-//
-//==============================================================================
-procedure P_SpawnBlood(x, y, z: fixed_t; damage: integer; const originator: Pmobj_t);
-
-//==============================================================================
-//
 // P_BloodSplatter
 //
 //==============================================================================
@@ -952,35 +945,6 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// P_SpawnBlood
-//
-//==============================================================================
-procedure P_SpawnBlood(x, y, z: fixed_t; damage: integer; const originator: Pmobj_t);
-var
-  th: Pmobj_t;
-begin
-  z := z + _SHL(P_Random - P_Random, 10);
-  th := P_SpawnMobj(x, y, z, Ord(MT_BLOOD));
-
-  if originator.bloodcolor <> 0 then
-    R_SetMobjBloodTranslation(th, originator.bloodcolor);
-
-  th.momz := FRACUNIT * 2;
-  th.tics := th.tics - (P_Random and 3);
-
-  if th.tics < 1 then
-    th.tics := 1;
-
-  if th.flags3_ex and MF3_EX_BLOODIGNOREDAMAGE = 0 then
-  begin
-    if (damage <= 12) and (damage >= 9) then
-      P_SetMobjState(th, S_BLOOD2)
-    else if damage < 9 then
-      P_SetMobjState(th, S_BLOOD3);
-  end;
-end;
 
 //==============================================================================
 //

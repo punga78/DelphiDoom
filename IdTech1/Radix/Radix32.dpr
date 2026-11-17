@@ -326,6 +326,7 @@ uses
   p_maputl in '..\Base\p_maputl.pas',
   p_mobj in '..\Base\p_mobj.pas',
   DelphiDoom.Engine.World.MobjRules in '..\Doom\DelphiDoom.Engine.World.MobjRules.pas',
+  DelphiDoom.Engine.World.BloodSpawner in '..\Base\DelphiDoom.Engine.World.BloodSpawner.pas',
   DelphiDoom.Engine.World.RadixBounce in 'DelphiDoom.Engine.World.RadixBounce.pas',
   DelphiDoom.Engine.World.RadixSky in 'DelphiDoom.Engine.World.RadixSky.pas',
   DelphiDoom.Engine.World.PhysicsExtension in 'DelphiDoom.Engine.World.PhysicsExtension.pas',
