@@ -125,4 +125,13 @@ fkey 147
 fshow
 fkey 130
 fshow
+fclear
+clipboard caf\xe9 \xff!
+fchar 22
+fshow
+fclear
+fchar 233
+fchar 255
+fchar 128
+fshow
 keyshutdown

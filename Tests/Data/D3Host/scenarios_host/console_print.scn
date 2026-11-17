@@ -10,9 +10,9 @@ conprint ^1red ^2green ^7white ^3yellow^0 black ^9default ^ plain\n
 conshow 2
 contimes
 conprint tab\there\tx\ty\n
-conshow 1
+conshow 2
 conprint aaaa\rbb\n
-conshow 1
+conshow 2
 conprint a long word without any blank that goes past the end of the line: 0123456789012345678901234567890123456789012345678901234567890123456789\n
 conshow 3
 conprint one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen\n
@@ -25,8 +25,8 @@ conprint abc\ndef\n\n\nghi\n
 conshow 6
 conprint 12345678901234567890123456789012345678901234567890123456789012345678901234\tabc\n
 conshow 3
-conprint \xe9\xfc caf\xe9\n
-conshow 1
+conprint \xe9\xfc caf\xe9 \xe9\xe9\xe9\xe9 12345678901234567890123456789012345678901234567890123456789012345678\xe9 word\n
+conshow 3
 context
 conclear
 conshow 2

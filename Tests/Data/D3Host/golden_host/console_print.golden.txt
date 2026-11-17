@@ -24,11 +24,15 @@ CONCOLOR 2 555555555555555555555555555555555555555555555555555555555555555555555
 CMD contimes
 TIMES 1000 2000 2000 0
 CMD conprint tab\\there\\tx\\ty\\n
-CMD conshow 1
+CMD conshow 2
+CONLINE 2 tab here    x   y                                                             
+CONCOLOR 2 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CONLINE 3                                                                               
 CONCOLOR 3 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CMD conprint aaaa\\rbb\\n
-CMD conshow 1
+CMD conshow 2
+CONLINE 3 bbaa                                                                          
+CONCOLOR 3 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CONLINE 4                                                                               
 CONCOLOR 4 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CMD conprint a long word without any blank that goes past the end of the line: 0123456789012345678901234567890123456789012345678901234567890123456789\\n
@@ -83,32 +87,36 @@ CONLINE 16 c
 CONCOLOR 16 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CONLINE 17                                                                               
 CONCOLOR 17 555555555555555555555555555555555555555555555555555555555555555555555555555555
-CMD conprint \\xe9\\xfc caf\\xe9\\n
-CMD conshow 1
-CONLINE 18                                                                               
-CONCOLOR 18 555555555555555555555555555555555555555555555555555555555555555555555555555555
-CMD context
-CONSOLE catching=0 current=18 x=0 display=18 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=0 history=0,0
-CONFIELD 
-CONFIELDCURSOR 0 0
-CMD conclear
-CMD conshow 2
-CONLINE 17                                                                               
+CMD conprint \\xe9\\xfc caf\\xe9 \\xe9\\xe9\\xe9\\xe9 12345678901234567890123456789012345678901234567890123456789012345678\\xe9 word\\n
+CMD conshow 3
+CONLINE 17 \xE9\xFC caf\xE9 \xE9\xE9\xE9\xE9 12345678901234567890123456789012345678901234567890123456789012345
 CONCOLOR 17 555555555555555555555555555555555555555555555555555555555555555555555555555555
-CONLINE 18                                                                               
-CONCOLOR 18 555555555555555555555555555555555555555555555555555555555555555555555555555555
-CMD context
-CONSOLE catching=0 current=18 x=0 display=18 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=0 history=0,0
-CONFIELD 
-CONFIELDCURSOR 0 0
-CMD conprint after clear\\n
-CMD conshow 2
-CONLINE 18 after clear                                                                   
+CONLINE 18 678\xE9 word                                                                     
 CONCOLOR 18 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CONLINE 19                                                                               
 CONCOLOR 19 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CMD context
 CONSOLE catching=0 current=19 x=0 display=19 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=0 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conclear
+CMD conshow 2
+CONLINE 18                                                                               
+CONCOLOR 18 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CONLINE 19                                                                               
+CONCOLOR 19 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CMD context
+CONSOLE catching=0 current=19 x=0 display=19 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=0 history=0,0
+CONFIELD 
+CONFIELDCURSOR 0 0
+CMD conprint after clear\\n
+CMD conshow 2
+CONLINE 19 after clear                                                                   
+CONCOLOR 19 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CONLINE 20                                                                               
+CONCOLOR 20 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CMD context
+CONSOLE catching=0 current=20 x=0 display=20 lastKey=-1 nextKey=200 frac=0.000 final=0.000 fracTime=0 history=0,0
 CONFIELD 
 CONFIELDCURSOR 0 0
 CMD exec nothing
@@ -127,8 +135,8 @@ CMD exec conDump
 PRINTF usage: conDump <filename>\n
 CMD conprint last\\n
 CMD conshow 1
-CONLINE 20                                                                               
-CONCOLOR 20 555555555555555555555555555555555555555555555555555555555555555555555555555555
+CONLINE 21                                                                               
+CONCOLOR 21 555555555555555555555555555555555555555555555555555555555555555555555555555555
 CMD conshutdown
 RMCMD clear
 RMCMD conDump

@@ -302,4 +302,21 @@ FIELD cursor=0 scroll=0 width=4 len=0 valid=0 match=0 index=0
 FBUF 123456789x
 FCOMP 
 FMATCH 
+CMD fclear
+CMD clipboard caf\\xe9 \\xff!
+CMD fchar 22
+CMD fshow
+FIELD cursor=5 scroll=2 width=4 len=0 valid=0 match=0 index=0
+FBUF caf !
+FCOMP 
+FMATCH 
+CMD fclear
+CMD fchar 233
+CMD fchar 255
+CMD fchar 128
+CMD fshow
+FIELD cursor=3 scroll=0 width=4 len=0 valid=0 match=0 index=0
+FBUF \xE9\xFF\x80
+FCOMP 
+FMATCH 
 CMD keyshutdown
