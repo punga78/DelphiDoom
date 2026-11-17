@@ -32,6 +32,8 @@ var
   dlbuffer: Pdlsortitem_tArray = nil;
   numdlitems: integer = 0;
   realdlitems: integer = 0;
+  lightdeflumppresent: boolean = false;
+  gldefs_as_lightdef: boolean = true;
 
 implementation
 

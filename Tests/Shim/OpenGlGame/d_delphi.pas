@@ -6,10 +6,15 @@
 {                                                                              }
 {******************************************************************************}
 // Stands in for IdTech1\Common\d_delphi.pas in DelphiDoom.Tests.OpenGl.<Game> only: the scene units take
-// from it the type float and the allocation helpers of the light buffer.
+// from it the type float, the allocation helpers of the light buffer, the list of pairs, the string list
+// of the extensions and printf (which here writes a line in EventLog, the list the test reads, if it is
+// assigned).
 unit d_delphi;
 
 interface
+
+uses
+  System.Classes;
 
 type
   float = Single;
@@ -30,10 +35,28 @@ type
     property Numbers[Index: Integer]: twointeger_t read Get; default;
   end;
 
-/// <summary>The realloc of d_delphi: a block of the new size that keeps the bytes of the old one</summary>
+  /// <summary>The string list of d_delphi (a plain TStringList here: Text, IndexOf, count, strings)</summary>
+  TDStringList = class(TStringList);
+
+var
+  /// <summary>Where printf writes (one line per call, the line breaks of the text shown as "|"); nil = nowhere</summary>
+  EventLog: TStringList = nil;
+
+/// <summary>The realloc of d_delphi</summary>
 procedure realloc(var P: Pointer; const OldSize, NewSize: Integer);
 
+/// <summary>Writes a line in EventLog (the shims of the units that the scene calls use it to be seen)</summary>
+procedure ShimEvent(const AText: string);
+
+procedure printf(const str: string); overload;
+procedure printf(const Fmt: string; const Args: array of const); overload;
+function strupper(const S: string): string;
+function StringVal(const Str: PAnsiChar): string;
+
 implementation
+
+uses
+  System.SysUtils;
 
 function T2DNumberList.Get(Index: Integer): twointeger_t;
 begin
@@ -62,6 +85,33 @@ begin
   end
   else if NewSize <> OldSize then
     ReallocMem(P, NewSize);
+end;
+
+procedure ShimEvent(const AText: string);
+begin
+  if Assigned(EventLog) then
+    EventLog.Add(AText);
+end;
+
+procedure printf(const str: string);
+begin
+  if Assigned(EventLog) then
+    EventLog.Add('printf ' + StringReplace(str, #13#10, '|', [rfReplaceAll]));
+end;
+
+procedure printf(const Fmt: string; const Args: array of const);
+begin
+  printf(Format(Fmt, Args));
+end;
+
+function strupper(const S: string): string;
+begin
+  Result := UpperCase(S);
+end;
+
+function StringVal(const Str: PAnsiChar): string;
+begin
+  Result := string(AnsiString(Str));
 end;
 
 end.

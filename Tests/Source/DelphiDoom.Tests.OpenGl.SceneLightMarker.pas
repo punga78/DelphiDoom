@@ -33,6 +33,8 @@ type
     FLights: array[0..15] of TDynLightRender;
   public
     Requests: TStringList;
+    /// <summary>What Load gives (a lump of lights was found or not)</summary>
+    LoadResult: Boolean;
     constructor Create;
     destructor Destroy; override;
     function Load(AGldefsAsLightDef: Boolean): Boolean;
@@ -102,6 +104,7 @@ var
 begin
   inherited Create;
   Requests := TStringList.Create;
+  LoadResult := True;
   for LIndex := 0 to High(FLights) do
   begin
     FLights[LIndex].R := LIndex / 16;
@@ -123,7 +126,8 @@ end;
 
 function TFakeLightCache.Load(AGldefsAsLightDef: Boolean): Boolean;
 begin
-  Result := True;
+  ShimEvent('IDynLightRenderCache.Load ' + BoolToStr(AGldefsAsLightDef, True));
+  Result := LoadResult;
 end;
 
 procedure TFakeLightCache.Clear;

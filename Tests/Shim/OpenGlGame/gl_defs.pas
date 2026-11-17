@@ -5,8 +5,9 @@
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-// Stands in for IdTech1\OpenGl\Legacy\gl_defs.pas in DelphiDoom.Tests.OpenGl.<Game> only: the options the
-// scene units read, same names and same initial values as the real ones.
+// Stands in for IdTech1\OpenGl\Legacy\gl_defs.pas in DelphiDoom.Tests.OpenGl.<Game> only: the options and
+// the types the scene units read, same names, same initial values and same declarations as the real ones
+// (keep them aligned).
 unit gl_defs;
 
 interface
@@ -28,10 +29,66 @@ const
 
 var
   camera: gld_camera_t;
+
   use_fog: boolean = false;
   fog_density: integer = 100;
   use_white_fog: boolean = true;
   white_fog_density: integer = 200;
+
+  gl_screensync: boolean = true;
+  gl_texture_filter_anisotropic: boolean = false;
+  gl_use_paletted_texture: integer = 0;
+  gl_use_shared_texture_palette: integer = 0;
+  gl_paletted_texture: boolean = false;
+  gl_shared_texture_palette: boolean = false;
+
+type
+  lp3DFXFUNC = procedure(i1, i2, i3, i4, i5: integer; const p: pointer);
+
+var
+  gld_ColorTableEXT: lp3DFXFUNC = nil;
+
+type
+  gl_filter_t = (
+    FLT_NEAREST,
+    FLT_LINEAR,
+    FLT_LINEAR_MIPMAP_NEAREST,
+    FLT_NEAREST_MIPMAP_NEAREST,
+    FLT_NEAREST_MIPMAP_LINEAR,
+    FLT_LINEAR_MIPMAP_LINEAR,
+    NUM_GL_FILTERS
+  );
+
+const
+  gl_tex_filters: array[0..Ord(NUM_GL_FILTERS) - 1] of string = (
+    'GL_NEAREST',
+    'GL_LINEAR',
+    'GL_LINEAR_MIPMAP_NEAREST',
+    'GL_NEAREST_MIPMAP_NEAREST',
+    'GL_NEAREST_MIPMAP_LINEAR',
+    'GL_LINEAR_MIPMAP_LINEAR'
+  );
+
+var
+  gl_tex_format_string: string;
+  gl_tex_format: integer = GL_RGBA8;
+
+type
+  tex_format_lookup_t = record
+    tex_format: integer;
+    desc: string
+  end;
+
+const
+  DEF_TEX_FORMAT = GL_RGBA;
+  NUM_GL_TEX_FORMATS = 5;
+  gl_tex_formats: array[0..NUM_GL_TEX_FORMATS - 1] of tex_format_lookup_t = (
+    (tex_format: GL_RGBA8; desc: 'GL_RGBA8'),
+    (tex_format: GL_RGB5_A1; desc: 'GL_RGB5_A1'),
+    (tex_format: GL_RGBA4; desc: 'GL_RGBA4'),
+    (tex_format: GL_RGBA2; desc: 'GL_RGBA2'),
+    (tex_format: GL_RGBA; desc: 'GL_RGBA')
+  );
 
 implementation
 
