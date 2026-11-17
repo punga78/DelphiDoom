@@ -525,28 +525,28 @@ begin
   DEH_AddNullAction;
 
   DEH_AddAction(@A_Light0, 'A_Light0()'); // 1
-  DEH_AddAction(@A_WeaponReady, 'A_WeaponReady()'); // 2
+  DEH_AddAction(@TDoomWeaponActions.A_WeaponReady, 'A_WeaponReady()'); // 2
   DEH_AddAction(@A_Lower, 'A_Lower()'); // 3
   DEH_AddAction(@A_Raise, 'A_Raise()'); // 4
-  DEH_AddAction(@A_Punch, 'A_Punch()'); // 5
+  DEH_AddAction(@TDoomWeaponActions.A_Punch, 'A_Punch()'); // 5
   DEH_AddAction(@A_ReFire, 'A_ReFire()'); // 6
-  DEH_AddAction(@A_FirePistol, 'A_FirePistol()'); // 7
-  DEH_AddAction(@A_Light1, 'A_Light1()'); // 8
-  DEH_AddAction(@A_FireShotgun, 'A_FireShotgun()'); // 9
-  DEH_AddAction(@A_Light2, 'A_Light2()'); // 10
-  DEH_AddAction(@A_FireShotgun2, 'A_FireShotgun2()'); // 11
-  DEH_AddAction(@A_CheckReload, 'A_CheckReload()'); // 12
+  DEH_AddAction(@TDoomWeaponActions.A_FirePistol, 'A_FirePistol()'); // 7
+  DEH_AddAction(@TDoomWeaponActions.A_Light1, 'A_Light1()'); // 8
+  DEH_AddAction(@TDoomWeaponActions.A_FireShotgun, 'A_FireShotgun()'); // 9
+  DEH_AddAction(@TDoomWeaponActions.A_Light2, 'A_Light2()'); // 10
+  DEH_AddAction(@TDoomWeaponActions.A_FireShotgun2, 'A_FireShotgun2()'); // 11
+  DEH_AddAction(@TDoomWeaponActions.A_CheckReload, 'A_CheckReload()'); // 12
   DEH_AddAction(@A_OpenShotgun2, 'A_OpenShotgun2()'); // 13
   DEH_AddAction(@A_LoadShotgun2, 'A_LoadShotgun2()'); // 14
   DEH_AddAction(@A_CloseShotgun2, 'A_CloseShotgun2()'); // 15
-  DEH_AddAction(@A_FireCGun, 'A_FireCGun()'); // 16
-  DEH_AddAction(@A_GunFlash, 'A_GunFlash()'); // 17
-  DEH_AddAction(@A_FireMissile, 'A_FireMissile()'); // 18
-  DEH_AddAction(@A_Saw, 'A_Saw()'); // 19
-  DEH_AddAction(@A_FirePlasma, 'A_FirePlasma()'); // 20
-  DEH_AddAction(@A_BFGsound, 'A_BFGsound()'); // 21
-  DEH_AddAction(@A_FireBFG, 'A_FireBFG()'); // 22
-  DEH_AddAction(@A_BFGSpray, 'A_BFGSpray()'); // 23
+  DEH_AddAction(@TDoomWeaponActions.A_FireCGun, 'A_FireCGun()'); // 16
+  DEH_AddAction(@TDoomWeaponActions.A_GunFlash, 'A_GunFlash()'); // 17
+  DEH_AddAction(@TDoomWeaponActions.A_FireMissile, 'A_FireMissile()'); // 18
+  DEH_AddAction(@TDoomWeaponActions.A_Saw, 'A_Saw()'); // 19
+  DEH_AddAction(@TDoomWeaponActions.A_FirePlasma, 'A_FirePlasma()'); // 20
+  DEH_AddAction(@TDoomWeaponActions.A_BFGsound, 'A_BFGsound()'); // 21
+  DEH_AddAction(@TDoomWeaponActions.A_FireBFG, 'A_FireBFG()'); // 22
+  DEH_AddAction(@TDoomWeaponActions.A_BFGSpray, 'A_BFGSpray()'); // 23
   DEH_AddAction(@A_Explode, 'A_Explode()'); // 24
   DEH_AddAction(@A_Pain, 'A_Pain()'); // 25
   DEH_AddAction(@A_PlayerScream, 'A_PlayerScream()'); // 26
