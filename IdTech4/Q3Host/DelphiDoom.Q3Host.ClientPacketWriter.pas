@@ -60,6 +60,8 @@ type
     ///   message is the same bytes the netchan takes (Transmit adds the sequence number)
     /// </summary>
     function Write(const AInput: TQ3ClientPacketInput): TBytes;
+    /// <summary>cl.outPackets[ n &amp; PACKET_MASK ].p_cmdNumber: how far the commands went when that packet left</summary>
+    procedure SetSentCommandNumber(AOutgoingSequence, ACommandNumber: Integer);
   end;
 
 implementation
@@ -73,6 +75,11 @@ begin
   inherited Create;
   FState := AState;
   FCoder := ACoder;
+end;
+
+procedure TQ3ClientPacketWriter.SetSentCommandNumber(AOutgoingSequence, ACommandNumber: Integer);
+begin
+  FCommandNumbers[AOutgoingSequence and (Q3_PACKET_BACKUP - 1)] := ACommandNumber;
 end;
 
 function TQ3ClientPacketWriter.Write(const AInput: TQ3ClientPacketInput): TBytes;
