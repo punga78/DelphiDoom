@@ -702,6 +702,7 @@ uses
   DelphiDoom.Thinkers.List in '..\Thinkers\DelphiDoom.Thinkers.List.pas',
   DelphiDoom.Thinkers.ActiveSlots in '..\Thinkers\DelphiDoom.Thinkers.ActiveSlots.pas',
   delphidoom.thinkers.bodyqueue in '..\Thinkers\delphidoom.thinkers.bodyqueue.pas',
+  DelphiDoom.Thinkers.LevelCorpses in '..\Thinkers\DelphiDoom.Thinkers.LevelCorpses.pas',
   DelphiDoom.Input.KeyboardLayout in '..\..\Framework\Input\DelphiDoom.Input.KeyboardLayout.pas',
   DelphiDoom.Input.EventScaling in '..\..\Framework\Input\DelphiDoom.Input.EventScaling.pas',
   DelphiDoom.Thinkers.LevelTotals in '..\Thinkers\DelphiDoom.Thinkers.LevelTotals.pas',

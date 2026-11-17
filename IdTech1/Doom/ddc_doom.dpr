@@ -715,6 +715,7 @@ uses
   DelphiDoom.Thinkers.List in '..\Thinkers\DelphiDoom.Thinkers.List.pas',
   DelphiDoom.Thinkers.ActiveSlots in '..\Thinkers\DelphiDoom.Thinkers.ActiveSlots.pas',
   delphidoom.thinkers.bodyqueue in '..\Thinkers\delphidoom.thinkers.bodyqueue.pas',
+  DelphiDoom.Thinkers.LevelCorpses in '..\Thinkers\DelphiDoom.Thinkers.LevelCorpses.pas',
   DelphiDoom.MapInfo.MapName in '..\MapInfo\DelphiDoom.MapInfo.MapName.pas',
   DelphiDoom.Demo.Types in '..\Demo\DelphiDoom.Demo.Types.pas',
   DelphiDoom.MapInfo.NewGameLimits in '..\MapInfo\DelphiDoom.MapInfo.NewGameLimits.pas',
