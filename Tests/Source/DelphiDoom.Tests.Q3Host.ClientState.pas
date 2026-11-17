@@ -582,9 +582,12 @@ begin
   LMemory.Fill(BUFFER, $77, 32);
   Assert.AreEqual(0, FRig.Call(TQ3Module.Ui, [UI_GETCLIPBOARDDATA, BUFFER, 7]));
   Assert.AreEqual('pasted', string(LMemory.ReadString(BUFFER)));
+  // no clipboard: only the first byte is zeroed (*buf = 0)
   FRig.ClientSystem.Clipboard := '';
+  LMemory.Fill(BUFFER, $77, 32);
   Assert.AreEqual(0, FRig.Call(TQ3Module.Ui, [UI_GETCLIPBOARDDATA, BUFFER, 7]));
   Assert.AreEqual('', string(LMemory.ReadString(BUFFER)));
+  Assert.AreEqual($77, Integer(LMemory.ReadByte(BUFFER + 1)));
 end;
 
 procedure TTestQ3ClientState.LeDimensioniDelleStruttureDovrebberoEssereQuelleDelC;

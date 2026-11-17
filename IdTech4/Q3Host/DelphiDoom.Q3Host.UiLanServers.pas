@@ -14,12 +14,12 @@
 {******************************************************************************}
 {$Q-}
 {$R-}
-unit DelphiDoom.Q3Host.LanServers;
+unit DelphiDoom.Q3Host.UiLanServers;
 
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Q3Host.Client.Types, DelphiDoom.Q3Host.Client.Intf, DelphiDoom.Q3Host.NetAddress;
+  System.SysUtils, DelphiDoom.Q3Host.Client.Types, DelphiDoom.Q3Host.Client.Intf, DelphiDoom.Q3Host.UiNetAddress;
 
 type
   /// <summary>serverInfo_t of client.h (the strings are 32 characters with the terminator)</summary>

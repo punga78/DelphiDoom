@@ -39,7 +39,7 @@ uses
   DelphiDoom.Q3Host.GameFiles, DelphiDoom.Q3Host.ClipMap, DelphiDoom.Q3Host.MapLoader, DelphiDoom.Q3Host.ServerState,
   DelphiDoom.Q3Host.Client.Types, DelphiDoom.Q3Host.Client.Services, DelphiDoom.Q3Host.ClientState,
   DelphiDoom.Q3Host.ClientKeys, DelphiDoom.Q3Host.ClientCdKey, DelphiDoom.Q3Host.ClientRecordingRenderer,
-  DelphiDoom.Q3Host.LanServers, DelphiDoom.Q3Host.ScriptFiles, DelphiDoom.Q3Host.ScriptLog,
+  DelphiDoom.Q3Host.UiLanServers, DelphiDoom.Q3Host.ClientScriptFiles, DelphiDoom.Q3Host.ClientScriptLog,
   DelphiDoom.Tests.Q3Host.Support, DelphiDoom.Tests.Q3Host.Services, DelphiDoom.Tests.Q3Host.ClientSupport,
   DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Golden, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.Tests.Qvm.Support, DelphiDoom.Q3Host.Opcodes;

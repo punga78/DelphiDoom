@@ -60,7 +60,7 @@ implementation
 uses
   System.SysUtils, DelphiDoom.Qvm.Intf, DelphiDoom.Qvm.Factory, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf,
   DelphiDoom.Q3Host.Opcodes,
-  DelphiDoom.Q3Host.Client.Types, DelphiDoom.Q3Host.NetAddress, DelphiDoom.Q3Host.LanServers,
+  DelphiDoom.Q3Host.Client.Types, DelphiDoom.Q3Host.UiNetAddress, DelphiDoom.Q3Host.UiLanServers,
   DelphiDoom.Q3Host.ClientCdKey, DelphiDoom.Tests.Q3Host.Services;
 
 const

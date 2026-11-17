@@ -11,7 +11,7 @@
 {******************************************************************************}
 {$Q-}
 {$R-}
-unit DelphiDoom.Q3Host.KeySyscalls;
+unit DelphiDoom.Q3Host.ClientKeySyscalls;
 
 // Overflow and range checks are off: the arguments are 32 bit words, as in the C.
 
@@ -78,9 +78,15 @@ begin
           end);
         ARegistry.Register(UI_KEY_GETBINDINGBUF,
           function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
+          var
+            LBinding: AnsiString;
           begin
-            // an unbound key is "" in the buffer
-            AMachine.Memory.WriteString(AArgs[2], AKeys.GetBinding(AArgs[1]), AArgs[3]);
+            // an unbound key only puts a zero in the first byte (*buf = 0), a binding is copied by Q_strncpyz
+            LBinding := AKeys.GetBinding(AArgs[1]);
+            if LBinding = '' then
+              AMachine.Memory.WriteByte(AArgs[2], 0)
+            else
+              AMachine.Memory.WriteString(AArgs[2], LBinding, AArgs[3]);
             Result := 0;
           end);
         ARegistry.Register(UI_KEY_SETBINDING,

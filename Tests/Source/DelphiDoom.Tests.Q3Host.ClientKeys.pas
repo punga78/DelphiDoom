@@ -233,8 +233,11 @@ begin
   LMemory.Fill(BUFFER, $77, 32);
   Assert.AreEqual(0, FRig.Call(TQ3Module.Ui, [UI_KEY_GETBINDINGBUF, 32, BUFFER, 32]));
   Assert.AreEqual('+jump', string(LMemory.ReadString(BUFFER)));
+  // an unbound key only puts a zero in the first byte
+  LMemory.Fill(BUFFER, $77, 32);
   Assert.AreEqual(0, FRig.Call(TQ3Module.Ui, [UI_KEY_GETBINDINGBUF, 33, BUFFER, 32]));
   Assert.AreEqual('', string(LMemory.ReadString(BUFFER)));
+  Assert.AreEqual($77, Integer(LMemory.ReadByte(BUFFER + 1)));
   Assert.AreEqual(0, FRig.Call(TQ3Module.Ui, [UI_KEY_GETOVERSTRIKEMODE]));
   Assert.AreEqual(0, FRig.Call(TQ3Module.Ui, [UI_KEY_SETOVERSTRIKEMODE, 1]));
   Assert.AreEqual(1, FRig.Call(TQ3Module.Ui, [UI_KEY_GETOVERSTRIKEMODE]));

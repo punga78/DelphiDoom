@@ -204,9 +204,15 @@ begin
           end);
         ARegistry.Register(UI_GETCLIPBOARDDATA,
           function(const AMachine: IQvmMachine; const AArgs: TQvmSystemCallArguments): Integer
+          var
+            LText: AnsiString;
           begin
-            // an empty clipboard is "" in the buffer
-            AMachine.Memory.WriteString(AArgs[1], ASystem.ClipboardText, AArgs[2]);
+            // no clipboard only puts a zero in the first byte (*buf = 0), a text is copied by Q_strncpyz
+            LText := ASystem.ClipboardText;
+            if LText = '' then
+              AMachine.Memory.WriteByte(AArgs[1], 0)
+            else
+              AMachine.Memory.WriteString(AArgs[1], LText, AArgs[2]);
             Result := 0;
           end);
       end;

@@ -10,7 +10,7 @@
 {  General Public License, version 2 or (at your option) any later version.     }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Q3Host.ScriptFiles;
+unit DelphiDoom.Q3Host.ClientScriptFiles;
 
 interface
 

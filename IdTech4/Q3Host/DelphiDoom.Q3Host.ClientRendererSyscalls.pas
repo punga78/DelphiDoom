@@ -11,7 +11,7 @@
 {******************************************************************************}
 {$Q-}
 {$R-}
-unit DelphiDoom.Q3Host.RendererSyscalls;
+unit DelphiDoom.Q3Host.ClientRendererSyscalls;
 
 // Overflow and range checks are off: the arguments are 32 bit words, as in the C.
 

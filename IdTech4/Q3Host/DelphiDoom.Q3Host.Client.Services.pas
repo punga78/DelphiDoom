@@ -48,9 +48,9 @@ type
 implementation
 
 uses
-  DelphiDoom.Q3Host.ClientStateSyscalls, DelphiDoom.Q3Host.KeySyscalls, DelphiDoom.Q3Host.SoundSyscalls,
-  DelphiDoom.Q3Host.CinematicSyscalls, DelphiDoom.Q3Host.RendererSyscalls, DelphiDoom.Q3Host.PrecompilerSyscalls,
-  DelphiDoom.Q3Host.LanSyscalls, DelphiDoom.Q3Host.CdKeySyscalls, DelphiDoom.Q3Host.ClientMathSyscalls;
+  DelphiDoom.Q3Host.ClientStateSyscalls, DelphiDoom.Q3Host.ClientKeySyscalls, DelphiDoom.Q3Host.ClientSoundSyscalls,
+  DelphiDoom.Q3Host.ClientCinematicSyscalls, DelphiDoom.Q3Host.ClientRendererSyscalls, DelphiDoom.Q3Host.ClientPrecompilerSyscalls,
+  DelphiDoom.Q3Host.UiLanSyscalls, DelphiDoom.Q3Host.UiCdKeySyscalls, DelphiDoom.Q3Host.ClientMathSyscalls;
 
 class procedure TQ3ClientGroups.Register(AModule: TQ3Module; const ARegistry: IQ3SyscallRegistry;
   const AServices: TQ3HostClientServices; const ACVars: IQ3CVarSystem);

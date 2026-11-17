@@ -10,7 +10,7 @@
 {  later version.                                                               }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Q3Host.NetAddress;
+unit DelphiDoom.Q3Host.UiNetAddress;
 
 interface
 

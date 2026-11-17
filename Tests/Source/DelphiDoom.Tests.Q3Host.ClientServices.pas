@@ -333,13 +333,19 @@ begin
 
   LCount := 0;
   LText := '';
+  LMemory.Fill(6000, $77, Q3_PCTOKEN_SIZE);
   while FRig.Call(TQ3Module.CGame, [CG_PC_READ_TOKEN, LHandle, 6000]) <> 0 do
   begin
     Inc(LCount);
     LKind := LMemory.ReadInt32(6000);
     LText := LText + string(LMemory.ReadString(6000 + Q3_PCTOKEN_STRING)) + '|';
     if LCount = 1 then
+    begin
       Assert.AreEqual(TT_NAME, LKind);
+      // strcpy: the seven letters and their zero, and the rest of the field is not touched
+      Assert.AreEqual(0, Integer(LMemory.ReadByte(6000 + Q3_PCTOKEN_STRING + 7)));
+      Assert.AreEqual($77, Integer(LMemory.ReadByte(6000 + Q3_PCTOKEN_STRING + 8)));
+    end;
     if LCount = 2 then
       Assert.AreEqual(TT_PUNCTUATION, LKind);
     if LCount = 4 then

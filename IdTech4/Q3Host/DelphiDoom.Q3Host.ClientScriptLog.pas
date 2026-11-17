@@ -9,7 +9,7 @@
 {  your option) any later version.                                              }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Q3Host.ScriptLog;
+unit DelphiDoom.Q3Host.ClientScriptLog;
 
 interface
 

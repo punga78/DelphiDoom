@@ -17,7 +17,7 @@ uses
   DelphiDoom.Scanner.Q3.SourceHandles, DelphiDoom.Q3Host.Types, DelphiDoom.Q3Host.Intf, DelphiDoom.Q3Host.Client.Types,
   DelphiDoom.Q3Host.Client.Intf, DelphiDoom.Q3Host.Client.Services, DelphiDoom.Q3Host.ClientState,
   DelphiDoom.Q3Host.ClientKeys, DelphiDoom.Q3Host.ClientCdKey, DelphiDoom.Q3Host.ClientRecordingRenderer,
-  DelphiDoom.Q3Host.LanServers;
+  DelphiDoom.Q3Host.UiLanServers;
 
 type
   /// <summary>Records the sound calls as lines of text; the sounds get the numbers 1, 2 ... in the order of registration</summary>
@@ -141,7 +141,7 @@ implementation
 uses
   DelphiDoom.Qvm.Factory, DelphiDoom.Qvm.Opcodes, DelphiDoom.Q3Host.Factory, DelphiDoom.Scanner.Q3.ScriptLoader,
   DelphiDoom.Scanner.Q3.Types, DelphiDoom.Tests.Qvm.Assembler, DelphiDoom.Tests.Qvm.Programs,
-  DelphiDoom.Tests.Q3Host.Support, DelphiDoom.Q3Host.ScriptFiles, DelphiDoom.Q3Host.GameFiles,
+  DelphiDoom.Tests.Q3Host.Support, DelphiDoom.Q3Host.ClientScriptFiles, DelphiDoom.Q3Host.GameFiles,
   DelphiDoom.Q3Host.ClipMap;
 
 { TQ3FakeSound }

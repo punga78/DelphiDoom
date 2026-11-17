@@ -12,7 +12,7 @@
 {******************************************************************************}
 {$Q-}
 {$R-}
-unit DelphiDoom.Q3Host.PrecompilerSyscalls;
+unit DelphiDoom.Q3Host.ClientPrecompilerSyscalls;
 
 // Overflow and range checks are off: the arguments are 32 bit words, as in the C.
 
@@ -80,8 +80,8 @@ begin
       LMemory.WriteInt32(AArgs[2] + 4, LToken.Subtype);
       LMemory.WriteInt32(AArgs[2] + 8, LToken.IntValue);
       LMemory.WriteInt32(AArgs[2] + 12, TQ3SyscallArguments.FromSingle(LToken.FloatValue));
-      // strncpy( pc_token->string, token.string, MAX_TOKENLENGTH ): the 1024 bytes of the field
-      LMemory.WriteString(AArgs[2] + Q3_PCTOKEN_STRING, LToken.Text, Q3_PCTOKEN_STRING_SIZE);
+      // strcpy( pc_token->string, token.string ): the text and its zero, no more
+      LMemory.WriteString(AArgs[2] + Q3_PCTOKEN_STRING, LToken.Text, Length(LToken.Text) + 1);
     end);
 
   ARegistry.Register(WHERE[AModule],
