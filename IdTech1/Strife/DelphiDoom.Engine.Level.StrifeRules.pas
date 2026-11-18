@@ -143,7 +143,7 @@ procedure TStrifeLevelRules.ResetStatistics;
 var
   LPlayer: Integer;
 begin
-  P_World.Totals.Clear;
+  TTickRoutines.P_World.Totals.Clear;
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
   begin

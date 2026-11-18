@@ -314,7 +314,7 @@ begin
   RX_PhysicsReset;
 
   pilot := Z_Malloc(SizeOf(radixpilot_t), PU_LEVSPEC, nil);
-  P_AddThinker(@pilot.thinker);
+  TTickRoutines.P_AddThinker(@pilot.thinker);
   pilot.thinker._function.acp1 := @T_RadixPilot;
 end;
 

@@ -689,7 +689,7 @@ begin
   end;
 
   dist := actor.state.params.FixedVal[0];
-  if P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) > dist then
+  if TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) > dist then
     P_SetMobjState(actor, statenum_t(actor.info.spawnstate));
 end;
 
@@ -718,7 +718,7 @@ begin
       if TGameSession.Players[i].mo <> nil then
         if TGameSession.Players[i].mo.health >= 0 then
         begin
-          distance := P_AproxDistance(TGameSession.Players[i].mo.x - actor.x, TGameSession.Players[i].mo.y - actor.y);
+          distance := TMapUtilRoutines.P_AproxDistance(TGameSession.Players[i].mo.x - actor.x, TGameSession.Players[i].mo.y - actor.y);
           if distance < nearest then
           begin
             nearest := distance;

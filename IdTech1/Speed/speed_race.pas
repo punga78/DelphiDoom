@@ -462,7 +462,7 @@ begin
   end;
 
   race := Z_Malloc(SizeOf(speedrace_t), PU_LEVSPEC, nil);
-  P_AddThinker(@race.thinker);
+  TTickRoutines.P_AddThinker(@race.thinker);
   race.thinker._function.acp1 := @T_SpeedRace;
   // out of the tail, in after the head
   race.thinker.prev.next := race.thinker.next;

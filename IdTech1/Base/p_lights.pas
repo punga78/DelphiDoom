@@ -167,7 +167,7 @@ begin
 
   flick := Z_Malloc(SizeOf(fireflicker_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@flick.thinker);
+  TTickRoutines.P_AddThinker(@flick.thinker);
 
   flick.thinker._function.acp1 := @T_FireFlicker;
   flick.sector := sector;
@@ -213,7 +213,7 @@ begin
 
   flash := Z_Malloc(SizeOf(lightflash_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@flash.thinker);
+  TTickRoutines.P_AddThinker(@flash.thinker);
 
   flash.thinker._function.acp1 := @T_LightFlash;
   flash.sector := sector;
@@ -257,7 +257,7 @@ var
 begin
   flash := Z_Malloc(SizeOf(strobe_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@flash.thinker);
+  TTickRoutines.P_AddThinker(@flash.thinker);
 
   flash.sector := sector;
   TLightStrobe.Initialize(TEngineLightSector.Wrap(sector), fastOrSlow, inSync <> 0, LightRandom,
@@ -377,7 +377,7 @@ var
 begin
   g := Z_Malloc(SizeOf(glow_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@g.thinker);
+  TTickRoutines.P_AddThinker(@g.thinker);
 
   g.sector := sector;
   TLightGlow.Initialize(TEngineLightSector.Wrap(sector), minlight, maxlight, direction);

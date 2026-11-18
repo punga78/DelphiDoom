@@ -230,7 +230,7 @@ begin
         if (mo.info.missilestate > 0) or (mo.info.meleestate > 0) then
           if (abs(mo.x - pmo.x) <= ATTACKINGWARNRANGE * FRACUNIT) and
              (abs(mo.y - pmo.y) <= ATTACKINGWARNRANGE * FRACUNIT) then
-            if P_CheckSight(mo, pmo) then
+            if TSightRoutines.P_CheckSight(mo, pmo) then
               exit;
     end;
     think := think.next;

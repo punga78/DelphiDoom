@@ -680,8 +680,8 @@ begin
 
     // JVAL: Slopes
     // JVAL 20191209 - Fix 3d floor problem
-    TMapCheck.FloorZ := P_3dFloorHeight(ptryx, ptryy, mo.z);
-    TMapCheck.CeilingZ := P_3dCeilingHeight(ptryx, ptryy, mo.z);
+    TMapCheck.FloorZ := T3dFloorRoutines.P_3dFloorHeight(ptryx, ptryy, mo.z);
+    TMapCheck.CeilingZ := T3dFloorRoutines.P_3dCeilingHeight(ptryx, ptryy, mo.z);
 
     if not P_TryMove(mo, ptryx, ptryy) then
       if TMobjGameRules.BlockedMove(mo, ptryx, ptryy, xmove, ymove) then
@@ -730,7 +730,7 @@ begin
        (mo.momy > FRACUNIT div 4) or
        (mo.momy < -FRACUNIT div 4) then
     begin
-      if mo.floorz <> P_3dFloorHeight(mo) then // JVAL: 3d floors
+      if mo.floorz <> T3dFloorRoutines.P_3dFloorHeight(mo) then // JVAL: 3d floors
         exit;
     end;
   end;
@@ -819,7 +819,7 @@ begin
   begin
     P_XYMovement(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       exit; // mobj was removed
 
     TMobjGameRules.AfterXYMovement(mobj);
@@ -954,13 +954,13 @@ begin
   TMobjGameRules.InitStateMemory(mobj, st);
 
   // set subsector and/or block links
-  P_SetThingPosition(mobj);
+  TMapUtilRoutines.P_SetThingPosition(mobj);
 
   sec := Psubsector_t(mobj.subsector).sector;
 
   // JVAL: Slopes
-  spawnfloorheight := P_FloorHeight(sec, x, y);
-  spawnceilingheight := P_CeilingHeight(sec, x, y);
+  spawnfloorheight := TSlopeRoutines.P_FloorHeight(sec, x, y);
+  spawnceilingheight := TSlopeRoutines.P_CeilingHeight(sec, x, y);
   mobj.floorz := spawnfloorheight;  // JVAL: Slopes
   mobj.ceilingz := spawnceilingheight;  // JVAL: Slopes
   onmidfloor := false;
@@ -1042,7 +1042,7 @@ begin
 
   mobj.thinker._function.acp1 := @P_MobjThinker;
 
-  P_AddThinker(@mobj.thinker);
+  TTickRoutines.P_AddThinker(@mobj.thinker);
 
   mobj.prevx := mobj.x;
   mobj.prevy := mobj.y;
@@ -1067,7 +1067,7 @@ begin
   TMobjGameRules.BeforeRemove(mobj);
 
   // unlink from sector and block lists
-  P_UnsetThingPosition(mobj);
+  TMapUtilRoutines.P_UnsetThingPosition(mobj);
 
   // Delete all nodes on the current sector_list               phares 3/16/98
 
@@ -1087,7 +1087,7 @@ begin
   P_RemoveMobjCustomParams(mobj.customparams);
 
   // free block
-  P_RemoveThinker(Pthinker_t(mobj));
+  TTickRoutines.P_RemoveThinker(Pthinker_t(mobj));
 end;
 
 //==============================================================================
@@ -1110,7 +1110,7 @@ begin
   if TGameSession.DeathMatch <> 2 then
     exit; //
 
-  queue := P_World.ItemRespawn;
+  queue := TTickRoutines.P_World.ItemRespawn;
 
   // nothing left to respawn?
   if queue.IsEmpty then
@@ -1360,7 +1360,7 @@ begin
   if (actor.z + actor.height < target.z) or
      (target.z + target.height < actor.z) then
   begin // Need to seek vertically
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     if speed = 0 then
       dist := 1
     else

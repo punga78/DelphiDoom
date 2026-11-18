@@ -232,7 +232,7 @@ begin
   ATable.Add('function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;', @TRendererMain.R_PointToAngle);
   ATable.Add('function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;', @TRendererMain.R_PointToAngle2);
   ATable.Add('function R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t;', @TRendererMain.R_PointToDist);
-  ATable.Add('function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;', @P_AproxDistance);
+  ATable.Add('function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;', @TMapUtilRoutines.P_AproxDistance);
   ATable.Add('function P_PointOnLineSide(x: fixed_t; y: fixed_t; line: integer): integer;', @PS_P_PointOnLineSide);
   ATable.Add('function R_PointInSector(const x: fixed_t; const y: fixed_t): integer;', @PS_R_PointInSector);
   ATable.Add('function R_PointInSubSector(const x: fixed_t; const y: fixed_t): integer;', @PS_R_PointInSubSector);

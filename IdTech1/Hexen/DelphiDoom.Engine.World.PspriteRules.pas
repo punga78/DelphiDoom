@@ -1287,7 +1287,7 @@ begin
   if mo <> nil then
   begin
     mo.target := pmo;
-    mo.special1 := NativeInt(P_RoughMonsterSearch(mo, 10));
+    mo.special1 := NativeInt(TMapUtilRoutines.P_RoughMonsterSearch(mo, 10));
   end;
 end;
 
@@ -1389,7 +1389,7 @@ end;
 class procedure THexenWeaponActions.A_MStaffTrack(actor: Pmobj_t);
 begin
   if (actor.special1 = 0) and (P_Random < 50) then
-    actor.special1 := NativeInt(P_RoughMonsterSearch(actor, 10));
+    actor.special1 := NativeInt(TMapUtilRoutines.P_RoughMonsterSearch(actor, 10));
   P_SeekerMissile(actor, ANG1 * 2, ANG1 * 10);
 end;
 
@@ -1406,7 +1406,7 @@ begin
   if mo <> nil then
   begin
     mo.target := actor;
-    mo.special1 := NativeInt(P_RoughMonsterSearch(mo, 10));
+    mo.special1 := NativeInt(TMapUtilRoutines.P_RoughMonsterSearch(mo, 10));
   end;
 end;
 
@@ -2021,7 +2021,7 @@ class procedure THexenWeaponActions.P_CHolyFindTarget(actor: Pmobj_t);
 var
   target: Pmobj_t;
 begin
-  target := P_RoughMonsterSearch(actor, 6);
+  target := TMapUtilRoutines.P_RoughMonsterSearch(actor, 6);
   if target <> nil then
   begin
     actor.special1 := NativeInt(target);
@@ -2097,7 +2097,7 @@ begin
         deltaZ := -15 * FRACUNIT;
       end;
     end;
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     if actor.info.speed = 0 then
       dist := 1
     else
@@ -2178,10 +2178,10 @@ begin
   if child <> nil then
   begin
     an := TRendererMain.R_PointToAngle2(actor.x, actor.y, child.x, child.y) shr ANGLETOFINESHIFT;
-    oldDistance := P_AproxDistance(child.x - actor.x, child.y - actor.y);
+    oldDistance := TMapUtilRoutines.P_AproxDistance(child.x - actor.x, child.y - actor.y);
     if P_TryMove(child, actor.x + FixedMul(dist, finecosine[an]), actor.y + FixedMul(dist, finesine[an])) then
     begin
-      newDistance := P_AproxDistance(child.x - actor.x, child.y - actor.y) - FRACUNIT;
+      newDistance := TMapUtilRoutines.P_AproxDistance(child.x - actor.x, child.y - actor.y) - FRACUNIT;
       if oldDistance < FRACUNIT then
       begin
         if child.z < actor.z then

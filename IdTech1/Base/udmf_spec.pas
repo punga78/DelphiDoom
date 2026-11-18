@@ -535,8 +535,8 @@ begin
     if TGameSession.PlayerInGame[i] then
     begin
       pmo := TGameSession.Players[i].mo;
-      dist := P_AproxDistance(actor.x - pmo.x, actor.y - pmo.y);
-      dist := P_AproxDistance(actor.z - pmo.z, dist); // 3d distance
+      dist := TMapUtilRoutines.P_AproxDistance(actor.x - pmo.x, actor.y - pmo.y);
+      dist := TMapUtilRoutines.P_AproxDistance(actor.z - pmo.z, dist); // 3d distance
       if dist <= maxtdist then
       begin
         if TGameSession.Players[i].quaketics < tics then

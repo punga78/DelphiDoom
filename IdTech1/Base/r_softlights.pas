@@ -443,7 +443,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, TRendererSoftLightsLocal.RIT_AddAdditionalLights);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, TRendererSoftLightsLocal.RIT_AddAdditionalLights);
 end;
 
 //==============================================================================

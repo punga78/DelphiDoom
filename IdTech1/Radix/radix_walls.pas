@@ -170,7 +170,7 @@ begin
   dz := z2 div FRACUNIT - z1 div FRACUNIT;
 
   // Every 64x64 px area 1 explosion when fracdensity = FRACUNIT
-  area := (P_AproxDistance(x2 - x1, y2 - y1) div FRACUNIT * dz) div (64 * 64);
+  area := (TMapUtilRoutines.P_AproxDistance(x2 - x1, y2 - y1) div FRACUNIT * dz) div (64 * 64);
   cnt := (area * fracdensity) div FRACUNIT;
   if cnt <= 0 then
     cnt := 1;  // At least one explosion
@@ -296,7 +296,7 @@ begin
      (TMapCheck.BBox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
     exit;
 
-  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
+  if TMapUtilRoutines.P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
     exit;
 
   if not RX_ShootableLine(pDiff(ld, @lines[0], SizeOf(line_t))) then
@@ -348,7 +348,7 @@ begin
   inc(validcount);
   for bx := xl to xh do
     for by := yl to yh do
-      if not P_BlockLinesIterator(bx, by, PIT_RadixTargetLine) then
+      if not TMapUtilRoutines.P_BlockLinesIterator(bx, by, PIT_RadixTargetLine) then
       begin
         result := targetline;
         exit;

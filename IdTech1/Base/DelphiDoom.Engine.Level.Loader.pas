@@ -228,9 +228,9 @@ begin
   R_SetupLevel;
 
   Trace('P_InitThinkers');
-  P_InitThinkers;
+  TTickRoutines.P_InitThinkers;
   Trace('P_InitIntercepts');
-  P_InitIntercepts;
+  TMapUtilRoutines.P_InitIntercepts;
 
   // if working with a devlopment map, reload it
   Trace('W_Reload');
@@ -332,7 +332,7 @@ begin
   FUdmf.ApplySegs;
 
   Trace('P_3dFloorSetupSegs');
-  P_3dFloorSetupSegs; // JVAL: 3d Floors
+  T3dFloorRoutines.P_3dFloorSetupSegs; // JVAL: 3d Floors
 
   Trace('P_RemoveSlimeTrails');
   FBlockmap.RemoveSlimeTrails; // killough 10/98: remove slime trails from wad
@@ -345,7 +345,7 @@ begin
 {$ENDIF}
 
   Trace('P_SlopesSetup');
-  P_SlopesSetup; // JVAL: Slopes
+  TSlopeRoutines.P_SlopesSetup; // JVAL: Slopes
 
   Trace('UDMF_MakeSectors');
   FUdmf.ApplySectors;
@@ -380,7 +380,7 @@ end;
 
 procedure TLevelLoader.SpawnThings(AMapLump: Integer);
 begin
-  P_World.ClearCorpses;
+  TTickRoutines.P_World.ClearCorpses;
   po_NumPolyobjs := 0;
   deathmatch_p := 0;
   FRules.BeforeThings;
@@ -403,7 +403,7 @@ begin
   SpawnDeathmatchPlayers;
 
   // clear special respawning que
-  P_World.ItemRespawn.Clear;
+  TTickRoutines.P_World.ItemRespawn.Clear;
 end;
 
 procedure TLevelLoader.FinishLevel;

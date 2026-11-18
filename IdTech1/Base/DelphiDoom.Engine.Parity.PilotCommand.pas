@@ -124,7 +124,7 @@ begin
         LDistance := LDeltaX * LDeltaX + LDeltaY * LDeltaY;
         // the sight is traced last, and only for a monster nearer than the best so far: an enemy behind a
         // wall (it can have heard the player) would keep the pilot firing at the wall
-        if (LDistance <= LBest) and P_CheckSight(APlayer, LMobj) then
+        if (LDistance <= LBest) and TSightRoutines.P_CheckSight(APlayer, LMobj) then
         begin
           LBest := LDistance;
           AView.HasEnemy := True;
@@ -163,7 +163,7 @@ begin
       LView.Y := TGameSession.Players[TGameSession.ConsolePlayer].mo.y;
       LView.Z := TGameSession.Players[TGameSession.ConsolePlayer].mo.z;
       LView.Angle := TGameSession.Players[TGameSession.ConsolePlayer].mo.angle;
-      LView.Speed := P_AproxDistance(TGameSession.Players[TGameSession.ConsolePlayer].mo.momx, TGameSession.Players[TGameSession.ConsolePlayer].mo.momy);
+      LView.Speed := TMapUtilRoutines.P_AproxDistance(TGameSession.Players[TGameSession.ConsolePlayer].mo.momx, TGameSession.Players[TGameSession.ConsolePlayer].mo.momy);
     end;
     // only a script that fights asks for the enemies: the automatic pilot never searches the level
     if LView.Alive and (TGameSession.GameState = GS_LEVEL) and (APilot.EnemyRange > 0) then

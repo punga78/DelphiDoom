@@ -714,10 +714,10 @@ begin
     Pplayer_t(mobj.player).mo := mobj;
   end;
   R_InitMobjTranslation(mobj);
-  P_SetThingPosition(mobj);
+  TMapUtilRoutines.P_SetThingPosition(mobj);
   mobj.info := @mobjinfo[mobj._type];
-  mobj.floorz := P_3dFloorHeight(mobj);
-  mobj.ceilingz := P_3dCeilingHeight(mobj);
+  mobj.floorz := T3dFloorRoutines.P_3dFloorHeight(mobj);
+  mobj.ceilingz := T3dFloorRoutines.P_3dCeilingHeight(mobj);
   SetMobjPtr(PNativeInt(@mobj.target));
   SetMobjPtr(PNativeInt(@mobj.tracer));
   SetMobjPtr(PNativeInt(@mobj.master));
@@ -1422,8 +1422,8 @@ var
   thinker: Pthinker_t;
 begin
   MapMobjCount := 0;
-  thinker := P_ThinkerHead.next;
-  while thinker <> P_ThinkerHead do
+  thinker := TTickRoutines.P_ThinkerHead.next;
+  while thinker <> TTickRoutines.P_ThinkerHead do
   begin
     if @thinker._function.acp1 = @P_MobjThinker then
     begin
@@ -1548,8 +1548,8 @@ begin
   StreamOutLong(ASEG_MOBJS);
   StreamOutLong(MapMobjCount);
   count := 0;
-  thinker := P_ThinkerHead.next;
-  while thinker <> P_ThinkerHead do
+  thinker := TTickRoutines.P_ThinkerHead.next;
+  while thinker <> TTickRoutines.P_ThinkerHead do
   begin
     if @thinker._function.acp1 <> @P_MobjThinker then
     begin // Not a mobj thinker
@@ -1816,7 +1816,7 @@ begin
     end;
 
     RestoreMobj(mobj);
-    P_AddThinker(@mobj.thinker);
+    TTickRoutines.P_AddThinker(@mobj.thinker);
   end;
 
   for i := 0 to MAXPLAYERS - 1 do
@@ -1839,8 +1839,8 @@ var
   buffer: array[0..MAX_THINKER_SIZE - 1] of byte;
 begin
   StreamOutLong(ASEG_THINKERS);
-  thinker := P_ThinkerHead.next;
-  while thinker <> P_ThinkerHead do
+  thinker := TTickRoutines.P_ThinkerHead.next;
+  while thinker <> TTickRoutines.P_ThinkerHead do
   begin
     if @thinker._function.acp1 <> @P_MobjThinker then // JVAL Speed up, leave out P_MobjThinker
     begin
@@ -1891,7 +1891,7 @@ begin
         thinker._function.acp1 := @info.thinkerFunc.acp1;
         if Assigned(info.restoreFunc) then
           info.restoreFunc(thinker);
-        P_AddThinker(thinker);
+        TTickRoutines.P_AddThinker(thinker);
         break;
       end;
       inc(info);
@@ -2112,8 +2112,8 @@ var
   thinker: Pthinker_t;
   nextThinker: Pthinker_t;
 begin
-  thinker := P_ThinkerHead.next;
-  while thinker <> P_ThinkerHead do
+  thinker := TTickRoutines.P_ThinkerHead.next;
+  while thinker <> TTickRoutines.P_ThinkerHead do
   begin
     nextThinker := thinker.next;
     if @thinker._function.acp1 = @P_MobjThinker then
@@ -2126,7 +2126,7 @@ begin
     end;
     thinker := nextThinker;
   end;
-  P_InitThinkers;
+  TTickRoutines.P_InitThinkers;
 end;
 
 //==============================================================================
@@ -2382,7 +2382,7 @@ begin
   StreamOutLong(VERSION);
 
   // Write the level timer
-  StreamOutLong(P_World.Time.LevelTime^);
+  StreamOutLong(TTickRoutines.P_World.Time.LevelTime^);
 
   // Set the mobj archive numbers
   SetMobjArchiveNums;
@@ -2499,7 +2499,7 @@ begin
     LOADVERSION := VERSION141;
 
   // Read the level timer
-  P_World.Time.LevelTime^ := GET_LONG;
+  TTickRoutines.P_World.Time.LevelTime^ := GET_LONG;
 
   UnarchiveWorld;
   UnarchivePolyobjs;

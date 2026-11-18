@@ -234,14 +234,14 @@ begin
     if mthing.options and MTF_ONMIDSECTOR <> 0 then
     begin
       if z = ONFLOATZ then
-        z := (msec.ceilingheight + P_CeilingHeight(ss, x, y)) div 2
+        z := (msec.ceilingheight + TSlopeRoutines.P_CeilingHeight(ss, x, y)) div 2
       else if z = ONFLOORZ then
         z := msec.ceilingheight;
     end
     else
     begin
       if z = ONFLOATZ then
-        z := (P_FloorHeight(ss, x, y) + msec.floorheight) div 2
+        z := (TSlopeRoutines.P_FloorHeight(ss, x, y) + msec.floorheight) div 2
       else if z = ONCEILINGZ then
         z := msec.floorheight;
     end;
@@ -259,7 +259,7 @@ begin
   if result.tics > 0 then
     result.tics := 1 + (P_Random mod result.tics);
   if result.flags and MF_COUNTKILL <> 0 then
-    P_World.Totals.CountKill;
+    TTickRoutines.P_World.Totals.CountKill;
   TMobjGameRules.CountItem(result);
 
   if result.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then

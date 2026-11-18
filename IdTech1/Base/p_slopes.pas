@@ -38,80 +38,80 @@ uses
   m_fixed,
   r_defs;
 
-//==============================================================================
-//
-// P_FloorHeight
-//
-//==============================================================================
-function P_FloorHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_FloorHeight
-//
-//==============================================================================
-function P_FloorHeight(const x, y: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_CeilingHeight
-//
-//==============================================================================
-function P_CeilingHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_CeilingHeight
-//
-//==============================================================================
-function P_CeilingHeight(const x, y: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_SlopesSetup
-//
-//==============================================================================
-procedure P_SlopesSetup;
-
-//==============================================================================
-//
-// P_DynamicSlope
-//
-//==============================================================================
-procedure P_DynamicSlope(const sec: Psector_t);
-
-//==============================================================================
-//
-// P_SlopesAlignPlane
-//
-//==============================================================================
-procedure P_SlopesAlignPlane(const sec: Psector_t; const line: Pline_t; const flag: LongWord;
-  const calcpivotline: boolean = true);
-
-procedure calc_slope_plane(
-  const x1, y1, z1: float;
-  const x2, y2, z2: float;
-  const x3, y3, z3: float;
-  out fa, fb, fc, fd: float);
-
-//==============================================================================
-//
-// PS_SetFloorSlope
-//
-//==============================================================================
-procedure PS_SetFloorSlope(const secid: integer; const x1, y1, z1: fixed_t;
-  const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);
-
-//==============================================================================
-//
-// PS_SetCeilingSlope
-//
-//==============================================================================
-procedure PS_SetCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t;
-  const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);
-
 const
   SLOPECOUNTDOWN = 4;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSlopeRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_FloorHeight
+    //
+    //==============================================================================
+    class function P_FloorHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_FloorHeight
+    //
+    //==============================================================================
+    class function P_FloorHeight(const x, y: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_CeilingHeight
+    //
+    //==============================================================================
+    class function P_CeilingHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_CeilingHeight
+    //
+    //==============================================================================
+    class function P_CeilingHeight(const x, y: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_SlopesSetup
+    //
+    //==============================================================================
+    class procedure P_SlopesSetup; static;
+    //==============================================================================
+    //
+    // P_DynamicSlope
+    //
+    //==============================================================================
+    class procedure P_DynamicSlope(const sec: Psector_t); static;
+    //==============================================================================
+    //
+    // P_SlopesAlignPlane
+    //
+    //==============================================================================
+    class procedure P_SlopesAlignPlane(const sec: Psector_t; const line: Pline_t; const flag: LongWord;
+      const calcpivotline: boolean = true); static;
+    class procedure calc_slope_plane(
+      const x1, y1, z1: float;
+      const x2, y2, z2: float;
+      const x3, y3, z3: float;
+      out fa, fb, fc, fd: float); static;
+    //==============================================================================
+    //
+    // PS_SetFloorSlope
+    //
+    //==============================================================================
+    class procedure PS_SetFloorSlope(const secid: integer; const x1, y1, z1: fixed_t;
+      const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t); static;
+    //==============================================================================
+    //
+    // PS_SetCeilingSlope
+    //
+    //==============================================================================
+    class procedure PS_SetCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t;
+      const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t); static;
+  end;
+
 
 implementation
 
@@ -127,12 +127,35 @@ uses
   p_spec,
   r_main;
 
+type
+  zvertex_t = record
+    zc, zf: fixed_t;
+  end;
+  Pzvertex_t = ^zvertex_t;
+  zvertex_tArray = array[0..$FFF] of zvertex_t;
+  Pzvertex_tArray = ^zvertex_tArray;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSlopeLocalRoutines = class sealed
+  public
+    class function ZatPointFloor(const s: Psector_t; const x, y: fixed_t): fixed_t; static;
+    class function ZatPointCeiling(const s: Psector_t; const x, y: fixed_t): fixed_t; static;
+    class function zvertex(const v: Pvertex_t; const A: Pzvertex_tArray): Pzvertex_t; static;
+    class function linelen(const l: Pline_t): float; static;
+    class procedure P_FixSlopedMobjs(const s: Psector_t); static;
+  end;
+
 //==============================================================================
 //
 // ZatPointFloor
 //
 //==============================================================================
-function ZatPointFloor(const s: Psector_t; const x, y: fixed_t): fixed_t;
+class function TSlopeLocalRoutines.ZatPointFloor(const s: Psector_t; const x, y: fixed_t): fixed_t;
 begin
   result := Round(((-s.fa * (x / FRACUNIT) - s.fb * (y / FRACUNIT) - s.fd) * s.fic) * FRACUNIT);
 end;
@@ -142,7 +165,7 @@ end;
 // ZatPointCeiling
 //
 //==============================================================================
-function ZatPointCeiling(const s: Psector_t; const x, y: fixed_t): fixed_t;
+class function TSlopeLocalRoutines.ZatPointCeiling(const s: Psector_t; const x, y: fixed_t): fixed_t;
 begin
   result := Round(((-s.ca * (x / FRACUNIT) - s.cb * (y / FRACUNIT) - s.cd) * s.cic) * FRACUNIT);
 end;
@@ -152,10 +175,10 @@ end;
 // P_FloorHeight
 //
 //==============================================================================
-function P_FloorHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t; overload;
+class function TSlopeRoutines.P_FloorHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t;
 begin
   if sec.renderflags and SRF_SLOPEFLOOR <> 0 then
-    result := ZatPointFloor(sec, x, y)
+    result := TSlopeLocalRoutines.ZatPointFloor(sec, x, y)
   else
     result := sec.floorheight;
 end;
@@ -165,7 +188,7 @@ end;
 // P_FloorHeight
 //
 //==============================================================================
-function P_FloorHeight(const x, y: fixed_t): fixed_t; overload;
+class function TSlopeRoutines.P_FloorHeight(const x, y: fixed_t): fixed_t;
 begin
   result := P_FloorHeight(TRendererMain.R_PointInSubSector(x, y).sector, x, y);
 end;
@@ -175,10 +198,10 @@ end;
 // P_CeilingHeight
 //
 //==============================================================================
-function P_CeilingHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t; overload;
+class function TSlopeRoutines.P_CeilingHeight(const sec: Psector_t; const x, y: fixed_t): fixed_t;
 begin
   if sec.renderflags and SRF_SLOPECEILING <> 0 then
-    result := ZatPointCeiling(sec, x, y)
+    result := TSlopeLocalRoutines.ZatPointCeiling(sec, x, y)
   else
     result := sec.ceilingheight;
 end;
@@ -188,25 +211,17 @@ end;
 // P_CeilingHeight
 //
 //==============================================================================
-function P_CeilingHeight(const x, y: fixed_t): fixed_t; overload;
+class function TSlopeRoutines.P_CeilingHeight(const x, y: fixed_t): fixed_t;
 begin
   result := P_CeilingHeight(TRendererMain.R_PointInSubSector(x, y).sector, x, y);
 end;
-
-type
-  zvertex_t = record
-    zc, zf: fixed_t;
-  end;
-  Pzvertex_t = ^zvertex_t;
-  zvertex_tArray = array[0..$FFF] of zvertex_t;
-  Pzvertex_tArray = ^zvertex_tArray;
 
 //==============================================================================
 //
 // zvertex
 //
 //==============================================================================
-function zvertex(const v: Pvertex_t; const A: Pzvertex_tArray): Pzvertex_t;
+class function TSlopeLocalRoutines.zvertex(const v: Pvertex_t; const A: Pzvertex_tArray): Pzvertex_t;
 var
   id: integer;
 begin
@@ -224,7 +239,7 @@ end;
 // linelen
 //
 //==============================================================================
-function linelen(const l: Pline_t): float;
+class function TSlopeLocalRoutines.linelen(const l: Pline_t): float;
 var
   dx, dy: float;
 begin
@@ -238,7 +253,7 @@ end;
 // P_SlopesAlignPlane
 //
 //==============================================================================
-procedure P_SlopesAlignPlane(const sec: Psector_t; const line: Pline_t; const flag: LongWord;
+class procedure TSlopeRoutines.P_SlopesAlignPlane(const sec: Psector_t; const line: Pline_t; const flag: LongWord;
   const calcpivotline: boolean = true);
 var
   refsec: Psector_t;
@@ -388,9 +403,9 @@ begin
       for j := subsectors[i].firstline + subsectors[i].numlines - 1 downto subsectors[i].firstline do
       begin
         if flag = SRF_SLOPEFLOOR then
-          zvertex(segs[j].v1, zvertexes).zf := ZatPointFloor(sec, segs[j].v1.x, segs[j].v1.y)
+          TSlopeLocalRoutines.zvertex(segs[j].v1, zvertexes).zf := TSlopeLocalRoutines.ZatPointFloor(sec, segs[j].v1.x, segs[j].v1.y)
         else
-          zvertex(segs[j].v1, zvertexes).zc := ZatPointCeiling(sec, segs[j].v1.x, segs[j].v1.y);
+          TSlopeLocalRoutines.zvertex(segs[j].v1, zvertexes).zc := TSlopeLocalRoutines.ZatPointCeiling(sec, segs[j].v1.x, segs[j].v1.y);
       end;
 
   for i := sec.linecount - 1 downto 0 do
@@ -404,10 +419,10 @@ begin
     refline.renderflags := refline.renderflags or LRF_SLOPED;
     if flag = SRF_SLOPEFLOOR then
       refline.flslopestep[side] :=
-        ((zvertex(refline.v1, zvertexes).zf - zvertex(refline.v2, zvertexes).zf) / FRACUNIT) / linelen(refline)
+        ((TSlopeLocalRoutines.zvertex(refline.v1, zvertexes).zf - TSlopeLocalRoutines.zvertex(refline.v2, zvertexes).zf) / FRACUNIT) / TSlopeLocalRoutines.linelen(refline)
     else
       refline.clslopestep[side] :=
-        ((zvertex(refline.v1, zvertexes).zc - zvertex(refline.v2, zvertexes).zc) / FRACUNIT) / linelen(refline);
+        ((TSlopeLocalRoutines.zvertex(refline.v1, zvertexes).zc - TSlopeLocalRoutines.zvertex(refline.v2, zvertexes).zc) / FRACUNIT) / TSlopeLocalRoutines.linelen(refline);
   end;
 
   memfree(Pointer(zvertexes), SizeOf(zvertex_t));
@@ -418,7 +433,7 @@ end;
 // P_FixSlopedMobjs
 //
 //==============================================================================
-procedure P_FixSlopedMobjs(const s: Psector_t);
+class procedure TSlopeLocalRoutines.P_FixSlopedMobjs(const s: Psector_t);
 var
   mo: Pmobj_t;
   grav: fixed_t;
@@ -431,8 +446,8 @@ begin
     else
       grav := FixedMul(P_GetSectorGravity(s), mo.gravity);
 
-    mo.floorz := P_FloorHeight(s, mo.x, mo.y);
-    mo.ceilingz := P_CeilingHeight(s, mo.x, mo.y);
+    mo.floorz := TSlopeRoutines.P_FloorHeight(s, mo.x, mo.y);
+    mo.ceilingz := TSlopeRoutines.P_CeilingHeight(s, mo.x, mo.y);
 
     if mo.z - grav < mo.floorz then
       mo.z := mo.floorz
@@ -448,7 +463,7 @@ end;
 // P_DynamicSlope
 //
 //==============================================================================
-procedure P_DynamicSlope(const sec: Psector_t);
+class procedure TSlopeRoutines.P_DynamicSlope(const sec: Psector_t);
 var
  s: Psector_t;
  sl: Pline_t;
@@ -490,7 +505,7 @@ begin
        (sl.special = 391) then
       P_SlopesAlignPlane(s, sl, SRF_SLOPECEILING);
     {$ENDIF}
-    P_FixSlopedMobjs(s);
+    TSlopeLocalRoutines.P_FixSlopedMobjs(s);
   end;
 end;
 
@@ -499,7 +514,7 @@ end;
 // P_SlopesSetup
 //
 //==============================================================================
-procedure P_SlopesSetup;
+class procedure TSlopeRoutines.P_SlopesSetup;
 var
   i: integer;
 begin
@@ -555,7 +570,7 @@ begin
   end;
 end;
 
-procedure calc_slope_plane(
+class procedure TSlopeRoutines.calc_slope_plane(
   const x1, y1, z1: float;
   const x2, y2, z2: float;
   const x3, y3, z3: float;
@@ -581,7 +596,7 @@ end;
 // PS_SetFloorSlope
 //
 //==============================================================================
-procedure PS_SetFloorSlope(const secid: integer; const x1, y1, z1: fixed_t;
+class procedure TSlopeRoutines.PS_SetFloorSlope(const secid: integer; const x1, y1, z1: fixed_t;
   const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);
 var
   fx1, fy1, fz1: float;
@@ -626,7 +641,7 @@ begin
     sec.slopeline := sec.lines[0];
     sec.slopeline.renderflags := sec.slopeline.renderflags or LRF_SLOPED;
     sec.renderflags := sec.renderflags or SRF_INTERPOLATE_FLOORSLOPE;
-    P_FixSlopedMobjs(sec);
+    TSlopeLocalRoutines.P_FixSlopedMobjs(sec);
   end;
 end;
 
@@ -635,7 +650,7 @@ end;
 // PS_SetCeilingSlope
 //
 //==============================================================================
-procedure PS_SetCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t;
+class procedure TSlopeRoutines.PS_SetCeilingSlope(const secid: integer; const x1, y1, z1: fixed_t;
   const x2, y2, z2: fixed_t; const x3, y3, z3: fixed_t);
 var
   fx1, fy1, fz1: float;
@@ -680,7 +695,7 @@ begin
     sec.slopeline := sec.lines[0];
     sec.slopeline.renderflags := sec.slopeline.renderflags or LRF_SLOPED;
     sec.renderflags := sec.renderflags or SRF_INTERPOLATE_CEILINGSLOPE;
-    P_FixSlopedMobjs(sec);
+    TSlopeLocalRoutines.P_FixSlopedMobjs(sec);
   end;
 end;
 

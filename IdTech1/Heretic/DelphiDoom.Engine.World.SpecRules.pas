@@ -1151,7 +1151,7 @@ begin
 
       //  Spawn rising slime
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-      P_AddThinker(@floor.thinker);
+      TTickRoutines.P_AddThinker(@floor.thinker);
       s2.specialdata := floor;
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := donutRaise;
@@ -1165,7 +1165,7 @@ begin
 
       //  Spawn lowering donut-hole
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-      P_AddThinker(@floor.thinker);
+      TTickRoutines.P_AddThinker(@floor.thinker);
       s1.specialdata := floor;
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := lowerFloor;
@@ -1261,7 +1261,7 @@ begin
      9:
       begin
         // SECRET SECTOR
-        P_World.Totals.CountSecret;
+        TTickRoutines.P_World.Totals.CountSecret;
       end;
 
     10:
@@ -1324,10 +1324,10 @@ begin
   end;
 
   //  Init other misc stuff
-  P_World.ActiveCeilings.Clear;
-  P_World.UdmfCeilings.Clear;
-  P_World.ActivePlats.Clear;
-  P_World.UdmfPlats.Clear;
+  TTickRoutines.P_World.ActiveCeilings.Clear;
+  TTickRoutines.P_World.UdmfCeilings.Clear;
+  TTickRoutines.P_World.ActivePlats.Clear;
+  TTickRoutines.P_World.UdmfPlats.Clear;
 
   for i := 0 to MAXBUTTONS - 1 do
     ZeroMemory(@buttonlist[i], SizeOf(button_t));

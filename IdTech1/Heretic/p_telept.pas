@@ -144,7 +144,7 @@ begin
         end;
 
         // JVAL: 3d Floors
-        if (G_PlayingEngineVersion >= VERSION115) and (P_3dFloorNumber(m) > 0) then
+        if (G_PlayingEngineVersion >= VERSION115) and (T3dFloorRoutines.P_3dFloorNumber(m) > 0) then
         begin
           destfogdz := m.floorz - Psubsector_t(m.subsector).sector.floorheight;
           dz := thing.z - thing.floorz;

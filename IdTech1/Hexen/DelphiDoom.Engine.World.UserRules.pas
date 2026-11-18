@@ -595,7 +595,7 @@ begin
     pmo := player.mo;
     if (player.powers[Ord(pw_speed)] > 0) and
        (TTickState.LevelTime and 1 = 0) and
-       (P_AproxDistance(pmo.momx, pmo.momy) > 12 * FRACUNIT) then
+       (TMapUtilRoutines.P_AproxDistance(pmo.momx, pmo.momy) > 12 * FRACUNIT) then
     begin
 
       speedMo := P_SpawnMobj(pmo.x, pmo.y, pmo.z, Ord(MT_PLAYER_SPEED));
@@ -635,7 +635,7 @@ begin
   // JVAL: 3d Floors
   sec := Psubsector_t(player.mo.subsector).sector;
   if sec.special <> 0 then
-    TSpecRoutines.P_PlayerInSpecialSector(player, sec, P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
+    TSpecRoutines.P_PlayerInSpecialSector(player, sec, TSlopeRoutines.P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
   if sec.midsec >= 0 then
     if sectors[sec.midsec].special <> 0 then
       TSpecRoutines.P_PlayerInSpecialSector(player, @sectors[sec.midsec], sectors[sec.midsec].ceilingheight);  // JVAL: 3d Floors
@@ -929,7 +929,7 @@ begin
     else
       destAngle := ANG45 * (playerstarts[0][0].angle div 45);
   end;
-  PH_Teleport(player.mo, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(mt), P_3dFloorFindMapthingCeilingZ(mt));
+  PH_Teleport(player.mo, destX, destY, destAngle, true, T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(mt), T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(mt));
   if player.morphTics <> 0 then
   begin // Teleporting away will undo any morph effects (pig)
     TUserRoutines.P_UndoPlayerMorph(player);
@@ -975,7 +975,7 @@ begin
     destAngle := ANG1 * playerstarts[0][i].angle
   else
     destAngle := ANG45 * (playerstarts[0][i].angle div 45);
-  PH_Teleport(victim, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(@playerstarts[0][i]), P_3dFloorFindMapthingCeilingZ(@playerstarts[0][i]));
+  PH_Teleport(victim, destX, destY, destAngle, true, T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(@playerstarts[0][i]), T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(@playerstarts[0][i]));
 end;
 
 //==============================================================================
@@ -999,7 +999,7 @@ begin
       destAngle := ANG1 * deathmatchstarts[i].angle
     else
       destAngle := ANG45 * (deathmatchstarts[i].angle div 45);
-    PH_Teleport(victim, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(@deathmatchstarts[i]), P_3dFloorFindMapthingCeilingZ(@deathmatchstarts[i]));
+    PH_Teleport(victim, destX, destY, destAngle, true, T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(@deathmatchstarts[i]), T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(@deathmatchstarts[i]));
   end
   else
     P_TeleportToPlayerStarts(victim);
@@ -1213,7 +1213,7 @@ begin
       continue;
     end;
 
-    dist := P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
+    dist := TMapUtilRoutines.P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
     if dist > BLAST_RADIUS_DIST then
     begin // Out of range
       think := think.next;
@@ -1267,7 +1267,7 @@ begin
       continue;
     end;
 
-    dist := P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
+    dist := TMapUtilRoutines.P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
     if dist > HEAL_RADIUS_DIST then
     begin // Out of range
       think := think.next;

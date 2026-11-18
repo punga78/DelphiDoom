@@ -415,10 +415,10 @@ begin
         LSector := TRendererMain.R_PointInSubsector(LMapX, LMapY).sector;
         if LLight.shadow then
         begin
-          LLightY1 := (P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;
+          LLightY1 := (T3dFloorRoutines.P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;
           LLightY2 := LLightY2 - LCheckRadius / 2;
-          LFloorZ := (P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;
-          LCeilingZ := (P_3dCeilingHeight(LSector, LMapX, LMapY, LMapZ) + 4 * FRACUNIT) / MAP_SCALE;
+          LFloorZ := (T3dFloorRoutines.P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;
+          LCeilingZ := (T3dFloorRoutines.P_3dCeilingHeight(LSector, LMapX, LMapY, LMapZ) + 4 * FRACUNIT) / MAP_SCALE;
           if LLightY2 < LFloorZ then
             LLightY2 := LFloorZ
           else if LLightY2 > LCeilingZ then
@@ -426,8 +426,8 @@ begin
         end
         else
         begin
-          LFloorZ := (P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;
-          LCeilingZ := (P_3dCeilingHeight(LSector, LMapX, LMapY, LMapZ) + 4 * FRACUNIT) / MAP_SCALE;
+          LFloorZ := (T3dFloorRoutines.P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;
+          LCeilingZ := (T3dFloorRoutines.P_3dCeilingHeight(LSector, LMapX, LMapY, LMapZ) + 4 * FRACUNIT) / MAP_SCALE;
           if LLightY1 < LFloorZ then
             LLightY1 := LFloorZ
           else if LLightY1 > LCeilingZ then

@@ -916,7 +916,7 @@ begin
   begin
     // we only wake up certain thing types (Acolytes and Templars?)
     if (rover.health > 0) and (rover._type >= Ord(MT_GUARD1)) and (rover._type <= Ord(MT_PGUARD)) and
-       (P_CheckSight(rover, puncher) or P_CheckSight(rover, punchee)) then
+       (TSightRoutines.P_CheckSight(rover, puncher) or TSightRoutines.P_CheckSight(rover, punchee)) then
     begin
       TMonsterLocalActions.P_WakeUpThing(puncher, rover);
       rover.flags := rover.flags or MF_NODIALOG;
@@ -930,7 +930,7 @@ begin
   begin
     // we only wake up certain thing types (Acolytes and Templars?)
     if (rover.health > 0) and (rover._type >= Ord(MT_GUARD1)) and (rover._type <= Ord(MT_PGUARD)) and
-       (P_CheckSight(rover, puncher) or P_CheckSight(rover, punchee)) then
+       (TSightRoutines.P_CheckSight(rover, puncher) or TSightRoutines.P_CheckSight(rover, punchee)) then
     begin
       TMonsterLocalActions.P_WakeUpThing(puncher, rover);
       rover.flags := rover.flags or MF_NODIALOG;
@@ -972,7 +972,7 @@ begin
     exit;
   end;
 
-  dist := P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
 
   mrange := P_MeleeRange(actor) * factor;
 
@@ -998,7 +998,7 @@ begin
     end;
   end;
 
-  result := P_CheckSight(actor, actor.target);
+  result := TSightRoutines.P_CheckSight(actor, actor.target);
 end;
 
 //==============================================================================
@@ -1015,7 +1015,7 @@ class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean
 var
   dist: fixed_t;
 begin
-  if not P_CheckSight(actor, actor.target) then
+  if not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     result := false;
     exit;
@@ -1044,7 +1044,7 @@ begin
   end;
 
   // OPTIMIZE: get this from a global checksight
-  dist := P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) -
+  dist := TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) -
             64 * FRACUNIT;
 
   if actor.info.meleestate = 0 then
@@ -1130,7 +1130,7 @@ class function TMonsterLocalActions.P_CheckRobotRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
-  if not P_CheckSight(actor, actor.target) then
+  if not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     result := false;
     exit;
@@ -1149,7 +1149,7 @@ begin
     exit;
   end;
 
-  dist := P_AproxDistance(actor.x - actor.target.x,
+  dist := TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x,
                           actor.y - actor.target.y) - 64 * FRACUNIT;
 
   result := dist < 200 * FRACUNIT;
@@ -1356,10 +1356,10 @@ begin
       continue;   // dead
 
     if actor.info.maxtargetrange > 0 then
-      if P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
+      if TMapUtilRoutines.P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
         continue; // JVAL: 20210211 - Out of range
 
-    if not P_CheckSight(actor, player.mo) then
+    if not TSightRoutines.P_CheckSight(actor, player.mo) then
       continue;   // out of sight
 
     if not allaround then
@@ -1368,7 +1368,7 @@ begin
 
       if (an > ANG90) and (an < ANG270) then
       begin
-        dist := P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y);
+        dist := TMapUtilRoutines.P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y);
         // if real close, react anyway
         if dist > MELEERANGE then
           continue; // behind back
@@ -1411,7 +1411,7 @@ begin
 
       if actor.flags and MF_AMBUSH <> 0 then
       begin
-        if P_CheckSight(actor, targ) then
+        if TSightRoutines.P_CheckSight(actor, targ) then
           seeyou := true;
       end
       else
@@ -1538,7 +1538,7 @@ begin
     begin
       actor.target := soundtarget;
 
-      if (actor.flags and MF_AMBUSH = 0) or P_CheckSight(actor, actor.target) then
+      if (actor.flags and MF_AMBUSH = 0) or TSightRoutines.P_CheckSight(actor, actor.target) then
       begin
         actor.threshold := 10;
         P_SetMobjState(actor, statenum_t(actor.info.seestate));
@@ -1577,7 +1577,7 @@ begin
     begin
       actor.target := soundtarget;
 
-      if (actor.flags and MF_AMBUSH = 0) or P_CheckSight(actor, actor.target) then
+      if (actor.flags and MF_AMBUSH = 0) or TSightRoutines.P_CheckSight(actor, actor.target) then
       begin
         A_SeeSound1(actor);
         actor.threshold := 10;
@@ -1678,7 +1678,7 @@ begin
   // possibly choose another target
   if TGameSession.NetGame and
     (actor.threshold = 0) and
-    not P_CheckSight(actor, actor.target) then
+    not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     if P_LookForTargets(actor, true) then
       exit;  // got a new target
@@ -1698,7 +1698,7 @@ begin
       actor.fastchasetics := 0;
       actor.momx := 0;
       actor.momy := 0;
-      dist := P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y);
       if dist < 64 * 10 * FRACUNIT then
         if P_Random < 100 then
         begin
@@ -1849,7 +1849,7 @@ begin
   begin
     target := actor.target;
 
-    if (target <> nil) or (target.health <= 0) or not P_CheckSight(actor, target) or (P_Random < 40) then
+    if (target <> nil) or (target.health <= 0) or not TSightRoutines.P_CheckSight(actor, target) or (P_Random < 40) then
       P_SetMobjState(actor, statenum_t(actor.info.seestate));
   end;
 end;
@@ -2168,7 +2168,7 @@ end;
 class procedure TStrifeMonsterActions.A_CheckTargetVisible2(actor: Pmobj_t);
 begin
   if (actor.target = nil) or (actor.target.health <= 0) or
-     not P_CheckSight(actor, actor.target) then
+     not TSightRoutines.P_CheckSight(actor, actor.target) then
     P_SetMobjState(actor, statenum_t(actor.info.seestate));
 end;
 
@@ -2259,7 +2259,7 @@ begin
   actor.momx := FixedMul(finecosine[an], speed);
   actor.momy := FixedMul(finesine[an], speed);
 
-  dist := P_AproxDistance(actor.target.x - actor.x,
+  dist := TMapUtilRoutines.P_AproxDistance(actor.target.x - actor.x,
                           actor.target.y - actor.y);
 
   dist := dist div speed;
@@ -2809,7 +2809,7 @@ begin
   actor.momy := FixedMul(actor.info.speed, finesine[exact]);
 
   // change slope
-  dist := P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
 
   dist := dist div actor.info.speed;
 

@@ -174,7 +174,7 @@ begin
     end;
 
     floor.sector.floordata := nil;
-    P_RemoveThinker(@floor.thinker);
+    TTickRoutines.P_RemoveThinker(@floor.thinker);
 
     //jff 2/26/98 implement stair retrigger lockout while still building
     // note this only applies to the retriggerable generalized stairs
@@ -278,7 +278,7 @@ begin
   begin
     elevator.sector.floordata := nil;     //jff 2/22/98
     elevator.sector.ceilingdata := nil;   //jff 2/22/98
-    P_RemoveThinker(@elevator.thinker);    // remove elevator from actives
+    TTickRoutines.P_RemoveThinker(@elevator.thinker);    // remove elevator from actives
 
     // make floor stop sound
     S_StartSound(@elevator.sector.soundorg, Ord(sfx_pstop));
@@ -323,7 +323,7 @@ begin
     // new floor thinker
     result := 1;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.floordata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
     floor._type := floortype;
@@ -411,7 +411,7 @@ begin
         end;
       end;
     end;
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   until secnum < 0;
 end;
 
@@ -504,7 +504,7 @@ begin
     result := 1;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
     ZeroMemory(floor, SizeOf(floormove_t));
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.floordata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
     // speed, step, direction and crushing of the kind with the rules of the
@@ -559,7 +559,7 @@ begin
         secnum := newsecnum;
         floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
         ZeroMemory(floor, SizeOf(floormove_t));
-        P_AddThinker(@floor.thinker);
+        TTickRoutines.P_AddThinker(@floor.thinker);
 
         sec.floordata := floor;
         floor.thinker._function.acp1 := @T_MoveFloor;
@@ -628,7 +628,7 @@ begin
 
       //  Spawn rising slime
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-      P_AddThinker(@floor.thinker);
+      TTickRoutines.P_AddThinker(@floor.thinker);
       s2.floordata := floor; //jff 2/22/98
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := donutRaise;
@@ -642,7 +642,7 @@ begin
 
       //  Spawn lowering donut-hole pillar
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-      P_AddThinker (@floor.thinker);
+      TTickRoutines.P_AddThinker (@floor.thinker);
       s1.floordata := floor; //jff 2/22/98
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := lowerFloor;
@@ -701,7 +701,7 @@ begin
 
       //  Spawn rising slime
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-      P_AddThinker(@floor.thinker);
+      TTickRoutines.P_AddThinker(@floor.thinker);
       s2.floordata := floor;
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := donutRaise;
@@ -715,7 +715,7 @@ begin
 
       //  Spawn lowering donut-hole
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-      P_AddThinker(@floor.thinker);
+      TTickRoutines.P_AddThinker(@floor.thinker);
       s1.floordata := floor;
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := lowerFloor;
@@ -760,7 +760,7 @@ begin
     // create and initialize new elevator thinker
     result := 1;
     elevator := Z_Malloc(SizeOf(elevator_t), PU_LEVSPEC, nil);
-    P_AddThinker(@elevator.thinker);
+    TTickRoutines.P_AddThinker(@elevator.thinker);
     sec.floordata := elevator; //jff 2/22/98
     sec.ceilingdata := elevator; //jff 2/22/98
     elevator.thinker._function.acp1 := @T_MoveElevator;

@@ -96,7 +96,7 @@ begin
       // phares 3/11/98: you start off slowly, then increase as
       // you get better footing
 
-      momentum := P_AproxDistance(mo.momx, mo.momy);
+      momentum := TMapUtilRoutines.P_AproxDistance(mo.momx, mo.momy);
       result := mo.movefactor;
       if momentum > MORE_FRICTION_MOMENTUM shl 2 then
         result := result shl 3

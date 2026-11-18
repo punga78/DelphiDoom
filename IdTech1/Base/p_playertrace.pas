@@ -132,11 +132,11 @@ begin
   else
   begin
     item := @history.data[history.rover];
-    dist := P_AproxDistance(pmo.x - item.x, pmo.y - item.y);
+    dist := TMapUtilRoutines.P_AproxDistance(pmo.x - item.x, pmo.y - item.y);
     if dist < HISTORYIGNOREDISTANCE div 2 then
       exit;
     if dist < HISTORYIGNOREDISTANCE then
-      if P_CheckSightXYZ(item.x, item.y, item.z, pmo) then
+      if TSightRoutines.P_CheckSightXYZ(item.x, item.y, item.z, pmo) then
         exit;
     nrover := history.rover + 1;
     if nrover >= NUMPLAYERTRACEHISTORY then
@@ -209,7 +209,7 @@ var
       speed := speed div FRACUNIT;
     mo.momx := speed * finecosine[ang shr ANGLETOFINESHIFT];
     mo.momy := speed * finesine[ang shr ANGLETOFINESHIFT];
-    dist := P_AproxDistance(item.x - mo.x, item.y - mo.y);
+    dist := TMapUtilRoutines.P_AproxDistance(item.x - mo.x, item.y - mo.y);
     tics := (dist - PLAYERFOLLOWDISTANCE) div (speed * FRACUNIT);
     if tics < TICRATE div 5 then
       tics := TICRATE div 5;
@@ -226,13 +226,13 @@ begin
   if p = nil then
     exit;
 
-  seeplayer := P_CheckSight(mo, p.mo);
+  seeplayer := TSightRoutines.P_CheckSight(mo, p.mo);
   if seeplayer then
     if mo.target <> nil then
       if mo.target <> p.mo then
         exit;
 
-  distfromplayer := P_AproxDistance(mo.x - p.mo.x, mo.y - p.mo.y);
+  distfromplayer := TMapUtilRoutines.P_AproxDistance(mo.x - p.mo.x, mo.y - p.mo.y);
   if distfromplayer < PLAYERFOLLOWDISTANCE then
     if seeplayer then
       exit;
@@ -243,8 +243,8 @@ begin
 
   if mo.flags4_ex and MF4_EX_TRACEDEFINED <> 0 then
   begin
-    dist := P_AproxDistance(mo.tracex - mo.x, mo.tracey - mo.y);
-    if (dist > HISTORYIGNOREDISTANCE) and P_CheckSightXYZ(mo.tracex, mo.tracey, mo.tracez, mo) then
+    dist := TMapUtilRoutines.P_AproxDistance(mo.tracex - mo.x, mo.tracey - mo.y);
+    if (dist > HISTORYIGNOREDISTANCE) and TSightRoutines.P_CheckSightXYZ(mo.tracex, mo.tracey, mo.tracez, mo) then
     begin
       tmp.x := mo.tracex;
       tmp.y := mo.tracey;
@@ -272,14 +272,14 @@ begin
     item := @history.data[hpos];
     if item.leveltime > mo.tracefollowtimestamp then
     begin
-      if P_CheckSightXYZ(item.x, item.y, item.z, mo) then
+      if TSightRoutines.P_CheckSightXYZ(item.x, item.y, item.z, mo) then
       begin
         if item.leveltime > bestleveltime then
         begin
           bestleveltime := item.leveltime;
           bestitem := item;
         end;
-        tracefromplayer := P_AproxDistance(item.x - p.mo.x, item.y - p.mo.y);
+        tracefromplayer := TMapUtilRoutines.P_AproxDistance(item.x - p.mo.x, item.y - p.mo.y);
         if tracefromplayer < distfromplayer then
         begin
           bestitem3 := item;
@@ -288,7 +288,7 @@ begin
       end
       else if N_Random < 32 then
       begin
-        P_LineTrace(mo.x, mo.y, mo.z, item.x, item.y, item.z, newx, newy, newz);
+        TMapUtilRoutines.P_LineTrace(mo.x, mo.y, mo.z, item.x, item.y, item.z, newx, newy, newz);
         if (newx = item.x) and (newy = item.y) then
         begin
           if item.leveltime > bestleveltime2 then
@@ -296,7 +296,7 @@ begin
             bestleveltime2 := item.leveltime;
             bestitem2 := item;
           end;
-          tracefromplayer := P_AproxDistance(item.x - p.mo.x, item.y - p.mo.y);
+          tracefromplayer := TMapUtilRoutines.P_AproxDistance(item.x - p.mo.x, item.y - p.mo.y);
           if tracefromplayer < distfromplayer then
           begin
             bestitem3 := item;

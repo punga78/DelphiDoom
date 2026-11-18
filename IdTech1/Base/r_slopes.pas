@@ -1221,9 +1221,9 @@ begin
     FixedMul(finetangent[(rw_centerangle + xtoviewangle[stop]) div ANGLETOFINEUNIT],
       rw_distance);
 
-  sc11 := P_CeilingHeight(frontsector, curline.v1.x, curline.v1.y) - viewz;
+  sc11 := TSlopeRoutines.P_CeilingHeight(frontsector, curline.v1.x, curline.v1.y) - viewz;
   sc22 := sc11;
-  sf11 := P_FloorHeight(frontsector, curline.v1.x, curline.v1.y) - viewz;
+  sf11 := TSlopeRoutines.P_FloorHeight(frontsector, curline.v1.x, curline.v1.y) - viewz;
   sf22 := sf11;
 
   // JVAL: Shut up compiler warning
@@ -1234,9 +1234,9 @@ begin
 
   if backsector <> nil then
   begin
-    sc1 := P_CeilingHeight(backsector, curline.v1.x, curline.v1.y) - viewz;
+    sc1 := TSlopeRoutines.P_CeilingHeight(backsector, curline.v1.x, curline.v1.y) - viewz;
     sc2 := sc1;
-    sf1 := P_FloorHeight(backsector, curline.v1.x, curline.v1.y) - viewz;
+    sf1 := TSlopeRoutines.P_FloorHeight(backsector, curline.v1.x, curline.v1.y) - viewz;
     sf2 := sf1;
     if (frontsector.ceilingpic = skyflatnum) and (backsector.ceilingpic = skyflatnum) then  // JVAL: SOS check floorpic = skyflatnum
     begin
@@ -1495,13 +1495,13 @@ begin
   if frontsector.heightsec = -1 then
   {$ENDIF}
   begin
-    if P_FloorHeight(frontsector, viewx, viewy) >= viewz then
+    if TSlopeRoutines.P_FloorHeight(frontsector, viewx, viewy) >= viewz then
     begin
       // above view plane
       markfloor := false;
     end;
 
-    if (P_CeilingHeight(frontsector, viewx, viewy) <= viewz) and
+    if (TSlopeRoutines.P_CeilingHeight(frontsector, viewx, viewy) <= viewz) and
        (frontsector.ceilingpic <> skyflatnum) then
     begin
       // below view plane
@@ -1860,13 +1860,13 @@ begin
   if virtualfloor then
   begin
     {$IFDEF DEBUG}
-    slopeheight := P_FloorHeight(sec, viewx, viewy);
+    slopeheight := TSlopeRoutines.P_FloorHeight(sec, viewx, viewy);
     {$ENDIF}
     for j := 0 to cnt - 1 do
     begin
       sX := solutionI[0][j].x * POINTUNIT + viewx;
       sY := solutionI[0][j].y * POINTUNIT + viewy;
-      h := P_FloorHeight(sec, sX, sY);
+      h := TSlopeRoutines.P_FloorHeight(sec, sX, sY);
       R_SlopesCalcSSPoint(
         sX,
         sY,
@@ -1914,13 +1914,13 @@ begin
   else
   begin
     {$IFDEF DEBUG}
-    slopeheight := P_CeilingHeight(sec, viewx, viewy);
+    slopeheight := TSlopeRoutines.P_CeilingHeight(sec, viewx, viewy);
     {$ENDIF}
     for j := 0 to cnt - 1 do
     begin
       sX := solutionI[0][j].x * POINTUNIT + viewx;
       sY := solutionI[0][j].y * POINTUNIT + viewy;
-      h := P_CeilingHeight(sec, sX, sY);
+      h := TSlopeRoutines.P_CeilingHeight(sec, sX, sY);
       R_SlopesCalcSSPoint(
         sX,
         sY,

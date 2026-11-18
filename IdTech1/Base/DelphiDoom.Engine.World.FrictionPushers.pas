@@ -198,7 +198,7 @@ begin
   f.friction := friction;
   f.movefactor := movefactor;
   f.affectee := affectee;
-  P_AddThinker(@f.thinker);
+  TTickRoutines.P_AddThinker(@f.thinker);
 end;
 
 //==============================================================================
@@ -223,7 +223,7 @@ begin
   begin
     if l.special = 223 then
     begin
-      len := P_AproxDistance(l.dx, l.dy) div FRACUNIT;
+      len := TMapUtilRoutines.P_AproxDistance(l.dx, l.dy) div FRACUNIT;
       friction := ($1EB8 * len) div $80 + $D000;
 
       // The following check might seem odd. At the time of movement,
@@ -326,13 +326,13 @@ begin
 
   sx := tmpusher.x;
   sy := tmpusher.y;
-  dist := P_AproxDistance(thing.x - sx,thing.y - sy);
+  dist := TMapUtilRoutines.P_AproxDistance(thing.x - sx,thing.y - sy);
   speed := (tmpusher.magnitude - (dist div (2 * FRACUNIT))) * (1 shl (FRACBITS - PUSH_FACTOR - 1));
 
   // If speed <= 0, you're outside the effective radius. You also have
   // to be able to see the push/pull source point.
 
-  if (speed > 0) and P_CheckSight(thing, tmpusher.source) then
+  if (speed > 0) and TSightRoutines.P_CheckSight(thing, tmpusher.source) then
   begin
     pushangle := TRendererMain.R_PointToAngle2(thing.x, thing.y, sx, sy);
     if tmpusher.source._type = Ord(MT_PUSH) then
@@ -420,7 +420,7 @@ begin
       by := yl;
       while by <= yh do
       begin
-        P_BlockThingsIterator(bx, by, PIT_PushThing);
+        TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_PushThing);
         inc(by);
       end;
       inc(bx);
@@ -533,7 +533,7 @@ begin
   p._type := _type;
   p.x_mag := x_mag div FRACUNIT;
   p.y_mag := y_mag div FRACUNIT;
-  p.magnitude := P_AproxDistance(p.x_mag, p.y_mag);
+  p.magnitude := TMapUtilRoutines.P_AproxDistance(p.x_mag, p.y_mag);
   if source <> nil then // point source exist?
   begin
     p.radius := p.magnitude * (FRACUNIT * 2); // where force goes to zero
@@ -541,7 +541,7 @@ begin
     p.y := p.source.y;
   end;
   p.affectee := affectee;
-  P_AddThinker(@p.thinker);
+  TTickRoutines.P_AddThinker(@p.thinker);
 end;
 
 //==============================================================================

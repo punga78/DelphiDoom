@@ -258,7 +258,7 @@ begin
       VV[0] := P_FindClosestSectorPoint(secid, slopeinfo[secid].floorcontrols[0]);
       VV[1] := P_FindClosestSectorPoint(secid, slopeinfo[secid].floorcontrols[1]);
       VV[2] := P_FindClosestSectorPoint(secid, slopeinfo[secid].floorcontrols[2]);
-      calc_slope_plane(
+      TSlopeRoutines.calc_slope_plane(
         VV[0].x / FRACUNIT, VV[0].y / FRACUNIT, calcz(secid, slopeinfo[secid].floorcontrols[0]) / FRACUNIT,
         VV[1].x / FRACUNIT, VV[1].y / FRACUNIT, calcz(secid, slopeinfo[secid].floorcontrols[1]) / FRACUNIT,
         VV[2].x / FRACUNIT, VV[2].y / FRACUNIT, calcz(secid, slopeinfo[secid].floorcontrols[2]) / FRACUNIT,
@@ -269,7 +269,7 @@ begin
       sectors[secid].fic := 1 / fc;
       sectors[secid].fd := fd;
       sectors[secid].renderflags := sectors[secid].renderflags or SRF_SLOPEFLOOR;
-      P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPEFLOOR, false);
+      TSlopeRoutines.P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPEFLOOR, false);
       sectors[secid].slopeline := sectors[secid].lines[0];
       sectors[secid].slopeline.renderflags := sectors[secid].slopeline.renderflags or LRF_SLOPED;
     end;
@@ -278,7 +278,7 @@ begin
       VV[0] := P_FindClosestSectorPoint(secid, slopeinfo[secid].ceilingcontrols[0]);
       VV[1] := P_FindClosestSectorPoint(secid, slopeinfo[secid].ceilingcontrols[1]);
       VV[2] := P_FindClosestSectorPoint(secid, slopeinfo[secid].ceilingcontrols[2]);
-      calc_slope_plane(
+      TSlopeRoutines.calc_slope_plane(
         VV[0].x / FRACUNIT, VV[0].y / FRACUNIT, calcz(secid, slopeinfo[secid].ceilingcontrols[0]) / FRACUNIT,
         VV[1].x / FRACUNIT, VV[1].y / FRACUNIT, calcz(secid, slopeinfo[secid].ceilingcontrols[1]) / FRACUNIT,
         VV[2].x / FRACUNIT, VV[2].y / FRACUNIT, calcz(secid, slopeinfo[secid].ceilingcontrols[2]) / FRACUNIT,
@@ -289,7 +289,7 @@ begin
       sectors[secid].cic := 1 / fc;
       sectors[secid].cd := fd;
       sectors[secid].renderflags := sectors[secid].renderflags or SRF_SLOPECEILING;
-      P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPECEILING, false);
+      TSlopeRoutines.P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPECEILING, false);
       sectors[secid].slopeline := sectors[secid].lines[0];
       sectors[secid].slopeline.renderflags := sectors[secid].slopeline.renderflags or LRF_SLOPED;
     end;
@@ -476,7 +476,7 @@ begin
         VV[0] := slopeinfo[secid].floorvertexes[0];
         VV[1] := slopeinfo[secid].floorvertexes[1];
         VV[2] := slopeinfo[secid].floorvertexes[2];
-        calc_slope_plane(
+        TSlopeRoutines.calc_slope_plane(
           VV[0].x / FRACUNIT, VV[0].y / FRACUNIT, calcz(secid, slopeinfo[secid].floorcontrols[0], sectors[secid].floorheight) / FRACUNIT,
           VV[1].x / FRACUNIT, VV[1].y / FRACUNIT, calcz(secid, slopeinfo[secid].floorcontrols[1], sectors[secid].floorheight) / FRACUNIT,
           VV[2].x / FRACUNIT, VV[2].y / FRACUNIT, calcz(secid, slopeinfo[secid].floorcontrols[2], sectors[secid].floorheight) / FRACUNIT,
@@ -487,7 +487,7 @@ begin
         sectors[secid].fic := 1 / fc;
         sectors[secid].fd := fd;
         sectors[secid].renderflags := sectors[secid].renderflags or SRF_SLOPEFLOOR;
-        P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPEFLOOR, false);
+        TSlopeRoutines.P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPEFLOOR, false);
         sectors[secid].slopeline := sectors[secid].lines[0];
         sectors[secid].slopeline.renderflags := sectors[secid].slopeline.renderflags or LRF_SLOPED;
         for i := 0 to sectors[secid].linecount - 1 do
@@ -504,7 +504,7 @@ begin
         VV[0] := slopeinfo[secid].ceilingvertexes[0];
         VV[1] := slopeinfo[secid].ceilingvertexes[1];
         VV[2] := slopeinfo[secid].ceilingvertexes[2];
-        calc_slope_plane(
+        TSlopeRoutines.calc_slope_plane(
           VV[0].x / FRACUNIT, VV[0].y / FRACUNIT, calcz(secid, slopeinfo[secid].ceilingcontrols[0], sectors[secid].ceilingheight) / FRACUNIT,
           VV[1].x / FRACUNIT, VV[1].y / FRACUNIT, calcz(secid, slopeinfo[secid].ceilingcontrols[1], sectors[secid].ceilingheight) / FRACUNIT,
           VV[2].x / FRACUNIT, VV[2].y / FRACUNIT, calcz(secid, slopeinfo[secid].ceilingcontrols[2], sectors[secid].ceilingheight) / FRACUNIT,
@@ -515,7 +515,7 @@ begin
         sectors[secid].cic := 1 / fc;
         sectors[secid].cd := fd;
         sectors[secid].renderflags := sectors[secid].renderflags or SRF_SLOPECEILING;
-        P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPECEILING, false);
+        TSlopeRoutines.P_SlopesAlignPlane(@sectors[secid], nil, SRF_SLOPECEILING, false);
         sectors[secid].slopeline := sectors[secid].lines[0];
         sectors[secid].slopeline.renderflags := sectors[secid].slopeline.renderflags or LRF_SLOPED;
         for i := 0 to sectors[secid].linecount - 1 do

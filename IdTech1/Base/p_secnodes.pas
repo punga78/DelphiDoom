@@ -197,7 +197,7 @@ begin
     exit;
   end;
 
-  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
+  if TMapUtilRoutines.P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -286,7 +286,7 @@ begin
 
   for bx := xl to xh do
     for by := yl to yh do
-      P_BlockLinesIterator(bx, by, PIT_GetSectors);
+      TMapUtilRoutines.P_BlockLinesIterator(bx, by, PIT_GetSectors);
 
   // Add the sector of the (x,y) point to sector_list.
 

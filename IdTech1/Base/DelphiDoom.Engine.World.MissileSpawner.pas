@@ -88,7 +88,7 @@ begin
   th.momx := FixedMul(th.info.speed, finecosine[an]);
   th.momy := FixedMul(th.info.speed, finesine[an]);
 
-  dist := P_AproxDistance(dest.x - source.x, dest.y - source.y);
+  dist := TMapUtilRoutines.P_AproxDistance(dest.x - source.x, dest.y - source.y);
   // JVAL: If forgot to set custom missile speed we use default (12 * FRACUNIT)
   if th.info.speed = 0 then
     dist := dist div (12 * FRACUNIT)

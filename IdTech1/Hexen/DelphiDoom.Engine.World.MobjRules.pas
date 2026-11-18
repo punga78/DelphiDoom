@@ -565,7 +565,7 @@ begin
   begin  // float down towards target if too close
     if (mo.flags and MF_SKULLFLY = 0) and (mo.flags and MF_INFLOAT = 0) then
     begin
-      dist := P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
       delta := mo.target.z + _SHR1(mo.height) - mo.z;
       if (delta < 0) and (dist < -(delta * 3)) then
         mo.z := mo.z - TCommonMovementActions.P_FloatSpeed(mo)
@@ -1387,16 +1387,16 @@ begin
       if isfloatbob then
         z := z + msec.ceilingheight
       else if z = FLOATRANDZ then
-        z := (msec.ceilingheight + P_CeilingHeight(ss.sector, x, y)) div 2  // JVAL: Slopes
+        z := (msec.ceilingheight + TSlopeRoutines.P_CeilingHeight(ss.sector, x, y)) div 2  // JVAL: Slopes
       else if z = ONFLOORZ then
         z := msec.ceilingheight;
     end
     else
     begin
       if isfloatbob then
-        z := z + P_FloorHeight(ss.sector, x, y) // JVAL: Slopes
+        z := z + TSlopeRoutines.P_FloorHeight(ss.sector, x, y) // JVAL: Slopes
       else if z = FLOATRANDZ then
-        z := (P_FloorHeight(ss.sector, x, y) + msec.floorheight) div 2 // JVAL: Slopes
+        z := (TSlopeRoutines.P_FloorHeight(ss.sector, x, y) + msec.floorheight) div 2 // JVAL: Slopes
       else if z = ONCEILINGZ then
         z := msec.floorheight;
     end;
@@ -1908,7 +1908,7 @@ begin
     an := an shr ANGLETOFINESHIFT;
     th.momx := FixedMul(th.info.speed, finecosine[an]);
     th.momy := FixedMul(th.info.speed, finesine[an]);
-    dist := P_AproxDistance(dest.x - source.x, dest.y - source.y);
+    dist := TMapUtilRoutines.P_AproxDistance(dest.x - source.x, dest.y - source.y);
     if th.info.speed = 0 then
       dist := 1
     else
@@ -1981,7 +1981,7 @@ begin
   an := an shr ANGLETOFINESHIFT;
   th.momx := FixedMul(th.info.speed, finecosine[an]);
   th.momy := FixedMul(th.info.speed, finesine[an]);
-  dist := P_AproxDistance(dest.x - source.x, dest.y - source.y);
+  dist := TMapUtilRoutines.P_AproxDistance(dest.x - source.x, dest.y - source.y);
   if th.info.speed = 0 then
     dist := 1
   else
@@ -2334,7 +2334,7 @@ begin
     an := an shr ANGLETOFINESHIFT;
     th.momx := FixedMul(th.info.speed, finecosine[an]);
     th.momy := FixedMul(th.info.speed, finesine[an]);
-    dist := P_AproxDistance(dest.x - x, dest.y - y);
+    dist := TMapUtilRoutines.P_AproxDistance(dest.x - x, dest.y - y);
     if th.info.speed = 0 then
       dist := 1
     else
@@ -2621,7 +2621,7 @@ begin
           rnd := P_Random;
           angle := TRendererMain.R_PointToAngle2(BlockingMobj.x, BlockingMobj.y, mo.x, mo.y) +
                        ANG1 * ((rnd mod 16) - 8);
-          speed := P_AproxDistance(mo.momx, mo.momy);
+          speed := TMapUtilRoutines.P_AproxDistance(mo.momx, mo.momy);
           speed := FixedMul(speed, 3 * FRACUNIT div 4);
           mo.angle := angle;
           angle := angle shr ANGLETOFINESHIFT;
@@ -2859,7 +2859,7 @@ begin
     else
       P_ZMovement(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed
         result := false;
         exit;

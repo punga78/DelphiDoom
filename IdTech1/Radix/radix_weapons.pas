@@ -455,7 +455,7 @@ begin
   spawny := source.y + dy + stepy;
   spawnz := source.z + dz;
 
-  P_LineTrace(oldx, oldy, oldz, spawnx, spawny, spawnz, newx, newy, newz);
+  TMapUtilRoutines.P_LineTrace(oldx, oldy, oldz, spawnx, spawny, spawnz, newx, newy, newz);
 
   // JVAL: 20200502 - Limit z spawn height of missile
   if abs(oldz - newz) > TRadixWeaponRules.MAX_WEAPON_Z_OFFSET then
@@ -469,8 +469,8 @@ begin
 
   sec := TRendererMain.R_PointInSubsector(source.x, source.y).sector;
 
-  sfloor := P_3dFloorHeight(sec, source.x, source.y, newz);
-  sceiling := P_3dCeilingHeight(sec, source.x, source.y, newz);
+  sfloor := T3dFloorRoutines.P_3dFloorHeight(sec, source.x, source.y, newz);
+  sceiling := T3dFloorRoutines.P_3dCeilingHeight(sec, source.x, source.y, newz);
 
   if newz - mobjinfo[_type].height < sfloor then
     newz := newz + mobjinfo[_type].height;
@@ -1008,12 +1008,12 @@ begin
   if thing.player <> nil then
     exit;
 
-  dist := P_AproxDistance(thing.x - pbplayer.mo.x, thing.y - pbplayer.mo.y);
+  dist := TMapUtilRoutines.P_AproxDistance(thing.x - pbplayer.mo.x, thing.y - pbplayer.mo.y);
 
   if dist >= TRadixWeaponRules.PLASMA_BOMB_RADIUS then
     exit; // out of range
 
-  if P_CheckSight(thing, pbplayer.mo) then
+  if TSightRoutines.P_CheckSight(thing, pbplayer.mo) then
   begin
     // must be in direct path
     P_DamageMobj(thing, pbplayer.mo, pbplayer.mo, TRadixWeaponRules.PLASMA_BOMB_DAMAGE);
@@ -1044,7 +1044,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, PIT_Plasmabomb);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, PIT_Plasmabomb);
 end;
 
 //==============================================================================

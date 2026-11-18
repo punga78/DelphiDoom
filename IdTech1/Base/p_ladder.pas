@@ -96,7 +96,7 @@ begin
     if mo.z < topz then
       if player.cmd.forwardmove > 0 then
       begin
-        mo.momz := P_AproxDistance(mo.momx, mo.momy);
+        mo.momz := TMapUtilRoutines.P_AproxDistance(mo.momx, mo.momy);
         if mo.momz > MAXLADDERMOVE then
           mo.momz := MAXLADDERMOVE;
         if mo.momz < MINLADDERMOVE then

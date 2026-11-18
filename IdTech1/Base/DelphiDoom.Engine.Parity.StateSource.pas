@@ -430,7 +430,7 @@ begin
   LThinker := TTickState.ThinkerCap.next;
   while LThinker <> @TTickState.ThinkerCap do
   begin
-    if not P_ThinkerIsRemoved(LThinker) then
+    if not TTickRoutines.P_ThinkerIsRemoved(LThinker) then
     begin
       Inc(LThinkerCount);
       if @LThinker._function.acp1 = @P_MobjThinker then
@@ -448,7 +448,7 @@ begin
   LThinker := TTickState.ThinkerCap.next;
   while LThinker <> @TTickState.ThinkerCap do
   begin
-    if not P_ThinkerIsRemoved(LThinker) and (@LThinker._function.acp1 = @P_MobjThinker) then
+    if not TTickRoutines.P_ThinkerIsRemoved(LThinker) and (@LThinker._function.acp1 = @P_MobjThinker) then
     begin
       FSink.BeginObject(FMobjCategory, LIndex);
       FFieldIndex := 0;

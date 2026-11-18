@@ -981,9 +981,9 @@ begin
   // will adjust them.
 
   // JVAL: Slopes
-  TMapCheck.FloorZ := P_FloorHeight(newsubsec.sector, x, y);
+  TMapCheck.FloorZ := TSlopeRoutines.P_FloorHeight(newsubsec.sector, x, y);
   TMapCheck.DropOffZ := TMapCheck.FloorZ;
-  TMapCheck.CeilingZ := P_CeilingHeight(newsubsec.sector, x, y);
+  TMapCheck.CeilingZ := TSlopeRoutines.P_CeilingHeight(newsubsec.sector, x, y);
 
   if TMapCheck.Flags and MF_NOCLIP <> 0 then
   begin
@@ -1014,7 +1014,7 @@ begin
 
   for bx := xl to xh do
     for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_CheckThing) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_CheckThing) then
       begin
         TMapCheck.Thing.z := z;
         result := false;

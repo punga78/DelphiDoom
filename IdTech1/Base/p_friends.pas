@@ -105,14 +105,14 @@ begin
   if mo.health <= 0 then
     exit;
 
-  dist1 := P_AproxDistance(mo.x - dplayermo.x, mo.y - dplayermo.y);
+  dist1 := TMapUtilRoutines.P_AproxDistance(mo.x - dplayermo.x, mo.y - dplayermo.y);
   if dist1 > MAXFRIENDRADIUS then
     exit;
 
   if mo.health < mo.info.spawnhealth then
     inc(mo.health);
 
-  dist2 := P_AproxDistance(mo.x + mo.momx - dplayermo.x - dplayermo.momx, mo.y + mo.momx - dplayermo.y - dplayermo.momx);
+  dist2 := TMapUtilRoutines.P_AproxDistance(mo.x + mo.momx - dplayermo.x - dplayermo.momx, mo.y + mo.momx - dplayermo.y - dplayermo.momx);
   if dist2 > dist1 then // Going away
   begin
     mo.momx := mo.momx * 15 div 16;
@@ -177,7 +177,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, RIT_HandleFriendsNearMe);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, RIT_HandleFriendsNearMe);
 end;
 
 //==============================================================================
@@ -246,7 +246,7 @@ begin
     visible := false;
     for i := 0 to MAXPLAYERS - 1 do
       if TGameSession.PlayerInGame[i] then
-        if P_CheckSight(TGameSession.Players[i].mo, actor) then
+        if TSightRoutines.P_CheckSight(TGameSession.Players[i].mo, actor) then
         begin
           visible := true;
           break;
@@ -306,7 +306,7 @@ begin
     else
       maxrange := MONS_LOOK_RANGE;
 
-    if P_AproxDistance(actor.x - mo.x, actor.y - mo.y) > maxrange then
+    if TMapUtilRoutines.P_AproxDistance(actor.x - mo.x, actor.y - mo.y) > maxrange then
     begin // Out of range
       think := think.next;
       continue;
@@ -325,7 +325,7 @@ begin
       exit;
     end;
 
-    if not P_CheckSight(actor, mo) then
+    if not TSightRoutines.P_CheckSight(actor, mo) then
     begin // Out of sight
       think := think.next;
       continue;

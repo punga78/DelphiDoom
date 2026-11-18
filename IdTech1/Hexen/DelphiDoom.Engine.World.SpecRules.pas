@@ -1150,10 +1150,10 @@ begin
   //
   //      Init other misc stuff
   //
-  P_World.ActiveCeilings.Clear;
-  P_World.UdmfCeilings.Clear;
-  P_World.ActivePlats.Clear;
-  P_World.UdmfPlats.Clear;
+  TTickRoutines.P_World.ActiveCeilings.Clear;
+  TTickRoutines.P_World.UdmfCeilings.Clear;
+  TTickRoutines.P_World.ActivePlats.Clear;
+  TTickRoutines.P_World.UdmfPlats.Clear;
 
   for i := 0 to MAXBUTTONS - 1 do
     memset(@buttonlist[i], 0, SizeOf(button_t));

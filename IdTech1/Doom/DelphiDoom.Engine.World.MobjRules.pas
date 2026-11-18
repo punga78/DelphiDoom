@@ -392,7 +392,7 @@ begin
     if (mo.flags and MF_SKULLFLY = 0) and
        (mo.flags and MF_INFLOAT = 0) then
     begin
-      dist := P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
 
       delta := (mo.target.z + _SHR1(mo.height)) - mo.z;
 
@@ -643,7 +643,7 @@ end;
 //==============================================================================
 class function TMobjGameRules.RespawnFogFloor(ss: Psector_t; fog: Pmobj_t): fixed_t;
 begin
-  result := P_FloorHeight(ss, fog.x, fog.y);
+  result := TSlopeRoutines.P_FloorHeight(ss, fog.x, fog.y);
 end;
 
 //==============================================================================
@@ -833,7 +833,7 @@ end;
 class procedure TMobjGameRules.CountItem(mo: Pmobj_t);
 begin
   if mo.flags and MF_COUNTITEM <> 0 then
-    P_World.Totals.CountItem;
+    TTickRoutines.P_World.Totals.CountItem;
 end;
 //
 // GAME SPAWN FUNCTIONS
@@ -1089,7 +1089,7 @@ begin
      (mobj._type <> Ord(MT_INV)) and
      (mobj._type <> Ord(MT_INS)) then
   begin
-    P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
+    TTickRoutines.P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
   end;
 end;
 
@@ -1158,7 +1158,7 @@ end;
 
 class function TMobjGameRules.SeekerSpeed(actor: Pmobj_t): fixed_t;
 begin
-  result := P_AproxDistance(actor.momx, actor.momy);
+  result := TMapUtilRoutines.P_AproxDistance(actor.momx, actor.momy);
 end;
 
 class function TMobjGameRules.TerrainFloorPic(thing: Pmobj_t): integer;
@@ -1421,7 +1421,7 @@ begin
 
     TSpecRoutines.P_MobjInSpecialSector(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed
         result := false;
         exit;

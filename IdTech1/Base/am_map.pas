@@ -1321,7 +1321,7 @@ begin
       if allowautomaprotate then
         TAutomapRotation.Rotate(x, y, plra, plrx, plry);
 
-      if P_AproxDistance(x - x2, y - y2) < (128 * FRACUNIT) div FRACTOMAPUNIT then
+      if TMapUtilRoutines.P_AproxDistance(x - x2, y - y2) < (128 * FRACUNIT) div FRACTOMAPUNIT then
       begin
 
         colordiff := (i + TTickState.LevelTime div 4) and (2 * PTRACECOLORRANGE - 1);

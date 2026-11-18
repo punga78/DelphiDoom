@@ -409,7 +409,7 @@ begin
   radar_friendlist.count := 0;
   for bx := xl to xh do
     for by := yl to yh do
-      P_BlockThingsIterator(bx, by, PIT_AddRadarThing);
+      TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_AddRadarThing);
 
   RX_HudPutPixel(x, y, hud_blue);
 
@@ -557,7 +557,7 @@ end;
 procedure RX_HudDrawKills(const x1, x2, y: integer);
 begin
   M_WriteSmallText(x1, y, IntToStrZfill(3, GetIntegerInRange(hud_player.killcount, 0, 999)), SCN_HUD);
-  M_WriteSmallText(x2, y, IntToStrZfill(3, GetIntegerInRange(P_World.Totals.Kills, 0, 999)), SCN_HUD);
+  M_WriteSmallText(x2, y, IntToStrZfill(3, GetIntegerInRange(TTickRoutines.P_World.Totals.Kills, 0, 999)), SCN_HUD);
 end;
 
 //==============================================================================

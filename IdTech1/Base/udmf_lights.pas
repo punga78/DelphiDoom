@@ -157,7 +157,7 @@ procedure TH_Light(light: Plight_t);
 begin
   if TLightScripted.Tick(TLightKind(Ord(light._type)), light.value1, light.value2,
     light.tics1, light.tics2, light.count, light.sector.lightlevel, LightRandom) then
-    P_RemoveThinker(@light.thinker);
+    TTickRoutines.P_RemoveThinker(@light.thinker);
 end;
 
 //==============================================================================
@@ -197,7 +197,7 @@ begin
       light.tics1 := state.Tics1;
       light.tics2 := state.Tics2;
       light.count := state.Count;
-      P_AddThinker(@light.thinker);
+      TTickRoutines.P_AddThinker(@light.thinker);
       light.thinker._function.acp1 := @TH_Light;
     end;
   end;
@@ -225,7 +225,7 @@ var
   phasebase: integer;
 begin
   phase := Z_Malloc(SizeOf(phase_t), PU_LEVSPEC, nil);
-  P_AddThinker(@phase.thinker);
+  TTickRoutines.P_AddThinker(@phase.thinker);
   phase.sector := sector;
   TLightPhase.Initialize(TEngineLightSector.Wrap(sector), base, index, LightSequenceProfile,
     phaseindex, phasebase);

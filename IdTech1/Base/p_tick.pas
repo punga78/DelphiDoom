@@ -62,41 +62,6 @@ type
     class var LevelTime: integer;
   end;
 
-//==============================================================================
-//
-// P_InitThinkers
-//
-//==============================================================================
-procedure P_InitThinkers;
-
-//==============================================================================
-//
-// P_AddThinker
-//
-//==============================================================================
-procedure P_AddThinker(thinker: Pthinker_t);
-
-//==============================================================================
-//
-// P_RemoveThinker
-//
-//==============================================================================
-procedure P_RemoveThinker(thinker: Pthinker_t);
-
-//==============================================================================
-//
-// P_Ticker
-//
-//==============================================================================
-procedure P_Ticker;
-
-//==============================================================================
-//
-// P_ThinkerIsRemoved
-//
-//==============================================================================
-function P_ThinkerIsRemoved(thinker: Pthinker_t): boolean;
-
 var
 {$IFDEF HEXEN}
   TimerGame: integer;
@@ -104,47 +69,82 @@ var
   isgamesuspended: boolean = true;
   isgamefreezed: boolean = false;
 
-//==============================================================================
-//
-// P_ConfigureTickerConsole
-// The console, given by the composition root
-//
-//==============================================================================
-procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TTickRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_InitThinkers
+    //
+    //==============================================================================
+    class procedure P_InitThinkers; static;
+    //==============================================================================
+    //
+    // P_AddThinker
+    //
+    //==============================================================================
+    class procedure P_AddThinker(thinker: Pthinker_t); static;
+    //==============================================================================
+    //
+    // P_RemoveThinker
+    //
+    //==============================================================================
+    class procedure P_RemoveThinker(thinker: Pthinker_t); static;
+    //==============================================================================
+    //
+    // P_Ticker
+    //
+    //==============================================================================
+    class procedure P_Ticker; static;
+    //==============================================================================
+    //
+    // P_ThinkerIsRemoved
+    //
+    //==============================================================================
+    class function P_ThinkerIsRemoved(thinker: Pthinker_t): boolean; static;
+    //==============================================================================
+    //
+    // P_ConfigureTickerConsole
+    // The console, given by the composition root
+    //
+    //==============================================================================
+    class procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole); static;
+    //==============================================================================
+    //
+    // P_WorldTime
+    // Where the time of the level is kept, for the world of the composition root
+    //
+    //==============================================================================
+    class function P_WorldTime: TEngineWorldTime; static;
+    //==============================================================================
+    //
+    // P_ConfigureWorld
+    // The world, given by the composition root; p_tick owns it from here on
+    //
+    //==============================================================================
+    class procedure P_ConfigureWorld(const AWorld: TEngineWorld); static;
+    //==============================================================================
+    //
+    // P_World
+    // The world of the level, for the classes and the rules of the games that keep
+    // their state in it (I_Error if P_ConfigureWorld() was not called)
+    //
+    //==============================================================================
+    class function P_World: TEngineWorld; static;
+    //==============================================================================
+    //
+    // P_ThinkerHead
+    // The head of the list of the thinkers, as the world has it: the saved games
+    // walk the list from here (thinkercap stays the memory behind it)
+    //
+    //==============================================================================
+    class function P_ThinkerHead: Pthinker_t; static;
+  end;
 
-//==============================================================================
-//
-// P_WorldTime
-// Where the time of the level is kept, for the world of the composition root
-//
-//==============================================================================
-function P_WorldTime: TEngineWorldTime;
-
-//==============================================================================
-//
-// P_ConfigureWorld
-// The world, given by the composition root; p_tick owns it from here on
-//
-//==============================================================================
-procedure P_ConfigureWorld(const AWorld: TEngineWorld);
-
-//==============================================================================
-//
-// P_World
-// The world of the level, for the classes and the rules of the games that keep
-// their state in it (I_Error if P_ConfigureWorld() was not called)
-//
-//==============================================================================
-function P_World: TEngineWorld;
-
-//==============================================================================
-//
-// P_ThinkerHead
-// The head of the list of the thinkers, as the world has it: the saved games
-// walk the list from here (thinkercap stays the memory behind it)
-//
-//==============================================================================
-function P_ThinkerHead: Pthinker_t;
 
 implementation
 
@@ -183,12 +183,22 @@ var
   p_tickerconsole_ref: IEngineConsole = nil;
   p_world_ref: TEngineWorld = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TTickLocalRoutines = class sealed
+  public
+    class function P_TickerConsole: IEngineConsole; static;
+  end;
+
 //==============================================================================
 //
 // P_ConfigureTickerConsole
 //
 //==============================================================================
-procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole);
+class procedure TTickRoutines.P_ConfigureTickerConsole(const AConsole: IEngineConsole);
 begin
   p_tickerconsole_ref := AConsole;
 end;
@@ -198,7 +208,7 @@ end;
 // P_TickerConsole
 //
 //==============================================================================
-function P_TickerConsole: IEngineConsole;
+class function TTickLocalRoutines.P_TickerConsole: IEngineConsole;
 begin
   if p_tickerconsole_ref = nil then
     I_Error('P_ConfigureTickerConsole() was not called: the console is missing');
@@ -210,7 +220,7 @@ end;
 // P_WorldTime
 //
 //==============================================================================
-function P_WorldTime: TEngineWorldTime;
+class function TTickRoutines.P_WorldTime: TEngineWorldTime;
 begin
   result.LevelTime := @TTickState.LevelTime;
   result.IsFrozen := @isgamefreezed;
@@ -227,7 +237,7 @@ end;
 // P_ConfigureWorld
 //
 //==============================================================================
-procedure P_ConfigureWorld(const AWorld: TEngineWorld);
+class procedure TTickRoutines.P_ConfigureWorld(const AWorld: TEngineWorld);
 begin
   if p_world_ref <> AWorld then
     p_world_ref.Free;
@@ -239,7 +249,7 @@ end;
 // P_World
 //
 //==============================================================================
-function P_World: TEngineWorld;
+class function TTickRoutines.P_World: TEngineWorld;
 begin
   if p_world_ref = nil then
     I_Error('P_ConfigureWorld() was not called: the world is missing');
@@ -251,7 +261,7 @@ end;
 // P_ThinkerHead
 //
 //==============================================================================
-function P_ThinkerHead: Pthinker_t;
+class function TTickRoutines.P_ThinkerHead: Pthinker_t;
 begin
   result := Pthinker_t(P_World.Thinkers.Head);
 end;
@@ -261,7 +271,7 @@ end;
 // P_InitThinkers
 //
 //==============================================================================
-procedure P_InitThinkers;
+class procedure TTickRoutines.P_InitThinkers;
 begin
   P_World.Thinkers.Clear;
 end;
@@ -274,7 +284,7 @@ end;
 // the first thinker of a level can be added
 //
 //==============================================================================
-procedure P_AddThinker(thinker: Pthinker_t);
+class procedure TTickRoutines.P_AddThinker(thinker: Pthinker_t);
 begin
   p_world_ref.Thinkers.Add(PThinkerNode(thinker));
 end;
@@ -289,7 +299,7 @@ end;
 //                 https://www.doomworld.com/forum/topic/98789-fpcdoom-1124117-updated-dec-2-2019/?do=findComment&comment=2050845
 //
 //==============================================================================
-procedure P_RemoveThinker(thinker: Pthinker_t);
+class procedure TTickRoutines.P_RemoveThinker(thinker: Pthinker_t);
 begin
   p_world_ref.Thinkers.Remove(PThinkerNode(thinker));
 end;
@@ -299,7 +309,7 @@ end;
 // P_ThinkerIsRemoved
 //
 //==============================================================================
-function P_ThinkerIsRemoved(thinker: Pthinker_t): boolean;
+class function TTickRoutines.P_ThinkerIsRemoved(thinker: Pthinker_t): boolean;
 begin
   Result := TThinkerList.IsRemoved(PThinkerNode(thinker));
 end;
@@ -309,7 +319,7 @@ end;
 // P_Ticker
 //
 //==============================================================================
-procedure P_Ticker;
+class procedure TTickRoutines.P_Ticker;
 var
   i: integer;
 begin
@@ -323,7 +333,7 @@ begin
      not TGameSession.DemoPlayback and (TGameSession.Players[TGameSession.ConsolePlayer].viewz <> 1) then
     exit;
 
-  if not TGameSession.DemoPlayback and not TGameSession.DemoRecording and P_TickerConsole.IsActive and not TGameSession.NetGame and (TTickState.LevelTime <> 0) then
+  if not TGameSession.DemoPlayback and not TGameSession.DemoRecording and TTickLocalRoutines.P_TickerConsole.IsActive and not TGameSession.NetGame and (TTickState.LevelTime <> 0) then
     exit;
 
   isgamesuspended := false;

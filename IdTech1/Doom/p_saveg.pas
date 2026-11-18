@@ -1079,8 +1079,8 @@ var
   parm: Pmobjcustomparam_t;
 begin
   // save off the current thinkers
-  th := P_ThinkerHead.next;
-  while th <> P_ThinkerHead do
+  th := TTickRoutines.P_ThinkerHead.next;
+  while th <> TTickRoutines.P_ThinkerHead do
   begin
     if @th._function.acp1 = @P_MobjThinker then
     begin
@@ -1697,8 +1697,8 @@ var
   parm: mobjcustomparam_t;
 begin
   // remove all the current thinkers
-  currentthinker := P_ThinkerHead.next;
-  while currentthinker <> P_ThinkerHead do
+  currentthinker := TTickRoutines.P_ThinkerHead.next;
+  while currentthinker <> TTickRoutines.P_ThinkerHead do
   begin
     next := currentthinker.next;
 
@@ -1709,7 +1709,7 @@ begin
 
     currentthinker := next;
   end;
-  P_InitThinkers;
+  TTickRoutines.P_InitThinkers;
 
   // read in saved thinkers
   while true do
@@ -1720,8 +1720,8 @@ begin
       Ord(tc_end):
         begin
           // Retrieve target, tracer and master
-          currentthinker := P_ThinkerHead.next;
-          while currentthinker <> P_ThinkerHead do
+          currentthinker := TTickRoutines.P_ThinkerHead.next;
+          while currentthinker <> TTickRoutines.P_ThinkerHead do
           begin
             next := currentthinker.next;
 
@@ -1782,11 +1782,11 @@ begin
           end;
 
           R_InitMobjTranslation(mobj);
-          P_SetThingPosition(mobj);
-          mobj.floorz := P_3dFloorHeight(mobj); // JVAL: 3d floors
-          mobj.ceilingz := P_3dCeilingHeight(mobj); // JVAL: 3d floors
+          TMapUtilRoutines.P_SetThingPosition(mobj);
+          mobj.floorz := T3dFloorRoutines.P_3dFloorHeight(mobj); // JVAL: 3d floors
+          mobj.ceilingz := T3dFloorRoutines.P_3dCeilingHeight(mobj); // JVAL: 3d floors
           @mobj.thinker._function.acp1 := @P_MobjThinker;
-          P_AddThinker(@mobj.thinker);
+          TTickRoutines.P_AddThinker(@mobj.thinker);
         end;
       else
         I_Error('P_UnArchiveThinkers(): Unknown tclass %d in savegame', [tclass]);
@@ -1871,8 +1871,8 @@ var
 
 begin
   // save off the current thinkers
-  th1 := P_ThinkerHead.next;
-  while th1 <> P_ThinkerHead do
+  th1 := TTickRoutines.P_ThinkerHead.next;
+  while th1 <> TTickRoutines.P_ThinkerHead do
   begin
     th := th1;
     th1 := th1.next;
@@ -1881,7 +1881,7 @@ begin
 
     if not Assigned(th._function.acv) then
     begin
-      if P_World.ActiveCeilings.Contains(th) then
+      if TTickRoutines.P_World.ActiveCeilings.Contains(th) then
       begin
         save_p[0] := Ord(tc_ceiling);
         save_p := @save_p[1];
@@ -1892,7 +1892,7 @@ begin
       end;
 
       // JVAL: 20220218 - Handle hactiveceilings
-      if P_World.UdmfCeilings.Contains(th) then
+      if TTickRoutines.P_World.UdmfCeilings.Contains(th) then
       begin
         save_p[0] := Ord(tch_moveceiling);
         save_p := @save_p[1];
@@ -2244,7 +2244,7 @@ begin
           if Assigned(ceiling.thinker._function.acp1) then // JVAL works ???
             @ceiling.thinker._function.acp1 := @T_MoveCeiling;
 
-          P_AddThinker(@ceiling.thinker);
+          TTickRoutines.P_AddThinker(@ceiling.thinker);
           P_AddActiveCeiling(ceiling);
         end;
 
@@ -2279,7 +2279,7 @@ begin
             door.line := @lines[NativeInt(door.line)];
 
           @door.thinker._function.acp1 := @T_VerticalDoor;
-          P_AddThinker(@door.thinker);
+          TTickRoutines.P_AddThinker(@door.thinker);
         end;
 
       Ord(tc_floor):
@@ -2327,7 +2327,7 @@ begin
           floor.sector := @sectors[NativeInt(floor.sector)];
           floor.sector.floordata := floor;
           @floor.thinker._function.acp1 := @T_MoveFloor;
-          P_AddThinker(@floor.thinker);
+          TTickRoutines.P_AddThinker(@floor.thinker);
         end;
 
       Ord(tc_plat):
@@ -2341,7 +2341,7 @@ begin
           if Assigned(plat.thinker._function.acp1) then
             @plat.thinker._function.acp1 := @T_PlatRaise;
 
-          P_AddThinker(@plat.thinker);
+          TTickRoutines.P_AddThinker(@plat.thinker);
           P_AddActivePlat(plat);
         end;
 
@@ -2352,7 +2352,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(lightflash_t), flash);
           flash.sector := @sectors[NativeInt(flash.sector)];
           @flash.thinker._function.acp1 := @T_LightFlash;
-          P_AddThinker(@flash.thinker);
+          TTickRoutines.P_AddThinker(@flash.thinker);
         end;
 
       Ord(tc_strobe):
@@ -2362,7 +2362,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(strobe_t), strobe);
           strobe.sector := @sectors[NativeInt(strobe.sector)];
           @strobe.thinker._function.acp1 := @T_StrobeFlash;
-          P_AddThinker(@strobe.thinker);
+          TTickRoutines.P_AddThinker(@strobe.thinker);
         end;
 
       Ord(tc_glow):
@@ -2372,7 +2372,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(glow_t), glow);
           glow.sector := @sectors[NativeInt(glow.sector)];
           @glow.thinker._function.acp1 := @T_Glow;
-          P_AddThinker(@glow.thinker);
+          TTickRoutines.P_AddThinker(@glow.thinker);
         end;
 
       Ord(tc_scroll):
@@ -2384,7 +2384,7 @@ begin
           scroll := Z_Malloc(SizeOf(scroll_t), PU_LEVEL, nil);
           P_GetRecord(pointer(save_p), TypeInfo(scroll_t), scroll);
           @scroll.thinker._function.acp1 := @T_Scroll;
-          P_AddThinker(@scroll.thinker);
+          TTickRoutines.P_AddThinker(@scroll.thinker);
         end;
 
       Ord(tc_friction):
@@ -2396,7 +2396,7 @@ begin
           friction := Z_Malloc(SizeOf(friction_t), PU_LEVEL, nil);
           P_GetRecord(pointer(save_p), TypeInfo(friction_t), friction);
           @friction.thinker._function.acp1 := @T_Friction;
-          P_AddThinker(@friction.thinker);
+          TTickRoutines.P_AddThinker(@friction.thinker);
         end;
 
       Ord(tc_pusher):
@@ -2409,7 +2409,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(pusher_t), pusher);
           @pusher.thinker._function.acp1 := @T_Pusher;
           pusher.source := P_GetPushThing(pusher.affectee);
-          P_AddThinker(@pusher.thinker);
+          TTickRoutines.P_AddThinker(@pusher.thinker);
         end;
 
       Ord(tc_fireflicker):
@@ -2423,7 +2423,7 @@ begin
 
           @flicker.thinker._function.acp1 := @T_FireFlicker;
           flicker.sector := @sectors[NativeInt(flicker.sector)];
-          P_AddThinker(@flicker.thinker);
+          TTickRoutines.P_AddThinker(@flicker.thinker);
         end;
 
       Ord(tc_elevator):
@@ -2439,7 +2439,7 @@ begin
           elevator.sector := @sectors[NativeInt(elevator.sector)];
           elevator.sector.floordata := elevator; //jff 2/22/98
           elevator.sector.ceilingdata := elevator; //jff 2/22/98
-          P_AddThinker(@elevator.thinker);
+          TTickRoutines.P_AddThinker(@elevator.thinker);
         end;
 
       // JVAL: 20220218 - Handle UDMF special effects
@@ -2455,7 +2455,7 @@ begin
           if Assigned(ceiling.thinker._function.acp1) then
             @ceiling.thinker._function.acp1 := @TH_MoveCeiling;
 
-          P_AddThinker(@ceiling.thinker);
+          TTickRoutines.P_AddThinker(@ceiling.thinker);
           PH_AddActiveCeiling(ceiling);
         end;
 
@@ -2471,7 +2471,7 @@ begin
           if Assigned(floor.thinker._function.acp1) then
             @floor.thinker._function.acp1 := @TH_MoveFloor;
 
-          P_AddThinker(@floor.thinker);
+          TTickRoutines.P_AddThinker(@floor.thinker);
         end;
 
       Ord(tch_platraise):
@@ -2486,7 +2486,7 @@ begin
           if Assigned(plat.thinker._function.acp1) then
             @plat.thinker._function.acp1 := @TH_PlatRaise;
 
-          P_AddThinker(@plat.thinker);
+          TTickRoutines.P_AddThinker(@plat.thinker);
           PH_AddActivePlat(plat);
         end;
 
@@ -2502,7 +2502,7 @@ begin
           if Assigned(light.thinker._function.acp1) then
             @light.thinker._function.acp1 := @TH_Light;
 
-          P_AddThinker(@light.thinker);
+          TTickRoutines.P_AddThinker(@light.thinker);
         end;
 
       Ord(tch_verticaldoor):
@@ -2517,7 +2517,7 @@ begin
           if Assigned(door.thinker._function.acp1) then
             @door.thinker._function.acp1 := @TH_VerticalDoor;
 
-          P_AddThinker(@door.thinker);
+          TTickRoutines.P_AddThinker(@door.thinker);
         end;
 
       Ord(tch_phase):
@@ -2532,7 +2532,7 @@ begin
           if Assigned(phase.thinker._function.acp1) then
             @phase.thinker._function.acp1 := @TH_Phase;
 
-          P_AddThinker(@phase.thinker);
+          TTickRoutines.P_AddThinker(@phase.thinker);
         end;
 
       Ord(tch_interpretacs):
@@ -2551,7 +2551,7 @@ begin
           if Assigned(acs.thinker._function.acp1) then
             @acs.thinker._function.acp1 := @TH_InterpretACS;
 
-          P_AddThinker(@acs.thinker);
+          TTickRoutines.P_AddThinker(@acs.thinker);
         end;
 
       Ord(tch_rotatepoly):
@@ -2563,7 +2563,7 @@ begin
           if Assigned(polyevent.thinker._function.acp1) then
             @polyevent.thinker._function.acp1 := @TH_RotatePoly;
 
-          P_AddThinker(@polyevent.thinker);
+          TTickRoutines.P_AddThinker(@polyevent.thinker);
         end;
 
       Ord(tch_buildpillar):
@@ -2578,7 +2578,7 @@ begin
           if Assigned(pillar.thinker._function.acp1) then
             @pillar.thinker._function.acp1 := @TH_BuildPillar;
 
-          P_AddThinker(@pillar.thinker);
+          TTickRoutines.P_AddThinker(@pillar.thinker);
         end;
 
       Ord(tch_movepoly):
@@ -2590,7 +2590,7 @@ begin
           if Assigned(polyevent.thinker._function.acp1) then
             @polyevent.thinker._function.acp1 := @TH_MovePoly;
 
-          P_AddThinker(@polyevent.thinker);
+          TTickRoutines.P_AddThinker(@polyevent.thinker);
         end;
 
       Ord(tch_polydoor):
@@ -2602,7 +2602,7 @@ begin
           if Assigned(polydoor.thinker._function.acp1) then
             @polydoor.thinker._function.acp1 := @TH_PolyDoor;
 
-          P_AddThinker(@polydoor.thinker);
+          TTickRoutines.P_AddThinker(@polydoor.thinker);
         end;
 
       Ord(tch_floorwaggle):
@@ -2617,7 +2617,7 @@ begin
           if Assigned(floorwaggle.thinker._function.acp1) then
             @floorwaggle.thinker._function.acp1 := @TH_FloorWaggle;
 
-          P_AddThinker(@floorwaggle.thinker);
+          TTickRoutines.P_AddThinker(@floorwaggle.thinker);
         end;
 
       else

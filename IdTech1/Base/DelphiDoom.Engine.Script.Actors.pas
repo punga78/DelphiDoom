@@ -285,15 +285,15 @@ begin
   case AField of
     acfX:
       begin
-        P_UnsetThingPosition(LMobj);
+        TMapUtilRoutines.P_UnsetThingPosition(LMobj);
         LMobj.x := AValue;
-        P_SetThingPosition(LMobj);
+        TMapUtilRoutines.P_SetThingPosition(LMobj);
       end;
     acfY:
       begin
-        P_UnsetThingPosition(LMobj);
+        TMapUtilRoutines.P_UnsetThingPosition(LMobj);
         LMobj.y := AValue;
-        P_SetThingPosition(LMobj);
+        TMapUtilRoutines.P_SetThingPosition(LMobj);
       end;
     acfZ: LMobj.z := AValue;
     acfMomX: LMobj.momx := AValue;
@@ -452,11 +452,11 @@ begin
   LMobj := MobjOfKey(AKey);
   if LMobj = nil then
     Exit;
-  P_UnsetThingPosition(LMobj);
+  TMapUtilRoutines.P_UnsetThingPosition(LMobj);
   LMobj.x := AX;
   LMobj.y := AY;
   LMobj.z := AZ;
-  P_SetThingPosition(LMobj);
+  TMapUtilRoutines.P_SetThingPosition(LMobj);
 end;
 
 function TEngineScriptActors.CustomParam(const AKey: Cardinal; const AName: string): Integer;
@@ -591,7 +591,7 @@ end;
 
 function TEngineScriptActors.CheckSight(const AKey1, AKey2: Cardinal): Boolean;
 begin
-  Result := P_CheckSight(MobjOfKey(AKey1), MobjOfKey(AKey2));
+  Result := TSightRoutines.P_CheckSight(MobjOfKey(AKey1), MobjOfKey(AKey2));
 end;
 
 class procedure TEngineScriptActors.CollectKeys(const ASelection: TScriptActorSelection;

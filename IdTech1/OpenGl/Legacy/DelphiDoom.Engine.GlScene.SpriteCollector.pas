@@ -128,7 +128,7 @@ begin
     LSector := Psubsector_t(LMobj.subsector).sector;
     if LSector.midsec < 0 then
       LSprite.light := LightLevel(LSector.lightlevel + (extralight shl 5))
-    else if P_3dFloorNumber(LMobj) = 0 then
+    else if T3dFloorRoutines.P_3dFloorNumber(LMobj) = 0 then
       LSprite.light := LightLevel(sectors[LSector.midsec].lightlevel + (extralight shl 5))
     else
       LSprite.light := LightLevel(LSector.lightlevel + (extralight shl 5));
@@ -209,7 +209,7 @@ begin
   LSprite.models := AVisSprite.mo.state.models;
   LSprite.voxels := AVisSprite.mo.state.voxels;
   LSprite.mo := LMobj;
-  LSprite.aproxdist := P_AproxDistance(LMobj.x - viewx, LMobj.y - viewy);
+  LSprite.aproxdist := TMapUtilRoutines.P_AproxDistance(LMobj.x - viewx, LMobj.y - viewy);
 
   LSprite.x := -LMobj.x / MAP_SCALE;
   LSprite.y :=  (LMobj.z{$IFNDEF HERETIC} - LMobj.floorclip{$ENDIF}) / MAP_SCALE;

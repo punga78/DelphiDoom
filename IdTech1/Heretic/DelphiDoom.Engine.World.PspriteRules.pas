@@ -543,7 +543,7 @@ var
   spot: integer;
   ss: Psubsector_t;
 begin
-  P_UnsetThingPosition(mo);
+  TMapUtilRoutines.P_UnsetThingPosition(mo);
   spot := P_Random mod MaceSpotCount;
   mo.x := MaceSpots[spot].x;
   mo.y := MaceSpots[spot].y;
@@ -551,7 +551,7 @@ begin
   mo.z := ss.sector.floorheight;
   mo.floorz := mo.z;
   mo.ceilingz := ss.sector.ceilingheight;
-  P_SetThingPosition(mo);
+  TMapUtilRoutines.P_SetThingPosition(mo);
 end;
 
 //---------------------------------------------------------------------------

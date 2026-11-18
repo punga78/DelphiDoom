@@ -468,11 +468,11 @@ begin
   // Any contacted lines the step closer together
   // will adjust them.
   //**TMapCheck.DropOffZ := newsubsec.sector.floorheight;
-  TMapCheck.DropOffZ := P_FloorHeight(newsec, x, y); // JVAL: Slopes
+  TMapCheck.DropOffZ := TSlopeRoutines.P_FloorHeight(newsec, x, y); // JVAL: Slopes
   TMapCheck.FloorZ := TMapCheck.DropOffZ;
 
   //**TMapCheck.CeilingZ := newsubsec.sector.ceilingheight + P_SectorJumpOverhead(newsubsec.sector);
-  TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
+  TMapCheck.CeilingZ := TSlopeRoutines.P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
   TMapCheck.FloorPic := newsec.floorpic;
 
   inc(validcount);
@@ -496,7 +496,7 @@ begin
 
   for bx := xl to xh do
     for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_StompThing) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_StompThing) then
       begin
         result := false;
         exit;
@@ -504,7 +504,7 @@ begin
 
   // the move is ok,
   // so link the thing into its new position
-  P_UnsetThingPosition(thing);
+  TMapUtilRoutines.P_UnsetThingPosition(thing);
 
   thing.floorz := TMapCheck.FloorZ;
   thing.ceilingz := TMapCheck.CeilingZ;
@@ -513,7 +513,7 @@ begin
   if TMapGameRules.TeleportSetsZ then
     thing.z := TMapCheck.FloorZ;
 
-  P_SetThingPosition(thing);
+  TMapUtilRoutines.P_SetThingPosition(thing);
 
   if thing.player = viewplayer then
     TRendererInterpolation.R_SetInterpolateSkipTicks(1);
@@ -543,7 +543,7 @@ begin
     exit;
   end;
 
-  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
+  if TMapUtilRoutines.P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -577,7 +577,7 @@ begin
     end;
 
   // set openrange, opentop, openbottom
-  P_LineOpening(ld, true);
+  TMapUtilRoutines.P_LineOpening(ld, true);
 
   // adjust floor / ceiling heights
   if opentop < TMapCheck.CeilingZ then
@@ -638,7 +638,7 @@ begin
     exit;
   end;
 
-  if P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
+  if TMapUtilRoutines.P_BoxOnLineSide(@TMapCheck.BBox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -675,7 +675,7 @@ begin
 {  if G_PlayingEngineVersion >= VERSION205 then
     P_LineOpeningTM206(ld, true)
   else}
-    P_LineOpeningTM(ld, true);
+    TMapUtilRoutines.P_LineOpeningTM(ld, true);
 
   // adjust floor / ceiling heights
   if opentop < TMapCheck.CeilingZ then
@@ -993,9 +993,9 @@ begin
   // Any contacted lines the step closer together
   // will adjust them.
   // JVAL 20191209 - Fix 3d floor problems with A_SpawnItem & A_SpawnItemEx
-  TMapCheck.DropOffZ := P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
+  TMapCheck.DropOffZ := T3dFloorRoutines.P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
   TMapCheck.FloorZ := TMapCheck.DropOffZ;
-  TMapCheck.CeilingZ := P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
+  TMapCheck.CeilingZ := T3dFloorRoutines.P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
 
   TMapCheck.BounceLine := nil;
 
@@ -1042,7 +1042,7 @@ begin
   TMapGameRules.ClearBlockingThing;
   for bx := xl to xh do
     for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_CheckThing) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_CheckThing) then
       begin
         result := false;
         exit;
@@ -1076,7 +1076,7 @@ begin
   begin
     for bx := xl to xh do
       for by := yl to yh do
-        if not P_BlockLinesIterator(bx, by, PIT_CheckLineTM) then // JVAL: Slopes
+        if not TMapUtilRoutines.P_BlockLinesIterator(bx, by, PIT_CheckLineTM) then // JVAL: Slopes
         begin
           result := false;
           exit;
@@ -1086,7 +1086,7 @@ begin
   begin
     for bx := xl to xh do
       for by := yl to yh do
-        if not P_BlockLinesIterator(bx, by, PIT_CheckLine) then
+        if not TMapUtilRoutines.P_BlockLinesIterator(bx, by, PIT_CheckLine) then
         begin
           result := false;
           exit;
@@ -1116,7 +1116,7 @@ begin
   begin  // float down towards target if too close
     if not TMapGameRules.IsSkullFlying(mo) and (mo.flags and MF_INFLOAT = 0) then
     begin
-      dist := P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
       delta := mo.target.z + (mo.height div 2) - mo.z;
       if (delta < 0) and (dist < -delta * 3) then
         mo.z := mo.z - TCommonMovementActions.P_FloatSpeed(mo)
@@ -1257,9 +1257,9 @@ begin
 // the base floor / ceiling is from the subsector that contains the
 // point.  Any contacted lines the step closer together will adjust them
 //
-  TMapCheck.FloorZ := P_FloorHeight(newsec, x, y);  // JVAL: Slopes
+  TMapCheck.FloorZ := TSlopeRoutines.P_FloorHeight(newsec, x, y);  // JVAL: Slopes
   TMapCheck.DropOffZ := TMapCheck.FloorZ;
-  TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
+  TMapCheck.CeilingZ := TSlopeRoutines.P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
 
   inc(validcount);
   TMapCheck.NumSpecHit := 0;
@@ -1293,7 +1293,7 @@ begin
 
   for bx := xl to xh do
     for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ) then
       begin
         TMapCheck.Thing^ := oldmo;
         result := TMapCheck.OnMobj;
@@ -1337,7 +1337,7 @@ var
         dec(numSpecHitTemp);
         // see if the line was crossed
         ld := TMapCheck.SpecHit[numSpecHitTemp];
-        side := P_PointOnLineSide(thing.x, thing.y, ld);
+        side := TMapUtilRoutines.P_PointOnLineSide(thing.x, thing.y, ld);
         TMapRoutines.P_CheckForPushSpecial(ld, side, thing);
       end;
     end;
@@ -1471,9 +1471,9 @@ begin
 
   // the move is ok,
   // so link the thing into its new position
-  oldfloorz := P_FloorHeight(thing.x, thing.y); // JVAL: Slopes
+  oldfloorz := TSlopeRoutines.P_FloorHeight(thing.x, thing.y); // JVAL: Slopes
   oldonfloorz := oldfloorz >= thing.z; // JVAL: Slopes
-  P_UnsetThingPosition(thing);
+  TMapUtilRoutines.P_UnsetThingPosition(thing);
 
   oldx := thing.x;
   oldy := thing.y;
@@ -1485,7 +1485,7 @@ begin
   thing.x := x;
   thing.y := y;
 
-  P_SetThingPosition(thing);
+  TMapUtilRoutines.P_SetThingPosition(thing);
 
   // JVAL: Slopes
   if Psubsector_t(thing.subsector).sector.renderflags and SRF_SLOPED <> 0 then
@@ -1517,8 +1517,8 @@ begin
       // see if the line was crossed
       dec(TMapCheck.NumSpecHit);
       ld := TMapCheck.SpecHit[TMapCheck.NumSpecHit];
-      side := P_PointOnLineSide(thing.x, thing.y, ld);
-      oldside := P_PointOnLineSide(oldx, oldy, ld);
+      side := TMapUtilRoutines.P_PointOnLineSide(thing.x, thing.y, ld);
+      oldside := TMapUtilRoutines.P_PointOnLineSide(oldx, oldy, ld);
       if side <> oldside then
       begin
         // JVAL: Script Events
@@ -1610,7 +1610,7 @@ begin
     exit;
   end;
 
-  side := P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, ld);
+  side := TMapUtilRoutines.P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, ld);
 
   lineangle := TRendererMain.R_PointToAngle2(0, 0, ld.dx, ld.dy);
 
@@ -1632,7 +1632,7 @@ begin
   deltaangle := deltaangle shr ANGLETOFINESHIFT;
   {$ENDIF}
 
-  movelen := P_AproxDistance(TMapSlide.XMove, TMapSlide.YMove);
+  movelen := TMapUtilRoutines.P_AproxDistance(TMapSlide.XMove, TMapSlide.YMove);
   newlen := FixedMul(movelen, finecosine[deltaangle]);
 
   TMapSlide.XMove := FixedMul(newlen, finecosine[lineangle]);
@@ -1668,7 +1668,7 @@ begin
 
   if li.flags and ML_TWOSIDED = 0 then
   begin
-    if P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
+    if TMapUtilRoutines.P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
     begin
       // don't hit the back side
       result := true;
@@ -1680,7 +1680,7 @@ begin
   end;
 
   // set openrange, opentop, openbottom
-  P_LineOpening(li, true);
+  TMapUtilRoutines.P_LineOpening(li, true);
 
   if openrange < TMapSlide.Mobj.height then
   begin
@@ -1786,11 +1786,11 @@ begin
 
     TMapSlide.BestFrac := FRACUNIT + 1;
 
-    P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy,
+    TMapUtilRoutines.P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy,
       PT_ADDLINES, PTR_SlideTraverse);
-    P_PathTraverse(trailx, leady, trailx + mo.momx, leady + mo.momy,
+    TMapUtilRoutines.P_PathTraverse(trailx, leady, trailx + mo.momx, leady + mo.momy,
       PT_ADDLINES, PTR_SlideTraverse);
-    P_PathTraverse(leadx, traily, leadx + mo.momx, traily + mo.momy,
+    TMapUtilRoutines.P_PathTraverse(leadx, traily, leadx + mo.momx, traily + mo.momy,
       PT_ADDLINES, PTR_SlideTraverse);
 
     // move up to the wall
@@ -1878,7 +1878,7 @@ begin
     // Crosses a two sided line.
     // A two sided line will restrict
     // the possible target ranges.
-    P_LineOpening(li, false); // JVAL: 3dFloors We do not aim at the side of the midsec
+    TMapUtilRoutines.P_LineOpening(li, false); // JVAL: 3dFloors We do not aim at the side of the midsec
 
     if openbottom >= opentop then
     begin
@@ -2105,7 +2105,7 @@ begin
 
     if li.flags and ML_TRIGGERSCRIPTS <> 0 then
       if TMapAim.ShootThing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-        PS_EventShootLine(TMapAim.ShootThing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(TMapAim.ShootThing.x, TMapAim.ShootThing.y, li));
+        PS_EventShootLine(TMapAim.ShootThing, pDiff(li, lines, SizeOf(line_t)), TMapUtilRoutines.P_PointOnLineSide(TMapAim.ShootThing.x, TMapAim.ShootThing.y, li));
 
     if li.special <> 0 then
       TMapGameRules.ShootSpecialLine(TMapAim.ShootThing, li);
@@ -2123,7 +2123,7 @@ begin
     end;
 
     // crosses a two sided line
-    P_LineOpening(li, false);
+    TMapUtilRoutines.P_LineOpening(li, false);
 
     dist := FixedMul(TMapAim.AttackRange, intr.frac);
 
@@ -2251,7 +2251,7 @@ begin
   // killough 8/2/98: prevent friends from aiming at friends
   TMapAim.AimFlagsMask2Ex := mask2_ex;
 
-  P_PathTraverse(t1.x, t1.y, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_AimTraverse);
+  TMapUtilRoutines.P_PathTraverse(t1.x, t1.y, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_AimTraverse);
 
   if TMapAim.LineTarget <> nil then
     result := TMapAim.AimSlope
@@ -2285,7 +2285,7 @@ begin
   TMapAim.AttackRange := distance;
   TMapAim.AimSlope := slope;
 
-  if P_PathTraverse(t1.x, t1.y, x2, y2, TMapGameRules.LineAttackFlags(damage), PTR_ShootTraverse) then
+  if TMapUtilRoutines.P_PathTraverse(t1.x, t1.y, x2, y2, TMapGameRules.LineAttackFlags(damage), PTR_ShootTraverse) then
     TMapGameRules.LineAttackMissed(t1, x2, y2, slope, distance);
 end;
 
@@ -2302,7 +2302,7 @@ var
   side: integer;
   li: Pline_t;
 begin
-  side := P_PointOnLineSide(TMapUse.Thing.x, TMapUse.Thing.y, intr.d.line);
+  side := TMapUtilRoutines.P_PointOnLineSide(TMapUse.Thing.x, TMapUse.Thing.y, intr.d.line);
   li := intr.d.line;
 
   if li.flags and ML_TRIGGERSCRIPTS <> 0 then
@@ -2311,7 +2311,7 @@ begin
 
   if li.special = 0 then
   begin
-    P_LineOpening(li, true);
+    TMapUtilRoutines.P_LineOpening(li, true);
     if openrange <= 0 then
     begin
       TMapGameRules.UseBlockedByWall(TMapUse.Thing);
@@ -2342,7 +2342,7 @@ begin
   if intr.isaline then
     if intr.d.line.flags and ML_TWOSIDED <> 0 then
     begin
-      P_LineOpening(intr.d.line, true);
+      TMapUtilRoutines.P_LineOpening(intr.d.line, true);
       if openrange <= 0 then
       begin
         // can't use through a wall
@@ -2419,12 +2419,12 @@ begin
   // JVAL: mobjs interaction!
   x2 := x1 + USETHINGRANGEINT * finecosine[angle];
   y2 := y1 + USETHINGRANGEINT * finesine[angle];
-  P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_UseThingTraverse);
+  TMapUtilRoutines.P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_UseThingTraverse);
 
   x2 := x1 + USERANGEINT * finecosine[angle];
   y2 := y1 + USERANGEINT * finesine[angle];
 
-  P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse);
+  TMapUtilRoutines.P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse);
 end;
 
 //
@@ -2538,7 +2538,7 @@ begin
     exit;
   end;
 
-  if P_CheckSight(thing, TMapBlast.Spot) then
+  if TSightRoutines.P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
     P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, TMapGameRules.BlastDamage(thing, TMapBlast.Damage, dist));
@@ -2587,7 +2587,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, PIT_RadiusAttack);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, PIT_RadiusAttack);
 
   TMapGameRules.AfterRadiusAttack(spot, dist);
 end;
@@ -2631,7 +2631,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, PIT_RadiusAttack);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, PIT_RadiusAttack);
 
   TMapGameRules.AfterRadiusAttack(spot, dist);
 end;
@@ -2710,7 +2710,7 @@ begin
       exit;
     end;
 
-  if P_CheckSight(thing, TMapBlast.Spot) then
+  if TSightRoutines.P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
     if TMapBlast.Radius = 0 then
@@ -2766,7 +2766,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, PIT_RadiusAttackPlayer);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, PIT_RadiusAttackPlayer);
 end;
 
 //
@@ -2860,7 +2860,7 @@ begin
     pbox := @sector.blockbox;
     for x := pbox[BOX_LEFT] to pbox[BOX_RIGHT] do
       for y := pbox[BOX_BOTTOM] to pbox[BOX_TOP] do
-        P_BlockThingsIterator(x, y, PIT_ChangeSector);
+        TMapUtilRoutines.P_BlockThingsIterator(x, y, PIT_ChangeSector);
   end;
 end;
 

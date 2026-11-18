@@ -101,10 +101,10 @@ procedure P_AddActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
-    if Pceiling_t(P_World.ActiveCeilings[i]) = nil then
+  for i := 0 to TTickRoutines.P_World.ActiveCeilings.Capacity - 1 do
+    if Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]) = nil then
     begin
-      P_World.ActiveCeilings.Add(c);
+      TTickRoutines.P_World.ActiveCeilings.Add(c);
       exit;
     end;
   I_Warning('P_AddActiveCeiling(): Can not add ceiling, limit %d reached'#13#10, [MAXCEILINGS]);
@@ -120,12 +120,12 @@ procedure P_RemoveActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
-    if Pceiling_t(P_World.ActiveCeilings[i]) = c then
+  for i := 0 to TTickRoutines.P_World.ActiveCeilings.Capacity - 1 do
+    if Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]) = c then
     begin
-      CeilingAttach(Pceiling_t(P_World.ActiveCeilings[i]).sector, nil);
-      P_RemoveThinker(@Pceiling_t(P_World.ActiveCeilings[i]).thinker);
-      P_World.ActiveCeilings.Release(i);
+      CeilingAttach(Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).sector, nil);
+      TTickRoutines.P_RemoveThinker(@Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).thinker);
+      TTickRoutines.P_World.ActiveCeilings.Release(i);
       exit;
     end;
 end;
@@ -141,13 +141,13 @@ var
   i: integer;
 begin
   result := 0;
-  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
-    if (Pceiling_t(P_World.ActiveCeilings[i]) <> nil) and
-       (Pceiling_t(P_World.ActiveCeilings[i]).tag = line.tag) and
-       (Pceiling_t(P_World.ActiveCeilings[i]).direction = 0) then
+  for i := 0 to TTickRoutines.P_World.ActiveCeilings.Capacity - 1 do
+    if (Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]) <> nil) and
+       (Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).tag = line.tag) and
+       (Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).direction = 0) then
     begin
-      Pceiling_t(P_World.ActiveCeilings[i]).direction := Pceiling_t(P_World.ActiveCeilings[i]).olddirection;
-      Pceiling_t(P_World.ActiveCeilings[i]).thinker._function.acp1 := @T_MoveCeiling;
+      Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).direction := Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).olddirection;
+      Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).thinker._function.acp1 := @T_MoveCeiling;
       result := 1;
     end;
 end;
@@ -250,7 +250,7 @@ begin
     // new door thinker
     result := 1;
     ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVSPEC, nil);
-    P_AddThinker(@ceiling.thinker);
+    TTickRoutines.P_AddThinker(@ceiling.thinker);
     CeilingAttach(sec, ceiling);
     ceiling.thinker._function.acp1 := @T_MoveCeiling;
     ceiling.sector := sec;
@@ -280,7 +280,7 @@ begin
     ceiling.tag := sec.tag;
     ceiling._type := _type;
     P_AddActiveCeiling(ceiling);
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   end;
 end;
 
@@ -295,14 +295,14 @@ var
   i: integer;
 begin
   result := 0;
-  for i := 0 to P_World.ActiveCeilings.Capacity - 1 do
-    if (Pceiling_t(P_World.ActiveCeilings[i]) <> nil) and
-       (Pceiling_t(P_World.ActiveCeilings[i]).tag = line.tag) and
-       (Pceiling_t(P_World.ActiveCeilings[i]).direction <> 0) then
+  for i := 0 to TTickRoutines.P_World.ActiveCeilings.Capacity - 1 do
+    if (Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]) <> nil) and
+       (Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).tag = line.tag) and
+       (Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).direction <> 0) then
     begin
-      Pceiling_t(P_World.ActiveCeilings[i]).olddirection := Pceiling_t(P_World.ActiveCeilings[i]).direction;
-      Pceiling_t(P_World.ActiveCeilings[i]).thinker._function.acv := nil;
-      Pceiling_t(P_World.ActiveCeilings[i]).direction := 0; // in-stasis
+      Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).olddirection := Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).direction;
+      Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).thinker._function.acv := nil;
+      Pceiling_t(TTickRoutines.P_World.ActiveCeilings[i]).direction := 0; // in-stasis
       result := 1;
     end;
 end;

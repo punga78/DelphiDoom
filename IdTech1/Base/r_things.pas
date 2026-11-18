@@ -3032,7 +3032,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, TRendererThingsLocal.RIT_ProjectAdditionalThing);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, TRendererThingsLocal.RIT_ProjectAdditionalThing);
 end;
 
 //==============================================================================

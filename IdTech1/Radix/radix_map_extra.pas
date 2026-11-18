@@ -224,7 +224,7 @@ begin
     sec.cd := plane.D;
   end;
   sec.renderflags := sec.renderflags or flag;
-  P_SlopesAlignPlane(sec, nil, flag, false);
+  TSlopeRoutines.P_SlopesAlignPlane(sec, nil, flag, false);
   if sec.linecount > 0 then
   begin
     sec.slopeline := sec.lines[0];

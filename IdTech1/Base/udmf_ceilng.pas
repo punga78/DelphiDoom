@@ -98,10 +98,10 @@ procedure PH_AddActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.UdmfCeilings.Capacity - 1 do
-    if Pceiling_t(P_World.UdmfCeilings[i]) = nil then
+  for i := 0 to TTickRoutines.P_World.UdmfCeilings.Capacity - 1 do
+    if Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]) = nil then
     begin
-      P_World.UdmfCeilings.Add(c);
+      TTickRoutines.P_World.UdmfCeilings.Add(c);
       exit;
     end;
   I_Warning('PH_AddActiveCeiling(): Can not add ceiling, limit %d reached'#13#10, [MAXCEILINGS]);
@@ -117,13 +117,13 @@ procedure PH_RemoveActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.UdmfCeilings.Capacity - 1 do
-    if Pceiling_t(P_World.UdmfCeilings[i]) = c then
+  for i := 0 to TTickRoutines.P_World.UdmfCeilings.Capacity - 1 do
+    if Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]) = c then
     begin
-      Pceiling_t(P_World.UdmfCeilings[i]).sector.specialdata := nil;
-      P_RemoveThinker(@Pceiling_t(P_World.UdmfCeilings[i]).thinker);
-      P_TagFinished(Pceiling_t(P_World.UdmfCeilings[i]).sector.tag);
-      P_World.UdmfCeilings.Release(i);
+      Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.specialdata := nil;
+      TTickRoutines.P_RemoveThinker(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).thinker);
+      P_TagFinished(Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.tag);
+      TTickRoutines.P_World.UdmfCeilings.Release(i);
       exit;
     end;
 end;
@@ -228,7 +228,7 @@ begin
     // new door thinker
     result := true;
     ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVSPEC, nil);
-    P_AddThinker(@ceiling.thinker);
+    TTickRoutines.P_AddThinker(@ceiling.thinker);
     sec.specialdata := ceiling;
     ceiling.thinker._function.acp1 := @TH_MoveCeiling;
     ceiling.sector := sec;
@@ -371,7 +371,7 @@ begin
       {$ELSE}
       S_StartSound(@ceiling.sector.soundorg, ceiling.sector.seqType);
       {$ENDIF}
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   end;
 end;
 
@@ -386,19 +386,19 @@ var
   i: integer;
 begin
   result := false;
-  for i := 0 to P_World.UdmfCeilings.Capacity - 1 do
-    if (Pceiling_t(P_World.UdmfCeilings[i]) <> nil) and
-       (Pceiling_t(P_World.UdmfCeilings[i]).tag = args[0]) then
+  for i := 0 to TTickRoutines.P_World.UdmfCeilings.Capacity - 1 do
+    if (Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]) <> nil) and
+       (Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).tag = args[0]) then
     begin
       {$IFDEF HEXEN}
-      S_StopSequence(Pmobj_t(@Pceiling_t(P_World.UdmfCeilings[i]).sector.soundorg));
+      S_StopSequence(Pmobj_t(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.soundorg));
       {$ELSE}
-      S_StopSound(@Pceiling_t(P_World.UdmfCeilings[i]).sector.soundorg);
+      S_StopSound(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.soundorg);
       {$ENDIF}
-      Pceiling_t(P_World.UdmfCeilings[i]).sector.specialdata := nil;
-      P_RemoveThinker(@Pceiling_t(P_World.UdmfCeilings[i]).thinker);
-      P_TagFinished(Pceiling_t(P_World.UdmfCeilings[i]).sector.tag);
-      P_World.UdmfCeilings.Release(i);
+      Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.specialdata := nil;
+      TTickRoutines.P_RemoveThinker(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).thinker);
+      P_TagFinished(Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.tag);
+      TTickRoutines.P_World.UdmfCeilings.Release(i);
       result := true;
       exit;
     end;

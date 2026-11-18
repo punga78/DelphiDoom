@@ -148,7 +148,7 @@ begin
       end;
     end;
 
-    P_RemoveThinker(@floor.thinker);
+    TTickRoutines.P_RemoveThinker(@floor.thinker);
   end;
 end;
 
@@ -183,7 +183,7 @@ begin
     // new floor thinker
     result := 1;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.specialdata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
     floor._type := floortype;
@@ -308,7 +308,7 @@ begin
           end;
         end;
     end;
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   until secnum < 0;
 end;
 
@@ -348,7 +348,7 @@ begin
     result := 1;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
     ZeroMemory(floor, SizeOf(floormove_t));
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.specialdata := floor;
     height := sec.floorheight + step;
     floor.thinker._function.acp1 := @T_MoveFloor;
@@ -393,7 +393,7 @@ begin
         secnum := newsecnum;
         floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
         ZeroMemory(floor, SizeOf(floormove_t));
-        P_AddThinker(@floor.thinker);
+        TTickRoutines.P_AddThinker(@floor.thinker);
 
         sec.specialdata := floor;
         floor.thinker._function.acp1 := @T_MoveFloor;

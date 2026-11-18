@@ -227,7 +227,7 @@ begin
   if control <> -1 then
     s.last_height := sectors[control].floorheight + sectors[control].ceilingheight;
   s.affectee := affectee;
-  P_AddThinker(@s.thinker);
+  TTickRoutines.P_AddThinker(@s.thinker);
 end;
 
 //==============================================================================
