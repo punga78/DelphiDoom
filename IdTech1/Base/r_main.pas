@@ -2214,7 +2214,7 @@ begin
   R_ShutDownLightBoost;
 {$IFNDEF OPENGL}
   printf(#13#10 + 'R_ShutDownLightTexture');
-  R_ShutDownLightTexture;
+  TRendererSoftLights.R_ShutDownLightTexture;
   printf(#13#10 + 'R_ShutDownFake3D');
   R_ShutDownFake3D;
   printf(#13#10 + 'R_ShutDown32Cache');

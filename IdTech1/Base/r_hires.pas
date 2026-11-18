@@ -1419,7 +1419,7 @@ procedure R_InitHiRes;
 begin
   R_InitLightBoost;
 {$IFNDEF OPENGL}
-  R_InitLightTexture;
+  TRendererSoftLights.R_InitLightTexture;
 {$ENDIF}
 end;
 

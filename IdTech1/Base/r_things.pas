@@ -2842,8 +2842,8 @@ begin
   numdlitems := 0;
   vislight_p := 0;
   for i := 0 to vissprite_p - 1 do
-    R_MarkDLights(vissprites[i].mo);
-  R_AddAdditionalLights;
+    TRendererSoftLights.R_MarkDLights(vissprites[i].mo);
+  TRendererSoftLights.R_AddAdditionalLights;
 end;
 
 //==============================================================================
@@ -2945,12 +2945,12 @@ begin
     if numdlitems > 0 then
     begin
       // Draw lights - First pass - only world
-      R_DrawLightsSingleThread(lp_solid);
+      TRendererSoftLights.R_DrawLightsSingleThread(lp_solid);
       domaskedzbuffer := r_lightmaponmasked;
       TRendererThingsLocal.R_DoDrawMasked;
       // Draw lights - Second pass - masked
       if r_lightmaponmasked then
-        R_DrawLightsSingleThread(lp_masked);
+        TRendererSoftLights.R_DrawLightsSingleThread(lp_masked);
     end
     else
       TRendererThingsLocal.R_DoDrawMasked;
@@ -2973,12 +2973,12 @@ begin
     if numdlitems > 0 then
     begin
       // Draw lights - First pass - only world
-      R_DrawLightsMultiThread(lp_solid);
+      TRendererSoftLights.R_DrawLightsMultiThread(lp_solid);
       domaskedzbuffer := r_lightmaponmasked;
       TRendererThingsLocal.R_DoDrawMasked;
       // Draw lights - Second pass - masked
       if r_lightmaponmasked then
-        R_DrawLightsMultiThread(lp_masked);
+        TRendererSoftLights.R_DrawLightsMultiThread(lp_masked);
     end
     else
       TRendererThingsLocal.R_DoDrawMasked;

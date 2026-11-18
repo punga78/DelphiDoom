@@ -854,7 +854,7 @@ begin
     TEngineGlSceneLightMarker.Create(LCache)));
 {$ELSE}
   R_ConfigureDynamicLights(LCache);
-  R_ConfigureSoftLights(LCache);
+  TRendererSoftLights.R_ConfigureSoftLights(LCache);
 {$ENDIF}
 end;
 
