@@ -17,6 +17,9 @@ uses
 
 var
   validcount: integer = 1;
+  viewx: fixed_t;
+  viewy: fixed_t;
+  viewz: fixed_t;
 
 type
   TRendererMain = class sealed

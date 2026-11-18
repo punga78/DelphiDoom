@@ -20,7 +20,8 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  DelphiDoom.Tests.Rules.MapUtil in 'Source\DelphiDoom.Tests.Rules.MapUtil.pas';
+  DelphiDoom.Tests.Rules.MapUtil in 'Source\DelphiDoom.Tests.Rules.MapUtil.pas',
+  DelphiDoom.Tests.Rules.Sight in 'Source\DelphiDoom.Tests.Rules.Sight.pas';
 var
   Runner: ITestRunner;
   Results: IRunResults;
