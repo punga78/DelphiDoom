@@ -163,7 +163,7 @@ begin
 
     state := @states[Ord(stnum)];
     psp.state := state;
-    psp.tics := P_TicsFromState(state); // could be 0
+    psp.tics := TCommonStateParamActions.P_TicsFromState(state); // could be 0
 
     // coordinate set
     if state.misc1 <> 0 then

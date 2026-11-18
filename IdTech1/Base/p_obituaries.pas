@@ -129,11 +129,11 @@ begin
     end;
   end;
 
-  vname := 'Player ' + itoa(PlayerToId(pv));
+  vname := 'Player ' + itoa(TCommonFriendActions.PlayerToId(pv));
 
   pa := attacker.player;
   if pa <> nil then
-    aname := 'Player ' + itoa(PlayerToId(pa))
+    aname := 'Player ' + itoa(TCommonFriendActions.PlayerToId(pa))
   else
     aname := attacker.info.name;
 

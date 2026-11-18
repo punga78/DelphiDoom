@@ -53,7 +53,7 @@ Le colonne: **Rout.** = routine, **Righe** = righe dei corpi, **IF** = routine c
 
 Il conteggio per routine con chiamanti, dei quali si e' certi, sta nel testo sopra; le 28 funzioni non `A_*` senza chiamanti fuori da `p_common` (`P_DoBulletSlope`, `P_CustomMissile`, `InitSpawnedItem`, `Do_FadeOut`, `Do_FadeIn`, `P_RandomChaseDir`, `P_SetHealth`, `P_DoDamage`, `P_DoRemoveThing`, `P_TransferFriendliness`, `P_CopyFriendliness`, `P_RaiseActor`, `P_DoAttack`, `P_RecursiveSoundEx`, `P_NoiseAlertEx`, `P_LocalEarthQuake`, `P_CheckCustomMeleeRange`, `P_CheckFov`, `RoughBlockCheck`, `P_RoughTargetSearch`, `PIT_HealCheck`, `P_HealCorpse`, `P_SeekerMissileEx`, `P_SetMBF21Flags`, `P_UnSetMBF21Flags`, `P_CheckMBF21Flags`, `P_SetPspritePtr`, `P_Console`) sono helper delle `A_*` e sono dichiarati nell'interface senza bisogno.
 
-## 5. Perche' le `A_*` non si migrano in questa tornata (il vincolo che decide)
+## 5. Perche' le `A_*` non si migravano nella prima tornata (il vincolo che decideva; **superato dal par. 8**)
 
 Una `A_*` e' un indirizzo dentro `states[]` e nei registri dei quattro giochi. Per metterla in una classe a **costo zero** ci sono due strade, e nessuna e' "metodo statico nella stessa unit e chiamanti invariati":
 
@@ -80,3 +80,31 @@ Tag `ondata11-185b-2`. `P_ResolveMBF21Flags` (120 righe, 8 `{$IF}`: la chiamano 
 4. Poi i gruppi che toccano il mondo senza `{$IF}`: movimento (26), ricerca (21), danno e morte senza `{$IF}`.
 5. Per ultimi i gruppi con `{$IF}` (armi, flag, spawn con `HEXEN`, `P_RaiseActor`), con una strategia per gioco nelle unit `DelphiDoom.Engine.World.*` come le `*Rules`; i tre `P_Set/UnSet/CheckMBF21Flags` e le tre ricerche per nome (`P_CheckFlag`, `A_CheckFlag`, `A_ChangeFlag`) si riducono a una tabella condivisa **solo dopo** la misura delle dimensioni e a macchina libera (sono calde).
 6. Le costanti dell'interface (`SIXF_*`, `CMF_*`, ...) e `FloatBobOffsets` si spostano con la loro famiglia, non prima: nessun codice da guadagnare, solo `uses` da cambiare in 15 unit.
+
+## 8. Seconda tornata (185p, 2026-11-18): le routine sono metodi statici di classi, costo zero
+
+Il vincolo del par. 5 (strada A, procedura libera che inoltra, cambia la dimensione di ogni azione) e' superato dalla tecnica dell'ondata 11 (par. 11.26 del piano): le routine diventano **metodi statici di classi `sealed` nella stessa unit**, con lo stesso nome e lo stesso testo, e **ogni chiamante** (unit delle regole di ogni gioco, `info`, `deh_main`, `Dehacked.Applier`, `ActorFunctions`, `PspriteRules`, Radix, Speed) scrive `Classe.Nome` (anche `@Classe.Nome` nei registri): e' la strada B senza procedure libere, e non cambia il codice generato. Strumento: `Tools\Verifica\185\Converti-PCommon.ps1` (tabella dei gruppi; `-List` controlla che ogni routine sia in un solo gruppo) sopra `Converti-Regole.ps1` (nuovi: `-UsersOf p_common`, che tocca solo i file che nominano la unit, e il riconoscimento dei nomi definiti dal file stesso anche dentro classi).
+
+| Classe (in `p_common.pas`) | Gruppo del par. 4 | Routine (interfaccia + `...Local` nell'implementazione) |
+|---|---|---:|
+| `TCommonStateBitActions` | bit di stato e proprieta' (massa, gravita', attrito, altezza, dimensione) | 34 |
+| `TCommonAppearanceActions` (+`Local`) | dissolvenza e aspetto | 24 + 2 |
+| `TCommonSoundActions` | suono | 20 |
+| `TCommonCustomParamActions` | parametri custom, mappa, mondo, variabili utente | 20 |
+| `TCommonJumpActions` | salti e `GoTo` (tutte le `A_Jump*`, `A_GoTo*`, `A_RandomJump`, `A_RandomGoto`, `A_WeaponJump`, `A_JumpIfFlagsSet`) | 79 |
+| `TCommonMovementActions` (+`Local`) | movimento e orientamento | 23 + 1 |
+| `TCommonSearchActions` (+`Local`) | ricerca di bersagli, vista, allarme | 19 + 2 |
+| `TCommonStateParamActions` | puntatori, parametri e argomenti degli stati (`A_LineEffect` solo fuori da Hexen) | 20 |
+| `TCommonDamageActions` (+`Local`) | danno, morte, rimozione, guarigione | 27 + 4 |
+| `TCommonSpawnActions` (+`Local`) | spawn e proiettili | 10 + 1 |
+| `TCommonAttackActions` (+`Local`) | attacchi e mira | 9 + 2 |
+| `TCommonFriendActions` | amicizia e immunita' | 7 |
+| `TCommonFlagActions` | `A_AddFlags`, `A_RemoveFlags` | 2 |
+| `TCommonWeaponActions` (+`Local`) | armi del giocatore senza `{$IF}` | 2 + 1 |
+| `TCommonGameDependentActions` (+`Local`) | le 23 routine con `{$IF}` di gioco (`P_Set/UnSet/CheckMBF21Flags`, `P_ResolveMBF21Flags`, `A_ConsumeAmmo`, `A_CheckAmmo`, `A_GunFlashTo`, `P_RaiseActor`, `InitSpawnedItem`, `A_CStaffMissileSlither`, `A_Detonate`, `A_HealThing`, `P_GetPlayerMeleeRange`...) | 18 + 5 |
+
+Totale **332 routine** in 15 classi dell'interfaccia e 8 dell'implementazione; restano **libere** `P_ConfigureConsole` e `P_Console` (collegamento della console dato dal composition root). Il testo dei corpi e' quello di prima (i `{$IF}` restano nei corpi: le 23 sono in una classe sola perche' la differenza di gioco e' nel testo, da ridurre a strategia solo a macchina libera). Un solo punto non meccanico: la dichiarazione di `A_LineEffect` nella classe ha lo stesso `{$IFNDEF HEXEN}` del corpo; una chiamata con maiuscole diverse (`P_Doattack`) non e' riconosciuta dal convertitore (che distingue le maiuscole) e si e' qualificata a mano: il compilatore la trova.
+
+**Prova del costo** (nessun gioco avviato; base costruita a freddo da `f65412172` in una cartella a parte, `Prova-Costo.ps1` su tutte le routine dei `.map` di Release Win32): Doom32, Heretic32, Hexen32, Strife32 **0 routine con dimensione diversa** (l'unica "diversa" di Doom e' `TActorDefFlagReader.TryAdd` 272 -> 268, un riempimento di allineamento prima di una routine che non cita `p_common`; compare con un solo gruppo gia' fatto); byte diversi: solo `DelphiDoom.*` di librerie non toccate e quattro routine non di libreria con indirizzi assoluti di dati che si spostano perche' le classi aggiungono RTTI (`d_main.IdentifyVersion` 9 byte, `r_slopes.R_VisSlopeFromSubsector` 9, `r_3dfloors.R_3dVisplaneFromSubsector` 9, `info_fnd.Info_FindStatesFromSprite` 17); **nessuna routine di `p_*`, `a_*`, `info`, `deh_main`, `DelphiDoom.Engine.World/Dehacked/Actions/Scanner` cambia**. Exe di pari dimensione per Doom, Heretic e Hexen; **Strife +512 byte** (un'unita' di allineamento del file nei dati: il codice e' lo stesso, le routine sono uguali byte per byte; non analizzato in che sezione). Avvisi 379/303/197/411 (base 380/304/198/412: nessuno nuovo).
+
+Non provato: nessun gioco avviato (regola della tornata), nessun test eseguito (nessun test chiama queste routine: solo un commento in `Tests.Actions.Mbf21Flags`); il costo a Win64 non e' provato, solo la compilazione.

@@ -239,7 +239,7 @@ begin
   if TGameSession.DemoPlayback or TGameSession.DemoRecording then
     exit;
 
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   cnt := actor.state.params.Count;

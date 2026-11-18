@@ -22,7 +22,9 @@ param(
   [string[]]$CallerDirs = @(),
   [string]$Root = '',
   [switch]$CallersOnly,
-  [switch]$ImplOnly
+  [switch]$ImplOnly,
+  # solo i file che nominano questa unit (per p_common: i chiamanti la citano nella uses); vuoto = tutti
+  [string]$UsersOf = ''
 )
 $ErrorActionPreference = 'Stop'
 if ($Root -eq '') { $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path }
@@ -246,8 +248,9 @@ foreach ($dir in $CallerDirs) {
   foreach ($file in (Get-ChildItem (Join-Path $Root $dir) -Recurse -Include *.pas, *.inc, *.dpr -File)) {
     if ($file.FullName -eq $path) { continue }
     $s = Read-Source $file.FullName
+    if ($UsersOf -ne '' -and $s.Text -notmatch ('\b' + $UsersOf + '\b')) { continue }
     # un nome che il file stesso definisce (intestazione a colonna 0) e' una routine sua, non quella della unit
-    $own = @([regex]::Matches($s.Text, '(?m)^(?:procedure|function)\s+(\w+)') | ForEach-Object { $_.Groups[1].Value } | Where-Object { $all -contains $_ })
+    $own = @([regex]::Matches($s.Text, '(?m)^\s*(?:class\s+)?(?:procedure|function)\s+(?:\w+\.)?(\w+)') | ForEach-Object { $_.Groups[1].Value } | Where-Object { $all -contains $_ })
     $useNames = @($all | Where-Object { $own -notcontains $_ })
     if ($useNames.Count -eq 0) { continue }
     $script:NameRegex = New-Object Text.RegularExpressions.Regex(('(?<![\w.])(' + ($useNames -join '|') + ')\b'))

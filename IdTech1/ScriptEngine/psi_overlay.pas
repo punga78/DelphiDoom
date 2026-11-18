@@ -332,7 +332,7 @@ var
   patchname: string;
   x, y: Integer;
 begin
-  if not P_CheckStateParams(actor, 4) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 4) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -355,7 +355,7 @@ var
   patchname: string;
   x1, y1, x2, y2: Integer;
 begin
-  if not P_CheckStateParams(actor, 6) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 6) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -380,7 +380,7 @@ var
   red, green, blue: byte;
   x, y: Integer;
 begin
-  if not P_CheckStateParams(actor, 6) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 6) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -405,7 +405,7 @@ var
   red, green, blue: byte;
   x1, y1, x2, y2: Integer;
 begin
-  if not P_CheckStateParams(actor, 8) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 8) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -432,7 +432,7 @@ var
   red, green, blue: byte;
   x1, y1, x2, y2: Integer;
 begin
-  if not P_CheckStateParams(actor, 8) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 8) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -460,7 +460,7 @@ var
   align: Integer;
   x, y: Integer;
 begin
-  if not P_CheckStateParams(actor, 5) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 5) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -484,7 +484,7 @@ var
   txt: string;
   x, y: Integer;
 begin
-  if not P_CheckStateParams(actor, 4) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 4) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -507,7 +507,7 @@ var
   txt: string;
   x, y: Integer;
 begin
-  if not P_CheckStateParams(actor, 4) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 4) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];
@@ -530,7 +530,7 @@ var
   txt: string;
   x, y: Integer;
 begin
-  if not P_CheckStateParams(actor, 4) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 4) then
     Exit;
 
   ticks := actor.state.params.IntVal[0];

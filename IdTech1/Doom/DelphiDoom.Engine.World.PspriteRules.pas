@@ -646,7 +646,7 @@ begin
 
   angle := player.mo.angle;
   angle := angle + _SHLW(P_Random - P_Random, 18);
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   if G_PlayingEngineVersion >= VERSION207 then
   begin
     slope := P_AimLineAttack(player.mo, angle, mrange, MF2_EX_FRIEND);
@@ -684,7 +684,7 @@ begin
   angle := angle + _SHLW(P_Random - P_Random, 18);
 
   // use meleerange + 1 so that the puff doesn't skip the flash
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   if G_PlayingEngineVersion >= VERSION207 then
   begin
     slope := P_AimLineAttack(player.mo, angle, mrange + 1, MF2_EX_FRIEND);
@@ -797,7 +797,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player,0);  // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
   TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;
 
@@ -817,7 +817,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
 
   for i := 0 to 6 do
     TWeaponLocalActions.P_GunShot(player.mo, false);
@@ -841,7 +841,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
 
   for i := 0 to 19 do
   begin
@@ -871,7 +871,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
 
   TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;

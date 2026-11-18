@@ -302,9 +302,9 @@ begin
     begin
       // must adjust height
       if actor.z < TMapCheck.FloorZ then
-        actor.z := actor.z + P_FloatSpeed(actor)
+        actor.z := actor.z + TCommonMovementActions.P_FloatSpeed(actor)
       else
-        actor.z := actor.z - P_FloatSpeed(actor);
+        actor.z := actor.z - TCommonMovementActions.P_FloatSpeed(actor);
 
       actor.flags := actor.flags or MF_INFLOAT;
       result := true;

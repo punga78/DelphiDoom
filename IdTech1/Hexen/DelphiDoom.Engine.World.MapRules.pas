@@ -998,7 +998,7 @@ begin
        // JVAL: 20211126 - Inherited actors do not hurt each other
        (Info_GetInheritance(TMapCheck.Thing.target.info) = Info_GetInheritance(thing.info))) then
     begin
-      if (G_PlayingEngineVersion <= VERSION206) or P_ProjectileImmune(thing, TMapCheck.Thing.target) then
+      if (G_PlayingEngineVersion <= VERSION206) or TCommonFriendActions.P_ProjectileImmune(thing, TMapCheck.Thing.target) then
       begin
         // Don't hit same species as originator
         if thing = TMapCheck.Thing.target then

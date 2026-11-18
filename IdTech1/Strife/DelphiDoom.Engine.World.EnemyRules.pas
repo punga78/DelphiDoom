@@ -1283,7 +1283,7 @@ begin
       else
       begin
         // haleyjd 09/06/10: Note that this sets actor->target in Strife!
-        P_BulletSlope(actor);
+        TCommonAttackActions.P_BulletSlope(actor);
         if TMapAim.LineTarget <> nil then
           actor.target := TMapAim.LineTarget;
 
@@ -1311,7 +1311,7 @@ begin
       end;
 
       // haleyjd 09/06/10: Note that this sets actor->target in Strife!
-      P_BulletSlope(actor);
+      TCommonAttackActions.P_BulletSlope(actor);
       if TMapAim.LineTarget <> nil then
         actor.target := TMapAim.LineTarget;
 
@@ -1439,9 +1439,9 @@ begin
     begin
       if (actor._type = Ord(MT_INQUISITOR)) or (actor.flags_ex and MF_EX_BOSS <> 0) then
         // full volume
-        P_RandomSound(nil, sound)
+        TCommonSoundActions.P_RandomSound(nil, sound)
       else
-        P_RandomSound(actor, sound)
+        TCommonSoundActions.P_RandomSound(actor, sound)
     end
     else
     begin
@@ -2970,7 +2970,7 @@ begin
   an := _SHLW(r - P_Random, 22) + actor.angle + ANG180;
   mo.angle := an;
 
-  P_ThrustMobj(mo, an, mo.info.speed);  // inlined in asm
+  TCommonMovementActions.P_ThrustMobj(mo, an, mo.info.speed);  // inlined in asm
 
   mo.momz := P_Random * 512;
 end;
@@ -2995,7 +2995,7 @@ begin
   an := _SHLW(r - P_Random, 22) + actor.angle - ANG90;
   mo.angle := an;
 
-  P_ThrustMobj(mo, an, mo.info.speed);  // inlined in asm
+  TCommonMovementActions.P_ThrustMobj(mo, an, mo.info.speed);  // inlined in asm
 
   mo.momz := P_Random * 1024;
 end;
@@ -3137,7 +3137,7 @@ begin
                            entity_pos_z, Ord(MT_SUBENTITY));
   subentity.target := actor.target;
   A_FaceTarget(subentity);
-  P_ThrustMobj(subentity, subentity.angle, 5120000);
+  TCommonMovementActions.P_ThrustMobj(subentity, subentity.angle, 5120000);
 
   // Subentity Two
   an := (actor.angle + ANG90) div ANGLETOFINEUNIT;
@@ -3145,7 +3145,7 @@ begin
                            FixedMul(finesine[an], dist) + entity_pos_y,
                             entity_pos_z, Ord(MT_SUBENTITY));
   subentity.target := actor.target;
-  P_ThrustMobj(subentity, actor.angle + ANG90, 4);
+  TCommonMovementActions.P_ThrustMobj(subentity, actor.angle + ANG90, 4);
   A_FaceTarget(subentity);
 
   // Subentity Three
@@ -3154,7 +3154,7 @@ begin
                            FixedMul(finesine[an], dist) + entity_pos_y,
                            entity_pos_z, Ord(MT_SUBENTITY));
   subentity.target := actor.target;
-  P_ThrustMobj(subentity, actor.angle - ANG90, 4);
+  TCommonMovementActions.P_ThrustMobj(subentity, actor.angle - ANG90, 4);
   A_FaceTarget(subentity);
 end;
 
@@ -3195,7 +3195,7 @@ begin
     tagval := sector.tag - 100;
     force := (tagval mod 10) * 4096;
     angle := _SHLW(tagval div 10, 29);
-    P_ThrustMobj(actor, angle, force);  // inlined in asm
+    TCommonMovementActions.P_ThrustMobj(actor, angle, force);  // inlined in asm
   end;
 end;
 

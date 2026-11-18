@@ -438,9 +438,9 @@ begin
       delta := (mo.target.z + _SHR1(mo.height)) - mo.z; // JVAL is it right ???
 
       if (delta < 0) and (dist < -(delta * 3)) then
-        mo.z := mo.z - P_FloatSpeed(mo)
+        mo.z := mo.z - TCommonMovementActions.P_FloatSpeed(mo)
       else if (delta > 0) and (dist < (delta * 3)) then
-        mo.z := mo.z + P_FloatSpeed(mo);
+        mo.z := mo.z + TCommonMovementActions.P_FloatSpeed(mo);
     end;
   end;
 
@@ -1106,7 +1106,7 @@ begin
   if th.info.seesound <> 0 then
   begin
     if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(th, th.info.seesound)
+      TCommonSoundActions.P_RandomSound(th, th.info.seesound)
     else
       S_StartSound(th, th.info.seesound);
   end;
@@ -1189,7 +1189,7 @@ begin
     if MissileMobj.info.seesound <> 0 then
     begin
       if MissileMobj.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-        P_RandomSound(MissileMobj, MissileMobj.info.seesound)
+        TCommonSoundActions.P_RandomSound(MissileMobj, MissileMobj.info.seesound)
       else
         S_StartSound(MissileMobj, MissileMobj.info.seesound);
     end;
@@ -1382,7 +1382,7 @@ begin
   if mo.info.deathsound <> 0 then
   begin
     if mo.flags_ex and MF_EX_RANDOMDEATHSOUND <> 0 then
-      P_RandomSound(mo, mo.info.deathsound)
+      TCommonSoundActions.P_RandomSound(mo, mo.info.deathsound)
     else
       S_StartSound(mo, mo.info.deathsound);
   end;
@@ -1455,7 +1455,7 @@ begin
   if mo.info.seesound <> 0 then
   begin
     if mo.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(mo, mo.info.seesound)
+      TCommonSoundActions.P_RandomSound(mo, mo.info.seesound)
     else
       S_StartSound(mo, mo.info.seesound);
   end;
@@ -1528,13 +1528,13 @@ begin
   begin
     case special of
       40, 41, 42: // Wind_East
-        P_ThrustMobj(mo, 0, windTab[special - 40]);
+        TCommonMovementActions.P_ThrustMobj(mo, 0, windTab[special - 40]);
       43, 44, 45: // Wind_North
-        P_ThrustMobj(mo, ANG90, windTab[special - 43]);
+        TCommonMovementActions.P_ThrustMobj(mo, ANG90, windTab[special - 43]);
       46, 47, 48: // Wind_South
-        P_ThrustMobj(mo, ANG270, windTab[special - 46]);
+        TCommonMovementActions.P_ThrustMobj(mo, ANG270, windTab[special - 46]);
       49, 50, 51: // Wind_West
-        P_ThrustMobj(mo, ANG180, windTab[special - 49]);
+        TCommonMovementActions.P_ThrustMobj(mo, ANG180, windTab[special - 49]);
     end;
   end;
   result := special;

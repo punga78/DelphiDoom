@@ -346,7 +346,7 @@ var
       end;
     end;
 
-    P_ResolveMBF21Flags(@mobjinfo[mobj_no]);
+    TCommonGameDependentActions.P_ResolveMBF21Flags(@mobjinfo[mobj_no]);
   end;
 
   procedure ApplyFrame;
