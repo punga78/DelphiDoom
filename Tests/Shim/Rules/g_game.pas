@@ -11,6 +11,10 @@ unit g_game;
 
 interface
 
+uses
+  d_player,
+  doomdef;
+
 type
   TGameSession = class sealed
   public
@@ -18,6 +22,9 @@ type
     class var DeathMatch: integer;
     class var DemoPlayback: boolean;
     class var DemoRecording: boolean;
+    class var GameState: gamestate_t;
+    class var ConsolePlayer: integer;
+    class var Players: array[0..MAXPLAYERS - 1] of player_t;
   end;
 
 function G_PlayingEngineVersion: integer;
