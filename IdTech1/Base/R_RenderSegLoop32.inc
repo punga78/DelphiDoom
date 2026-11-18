@@ -254,9 +254,9 @@ begin
           dc_yh := r.floorheight[0];
           dc_lightlevel := Integer(r.lightlevel[0]);
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn32(@midwalls32);
+          TRendererWall32.R_StoreWallColumn32(@midwalls32);
           if totalclip then
-            R_FlashWallColumns32(@midwalls32);
+            TRendererWall32.R_FlashWallColumns32(@midwalls32);
           {$ELSE}
           midwallcolfunc;
           {$ENDIF}
@@ -269,9 +269,9 @@ begin
 
           {$IFDEF RENDERSEGOPTIMIZED}
           if totalclip then
-            R_FlashWallColumns32(@midwalls32b)
+            TRendererWall32.R_FlashWallColumns32(@midwalls32b)
           else
-            R_StoreWallColumn32(@midwalls32b);
+            TRendererWall32.R_StoreWallColumn32(@midwalls32b);
           {$ELSE}
           midwallcolfunc;
           {$ENDIF}
@@ -282,8 +282,8 @@ begin
         else
         begin
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_FlashWallColumns32(@midwalls32);
-          R_FlashWallColumns32(@midwalls32b);
+          TRendererWall32.R_FlashWallColumns32(@midwalls32);
+          TRendererWall32.R_FlashWallColumns32(@midwalls32b);
           {$ENDIF}
         end;
       end
@@ -300,7 +300,7 @@ begin
       begin
 {$ENDIF}
         {$IFDEF RENDERSEGOPTIMIZED}
-        R_StoreWallColumn32(@midwalls32);
+        TRendererWall32.R_StoreWallColumn32(@midwalls32);
         {$ELSE}
         midwallcolfunc;
         {$ENDIF}
@@ -363,9 +363,9 @@ begin
               dc_lightlevel := Integer(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_StoreWallColumn32(@upperwalls32);
+              TRendererWall32.R_StoreWallColumn32(@upperwalls32);
               if totalclip then
-                R_FlashWallColumns32(@upperwalls32);
+                TRendererWall32.R_FlashWallColumns32(@upperwalls32);
               {$ELSE}
               topwallcolfunc;
               {$ENDIF}
@@ -378,9 +378,9 @@ begin
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
-                R_FlashWallColumns32(@upperwalls32b)
+                TRendererWall32.R_FlashWallColumns32(@upperwalls32b)
               else
-                R_StoreWallColumn32(@upperwalls32b);
+                TRendererWall32.R_StoreWallColumn32(@upperwalls32b);
               {$ELSE}
               topwallcolfunc;
               {$ENDIF}
@@ -391,8 +391,8 @@ begin
             else
             begin
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_FlashWallColumns32(@upperwalls32);
-              R_FlashWallColumns32(@upperwalls32b);
+              TRendererWall32.R_FlashWallColumns32(@upperwalls32);
+              TRendererWall32.R_FlashWallColumns32(@upperwalls32b);
               {$ENDIF}
             end;
           end
@@ -403,7 +403,7 @@ begin
           dc_yl := yl;
           dc_yh := mid;
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn32(@upperwalls32);
+          TRendererWall32.R_StoreWallColumn32(@upperwalls32);
           {$ELSE}
           topwallcolfunc;
           {$ENDIF}
@@ -509,9 +509,9 @@ begin
               dc_lightlevel := Integer(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_StoreWallColumn32(@lowerwalls32);
+              TRendererWall32.R_StoreWallColumn32(@lowerwalls32);
               if totalclip then
-                R_FlashWallColumns32(@lowerwalls32);
+                TRendererWall32.R_FlashWallColumns32(@lowerwalls32);
               {$ELSE}
               bottomwallcolfunc;
               {$ENDIF}
@@ -524,9 +524,9 @@ begin
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
-                R_FlashWallColumns32(@lowerwalls32b)
+                TRendererWall32.R_FlashWallColumns32(@lowerwalls32b)
               else
-                R_StoreWallColumn32(@lowerwalls32b);
+                TRendererWall32.R_StoreWallColumn32(@lowerwalls32b);
               {$ELSE}
               bottomwallcolfunc;
               {$ENDIF}
@@ -537,8 +537,8 @@ begin
             else
             begin
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_FlashWallColumns32(@lowerwalls32);
-              R_FlashWallColumns32(@lowerwalls32b);
+              TRendererWall32.R_FlashWallColumns32(@lowerwalls32);
+              TRendererWall32.R_FlashWallColumns32(@lowerwalls32b);
               {$ENDIF}
             end;
           end
@@ -548,7 +548,7 @@ begin
           dc_yl := mid;
           dc_yh := yh;
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn32(@lowerwalls32);
+          TRendererWall32.R_StoreWallColumn32(@lowerwalls32);
           {$ELSE}
           bottomwallcolfunc;
           {$ENDIF}
@@ -639,14 +639,14 @@ begin
     inc(pfloorclip);
   end;
   {$IFDEF RENDERSEGOPTIMIZED}
-  R_FlashWallColumns32(@midwalls32);
-  R_FlashWallColumns32(@lowerwalls32);
-  R_FlashWallColumns32(@upperwalls32);
+  TRendererWall32.R_FlashWallColumns32(@midwalls32);
+  TRendererWall32.R_FlashWallColumns32(@lowerwalls32);
+  TRendererWall32.R_FlashWallColumns32(@upperwalls32);
   {$IFDEF FLOORS3DVIS}
   // JVAL: 3d Floors
-  R_FlashWallColumns32(@midwalls32b);
-  R_FlashWallColumns32(@lowerwalls32b);
-  R_FlashWallColumns32(@upperwalls32b);
+  TRendererWall32.R_FlashWallColumns32(@midwalls32b);
+  TRendererWall32.R_FlashWallColumns32(@lowerwalls32b);
+  TRendererWall32.R_FlashWallColumns32(@upperwalls32b);
   {$ENDIF}
   {$ENDIF}
 end;

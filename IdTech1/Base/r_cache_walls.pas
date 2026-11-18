@@ -323,9 +323,9 @@ begin
       if dc32cache[hash][index] <> nil then
         if dc32cache[hash][index].tic = TGameSession.GameTic then
         begin
-          R_RenderMultiThreadWalls32;
-          R_WaitWallsCache32;
-          R_ClearWallsCache32;
+          TRendererWall32.R_RenderMultiThreadWalls32;
+          TRendererWall32.R_WaitWallsCache32;
+          TRendererWall32.R_ClearWallsCache32;
         end;
 
     inc(c_cmiss); // Cache miss
@@ -622,9 +622,9 @@ begin
       if usemultithread then
         if dc32cache[hash][index].tic = TGameSession.GameTic then
         begin
-          R_RenderMultiThreadWalls32;
-          R_WaitWallsCache32;
-          R_ClearWallsCache32;
+          TRendererWall32.R_RenderMultiThreadWalls32;
+          TRendererWall32.R_WaitWallsCache32;
+          TRendererWall32.R_ClearWallsCache32;
         end;
     end;
 

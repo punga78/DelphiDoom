@@ -60,55 +60,6 @@ type
   batchwallrenderinfo32_tArray = array[0..$FFF] of batchwallrenderinfo32_t;
   Pbatchwallrenderinfo32_tArray = ^batchwallrenderinfo32_tArray;
 
-//==============================================================================
-//
-// R_StoreWallColumn32
-//
-//==============================================================================
-procedure R_StoreWallColumn32(const idx: PInteger);
-
-//==============================================================================
-//
-// R_FlashWallColumns32
-//
-//==============================================================================
-procedure R_FlashWallColumns32(const idx: PInteger);
-
-//==============================================================================
-//
-// R_InitWallsCache32
-//
-//==============================================================================
-procedure R_InitWallsCache32;
-
-//==============================================================================
-//
-// R_ShutDownWallsCache32
-//
-//==============================================================================
-procedure R_ShutDownWallsCache32;
-
-//==============================================================================
-//
-// R_ClearWallsCache32
-//
-//==============================================================================
-procedure R_ClearWallsCache32;
-
-//==============================================================================
-//
-// R_RenderMultiThreadWalls32
-//
-//==============================================================================
-procedure R_RenderMultiThreadWalls32;
-
-//==============================================================================
-//
-// R_WaitWallsCache32
-//
-//==============================================================================
-procedure R_WaitWallsCache32;
-
 var
   midwalls32: integer;
   lowerwalls32: integer;
@@ -120,6 +71,58 @@ var
 
 var
   force_numwallrenderingthreads_32bit: integer = 0;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererWall32 = class sealed
+  public
+    //==============================================================================
+    //
+    // R_StoreWallColumn32
+    //
+    //==============================================================================
+    class procedure R_StoreWallColumn32(const idx: PInteger); static;
+    //==============================================================================
+    //
+    // R_FlashWallColumns32
+    //
+    //==============================================================================
+    class procedure R_FlashWallColumns32(const idx: PInteger); static;
+    //==============================================================================
+    //
+    // R_InitWallsCache32
+    //
+    //==============================================================================
+    class procedure R_InitWallsCache32; static;
+    //==============================================================================
+    //
+    // R_ShutDownWallsCache32
+    //
+    //==============================================================================
+    class procedure R_ShutDownWallsCache32; static;
+    //==============================================================================
+    //
+    // R_ClearWallsCache32
+    //
+    //==============================================================================
+    class procedure R_ClearWallsCache32; static;
+    //==============================================================================
+    //
+    // R_RenderMultiThreadWalls32
+    //
+    //==============================================================================
+    class procedure R_RenderMultiThreadWalls32; static;
+    //==============================================================================
+    //
+    // R_WaitWallsCache32
+    //
+    //==============================================================================
+    class procedure R_WaitWallsCache32; static;
+  end;
+
 
 implementation
 
@@ -169,12 +172,38 @@ var
   wallcachesize: integer;
   wallcacherealsize: integer;
 
+const
+  MAXWALLTHREADS32 = 256;
+
+
+type
+  Pwallthreadparms32_t = ^wallthreadparms32_t;
+  wallthreadparms32_t = record
+    start, stop: integer;
+    next: Pwallthreadparms32_t;
+  end;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererWall32Local = class sealed
+  public
+    class procedure R_GrowWallsCache32; static;
+    class procedure R_AddWallsToCache32(const idx: PInteger); static;
+    class procedure R_DrawSingleThreadWall32(const w: Pwallrenderinfo32_t); static;
+    class procedure R_RenderWall32(walls: Pbatchwallrenderinfo32_t); static;
+    class function _wall_thread_worker32(parms: Pwallthreadparms32_t): integer; stdcall; static;
+  end;
+
 //==============================================================================
 //
 // R_GrowWallsCache32
 //
 //==============================================================================
-procedure R_GrowWallsCache32;
+class procedure TRendererWall32Local.R_GrowWallsCache32;
 begin
   if wallcachesize >= wallcacherealsize then
   begin
@@ -188,7 +217,7 @@ end;
 // R_AddWallsToCache32
 //
 //==============================================================================
-procedure R_AddWallsToCache32(const idx: PInteger);
+class procedure TRendererWall32Local.R_AddWallsToCache32(const idx: PInteger);
 begin
   R_GrowWallsCache32;
   idx^ := wallcachesize;
@@ -201,7 +230,7 @@ end;
 // R_DrawSingleThreadWall32
 //
 //==============================================================================
-procedure R_DrawSingleThreadWall32(const w: Pwallrenderinfo32_t);
+class procedure TRendererWall32Local.R_DrawSingleThreadWall32(const w: Pwallrenderinfo32_t);
 begin
   dc_source32 := w.dc_source32;
   dc_texturefactorbits := w.dc_texturefactorbits;
@@ -220,7 +249,7 @@ end;
 // R_RenderWall32
 //
 //==============================================================================
-procedure R_RenderWall32(walls: Pbatchwallrenderinfo32_t);
+class procedure TRendererWall32Local.R_RenderWall32(walls: Pbatchwallrenderinfo32_t);
 var
   nwalls: integer;
   w: Pwallrenderinfo32_t;
@@ -355,7 +384,7 @@ end;
 // R_FlashWallColumns32
 //
 //==============================================================================
-procedure R_FlashWallColumns32(const idx: PInteger);
+class procedure TRendererWall32.R_FlashWallColumns32(const idx: PInteger);
 var
   walls: Pbatchwallrenderinfo32_t;
 begin
@@ -365,11 +394,11 @@ begin
 
   if usemultithread then
   begin
-    R_AddWallsToCache32(idx);
+    TRendererWall32Local.R_AddWallsToCache32(idx);
     exit;
   end;
 
-  R_RenderWall32(walls);
+  TRendererWall32Local.R_RenderWall32(walls);
 end;
 
 //==============================================================================
@@ -377,7 +406,7 @@ end;
 // R_StoreWallColumn32
 //
 //==============================================================================
-procedure R_StoreWallColumn32(const idx: PInteger);
+class procedure TRendererWall32.R_StoreWallColumn32(const idx: PInteger);
 var
   w: Pwallrenderinfo32_t;
   walls: Pbatchwallrenderinfo32_t;
@@ -410,7 +439,7 @@ begin
   if walls.numwalls = MAXBATCHWALLS then
   begin
     if usemultithread then
-      R_AddWallsToCache32(idx)
+      TRendererWall32Local.R_AddWallsToCache32(idx)
     else
     begin
       {$IFNDEF OPTIMIZE_FOR_SIZE}
@@ -427,26 +456,16 @@ begin
   end;
 end;
 
-const
-  MAXWALLTHREADS32 = 256;
-
 var
   wallthreads32: array[0..MAXWALLTHREADS32 - 1] of TDThread;
   numwallthreads32: Integer = 0;
-
-type
-  Pwallthreadparms32_t = ^wallthreadparms32_t;
-  wallthreadparms32_t = record
-    start, stop: integer;
-    next: Pwallthreadparms32_t;
-  end;
 
 //==============================================================================
 //
 // _wall_thread_worker32
 //
 //==============================================================================
-function _wall_thread_worker32(parms: Pwallthreadparms32_t): integer; stdcall;
+class function TRendererWall32Local._wall_thread_worker32(parms: Pwallthreadparms32_t): integer; stdcall;
 var
   start, stop, part: integer;
   i: integer;
@@ -485,14 +504,14 @@ var
 // R_InitWallsCache32
 //
 //==============================================================================
-procedure R_InitWallsCache32;
+class procedure TRendererWall32.R_InitWallsCache32;
 var
   i: integer;
 begin
   wallcache := nil;
   wallcachesize := 0;
   wallcacherealsize := 0;
-  R_GrowWallsCache32;
+  TRendererWall32Local.R_GrowWallsCache32;
   midwalls32 := 0;
   lowerwalls32 := 1;
   upperwalls32 := 2;
@@ -519,7 +538,7 @@ begin
 
   default_numwallrenderingthreads_32bit := numwallthreads32;
   for i := 0 to numwallthreads32 - 1 do
-    wallthreads32[i] := TDThread.Create(@_wall_thread_worker32);
+    wallthreads32[i] := TDThread.Create(@TRendererWall32Local._wall_thread_worker32);
 end;
 
 //==============================================================================
@@ -527,7 +546,7 @@ end;
 // R_ShutDownWallsCache32
 //
 //==============================================================================
-procedure R_ShutDownWallsCache32;
+class procedure TRendererWall32.R_ShutDownWallsCache32;
 var
   i: integer;
 begin
@@ -542,7 +561,7 @@ end;
 // R_ClearWallsCache32
 //
 //==============================================================================
-procedure R_ClearWallsCache32;
+class procedure TRendererWall32.R_ClearWallsCache32;
 begin
   midwalls32 := 0;
   lowerwalls32 := 1;
@@ -562,7 +581,7 @@ var
 // R_RenderMultiThreadWalls32
 //
 //==============================================================================
-procedure R_RenderMultiThreadWalls32;
+class procedure TRendererWall32.R_RenderMultiThreadWalls32;
 var
   i: integer;
   newnumthreads: integer;
@@ -595,7 +614,7 @@ begin
   if newnumthreads <> numwallthreads32 then
   begin
     for i := numwallthreads32 to newnumthreads - 1 do
-      wallthreads32[i] := TDThread.Create(@_wall_thread_worker32);
+      wallthreads32[i] := TDThread.Create(@TRendererWall32Local._wall_thread_worker32);
     for i := newnumthreads to numwallthreads32 - 1 do
       wallthreads32[i].Free;
     numwallthreads32 := newnumthreads;
@@ -623,7 +642,7 @@ end;
 // R_WaitWallsCache32
 //
 //==============================================================================
-procedure R_WaitWallsCache32;
+class procedure TRendererWall32.R_WaitWallsCache32;
 var
   i: integer;
 begin

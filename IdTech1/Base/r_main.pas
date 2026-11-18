@@ -2156,7 +2156,7 @@ begin
   printf('R_InitWallsCache8'#13#10);
   TRendererWall8.R_InitWallsCache8;
   printf('R_InitWallsCache32'#13#10);
-  R_InitWallsCache32;
+  TRendererWall32.R_InitWallsCache32;
   printf('R_InitFlatsCache8'#13#10);
   R_InitFlatsCache8;
   printf('R_InitFlatsCache32'#13#10);
@@ -2234,7 +2234,7 @@ begin
   printf(#13#10 + 'R_ShutDownWallsCache8');
   TRendererWall8.R_ShutDownWallsCache8;
   printf(#13#10 + 'R_ShutDownWallsCache32');
-  R_ShutDownWallsCache32;
+  TRendererWall32.R_ShutDownWallsCache32;
   printf(#13#10 + 'R_ShutDownFlatsCache8');
   R_ShutDownFlatsCache8;
   printf(#13#10 + 'R_ShutDownFlatsCache32');
@@ -2746,7 +2746,7 @@ begin
   // check for new console commands.
   R_NetGame.Update;
 
-  R_ClearWallsCache32;
+  TRendererWall32.R_ClearWallsCache32;
 
   // The head node is the last node output.
   R_RenderBSPNode(numnodes - 1);
@@ -2761,7 +2761,7 @@ begin
   task_maskedstuff := MT_ScheduleTask(@R_MaskedStuffMT);
   MT_ExecutePendingTask(task_maskedstuff);
 
-  R_RenderMultiThreadWalls32;
+  TRendererWall32.R_RenderMultiThreadWalls32;
 
   R_DrawPlanes;
 
@@ -2770,7 +2770,7 @@ begin
 
   R_RenderMultiThreadFlats32;
 
-  R_WaitWallsCache32;
+  TRendererWall32.R_WaitWallsCache32;
 
   R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
 
