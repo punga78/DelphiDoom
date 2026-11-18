@@ -509,7 +509,7 @@ begin
     exit;
 
   // OK, we have a valid vislight
-  result := R_NewVisLight;
+  result := TRendererVisLight.R_NewVisLight;
 
   // store information in a vissprite
   result.scale := FixedDiv(projectiony, tz); // JVAL For correct aspect
