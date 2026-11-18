@@ -1,0 +1,98 @@
+tga bad-depth-rle.tga error LoadTGA: Only 32 or 24 bit images supported (no colormaps)
+tga bad-depth-type2.tga error LoadTGA: Only 32 or 24 bit images supported (no colormaps)
+tga bad-depth-type3.tga error LoadTGA: illegal pixel_size '16'
+tga bad-type.tga error LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported
+tga colormap.tga error LoadTGA: colormaps not supported
+tga gray8.tga ok 5 2 58b22f713834c16a sum=6141 warnings=0
+tga gray-type-rgb24.tga ok 2 2 50a9e58b6a06de71 sum=2360 warnings=0
+tga height0.tga ok 4 0 cbf29ce484222325 sum=0 warnings=0
+tga rgb24-id.tga ok 4 3 c76610fafcbd25a9 sum=7728 warnings=0
+tga rgba32.tga ok 3 5 a7ca49b8652cbb71 sum=8092 warnings=0
+tga rle24-span.tga ok 3 3 b53d1519b22bd90b sum=3592 warnings=0
+tga rle32-fill.tga ok 2 2 392db12a01c54be5 sum=400 warnings=0
+tga rle32-overrun.tga ok 2 2 392db12a01c54be5 sum=400 warnings=0
+tga t1_cmap.tga error LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported
+tga t10_24.tga ok 6 4 796e0665d18ad2b9 sum=15750 warnings=0
+tga t10_32_top.tga ok 5 5 1aba881547421852 sum=11173 warnings=1
+tga t10_overrun.tga ok 3 2 3832bd23406e42cc sum=3145 warnings=0
+tga t2_16.tga error LoadTGA: Only 32 or 24 bit images supported (no colormaps)
+tga t2_24.tga ok 4 3 9c8eb166f8f40678 sum=8027 warnings=0
+tga t2_32_top.tga ok 5 4 30ee79158c9d50a6 sum=9933 warnings=1
+tga t2_idlen.tga ok 3 3 c996394efe92d2cc sum=5107 warnings=0
+tga t3_gray.tga ok 4 4 8befbf4f3cc22fce sum=10527 warnings=0
+tga topdown.tga ok 2 2 091a6e81a798a9a9 sum=2480 warnings=1
+tga width0.tga ok 0 4 cbf29ce484222325 sum=0 warnings=0
+jpg encoder-17x13-c3-q80.jpg ok 17 13 469da6811ea50053 sum=140364 warnings=0
+jpg encoder-1x1-c3-q90.jpg ok 1 1 61a496d2e3630ddc sum=271 warnings=0
+jpg encoder-40x24-c3-q95.jpg ok 40 24 e022aa1798cb276d sum=609306 warnings=0
+jpg encoder-48x48-c3-q10.jpg ok 48 48 504adfe389a4a920 sum=1473303 warnings=0
+jpg encoder-48x48-c3-q100.jpg ok 48 48 9eeb69d613fc500d sum=1477940 warnings=0
+oa jpg gfx/2d/backtile.jpg ok 64 64 6927fac75e74a325 sum=1044480 warnings=0
+oa jpg gfx/colors/black.jpg ok 8 8 d219fe4d821f6d25 sum=16320 warnings=0
+oa jpg gfx/misc/lightning3.jpg ok 128 64 bac6bc4dc286f92f sum=3939470 warnings=0
+oa jpg menu/art/unknownmap.jpg ok 64 64 f5b631d42b84b160 sum=1333341 warnings=0
+oa jpg models/powerups/armor/shard.jpg ok 256 256 23b50a2af355d5bf sum=43083252 warnings=0
+oa jpg models/weaphits/bfg02.jpg ok 128 256 bcbf190185163ed3 sum=9791992 warnings=0
+oa jpg models/weaphits/bfgboom/bfgboom_2.jpg ok 64 64 b62cf521a67af8f8 sum=1638849 warnings=0
+oa jpg models/weaphits/bullet2.jpg ok 128 128 6754051770c665a6 sum=4390463 warnings=0
+oa jpg models/weaphits/glboom/glboom_1.jpg ok 64 64 bce05b0a86849b62 sum=2155703 warnings=0
+oa jpg models/weaphits/newexplo1.jpg ok 128 128 11f018b134fd8b15 sum=7151424 warnings=0
+oa jpg models/weaphits/rlboom/rlboom_2.jpg ok 128 128 381d7f0270b3459a sum=4712813 warnings=0
+oa jpg models/weaphits/rlboom/rlboom_5.jpg ok 128 128 a0256f46ba597b4f sum=4622990 warnings=0
+oa jpg models/weaphits/rlboom/rlboom_8.jpg ok 128 128 d208f29955fbe3dd sum=4200414 warnings=0
+oa jpg models/weapons2/lightning/f_lightning.jpg ok 128 128 0b414a8228239cdb sum=5345898 warnings=0
+oa jpg models/weapons2/plasma/f_plasma.jpg ok 128 128 e5ee343fad335509 sum=5253284 warnings=0
+oa jpg models/weapons2/rocketl/f_rocketl.jpg ok 128 128 a815db77691d3098 sum=5972957 warnings=0
+oa jpg textures/detail/d_conc.jpg ok 256 256 22b4e6cbbb7b9a91 sum=39930312 warnings=0
+oa jpg textures/effects/envmapblue.jpg ok 64 64 226ed7028f725903 sum=1289020 warnings=0
+oa jpg textures/effects/envmapdimb.jpg ok 64 64 2608b25573391ddd sum=1130070 warnings=0
+oa jpg textures/effects/envmapligh.jpg ok 64 64 5f39ff68373b3053 sum=1404826 warnings=0
+oa jpg textures/effects/envmappurp.jpg ok 64 64 17a212dec5a30ab7 sum=1233476 warnings=0
+oa jpg textures/effects/envmaproc.jpg ok 64 64 6432b3f15a498db5 sum=1181102 warnings=0
+oa jpg textures/effects/hastenv.jpg ok 64 64 68d08957b2c055a8 sum=2689917 warnings=0
+oa jpg textures/effects/regenmap2.jpg ok 64 64 2a20cf1ccb646164 sum=1150119 warnings=0
+oa jpg textures/effects/tinfx3.jpg ok 128 128 583262de923d03c1 sum=4257600 warnings=0
+oa jpg textures/oa/bfgfiar.jpg ok 256 256 a3587decb1e29515 sum=21815232 warnings=0
+oa jpg textures/oa/fiar2.jpg ok 256 256 97310dbfb4423b5d sum=21605250 warnings=0
+oa jpg textures/oa/oldfiar2.jpg ok 256 256 f3be24be9a337728 sum=24891803 warnings=0
+oa jpg textures/oafx/bloodscreenmult.jpg ok 256 256 4725ca020e9bd1cd sum=40192224 warnings=0
+oa jpg textures/oafx/greenchrm.jpg ok 64 64 3418991024217028 sum=1470115 warnings=0
+oa jpg textures/oafx/inviso.jpg ok 128 128 ec1618c60d062de7 sum=10495878 warnings=0
+oa jpg textures/oafx/orangechrm_2.jpg ok 57 57 e0620c82929deb91 sum=1550404 warnings=0
+oa jpg textures/oafx/plastrail.jpg ok 128 128 2efd0e8cac44e64b sum=4796686 warnings=0
+oa jpg textures/oafx/rocketflare.jpg ok 128 128 6e28a6655dab7d68 sum=5983449 warnings=0
+oa tga gfx/2d/bigchars.tga ok 256 256 712732affc1f2787 sum=34609312 warnings=0
+oa tga gfx/2d/defer.tga ok 64 64 919bde7acd7aeca5 sum=1918512 warnings=0
+oa tga gfx/2d/numbers/zero_32b.tga ok 64 64 f32e8d2b9c4234eb sum=1653284 warnings=0
+oa tga gfx/misc/smokepuff3.tga ok 64 64 33fbc2f146579b75 sum=1605166 warnings=0
+oa tga icons/icona_machinegun.tga ok 64 64 1271fac930474739 sum=2314968 warnings=0
+oa tga icons/iconf_blu1.tga ok 64 64 ebe94ebe70666b5f sum=1394300 warnings=0
+oa tga icons/iconr_shard.tga ok 128 128 e790cf24ddd11f40 sum=4205197 warnings=0
+oa tga icons/invis.tga ok 64 64 39c7e694e4ba615c sum=2350027 warnings=0
+oa tga menu/art/arrows_horz_left.tga ok 64 64 078d80395f1e1e09 sum=205504 warnings=0
+oa tga menu/art/delete_1.tga ok 128 64 d5193167a06570a3 sum=2016510 warnings=0
+oa tga menu/art/fx_blue.tga ok 16 8 1d83b02dd5ee0325 sum=68096 warnings=0
+oa tga menu/art/level_complete2.tga ok 256 256 75bb0c1120f1c502 sum=2698263 warnings=0
+oa tga menu/art/narrow_0.tga ok 16 128 d95da2450fe0fc7e sum=278237 warnings=0
+oa tga menu/art/refresh_1.tga ok 128 64 2fa8a69ceccfc430 sum=2015411 warnings=0
+oa tga menu/art/skirmish_0.tga ok 128 64 6a40ae25f1749b69 sum=1976482 warnings=0
+oa tga menu/medals/medal_defend.tga ok 128 128 1c7aba060d7b977e sum=6302879 warnings=0
+oa tga models/ammo/rocket/thrustc3.tga ok 128 128 c02082c6af608943 sum=5375350 warnings=0
+oa tga models/mapobjects/cosmoflash/torch1.tga ok 256 256 0968aed936a0bc24 sum=23227911 warnings=0
+oa tga models/mapobjects/palmier/palmleafs_bottom2.tga ok 256 256 dfa94e1d905565d4 sum=30231235 warnings=0
+oa tga models/players/grism/morphedr.tga ok 512 512 0cbbcf9d7c9660c0 sum=129410487 warnings=0
+oa tga models/players/sorceress/icon_red.tga ok 128 128 5d6e848ee7994deb sum=4745964 warnings=0
+oa tga models/powerups/ammo/rockammo2.tga ok 128 128 ec019933d5fe496d sum=4987644 warnings=0
+oa tga models/weaphits/blood202.tga ok 64 64 73de60b578a7b68c sum=148451 warnings=0
+oa tga models/weaphits/bulletscroll.tga ok 256 256 948ed9dc177b17d0 sum=18043279 warnings=0
+oa tga models/weaphits/smokering.tga ok 128 128 5bccd2c338ceb000 sum=2160289 warnings=0
+oa tga models/weapons2/grenadel/blackhandle.tga ok 128 128 2b95e8c4bb63316f sum=8943522 warnings=0
+oa tga models/weapons2/machinegun/mgun.tga ok 512 512 0aa62d368788956d sum=105218044 warnings=0
+oa tga models/weapons2/railgun/scrolly.tga ok 128 128 e5c1d23347a09849 sum=4959764 warnings=0
+oa tga models/weapons2/shotgun/muzzley.tga ok 128 128 7300fba3489b3a4b sum=5498736 warnings=0
+oa tga sprites/multwake4.tga ok 128 128 f3531da61a031d6c sum=10471581 warnings=0
+oa tga textures/detail/d_conc2.tga ok 256 256 2a2a2eeae375233e sum=39256203 warnings=0
+oa tga textures/effects/envmap2.tga ok 256 256 6ac627288890c382 sum=24426663 warnings=0
+oa tga textures/effects/shinyskin.tga ok 16 16 4fe97425edc569e2 sum=133611 warnings=0
+oa tga textures/effects/tinfx2c.tga ok 256 256 e660a7a455c55cf9 sum=35355938 warnings=0
+oa tga textures/oafx/burnme.tga ok 64 64 0c29bbf867b8cf54 sum=1477565 warnings=0
