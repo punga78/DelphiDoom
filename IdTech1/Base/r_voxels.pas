@@ -1791,7 +1791,7 @@ begin
   if vis.cache <> nil then
   begin
     cache := vis.cache;
-    R_ExecuteSpriteCache(cache);
+    TRendererThings.R_ExecuteSpriteCache(cache);
     fdrawsegs := cache.fdrawsegs;
     fds_p := cache.fds_p;
   end

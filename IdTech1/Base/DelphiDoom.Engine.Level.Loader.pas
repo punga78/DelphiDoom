@@ -176,7 +176,7 @@ end;
 procedure TLevelLoader.Initialize;
 begin
   FRules.InitializeData;
-  R_InitSprites(sprnames);
+  TRendererThings.R_InitSprites(sprnames);
   FMusInfo.Load;
   // the commands have always been called with both parameters, whatever their own declaration
   FCommands.Add('suicide',

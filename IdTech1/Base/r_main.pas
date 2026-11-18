@@ -2245,7 +2245,7 @@ begin
   R_ShutDownCustomColormaps;
 {$ENDIF}
   printf(#13#10 + 'R_ShutDownSprites');
-  R_ShutDownSprites;
+  TRendererThings.R_ShutDownSprites;
   printf(#13#10 + 'R_FreeMemory');
   R_FreeMemory;
 {$IFNDEF OPENGL}
@@ -2637,7 +2637,7 @@ procedure R_MaskedStuffMT;
 begin
   R_SortVisSprites;
   TRendererSegs2.R_SetUpDrawSegLists;
-  R_PrepareMasked;
+  TRendererThings.R_PrepareMasked;
 end;
 
 //==============================================================================
@@ -2658,7 +2658,7 @@ begin
   TRendererPlane.R_ClearPlanes;
   R_Wait3DLookup;
   R_Fake3DAdjustPlanes(player);
-  R_ClearSprites;
+  TRendererThings.R_ClearSprites;
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2674,7 +2674,7 @@ begin
   // Check for completed thread tasks
   TestActiveThreads;
 
-  R_ProjectAdditionalThings;
+  TRendererThings.R_ProjectAdditionalThings;
 
   R_SortVisSpritesMT;
 
@@ -2700,9 +2700,9 @@ begin
   R_RenderMultiThreadFFloors8;
 
   MT_WaitTask(task_8bitlights);
-  R_SignalPrepareMasked;
+  TRendererThings.R_SignalPrepareMasked;
   MT_WaitTask(task_maskedstuff);
-  R_DrawMasked_MultiThread;
+  TRendererThings.R_DrawMasked_MultiThread;
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2712,7 +2712,7 @@ begin
 
   R_Execute3DTransform;
 
-  R_DrawPlayer;
+  TRendererThings.R_DrawPlayer;
 
   // Check for new console commands.
   R_NetGame.Update;
@@ -2738,7 +2738,7 @@ begin
   TRendererPlane.R_ClearPlanes;
   R_Wait3DLookup;
   R_Fake3DAdjustPlanes(player);
-  R_ClearSprites;
+  TRendererThings.R_ClearSprites;
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2754,7 +2754,7 @@ begin
   // Check for completed thread tasks
   TestActiveThreads;
 
-  R_ProjectAdditionalThings;
+  TRendererThings.R_ProjectAdditionalThings;
 
   R_SortVisSpritesMT;
 
@@ -2779,9 +2779,9 @@ begin
 
   R_RenderMultiThreadFFloors32;
 
-  R_SignalPrepareMasked;
+  TRendererThings.R_SignalPrepareMasked;
   MT_WaitTask(task_maskedstuff);
-  R_DrawMasked_MultiThread;
+  TRendererThings.R_DrawMasked_MultiThread;
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2791,7 +2791,7 @@ begin
 
   R_Execute3DTransform;
 
-  R_DrawPlayer;
+  TRendererThings.R_DrawPlayer;
 
   // Check for new console commands.
   R_NetGame.Update;
@@ -2827,7 +2827,7 @@ begin
 {$IFNDEF OPENGL}
   R_Fake3DAdjustPlanes(player);
 {$ENDIF}
-  R_ClearSprites;
+  TRendererThings.R_ClearSprites;
 
 {$IFDEF OPENGL}
   gld_StartDrawScene; // JVAL OPENGL
@@ -2843,7 +2843,7 @@ begin
   // The head node is the last node output.
   TRendererBsp.R_RenderBSPNode(numnodes - 1);
 
-  R_ProjectAdditionalThings;
+  TRendererThings.R_ProjectAdditionalThings;
 
   // Check for new console commands.
   R_NetGame.Update;
@@ -2865,11 +2865,11 @@ begin
 
   TRenderer3dFloors.R_DrawFFloors;  // JVAL: 3d Floors
 
-  R_DrawMasked_SingleThread;
+  TRendererThings.R_DrawMasked_SingleThread;
 
   R_Execute3DTransform;
 
-  R_DrawPlayer;
+  TRendererThings.R_DrawPlayer;
 {$ENDIF}
 
   // Check for new console commands.

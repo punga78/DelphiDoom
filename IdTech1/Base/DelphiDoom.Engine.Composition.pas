@@ -1206,7 +1206,7 @@ begin
 {$ENDIF}
   R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
     TEngineRendererPatchSource.Create, ALog));
-  R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
+  TRendererThings.R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
     TEngineRendererSpriteSource.Create, ALog));
   TRendererSubsectors.R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);

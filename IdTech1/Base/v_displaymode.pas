@@ -165,7 +165,7 @@ begin
   {$IFNDEF STRIFE}
   R_InitFuzzTable;         // Re-calculate fuzz tabble offsets
   {$ENDIF}
-  R_InitNegoArray;         // Re-calculate the nego-array
+  TRendererThings.R_InitNegoArray;         // Re-calculate the nego-array
   overlay.ReCalcOverlayLookUp;
   result := true;
 end;

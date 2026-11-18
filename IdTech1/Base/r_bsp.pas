@@ -1498,10 +1498,10 @@ begin
 {$ENDIF}
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
 
-  R_AddSprites(frontsector);
+  TRendererThings.R_AddSprites(frontsector);
 
 {$ELSE}
-  R_AddSprites(sub.sector); //jff 9/11/98 passing frontsector here was
+  TRendererThings.R_AddSprites(sub.sector); //jff 9/11/98 passing frontsector here was
                             //causing the underwater fireball medusa problem
                             //when R_FakeFlat substituted a fake sector
 {$ENDIF}
