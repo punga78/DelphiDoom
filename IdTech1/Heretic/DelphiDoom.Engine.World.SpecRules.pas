@@ -309,7 +309,7 @@ begin
     end
     else
     begin
-      if W_CheckNumForName(animdefs[i].startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(animdefs[i].startname) = -1 then
       begin
         inc(i);
         continue;
@@ -322,7 +322,7 @@ begin
       // JVAL
       // Create new flats as nessesary
       for j := anims[lastanim].basepic to anims[lastanim].basepic + anims[lastanim].numpics - 1 do
-        R_FlatNumForName(W_GetNameForNum(j));
+        R_FlatNumForName(TWadRoutines.W_GetNameForNum(j));
     end;
 
     if anims[lastanim].numpics < 2 then
@@ -1103,7 +1103,7 @@ begin
           bottom:
             sides[button.line.sidenum[0]].bottomtexture := button.btexture;
         end;
-        S_StartSound(@button.soundorg, Ord(sfx_switch));
+        TSoundRoutines.S_StartSound(@button.soundorg, Ord(sfx_switch));
         ZeroMemory(button, SizeOf(button_t));
       end;
 
@@ -1196,7 +1196,7 @@ var
   s: integer;
   ang: angle_t;
 begin
-  if W_CheckNumForName('texture2') < 0 then
+  if TWadRoutines.W_CheckNumForName('texture2') < 0 then
     TGameSession.GameEpisode := 1; // ???
 
   // See if -TIMER needs to be used.

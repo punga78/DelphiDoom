@@ -192,7 +192,7 @@ var
 procedure W_InitSprites;
 begin
   spritecache := TSpriteLumpCache.Create;
-  spritecache.NotifySize(W_NumLumps);
+  spritecache.NotifySize(TWadRoutines.W_NumLumps);
 end;
 
 //==============================================================================
@@ -291,7 +291,7 @@ begin
     Exit;
   end
   else
-    result := W_CacheLumpNum(lump, tag);
+    result := TWadRoutines.W_CacheLumpNum(lump, tag);
 
   if NativeInt(data) = 1 then
     Exit;
@@ -299,7 +299,7 @@ begin
   spritecache.Items[lump] := Pointer($1);
 
   strm := TAttachableMemoryStream.Create;
-  strm.Attach(result, W_LumpLength(lump));
+  strm.Attach(result, TWadRoutines.W_LumpLength(lump));
 
   ZeroMemory(@buf, SizeOf(buf));
 

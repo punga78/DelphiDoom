@@ -968,7 +968,7 @@ begin
   cy := y;
 
   oldtranslation := v_translation;
-  v_translation := W_CacheLumpName('TRN_MENU', PU_STATIC);
+  v_translation := TWadRoutines.W_CacheLumpName('TRN_MENU', PU_STATIC);
   while true do
   begin
     if ch > len then
@@ -2036,11 +2036,11 @@ begin
   end;
 
   if customgame = cg_hacx then
-    result := W_CheckNumForName('M_SSHOTH')
+    result := TWadRoutines.W_CheckNumForName('M_SSHOTH')
   else if customgame in [cg_chex, cg_chex2] then
-    result := W_CheckNumForName('M_SSHOTC')
+    result := TWadRoutines.W_CheckNumForName('M_SSHOTC')
   else
-    result := W_CheckNumForName('M_SSHOT');
+    result := TWadRoutines.W_CheckNumForName('M_SSHOT');
   sspatch := result;
 end;
 
@@ -2289,7 +2289,7 @@ class procedure TMenuLocalRoutines.M_StartSound(origin: pointer; sfx_id: integer
 begin
   if TGameSession.GameState = GS_ENDOOM then
     exit;
-  S_StartSound(origin, sfx_id);
+  TSoundRoutines.S_StartSound(origin, sfx_id);
 end;
 
 //==============================================================================
@@ -2456,7 +2456,7 @@ end;
 class procedure TMenuLocalRoutines.M_DrawReadThisExt;
 begin
   inhelpscreens := true;
-  V_PageDrawer(char8tostring(W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
+  V_PageDrawer(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
 end;
 
 //==============================================================================
@@ -3270,7 +3270,7 @@ begin
     0: if snd_SfxVolume <> 0 then dec(snd_SfxVolume);
     1: if snd_SfxVolume < 15 then inc(snd_SfxVolume);
   end;
-  S_SetSfxVolume(snd_SfxVolume);
+  TSoundRoutines.S_SetSfxVolume(snd_SfxVolume);
 end;
 
 //==============================================================================
@@ -3284,7 +3284,7 @@ begin
     0: if snd_MusicVolume <> 0 then dec(snd_MusicVolume);
     1: if snd_MusicVolume < 15 then inc(snd_MusicVolume);
   end;
-  S_SetMusicVolume(snd_MusicVolume);
+  TSoundRoutines.S_SetMusicVolume(snd_MusicVolume);
 end;
 
 //==============================================================================
@@ -3413,7 +3413,7 @@ begin
     exit;
 
   if lumpepi = -2 then
-    lumpepi := W_CheckNumForName('M_EPISOD');
+    lumpepi := TWadRoutines.W_CheckNumForName('M_EPISOD');
   if lumpepi >= 0 then
     V_DrawPatch(54, 38, SCN_TMP, lumpepi, false)
   else
@@ -3556,7 +3556,7 @@ begin
   if M_ExtPatch(52, 15, 'M_DISOPT') then
     exit;
 
-  lump := W_CheckNumForName('M_DISOPT');
+  lump := TWadRoutines.W_CheckNumForName('M_DISOPT');
   if lump >= 0 then
     V_DrawPatch(52, 15, SCN_TMP, lump, false)
   else
@@ -5236,7 +5236,7 @@ begin
       exit;
   end;
 
-  src := W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
+  src := TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
   dest := 0;
 
   for y := 0 to 200 - 1 do
@@ -5349,7 +5349,7 @@ begin
         // drawn (or hidden) by the game
       else
       begin
-        lump := W_CheckNumForName(currentMenu.menuitems[i].name);
+        lump := TWadRoutines.W_CheckNumForName(currentMenu.menuitems[i].name);
         if lump >= 0 then
           V_DrawPatch(x, y, SCN_TMP, lump, false)
         else
@@ -5643,7 +5643,7 @@ begin
   extrahelpscreens := TDNumberList.Create;
   for i := 1 + menuext.helppages to 99 do
   begin
-    lump := W_CheckNumForName('HELP' + IntToStrzFill(2, i));
+    lump := TWadRoutines.W_CheckNumForName('HELP' + IntToStrzFill(2, i));
     if lump >= 0 then
       extrahelpscreens.Add(lump);
   end;

@@ -335,12 +335,12 @@ begin
 // JVAL
 // Check for 'ANIMATED' lump
   animdefs := nil;
-  lump := W_CheckNumForName('ANIMATED');
+  lump := TWadRoutines.W_CheckNumForName('ANIMATED');
   if lump >= 0 then
   begin
-    len := W_LumpLength(lump);
+    len := TWadRoutines.W_LumpLength(lump);
     len := len div SizeOf(wad_animdef_t);
-    wadanims := W_CacheLumpNum(lump, PU_STATIC);
+    wadanims := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
     animdefs := Z_Malloc((len + 1) * SizeOf(animdef_t), PU_STATIC, nil);
     anims := Z_Malloc((len + 1) * SizeOf(anim_t), PU_STATIC, nil);
     ianimdef := @animdefs[0];
@@ -389,7 +389,7 @@ begin
     end
     else
     begin
-      if W_CheckNumForName(ianimdef.startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(ianimdef.startname) = -1 then
       begin
         inc(ianimdef);
         continue;
@@ -451,7 +451,7 @@ begin
            not player.cards[Ord(it_yellowskull)] then
         begin
           player._message := PD_ANY; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -466,7 +466,7 @@ begin
             player._message := PD_REDK
           else
             player._message := PD_REDC; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -481,7 +481,7 @@ begin
             player._message := PD_BLUEK
           else
             player._message := PD_BLUEC; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -496,7 +496,7 @@ begin
             player._message := PD_YELLOWK
           else
             player._message := PD_YELLOWC; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -511,7 +511,7 @@ begin
             player._message := PD_REDK
           else
             player._message := PD_REDS; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -526,7 +526,7 @@ begin
             player._message := PD_BLUEK
           else
             player._message := PD_BLUES; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -541,7 +541,7 @@ begin
             player._message := PD_YELLOWK
           else
             player._message := PD_YELLOWS; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -558,7 +558,7 @@ begin
            not player.cards[Ord(it_yellowskull)]) then
         begin
           player._message := PD_ALL6; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -571,7 +571,7 @@ begin
            not player.cards[Ord(it_yellowskull)])) then
         begin
           player._message := PD_ALL3; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -2160,7 +2160,7 @@ begin
           bottom:
             sides[button.line.sidenum[0]].bottomtexture := button.btexture;
         end;
-        S_StartSound(@button.soundorg, Ord(sfx_swtchn));
+        TSoundRoutines.S_StartSound(@button.soundorg, Ord(sfx_swtchn));
         ZeroMemory(button, SizeOf(button_t));
       end;
 
@@ -2188,7 +2188,7 @@ var
   s, sec: integer;
   ang: angle_t;
 begin
-  if W_CheckNumForName('texture2') < 0 then
+  if TWadRoutines.W_CheckNumForName('texture2') < 0 then
     TGameSession.GameEpisode := 1; // ???
 
   // See if -TIMER needs to be used.

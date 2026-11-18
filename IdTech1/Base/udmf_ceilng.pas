@@ -155,7 +155,7 @@ begin
           {$IFDEF HEXEN}
           S_StopSequence(Pmobj_t(@ceiling.sector.soundorg));
           {$ELSE}
-          S_StopSound(@ceiling.sector.soundorg);
+          TSoundRoutines.S_StopSound(@ceiling.sector.soundorg);
           {$ENDIF}
           if ceiling._type = CLEV_CRUSHANDRAISE then
           begin
@@ -179,7 +179,7 @@ begin
           {$IFDEF HEXEN}
           S_StopSequence(Pmobj_t(@ceiling.sector.soundorg));
           {$ELSE}
-          S_StopSound(@ceiling.sector.soundorg);
+          TSoundRoutines.S_StopSound(@ceiling.sector.soundorg);
           {$ENDIF}
           case ceiling._type of
             CLEV_CRUSHANDRAISE,
@@ -369,7 +369,7 @@ begin
       {$IFDEF HEXEN}
       S_StartSequence(Pmobj_t(@ceiling.sector.soundorg), Ord(SEQ_PLATFORM) + Ord(ceiling.sector.seqType));
       {$ELSE}
-      S_StartSound(@ceiling.sector.soundorg, ceiling.sector.seqType);
+      TSoundRoutines.S_StartSound(@ceiling.sector.soundorg, ceiling.sector.seqType);
       {$ENDIF}
     TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   end;
@@ -393,7 +393,7 @@ begin
       {$IFDEF HEXEN}
       S_StopSequence(Pmobj_t(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.soundorg));
       {$ELSE}
-      S_StopSound(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.soundorg);
+      TSoundRoutines.S_StopSound(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.soundorg);
       {$ENDIF}
       Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).sector.specialdata := nil;
       TTickRoutines.P_RemoveThinker(@Pceiling_t(TTickRoutines.P_World.UdmfCeilings[i]).thinker);

@@ -149,11 +149,11 @@ begin
   if FLightTableInitialized then
     Exit;
 
-  lump := W_CheckNumForName('GLGAMMA');
+  lump := TWadRoutines.W_CheckNumForName('GLGAMMA');
   if lump > 0 then
   begin
 
-    sc := TScriptScanner.Create(W_TextLumpNum(lump), TEngineScannerLog.Create);
+    sc := TScriptScanner.Create(TWadRoutines.W_TextLumpNum(lump), TEngineScannerLog.Create);
     for i := 0 to GAMMASIZE - 1 do
       for j := 0 to 255 do
       begin

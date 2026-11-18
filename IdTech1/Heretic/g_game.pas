@@ -1009,7 +1009,7 @@ begin
     side := side - sidemove[speed];
 
   // buttons
-  cmd.chatchar := Ord(HU_dequeueChatChar);
+  cmd.chatchar := Ord(THudRoutines.HU_dequeueChatChar);
 
   if gamekeydown[key_fire] or
      (usemouse and mousebuttons[mousebfire]) or
@@ -1484,7 +1484,7 @@ begin
 
   if TGameSession.GameState = GS_LEVEL then
   begin
-    if HU_Responder(ev) then
+    if THudRoutines.HU_Responder(ev) then
     begin
       result := true; // chat ate the event
       exit;
@@ -1733,9 +1733,9 @@ begin
             begin
               TGameSession.Paused := not TGameSession.Paused;
               if TGameSession.Paused then
-                S_PauseSound
+                TSoundRoutines.S_PauseSound
               else
-                S_ResumeSound;
+                TSoundRoutines.S_ResumeSound;
             end;
           BTS_SAVEGAME:
             begin
@@ -1770,7 +1770,7 @@ begin
         TTickRoutines.P_Ticker;
         TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
-        HU_Ticker;
+        THudRoutines.HU_Ticker;
       end;
     GS_INTERMISSION:
       begin
@@ -2576,7 +2576,7 @@ begin
 
   TMapName.FromArguments(False, parm1, parm2, epsd, map);
 
-  if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
+  if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
   begin
     TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
     G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
@@ -2615,7 +2615,7 @@ begin
   if TGameSession.Paused then
   begin
     TGameSession.Paused := false;
-    S_ResumeSound;
+    TSoundRoutines.S_ResumeSound;
   end;
 
   if skill > sk_nightmare then
@@ -2631,7 +2631,7 @@ begin
     map := 1
   else if map > 9 then
     map := 9;
-  LMapMissing := not EpiCustom and (W_CheckNumForName(P_GetMapName(episode, map)) < 0);
+  LMapMissing := not EpiCustom and (TWadRoutines.W_CheckNumForName(P_GetMapName(episode, map)) < 0);
 
   case gamemode of
     shareware: LEdition := ngeShareware;
@@ -2642,8 +2642,8 @@ begin
   TNewGameLimits.Heretic(LMapMissing, LEdition, episode, map);
 
   levelinf := P_GetLevelInfo(P_GetMapName(episode, map));
-  levelinf.musname := stringtochar8('');
-  levelinf.skyflat := stringtochar8('');
+  levelinf.musname := TWadRoutines.stringtochar8('');
+  levelinf.skyflat := TWadRoutines.stringtochar8('');
 
   TRendererInterpolation.R_ResetInterpolationBuffer;
 
@@ -2927,9 +2927,9 @@ begin
   pdot := CharPos('.', dmname);
   if ((Length(dmname) <= 8) and (pdot = 0)) or ((pdot < 9) and (pdot <> 0)) then
   begin
-    ExtractFileBase8(dmname, defdemoname8);
-    defdemoname := char8tostring(defdemoname8);
-    if W_CheckNumForName(defdemoname) >= 0 then
+    TWadRoutines.ExtractFileBase8(dmname, defdemoname8);
+    defdemoname := TWadRoutines.char8tostring(defdemoname8);
+    if TWadRoutines.W_CheckNumForName(defdemoname) >= 0 then
     begin
       externaldemo := false;
       TGameSession.GameAction := ga_playdemo;
@@ -2996,9 +2996,9 @@ begin
     len := G_Files.ReadFile(defdemoname, pointer(demobuffer))
   else
   begin
-    lump := W_GetNumForName(defdemoname);
-    demobuffer := W_CacheLumpNum(lump, PU_STATIC);
-    len := W_LumpLength(lump);
+    lump := TWadRoutines.W_GetNumForName(defdemoname);
+    demobuffer := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+    len := TWadRoutines.W_LumpLength(lump);
   end;
 
   demo_p := demobuffer;
@@ -3169,7 +3169,7 @@ begin
   if displayendscreen then
   begin
     TGameSession.GameState := GS_ENDOOM;
-    S_PauseSound; // Stop music in ENDOOM screen
+    TSoundRoutines.S_PauseSound; // Stop music in ENDOOM screen
     printf('E_Init: Initializing ENDTEXT screen.'#13#10, [mb_used]);
     G_EndoomScreen.Initialize;
   end

@@ -521,7 +521,7 @@ var
 {$ENDIF}
 begin
 {$IFDEF STRIFE}
-  if W_CheckNumForName('PLMNUM0') >= 0 then
+  if TWadRoutines.W_CheckNumForName('PLMNUM0') >= 0 then
 {$ELSE}
   for i := 0 to AM_NUMMARKPOINTS - 1 do
 {$ENDIF}
@@ -533,15 +533,15 @@ begin
 {$ELSE}
     sprintf(namebuf, 'AMMNUM%d', [i]);
 {$ENDIF}
-    marknumsid[i] := W_GetNumForName(namebuf);
-    marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+    marknumsid[i] := TWadRoutines.W_GetNumForName(namebuf);
+    marknums[i] := TWadRoutines.W_CacheLumpNum(marknumsid[i], PU_STATIC);
   end;
 {$ELSEIF DEFINED(STRIFE)}
     for i := 0 to AM_NUMMARKPOINTS - 1 do
     begin
       sprintf(namebuf, 'PLMNUM%d', [i]);
-      marknumsid[i] := W_GetNumForName(namebuf);
-      marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+      marknumsid[i] := TWadRoutines.W_GetNumForName(namebuf);
+      marknums[i] := TWadRoutines.W_CacheLumpNum(marknumsid[i], PU_STATIC);
     end;
   end
   else  // JVAL: support for the old demo version
@@ -549,20 +549,20 @@ begin
     for i := 0 to AM_NUMMARKPOINTS - 1 do
     begin
       sprintf(namebuf, 'AMMNUM%d', [i]);
-      marknumsid[i] := W_GetNumForName(namebuf);
-      marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+      marknumsid[i] := TWadRoutines.W_GetNumForName(namebuf);
+      marknums[i] := TWadRoutines.W_CacheLumpNum(marknumsid[i], PU_STATIC);
     end;
   end
 {$ELSE}
     sprintf(namebuf, 'SMALLIN%d', [i]);
-    marknumsid[i] := W_GetNumForName(namebuf);
-    marknums[i] := W_CacheLumpNum(marknumsid[i], PU_STATIC);
+    marknumsid[i] := TWadRoutines.W_GetNumForName(namebuf);
+    marknums[i] := TWadRoutines.W_CacheLumpNum(marknumsid[i], PU_STATIC);
   end;
-  lump := W_CheckNumForName('AUTOPAGE');
+  lump := TWadRoutines.W_CheckNumForName('AUTOPAGE');
   if lump >= 0 then
   begin
-    maplump := W_CacheLumpNum(lump, PU_STATIC);
-    maplumpsize := W_LumpLength(lump);
+    maplump := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+    maplumpsize := TWadRoutines.W_LumpLength(lump);
     maplumpheight := maplumpsize div 320;
   end
   else

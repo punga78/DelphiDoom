@@ -303,7 +303,7 @@ begin
       if fog then
       begin
         fogMobj := P_SpawnMobj(mobj.x, mobj.y, mobj.z + TELEFOGHEIGHT, Ord(MT_TFOG));
-        S_StartSound(fogMobj, Ord(SFX_TELEPORT));
+        TSoundRoutines.S_StartSound(fogMobj, Ord(SFX_TELEPORT));
       end;
       newMobj.flags2 := newMobj.flags2 or MF2_DROPPED; // Don't respawn
       if (newMobj.flags2 and MF2_FLOATBOB <> 0) or (newMobj.flags_ex and MF_EX_FLOATBOB <> 0) then
@@ -339,14 +339,14 @@ begin
     Ord(MT_ZTWINEDTORCH_UNLIT):
       begin
         P_SetMobjState(mobj, S_ZTWINEDTORCH_1);
-        S_StartSound(mobj, Ord(SFX_IGNITE));
+        TSoundRoutines.S_StartSound(mobj, Ord(SFX_IGNITE));
       end;
 
     Ord(MT_ZWALLTORCH),
     Ord(MT_ZWALLTORCH_UNLIT):
       begin
         P_SetMobjState(mobj, S_ZWALLTORCH1);
-        S_StartSound(mobj, Ord(SFX_IGNITE));
+        TSoundRoutines.S_StartSound(mobj, Ord(SFX_IGNITE));
       end;
 
     Ord(MT_ZGEMPEDESTAL):
@@ -364,7 +364,7 @@ begin
       begin
         if mobj.args[0] = 0 then
         begin
-          S_StartSound(mobj, Ord(SFX_THRUSTSPIKE_LOWER));
+          TSoundRoutines.S_StartSound(mobj, Ord(SFX_THRUSTSPIKE_LOWER));
           mobj.flags2 := mobj.flags2 and not MF2_DONTDRAW;
           if mobj.args[1] <> 0 then
             P_SetMobjState(mobj, S_BTHRUSTRAISE1)
@@ -377,7 +377,7 @@ begin
     Ord(MT_ZFIREBULL_UNLIT):
       begin
         P_SetMobjState(mobj, S_ZFIREBULL_BIRTH);
-        S_StartSound(mobj, Ord(SFX_IGNITE));
+        TSoundRoutines.S_StartSound(mobj, Ord(SFX_IGNITE));
       end;
 
     Ord(MT_ZBELL):
@@ -392,18 +392,18 @@ begin
     Ord(MT_ZCAULDRON_UNLIT):
       begin
         P_SetMobjState(mobj, S_ZCAULDRON1);
-        S_StartSound(mobj, Ord(SFX_IGNITE));
+        TSoundRoutines.S_StartSound(mobj, Ord(SFX_IGNITE));
       end;
 
     Ord(MT_FLAME_SMALL):
       begin
-        S_StartSound(mobj, Ord(SFX_IGNITE));
+        TSoundRoutines.S_StartSound(mobj, Ord(SFX_IGNITE));
         P_SetMobjState(mobj, S_FLAME_SMALL1);
       end;
 
     Ord(MT_FLAME_LARGE):
       begin
-        S_StartSound(mobj, Ord(SFX_IGNITE));
+        TSoundRoutines.S_StartSound(mobj, Ord(SFX_IGNITE));
         P_SetMobjState(mobj, S_FLAME_LARGE1);
       end;
 
@@ -478,7 +478,7 @@ begin
       begin
         if mobj.args[0] = 1 then
         begin
-          S_StartSound(mobj, Ord(SFX_THRUSTSPIKE_RAISE));
+          TSoundRoutines.S_StartSound(mobj, Ord(SFX_THRUSTSPIKE_RAISE));
           if mobj.args[1] <> 0 then
             P_SetMobjState(mobj, S_BTHRUSTLOWER)
           else

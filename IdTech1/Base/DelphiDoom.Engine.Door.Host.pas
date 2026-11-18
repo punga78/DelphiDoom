@@ -108,26 +108,26 @@ begin
 {$ELSE}
   if FFlavor = TDoorFlavor.Udmf then
     // the scripted doors of the other games play the sound number kept in the sector
-    S_StartSound(@LSector.soundorg, LSector.seqType)
+    TSoundRoutines.S_StartSound(@LSector.soundorg, LSector.seqType)
   else
     case ASound of
       TDoorSound.Open:
         {$IFDEF STRIFE}
-        S_StartSound(@LSector.soundorg, AState.OpenSound);
+        TSoundRoutines.S_StartSound(@LSector.soundorg, AState.OpenSound);
         {$ELSE}
-        S_StartSound(@LSector.soundorg, Ord(sfx_doropn));
+        TSoundRoutines.S_StartSound(@LSector.soundorg, Ord(sfx_doropn));
         {$ENDIF}
       TDoorSound.Close:
         {$IFDEF STRIFE}
-        S_StartSound(@LSector.soundorg, AState.CloseSound);
+        TSoundRoutines.S_StartSound(@LSector.soundorg, AState.CloseSound);
         {$ELSE}
-        S_StartSound(@LSector.soundorg, Ord(sfx_dorcls));
+        TSoundRoutines.S_StartSound(@LSector.soundorg, Ord(sfx_dorcls));
         {$ENDIF}
       {$IFNDEF HERETIC}
       TDoorSound.BlazeOpen:
-        S_StartSound(@LSector.soundorg, Ord(sfx_bdopn));
+        TSoundRoutines.S_StartSound(@LSector.soundorg, Ord(sfx_bdopn));
       TDoorSound.BlazeClose:
-        S_StartSound(@LSector.soundorg, Ord(sfx_bdcls));
+        TSoundRoutines.S_StartSound(@LSector.soundorg, Ord(sfx_bdcls));
       {$ENDIF}
     end;
 {$ENDIF}
@@ -141,7 +141,7 @@ begin
 {$IFDEF HEXEN}
   S_StopSequence(Pmobj_t(@LSector.soundorg));
 {$ELSE}
-  S_StopSound(Pmobj_t(@LSector.soundorg));
+  TSoundRoutines.S_StopSound(Pmobj_t(@LSector.soundorg));
 {$ENDIF}
 end;
 

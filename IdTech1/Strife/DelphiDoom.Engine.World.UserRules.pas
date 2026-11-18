@@ -403,7 +403,7 @@ begin
     player._message := 'You used the ' + name;
 
     if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-      S_StartSound(nil, Ord(sfx_itemup));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_itemup));
 
     result := true;
     exit;
@@ -854,7 +854,7 @@ begin
 
     // villsa [STRIFE] gasmask sound
     if TTickState.LevelTime and $3f = 0 then
-      S_StartSound(player.mo, Ord(sfx_mask));
+      TSoundRoutines.S_StartSound(player.mo, Ord(sfx_mask));
   end;
 
   if player.powers[Ord(pw_allmap)] > 1 then

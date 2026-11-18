@@ -36,7 +36,7 @@ var
   LIndex: Integer;
 begin
   for LIndex := numflats - 1 downto 0 do
-    if AUpperName = char8tostring(flats[LIndex].name) then
+    if AUpperName = TWadRoutines.char8tostring(flats[LIndex].name) then
       Exit(LIndex);
   Result := -1;
 end;

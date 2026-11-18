@@ -158,7 +158,7 @@ var
   sbar: Integer;
 {$ENDIF}
 begin
-  gltexture := gld_RegisterFlat(W_GetNumForName(AName), false, -1);
+  gltexture := gld_RegisterFlat(TWadRoutines.W_GetNumForName(AName), false, -1);
   gld_BindFlat(gltexture, -1);
   if gltexture = nil then
     exit;

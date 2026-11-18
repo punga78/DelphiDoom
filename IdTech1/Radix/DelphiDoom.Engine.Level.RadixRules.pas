@@ -91,7 +91,7 @@ begin
   totalradixkills := 0;
   // RTHINGS goes with THINGS record by record: another count is not the data of this map
   FThingExtras := RX_ReadThingExtras(FMapLump + LAST_DOOM_LUMP_OFFSET);
-  LThingCount := W_LumpLength(FMapLump + Ord(ML_THINGS)) div SizeOf(mapthing_t);
+  LThingCount := TWadRoutines.W_LumpLength(FMapLump + Ord(ML_THINGS)) div SizeOf(mapthing_t);
   if Length(FThingExtras) <> LThingCount then
     FThingExtras := nil;
   // before the things of the map are spawned: the pickups of Radix must not be the ones of Doom

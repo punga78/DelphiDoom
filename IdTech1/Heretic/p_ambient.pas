@@ -399,7 +399,7 @@ begin
       Ord(afxcmd_play):
         begin
           AmbSfxVolume := P_Random div 4;
-          S_StartSoundAtVolume(nil, AmbSfxPtr^, AmbSfxVolume);
+          TSoundRoutines.S_StartSoundAtVolume(nil, AmbSfxPtr^, AmbSfxVolume);
           inc(AmbSfxPtr);
         end;
       Ord(afxcmd_playabsvol):
@@ -408,7 +408,7 @@ begin
           inc(AmbSfxPtr);
           AmbSfxVolume := AmbSfxPtr^;
           inc(AmbSfxPtr);
-          S_StartSoundAtVolume(nil, sound, AmbSfxVolume);
+          TSoundRoutines.S_StartSoundAtVolume(nil, sound, AmbSfxVolume);
         end;
       Ord(afxcmd_playrelvol):
         begin
@@ -420,7 +420,7 @@ begin
             AmbSfxVolume := 0
           else if AmbSfxVolume > 127 then
             AmbSfxVolume := 127;
-          S_StartSoundAtVolume(nil, sound, AmbSfxVolume);
+          TSoundRoutines.S_StartSoundAtVolume(nil, sound, AmbSfxVolume);
         end;
       Ord(afxcmd_delay):
         begin

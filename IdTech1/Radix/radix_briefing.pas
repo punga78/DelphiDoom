@@ -506,12 +506,12 @@ begin
   briefingfiredown := true; // the key that chose the skill, or ended the debriefing, is still down
 
   sprintf(lumpname, 'MissionBrief[%d][%d]', [epi, map]);
-  lump := W_CheckNumForName(lumpname);
+  lump := TWadRoutines.W_CheckNumForName(lumpname);
   if lump < 0 then
     exit;
 
   try
-    commands := TRadixBriefingScript.Parse(W_TextLumpNum(lump), string(pilotname));
+    commands := TRadixBriefingScript.Parse(TWadRoutines.W_TextLumpNum(lump), string(pilotname));
   except
     on e: ERadixException do
     begin
@@ -621,11 +621,11 @@ var
   var
     lump: integer;
   begin
-    lump := W_CheckNumForName(name);
+    lump := TWadRoutines.W_CheckNumForName(name);
     if lump < 0 then
       result := nil
     else
-      result := W_CacheLumpNum(lump, PU_CACHE);
+      result := TWadRoutines.W_CacheLumpNum(lump, PU_CACHE);
   end;
 
 begin
@@ -722,10 +722,10 @@ var
   post: PByteArray;
   i, len: integer;
 begin
-  lump := W_CheckNumForName(name);
+  lump := TWadRoutines.W_CheckNumForName(name);
   if lump < 0 then
     exit;
-  p := W_CacheLumpNum(lump, PU_CACHE);
+  p := TWadRoutines.W_CacheLumpNum(lump, PU_CACHE);
 
   col := 0;
   while col < p.width do
@@ -767,7 +767,7 @@ begin
   if not briefingactive then
     exit;
 
-  if W_CheckNumForName('BACKIMG') >= 0 then
+  if TWadRoutines.W_CheckNumForName('BACKIMG') >= 0 then
     V_DrawPatchFullScreenTMP320x200('BACKIMG')
   else
     ZeroMemory(screens[SCN_TMP], 320 * 200);

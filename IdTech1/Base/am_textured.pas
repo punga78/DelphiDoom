@@ -607,7 +607,7 @@ begin
     fangcos := fixedcosine[(ANGLE_MAX - fang) shr FRACBITS];
   end;
 
-  data := W_CacheLumpNum(lump, PU_LEVEL);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_LEVEL);
 
   if v2.x = v3.x then
   begin
@@ -881,7 +881,7 @@ begin
   begin
     // Precache floor textures
     for i := 0 to numsectors - 1 do
-      W_CacheLumpNum(R_GetLumpForFlat(sectors[i].floorpic), PU_LEVEL);
+      TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(sectors[i].floorpic), PU_LEVEL);
 
     numdssthreads := I_GetNumCPUs;
     if numdssthreads > MAXDSSTHREADS then

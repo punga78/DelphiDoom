@@ -134,7 +134,7 @@ begin
   if LRandomList <> nil then
     if LRandomList.Count > 0 then
       LSoundNumber := LRandomList[N_Random mod LRandomList.Count];
-  S_StartSound(AOrigin, LSoundNumber);
+  TSoundRoutines.S_StartSound(AOrigin, LSoundNumber);
 end;
 
 // where a flag of the scripts is kept: the numbers of the scripts are 32 for each word of flags

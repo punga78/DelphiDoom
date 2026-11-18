@@ -237,26 +237,26 @@ var
   i: integer;
 begin
   case TGameSession.GameEpisode of
-    1: patchINTERPIC := W_CacheLumpName('MAPE1', PU_STATIC);
-    2: patchINTERPIC := W_CacheLumpName('MAPE2', PU_STATIC);
-    3: patchINTERPIC := W_CacheLumpName('MAPE3', PU_STATIC);
+    1: patchINTERPIC := TWadRoutines.W_CacheLumpName('MAPE1', PU_STATIC);
+    2: patchINTERPIC := TWadRoutines.W_CacheLumpName('MAPE2', PU_STATIC);
+    3: patchINTERPIC := TWadRoutines.W_CacheLumpName('MAPE3', PU_STATIC);
   else
     patchINTERPIC := nil;
   end;
 
-  patchBEENTHERE := W_CacheLumpName('IN_X', PU_STATIC);
-  patchGOINGTHERE := W_CacheLumpName('IN_YAH', PU_STATIC);
-  FontBLumpBase := W_GetNumForName('FONTB16');
+  patchBEENTHERE := TWadRoutines.W_CacheLumpName('IN_X', PU_STATIC);
+  patchGOINGTHERE := TWadRoutines.W_CacheLumpName('IN_YAH', PU_STATIC);
+  FontBLumpBase := TWadRoutines.W_GetNumForName('FONTB16');
   for i := 0 to 9 do
-    FontBNumbers[i] := W_CacheLumpNum(FontBLumpBase + i, PU_STATIC);
+    FontBNumbers[i] := TWadRoutines.W_CacheLumpNum(FontBLumpBase + i, PU_STATIC);
 
-  FontBLump := W_GetNumForName('FONTB_S') + 1;
-  FontBNegative := W_CacheLumpName('FONTB13', PU_STATIC);
+  FontBLump := TWadRoutines.W_GetNumForName('FONTB_S') + 1;
+  FontBNegative := TWadRoutines.W_CacheLumpName('FONTB13', PU_STATIC);
 
-  FontBSlash := W_CacheLumpName('FONTB15', PU_STATIC);
-  FontBPercent := W_CacheLumpName('FONTB05', PU_STATIC);
-  patchFaceOkayBase := W_GetNumForName('FACEA0');
-  patchFaceDeadBase := W_GetNumForName('FACEB0');
+  FontBSlash := TWadRoutines.W_CacheLumpName('FONTB15', PU_STATIC);
+  FontBPercent := TWadRoutines.W_CacheLumpName('FONTB05', PU_STATIC);
+  patchFaceOkayBase := TWadRoutines.W_GetNumForName('FACEA0');
+  patchFaceDeadBase := TWadRoutines.W_GetNumForName('FACEB0');
 end;
 
 //==============================================================================
@@ -271,7 +271,7 @@ begin
     exitpic := wbs.lastmapinfo.exitpic;
     if exitpic = '-' then
       exitpic := ''
-    else if W_CheckNumForName(exitpic) < 0 then
+    else if TWadRoutines.W_CheckNumForName(exitpic) < 0 then
       exitpic := '';
   end
   else
@@ -282,7 +282,7 @@ begin
     enterpic := wbs.nextmapinfo.enterpic;
     if enterpic = '-' then
       enterpic := ''
-    else if W_CheckNumForName(enterpic) < 0 then
+    else if TWadRoutines.W_CheckNumForName(enterpic) < 0 then
       enterpic := '';
   end
   else
@@ -402,7 +402,7 @@ begin
   intertime := 0;
   oldintertime := 0;
   AM_Stop;
-  S_ChangeMusic(Ord(mus_intr), true)
+  TSoundRoutines.S_ChangeMusic(Ord(mus_intr), true)
 end;
 
 //========================================================================
@@ -558,13 +558,13 @@ begin
     begin
       interstate := 2;
       skipintermission := false;
-      S_StartSound(nil, Ord(sfx_dorcls));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
       exit;
     end;
     interstate := 3;
     cnt := 10;
     skipintermission := false;
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
   end;
 end;
 
@@ -586,7 +586,7 @@ begin
     V_TileScreen8(exitpic, SCN_TMP)
   else
   begin
-    src := W_CacheLumpName ('FLOOR16', PU_STATIC);
+    src := TWadRoutines.W_CacheLumpName ('FLOOR16', PU_STATIC);
     dest := 0;
 
     for y := 0 to 200 - 1 do
@@ -635,7 +635,7 @@ begin
       x := x + 8
     else
     begin
-      p := W_CacheLumpNum(FontBLump + Ord(c) - 33, PU_CACHE);
+      p := TWadRoutines.W_CacheLumpNum(FontBLump + Ord(c) - 33, PU_CACHE);
       V_DrawPatch(x, y, SCN_TMP, p, false); // V_DrawShadowedPatch
       x := x + p.width - 1;
     end;
@@ -780,7 +780,7 @@ begin
   end
   else if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelpic <> '') then
   begin
-    lpic := W_CacheLumpName(wbs.lastmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(wbs.lastmapinfo.levelpic, PU_CACHE);
 
     V_DrawPatch((320 - lpic.width) div 2, y, SCN_TMP, lpic, false);
 
@@ -820,7 +820,7 @@ begin
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
   begin
-    lpic := W_CacheLumpName(wbs.nextmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(wbs.nextmapinfo.levelpic, PU_CACHE);
 
     V_DrawPatch((320 - lpic.width) div 2, y + 10, SCN_TMP, lpic, false);
   end
@@ -856,7 +856,7 @@ begin
 
   if (in_sounds < 1) and (intertime >= 30) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].killcount, 200, 65, 3);
@@ -868,7 +868,7 @@ begin
 
   if (in_sounds < 2) and (intertime >= 60) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
 
@@ -881,7 +881,7 @@ begin
 
   if (in_sounds < 3) and (intertime >= 90) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].secretcount, 200, 115, 3);
@@ -893,7 +893,7 @@ begin
 
   if (in_sounds < 4) and (intertime >= 150) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
 
@@ -939,7 +939,7 @@ begin
   begin
     if TGameSession.PlayerInGame[i] then
     begin
-      V_DrawPatch(25, ypos, SCN_TMP, W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
+      V_DrawPatch(25, ypos, SCN_TMP, TWadRoutines.W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
       if intertime < 40 then
       begin
         in_sounds2 := 0;
@@ -948,7 +948,7 @@ begin
       end
       else if (intertime >= 40) and (in_sounds2 < 1) then
       begin
-        S_StartSound(nil, Ord(sfx_dorcls));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
         inc(in_sounds2);
       end;
       IN_DrawNumber(killPercent[i], 85, ypos + 10, 3);
@@ -999,10 +999,10 @@ begin
       begin
         V_DrawPatch(40, ((ypos * FRACUNIT) + dSlideY[i] * intertime) div FRACUNIT,
           SCN_TMP,
-            W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
+            TWadRoutines.W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
         V_DrawPatch(((xpos * FRACUNIT) + dSlideX[i] * intertime) div FRACUNIT, 18,
           SCN_TMP,
-            W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false);  // V_DrawShadowedPatch
+            TWadRoutines.W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false);  // V_DrawShadowedPatch
       end;
     end;
     in_sounds3 := 0;
@@ -1011,13 +1011,13 @@ begin
 
   if (intertime >= 20) and (in_sounds3 < 1) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds3);
   end;
 
   if (intertime >= 100) and (slaughterboy <> 0) and (in_sounds3 < 2) then
   begin
-    S_StartSound(nil, Ord(sfx_wpnup));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup));
     inc(in_sounds3);
   end;
 
@@ -1027,13 +1027,13 @@ begin
     begin
       if (intertime < 100) or (i = TGameSession.ConsolePlayer) then
       begin
-        V_DrawPatch(40, ypos, SCN_TMP, W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
-        V_DrawPatch(xpos, 18, SCN_TMP, W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false); // V_DrawShadowedPatch
+        V_DrawPatch(40, ypos, SCN_TMP, TWadRoutines.W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawShadowedPatch
+        V_DrawPatch(xpos, 18, SCN_TMP, TWadRoutines.W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false); // V_DrawShadowedPatch
       end
       else
       begin
-        V_DrawPatch(40, ypos, SCN_TMP, W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawFuzzPatch
-        V_DrawPatch(xpos, 18, SCN_TMP, W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false); // V_DrawFuzzPatch
+        V_DrawPatch(40, ypos, SCN_TMP, TWadRoutines.W_CacheLumpNum(patchFaceOkayBase + i, PU_CACHE), false); // V_DrawFuzzPatch
+        V_DrawPatch(xpos, 18, SCN_TMP, TWadRoutines.W_CacheLumpNum(patchFaceDeadBase + i, PU_CACHE), false); // V_DrawFuzzPatch
       end;
       kpos := 86;
       for j := 0 to MAXPLAYERS - 1 do
@@ -1180,7 +1180,7 @@ begin
   MT_ZeroMemory(screens[SCN_TMP], 320 * 200);
 
   if (oldinterstate <> 2) and (interstate = 2) then
-    S_StartSound(nil, Ord(sfx_pstop));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_pstop));
 
   oldinterstate := interstate;
   case interstate of

@@ -661,24 +661,24 @@ begin
           end
           else if (mo.momz < -P_GetMobjGravity(mo) * 12) and (pl.morphTics = 0) then
           begin
-            S_StartSound(mo, Ord(SFX_PLAYER_LAND));
+            TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_LAND));
 
             case pl._class of
 
               PCLASS_FIGHTER:
                 begin
-                  S_StartSound(mo, Ord(SFX_PLAYER_FIGHTER_GRUNT));
+                  TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_FIGHTER_GRUNT));
                 end;
 
               PCLASS_CLERIC:
                 begin
-                  S_StartSound(mo, Ord(SFX_PLAYER_CLERIC_GRUNT));
+                  TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_CLERIC_GRUNT));
                 end;
 
               PCLASS_MAGE:
 
                 begin
-                  S_StartSound(mo, Ord(SFX_PLAYER_MAGE_GRUNT));
+                  TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_MAGE_GRUNT));
                 end;
 
             end;
@@ -686,7 +686,7 @@ begin
           else if (P_GetThingFloorType(mo) < FLOOR_LIQUID) and
                   (pl.morphTics = 0) then
           begin
-            S_StartSound(mo, Ord(SFX_PLAYER_LAND));
+            TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_LAND));
           end;
           pl.centering := true;
         end;
@@ -947,30 +947,30 @@ begin
   else if (mo.momz < -P_GetMobjGravity(mo) * 12) and
           (pl.morphTics = 0) then
   begin
-    S_StartSound(mo, Ord(SFX_PLAYER_LAND));
+    TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_LAND));
 
     case pl._class of
 
       PCLASS_FIGHTER:
          begin
-          S_StartSound(mo, Ord(SFX_PLAYER_FIGHTER_GRUNT));
+          TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_FIGHTER_GRUNT));
         end;
 
       PCLASS_CLERIC:
         begin
-          S_StartSound(mo, Ord(SFX_PLAYER_CLERIC_GRUNT));
+          TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_CLERIC_GRUNT));
         end;
 
       PCLASS_MAGE:
         begin
-          S_StartSound(mo, Ord(SFX_PLAYER_MAGE_GRUNT));
+          TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_MAGE_GRUNT));
         end;
 
     end;
   end
   else if pl.morphTics = 0 then
   begin
-    S_StartSound(mo, Ord(SFX_PLAYER_LAND));
+    TSoundRoutines.S_StartSound(mo, Ord(SFX_PLAYER_LAND));
   end;
 
   pl.centering := true;
@@ -1141,7 +1141,7 @@ begin
   if mthing._type = 1 then
   begin
     // wake up the heads up text
-    HU_Start;
+    THudRoutines.HU_Start;
 
     p_justspawned := true;
   end;
@@ -1781,7 +1781,7 @@ begin
           mo := P_SpawnMobj(thing.x, thing.y, ONFLOORZ, Ord(MT_SPLASHBASE));
           if mo <> nil then
             mo.floorclip := mo.floorclip + SMALLSPLASHCLIP;
-          S_StartSound(mo, Ord(SFX_AMBIENT10));  // small drip
+          TSoundRoutines.S_StartSound(mo, Ord(SFX_AMBIENT10));  // small drip
         end
         else
         begin
@@ -1793,7 +1793,7 @@ begin
           mo := P_SpawnMobj(thing.x, thing.y, ONFLOORZ, Ord(MT_SPLASHBASE));
           if thing.player <> nil then
             P_NoiseAlert(thing, thing);
-          S_StartSound(mo, Ord(SFX_WATER_SPLASH));
+          TSoundRoutines.S_StartSound(mo, Ord(SFX_WATER_SPLASH));
         end;
         result := FLOOR_WATER;
         exit;
@@ -1814,7 +1814,7 @@ begin
           if thing.player <> nil then
             P_NoiseAlert(thing, thing);
         end;
-        S_StartSound(mo, Ord(SFX_LAVA_SIZZLE));
+        TSoundRoutines.S_StartSound(mo, Ord(SFX_LAVA_SIZZLE));
         if (thing.player <> nil) and (TTickState.LevelTime and 31 <> 0) then
           P_DamageMobj(thing, @LavaInflictor, nil, 5);
         result := FLOOR_LAVA;
@@ -1839,7 +1839,7 @@ begin
           if thing.player <> nil then
             P_NoiseAlert(thing, thing);
         end;
-        S_StartSound(mo, Ord(SFX_SLUDGE_GLOOP));
+        TSoundRoutines.S_StartSound(mo, Ord(SFX_SLUDGE_GLOOP));
         result := FLOOR_SLUDGE;
         exit;
       end;
@@ -2375,9 +2375,9 @@ begin
     Ord(MT_SORCBALL1),
     Ord(MT_SORCBALL2),
     Ord(MT_SORCBALL3):
-      S_StartSound(nil, Ord(SFX_SORCERER_BIGBALLEXPLODE));
+      TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_BIGBALLEXPLODE));
     Ord(MT_SORCFX1):
-      S_StartSound(nil, Ord(SFX_SORCERER_HEADSCREAM));
+      TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_HEADSCREAM));
   else
     A_DeathSound(mo, mo);
   end;

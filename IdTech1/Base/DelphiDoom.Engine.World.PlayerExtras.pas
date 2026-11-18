@@ -150,7 +150,7 @@ begin
       sndidx := brsnd;
     end;
     if sndidx > 0 then
-      S_StartSound(p.mo, sndidx);
+      TSoundRoutines.S_StartSound(p.mo, sndidx);
   end;
 end;
 

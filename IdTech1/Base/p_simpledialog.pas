@@ -79,10 +79,10 @@ var
 begin
   if Length(lumpname) <= 8 then
   begin
-    lump := W_CheckNumForName(lumpname);
+    lump := TWadRoutines.W_CheckNumForName(lumpname);
     if lump >= 0 then
     begin
-      Result := W_TextLumpNum(lump);
+      Result := TWadRoutines.W_TextLumpNum(lump);
       Exit;
     end;
   end;
@@ -217,7 +217,7 @@ procedure M_SimpleDialogDrawer;
 var
   str: string;
 begin
-  V_DrawPatchTransparent(20, 10, SCN_FG, W_CacheLumpName('M_DIALOG', PU_STATIC), true);
+  V_DrawPatchTransparent(20, 10, SCN_FG, TWadRoutines.W_CacheLumpName('M_DIALOG', PU_STATIC), true);
   str := M_SimpleDialogDimMsg(39, 17, P_SimpleDialogLoadText(simpledialoglumps[currentsimpledialog]));
   TMenuRoutines.M_WriteText(39, 17, str);
 end;
@@ -286,7 +286,7 @@ begin
   {$IFDEF HEXEN}
   sndid := Ord(SFX_DOOR_LIGHT_CLOSE);
   {$ENDIF}
-  S_StartSound(nil, sndid);
+  TSoundRoutines.S_StartSound(nil, sndid);
   currentMenu := @simpledialogmenus[0];
 end;
 

@@ -846,19 +846,19 @@ var
   _class: integer;
 begin
   _class := Ord(PlayerClass[TGameSession.ConsolePlayer]); // original player _class (not pig)
-  PatchWEAPONSLOT := W_CacheLumpNum(W_GetNumForName('wpslot0') + _class, PU_STATIC);
-  PatchWEAPONFULL := W_CacheLumpNum(W_GetNumForName('wpfull0') + _class, PU_STATIC);
-  PatchPIECE1 := W_CacheLumpNum(W_GetNumForName('wpiecef1') + _class, PU_STATIC);
-  PatchPIECE2 := W_CacheLumpNum(W_GetNumForName('wpiecef2') + _class, PU_STATIC);
-  PatchPIECE3 := W_CacheLumpNum(W_GetNumForName('wpiecef3') + _class, PU_STATIC);
-  PatchCHAIN := W_CacheLumpNum(W_GetNumForName('chain') + _class, PU_STATIC);
+  PatchWEAPONSLOT := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('wpslot0') + _class, PU_STATIC);
+  PatchWEAPONFULL := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('wpfull0') + _class, PU_STATIC);
+  PatchPIECE1 := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('wpiecef1') + _class, PU_STATIC);
+  PatchPIECE2 := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('wpiecef2') + _class, PU_STATIC);
+  PatchPIECE3 := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('wpiecef3') + _class, PU_STATIC);
+  PatchCHAIN := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('chain') + _class, PU_STATIC);
   if not TGameSession.NetGame then
   begin // single player game uses red life gem (the second gem)
-    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('lifegem') + MAXPLAYERS * _class + 1, PU_STATIC);
+    PatchLIFEGEM := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('lifegem') + MAXPLAYERS * _class + 1, PU_STATIC);
   end
   else
   begin
-    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('lifegem') + MAXPLAYERS * _class + TGameSession.ConsolePlayer, PU_STATIC);
+    PatchLIFEGEM := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('lifegem') + MAXPLAYERS * _class + TGameSession.ConsolePlayer, PU_STATIC);
   end;
 end;
 
@@ -926,53 +926,53 @@ begin
   cheat_nra.sequence := get_cheatseq_string(cheat_nra_seq);
   cheat_nra.p := get_cheatseq_string(0);
 
-  PatchH2BAR := W_CacheLumpName('H2BAR', PU_STATIC);
-  PatchH2TOP := W_CacheLumpName('H2TOP', PU_STATIC);
-  PatchINVBAR := W_CacheLumpName('INVBAR', PU_STATIC);
-  PatchLFEDGE := W_CacheLumpName('LFEDGE', PU_STATIC);
-  PatchRTEDGE := W_CacheLumpName('RTEDGE', PU_STATIC);
-  PatchSTATBAR := W_CacheLumpName('STATBAR', PU_STATIC);
-  PatchKEYBAR := W_CacheLumpName('KEYBAR', PU_STATIC);
-  PatchSELECTBOX := W_CacheLumpName('SELECTBO', PU_STATIC);
-  PatchARTICLEAR := W_CacheLumpName('ARTICLS', PU_STATIC);
-  PatchARMCLEAR := W_CacheLumpName('ARMCLS', PU_STATIC);
-  PatchMANACLEAR := W_CacheLumpName('MANACLS', PU_STATIC);
-  PatchMANAVIAL1 := W_CacheLumpName('MANAVL1', PU_STATIC);
-  PatchMANAVIAL2 := W_CacheLumpName('MANAVL2', PU_STATIC);
-  PatchMANAVIALDIM1 := W_CacheLumpName('MANAVL1D', PU_STATIC);
-  PatchMANAVIALDIM2 := W_CacheLumpName('MANAVL2D', PU_STATIC);
-  PatchMANADIM1 := W_CacheLumpName('MANADIM1', PU_STATIC);
-  PatchMANADIM2 := W_CacheLumpName('MANADIM2', PU_STATIC);
-  PatchMANABRIGHT1 := W_CacheLumpName('MANABRT1', PU_STATIC);
-  PatchMANABRIGHT2 := W_CacheLumpName('MANABRT2', PU_STATIC);
-  PatchINVLFGEM1 := W_CacheLumpName('invgeml1', PU_STATIC);
-  PatchINVLFGEM2 := W_CacheLumpName('invgeml2', PU_STATIC);
-  PatchINVRTGEM1 := W_CacheLumpName('invgemr1', PU_STATIC);
-  PatchINVRTGEM2 := W_CacheLumpName('invgemr2', PU_STATIC);
+  PatchH2BAR := TWadRoutines.W_CacheLumpName('H2BAR', PU_STATIC);
+  PatchH2TOP := TWadRoutines.W_CacheLumpName('H2TOP', PU_STATIC);
+  PatchINVBAR := TWadRoutines.W_CacheLumpName('INVBAR', PU_STATIC);
+  PatchLFEDGE := TWadRoutines.W_CacheLumpName('LFEDGE', PU_STATIC);
+  PatchRTEDGE := TWadRoutines.W_CacheLumpName('RTEDGE', PU_STATIC);
+  PatchSTATBAR := TWadRoutines.W_CacheLumpName('STATBAR', PU_STATIC);
+  PatchKEYBAR := TWadRoutines.W_CacheLumpName('KEYBAR', PU_STATIC);
+  PatchSELECTBOX := TWadRoutines.W_CacheLumpName('SELECTBO', PU_STATIC);
+  PatchARTICLEAR := TWadRoutines.W_CacheLumpName('ARTICLS', PU_STATIC);
+  PatchARMCLEAR := TWadRoutines.W_CacheLumpName('ARMCLS', PU_STATIC);
+  PatchMANACLEAR := TWadRoutines.W_CacheLumpName('MANACLS', PU_STATIC);
+  PatchMANAVIAL1 := TWadRoutines.W_CacheLumpName('MANAVL1', PU_STATIC);
+  PatchMANAVIAL2 := TWadRoutines.W_CacheLumpName('MANAVL2', PU_STATIC);
+  PatchMANAVIALDIM1 := TWadRoutines.W_CacheLumpName('MANAVL1D', PU_STATIC);
+  PatchMANAVIALDIM2 := TWadRoutines.W_CacheLumpName('MANAVL2D', PU_STATIC);
+  PatchMANADIM1 := TWadRoutines.W_CacheLumpName('MANADIM1', PU_STATIC);
+  PatchMANADIM2 := TWadRoutines.W_CacheLumpName('MANADIM2', PU_STATIC);
+  PatchMANABRIGHT1 := TWadRoutines.W_CacheLumpName('MANABRT1', PU_STATIC);
+  PatchMANABRIGHT2 := TWadRoutines.W_CacheLumpName('MANABRT2', PU_STATIC);
+  PatchINVLFGEM1 := TWadRoutines.W_CacheLumpName('invgeml1', PU_STATIC);
+  PatchINVLFGEM2 := TWadRoutines.W_CacheLumpName('invgeml2', PU_STATIC);
+  PatchINVRTGEM1 := TWadRoutines.W_CacheLumpName('invgemr1', PU_STATIC);
+  PatchINVRTGEM2 := TWadRoutines.W_CacheLumpName('invgemr2', PU_STATIC);
 
-  startLump := W_GetNumForName('IN0');
+  startLump := TWadRoutines.W_GetNumForName('IN0');
   for i := 0 TO 9 do
-    PatchINumbers[i] := W_CacheLumpNum(startLump + i, PU_STATIC);
+    PatchINumbers[i] := TWadRoutines.W_CacheLumpNum(startLump + i, PU_STATIC);
 
-  PatchNEGATIVE := W_CacheLumpName('NEGNUM', PU_STATIC);
-  FontBNumBase := W_GetNumForName('FONTB16');
+  PatchNEGATIVE := TWadRoutines.W_CacheLumpName('NEGNUM', PU_STATIC);
+  FontBNumBase := TWadRoutines.W_GetNumForName('FONTB16');
 
-  startLump := W_GetNumForName('SMALLIN0');
+  startLump := TWadRoutines.W_GetNumForName('SMALLIN0');
   for i := 0 to 9 do
-    PatchSmNumbers[i] := W_CacheLumpNum(startLump + i, PU_STATIC);
+    PatchSmNumbers[i] := TWadRoutines.W_CacheLumpNum(startLump + i, PU_STATIC);
 
-  PlayPalette := W_GetNumForName('PLAYPAL');
-  SpinFlylump := W_GetNumForName('SPFLY0');
-  SpinMinotaurLump := W_GetNumForName('SPMINO0');
-  SpinSpeedLump := W_GetNumForName('SPBOOT0');
-  SpinDefenseLump := W_GetNumForName('SPSHLD0');
+  PlayPalette := TWadRoutines.W_GetNumForName('PLAYPAL');
+  SpinFlylump := TWadRoutines.W_GetNumForName('SPFLY0');
+  SpinMinotaurLump := TWadRoutines.W_GetNumForName('SPMINO0');
+  SpinSpeedLump := TWadRoutines.W_GetNumForName('SPBOOT0');
+  SpinDefenseLump := TWadRoutines.W_GetNumForName('SPSHLD0');
 
-  lmp_useartia := W_GetNumForName('useartia');
-  lmp_keyslot1 := W_GetNumForName('keyslot1');
-  lmp_armslot1 := W_GetNumForName('armslot1');
+  lmp_useartia := TWadRoutines.W_GetNumForName('useartia');
+  lmp_keyslot1 := TWadRoutines.W_GetNumForName('keyslot1');
+  lmp_armslot1 := TWadRoutines.W_GetNumForName('armslot1');
 
   if TGameSession.DeathMatch <> 0 then
-    PatchKILLS := W_CacheLumpName('KILLS', PU_STATIC);
+    PatchKILLS := TWadRoutines.W_CacheLumpName('KILLS', PU_STATIC);
 
   SB_SetClassData;
 
@@ -1060,7 +1060,7 @@ var
   toffs: integer;
   patch: Ppatch_t;
 begin
-  patch := W_CacheLumpName(patchname, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName(patchname, PU_STATIC);
 
   toffs := y + patch.topoffset;
   if toffs < sb_topoffset then
@@ -1140,17 +1140,17 @@ begin
     val := 0;
   if val > 99 then
   begin
-    patch := W_CacheLumpNum(W_GetNumForName('inred0') + val div 100, PU_CACHE);
+    patch := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('inred0') + val div 100, PU_CACHE);
     SB_DrawPatch(x, y, patch);
   end;
   val := val mod 100;
   if (val > 9) or (oldval > 99) then
   begin
-    patch := W_CacheLumpNum(W_GetNumForName('inred0') + val div 10, PU_CACHE);
+    patch := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('inred0') + val div 10, PU_CACHE);
     SB_DrawPatch(x + 8, y, patch);
   end;
   val := val mod 10;
-  patch := W_CacheLumpNum(W_GetNumForName('inred0') + val, PU_CACHE);
+  patch := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('inred0') + val, PU_CACHE);
   SB_DrawPatch(x + 16, y, patch);
 end;
 
@@ -1173,19 +1173,19 @@ begin
     val := 0;
   if val > 99 then
   begin
-    patch := W_CacheLumpNum(FontBNumBase + val div 100, PU_CACHE);
+    patch := TWadRoutines.W_CacheLumpNum(FontBNumBase + val div 100, PU_CACHE);
     SB_DrawPatch(xpos + 6 - patch.width div 2, y, patch); // V_DrawShadowedPatch
   end;
   val := val mod 100;
   xpos := xpos + 12;
   if (val > 9) or (oldval > 99) then
   begin
-    patch := W_CacheLumpNum(FontBNumBase + val div 10, PU_CACHE);
+    patch := TWadRoutines.W_CacheLumpNum(FontBNumBase + val div 10, PU_CACHE);
     SB_DrawPatch(xpos + 6 - patch.width div 2, y, patch); // V_DrawShadowedPatch
   end;
   val := val mod 10;
   xpos := xpos + 12;
-  patch := W_CacheLumpNum(FontBNumBase + val, PU_CACHE);
+  patch := TWadRoutines.W_CacheLumpNum(FontBNumBase + val, PU_CACHE);
   SB_DrawPatch(xpos + 6 - patch.width div 2, y, patch); // V_DrawShadowedPatch
 end;
 
@@ -1311,7 +1311,7 @@ begin
   if TTickState.LevelTime and 16 <> 0 then
     SB_WriteText(si_xPos[0], 20, '*** SOUND DEBUG INFO ***');
 
-  S_GetChannelInfo(@s);
+  TSoundRoutines.S_GetChannelInfo(@s);
   if s.numchannels = 0 then
     exit;
 
@@ -1425,12 +1425,12 @@ begin
       begin
         if hitCenterFrame and (frame <> 15) and (frame <> 0) then
         begin
-          SB_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + 15, PU_CACHE));
+          SB_DrawPatch(20, 19, TWadRoutines.W_CacheLumpNum(SpinFlylump + 15, PU_CACHE));
           sbiconsactive := true;
         end
         else
         begin
-          SB_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + frame, PU_CACHE));
+          SB_DrawPatch(20, 19, TWadRoutines.W_CacheLumpNum(SpinFlylump + frame, PU_CACHE));
           sbiconsactive := true;
           hitCenterFrame := false;
         end;
@@ -1439,13 +1439,13 @@ begin
       begin
         if not hitCenterFrame and (frame <> 15) and (frame <> 0) then
         begin
-          SB_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + frame, PU_CACHE));
+          SB_DrawPatch(20, 19, TWadRoutines.W_CacheLumpNum(SpinFlylump + frame, PU_CACHE));
           sbiconsactive := true;
           hitCenterFrame := false;
         end
         else
         begin
-          SB_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + 15, PU_CACHE));
+          SB_DrawPatch(20, 19, TWadRoutines.W_CacheLumpNum(SpinFlylump + 15, PU_CACHE));
           sbiconsactive := true;
           hitCenterFrame := true;
         end;
@@ -1459,7 +1459,7 @@ begin
     if (CPlayer.powers[Ord(pw_speed)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_speed)] and 16 = 0) then
     begin
       frame := (TTickState.LevelTime div 3) and 15;
-      SB_DrawPatch(60, 19, W_CacheLumpNum(SpinSpeedLump + frame, PU_CACHE));
+      SB_DrawPatch(60, 19, TWadRoutines.W_CacheLumpNum(SpinSpeedLump + frame, PU_CACHE));
       sbiconsactive := true;
     end;
   end;
@@ -1470,7 +1470,7 @@ begin
     if (CPlayer.powers[Ord(pw_invulnerability)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_invulnerability)] and 16 = 0) then
     begin
       frame := (TTickState.LevelTime div 3) and 15;
-      SB_DrawPatch(260, 19, W_CacheLumpNum(SpinDefenseLump + frame, PU_CACHE));
+      SB_DrawPatch(260, 19, TWadRoutines.W_CacheLumpNum(SpinDefenseLump + frame, PU_CACHE));
       sbiconsactive := true;
     end;
   end;
@@ -1481,7 +1481,7 @@ begin
     if (CPlayer.powers[Ord(pw_minotaur)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_minotaur)] and 16 = 0) then
     begin
       frame := (TTickState.LevelTime div 3) and 15;
-      SB_DrawPatch(300, 19, W_CacheLumpNum(SpinMinotaurLump + frame, PU_CACHE));
+      SB_DrawPatch(300, 19, TWadRoutines.W_CacheLumpNum(SpinMinotaurLump + frame, PU_CACHE));
       sbiconsactive := true;
     end;
   end;
@@ -1651,7 +1651,7 @@ begin
   if ArtifactFlash > 0 then
   begin
     SB_DrawPatch(144, 160, PatchARTICLEAR);
-    SB_DrawPatch(148, 164, W_CacheLumpNum(lmp_useartia + ArtifactFlash - 1, PU_CACHE));
+    SB_DrawPatch(148, 164, TWadRoutines.W_CacheLumpNum(lmp_useartia + ArtifactFlash - 1, PU_CACHE));
     dec(ArtifactFlash);
   end
   else
@@ -1659,7 +1659,7 @@ begin
     SB_DrawPatch(144, 160, PatchARTICLEAR);
     if Ord(CPlayer.readyArtifact) > 0 then
     begin
-      SB_DrawPatch(143, 163, W_CacheLumpName(patcharti[Ord(CPlayer.readyArtifact)], PU_CACHE));
+      SB_DrawPatch(143, 163, TWadRoutines.W_CacheLumpName(patcharti[Ord(CPlayer.readyArtifact)], PU_CACHE));
       if CPlayer.inventory[inv_ptr].count > 1 then
       begin
         SB_DrSmallNumber(CPlayer.inventory[inv_ptr].count, 162, 184);
@@ -1840,7 +1840,7 @@ begin
   begin
     if CPlayer.keys and _SHL(1, i) <> 0 then
     begin
-      SB_DrawPatch(xPosition, 164, W_CacheLumpNum(lmp_keyslot1 + i, PU_CACHE));
+      SB_DrawPatch(xPosition, 164, TWadRoutines.W_CacheLumpNum(lmp_keyslot1 + i, PU_CACHE));
       xPosition := xPosition + 20;
     end;
     inc(i);
@@ -1854,16 +1854,16 @@ begin
     if CPlayer.armorpoints[i] <= _SHR2(ArmorIncrement[Ord(CPlayer._class), i]) then
     begin
 //        V_DrawFuzzPatch(150 + 31 * i, 164, W_CacheLumpNum(lmp_armslot1 + i));
-      SB_DrawPatch(150 + 31 * i, 164, W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE));
+      SB_DrawPatch(150 + 31 * i, 164, TWadRoutines.W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE));
     end
     else if CPlayer.armorpoints[i] <= _SHR1(ArmorIncrement[Ord(CPlayer._class), i]) then
     begin
 //        V_DrawAltFuzzPatch(150 + 31 * i, 164, W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE);
-      SB_DrawPatch(150 + 31 * i, 164, W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE));
+      SB_DrawPatch(150 + 31 * i, 164, TWadRoutines.W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE));
     end
     else
     begin
-      SB_DrawPatch(150 + 31 * i, 164, W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE));
+      SB_DrawPatch(150 + 31 * i, 164, TWadRoutines.W_CacheLumpNum(lmp_armslot1 + i, PU_CACHE));
     end;
   end;
 end;
@@ -2095,7 +2095,7 @@ begin
         musnum := Ord(mus_map01) + (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0') - 1;
 
         if (musnum > 0) and (musnum < nummusic) then
-          S_ChangeMusic(musnum, true)
+          TSoundRoutines.S_ChangeMusic(musnum, true)
         else
           CPlayer._message := STSTR_NOMUS;
       end
@@ -2133,7 +2133,7 @@ begin
       map := (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0');
 
       // So be it.
-      if W_CheckNumForName(P_GetMapName(map)) > -1 then
+      if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
       begin
         CPlayer._message := STSTR_CLEV;
         G_DeferedInitNewUntranslated(TGameSession.GameSkill, map);

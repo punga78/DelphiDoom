@@ -450,7 +450,7 @@ begin
     end;
   end;
 
-  S_StartSound(mo, Ord(SFX_POTTERY_EXPLODE));
+  TSoundRoutines.S_StartSound(mo, Ord(SFX_POTTERY_EXPLODE));
 
   if actor.args[0] <> 0 then
   begin // Spawn an item
@@ -571,7 +571,7 @@ begin
     mo.momz := ((P_Random and 7) + 5) * (3 * FRACUNIT div 4);
     mo.momx := _SHL(P_Random - P_Random, FRACBITS - 6);
     mo.momy := _SHL(P_Random - P_Random, FRACBITS - 6);
-    S_StartSound(mo, Ord(SFX_FIRED_DEATH));
+    TSoundRoutines.S_StartSound(mo, Ord(SFX_FIRED_DEATH));
   end;
   P_RemoveMobj(actor);
 end;
@@ -852,11 +852,11 @@ class procedure THexenActions.A_ContMobjSound(actor: Pmobj_t);
 begin
   case actor._type of
     Ord(MT_SERPENTFX):
-      S_StartSound(actor, Ord(SFX_SERPENTFX_CONTINUOUS));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_SERPENTFX_CONTINUOUS));
     Ord(MT_HAMMER_MISSILE):
-      S_StartSound(actor, Ord(SFX_FIGHTER_HAMMER_CONTINUOUS));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_FIGHTER_HAMMER_CONTINUOUS));
     Ord(MT_QUAKE_FOCUS):
-      S_StartSound(actor, Ord(SFX_EARTHQUAKE));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_EARTHQUAKE));
   end;
 end;
 
@@ -872,7 +872,7 @@ begin
   if mo._type = Ord(MT_SOUNDWIND) then
   begin
     sound := Ord(SFX_WIND);
-    S_StartSound(mo, sound);
+    TSoundRoutines.S_StartSound(mo, sound);
   end;
 end;
 
@@ -914,7 +914,7 @@ begin
 
       // Make smoke puff
       P_SpawnMobj(actor.x, actor.y, actor.z, Ord(MT_MNTRSMOKE));
-      S_StartSound(actor, Ord(SFX_MAULATOR_ACTIVE));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_MAULATOR_ACTIVE));
     end;
   end;
 end;
@@ -1430,7 +1430,7 @@ begin
       P_SpawnMobj(actor.x, actor.y, actor.z, Ord(TranslateThingType[actor.args[0]]));
     end;
   end;
-  S_StartSound(mo, Ord(SFX_SUITOFARMOR_BREAK));
+  TSoundRoutines.S_StartSound(mo, Ord(SFX_SUITOFARMOR_BREAK));
   P_RemoveMobj(actor);
 end;
 
@@ -1549,7 +1549,7 @@ begin
   actor.momy := FixedMul(speed, finesine[newangle]);
 
   if P_Random < 15 then
-    S_StartSound(actor, Ord(SFX_BAT_SCREAM));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_BAT_SCREAM));
 
   // Handle Z movement
   actor.z := actor.target.z + 2 * FloatBobOffsets[actor.args[0]];

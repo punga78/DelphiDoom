@@ -306,7 +306,7 @@ begin
     player.pendingweapon := weapon;
 
     if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
-      S_StartSound(nil, Ord(sfx_wpnup));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
   end;
@@ -846,7 +846,7 @@ begin
   P_RemoveMobj(special);
   player.bonuscount := player.bonuscount + BONUSADD;
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-    S_StartSound(nil, sound);
+    TSoundRoutines.S_StartSound(nil, sound);
 end;
 
 //==============================================================================

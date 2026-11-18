@@ -297,7 +297,7 @@ begin
   for i := 0 to SS_MAX_SCRIPTS - 1 do
     SequenceData[i] := nil;
 
-  sc := TScriptScanner.Create(W_TextLumpName(SS_SCRIPT_NAME), TEngineScannerLog.Create);
+  sc := TScriptScanner.Create(TWadRoutines.W_TextLumpName(SS_SCRIPT_NAME), TEngineScannerLog.Create);
   while sc.GetString do
   begin
     if sc.AsString[1] = ':' then
@@ -504,9 +504,9 @@ begin
   begin
     if node.mobj = mobj then
     begin
-      S_StopSound(mobj);
+      TSoundRoutines.S_StopSound(mobj);
       if node.stopSound <> 0 then
-        S_StartSoundAtVolume(mobj, node.stopSound, node.volume);
+        TSoundRoutines.S_StartSoundAtVolume(mobj, node.stopSound, node.volume);
 
       if SequenceListHead = node then
         SequenceListHead := node.next;
@@ -548,7 +548,7 @@ begin
       continue;
     end;
 
-    sndPlaying := S_GetSoundPlayingInfo(node.mobj, node.currentSoundID);
+    sndPlaying := TSoundRoutines.S_GetSoundPlayingInfo(node.mobj, node.currentSoundID);
     case node.sequencePtr^ of
       Ord(SS_CMD_PLAY):
         begin
@@ -556,7 +556,7 @@ begin
           begin
             inc(node.sequencePtr);
             node.currentSoundID := node.sequencePtr^;
-            S_StartSoundAtVolume(node.mobj, node.currentSoundID, node.volume);
+            TSoundRoutines.S_StartSoundAtVolume(node.mobj, node.currentSoundID, node.volume);
           end;
           inc(node.sequencePtr, 1);
         end;
@@ -575,7 +575,7 @@ begin
             inc(node.sequencePtr);
             node.currentSoundID := node.sequencePtr^;
             dec(node.sequencePtr);
-            S_StartSoundAtVolume(node.mobj, node.currentSoundID, node.volume);
+            TSoundRoutines.S_StartSoundAtVolume(node.mobj, node.currentSoundID, node.volume);
           end;
         end;
       Ord(SS_CMD_DELAY):

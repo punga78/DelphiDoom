@@ -62,14 +62,14 @@ function TEngineRendererSpriteSource.LumpName(ALump: Integer): TRendererLumpName
 var
   LName: char8_t;
 begin
-  LName := W_GetNameForNum(ALump);
+  LName := TWadRoutines.W_GetNameForNum(ALump);
   Move(LName, Result, SizeOf(Result));
 end;
 
 function TEngineRendererSpriteSource.PatchedLump(ALump: Integer): Integer;
 begin
   if modifiedgame then
-    Result := W_GetNumForName(char8tostring(W_GetNameForNum(ALump)))
+    Result := TWadRoutines.W_GetNumForName(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(ALump)))
   else
     Result := ALump;
 end;

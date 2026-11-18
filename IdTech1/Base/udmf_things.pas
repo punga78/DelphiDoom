@@ -761,7 +761,7 @@ begin
       if fog then
       begin
         fogMobj := P_SpawnMobj(mobj.x, mobj.y, mobj.z + TELEFOGHEIGHT, Ord(MT_TFOG));
-        S_StartSound(fogMobj, Ord(sfx_telept));
+        TSoundRoutines.S_StartSound(fogMobj, Ord(sfx_telept));
       end;
       newMobj.flags := newMobj.flags or MF_DROPPED; // Don't respawn
       result := true;

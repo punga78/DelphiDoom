@@ -273,7 +273,7 @@ begin
     t := flats[flats[flat].translation].flat32;
     if useexternaltextures and (t = nil) then
     begin
-      flatname := W_GetNameForNum(lump);
+      flatname := TWadRoutines.W_GetNameForNum(lump);
       t := flat_texturefiles.LoadTexture(flatname);
       if t = nil then // JVAL: This allow to use Doomsday resource pack
         t := flat_texturefiles.LoadTexture('flat-' + flatname);
@@ -427,8 +427,8 @@ begin
     end
     else
     begin
-      ds_source := W_CacheLumpNum(lump, PU_STATIC);
-      lumplen := W_LumpLength(lump);
+      ds_source := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+      lumplen := TWadRoutines.W_LumpLength(lump);
       pds.size := flats[flats[flat].translation].size;
       if pds.size = 0 then
         pds.scale := R_FlatScaleFromSize(flat, lumplen)

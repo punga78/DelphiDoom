@@ -182,11 +182,11 @@ var
 
 begin
   found := false;
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = STATEDEFLUMPNAME then
+  for i := 0 to TWadRoutines.W_NumLumps - 1 do
+    if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = STATEDEFLUMPNAME then
     begin
       found := true;
-      sc := TScriptScanner.Create(W_TextLumpNum(i), TEngineScannerLog.Create);
+      sc := TScriptScanner.Create(TWadRoutines.W_TextLumpNum(i), TEngineScannerLog.Create);
       x := 0;
       while sc.GetString do
       begin

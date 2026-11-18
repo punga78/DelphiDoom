@@ -374,11 +374,11 @@ class procedure TMapGameRules.LineAttackMissed(t1: Pmobj_t; x2, y2: fixed_t; slo
 begin
   case PuffType of
     MT_PUNCHPUFF:
-      S_StartSound(t1, Ord(SFX_FIGHTER_PUNCH_MISS));
+      TSoundRoutines.S_StartSound(t1, Ord(SFX_FIGHTER_PUNCH_MISS));
     MT_HAMMERPUFF,
     MT_AXEPUFF,
     MT_AXEPUFF_GLOW:
-      S_StartSound(t1, Ord(SFX_FIGHTER_HAMMER_MISS));
+      TSoundRoutines.S_StartSound(t1, Ord(SFX_FIGHTER_HAMMER_MISS));
     MT_FLAMEPUFF:
       P_SpawnPuff(x2, y2, TMapAim.ShootZ + FixedMul(slope, distance));
   end;
@@ -402,7 +402,7 @@ begin
     else
       sound := Ord(SFX_NONE);
     end;
-    S_StartSound(usething, sound);
+    TSoundRoutines.S_StartSound(usething, sound);
   end;
 end;
 
@@ -428,7 +428,7 @@ begin
       else
         sound := Ord(SFX_NONE);
       end;
-      S_StartSound(usething, sound);
+      TSoundRoutines.S_StartSound(usething, sound);
     end;
   end;
 end;
@@ -797,13 +797,13 @@ begin
           if P_Random < 128 then
           begin
             P_SpawnMobj(TMapCheck.Thing.x, TMapCheck.Thing.y, TMapCheck.Thing.z, Ord(MT_HOLY_PUFF));
-            S_StartSound(TMapCheck.Thing, Ord(SFX_SPIRIT_ATTACK));
-            if (thing.flags and MF_COUNTKILL <> 0) and (P_Random < 128) and not S_GetSoundPlayingInfo(thing, Ord(SFX_PUPPYBEAT)) then
+            TSoundRoutines.S_StartSound(TMapCheck.Thing, Ord(SFX_SPIRIT_ATTACK));
+            if (thing.flags and MF_COUNTKILL <> 0) and (P_Random < 128) and not TSoundRoutines.S_GetSoundPlayingInfo(thing, Ord(SFX_PUPPYBEAT)) then
             begin
               if (thing._type = Ord(MT_CENTAUR)) or
                  (thing._type = Ord(MT_CENTAURLEADER)) or
                  (thing._type = Ord(MT_ETTIN)) then
-                S_StartSound(thing, Ord(SFX_PUPPYBEAT));
+                TSoundRoutines.S_StartSound(thing, Ord(SFX_PUPPYBEAT));
             end;
           end;
         end;
@@ -922,17 +922,17 @@ begin
             P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, 3);
           end;
 
-          if not S_GetSoundPlayingInfo(TMapCheck.Thing, Ord(SFX_MAGE_LIGHTNING_ZAP)) then
-            S_StartSound(TMapCheck.Thing, Ord(SFX_MAGE_LIGHTNING_ZAP));
+          if not TSoundRoutines.S_GetSoundPlayingInfo(TMapCheck.Thing, Ord(SFX_MAGE_LIGHTNING_ZAP)) then
+            TSoundRoutines.S_StartSound(TMapCheck.Thing, Ord(SFX_MAGE_LIGHTNING_ZAP));
 
           if (thing.flags and MF_COUNTKILL <> 0) and
              (P_Random < 64) and
-             (not S_GetSoundPlayingInfo(thing, Ord(SFX_PUPPYBEAT))) then
+             (not TSoundRoutines.S_GetSoundPlayingInfo(thing, Ord(SFX_PUPPYBEAT))) then
           begin
             if (thing._type = Ord(MT_CENTAUR)) or
                (thing._type = Ord(MT_CENTAURLEADER)) or
                (thing._type = Ord(MT_ETTIN)) then
-              S_StartSound(thing, Ord(SFX_PUPPYBEAT));
+              TSoundRoutines.S_StartSound(thing, Ord(SFX_PUPPYBEAT));
           end;
         end;
         dec(TMapCheck.Thing.health);
@@ -1199,7 +1199,7 @@ begin
       P_SetMobjState(thing, statenum_t(st));
       thing.height := 0;
       thing.radius := 0;
-      S_StartSound(thing, Ord(SFX_PLAYER_FALLING_SPLAT));
+      TSoundRoutines.S_StartSound(thing, Ord(SFX_PLAYER_FALLING_SPLAT));
     end;
   end;
   result := true;            // keep checking
@@ -1355,7 +1355,7 @@ begin
             PCLASS_MAGE:
               sound := Ord(SFX_PUZZLE_FAIL_MAGE);
           end;
-          S_StartSound(PuzzleItemUser, sound);
+          TSoundRoutines.S_StartSound(PuzzleItemUser, sound);
         end;
         result := false; // can't use through a wall
         exit;

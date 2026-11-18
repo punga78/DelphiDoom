@@ -369,12 +369,12 @@ var
   i: integer;
 begin
 // Retrive modeldef lumps
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = MODELDEFLUMPNAME then
-      SC_ParseModelDefinition(W_TextLumpNum(i));
+  for i := 0 to TWadRoutines.W_NumLumps - 1 do
+    if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = MODELDEFLUMPNAME then
+      SC_ParseModelDefinition(TWadRoutines.W_TextLumpNum(i));
 
-  PAK_StringIterator(MODELDEFLUMPNAME, SC_ParseModelDefinition);
-  PAK_StringIterator(MODELDEFLUMPNAME + '.txt', SC_ParseModelDefinition);
+  TPakRoutines.PAK_StringIterator(MODELDEFLUMPNAME, SC_ParseModelDefinition);
+  TPakRoutines.PAK_StringIterator(MODELDEFLUMPNAME + '.txt', SC_ParseModelDefinition);
 end;
 
 //==============================================================================

@@ -197,14 +197,14 @@ end;
 
 procedure THexenLevelRules.AfterSpecials;
 begin
-  R_ChangeColormap(W_GetNameForNum(P_GetMapFadeTable(TGameSession.GameMap)));
+  R_ChangeColormap(TWadRoutines.W_GetNameForNum(P_GetMapFadeTable(TGameSession.GameMap)));
 end;
 
 procedure THexenLevelRules.AfterLevel;
 begin
   // Check if the level is a lightning level
   P_InitLightning;
-  S_StopAllSounds;
+  TSoundRoutines.S_StopAllSounds;
   S_StopAllSequences;
 end;
 

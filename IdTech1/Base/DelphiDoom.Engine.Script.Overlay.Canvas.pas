@@ -408,12 +408,12 @@ end;
 
 function TEngineOverlayCanvas.FindPatchLump(const AName: string): Integer;
 begin
-  Result := W_CheckNumForName(AName, TYPE_PATCH or TYPE_SPRITE);
+  Result := TWadRoutines.W_CheckNumForName(AName, TYPE_PATCH or TYPE_SPRITE);
 end;
 
 function TEngineOverlayCanvas.CachePatch(const ALump: Integer): Pointer;
 begin
-  Result := W_CacheLumpNum(ALump, PU_STATIC);
+  Result := TWadRoutines.W_CacheLumpNum(ALump, PU_STATIC);
 end;
 
 function TEngineOverlayCanvas.FontPatch(const AChar: Char): Pointer;

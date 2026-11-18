@@ -929,9 +929,9 @@ begin
     begin
       if (actor._type = Ord(MT_SPIDER)) or (actor._type = Ord(MT_CYBORG)) or (actor.flags_ex and MF_EX_BOSS <> 0) then
         // full volume
-        S_StartSound(nil, sound)
+        TSoundRoutines.S_StartSound(nil, sound)
       else
-        S_StartSound(actor, sound);
+        TSoundRoutines.S_StartSound(actor, sound);
     end;
   end;
 
@@ -1133,7 +1133,7 @@ begin
   if (actor.info.meleestate <> 0) and TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     if actor.info.attacksound <> 0 then
-      S_StartSound(actor, actor.info.attacksound);
+      TSoundRoutines.S_StartSound(actor, actor.info.attacksound);
 
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
     exit;
@@ -1182,7 +1182,7 @@ begin
 
   // make active sound
   if (actor.info.activesound <> 0) and (P_Random < 3) then
-    S_StartSound(actor, actor.info.activesound);
+    TSoundRoutines.S_StartSound(actor, actor.info.activesound);
 end;
 
 //==============================================================================
@@ -1216,7 +1216,7 @@ begin
   angle := actor.angle;
   slope := P_AimLineAttack(actor, angle, MISSILERANGE);
 
-  S_StartSound(actor, Ord(sfx_pistol));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_pistol));
   angle := angle + _SHLW(P_Random - P_Random, 20);
   damage := ((P_Random mod 5) + 1) * 3;
   P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
@@ -1238,7 +1238,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_shotgn));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_shotgn));
   A_FaceTarget(actor);
   bangle := actor.angle;
   slope := P_AimLineAttack(actor, bangle, MISSILERANGE);
@@ -1266,7 +1266,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_shotgn));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_shotgn));
   A_FaceTarget(actor);
   bangle := actor.angle;
 
@@ -1344,7 +1344,7 @@ begin
   A_FaceTarget(actor);
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
-    S_StartSound(actor, Ord(sfx_claw));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_claw));
     damage := (P_Random mod 8 + 1) * 3;
     P_DamageMobj(actor.target, actor, actor, damage);
     exit;
@@ -1426,7 +1426,7 @@ begin
 
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
-    S_StartSound(actor, Ord(sfx_claw));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_claw));
     damage := (P_Random mod 8 + 1) * 10;
     P_DamageMobj(actor.target, actor, actor, damage);
     exit;
@@ -1553,7 +1553,7 @@ begin
     exit;
 
   A_FaceTarget(actor);
-  S_StartSound(actor, Ord(sfx_skeswg));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_skeswg));
 end;
 
 //==============================================================================
@@ -1573,7 +1573,7 @@ begin
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     damage := ((P_Random mod 10) + 1) * 6;
-    S_StartSound(actor, Ord(sfx_skepch));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_skepch));
     P_DamageMobj(actor.target, actor, actor, damage);
   end;
 end;
@@ -1697,7 +1697,7 @@ begin
           else
             P_SetMobjState(actor, S_VILE_HEAL1);
 
-          S_StartSound(corpsehit, Ord(sfx_slop));
+          TSoundRoutines.S_StartSound(corpsehit, Ord(sfx_slop));
           info := corpsehit.info;
 
           P_SetMobjState(corpsehit, statenum_t(info.raisestate));
@@ -1740,7 +1740,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_VileStart(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_vilatk));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_vilatk));
 end;
 
 //==============================================================================
@@ -1782,7 +1782,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_StartFire(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_flamst));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_flamst));
   A_Fire(actor);
 end;
 
@@ -1793,7 +1793,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_FireCrackle(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_flame));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_flame));
   A_Fire(actor);
 end;
 
@@ -1843,7 +1843,7 @@ begin
   if not TSightRoutines.P_CheckSight(actor, actor.target) then
     exit;
 
-  S_StartSound(actor, Ord(sfx_barexp));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_barexp));
   P_DamageMobj(actor.target, actor, actor, 20);
   actor.target.momz := 1000 * FRACUNIT div actor.target.mass;
 
@@ -1881,7 +1881,7 @@ const
 class procedure TDoomMonsterActions.A_FatRaise(actor: Pmobj_t);
 begin
   A_FaceTarget(actor);
-  S_StartSound(actor, Ord(sfx_manatk));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_manatk));
 end;
 
 //==============================================================================
@@ -2148,9 +2148,9 @@ begin
      (actor.flags_ex and MF_EX_BOSS <> 0) or
      (actor.flags2_ex and MF2_EX_FULLVOLDEATH <> 0) then
     // full volume
-    S_StartSound(nil, sound)
+    TSoundRoutines.S_StartSound(nil, sound)
   else
-    S_StartSound(actor, sound);
+    TSoundRoutines.S_StartSound(actor, sound);
 end;
 
 //==============================================================================
@@ -2160,7 +2160,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_XScream(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_slop));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_slop));
 end;
 
 //==============================================================================
@@ -2419,7 +2419,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_Hoof(mo: Pmobj_t);
 begin
-  S_StartSound(mo, Ord(sfx_hoof));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_hoof));
   TMonsterBaseActions.A_Chase(mo);
 end;
 
@@ -2430,7 +2430,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_Metal(mo: Pmobj_t);
 begin
-  S_StartSound(mo, Ord(sfx_metal));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_metal));
   TMonsterBaseActions.A_Chase(mo);
 end;
 
@@ -2441,7 +2441,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_BabyMetal(mo: Pmobj_t);
 begin
-  S_StartSound(mo, Ord(sfx_bspwlk));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_bspwlk));
   TMonsterBaseActions.A_Chase(mo);
 end;
 
@@ -2452,7 +2452,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_OpenShotgun2(player: Pplayer_t; psp: Pplayer_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_dbopn));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_dbopn));
 end;
 
 //==============================================================================
@@ -2462,7 +2462,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_LoadShotgun2(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_dbload));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_dbload));
 end;
 
 //==============================================================================
@@ -2472,7 +2472,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_CloseShotgun2(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_dbcls));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_dbcls));
   A_ReFire(player, psp);
 end;
 
@@ -2515,7 +2515,7 @@ begin
     thinker := thinker.next;
   end;
 
-  S_StartSound(nil, Ord(sfx_bossit));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_bossit));
 end;
 
 const
@@ -2561,7 +2561,7 @@ begin
 
   mapvars.IntVal[S_NUMBRAINSTARGETS] := fnumbraintargets;
 
-  S_StartSound(nil, Ord(sfx_bossit));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_bossit));
 end;
 
 //==============================================================================
@@ -2571,7 +2571,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_BrainPain(mo: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_bospn));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_bospn));
 end;
 
 //==============================================================================
@@ -2602,7 +2602,7 @@ begin
     x := x + FRACUNIT * 8;
   end;
 
-  S_StartSound(nil, Ord(sfx_bosdth));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_bosdth));
 end;
 
 //==============================================================================
@@ -2675,7 +2675,7 @@ begin
   newmobj.target := targ;
   newmobj.reactiontime := ((targ.y - mo.y) div newmobj.momy) div newmobj.state.tics;
 
-  S_StartSound(nil, Ord(sfx_bospit));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_bospit));
 end;
 
 //==============================================================================
@@ -2740,7 +2740,7 @@ begin
   newmobj.target := targ;
   newmobj.reactiontime := ((targ.y - mo.y) div newmobj.momy) div newmobj.state.tics;
 
-  S_StartSound(nil, Ord(sfx_bospit));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_bospit));
 end;
 
 //==============================================================================
@@ -2770,7 +2770,7 @@ begin
 
   // First spawn teleport fog.
   fog := P_SpawnMobj(targ.x, targ.y, targ.z, Ord(MT_SPAWNFIRE));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
 
   // Randomly select monster to spawn.
   r := P_Random;
@@ -2828,7 +2828,7 @@ end;
 //==============================================================================
 class procedure TDoomMonsterActions.A_SpawnSound(mo: Pmobj_t);
 begin
-  S_StartSound(mo, Ord(sfx_boscub));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_boscub));
   A_SpawnFly(mo);
 end;
 
@@ -2853,7 +2853,7 @@ begin
     sound := Ord(sfx_pldeth);
   end;
 
-  S_StartSound(mo, sound);
+  TSoundRoutines.S_StartSound(mo, sound);
 end;
 
 //----------------------------------------------------------------------------

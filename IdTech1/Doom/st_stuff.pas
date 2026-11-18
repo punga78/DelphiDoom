@@ -1057,7 +1057,7 @@ begin
           if (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0') > 35 then
             plyr._message := STSTR_NOMUS
           else
-            S_ChangeMusic(musnum, true);
+            TSoundRoutines.S_ChangeMusic(musnum, true);
         end
         else
         begin
@@ -1066,7 +1066,7 @@ begin
           if (musnum > 0) and (buf[2] <> '0') and
              ( ((musnum < 28) and (gamemode <> shareware)) or
                ((musnum < 10) and (gamemode = shareware))) then
-            S_ChangeMusic(musnum, true)
+            TSoundRoutines.S_ChangeMusic(musnum, true)
           else
             plyr._message := STSTR_NOMUS;
         end;
@@ -1152,7 +1152,7 @@ begin
       // If this is present the remaining checks should be skipped.
       entry := G_LookupMapinfo(epsd, map);
       if entry <> nil then
-        if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
+        if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
         begin
           plyr._message := STSTR_CLEV;
           G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
@@ -1186,7 +1186,7 @@ begin
       end;
 
       // So be it.
-      if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
+      if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
       begin
         plyr._message := STSTR_CLEV;
         G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
@@ -1550,7 +1550,7 @@ begin
     {$ELSE}
     TRendererHires.R_SetPalette(palette);
     {$ENDIF}
-    p := W_CacheLumpNum(lu_palette, PU_STATIC);
+    p := TWadRoutines.W_CacheLumpNum(lu_palette, PU_STATIC);
     pal := PByteArray(NativeInt(p) + palette * 768);
     {$IFDEF OPENGL}
     I_SetPalette(pal);
@@ -1767,25 +1767,25 @@ begin
   for i := 0 to 9 do
   begin
     sprintf(namebuf, 'STTNUM%d', [i]);
-    tallnum[i] := W_CacheLumpName(namebuf, PU_STATIC);
+    tallnum[i] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
 
     sprintf(namebuf, 'STYSNUM%d', [i]);
-    shortnum[i] := W_CacheLumpName(namebuf, PU_STATIC);
+    shortnum[i] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
   end;
 
   // Load percent key.
   //Note: why not load STMINUS here, too?
-  tallpercent := W_CacheLumpName('STTPRCNT', PU_STATIC);
+  tallpercent := TWadRoutines.W_CacheLumpName('STTPRCNT', PU_STATIC);
 
   // key cards
   for i := 0 to Ord(NUMCARDS) - 1 do
   begin
     sprintf(namebuf, 'STKEYS%d', [i]);
-    keys[i] := W_CacheLumpName(namebuf, PU_STATIC);
+    keys[i] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
   end;
 
   // arms background
-  armsbg := W_CacheLumpName('STARMS', PU_STATIC);
+  armsbg := TWadRoutines.W_CacheLumpName('STARMS', PU_STATIC);
 
   // arms ownership widgets
   for i := 0 to 5 do
@@ -1793,7 +1793,7 @@ begin
     sprintf(namebuf, 'STGNUM%d', [i + 2]);
 
     // gray #
-    arms[i][0] := W_CacheLumpName(namebuf, PU_STATIC);
+    arms[i][0] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
 
     // yellow #
     arms[i][1] := shortnum[i + 2];
@@ -1801,37 +1801,37 @@ begin
 
   // face backgrounds for different color players
   sprintf(namebuf, 'STFB%d', [TGameSession.ConsolePlayer]);
-  faceback := W_CacheLumpName(namebuf, PU_STATIC);
+  faceback := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
 
   // status bar background bits
-  lump :=  W_CheckNumForName('STBAR');
+  lump :=  TWadRoutines.W_CheckNumForName('STBAR');
   if lump = -1 then
   begin
     oldsharewareversion := true;
-    lump :=  W_CheckNumForName('STMBARL');
-    sbar := W_CacheLumpNum(lump, PU_STATIC);
-    lump :=  W_CheckNumForName('STMBARR');
-    sbar2 := W_CacheLumpNum(lump, PU_STATIC);
+    lump :=  TWadRoutines.W_CheckNumForName('STMBARL');
+    sbar := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+    lump :=  TWadRoutines.W_CheckNumForName('STMBARR');
+    sbar2 := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
     wide_stbar := 320;
   end
   else
   begin
-    sbar := W_CacheLumpNum(lump, PU_STATIC);
+    sbar := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
     wide_stbar := sbar.width;
   end;
 
 // JVAL
 // Statusbar medikit, use stimpack patch (STIMA0)
-  smedikit := W_GetNumForName('STIMA0');
+  smedikit := TWadRoutines.W_GetNumForName('STIMA0');
 
 // JVAL
 // Weapons ammo for small display
-  sammo[0] := W_GetNumForName('CLIPA0');
-  sammo[1] := W_GetNumForName('SHELA0');
+  sammo[0] := TWadRoutines.W_GetNumForName('CLIPA0');
+  sammo[1] := TWadRoutines.W_GetNumForName('SHELA0');
 // JVAL
 // Cells do not exist in shareware version, use W_CheckNumForName instead of W_GetNumForName
-  sammo[2] := W_CheckNumForName('CELLA0');
-  sammo[3] := W_GetNumForName('ROCKA0');
+  sammo[2] := TWadRoutines.W_CheckNumForName('CELLA0');
+  sammo[3] := TWadRoutines.W_GetNumForName('ROCKA0');
 
   // face states
   facenum := 0;
@@ -1840,28 +1840,28 @@ begin
     for j := 0 to ST_NUMSTRAIGHTFACES - 1 do
     begin
       sprintf(namebuf, 'STFST%d%d', [i, j]);
-      faces[facenum] := W_CacheLumpName(namebuf, PU_STATIC);
+      faces[facenum] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
       inc(facenum);
     end;
     sprintf(namebuf, 'STFTR%d0', [i]); // turn right
-    faces[facenum] := W_CacheLumpName(namebuf, PU_STATIC);
+    faces[facenum] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
     inc(facenum);
     sprintf(namebuf, 'STFTL%d0', [i]); // turn left
-    faces[facenum] := W_CacheLumpName(namebuf, PU_STATIC);
+    faces[facenum] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
     inc(facenum);
     sprintf(namebuf, 'STFOUCH%d', [i]); // ouch!
-    faces[facenum] := W_CacheLumpName(namebuf, PU_STATIC);
+    faces[facenum] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
     inc(facenum);
     sprintf(namebuf, 'STFEVL%d', [i]); // evil grin ;)
-    faces[facenum] := W_CacheLumpName(namebuf, PU_STATIC);
+    faces[facenum] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
     inc(facenum);
     sprintf(namebuf, 'STFKILL%d', [i]); // pissed off
-    faces[facenum] := W_CacheLumpName(namebuf, PU_STATIC);
+    faces[facenum] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
     inc(facenum);
   end;
-  faces[facenum] := W_CacheLumpName('STFGOD0', PU_STATIC);
+  faces[facenum] := TWadRoutines.W_CacheLumpName('STFGOD0', PU_STATIC);
   inc(facenum);
-  faces[facenum] := W_CacheLumpName('STFDEAD0', PU_STATIC);
+  faces[facenum] := TWadRoutines.W_CacheLumpName('STFDEAD0', PU_STATIC);
 end;
 
 //==============================================================================
@@ -1871,7 +1871,7 @@ end;
 //==============================================================================
 class procedure TStatusBarLocalRoutines.ST_LoadData;
 begin
-  lu_palette := W_GetNumForName(PLAYPAL);
+  lu_palette := TWadRoutines.W_GetNumForName(PLAYPAL);
 {$IFNDEF SPEED}
   // Speed Haste has none of the pictures of the status bar of Doom
   if not Assigned(st_replacement) then
@@ -2136,7 +2136,7 @@ begin
   if st_stopped then
     exit;
 
-  pal := W_CacheLumpNum(lu_palette, PU_STATIC);
+  pal := TWadRoutines.W_CacheLumpNum(lu_palette, PU_STATIC);
   {$IFDEF OPENGL}
   I_SetPalette(pal);
   V_SetPalette(pal);

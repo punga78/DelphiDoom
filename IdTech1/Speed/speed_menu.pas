@@ -143,7 +143,7 @@ var
 begin
   Result := 0;
   for i := 1 to MAX_COURSES do
-    if W_CheckNumForName(Format('E1M%d', [i])) >= 0 then
+    if TWadRoutines.W_CheckNumForName(Format('E1M%d', [i])) >= 0 then
       Result := i;
 end;
 
@@ -272,7 +272,7 @@ begin
   if not Result then
   begin
     // an item of the menus of Doom whose picture is not in the data: its words
-    Result := W_CheckNumForName(menu.menuitems[idx].name) < 0;
+    Result := TWadRoutines.W_CheckNumForName(menu.menuitems[idx].name) < 0;
     if Result then
       SH_DrawText(x, y, SH_MenuWord(menu.menuitems[idx].name), font, SCN_TMP);
     exit;
@@ -294,7 +294,7 @@ end;
 //==============================================================================
 function SH_MenuCursor(const menu: Pmenu_t; const idx: integer): boolean;
 begin
-  Result := (menu = menus.newgame) or (W_CheckNumForName('M_SKULL1') < 0);
+  Result := (menu = menus.newgame) or (TWadRoutines.W_CheckNumForName('M_SKULL1') < 0);
   if Result and (menu <> menus.newgame) then
     SH_DrawText(menu.x - 14, menu.y + idx * menu.itemheight, '>', SPEED_FONT_A, SCN_TMP);
 end;
@@ -314,7 +314,7 @@ begin
     exit;
   end;
   // a title or a picture of the menus of Doom that the data do not have: its words, centered
-  Result := (Length(name) > 2) and (Copy(name, 1, 2) = 'M_') and (W_CheckNumForName(name) < 0);
+  Result := (Length(name) > 2) and (Copy(name, 1, 2) = 'M_') and (TWadRoutines.W_CheckNumForName(name) < 0);
   if Result and (SH_MenuWord(name) <> name) then
     SH_DrawTextCenter(160, y + 8, SH_MenuWord(name), SPEED_FONT_A, SCN_TMP);
 end;

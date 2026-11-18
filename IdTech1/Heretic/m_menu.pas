@@ -1008,7 +1008,7 @@ begin
   cy := y;
 
   old_trans := v_translation;
-  v_translation := W_CacheLumpName('TRN_MENU', PU_STATIC);
+  v_translation := TWadRoutines.W_CacheLumpName('TRN_MENU', PU_STATIC);
   while true do
   begin
     if ch > len then
@@ -2169,7 +2169,7 @@ class procedure TMenuLocalRoutines.M_StartSound(origin: pointer; sfx_id: integer
 begin
   if TGameSession.GameState = GS_ENDOOM then
     exit;
-  S_StartSound(origin, sfx_id);
+  TSoundRoutines.S_StartSound(origin, sfx_id);
 end;
 
 //==============================================================================
@@ -2291,7 +2291,7 @@ end;
 class procedure TMenuLocalRoutines.M_DrawReadThisExt;
 begin
   inhelpscreens := true;
-  V_PageDrawer(char8tostring(W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
+  V_PageDrawer(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
 end;
 
 //==============================================================================
@@ -2977,7 +2977,7 @@ begin
     0: if snd_SfxVolume <> 0 then dec(snd_SfxVolume);
     1: if snd_SfxVolume < 15 then inc(snd_SfxVolume);
   end;
-  S_SetSfxVolume(snd_SfxVolume);
+  TSoundRoutines.S_SetSfxVolume(snd_SfxVolume);
 end;
 
 //==============================================================================
@@ -2991,7 +2991,7 @@ begin
     0: if snd_MusicVolume <> 0 then dec(snd_MusicVolume);
     1: if snd_MusicVolume < 15 then inc(snd_MusicVolume);
   end;
-  S_SetMusicVolume(snd_MusicVolume);
+  TSoundRoutines.S_SetMusicVolume(snd_MusicVolume);
 end;
 
 //==============================================================================
@@ -3006,8 +3006,8 @@ begin
   V_DrawPatch(88, 0, SCN_TMP, 'M_HTIC', false);
 
   frame := (TGameSession.GameTic div 3) mod 18;
-  V_DrawPatch(40, 10, SCN_TMP, W_CacheLumpNum(SkullBaseLump + (17 - frame), PU_CACHE), false);
-  V_DrawPatch(232, 10, SCN_TMP, W_CacheLumpNum(SkullBaseLump + frame, PU_CACHE), false);
+  V_DrawPatch(40, 10, SCN_TMP, TWadRoutines.W_CacheLumpNum(SkullBaseLump + (17 - frame), PU_CACHE), false);
+  V_DrawPatch(232, 10, SCN_TMP, TWadRoutines.W_CacheLumpNum(SkullBaseLump + frame, PU_CACHE), false);
 end;
 
 //==============================================================================
@@ -4831,7 +4831,7 @@ begin
       exit;
   end;
 
-  src := W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
+  src := TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
   dest := 0;
 
   for y := 0 to 200 - 1 do
@@ -4955,10 +4955,10 @@ begin
       end
       else
       begin
-        lump := W_CheckNumForName(currentMenu.menuitems[i].name);
+        lump := TWadRoutines.W_CheckNumForName(currentMenu.menuitems[i].name);
         if lump >= 0 then
         begin
-          p := W_CacheLumpNum(lump, PU_STATIC);
+          p := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
           V_DrawPatch(160 - p.width div 2, y, SCN_TMP, p, false);
           Z_ChangeTag(p, PU_CACHE);
         end
@@ -5232,9 +5232,9 @@ var
   i: integer;
   lump: integer;
 begin
-  FontABaseLump := W_GetNumForName('FONTA_S') + 1;
-  FontBBaseLump := W_GetNumForName('FONTB_S') + 1;
-  SkullBaseLump := W_GetNumForName('M_SKL00');
+  FontABaseLump := TWadRoutines.W_GetNumForName('FONTA_S') + 1;
+  FontBBaseLump := TWadRoutines.W_GetNumForName('FONTB_S') + 1;
+  SkullBaseLump := TWadRoutines.W_GetNumForName('M_SKL00');
 
   currentMenu := @MainDef;
   menuactive := false;
@@ -5264,7 +5264,7 @@ begin
   extrahelpscreens := TDNumberList.Create;
   for i := 1 to 99 do
   begin
-    lump := W_CheckNumForName('HELP' + IntToStrzFill(2, i));
+    lump := TWadRoutines.W_CheckNumForName('HELP' + IntToStrzFill(2, i));
     if lump >= 0 then
       extrahelpscreens.Add(lump);
   end;

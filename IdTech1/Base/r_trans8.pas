@@ -377,11 +377,11 @@ begin
     exit;
 
 // Expand WAD palette to longword values
-  lump := W_GetNumForName('PLAYPAL');
-  numapproxcolorstructitem := W_LumpLength(lump) div 768;
+  lump := TWadRoutines.W_GetNumForName('PLAYPAL');
+  numapproxcolorstructitem := TWadRoutines.W_LumpLength(lump) div 768;
   approxcolorstruct := mallocz(numapproxcolorstructitem * SizeOf(approxcolorstructitem_t));
 
-  pal := W_CacheLumpNum(lump, PU_STATIC);
+  pal := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   r1.pal := pal;
   r1.id := 0;
   r2.pal := pal;

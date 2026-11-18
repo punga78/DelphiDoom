@@ -316,7 +316,7 @@ begin
   begin
     sprintf(LockedBuffer, 'YOU NEED THE %s', [TextKeyMessages[lock - 1]]);
     TInterRoutines.P_SetMessage(mo.player, LockedBuffer, true);
-    S_StartSound(mo, Ord(SFX_DOOR_LOCKED));
+    TSoundRoutines.S_StartSound(mo, Ord(SFX_DOOR_LOCKED));
     result := false;
     exit;
   end;
@@ -367,9 +367,9 @@ begin
         if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
           if Ord(arti) < arti_firstpuzzitem then
-            S_StartSound(nil, Ord(SFX_ARTIFACT_USE))
+            TSoundRoutines.S_StartSound(nil, Ord(SFX_ARTIFACT_USE))
           else
-            S_StartSound(nil, Ord(SFX_PUZZLE_SUCCESS));
+            TSoundRoutines.S_StartSound(nil, Ord(SFX_PUZZLE_SUCCESS));
           ArtifactFlash := 4;
         end;
         result := true;
@@ -1031,7 +1031,7 @@ begin
     if TTickState.LevelTime and 31 = 0 then
     begin
       P_DamageMobj(player.mo, @LavaInflictor, nil, 10);
-      S_StartSound(player.mo, Ord(SFX_LAVA_SIZZLE));
+      TSoundRoutines.S_StartSound(player.mo, Ord(SFX_LAVA_SIZZLE));
     end;
   end;
 

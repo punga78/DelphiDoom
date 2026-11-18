@@ -925,7 +925,7 @@ begin
   end;
 
 {$IFNDEF OPENGL}
-  HU_DoFPSStuff;
+  THudRoutines.HU_DoFPSStuff;
 {$ENDIF}
 
   if nodrawers then
@@ -962,7 +962,7 @@ begin
 {$ENDIF}
 
   if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
-    HU_Erase;
+    THudRoutines.HU_Erase;
 
   // do buffered drawing
   case TGameSession.GameState of
@@ -1054,7 +1054,7 @@ begin
   end;
 
   if drawhu then
-    HU_Drawer;
+    THudRoutines.HU_Drawer;
 
   nowtime := I_GetTime;
 
@@ -1087,7 +1087,7 @@ begin
     begin
       TRendererDraw.R_DrawViewBorder;
       if drawhu then
-        HU_Drawer;
+        THudRoutines.HU_Drawer;
     end;
 
     // JVAL: Overlay Drawer before menus
@@ -1134,7 +1134,7 @@ begin
     TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     TMainLocalRoutines.D_Console.Draw;         // Console draw on top of wipes and menus
     TMainLocalRoutines.D_FinishUpdate;   // page flip or blit buffer
-    HU_DoFPSStuff;
+    THudRoutines.HU_DoFPSStuff;
   until done;
   videomode := oldvideomode;
   wipedisplay := false;
@@ -1143,7 +1143,7 @@ end;
 {$IFDEF OPENGL}
 begin
   I_StartUpdate;
-  HU_DoFPSStuff;
+  THudRoutines.HU_DoFPSStuff;
   if firstinterpolation then
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
   if TGameSession.GameState = GS_LEVEL then
@@ -1210,7 +1210,7 @@ begin
       I_SetNormalCPUPriority;
 {$ENDIF}
 
-    S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
+    TSoundRoutines.S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
 
     D_RunNotifications;
 
@@ -1270,17 +1270,17 @@ begin
       if (SCREENWIDTH = 1920) and (SCREENHEIGHT = 1080) then
       begin
         if fullhdpatch = -2 then
-          fullhdpatch := W_CheckNumForName('FULLHD');
+          fullhdpatch := TWadRoutines.W_CheckNumForName('FULLHD');
         if fullhdpatch > 0 then
         begin
-          pt := W_CacheLumpNum(fullhdpatch, PU_STATIC);
+          pt := TWadRoutines.W_CacheLumpNum(fullhdpatch, PU_STATIC);
           V_DrawPatch(120, 1020, SCN_FG, pt, false);
           Z_ChangeTag(pt, PU_CACHE);
         end;
       end;
   {$ENDIF}
   if demosequence = 1 then
-    V_DrawPatch(4, 160, SCN_FG, W_CacheLumpName('ADVISOR', PU_CACHE), true);
+    V_DrawPatch(4, 160, SCN_FG, TWadRoutines.W_CacheLumpName('ADVISOR', PU_CACHE), true);
 end;
 
 //==============================================================================
@@ -1318,7 +1318,7 @@ begin
         pagetic := 210;
         TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_TITLE;
-        S_StartMusic(Ord(mus_titl));
+        TSoundRoutines.S_StartMusic(Ord(mus_titl));
       end;
     1:
       begin
@@ -1421,7 +1421,7 @@ begin
       exit;
     try
       wadfiles.Add(fname2);
-      PAK_AddFile(fname2);
+      TPakRoutines.PAK_AddFile(fname2);
       D_CheckCustomWad(fname2);
     {$IFDEF OPENGL}
     // JVAL: If exists automatically loads GWA file
@@ -1487,7 +1487,7 @@ var
 begin
   names := TCommandLineFileList.Split(fnames);
   for i := 0 to Length(names) - 1 do
-    PAK_AddFile(names[i]);
+    TPakRoutines.PAK_AddFile(names[i]);
 end;
 
 var
@@ -1714,7 +1714,7 @@ begin
   try
 
     for i := 0 to files.Count - 1 do
-      if not PAK_AddFile(files[i]) then
+      if not TPakRoutines.PAK_AddFile(files[i]) then
         I_Warning('PAK_AddFile(): %s could not be added to PAK file system.'#13#10, [files[i]]);
 
   finally
@@ -1800,7 +1800,7 @@ begin
     inc(p);
     while (p < myargc) and (myargv[p][1] <> '-') do
     begin
-      PAK_AddFile(myargv[p]);
+      TPakRoutines.PAK_AddFile(myargv[p]);
       inc(p);
     end;
   end;
@@ -1856,7 +1856,7 @@ begin
     wadnames[i] := strupper(fname(wadfiles[i]));
   gamedirectorystring := TPakGameDirectories.Compose(gamedirectorystring, wadnames);
 
-  gamedirectories := PAK_GetDirectoryListFromString(gamedirectorystring);
+  gamedirectories := TPakRoutines.PAK_GetDirectoryListFromString(gamedirectorystring);
   for i := 0 to gamedirectories.Count - 1 do
   begin
     wad := gamedirectories[i];
@@ -2029,11 +2029,11 @@ class procedure TMainLocalRoutines.D_CheckInteterminedMode;
 begin
   if gamemode = indetermined then
   begin
-    if W_CheckNumForName('e5m1') <> -1 then
+    if TWadRoutines.W_CheckNumForName('e5m1') <> -1 then
     begin
       gamemode := extendedwad;
     end
-    else if W_CheckNumForName('e3m1') <> -1 then
+    else if TWadRoutines.W_CheckNumForName('e3m1') <> -1 then
     begin
       gamemode := registered;
     end
@@ -2043,7 +2043,7 @@ begin
     end
   end;
 
-  if W_CheckNumForName('e1m4') = -1 then
+  if TWadRoutines.W_CheckNumForName('e1m4') = -1 then
   begin
     gamemode := shareware;
     customgame := cg_beta;
@@ -2267,11 +2267,11 @@ begin
   SUC_Progress(9);
 
   printf('PAK_InitFileSystem: Init PAK/ZIP/PK3/PK4 files.'#13#10);
-  PAK_InitFileSystem;
+  TPakRoutines.PAK_InitFileSystem;
 
   SUC_Progress(10);
 
-  PAK_LoadPendingPaks;
+  TPakRoutines.PAK_LoadPendingPaks;
 
   SUC_Progress(11);
 
@@ -2396,12 +2396,12 @@ begin
     begin
       modifiedgame := true;
       externalpakspresent := true;
-      PAK_AddFile(myargv[p]);
+      TPakRoutines.PAK_AddFile(myargv[p]);
     end;
   end;
 
   printf('W_Init: Init WADfiles.'#13#10);
-  if (W_InitMultipleFiles(wadfiles) = 0) or (W_CheckNumForName('playpal') = -1) then
+  if (TWadRoutines.W_InitMultipleFiles(wadfiles) = 0) or (TWadRoutines.W_CheckNumForName('playpal') = -1) then
   begin
     // JVAL
     //  If none wadfile has found as far,
@@ -2422,7 +2422,7 @@ begin
         D_AddFile(filename);
       end
     end;
-    if W_InitMultipleFiles(wadfiles) = 0 then
+    if TWadRoutines.W_InitMultipleFiles(wadfiles) = 0 then
       I_Error('W_InitMultipleFiles(): no files found');
   end;
 
@@ -2452,10 +2452,10 @@ begin
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin
-    lump := W_CheckNumForName('GAMEDEF');
+    lump := TWadRoutines.W_CheckNumForName('GAMEDEF');
     if lump >= 0 then
     begin
-      if strupper(W_LumpCRC32(lump)) <> '1468BDEC' then
+      if strupper(TWadRoutines.W_LumpCRC32(lump)) <> '1468BDEC' then
         DEH_ParseLumpNum(lump);
     end
     else
@@ -2591,7 +2591,7 @@ begin
         j := 1;
         while j <= 9 do
         begin
-          if W_CheckNumForName('e' + itoa(i) + 'm' + itoa(j)) < 0 then
+          if TWadRoutines.W_CheckNumForName('e' + itoa(i) + 'm' + itoa(j)) < 0 then
           begin
             I_DevError(s_error);
             j := 9;
@@ -2680,7 +2680,7 @@ begin
   SUC_Progress(85);
 
   printf('S_Init: Setting up sound.'#13#10);
-  S_Init(snd_SfxVolume, snd_MusicVolume);
+  TSoundRoutines.S_Init(snd_SfxVolume, snd_MusicVolume);
 
   SUC_Progress(89);
 
@@ -2690,7 +2690,7 @@ begin
   SUC_Progress(90);
 
   printf('HU_Init: Setting up heads up display.'#13#10);
-  HU_Init;
+  THudRoutines.HU_Init;
 
   SUC_Progress(91);
 
@@ -2836,7 +2836,7 @@ begin
   printf('Info_ShutDown: Shut down game definition.'#13#10);
   Info_ShutDown;
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);
-  PAK_ShutDown;
+  TPakRoutines.PAK_ShutDown;
   printf('E_ShutDown: Shut down ENDOOM screen.'#13#10);
   if main_endoom <> nil then
     main_endoom.Shutdown;
@@ -2845,7 +2845,7 @@ begin
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);
-  W_ShutDown;
+  TWadRoutines.W_ShutDown;
   printf('V_ShutDown: Shut down screens.'#13#10);
   V_ShutDown;
   printf('MT_ShutDown: Shut down multithreading utilities.'#13#10);

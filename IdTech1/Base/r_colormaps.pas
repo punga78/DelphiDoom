@@ -168,9 +168,9 @@ begin
     I_Error('R_InitCustomColormaps(): the colormap preparer is not configured (ComposeEngine was not called)');
   in_c := false;
   lumps := TDNumberList.Create;
-  for i := 0 to W_NumLumps - 1 do
+  for i := 0 to TWadRoutines.W_NumLumps - 1 do
   begin
-    lumpname := strupper(char8tostring(W_GetNameForNum(i)));
+    lumpname := strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)));
     if lumpname = C_START then
     begin
       in_c := True;
@@ -184,7 +184,7 @@ begin
     if in_c then
     begin
       for j := lumps.Count - 1 downto 0 do
-        if strupper(char8tostring(W_GetNameForNum(lumps.Numbers[j]))) = lumpname then
+        if strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(lumps.Numbers[j]))) = lumpname then
           lumps.Delete(j);
       lumps.Add(i);
     end;
@@ -203,9 +203,9 @@ begin
     customcolormaps := mallocz(numcustomcolormaps * SizeOf(customcolormap_t));
     for i := 0 to numcustomcolormaps - 1 do
     begin
-      lumplen := W_LumpLength(lumps.Numbers[i]);
+      lumplen := TWadRoutines.W_LumpLength(lumps.Numbers[i]);
       SetLength(bytes, lumplen);
-      W_ReadLump(lumps.Numbers[i], @bytes[0]);
+      TWadRoutines.W_ReadLump(lumps.Numbers[i], @bytes[0]);
       // the colors 0 are the nearest to black, a colormap of less than the
       // number of colormaps of the game gets the last one repeated
       bytes := colormap_preparer.ReplaceZeros(bytes, aprox_black);
@@ -213,7 +213,7 @@ begin
       customcolormaps[i].colormap := Z_Malloc(Length(bytes), PU_STATIC, nil);
       memcpy(customcolormaps[i].colormap, @bytes[0], Length(bytes));
       customcolormaps[i].lump := lumps.Numbers[i];
-      customcolormaps[i].name := strupper(char8tostring(W_GetNameForNum(lumps.Numbers[i])));
+      customcolormaps[i].name := strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(lumps.Numbers[i])));
       customcolormaps[i].nummaps := nummaps;
 
       // JVAL: Create default colormap palette

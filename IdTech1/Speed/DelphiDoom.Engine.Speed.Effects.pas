@@ -89,10 +89,10 @@ var
   LRate, LSamples: Integer;
 begin
   Result := DEFAULT_SOUND_TICS;
-  LLump := W_CheckNumForName(ALump);
-  if (LLump < 0) or (W_LumpLength(LLump) < 8) then
+  LLump := TWadRoutines.W_CheckNumForName(ALump);
+  if (LLump < 0) or (TWadRoutines.W_LumpLength(LLump) < 8) then
     Exit;
-  LHeader := W_CacheLumpNum(LLump, PU_STATIC);
+  LHeader := TWadRoutines.W_CacheLumpNum(LLump, PU_STATIC);
   LRate := LHeader[2] or (LHeader[3] shl 8);
   LSamples := LHeader[4] or (LHeader[5] shl 8) or (LHeader[6] shl 16) or (LHeader[7] shl 24);
   Z_ChangeTag(LHeader, PU_CACHE);
@@ -124,14 +124,14 @@ var
 begin
   Inc(FEngineSounds);
   LFamily := Ord(not AFormula);
-  S_StartSound(FFindCar(FSelected), Format(ENGINE_SOUND_FORMAT, [LFamily, AFraction]));
+  TSoundRoutines.S_StartSound(FFindCar(FSelected), Format(ENGINE_SOUND_FORMAT, [LFamily, AFraction]));
   Result := DurationOf(Format(ENGINE_LUMP_FORMAT, [LFamily, AFraction]));
 end;
 
 function TEngineSpeedEffects.PlayBrakeSound(AX, AY, AZ: TFixed): Integer;
 begin
   Inc(FBrakeSounds);
-  S_StartSound(FFindCar(FSelected), BRAKE_SOUND);
+  TSoundRoutines.S_StartSound(FFindCar(FSelected), BRAKE_SOUND);
   Result := DurationOf(BRAKE_LUMP);
 end;
 

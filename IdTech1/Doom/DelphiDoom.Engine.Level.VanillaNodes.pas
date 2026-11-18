@@ -164,11 +164,11 @@ end;
 procedure TEngineVanillaNodes.Load(AMapLump: Integer);
 begin
   // JVAL: 20210131 - Load vanilla nodes
-  if char8tostring(W_GetNameForNum(AMapLump + Ord(ML_SSECTORS))) = 'SSECTORS' then
+  if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(AMapLump + Ord(ML_SSECTORS))) = 'SSECTORS' then
     LoadSubsectors(AMapLump + Ord(ML_SSECTORS));
-  if char8tostring(W_GetNameForNum(AMapLump + Ord(ML_NODES))) = 'NODES' then
+  if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(AMapLump + Ord(ML_NODES))) = 'NODES' then
     LoadNodes(AMapLump + Ord(ML_NODES));
-  if char8tostring(W_GetNameForNum(AMapLump + Ord(ML_SEGS))) = 'SEGS' then
+  if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(AMapLump + Ord(ML_SEGS))) = 'SEGS' then
     LoadSegs(AMapLump + Ord(ML_SEGS));
   hasvanillanodes := (vanillasubsectors <> nil) and (vanillanodes <> nil) and (vanillasegs <> nil);
 end;

@@ -93,7 +93,7 @@ end;
 function TEngineMapInfoTextSource.PakTexts(const AFileName: string): TArray<string>;
 begin
   GCollectedTexts := nil;
-  PAK_StringIterator(AFileName, @CollectText);
+  TPakRoutines.PAK_StringIterator(AFileName, @CollectText);
   Result := GCollectedTexts;
   GCollectedTexts := nil;
 end;

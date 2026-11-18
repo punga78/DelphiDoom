@@ -154,7 +154,7 @@ begin
             floor.crush, 0, floor.direction);
 
   if TTickState.LevelTime and 7 = 0 then
-    S_StartSound(@floor.sector.soundorg, Ord(sfx_stnmov));
+    TSoundRoutines.S_StartSound(@floor.sector.soundorg, Ord(sfx_stnmov));
 
   if res = pastdest then
   begin
@@ -203,7 +203,7 @@ begin
       end;
     end;
 
-    S_StartSound(@floor.sector.soundorg, Ord(sfx_pstop));
+    TSoundRoutines.S_StartSound(@floor.sector.soundorg, Ord(sfx_pstop));
   end;
 end;
 
@@ -272,7 +272,7 @@ begin
 
   // make floor move sound
   if TTickState.LevelTime and 7 = 0 then
-    S_StartSound(@elevator.sector.soundorg, Ord(sfx_stnmov));
+    TSoundRoutines.S_StartSound(@elevator.sector.soundorg, Ord(sfx_stnmov));
 
   if res = pastdest then            // if destination height acheived
   begin
@@ -281,7 +281,7 @@ begin
     TTickRoutines.P_RemoveThinker(@elevator.thinker);    // remove elevator from actives
 
     // make floor stop sound
-    S_StartSound(@elevator.sector.soundorg, Ord(sfx_pstop));
+    TSoundRoutines.S_StartSound(@elevator.sector.soundorg, Ord(sfx_pstop));
   end;
 end;
 

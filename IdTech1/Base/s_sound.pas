@@ -42,73 +42,6 @@ type
   /// <summary>Makes the player of the sound effects; false: no sound card, only handles</summary>
   TSfxPlayerFactory = reference to function(AWithDevice: Boolean): ISfxPlayer;
 
-//==============================================================================
-//
-// S_ConfigureSound
-//
-// The way to make the player of the sound effects, given by the composition root
-// (ComposeEngine); without it S_InitSoundDevice stops with I_Error.
-//
-//==============================================================================
-procedure S_ConfigureSound(const AFactory: TSfxPlayerFactory);
-
-//==============================================================================
-//
-// S_ConfigureMusic
-//
-// The player of the music, given by the composition root (ComposeEngine); without it
-// S_InitMusicDevice stops with I_Error.
-//
-//==============================================================================
-procedure S_ConfigureMusic(const APlayer: IMusicPlayer);
-
-//==============================================================================
-//
-// S_InitSoundDevice
-//
-// Makes the player of the sound effects (without a device with -nosound). Called by
-// I_Init at program start (it was I_InitSound).
-//
-//==============================================================================
-procedure S_InitSoundDevice;
-
-//==============================================================================
-//
-// S_ShutDownSoundDevice
-//
-// Releases the player of the sound effects and the cache of the samples at program
-// termination (it was I_ShutDownSound).
-//
-//==============================================================================
-procedure S_ShutDownSoundDevice;
-
-//==============================================================================
-//
-// S_InitMusicDevice
-//
-// Starts the backends of the music (it was I_InitMusic).
-//
-//==============================================================================
-procedure S_InitMusicDevice;
-
-//==============================================================================
-//
-// S_ShutDownMusicDevice
-//
-// Stops the backends of the music (it was I_ShutDownMusic).
-//
-//==============================================================================
-procedure S_ShutDownMusicDevice;
-
-//==============================================================================
-//
-// S_ProcessMusic
-//
-// Gives the playing song its time, every frame (it was I_ProcessMusic).
-//
-//==============================================================================
-procedure S_ProcessMusic;
-
 const
   MP3MAGIC = $1A33504D; //"MP3"<EOF>
 
@@ -120,200 +53,6 @@ type
     foo: array[0..1] of LongWord;
   end;
   Pmp3header_t = ^mp3header_t;
-
-//==============================================================================
-//
-// S_ConfigureExternalMusic
-//
-// The cache of the external songs (MOD, S3M, IT, XM next to the WAD) is given by the
-// composition root (ComposeEngine); without it S_Init stops with I_Error.
-//
-//==============================================================================
-procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
-
-//==============================================================================
-// S_Init
-//
-// Initializes sound stuff, including volume
-// Sets channels, SFX and music volume,
-//  allocates channel buffer, sets S_sfx lookup.
-//
-//==============================================================================
-{$IF DEFINED(DOOM)}
-procedure S_Init(sfxVolume: integer; musicVolume: integer);
-
-//==============================================================================
-//
-// S_InitDEHExtraSounds
-//
-//==============================================================================
-procedure S_InitDEHExtraSounds;
-{$ELSEIF DEFINED(STRIFE)}
-procedure S_Init(sfxVolume: integer; musicVolume: integer; voiceVolume: integer);
-{$ELSE}
-procedure S_Init(sfxVolume: integer; musicVolume: integer);
-{$ENDIF}
-
-//==============================================================================
-//
-// S_ShutDownSound
-//
-//==============================================================================
-procedure S_ShutDownSound;
-
-//==============================================================================
-// S_Start
-//
-// Per level startup code.
-// Kills playing sounds at start of level,
-//  determines music if any, changes music.
-//
-//==============================================================================
-procedure S_Start;
-
-//==============================================================================
-// S_StartSound
-//
-// Start sound for thing at <origin>
-//  using <sound_id> from sounds.h
-//
-//==============================================================================
-procedure S_StartSound(origin: pointer; sfx_id: integer); overload;
-
-//==============================================================================
-//
-// S_StartSound
-//
-//==============================================================================
-procedure S_StartSound(origin: pointer; const sndname: string); overload;
-
-//==============================================================================
-// S_StartSoundAtVolume
-//
-// Will start a sound at a given volume.
-//
-//==============================================================================
-procedure S_StartSoundAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
-{$IFDEF STRIFE}
-
-//==============================================================================
-// S_StartVoice
-//
-// Voice volume
-//
-//==============================================================================
-procedure S_StartVoice(const sndname: string);
-
-//==============================================================================
-//
-// S_StartVoiceAtVolume
-//
-//==============================================================================
-procedure S_StartVoiceAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
-{$ENDIF}
-
-//==============================================================================
-//
-// S_UnlinkSound
-//
-//==============================================================================
-procedure S_UnlinkSound(origin: Pmobj_t);
-
-//==============================================================================
-// S_StopSound
-//
-// Stop sound for thing at <origin>
-//
-//==============================================================================
-procedure S_StopSound(origin: pointer);
-{$IFDEF HEXEN}
-
-//==============================================================================
-// S_StopAllSounds
-//
-// Stop all sounds
-//
-//==============================================================================
-procedure S_StopAllSounds;
-{$ENDIF}
-
-//==============================================================================
-// S_StartMusic
-//
-// Start music using <music_id> from sounds.h
-//
-//==============================================================================
-procedure S_StartMusic(music_id: integer);
-
-//==============================================================================
-// S_ChangeMusic
-//
-// Start music using <music_id> from sounds.h,
-//  and set whether looping
-//
-//==============================================================================
-procedure S_ChangeMusic(musicnum: integer; looping: boolean);
-
-//==============================================================================
-// S_StopMusic
-//
-// Stops the music fer sure.
-//
-//==============================================================================
-procedure S_StopMusic;
-
-//==============================================================================
-// S_PauseSound
-//
-// Stop and resume music, during game PAUSE.
-//
-//==============================================================================
-procedure S_PauseSound;
-
-//==============================================================================
-//
-// S_ResumeSound
-//
-//==============================================================================
-procedure S_ResumeSound;
-
-//==============================================================================
-// S_UpdateSounds
-//
-// Updates music & sounds
-//
-//==============================================================================
-procedure S_UpdateSounds(listener_p: pointer);
-
-//==============================================================================
-//
-// S_SetMusicVolume
-//
-//==============================================================================
-procedure S_SetMusicVolume(volume: integer);
-
-//==============================================================================
-//
-// S_SetSfxVolume
-//
-//==============================================================================
-procedure S_SetSfxVolume(volume: integer);
-
-//==============================================================================
-//
-{$IFDEF STRIFE}
-// S_SetVoiceVolume
-//
-//==============================================================================
-procedure S_SetVoiceVolume(volume: integer);
-
-//==============================================================================
-//
-{$ENDIF}
-// S_PrecacheSounds
-//
-//==============================================================================
-procedure S_PrecacheSounds;
 
 var
 // These are not used, but should be (menu).
@@ -361,13 +100,6 @@ type
   end;
   Psoundinfo_t = ^soundinfo_t;
 
-//==============================================================================
-//
-// S_GetChannelInfo
-//
-//==============================================================================
-procedure S_GetChannelInfo(s: Psoundinfo_t);
-
 {$ELSEIF DEFINED(HEXEN)}
 type
   chaninfo_t = record
@@ -387,31 +119,12 @@ type
   end;
   Psoundinfo_t = ^soundinfo_t;
 
-//==============================================================================
-//
-// S_GetChannelInfo
-//
-//==============================================================================
-procedure S_GetChannelInfo(s: Psoundinfo_t);
-
-//==============================================================================
-//
-// S_GetSoundPlayingInfo
-//
-//==============================================================================
-function S_GetSoundPlayingInfo(mobj: Pmobj_t; sound_id: integer): boolean;
-
 {$ENDIF}
 //==============================================================================
 //
 // S_DefaultMusicForMap
 //
 //==============================================================================
-{$IF DEFINED(HEXEN) OR DEFINED(STRIFE)}
-function S_DefaultMusicForMap(const map: integer): integer;
-{$ELSE}
-function S_DefaultMusicForMap(const episode, map: integer): integer;
-{$ENDIF}
 
 var
   full_sounds: boolean = true;
@@ -420,6 +133,309 @@ var
   useexternalwav: boolean;
   preferewavnamesingamedirectory: boolean;
   miditempo: integer = 160;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSoundRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // S_ConfigureSound
+    //
+    // The way to make the player of the sound effects, given by the composition root
+    // (ComposeEngine); without it S_InitSoundDevice stops with I_Error.
+    //
+    //==============================================================================
+    class procedure S_ConfigureSound(const AFactory: TSfxPlayerFactory); static;
+
+    //==============================================================================
+    //
+    // S_ConfigureMusic
+    //
+    // The player of the music, given by the composition root (ComposeEngine); without it
+    // S_InitMusicDevice stops with I_Error.
+    //
+    //==============================================================================
+    class procedure S_ConfigureMusic(const APlayer: IMusicPlayer); static;
+
+    //==============================================================================
+    //
+    // S_InitSoundDevice
+    //
+    // Makes the player of the sound effects (without a device with -nosound). Called by
+    // I_Init at program start (it was I_InitSound).
+    //
+    //==============================================================================
+    class procedure S_InitSoundDevice; static;
+
+    //==============================================================================
+    //
+    // S_ShutDownSoundDevice
+    //
+    // Releases the player of the sound effects and the cache of the samples at program
+    // termination (it was I_ShutDownSound).
+    //
+    //==============================================================================
+    class procedure S_ShutDownSoundDevice; static;
+
+    //==============================================================================
+    //
+    // S_InitMusicDevice
+    //
+    // Starts the backends of the music (it was I_InitMusic).
+    //
+    //==============================================================================
+    class procedure S_InitMusicDevice; static;
+
+    //==============================================================================
+    //
+    // S_ShutDownMusicDevice
+    //
+    // Stops the backends of the music (it was I_ShutDownMusic).
+    //
+    //==============================================================================
+    class procedure S_ShutDownMusicDevice; static;
+
+    //==============================================================================
+    //
+    // S_ProcessMusic
+    //
+    // Gives the playing song its time, every frame (it was I_ProcessMusic).
+    //
+    //==============================================================================
+    class procedure S_ProcessMusic; static;
+
+    //==============================================================================
+    //
+    // S_ConfigureExternalMusic
+    //
+    // The cache of the external songs (MOD, S3M, IT, XM next to the WAD) is given by the
+    // composition root (ComposeEngine); without it S_Init stops with I_Error.
+    //
+    //==============================================================================
+    class procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache); static;
+
+    //==============================================================================
+    // S_Init
+    //
+    // Initializes sound stuff, including volume
+    // Sets channels, SFX and music volume,
+    //  allocates channel buffer, sets S_sfx lookup.
+    //
+    //==============================================================================
+{$IF ((DEFINED(DOOM)))}
+    class procedure S_Init(sfxVolume: integer; musicVolume: integer); static;
+
+    //==============================================================================
+    //
+    // S_InitDEHExtraSounds
+    //
+    //==============================================================================
+    class procedure S_InitDEHExtraSounds; static;
+
+{$ENDIF}
+{$IF ((NOT ((DEFINED(DOOM)))) AND (DEFINED(STRIFE)))}
+    class procedure S_Init(sfxVolume: integer; musicVolume: integer; voiceVolume: integer); static;
+
+{$ENDIF}
+{$IF (NOT ((DEFINED(DOOM))) AND NOT ((NOT ((DEFINED(DOOM)))) AND (DEFINED(STRIFE))))}
+    class procedure S_Init(sfxVolume: integer; musicVolume: integer); static;
+
+{$ENDIF}
+    //==============================================================================
+    //
+    // S_ShutDownSound
+    //
+    //==============================================================================
+    class procedure S_ShutDownSound; static;
+
+    //==============================================================================
+    // S_Start
+    //
+    // Per level startup code.
+    // Kills playing sounds at start of level,
+    //  determines music if any, changes music.
+    //
+    //==============================================================================
+    class procedure S_Start; static;
+
+    //==============================================================================
+    // S_StartSound
+    //
+    // Start sound for thing at <origin>
+    //  using <sound_id> from sounds.h
+    //
+    //==============================================================================
+    class procedure S_StartSound(origin: pointer; sfx_id: integer); overload; static;
+
+    //==============================================================================
+    //
+    // S_StartSound
+    //
+    //==============================================================================
+    class procedure S_StartSound(origin: pointer; const sndname: string); overload; static;
+
+    //==============================================================================
+    // S_StartSoundAtVolume
+    //
+    // Will start a sound at a given volume.
+    //
+    //==============================================================================
+    class procedure S_StartSoundAtVolume(origin_p: pointer; sfx_id: integer; volume: integer); static;
+
+{$IF (DEFINED(STRIFE))}
+    //==============================================================================
+    // S_StartVoice
+    //
+    // Voice volume
+    //
+    //==============================================================================
+    class procedure S_StartVoice(const sndname: string); static;
+
+    //==============================================================================
+    //
+    // S_StartVoiceAtVolume
+    //
+    //==============================================================================
+    class procedure S_StartVoiceAtVolume(origin_p: pointer; sfx_id: integer; volume: integer); static;
+
+{$ENDIF}
+    //==============================================================================
+    //
+    // S_UnlinkSound
+    //
+    //==============================================================================
+    class procedure S_UnlinkSound(origin: Pmobj_t); static;
+
+    //==============================================================================
+    // S_StopSound
+    //
+    // Stop sound for thing at <origin>
+    //
+    //==============================================================================
+    class procedure S_StopSound(origin: pointer); static;
+
+{$IF (DEFINED(HEXEN))}
+    //==============================================================================
+    // S_StopAllSounds
+    //
+    // Stop all sounds
+    //
+    //==============================================================================
+    class procedure S_StopAllSounds; static;
+
+{$ENDIF}
+    //==============================================================================
+    // S_StartMusic
+    //
+    // Start music using <music_id> from sounds.h
+    //
+    //==============================================================================
+    class procedure S_StartMusic(music_id: integer); static;
+
+    //==============================================================================
+    // S_ChangeMusic
+    //
+    // Start music using <music_id> from sounds.h,
+    //  and set whether looping
+    //
+    //==============================================================================
+    class procedure S_ChangeMusic(musicnum: integer; looping: boolean); static;
+
+    //==============================================================================
+    // S_StopMusic
+    //
+    // Stops the music fer sure.
+    //
+    //==============================================================================
+    class procedure S_StopMusic; static;
+
+    //==============================================================================
+    // S_PauseSound
+    //
+    // Stop and resume music, during game PAUSE.
+    //
+    //==============================================================================
+    class procedure S_PauseSound; static;
+
+    //==============================================================================
+    //
+    // S_ResumeSound
+    //
+    //==============================================================================
+    class procedure S_ResumeSound; static;
+
+    //==============================================================================
+    // S_UpdateSounds
+    //
+    // Updates music & sounds
+    //
+    //==============================================================================
+    class procedure S_UpdateSounds(listener_p: pointer); static;
+
+    //==============================================================================
+    //
+    // S_SetMusicVolume
+    //
+    //==============================================================================
+    class procedure S_SetMusicVolume(volume: integer); static;
+
+    //==============================================================================
+    //
+    // S_SetSfxVolume
+    //
+    //==============================================================================
+    class procedure S_SetSfxVolume(volume: integer); static;
+
+{$IF (DEFINED(STRIFE))}
+    // S_SetVoiceVolume
+    //
+    //==============================================================================
+    class procedure S_SetVoiceVolume(volume: integer); static;
+
+{$ENDIF}
+    // S_PrecacheSounds
+    //
+    //==============================================================================
+    class procedure S_PrecacheSounds; static;
+
+{$IF ((DEFINED(HERETIC)))}
+    //==============================================================================
+    //
+    // S_GetChannelInfo
+    //
+    //==============================================================================
+    class procedure S_GetChannelInfo(s: Psoundinfo_t); static;
+
+{$ENDIF}
+{$IF ((NOT ((DEFINED(HERETIC)))) AND (DEFINED(HEXEN)))}
+    //==============================================================================
+    //
+    // S_GetChannelInfo
+    //
+    //==============================================================================
+    class procedure S_GetChannelInfo(s: Psoundinfo_t); static;
+
+    //==============================================================================
+    //
+    // S_GetSoundPlayingInfo
+    //
+    //==============================================================================
+    class function S_GetSoundPlayingInfo(mobj: Pmobj_t; sound_id: integer): boolean; static;
+
+{$ENDIF}
+{$IF ((DEFINED(HEXEN) OR DEFINED(STRIFE)))}
+    class function S_DefaultMusicForMap(const map: integer): integer; static;
+
+{$ENDIF}
+{$IF (NOT ((DEFINED(HEXEN) OR DEFINED(STRIFE))))}
+    class function S_DefaultMusicForMap(const episode, map: integer): integer; static;
+
+{$ENDIF}
+  end;
 
 implementation
 
@@ -470,12 +486,38 @@ var
   // made by S_InitSoundDevice
   sound_sfx: ISfxPlayer = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSoundLocalRoutines = class sealed
+  public
+    class function S_RegisterSong(data: pointer; size: integer): integer; static;
+    class function S_GetSfxLumpNum(sfxinfo: Psfxinfo_t): integer; static;
+    class function S_StartSfx(id: integer; vol: integer; sep: integer; pitch: integer;
+      priority: integer): integer; static;
+    class function S_SfxIsPlaying(handle: integer): boolean; static; inline;
+    class procedure S_SetUseExternalWav(const newu: boolean); static;
+    class function S_ExternalMusicCache: IExternalMusicCache; static;
+    class function S_TryLoadExternalMusic(music: Pmusicinfo_t): boolean; static;
+    class procedure S_CmdUseMP3(const parm1: string = ''); static;
+    class procedure S_CmdUseExternalWav(const parm: string = ''); static;
+    class procedure S_CmdMidiTempo(const parm1: string = ''); static;
+    class procedure S_DoChangeMusic(music: Pmusicinfo_t; looping: boolean); static;
+    class procedure S_StopChannel(cnum: integer); static;
+    class function S_AdjustSoundParams(listener: Pmobj_t; source: Pmobj_t;
+      vol: Pinteger; sep: Pinteger; pitch: Pinteger): boolean; static;
+    class function S_ChannelPriority(ASound: pointer): integer; static;
+    class function S_GetChannel(origin: pointer; sfxinfo: Psfxinfo_t): integer; static;
+  end;
+
 //==============================================================================
 //
 // S_ConfigureSound
 //
 //==============================================================================
-procedure S_ConfigureSound(const AFactory: TSfxPlayerFactory);
+class procedure TSoundRoutines.S_ConfigureSound(const AFactory: TSfxPlayerFactory);
 begin
   sound_sfxfactory := AFactory;
 end;
@@ -485,7 +527,7 @@ end;
 // S_ConfigureMusic
 //
 //==============================================================================
-procedure S_ConfigureMusic(const APlayer: IMusicPlayer);
+class procedure TSoundRoutines.S_ConfigureMusic(const APlayer: IMusicPlayer);
 begin
   sound_music := APlayer;
 end;
@@ -495,7 +537,7 @@ end;
 // S_InitSoundDevice
 //
 //==============================================================================
-procedure S_InitSoundDevice;
+class procedure TSoundRoutines.S_InitSoundDevice;
 var
   i: integer;
 begin
@@ -518,7 +560,7 @@ end;
 // S_ShutDownSoundDevice
 //
 //==============================================================================
-procedure S_ShutDownSoundDevice;
+class procedure TSoundRoutines.S_ShutDownSoundDevice;
 begin
   if sound_sfx <> nil then
   begin
@@ -535,7 +577,7 @@ end;
 // S_InitMusicDevice
 //
 //==============================================================================
-procedure S_InitMusicDevice;
+class procedure TSoundRoutines.S_InitMusicDevice;
 begin
   if sound_music = nil then
     I_Error('I_InitMusic(): the music was not configured');
@@ -547,7 +589,7 @@ end;
 // S_ShutDownMusicDevice
 //
 //==============================================================================
-procedure S_ShutDownMusicDevice;
+class procedure TSoundRoutines.S_ShutDownMusicDevice;
 begin
   if sound_music <> nil then
     sound_music.Shutdown;
@@ -558,7 +600,7 @@ end;
 // S_ProcessMusic
 //
 //==============================================================================
-procedure S_ProcessMusic;
+class procedure TSoundRoutines.S_ProcessMusic;
 begin
   if sound_music <> nil then
     sound_music.Process;
@@ -571,7 +613,7 @@ end;
 // The handle of a song; 0 before the music is configured (as I_RegisterSong did)
 //
 //==============================================================================
-function S_RegisterSong(data: pointer; size: integer): integer;
+class function TSoundLocalRoutines.S_RegisterSong(data: pointer; size: integer): integer;
 begin
   if sound_music <> nil then
     result := sound_music.Register(data, size)
@@ -586,7 +628,7 @@ end;
 // Retrieve the raw data lump index for a given SFX name (it was I_GetSfxLumpNum).
 //
 //==============================================================================
-function S_GetSfxLumpNum(sfxinfo: Psfxinfo_t): integer;
+class function TSoundLocalRoutines.S_GetSfxLumpNum(sfxinfo: Psfxinfo_t): integer;
 var
   namebuf: string;
 begin
@@ -600,10 +642,10 @@ begin
 
   sprintf(namebuf, 'ds%s', [sfxinfo.name]);
   if Length(namebuf) <= 8 then
-    result := W_CheckNumForName(namebuf);
+    result := TWadRoutines.W_CheckNumForName(namebuf);
 
   if result = -1 then // JVAL, search without the ds prefix
-    result := W_CheckNumForName(sfxinfo.name);
+    result := TWadRoutines.W_CheckNumForName(sfxinfo.name);
 end;
 
 //==============================================================================
@@ -615,7 +657,7 @@ end;
 // priority are not used by the mixing, as before.
 //
 //==============================================================================
-function S_StartSfx(id: integer; vol: integer; sep: integer; pitch: integer;
+class function TSoundLocalRoutines.S_StartSfx(id: integer; vol: integer; sep: integer; pitch: integer;
   priority: integer): integer;
 begin
   result := 0;
@@ -640,7 +682,7 @@ end;
 // S_SfxIsPlaying
 //
 //==============================================================================
-function S_SfxIsPlaying(handle: integer): boolean; inline;
+class function TSoundLocalRoutines.S_SfxIsPlaying(handle: integer): boolean;
 begin
   result := (sound_sfx <> nil) and sound_sfx.IsPlaying(handle);
 end;
@@ -652,7 +694,7 @@ end;
 // The samples that were read change source: all of them are read again
 //
 //==============================================================================
-procedure S_SetUseExternalWav(const newu: boolean);
+class procedure TSoundLocalRoutines.S_SetUseExternalWav(const newu: boolean);
 var
   i: integer;
 begin
@@ -675,7 +717,7 @@ end;
 // S_ConfigureExternalMusic
 //
 //==============================================================================
-procedure S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
+class procedure TSoundRoutines.S_ConfigureExternalMusic(const ACache: IExternalMusicCache);
 begin
   sound_externalmusic := ACache;
 end;
@@ -685,7 +727,7 @@ end;
 // S_ExternalMusicCache
 //
 //==============================================================================
-function S_ExternalMusicCache: IExternalMusicCache;
+class function TSoundLocalRoutines.S_ExternalMusicCache: IExternalMusicCache;
 begin
   if sound_externalmusic = nil then
     I_Error('S_ConfigureExternalMusic() was not called: the external music cannot be loaded');
@@ -699,11 +741,11 @@ end;
 // A MOD, S3M, IT or XM file with the name of the lump: the cache finds it and keeps it
 //
 //==============================================================================
-function S_TryLoadExternalMusic(music: Pmusicinfo_t): boolean;
+class function TSoundLocalRoutines.S_TryLoadExternalMusic(music: Pmusicinfo_t): boolean;
 var
   clip: IExternalMusicClip;
 begin
-  clip := S_ExternalMusicCache.Find(char8tostring(W_GetNameForNum(music.lumpnum)));
+  clip := S_ExternalMusicCache.Find(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(music.lumpnum)));
   if clip = nil then
   begin
     result := false;
@@ -790,36 +832,31 @@ var
 // Internals.
 //
 //==============================================================================
-function S_GetChannel(origin: pointer; sfxinfo: Psfxinfo_t): integer; forward;
 
 //==============================================================================
 //
 // S_AdjustSoundParams
 //
 //==============================================================================
-function S_AdjustSoundParams(listener: Pmobj_t; source: Pmobj_t;
-  vol: Pinteger; sep: Pinteger; pitch: Pinteger): boolean; forward;
 
 //==============================================================================
 //
 // S_StopChannel
 //
 //==============================================================================
-procedure S_StopChannel(cnum: integer); forward;
 
 //==============================================================================
 //
 // S_DoChangeMusic
 //
 //==============================================================================
-procedure S_DoChangeMusic(music: Pmusicinfo_t; looping: boolean); forward;
 
 //==============================================================================
 //
 // S_CmdUseMP3
 //
 //==============================================================================
-procedure S_CmdUseMP3(const parm1: string = '');
+class procedure TSoundLocalRoutines.S_CmdUseMP3(const parm1: string = '');
 var
   newu: boolean;
 begin
@@ -844,7 +881,7 @@ end;
 // S_CmdUseExternalWav
 //
 //==============================================================================
-procedure S_CmdUseExternalWav(const parm: string = '');
+class procedure TSoundLocalRoutines.S_CmdUseExternalWav(const parm: string = '');
 begin
   if parm = '' then
   begin
@@ -861,7 +898,7 @@ end;
 // S_CmdMidiTempo
 //
 //==============================================================================
-procedure S_CmdMidiTempo(const parm1: string = '');
+class procedure TSoundLocalRoutines.S_CmdMidiTempo(const parm1: string = '');
 var
   newt: integer;
 begin
@@ -896,9 +933,9 @@ end;
 //
 //==============================================================================
 {$IFDEF STRIFE}
-procedure S_Init(sfxVolume: integer; musicVolume: integer; voiceVolume: integer);
+class procedure TSoundRoutines.S_Init(sfxVolume: integer; musicVolume: integer; voiceVolume: integer);
 {$ELSE}
-procedure S_Init(sfxVolume: integer; musicVolume: integer);
+class procedure TSoundRoutines.S_Init(sfxVolume: integer; musicVolume: integer);
 {$ENDIF}
 var
   i: integer;
@@ -916,7 +953,7 @@ begin
   printf('  default music volume %d'#13#10, [musicVolume]);
 {$ENDIF}
 
-  S_ExternalMusicCache.Clear;
+  TSoundLocalRoutines.S_ExternalMusicCache.Clear;
 
   S_SetSfxVolume(sfxVolume);
   // No music with Linux - another dummy.
@@ -968,9 +1005,9 @@ begin
     S_sfx[i].usefulness := -1;
   end;
 
-  C_AddCmd('usemp3', @S_CmdUseMP3);
-  C_AddCmd('useexternalwav', @S_CmdUseExternalWav);
-  C_AddCmd('miditempo', @S_CmdMidiTempo);
+  C_AddCmd('usemp3', @TSoundLocalRoutines.S_CmdUseMP3);
+  C_AddCmd('useexternalwav', @TSoundLocalRoutines.S_CmdUseExternalWav);
+  C_AddCmd('miditempo', @TSoundLocalRoutines.S_CmdMidiTempo);
 end;
 
 //==============================================================================
@@ -979,7 +1016,7 @@ end;
 // S_InitDEHExtraSounds
 //
 //==============================================================================
-procedure S_InitDEHExtraSounds;
+class procedure TSoundRoutines.S_InitDEHExtraSounds;
 var
   i: integer;
 begin
@@ -1002,7 +1039,7 @@ end;
 // S_ShutDownSound
 //
 //==============================================================================
-procedure S_ShutDownSound;
+class procedure TSoundRoutines.S_ShutDownSound;
 begin
   S_FreeRandomSoundLists;
   if sound_externalmusic <> nil then
@@ -1015,9 +1052,9 @@ end;
 //
 //==============================================================================
 {$IF DEFINED(HEXEN) OR DEFINED(STRIFE)}
-function S_DefaultMusicForMap(const map: integer): integer;
+class function TSoundRoutines.S_DefaultMusicForMap(const map: integer): integer;
 {$ELSE}
-function S_DefaultMusicForMap(const episode, map: integer): integer;
+class function TSoundRoutines.S_DefaultMusicForMap(const episode, map: integer): integer;
 {$ENDIF}
 {$IFNDEF HEXEN}
 var
@@ -1049,7 +1086,7 @@ begin
 //  determines music if any, changes music.
 //
 //==============================================================================
-procedure S_Start;
+class procedure TSoundRoutines.S_Start;
 var
   cnum: integer;
   mnum: integer;
@@ -1058,7 +1095,7 @@ begin
   //  (trust me - a good idea)
   for cnum := 0 to numChannels - 1 do
     if channels[cnum].sfxinfo <> nil then
-      S_StopChannel(cnum);
+      TSoundLocalRoutines.S_StopChannel(cnum);
 
   // start new music for the level
   mus_paused := false;
@@ -1077,7 +1114,7 @@ end;
 // S_StartSoundAtVolume
 //
 //==============================================================================
-procedure S_StartSoundAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
+class procedure TSoundRoutines.S_StartSoundAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
 var
   rc: boolean;
   sep: integer;
@@ -1126,7 +1163,7 @@ begin
   //  and if not, modify the params
   if (origin <> nil) and (origin <> TGameSession.Players[TGameSession.ConsolePlayer].mo) then
   begin
-    rc := S_AdjustSoundParams(TGameSession.Players[TGameSession.ConsolePlayer].mo, origin,
+    rc := TSoundLocalRoutines.S_AdjustSoundParams(TGameSession.Players[TGameSession.ConsolePlayer].mo, origin,
            @volume,
            @sep,
            @pitch);
@@ -1172,7 +1209,7 @@ begin
 {$ENDIF}
 
   // try to find a channel
-  cnum := S_GetChannel(origin, sfx);
+  cnum := TSoundLocalRoutines.S_GetChannel(origin, sfx);
 
   if cnum < 0 then
   begin
@@ -1189,7 +1226,7 @@ begin
   // get lumpnum if necessary
   if sfx.lumpnum < 0 then
   begin
-    sfx.lumpnum := S_GetSfxLumpNum(sfx);
+    sfx.lumpnum := TSoundLocalRoutines.S_GetSfxLumpNum(sfx);
 
     // JVAL
     // Prevent crash, simply don't play the sound
@@ -1210,7 +1247,7 @@ begin
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pitch := 127 - (M_Random and 3) + (M_Random and 3);
 {$ENDIF}
-  channels[cnum].handle := S_StartSfx(sfx_id, volume, sep, pitch, priority);
+  channels[cnum].handle := TSoundLocalRoutines.S_StartSfx(sfx_id, volume, sep, pitch, priority);
 end;
 
 //==============================================================================
@@ -1218,7 +1255,7 @@ end;
 // S_StartSound
 //
 //==============================================================================
-procedure S_StartSound(origin: pointer; sfx_id: integer);
+class procedure TSoundRoutines.S_StartSound(origin: pointer; sfx_id: integer);
 begin
   S_StartSoundAtVolume(origin, sfx_id, snd_SfxVolume);
 end;
@@ -1228,7 +1265,7 @@ end;
 // S_StartSound
 //
 //==============================================================================
-procedure S_StartSound(origin: pointer; const sndname: string);
+class procedure TSoundRoutines.S_StartSound(origin: pointer; const sndname: string);
 begin
   S_StartSoundAtVolume(origin, S_GetSoundNumForName(sndname), snd_SfxVolume);
 {$IFDEF STRIFE}
@@ -1239,7 +1276,7 @@ end;
 // S_StartVoiceAtVolume
 //
 //==============================================================================
-procedure S_StartVoiceAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
+class procedure TSoundRoutines.S_StartVoiceAtVolume(origin_p: pointer; sfx_id: integer; volume: integer);
 var
   rc: boolean;
   sep: integer;
@@ -1290,7 +1327,7 @@ begin
   //  and if not, modify the params
   if (origin <> nil) and (origin <> TGameSession.Players[TGameSession.ConsolePlayer].mo) then
   begin
-    rc := S_AdjustSoundParams(TGameSession.Players[TGameSession.ConsolePlayer].mo, origin,
+    rc := TSoundLocalRoutines.S_AdjustSoundParams(TGameSession.Players[TGameSession.ConsolePlayer].mo, origin,
            @volume,
            @sep,
            @pitch);
@@ -1309,7 +1346,7 @@ begin
   S_StopSound(origin);
 
   // try to find a channel
-  cnum := S_GetChannel(origin, sfx);
+  cnum := TSoundLocalRoutines.S_GetChannel(origin, sfx);
 
   if cnum < 0 then
     exit;
@@ -1323,7 +1360,7 @@ begin
   // get lumpnum if necessary
   if sfx.lumpnum < 0 then
   begin
-    sfx.lumpnum := S_GetSfxLumpNum(sfx);
+    sfx.lumpnum := TSoundLocalRoutines.S_GetSfxLumpNum(sfx);
 
     // JVAL
     // Prevent crash, simply don't play the sound
@@ -1341,7 +1378,7 @@ begin
 
   // Assigns the handle to one of the channels in the
   //  mix/output buffer.
-  channels[cnum].handle := S_StartSfx(sfx_id, volume, sep, pitch, priority);
+  channels[cnum].handle := TSoundLocalRoutines.S_StartSfx(sfx_id, volume, sep, pitch, priority);
 end;
 
 //==============================================================================
@@ -1349,7 +1386,7 @@ end;
 // S_StartVoice
 //
 //==============================================================================
-procedure S_StartVoice(const sndname: string);
+class procedure TSoundRoutines.S_StartVoice(const sndname: string);
 var
   id: integer;
 begin
@@ -1360,7 +1397,7 @@ begin
   if (id < 0) or (id > numsfx) then
     exit;
 
-  if W_CheckNumForName(S_sfx[id].name) < 0 then
+  if TWadRoutines.W_CheckNumForName(S_sfx[id].name) < 0 then
     exit;
 
   S_sfx[id].priority := 2;
@@ -1375,7 +1412,7 @@ end;
 // From Woof: [FG] removed map objects may finish their sounds
 //
 //==============================================================================
-procedure S_UnlinkSound(origin: Pmobj_t);
+class procedure TSoundRoutines.S_UnlinkSound(origin: Pmobj_t);
 var
   cnum: integer;
 begin
@@ -1398,7 +1435,7 @@ end;
 // S_StopSound
 //
 //==============================================================================
-procedure S_StopSound(origin: pointer);
+class procedure TSoundRoutines.S_StopSound(origin: pointer);
 var
   cnum: integer;
 begin
@@ -1406,7 +1443,7 @@ begin
   begin
     if (channels[cnum].sfxinfo <> nil) and (channels[cnum].origin = origin) then
     begin
-      S_StopChannel(cnum);
+      TSoundLocalRoutines.S_StopChannel(cnum);
       break;
     end;
   end;
@@ -1418,12 +1455,12 @@ end;
 // S_StopAllSounds
 //
 //==============================================================================
-procedure S_StopAllSounds;
+class procedure TSoundRoutines.S_StopAllSounds;
 var
   i: integer;
 begin
   for i := 0 to numChannels - 1 do
-    S_StopChannel(i);
+    TSoundLocalRoutines.S_StopChannel(i);
 end;
 
 //==============================================================================
@@ -1433,7 +1470,7 @@ end;
 // Stop and resume music, during game PAUSE.
 //
 //==============================================================================
-procedure S_PauseSound;
+class procedure TSoundRoutines.S_PauseSound;
 begin
   if (mus_playing <> nil) and not mus_paused then
   begin
@@ -1448,7 +1485,7 @@ end;
 // S_ResumeSound
 //
 //==============================================================================
-procedure S_ResumeSound;
+class procedure TSoundRoutines.S_ResumeSound;
 begin
   if (mus_playing <> nil) and mus_paused then
   begin
@@ -1464,7 +1501,7 @@ end;
 // Updates music & sounds
 //
 //==============================================================================
-procedure S_UpdateSounds(listener_p: pointer);
+class procedure TSoundRoutines.S_UpdateSounds(listener_p: pointer);
 var
   audible: boolean;
   cnum: integer;
@@ -1496,7 +1533,7 @@ begin
     if sfx <> nil then
 {$ENDIF}
     begin
-      if S_SfxIsPlaying(c.handle) then
+      if TSoundLocalRoutines.S_SfxIsPlaying(c.handle) then
       begin
         // initialize parameters
         volume := snd_SfxVolume;
@@ -1510,7 +1547,7 @@ begin
           volume := volume + sfx.volume;
           if volume < 1 then
           begin
-            S_StopChannel(cnum);
+            TSoundLocalRoutines.S_StopChannel(cnum);
             continue;
           end
           else if volume > snd_SfxVolume then
@@ -1524,11 +1561,11 @@ begin
         //  or modify their params
         if (c.origin <> nil) and (NativeInt(listener_p) <> NativeInt(c.origin)) then
         begin
-          audible := S_AdjustSoundParams(listener, c.origin, @volume, @sep, @pitch);
+          audible := TSoundLocalRoutines.S_AdjustSoundParams(listener, c.origin, @volume, @sep, @pitch);
 
           if not audible then
           begin
-            S_StopChannel(cnum);
+            TSoundLocalRoutines.S_StopChannel(cnum);
           end
           else
             sound_sfx.UpdateParams(c.handle, volume, sep);
@@ -1538,7 +1575,7 @@ begin
       begin
         // if channel is allocated but sound has stopped,
         //  free it
-        S_StopChannel(cnum);
+        TSoundLocalRoutines.S_StopChannel(cnum);
       end;
     end;
   end;
@@ -1549,7 +1586,7 @@ end;
 // S_SetMusicVolume
 //
 //==============================================================================
-procedure S_SetMusicVolume(volume: integer);
+class procedure TSoundRoutines.S_SetMusicVolume(volume: integer);
 begin
   if (volume < 0) or (volume > 15) then
   begin
@@ -1567,7 +1604,7 @@ end;
 // S_SetSfxVolume
 //
 //==============================================================================
-procedure S_SetSfxVolume(volume: integer);
+class procedure TSoundRoutines.S_SetSfxVolume(volume: integer);
 begin
 {$IFDEF DOOM}
   if (volume < 0) or (volume > 15) then
@@ -1592,7 +1629,7 @@ end;
 // S_SetVoiceVolume
 //
 //==============================================================================
-procedure S_SetVoiceVolume(volume: integer);
+class procedure TSoundRoutines.S_SetVoiceVolume(volume: integer);
 begin
   if (volume < 0) or (volume > 127) then
   begin
@@ -1610,7 +1647,7 @@ end;
 // Starts some music with the music id found in sounds.h.
 //
 //==============================================================================
-procedure S_StartMusic(music_id: integer);
+class procedure TSoundRoutines.S_StartMusic(music_id: integer);
 begin
   S_ChangeMusic(music_id, false);
 end;
@@ -1620,7 +1657,7 @@ end;
 // S_DoChangeMusic
 //
 //==============================================================================
-procedure S_DoChangeMusic(music: Pmusicinfo_t; looping: boolean);
+class procedure TSoundLocalRoutines.S_DoChangeMusic(music: Pmusicinfo_t; looping: boolean);
 var
   i: integer;
   namebuf: char8_t;
@@ -1630,7 +1667,7 @@ var
   mp3error: boolean;
 begin
   // shutdown old music
-  S_StopMusic;
+  TSoundRoutines.S_StopMusic;
 
   // get lumpnum if neccessary
 {$IFDEF HEXEN}
@@ -1640,26 +1677,26 @@ begin
 {$ENDIF}
   begin
 {$IF DEFINED(HERETIC)}
-    namebuf := stringtochar8('MUS_' + music.name);
-    music.lumpnum := W_CheckNumForName(namebuf);
+    namebuf := TWadRoutines.stringtochar8('MUS_' + music.name);
+    music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
 {$ELSEIF DEFINED(HEXEN)}
     if Length(music.name) <= 4 then
     begin
-      namebuf := stringtochar8('MUS_' + music.name);
-      music.lumpnum := W_CheckNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8('MUS_' + music.name);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
     end;
 {$ELSE}
-    namebuf := stringtochar8('d_' + music.name);
-    music.lumpnum := W_CheckNumForName(namebuf);
+    namebuf := TWadRoutines.stringtochar8('d_' + music.name);
+    music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
 {$ENDIF}
     if music.lumpnum <= 0 then
     begin
 {$IF DEFINED(HERETIC)}
-      namebuf := stringtochar8(music.name);
-      music.lumpnum := W_GetNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8(music.name);
+      music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
 {$ELSEIF DEFINED(HEXEN)}
-      namebuf := stringtochar8(music.name);
-      music.lumpnum := W_CheckNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8(music.name);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
     end;
     if music.lumpnum <= 0 then
     begin
@@ -1669,23 +1706,23 @@ begin
       music.lumpnum := S_music[Ord(mus_map01)].lumpnum;
       if music.lumpnum <= 0 then
       begin
-        namebuf :=  stringtochar8(music.name);
-        music.lumpnum := W_GetNumForName(namebuf);
+        namebuf :=  TWadRoutines.stringtochar8(music.name);
+        music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
       end;
 {$ELSE}
-      namebuf := stringtochar8('d_' + music.alias);
-      music.lumpnum := W_CheckNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8('d_' + music.alias);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
       if music.lumpnum <= 0 then
       begin
-        namebuf := stringtochar8(music.name);
-        music.lumpnum := W_CheckNumForName(namebuf);
+        namebuf := TWadRoutines.stringtochar8(music.name);
+        music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
       end;
     end;
 
     if music.lumpnum <= 0 then
     begin
-      namebuf := stringtochar8(music.alias);
-      music.lumpnum := W_GetNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8(music.alias);
+      music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
 {$ENDIF}
     end;
   end;
@@ -1729,15 +1766,15 @@ begin
     mp3header.ID := MP3MAGIC;
     mp3header.Stream := music.mp3stream;
     music.data := mp3header;
-    music.handle := S_RegisterSong(music.data, W_LumpLength(music.lumpnum));
+    music.handle := S_RegisterSong(music.data, TWadRoutines.W_LumpLength(music.lumpnum));
   end
   else
   begin
     if not S_TryLoadExternalMusic(music) then
     begin
       // load & register it
-      music.data := W_CacheLumpNum(music.lumpnum, PU_MUSIC);
-      music.handle := S_RegisterSong(music.data, W_LumpLength(music.lumpnum));
+      music.data := TWadRoutines.W_CacheLumpNum(music.lumpnum, PU_MUSIC);
+      music.handle := S_RegisterSong(music.data, TWadRoutines.W_LumpLength(music.lumpnum));
     end;
   end;
 
@@ -1754,7 +1791,7 @@ end;
 // S_ChangeMusic
 //
 //==============================================================================
-procedure S_ChangeMusic(musicnum: integer; looping: boolean);
+class procedure TSoundRoutines.S_ChangeMusic(musicnum: integer; looping: boolean);
 var
   music: Pmusicinfo_t;
 begin
@@ -1771,7 +1808,7 @@ begin
     if music.name = mus_playing.name then
       exit;
 
-  S_DoChangeMusic(music, looping);
+  TSoundLocalRoutines.S_DoChangeMusic(music, looping);
 end;
 
 //==============================================================================
@@ -1779,7 +1816,7 @@ end;
 // S_StopMusic
 //
 //==============================================================================
-procedure S_StopMusic;
+class procedure TSoundRoutines.S_StopMusic;
 begin
   if mus_playing <> nil then
   begin
@@ -1807,7 +1844,7 @@ end;
 // S_StopChannel
 //
 //==============================================================================
-procedure S_StopChannel(cnum: integer);
+class procedure TSoundLocalRoutines.S_StopChannel(cnum: integer);
 var
   i: integer;
   c: Pchannel_t;
@@ -1847,7 +1884,7 @@ end;
 // Otherwise, modifies parameters and returns 1.
 //
 //==============================================================================
-function S_AdjustSoundParams(listener: Pmobj_t; source: Pmobj_t;
+class function TSoundLocalRoutines.S_AdjustSoundParams(listener: Pmobj_t; source: Pmobj_t;
   vol: Pinteger; sep: Pinteger; pitch: Pinteger): boolean;
 var
   fullvolumelevel: boolean;
@@ -1881,7 +1918,7 @@ end;
 // The priority of the sound of a channel, for TSfxChannelPicker
 //
 //==============================================================================
-function S_ChannelPriority(ASound: pointer): integer;
+class function TSoundLocalRoutines.S_ChannelPriority(ASound: pointer): integer;
 begin
   result := Psfxinfo_t(ASound).priority;
 end;
@@ -1892,7 +1929,7 @@ end;
 //   If none available, return -1.  Otherwise channel #.
 //
 //==============================================================================
-function S_GetChannel(origin: pointer; sfxinfo: Psfxinfo_t): integer;
+class function TSoundLocalRoutines.S_GetChannel(origin: pointer; sfxinfo: Psfxinfo_t): integer;
 var
   choice: TSfxChannelChoice;
   c: Pchannel_t;
@@ -1927,7 +1964,7 @@ end;
 // S_GetChannelInfo
 //
 //==============================================================================
-procedure S_GetChannelInfo(s: Psoundinfo_t);
+class procedure TSoundRoutines.S_GetChannelInfo(s: Psoundinfo_t);
 var
   i: integer;
   c: Pchaninfo_t;
@@ -1966,7 +2003,7 @@ end;
 // S_GetChannelInfo
 //
 //==============================================================================
-procedure S_GetChannelInfo(s: Psoundinfo_t);
+class procedure TSoundRoutines.S_GetChannelInfo(s: Psoundinfo_t);
 var
   i: integer;
   c: Pchaninfo_t;
@@ -2004,7 +2041,7 @@ end;
 // S_GetSoundPlayingInfo
 //
 //==============================================================================
-function S_GetSoundPlayingInfo(mobj: Pmobj_t; sound_id: integer): boolean;
+class function TSoundRoutines.S_GetSoundPlayingInfo(mobj: Pmobj_t; sound_id: integer): boolean;
 var
   i: integer;
   c_id: integer;
@@ -2015,7 +2052,7 @@ begin
     begin
       c_id := (NativeInt(channels[i].sfxinfo) - NativeInt(@S_sfx[0])) div SizeOf(sfxinfo_t); // JVAL SOS
       if c_id = sound_id then
-        if S_SfxIsPlaying(channels[i].handle) then
+        if TSoundLocalRoutines.S_SfxIsPlaying(channels[i].handle) then
         begin
           result := true;
           exit;
@@ -2031,7 +2068,7 @@ end;
 // S_PrecacheSounds
 //
 //==============================================================================
-procedure S_PrecacheSounds;
+class procedure TSoundRoutines.S_PrecacheSounds;
 var
   hitlist: PBooleanArray;
   i: integer;
@@ -2074,11 +2111,11 @@ begin
   for i := 1 to numsfx - 1 do
     if hitlist[i] then
     begin
-      S_sfx[i].lumpnum := S_GetSfxLumpNum(@S_sfx[i]);
+      S_sfx[i].lumpnum := TSoundLocalRoutines.S_GetSfxLumpNum(@S_sfx[i]);
       if S_sfx[i].lumpnum >= 0 then
       begin
-        W_CacheLumpNum(S_sfx[i].lumpnum, PU_SOUND);
-        sndmem := sndmem + W_LumpLength(S_sfx[i].lumpnum);
+        TWadRoutines.W_CacheLumpNum(S_sfx[i].lumpnum, PU_SOUND);
+        sndmem := sndmem + TWadRoutines.W_LumpLength(S_sfx[i].lumpnum);
       end;
     end;
   printf('%6d KB memory usage for sound cache'#13#10, [sndmem div 1024]);

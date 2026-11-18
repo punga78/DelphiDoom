@@ -907,7 +907,7 @@ begin
   cy := y;
 
   oldtranslation := v_translation;
-  v_translation := W_CacheLumpName('TRN_MENU', PU_STATIC);
+  v_translation := TWadRoutines.W_CacheLumpName('TRN_MENU', PU_STATIC);
   while true do
   begin
     if ch > len then
@@ -2316,7 +2316,7 @@ class procedure TMenuLocalRoutines.M_StartSound(origin: pointer; sfx_id: integer
 begin
   if TGameSession.GameState = GS_ENDOOM then
     exit;
-  S_StartSound(origin, sfx_id);
+  TSoundRoutines.S_StartSound(origin, sfx_id);
 end;
 
 //==============================================================================
@@ -2444,7 +2444,7 @@ end;
 class procedure TMenuLocalRoutines.M_DrawReadThisExt;
 begin
   inhelpscreens := true;
-  V_PageDrawer(char8tostring(W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
+  V_PageDrawer(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
 end;
 
 //==============================================================================
@@ -3247,7 +3247,7 @@ begin
     0: if snd_SfxVolume <> 0 then dec(snd_SfxVolume);
     1: if snd_SfxVolume < 15 then inc(snd_SfxVolume);
   end;
-  S_SetSfxVolume(snd_SfxVolume);
+  TSoundRoutines.S_SetSfxVolume(snd_SfxVolume);
 end;
 
 //==============================================================================
@@ -3261,7 +3261,7 @@ begin
     0: if snd_MusicVolume <> 0 then dec(snd_MusicVolume);
     1: if snd_MusicVolume < 15 then inc(snd_MusicVolume);
   end;
-  S_SetMusicVolume(snd_MusicVolume);
+  TSoundRoutines.S_SetMusicVolume(snd_MusicVolume);
 end;
 
 //==============================================================================
@@ -3275,7 +3275,7 @@ begin
     0: if snd_VoiceVolume > 0 then dec(snd_VoiceVolume);
     1: if snd_VoiceVolume < 15 then inc(snd_VoiceVolume);
   end;
-  S_SetVoiceVolume(snd_VoiceVolume);
+  TSoundRoutines.S_SetVoiceVolume(snd_VoiceVolume);
 end;
 
 //==============================================================================
@@ -5039,7 +5039,7 @@ begin
       exit;
   end;
 
-  src := W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
+  src := TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
   dest := 0;
 
   for y := 0 to 200 - 1 do
@@ -5441,7 +5441,7 @@ begin
   extrahelpscreens := TDNumberList.Create;
   for i := 1 to 99 do
   begin
-    lump := W_CheckNumForName('HELP' + IntToStrzFill(2, i));
+    lump := TWadRoutines.W_CheckNumForName('HELP' + IntToStrzFill(2, i));
     if lump >= 0 then
       extrahelpscreens.Add(lump);
   end;

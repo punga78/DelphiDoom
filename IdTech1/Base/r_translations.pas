@@ -181,13 +181,13 @@ var
       Result := False;
       Exit;
     end;
-    lumpname := char8tostring(stringtochar8(wadname));
-    lump := W_CheckNumForName(lumpname);
+    lumpname := TWadRoutines.char8tostring(TWadRoutines.stringtochar8(wadname));
+    lump := TWadRoutines.W_CheckNumForName(lumpname);
     if lump >= 0 then
-      if W_LumpLength(lump) = SizeOf(translationtable_t) then
+      if TWadRoutines.W_LumpLength(lump) = SizeOf(translationtable_t) then
       begin
         newtrans := Z_Malloc(SizeOf(translationtable_t), PU_STATIC, nil);
-        W_ReadLump(lump, newtrans);
+        TWadRoutines.W_ReadLump(lump, newtrans);
         Result := True;
         Exit;
       end;

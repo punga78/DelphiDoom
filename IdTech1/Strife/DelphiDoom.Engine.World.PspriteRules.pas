@@ -280,7 +280,7 @@ begin
     player.pendingweapon := player.readyweapon;
 
   if player.pendingweapon = wp_flame then
-    S_StartSound(player.mo, Ord(sfx_flidl));  // villsa [STRIFE] flame sounds
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_flidl));  // villsa [STRIFE] flame sounds
 
   newstate := statenum_t(weaponinfo[Ord(player.pendingweapon)].upstate);
 
@@ -424,7 +424,7 @@ begin
   // haleyjd 09/06/10: fixed state (00 rather than 01)
   if (player.readyweapon = wp_flame) and
      (psp.state = @states[Ord(S_FLMT_00)]) then // 62
-    S_StartSound(player.mo, Ord(sfx_flidl));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_flidl));
 
   // check for change
   //  if player is dead, put the weapon away
@@ -520,9 +520,9 @@ begin
   begin
     // villsa [STRIFE] check for non-flesh types
     if TMapAim.LineTarget.flags and MF_NOBLOOD <> 0 then
-      S_StartSound(player.mo, Ord(sfx_mtalht))
+      TSoundRoutines.S_StartSound(player.mo, Ord(sfx_mtalht))
     else
-      S_StartSound(player.mo, Ord(sfx_meatht));
+      TSoundRoutines.S_StartSound(player.mo, Ord(sfx_meatht));
 
     player.mo.angle :=
       TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
@@ -534,7 +534,7 @@ begin
     TStrifeMonsterActions.P_DoPunchAlert(player.mo, TMapAim.LineTarget);
   end
   else
-    S_StartSound (player.mo, Ord(sfx_swish));
+    TSoundRoutines.S_StartSound (player.mo, Ord(sfx_swish));
 end;
 
 //==============================================================================
@@ -633,7 +633,7 @@ begin
 
   // change momz based on player's pitch
   mo.momz := FixedMul((player.lookdir * FRACUNIT) div 160, mo.info.speed) + (8 * FRACUNIT);
-  S_StartSound(mo, mo.info.seesound);
+  TSoundRoutines.S_StartSound(mo, mo.info.seesound);
 
   radius := mobjinfo[_type].radius + player.mo.info.radius;
   an := player.mo.angle div ANGLETOFINEUNIT;
@@ -670,7 +670,7 @@ begin
   dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)]);
   P_SpawnPlayerMissile(player.mo, Ord(MT_ELECARROW));
   player.mo.angle := an;
-  S_StartSound(player.mo, Ord(sfx_xbow));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_xbow));
 end;
 
 //==============================================================================
@@ -689,7 +689,7 @@ begin
   dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)]);
   P_SpawnPlayerMissile(player.mo, Ord(MT_POISARROW));
   player.mo.angle := an;
-  S_StartSound(player.mo, Ord(sfx_xbow));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_xbow));
 end;
 
 type
@@ -738,7 +738,7 @@ end;
 //==============================================================================
 class procedure TStrifeWeaponActions.A_FireRifle(player: Pplayer_t; pspr: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_rifle));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_rifle));
 
   if player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)] > 0 then
   begin
@@ -771,7 +771,7 @@ begin
     TCommonAttackActions.P_BulletSlope(player.mo);
     if TMapAim.LineTarget <> nil then
       player.mo.target := TMapAim.LineTarget;
-    S_StartSound(player.mo, Ord(sfx_pgrdat));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_pgrdat));
 
     for i := 0 to 19 do
     begin
@@ -793,7 +793,7 @@ end;
 //==============================================================================
 class procedure TStrifeWeaponActions.A_SigilSound(player: Pplayer_t; pspr: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_siglup));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_siglup));
   player.extralight := 2;
 end;
 
@@ -836,7 +836,7 @@ begin
   // restore armor
   player.armortype := i;
 
-  S_StartSound(player.mo, Ord(sfx_siglup));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_siglup));
 
   case player.sigiltype of
     // falling lightning bolts from the sky
@@ -997,7 +997,7 @@ end;
 //==============================================================================
 class procedure TStrifeWeaponActions.A_MaulerSound(player: Pplayer_t; psp: pspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_proton));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_proton));
   psp.sx := psp.sx + (P_Random - P_Random) * 1024;
   psp.sy := psp.sy + (P_Random - P_Random) * 1024;
 end;

@@ -352,7 +352,7 @@ begin
     player.pendingweapon := player.readyweapon;
 
   if player.pendingweapon = wp_chainsaw then
-    S_StartSound(player.mo, Ord(sfx_sawup));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_sawup));
 
   if G_PlayingEngineVersion >= VERSION207 then
     if player.pendingweapon = wp_nochange then
@@ -527,7 +527,7 @@ begin
 
   if (player.readyweapon = wp_chainsaw) and
      (psp.state = @states[Ord(S_SAW)]) then
-    S_StartSound(player.mo, Ord(sfx_sawidl));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_sawidl));
 
   // check for change
   //  if player is dead, put the weapon away
@@ -661,7 +661,7 @@ begin
   // turn to face target
   if TMapAim.LineTarget <> nil then
   begin
-    S_StartSound(player.mo, Ord(sfx_punch));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_punch));
     player.mo.angle :=
       TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
@@ -698,11 +698,11 @@ begin
 
   if TMapAim.LineTarget = nil then
   begin
-    S_StartSound(player.mo, Ord(sfx_sawful));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_sawful));
     exit;
   end;
 
-  S_StartSound(player.mo, Ord(sfx_sawhit));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_sawhit));
 
   // turn to face target
   angle :=
@@ -789,7 +789,7 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_FirePistol(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_pistol));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_pistol));
 
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
@@ -810,7 +810,7 @@ class procedure TDoomWeaponActions.A_FireShotgun(player: Pplayer_t; psp: Ppspdef
 var
   i: integer;
 begin
-  S_StartSound(player.mo, Ord(sfx_shotgn));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_shotgn));
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
   TWeaponLocalActions.P_SubtractAmmo(player, 1);
@@ -834,7 +834,7 @@ var
   angle: angle_t;
   damage: integer;
 begin
-  S_StartSound(player.mo, Ord(sfx_dshtgn));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_dshtgn));
   P_SetMobjState(player.mo, S_PLAY_ATK2);
 
   TWeaponLocalActions.P_SubtractAmmo(player, 2);
@@ -860,7 +860,7 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_pistol));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_pistol));
 
   if player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)] = 0 then
     exit;
@@ -947,7 +947,7 @@ end;
 //==============================================================================
 class procedure TDoomWeaponActions.A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
 begin
-  S_StartSound(player.mo, Ord(sfx_bfg));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_bfg));
 end;
 
 //==============================================================================

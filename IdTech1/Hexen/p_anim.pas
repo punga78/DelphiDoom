@@ -244,7 +244,7 @@ begin
   if foundSec then
   begin
     SkyTexture := P_GetMapSky2Texture(TGameSession.GameMap); // set alternate sky
-    S_StartSound(nil, Ord(SFX_THUNDER_CRASH));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_THUNDER_CRASH));
   end;
   // Calculate the next lighting flash
   if NextLightningFlash = 0 then
@@ -406,7 +406,7 @@ begin
   fd := 0;
   ad := @AnimDefs[0];
   AnimDefCount := 0;
-  sc := TScriptScanner.Create(TScannerText.RemoveLineQuotes(W_TextLumpName(ANIM_SCRIPT_NAME)), TEngineScannerLog.Create);
+  sc := TScriptScanner.Create(TScannerText.RemoveLineQuotes(TWadRoutines.W_TextLumpName(ANIM_SCRIPT_NAME)), TEngineScannerLog.Create);
   while sc.GetString do
   begin
     if AnimDefCount = MAX_ANIM_DEFS then
@@ -428,7 +428,7 @@ begin
     ignore := false;
     if ad._type = ANIM_FLAT then
     begin
-      if W_CheckNumForName(sc.AsString) = -1 then
+      if TWadRoutines.W_CheckNumForName(sc.AsString) = -1 then
       begin
         ignore := true;
       end

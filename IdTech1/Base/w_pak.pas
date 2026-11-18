@@ -54,13 +54,6 @@ const
 
   s_TEX_PATH = PAK_TEXTURE_PATH;
 
-//==============================================================================
-//
-// PAK_GetDirectoryListFromString
-//
-//==============================================================================
-function PAK_GetDirectoryListFromString(const aprefdirs: string): TDStringList;
-
 type
   /// <summary>A file of the PAK file system given by PAK_Configure (see TPakFileStream)</summary>
   TPakStream = class(TPakFileStream)
@@ -70,79 +63,95 @@ type
     constructor Create(const idx: integer); overload;
   end;
 
-//==============================================================================
-//
-// PAK_Configure
-// Gives the unit the PAK file system. The composition root calls it
-// before PAK_InitFileSystem
-//
-//==============================================================================
-procedure PAK_Configure(const AFiles: IPakFileSystem; const AContainers: IPakContainers);
-
-//==============================================================================
-//
-// PAK_InitFileSystem
-//
-//==============================================================================
-procedure PAK_InitFileSystem;
-
-//==============================================================================
-//
-// PAK_ShutDown
-//
-//==============================================================================
-procedure PAK_ShutDown;
-
-//==============================================================================
-//
-// PAK_AddFile
-//
-//==============================================================================
-function PAK_AddFile(const FileName: string): boolean;
-
 type
   stringparmproc_t = procedure(const atext: string);
-
-//==============================================================================
-//
-// PAK_StringIterator
-//
-//==============================================================================
-function PAK_StringIterator(const filename: string; proc: stringparmproc_t): integer;
-
-//==============================================================================
-//
-// PAK_FileNameIterator
-//
-//==============================================================================
-function PAK_FileNameIterator(proc: stringparmproc_t): integer;
-
-//==============================================================================
-//
-// PAK_ReadFileAsString
-//
-//==============================================================================
-function PAK_ReadFileAsString(const filename: string): string;
-
-//==============================================================================
-//
-// PAK_ReadAllFilesAsString
-//
-//==============================================================================
-function PAK_ReadAllFilesAsString(const filename: string): string;
-
-//==============================================================================
-//
-// PAK_LoadPendingPaks
-//
-//==============================================================================
-procedure PAK_LoadPendingPaks;
 
 //==============================================================================
 //
 // PAK_GetGlobalHash
 //
 //==============================================================================
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TPakRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // PAK_GetDirectoryListFromString
+    //
+    //==============================================================================
+    class function PAK_GetDirectoryListFromString(const aprefdirs: string): TDStringList; static;
+
+    //==============================================================================
+    //
+    // PAK_Configure
+    // Gives the unit the PAK file system. The composition root calls it
+    // before PAK_InitFileSystem
+    //
+    //==============================================================================
+    class procedure PAK_Configure(const AFiles: IPakFileSystem; const AContainers: IPakContainers); static;
+
+    //==============================================================================
+    //
+    // PAK_InitFileSystem
+    //
+    //==============================================================================
+    class procedure PAK_InitFileSystem; static;
+
+    //==============================================================================
+    //
+    // PAK_ShutDown
+    //
+    //==============================================================================
+    class procedure PAK_ShutDown; static;
+
+    //==============================================================================
+    //
+    // PAK_AddFile
+    //
+    //==============================================================================
+    class function PAK_AddFile(const FileName: string): boolean; static;
+
+    //==============================================================================
+    //
+    // PAK_StringIterator
+    //
+    //==============================================================================
+    class function PAK_StringIterator(const filename: string; proc: stringparmproc_t): integer; static;
+
+    //==============================================================================
+    //
+    // PAK_FileNameIterator
+    //
+    //==============================================================================
+    class function PAK_FileNameIterator(proc: stringparmproc_t): integer; static;
+
+    //==============================================================================
+    //
+    // PAK_ReadFileAsString
+    //
+    //==============================================================================
+    class function PAK_ReadFileAsString(const filename: string): string; static;
+
+    //==============================================================================
+    //
+    // PAK_ReadAllFilesAsString
+    //
+    //==============================================================================
+    class function PAK_ReadAllFilesAsString(const filename: string): string; static;
+
+    //==============================================================================
+    //
+    // PAK_LoadPendingPaks
+    //
+    //==============================================================================
+    class procedure PAK_LoadPendingPaks; static;
+  end;
+
 
 implementation
 
@@ -155,12 +164,24 @@ var
   pakfilesystem: IPakFileSystem = nil;
   pakcontainers: IPakContainers = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TPakLocalRoutines = class sealed
+  public
+    class function PAK_Files: IPakFileSystem; static;
+    class function PAK_Containers: IPakContainers; static;
+    class function PAK_DirectoryArray(const alist: TDStringList): TArray<string>; static;
+  end;
+
 //==============================================================================
 //
 // PAK_Files
 //
 //==============================================================================
-function PAK_Files: IPakFileSystem;
+class function TPakLocalRoutines.PAK_Files: IPakFileSystem;
 begin
   if pakfilesystem = nil then
     I_Error('PAK_Files(): the PAK file system was not configured (PAK_Configure)');
@@ -172,7 +193,7 @@ end;
 // PAK_Containers
 //
 //==============================================================================
-function PAK_Containers: IPakContainers;
+class function TPakLocalRoutines.PAK_Containers: IPakContainers;
 begin
   if pakcontainers = nil then
     I_Error('PAK_Containers(): the PAK file system was not configured (PAK_Configure)');
@@ -184,7 +205,7 @@ end;
 // PAK_DirectoryArray
 //
 //==============================================================================
-function PAK_DirectoryArray(const alist: TDStringList): TArray<string>;
+class function TPakLocalRoutines.PAK_DirectoryArray(const alist: TDStringList): TArray<string>;
 var
   i: integer;
 begin
@@ -201,7 +222,7 @@ end;
 // PAK_GetDirectoryListFromString
 //
 //==============================================================================
-function PAK_GetDirectoryListFromString(const aprefdirs: string): TDStringList;
+class function TPakRoutines.PAK_GetDirectoryListFromString(const aprefdirs: string): TDStringList;
 var
   dir: string;
 begin
@@ -217,7 +238,7 @@ end;
 //==============================================================================
 constructor TPakStream.Create(const FileName: string; amode: pakmode_t; const apreflist: TDStringList; const adir: string = '');
 begin
-  inherited Create(PAK_Files, FileName, amode, PAK_DirectoryArray(apreflist), adir);
+  inherited Create(TPakLocalRoutines.PAK_Files, FileName, amode, TPakLocalRoutines.PAK_DirectoryArray(apreflist), adir);
 end;
 
 //==============================================================================
@@ -227,7 +248,7 @@ end;
 //==============================================================================
 constructor TPakStream.Create(const FileName: string; amode: pakmode_t; const aprefdirs: string = ''; const adir: string = '');
 begin
-  inherited Create(PAK_Files, FileName, amode, TPakNames.DirectoryList(aprefdirs), adir);
+  inherited Create(TPakLocalRoutines.PAK_Files, FileName, amode, TPakNames.DirectoryList(aprefdirs), adir);
 end;
 
 //==============================================================================
@@ -237,7 +258,7 @@ end;
 //==============================================================================
 constructor TPakStream.Create(const idx: integer);
 begin
-  inherited CreateEntry(PAK_Files, idx);
+  inherited CreateEntry(TPakLocalRoutines.PAK_Files, idx);
 end;
 
 //==============================================================================
@@ -245,7 +266,7 @@ end;
 // PAK_Configure
 //
 //==============================================================================
-procedure PAK_Configure(const AFiles: IPakFileSystem; const AContainers: IPakContainers);
+class procedure TPakRoutines.PAK_Configure(const AFiles: IPakFileSystem; const AContainers: IPakContainers);
 begin
   pakfilesystem := AFiles;
   pakcontainers := AContainers;
@@ -256,9 +277,9 @@ end;
 // PAK_InitFileSystem
 //
 //==============================================================================
-procedure PAK_InitFileSystem;
+class procedure TPakRoutines.PAK_InitFileSystem;
 begin
-  PAK_Containers.Initialize;
+  TPakLocalRoutines.PAK_Containers.Initialize;
 end;
 
 //==============================================================================
@@ -266,9 +287,9 @@ end;
 // PAK_ShutDown
 //
 //==============================================================================
-procedure PAK_ShutDown;
+class procedure TPakRoutines.PAK_ShutDown;
 begin
-  PAK_Containers.ShutDown;
+  TPakLocalRoutines.PAK_Containers.ShutDown;
 end;
 
 //==============================================================================
@@ -276,9 +297,9 @@ end;
 // PAK_LoadPendingPaks
 //
 //==============================================================================
-procedure PAK_LoadPendingPaks;
+class procedure TPakRoutines.PAK_LoadPendingPaks;
 begin
-  PAK_Containers.LoadPending;
+  TPakLocalRoutines.PAK_Containers.LoadPending;
 end;
 
 //==============================================================================
@@ -286,9 +307,9 @@ end;
 // PAK_AddFile
 //
 //==============================================================================
-function PAK_AddFile(const FileName: string): boolean;
+class function TPakRoutines.PAK_AddFile(const FileName: string): boolean;
 begin
-  result := PAK_Containers.AddFile(FileName);
+  result := TPakLocalRoutines.PAK_Containers.AddFile(FileName);
 end;
 
 //==============================================================================
@@ -296,12 +317,12 @@ end;
 // PAK_StringIterator
 //
 //==============================================================================
-function PAK_StringIterator(const filename: string; proc: stringparmproc_t): integer;
+class function TPakRoutines.PAK_StringIterator(const filename: string; proc: stringparmproc_t): integer;
 var
   text: string;
 begin
   result := 0;
-  for text in PAK_Files.Texts(filename) do
+  for text in TPakLocalRoutines.PAK_Files.Texts(filename) do
   begin
     proc(text);
     inc(result);
@@ -313,12 +334,12 @@ end;
 // PAK_FileNameIterator
 //
 //==============================================================================
-function PAK_FileNameIterator(proc: stringparmproc_t): integer;
+class function TPakRoutines.PAK_FileNameIterator(proc: stringparmproc_t): integer;
 var
   i: integer;
   files: IPakFileSystem;
 begin
-  files := PAK_Files;
+  files := TPakLocalRoutines.PAK_Files;
   result := files.EntryCount;
   for i := 0 to result - 1 do
     proc(files.EntryName(i));
@@ -329,9 +350,9 @@ end;
 // PAK_ReadFileAsString
 //
 //==============================================================================
-function PAK_ReadFileAsString(const filename: string): string;
+class function TPakRoutines.PAK_ReadFileAsString(const filename: string): string;
 begin
-  result := PAK_Files.ReadText(filename);
+  result := TPakLocalRoutines.PAK_Files.ReadText(filename);
 end;
 
 //==============================================================================
@@ -339,9 +360,9 @@ end;
 // PAK_ReadAllFilesAsString
 //
 //==============================================================================
-function PAK_ReadAllFilesAsString(const filename: string): string;
+class function TPakRoutines.PAK_ReadAllFilesAsString(const filename: string): string;
 begin
-  result := PAK_Files.ReadAllTexts(filename);
+  result := TPakLocalRoutines.PAK_Files.ReadAllTexts(filename);
 end;
 
 end.

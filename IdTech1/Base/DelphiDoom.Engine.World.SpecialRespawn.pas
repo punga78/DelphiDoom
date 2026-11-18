@@ -80,7 +80,7 @@ procedure A_RestoreArtifact(arti: Pmobj_t);
 begin
   arti.flags := arti.flags or MF_SPECIAL;
   P_SetMobjState(arti, statenum_t(arti.info.spawnstate));
-  S_StartSound(arti, Ord(sfx_respawn));
+  TSoundRoutines.S_StartSound(arti, Ord(sfx_respawn));
 end;
 
 //==============================================================================
@@ -92,7 +92,7 @@ procedure A_RestoreSpecialThing1(thing: Pmobj_t);
 begin
   TInterGameRules.RepositionSpecial(thing);
   thing.flags2 := thing.flags2 and not MF2_DONTDRAW;
-  S_StartSound(thing, Ord(sfx_respawn));
+  TSoundRoutines.S_StartSound(thing, Ord(sfx_respawn));
 end;
 
 //==============================================================================

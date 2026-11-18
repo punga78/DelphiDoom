@@ -116,12 +116,12 @@ var
   lumpname: string;
   lump: integer;
 begin
-  S_ChangeMusic(Ord(mus_intro), true);
+  TSoundRoutines.S_ChangeMusic(Ord(mus_intro), true);
 
   sprintf(lumpname, 'EndEpisode%dText', [TGameSession.GameEpisode]);
-  lump := W_CheckNumForName(lumpname);
+  lump := TWadRoutines.W_CheckNumForName(lumpname);
   if lump >= 0 then
-    finaletext := W_TextLumpNum(lump)
+    finaletext := TWadRoutines.W_TextLumpNum(lump)
   else
     finaletext := 'The End';
   finalecount := 0;

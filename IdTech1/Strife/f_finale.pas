@@ -285,7 +285,7 @@ begin
   cx := 20;
   cy := 20;
 
-  ch := TMenuRoutines.M_DialogDimMsg(cx, cy, W_TextLumpName('T1TEXT'), false);
+  ch := TMenuRoutines.M_DialogDimMsg(cx, cy, TWadRoutines.W_TextLumpName('T1TEXT'), false);
   len := Length(ch);
 
   count := (finalecount - 10) div TEXTSPEED;
@@ -349,7 +349,7 @@ begin
   amstate := am_inactive;
   wipegamestate := -1;
 
-  slideshow_panel := char8tostring(W_GetNameForNum(D_Panel0Lump));
+  slideshow_panel := TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(D_Panel0Lump));
 
   case TGameSession.GameMap of
     3:  // Macil's exposition on the Programmer
@@ -405,9 +405,9 @@ begin
   end;
 
   if teaser > 0 then
-    S_ChangeMusic(Ord(mus_drone), true)
+    TSoundRoutines.S_ChangeMusic(Ord(mus_drone), true)
   else
-    S_ChangeMusic(Ord(mus_dark), true);
+    TSoundRoutines.S_ChangeMusic(Ord(mus_dark), true);
   slideshow_tics := 7;
   finalestage := F_STAGE_TEXT;
   finalecount := 0;
@@ -445,35 +445,35 @@ begin
         slideshow_tics := 700;
         slideshow_state := SLIDE_EXIT;
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F1');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC10'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC10'));
         slideshow_state := SLIDE_PROGRAMMER2;
         slideshow_tics := 315;
       end;
     SLIDE_PROGRAMMER1: // state #1
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F1');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC10'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC10'));
         slideshow_state := SLIDE_PROGRAMMER2;
         slideshow_tics := 315;
       end;
     SLIDE_PROGRAMMER2: // state #2
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F2');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC11'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC11'));
         slideshow_state := SLIDE_PROGRAMMER3;
         slideshow_tics := 350;
       end;
     SLIDE_PROGRAMMER3: // state #3
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F3');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC12'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC12'));
         slideshow_state := SLIDE_PROGRAMMER4;
         slideshow_tics := 420;
       end;
     SLIDE_PROGRAMMER4: // state #4
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F4');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC13'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC13'));
         slideshow_state := SLIDE_EXITHACK; // End of slides
         slideshow_tics := 595;
       end;
@@ -481,28 +481,28 @@ begin
     SLIDE_SIGIL1: // state #5
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F1');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC16'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC16'));
         slideshow_state := SLIDE_SIGIL2;
         slideshow_tics := 350;
       end;
     SLIDE_SIGIL2: // state #6
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F2');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC17'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC17'));
         slideshow_state := SLIDE_SIGIL3;
         slideshow_tics := 420;
       end;
     SLIDE_SIGIL3: // state #7
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F3');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC18'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC18'));
         slideshow_tics := 420;
         slideshow_state := SLIDE_SIGIL4;
       end;
     SLIDE_SIGIL4: // state #8
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F4');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC19'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('MAC19'));
         slideshow_tics := 385;
         slideshow_state := SLIDE_EXITHACK; // End of slides
       end;
@@ -510,22 +510,22 @@ begin
     SLIDE_GOODEND1: // state #10
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F1');
-        S_StartMusic(Ord(mus_happy));
-        S_StartVoice(TDehMainRoutines.DEH_GetString('RIE01'));
+        TSoundRoutines.S_StartMusic(Ord(mus_happy));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('RIE01'));
         slideshow_state := SLIDE_GOODEND2;
         slideshow_tics := 455;
       end;
     SLIDE_GOODEND2: // state #11
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F2');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('BBX01'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('BBX01'));
         slideshow_state := SLIDE_GOODEND3;
         slideshow_tics := 385;
       end;
     SLIDE_GOODEND3: // state #12
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F3');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('BBX02'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('BBX02'));
         slideshow_state := SLIDE_GOODEND4;
         slideshow_tics := 490;
       end;
@@ -538,47 +538,47 @@ begin
 
     SLIDE_BADEND1: // state #14
       begin
-        S_StartMusic(Ord(mus_sad));
+        TSoundRoutines.S_StartMusic(Ord(mus_sad));
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS5F1');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('SS501b'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('SS501b'));
         slideshow_state := SLIDE_BADEND2;
         slideshow_tics := 385;
       end;
     SLIDE_BADEND2: // state #15
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS5F2');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('SS502b'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('SS502b'));
         slideshow_state := SLIDE_BADEND3;
         slideshow_tics := 350;
       end;
     SLIDE_BADEND3: // state #16
       begin
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS5F3');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('SS503b'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('SS503b'));
         slideshow_state := SLIDE_EXIT; // Go to end credits
         slideshow_tics := 385;
       end;
     SLIDE_BLAHEND1: // state #17
       begin
-        S_StartMusic(Ord(mus_end));
+        TSoundRoutines.S_StartMusic(Ord(mus_end));
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS6F1');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('SS601A'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('SS601A'));
         slideshow_state := SLIDE_BLAHEND2;
         slideshow_tics := 280;
       end;
     SLIDE_BLAHEND2: // state #18
       begin
-        S_StartMusic(Ord(mus_end));
+        TSoundRoutines.S_StartMusic(Ord(mus_end));
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS6F2');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('SS602A'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('SS602A'));
         slideshow_state := SLIDE_BLAHEND3;
         slideshow_tics := 280;
       end;
     SLIDE_BLAHEND3: // state #19
       begin
-        S_StartMusic(Ord(mus_end));
+        TSoundRoutines.S_StartMusic(Ord(mus_end));
         slideshow_panel := TDehMainRoutines.DEH_GetString('SS6F3');
-        S_StartVoice(TDehMainRoutines.DEH_GetString('SS603A'));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('SS603A'));
         slideshow_state := SLIDE_EXIT; // Go to credits
         slideshow_tics := 315;
       end;
@@ -601,7 +601,7 @@ begin
       end;
     SLIDE_HACKHACK: // state -9: unknown bizarre unused state
       begin
-        S_StartSound(nil, Ord(sfx_rifle));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_rifle));
         slideshow_tics := 3150;
       end;
     SLIDE_EXIT: // state -1: proceed to next finale stage
@@ -609,7 +609,7 @@ begin
         finalecount := 0;
         finalestage := F_STAGE_ARTSCREEN;
         wipegamestate := -1;
-        S_StartMusic(Ord(mus_fast));
+        TSoundRoutines.S_StartMusic(Ord(mus_fast));
         // haleyjd 20130301: The ONLY glitch fixed in 1.31 of Strife
         // *would* be something this insignificant, of course!
         if (gameversion <> exe_strife_1_31) then
@@ -630,7 +630,7 @@ begin
         finalestage := F_STAGE_ARTSCREEN;
         if menuactive then
           wipegamestate := -1;
-        S_StartMusic(Ord(mus_fast));
+        TSoundRoutines.S_StartMusic(Ord(mus_fast));
         slideshow_state := SLIDE_CHOCO; // remain here.
       end;
   end;
@@ -638,7 +638,7 @@ begin
   finalecount := 0;
   if gameversion <> exe_strife_1_31 then // See above. This was removed in 1.31.
   begin
-    patch := W_CacheLumpNum(D_Panel0Lump, PU_STATIC);
+    patch := TWadRoutines.W_CacheLumpNum(D_Panel0Lump, PU_STATIC);
     V_DrawPatchFullScreenTMP320x200(patch);
     Z_ChangeTag(patch, PU_CACHE);
   end;
@@ -744,7 +744,7 @@ begin
     if castorder[castnum]._type = DO_NUMMOBJTYPES then
       castnum := 0;
     if mobjinfo[Ord(castorder[castnum]._type)].seesound <> 0 then
-      S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].seesound);
+      TSoundRoutines.S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].seesound);
     caststate := @states[mobjinfo[Ord(castorder[castnum]._type)].seestate];
     castframes := 0;
   end
@@ -778,7 +778,7 @@ begin
     else
       sfx := mobjinfo[Ord(castorder[castnum]._type)].attacksound;
     if sfx <> 0 then
-      S_StartSound(nil, sfx);
+      TSoundRoutines.S_StartSound(nil, sfx);
   end;
 
   if (castframes = 12) and not castdeath then
@@ -845,7 +845,7 @@ begin
   castframes := 0;
   castattacking := false;
   if mobjinfo[Ord(castorder[castnum]._type)].deathsound <> 0 then
-    S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].deathsound);
+    TSoundRoutines.S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].deathsound);
 
   result := true;
 end;
@@ -938,7 +938,7 @@ begin
   lump := sprframe.lump[0];
   flip := sprframe.flip[0];
 
-  patch := W_CacheLumpNum(lump + firstspritelump, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpNum(lump + firstspritelump, PU_STATIC);
   if flip then
     V_DrawPatchFlipped(160, 170, SCN_TMP, patch)
   else
@@ -1018,8 +1018,8 @@ var
   name: string;
   stage: integer;
 begin
-  p1 := W_CacheLumpName(TDehMainRoutines.DEH_GetString('credit'), PU_LEVEL);
-  p2 := W_CacheLumpName(TDehMainRoutines.DEH_GetString('vellogo'), PU_LEVEL);
+  p1 := TWadRoutines.W_CacheLumpName(TDehMainRoutines.DEH_GetString('credit'), PU_LEVEL);
+  p2 := TWadRoutines.W_CacheLumpName(TDehMainRoutines.DEH_GetString('vellogo'), PU_LEVEL);
 
   scrolled := 320 - (finalecount - 230) div 2;
   if scrolled > 320 then
@@ -1051,7 +1051,7 @@ begin
         stage := 6;
       if stage > laststage then
       begin
-        S_StartSound(nil, Ord(sfx_mtalht));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_mtalht));
         laststage := stage;
       end;
 
@@ -1094,7 +1094,7 @@ begin
     F_STAGE_TEXT:
       begin
         // Draw slideshow panel
-        patch := W_CacheLumpName(slideshow_panel, PU_STATIC);
+        patch := TWadRoutines.W_CacheLumpName(slideshow_panel, PU_STATIC);
         V_DrawPatchFullScreenTMP320x200(patch);
         Z_ChangeTag(patch, PU_CACHE);
         V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);
@@ -1105,7 +1105,7 @@ begin
         if TGameSession.GameMap <= 29 then
         begin
           // draw credits
-          patch := W_CacheLumpName(TDehMainRoutines.DEH_GetString('CREDIT'), PU_STATIC);
+          patch := TWadRoutines.W_CacheLumpName(TDehMainRoutines.DEH_GetString('CREDIT'), PU_STATIC);
           V_DrawPatchFullScreenTMP320x200(patch);
           Z_ChangeTag(patch, PU_CACHE);
           V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);

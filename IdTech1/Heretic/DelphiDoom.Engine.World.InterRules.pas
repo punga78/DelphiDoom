@@ -293,7 +293,7 @@ begin
     player.pendingweapon := weapon;
 
     if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
-      S_StartSound(nil, Ord(sfx_wpnup));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
   end;
@@ -483,7 +483,7 @@ begin
   else // Don't respawn
     P_SetMobjState(arti, S_DEADARTI1);
 
-  S_StartSound(arti, Ord(sfx_artiup));
+  TSoundRoutines.S_StartSound(arti, Ord(sfx_artiup));
 end;
 
 //---------------------------------------------------------------------------
@@ -556,7 +556,7 @@ begin
   oldFlags2 := pmo.flags2;
   P_SetMobjState(pmo, S_FREETARGMOBJ);
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
   chicken := P_SpawnMobj(x, y, z, Ord(MT_CHICPLAYER));
   chicken.special1 := Ord(player.readyweapon);
   chicken.angle := angle;
@@ -620,7 +620,7 @@ begin
   target := actor.target;
   P_SetMobjState(actor, S_FREETARGMOBJ);
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
   chicken := P_SpawnMobj(x, y, z, Ord(MT_CHICKEN));
   chicken.special2 := moType;
   chicken.special1 := CHICKENTICS + P_Random;
@@ -1110,7 +1110,7 @@ begin
 
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
-    S_StartSound(nil, sound);
+    TSoundRoutines.S_StartSound(nil, sound);
     //SB_PaletteFlash; // JVAL Check
   end;
 end;
@@ -1154,7 +1154,7 @@ begin
         Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] :=
           Pplayer_t(source.player).frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
         if source.player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-          S_StartSound(nil, Ord(sfx_gfrag));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_gfrag));
         if Pplayer_t(source.player).chickenTics <> 0 then // Make a super chicken
           TInterRoutines.P_GivePower(source.player, Ord(pw_weaponlevel2));
       end;

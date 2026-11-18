@@ -1280,7 +1280,7 @@ begin
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(3));
-    S_StartSound(actor, Ord(sfx_kgtat2));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_kgtat2));
     exit;
   end;
   A_AttackSound1(actor);
@@ -1490,7 +1490,7 @@ begin
   mo.angle := oldChicken.angle;
   mo.target := oldChicken.target;
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
   result := true;
 end;
 
@@ -1600,10 +1600,10 @@ begin
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(2));
-    S_StartSound(actor, Ord(sfx_mumat2));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_mumat2));
     exit;
   end;
-  S_StartSound(actor, Ord(sfx_mumat1));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_mumat1));
 end;
 
 //==============================================================================
@@ -1783,9 +1783,9 @@ begin
   if P_TeleportMove(actor, x, y) then
   begin
     mo := P_SpawnMobj(prevX, prevY, prevZ, Ord(MT_SOR2TELEFADE));
-    S_StartSound(mo, Ord(sfx_telept));
+    TSoundRoutines.S_StartSound(mo, Ord(sfx_telept));
     P_SetMobjState(actor, S_SOR2_TELE1);
-    S_StartSound(actor, Ord(sfx_telept));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_telept));
     actor.z := actor.floorz;
     actor.angle := BossSpots[i mod BossSpotCount].angle;
     actor.momx := 0;
@@ -1891,7 +1891,7 @@ begin
   P_SetMobjState(actor, statenum_t(mobjinfo[actor._type].deathstate));
   actor.flags := actor.flags and not MF_MISSILE;
   fog := P_SpawnMobj(actor.x, actor.y, actor.z, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
 end;
 
 //==============================================================================
@@ -1926,7 +1926,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SorZap(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_sorzap));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_sorzap));
 end;
 
 //==============================================================================
@@ -1936,7 +1936,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SorRise(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_sorrise));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_sorrise));
 end;
 
 //==============================================================================
@@ -1946,7 +1946,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SorDSph(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_sordsph));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_sordsph));
 end;
 
 //==============================================================================
@@ -1956,7 +1956,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SorDExp(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_sordexp));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_sordexp));
 end;
 
 //==============================================================================
@@ -1966,7 +1966,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SorDBon(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_sordbon));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_sordbon));
 end;
 
 //==============================================================================
@@ -1976,7 +1976,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_SorSightSnd(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(sfx_sorsit));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_sorsit));
 end;
 
 //==============================================================================
@@ -1991,7 +1991,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_stfpow));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_stfpow));
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(4));
@@ -2019,7 +2019,7 @@ begin
   if target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_minsit));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_minsit));
   dist := TMapUtilRoutines.P_AproxDistance(actor.x - target.x, actor.y - target.y);
   if (target.z + target.height > actor.z) and
      (target.z + target.height < actor.z + actor.height) and
@@ -2087,7 +2087,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_minat2));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_minat2));
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(5));
@@ -2096,7 +2096,7 @@ begin
   mo := P_SpawnMissile(actor, actor.target, Ord(MT_MNTRFX1));
   if mo <> nil then
   begin
-    S_StartSound(mo, Ord(sfx_minat2));
+    TSoundRoutines.S_StartSound(mo, Ord(sfx_minat2));
     momz := mo.momz;
     angle := mo.angle;
     TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_MNTRFX1), angle - (ANG45 div 8), momz);
@@ -2130,7 +2130,7 @@ begin
   begin
     mo := P_SpawnMissile(actor, actor.target, Ord(MT_MNTRFX2));
     if mo <> nil then
-      S_StartSound(mo, Ord(sfx_minat1));
+      TSoundRoutines.S_StartSound(mo, Ord(sfx_minat1));
   end;
   if (P_Random < 192) and (actor.special2 = 0) then
   begin
@@ -2221,7 +2221,7 @@ begin
   if randAttack < atkResolve1[dist] then
   begin // Ice ball
     P_SpawnMissile(actor, target, Ord(MT_HEADFX1));
-    S_StartSound(actor, Ord(sfx_hedat2));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_hedat2));
   end
   else if randAttack < atkResolve2[dist] then
   begin // Fire column
@@ -2233,7 +2233,7 @@ begin
       begin
         fire := P_SpawnMobj(baseFire.x, baseFire.y, baseFire.z, Ord(MT_HEADFX3));
         if i = 0 then
-          S_StartSound(actor, Ord(sfx_hedat1));
+          TSoundRoutines.S_StartSound(actor, Ord(sfx_hedat1));
         fire.target := baseFire.target;
         fire.angle := baseFire.angle;
         fire.momx := baseFire.momx;
@@ -2254,7 +2254,7 @@ begin
       mo.special1 := NativeInt(target);
       mo.special2 := 50; // Timer for active sound
       mo.health := 20 * TICRATE; // Duration
-      S_StartSound(actor, Ord(sfx_hedat3));
+      TSoundRoutines.S_StartSound(actor, Ord(sfx_hedat3));
     end;
   end;
 end;
@@ -2281,7 +2281,7 @@ begin
   if actor.special2 < 0 then
   begin
     actor.special2 := 58 + (P_Random and 31);
-    S_StartSound(actor, Ord(sfx_hedat3));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_hedat3));
   end;
 
   if (actor.special1 <> 0) and
@@ -2469,7 +2469,7 @@ begin
         // Handle the different player death screams
         if actor.special1 < 10 then
         begin // Wimpy death sound
-          S_StartSound(actor, Ord(sfx_plrwdth));
+          TSoundRoutines.S_StartSound(actor, Ord(sfx_plrwdth));
         end
         else if actor.health > -50 then
         begin // Normal death sound
@@ -2477,11 +2477,11 @@ begin
         end
         else if actor.health > -100 then
         begin // Crazy death sound
-          S_StartSound(actor, Ord(sfx_plrcdth));
+          TSoundRoutines.S_StartSound(actor, Ord(sfx_plrcdth));
         end
         else
         begin // Extreme death sound
-          S_StartSound(actor, Ord(sfx_gibdth));
+          TSoundRoutines.S_StartSound(actor, Ord(sfx_gibdth));
         end
       end;
     else if actor.info.deathsound <> 0 then
@@ -2667,7 +2667,7 @@ begin
 
   P_SetMobjState(mo, S_POD_GROW1);
   TCommonMovementActions.P_ThrustMobj(mo, LongWord(P_Random) * $1000000, $48000);
-  S_StartSound(mo, Ord(sfx_newpod));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_newpod));
   inc(actor.special1); // Increment generated pod count
   mo.special2 := NativeInt(actor); // Link the generator to the pod
 end;
@@ -2845,7 +2845,7 @@ begin
   else
     exit;
   end;
-  S_StartSound(mo, sound);
+  TSoundRoutines.S_StartSound(mo, sound);
 end;
 
 //==============================================================================
@@ -2959,7 +2959,7 @@ begin
       blast.momx := FixedMul(FRACUNIT, finecosine[angle]);
       blast.momy := FixedMul(FRACUNIT, finesine[angle]);
       blast.momz := $28000 + (P_Random * 1024);
-      S_StartSound(blast, Ord(sfx_volsht));
+      TSoundRoutines.S_StartSound(blast, Ord(sfx_volsht));
       P_CheckMissileSpawn(blast);
     end;
   end;
@@ -3101,7 +3101,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_FlameSnd(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_hedat1)); // Burn sound
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_hedat1)); // Burn sound
 end;
 
 //==============================================================================
@@ -3135,9 +3135,9 @@ class procedure THereticMonsterActions.A_ContMobjSound(actor: Pmobj_t);
 begin
   case actor._type of
     Ord(MT_KNIGHTAXE):
-      S_StartSound(actor, Ord(sfx_kgtatk));
+      TSoundRoutines.S_StartSound(actor, Ord(sfx_kgtatk));
     Ord(MT_MUMMYFX1):
-      S_StartSound(actor, Ord(sfx_mumhed));
+      TSoundRoutines.S_StartSound(actor, Ord(sfx_mumhed));
   end;
 end;
 

@@ -613,9 +613,9 @@ procedure P_GiveObjective(const x: string; const minlumpnum: integer);
 var
   obj_ln: integer;
 begin
-  obj_ln := W_CheckNumForName(TDehMainRoutines.DEH_GetString(x));
+  obj_ln := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString(x));
   if obj_ln > minlumpnum then
-    mission_objective := W_TextLumpNum(obj_ln);
+    mission_objective := TWadRoutines.W_TextLumpNum(obj_ln);
 end;
 
 //==============================================================================
@@ -628,10 +628,10 @@ procedure P_GiveVoiceObjective(const voice, log: string; const minlumpnum: integ
 var
   obj_ln: integer;
 begin
-  obj_ln := W_CheckNumForName(TDehMainRoutines.DEH_GetString(log));
-  S_StartVoice(TDehMainRoutines.DEH_GetString(voice));
+  obj_ln := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString(log));
+  TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString(voice));
   if obj_ln > minlumpnum then
-    mission_objective := W_TextLumpNum(obj_ln);
+    mission_objective := TWadRoutines.W_TextLumpNum(obj_ln);
 end;
 
 //
@@ -954,7 +954,7 @@ var
   oldformat: boolean;
   voc: string;
 begin
-  lumpnum := W_CheckNumForName(lumpname);
+  lumpnum := TWadRoutines.W_CheckNumForName(lumpname);
   if lumpnum < 0 then
   begin
     dialogs := nil;
@@ -962,7 +962,7 @@ begin
     exit;
   end;
 
-  lumplen := W_LumpLength(lumpnum);
+  lumplen := TWadRoutines.W_LumpLength(lumpnum);
   if lumplen = 0 then
   begin
     dialogs := nil;
@@ -993,7 +993,7 @@ begin
   if oldformat then
   begin
     olddialogs := Z_Malloc(lumplen, PU_STATIC, nil);
-    W_ReadLump(lumpnum, olddialogs);
+    TWadRoutines.W_ReadLump(lumpnum, olddialogs);
     ZeroMemory(dialogs, numdialogs * SizeOf(mapdialog_t));
     for i := 0 to numdialogs - 1 do
     begin
@@ -1022,7 +1022,7 @@ begin
     Z_Free(olddialogs);
   end
   else
-    W_ReadLump(lumpnum, dialogs);
+    TWadRoutines.W_ReadLump(lumpnum, dialogs);
 end;
 
 //==============================================================================
@@ -1321,7 +1321,7 @@ begin
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
     if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-      S_StartSound(nil, sound);
+      TSoundRoutines.S_StartSound(nil, sound);
     result := true;
     exit;
   end;
@@ -1695,7 +1695,7 @@ begin
 
   // Play sound.
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-    S_StartSound(nil, sound);
+    TSoundRoutines.S_StartSound(nil, sound);
 
   result := true;
 end;
@@ -1787,7 +1787,7 @@ begin
 
   currentchoice := @currentdialog.choices[choice];
 
-  S_StopSound(nil);
+  TSoundRoutines.S_StopSound(nil);
 
   // villsa 09/08/10: converted into for loop
   for i := 0 to MDLG_MAXITEMS - 1 do
@@ -1831,7 +1831,7 @@ begin
   begin
     objective := currentchoice.objective;
     if objective <> 0 then
-      mission_objective := W_TextLumpName('LOG' + itoa(objective));
+      mission_objective := TWadRoutines.W_TextLumpName('LOG' + itoa(objective));
     // haleyjd 20130301: v1.31 hack: if first char of message is a period,
     // clear the player's message. Is this actually used anywhere?
     if gameversion = exe_strife_1_31 then
@@ -1999,7 +1999,7 @@ begin
 
   // play a sound
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-    S_StartSound(nil, Ord(sfx_radio));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_radio));
 
   TMapAim.LineTarget.target := player.mo;           // target the player
   dialogtalker.reactiontime := 2;           // set reactiontime
@@ -2097,13 +2097,13 @@ begin
     itemOn := 0;
 
   // get backdrop
-  pic := W_CheckNumForName(currentdialog.backpic);
+  pic := TWadRoutines.W_CheckNumForName(currentdialog.backpic);
   dialogbgpiclumpnum := pic;
   if pic <> -1 then
     V_DrawPatch(0, 0, SCN_TMP, pic, false);
 
   // get voice
-  S_StartVoice(PascalText(PAnsiChar(@currentdialog.voice), SizeOf(currentdialog.voice)));
+  TSoundRoutines.S_StartVoice(PascalText(PAnsiChar(@currentdialog.voice), SizeOf(currentdialog.voice)));
 
   // get bye text
   if rnd = 2 then

@@ -77,13 +77,13 @@ begin
       S_StartSequence(Pmobj_t(@Psector_t(ASector).soundorg),
         Ord(SEQ_PLATFORM) + Ord(Psector_t(ASector).seqType));
 {$ELSE}
-      S_StartSound(@Psector_t(ASector).soundorg, Psector_t(ASector).seqType);
+      TSoundRoutines.S_StartSound(@Psector_t(ASector).soundorg, Psector_t(ASector).seqType);
 {$ENDIF}
     TPlatSound.Stop:
 {$IFDEF HEXEN}
       S_StopSequence(Pmobj_t(@Psector_t(ASector).soundorg));
 {$ELSE}
-      S_StopSound(@Psector_t(ASector).soundorg);
+      TSoundRoutines.S_StopSound(@Psector_t(ASector).soundorg);
 {$ENDIF}
   end;
   // the stone sound of a plane that moves in steps is not used by the scripted platforms

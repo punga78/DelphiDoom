@@ -153,7 +153,7 @@ type
 //==============================================================================
 class function TFinaleLocalRoutines.F_GetFinaleText(sequence: integer): string;
 begin
-  result := W_TextLumpName(winMsgLumpNames[sequence]);
+  result := TWadRoutines.W_TextLumpName(winMsgLumpNames[sequence]);
   if length(result) >= MAX_INTRMSN_MESSAGE_SIZE then
     I_Warning('F_GetFinaleText(): Finale message too long (%s)', [winMsgLumpNames[sequence]]);
 end;
@@ -172,7 +172,7 @@ begin
   PaletteDelta := Z_Malloc(768 * SizeOf(fixed_t), PU_STATIC, nil);
   RealPalette := Z_Malloc(768 * SizeOf(byte), PU_STATIC, nil);
 
-  pal := W_CacheLumpName('playpal', PU_STATIC);
+  pal := TWadRoutines.W_CacheLumpName('playpal', PU_STATIC);
 
   if fadeIn then
   begin
@@ -225,10 +225,10 @@ begin
   FinaleCount := 0;
   FinaleText := TFinaleLocalRoutines.F_GetFinaleText(0);
   FinaleEndCount := 70;
-  FinaleLumpNum := W_GetNumForName('FINALE1');
+  FinaleLumpNum := TWadRoutines.W_GetNumForName('FINALE1');
   TFinaleLocalRoutines.F_InitializeFade(true);
 
-  S_ChangeMusic(Ord(mus_hall), false); // don't loop the song
+  TSoundRoutines.S_ChangeMusic(Ord(mus_hall), false); // don't loop the song
 end;
 
 //==============================================================================
@@ -280,8 +280,8 @@ begin
         begin
           FinaleText := TFinaleLocalRoutines.F_GetFinaleText(1);
           FinaleEndCount := Length(FinaleText) * TEXTSPEED + TEXTWAIT;
-          FinaleLumpNum := W_GetNumForName('FINALE2');
-          S_ChangeMusic(Ord(mus_orb), false);
+          FinaleLumpNum := TWadRoutines.W_GetNumForName('FINALE2');
+          TSoundRoutines.S_ChangeMusic(Ord(mus_orb), false);
         end;
       3: // Pic 2 -- Fade out
         begin
@@ -291,11 +291,11 @@ begin
         end;
       4: // Pic 3 -- Fade in
         begin
-          FinaleLumpNum := W_GetNumForName('FINALE3');
+          FinaleLumpNum := TWadRoutines.W_GetNumForName('FINALE3');
           FinaleEndCount := 71;
           TFinaleLocalRoutines.F_DeInitializeFade;
           TFinaleLocalRoutines.F_InitializeFade(true);
-          S_ChangeMusic(Ord(mus_chess), true);
+          TSoundRoutines.S_ChangeMusic(Ord(mus_chess), true);
         end;
       5: // Pic 3 , Text 3
         begin
@@ -329,7 +329,7 @@ var
 begin
   // erase the entire screen to a tiled background
 
-  memcpy(@screens[SCN_TMP][0], W_CacheLumpNum(FinaleLumpNum, PU_CACHE), 320 * 200);
+  memcpy(@screens[SCN_TMP][0], TWadRoutines.W_CacheLumpNum(FinaleLumpNum, PU_CACHE), 320 * 200);
 
   if FinaleStage = 5 then
   begin // Chess pic, draw the correct character graphic
@@ -339,7 +339,7 @@ begin
     end
     else if Ord(PlayerClass[TGameSession.ConsolePlayer]) <> 0 then
     begin
-      V_DrawPatch(60, 0, SCN_TMP, W_CacheLumpNum(W_GetNumForName('chessc') + Ord(PlayerClass[TGameSession.ConsolePlayer]) - 1, PU_CACHE), false);
+      V_DrawPatch(60, 0, SCN_TMP, TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('chessc') + Ord(PlayerClass[TGameSession.ConsolePlayer]) - 1, PU_CACHE), false);
     end;
   end;
   // Draw the actual text
@@ -408,17 +408,17 @@ end;
 //==============================================================================
 class procedure TFinaleLocalRoutines.F_DrawPic;
 begin
-  memcpy(@screens[SCN_TMP][0], W_CacheLumpNum(FinaleLumpNum, PU_CACHE), 320 * 200);
+  memcpy(@screens[SCN_TMP][0], TWadRoutines.W_CacheLumpNum(FinaleLumpNum, PU_CACHE), 320 * 200);
 
   if (FinaleStage = 4) or (FinaleStage = 5) then
   begin // Chess pic, draw the correct character graphic
     if TGameSession.NetGame then
     begin
-      V_DrawPatch(20, 0, SCN_TMP, W_CacheLumpName('chessall', PU_CACHE), false);
+      V_DrawPatch(20, 0, SCN_TMP, TWadRoutines.W_CacheLumpName('chessall', PU_CACHE), false);
     end
     else if Ord(PlayerClass[TGameSession.ConsolePlayer]) <> 0 then
     begin
-      V_DrawPatch(60, 0, SCN_TMP, W_CacheLumpNum(W_GetNumForName('chessc') + Ord(PlayerClass[TGameSession.ConsolePlayer]) - 1, PU_CACHE), false);
+      V_DrawPatch(60, 0, SCN_TMP, TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('chessc') + Ord(PlayerClass[TGameSession.ConsolePlayer]) - 1, PU_CACHE), false);
     end;
   end;
 end;

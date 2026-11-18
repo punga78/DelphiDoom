@@ -309,7 +309,7 @@ begin
       {$IFDEF HEXEN}
       S_StopSequence(Pmobj_t(@poly.startSpot));
       {$ELSE}
-      S_StopSound(@poly.startSpot);
+      TSoundRoutines.S_StopSound(@poly.startSpot);
       {$ENDIF}
       P_PolyobjFinished(poly.tag);
       TTickRoutines.P_RemoveThinker(@pe.thinker);
@@ -368,7 +368,7 @@ begin
   {$IFDEF HEXEN}
   S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
   {$ELSE}
-  S_StartSound(@poly.startSpot, poly.seqType);
+  TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
   {$ENDIF}
 
   while GetPolyobjMirror(polyNum, @mirror) <> 0 do
@@ -413,7 +413,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
     {$ELSE}
-    S_StartSound(@poly.startSpot, poly.seqType);
+    TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
     {$ENDIF}
   end;
   result := true;
@@ -443,7 +443,7 @@ begin
       {$IFDEF HEXEN}
       S_StopSequence(Pmobj_t(@poly.startSpot));
       {$ELSE}
-      S_StopSound(@poly.startSpot);
+      TSoundRoutines.S_StopSound(@poly.startSpot);
       {$ENDIF}
       P_PolyobjFinished(poly.tag);
       TTickRoutines.P_RemoveThinker(@pe.thinker);
@@ -505,7 +505,7 @@ begin
   {$IFDEF HEXEN}
   S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
   {$ELSE}
-  S_StartSound(@poly.startSpot, poly.seqType);
+  TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
   {$ENDIF}
 
   while GetPolyobjMirror(polyNum, @mirror) <> 0 do
@@ -533,7 +533,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
     {$ELSE}
-    S_StartSound(@poly.startSpot, poly.seqType);
+    TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
     {$ENDIF}
   end;
   result := true;
@@ -558,7 +558,7 @@ begin
       {$IFDEF HEXEN}
       S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
       {$ELSE}
-      S_StartSound(@poly.startSpot, poly.seqType);
+      TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
       {$ENDIF}
     end;
     exit;
@@ -577,7 +577,7 @@ begin
             {$IFDEF HEXEN}
             S_StopSequence(Pmobj_t(@poly.startSpot));
             {$ELSE}
-            S_StopSound(@poly.startSpot);
+            TSoundRoutines.S_StopSound(@poly.startSpot);
             {$ENDIF}
             if not pd.close then
             begin
@@ -614,7 +614,7 @@ begin
             {$IFDEF HEXEN}
             S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
             {$ELSE}
-            S_StartSound(@poly.startSpot, poly.seqType);
+            TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
             {$ENDIF}
           end;
         end;
@@ -635,7 +635,7 @@ begin
             {$IFDEF HEXEN}
             S_StopSequence(Pmobj_t(@poly.startSpot));
             {$ELSE}
-            S_StopSound(@poly.startSpot);
+            TSoundRoutines.S_StopSound(@poly.startSpot);
             {$ENDIF}
             if not pd.close then
             begin
@@ -668,7 +668,7 @@ begin
             {$IFDEF HEXEN}
             S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
             {$ELSE}
-            S_StartSound(@poly.startSpot, poly.seqType);
+            TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
             {$ENDIF}
           end;
         end;
@@ -722,7 +722,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
     {$ELSE}
-    S_StartSound(@poly.startSpot, poly.seqType);
+    TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
     {$ENDIF}
   end
   else if _type = PODOOR_SWING then
@@ -739,7 +739,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
     {$ELSE}
-    S_StartSound(@poly.startSpot, poly.seqType);
+    TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
     {$ENDIF}
   end;
 
@@ -772,7 +772,7 @@ begin
       {$IFDEF HEXEN}
       S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
       {$ELSE}
-      S_StartSound(@poly.startSpot, poly.seqType);
+      TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
       {$ENDIF}
     end
     else if _type = PODOOR_SWING then
@@ -789,7 +789,7 @@ begin
       {$IFDEF HEXEN}
       S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
       {$ELSE}
-      S_StartSound(@poly.startSpot, poly.seqType);
+      TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
       {$ENDIF}
     end;
     polyNum := mirror;
@@ -1875,8 +1875,8 @@ begin
   polyobjs := Z_Malloc(po_NumPolyobjs * SizeOf(polyobj_t), PU_LEVEL, nil);
   memset(polyobjs, 0, po_NumPolyobjs * SizeOf(polyobj_t));
 
-  data := W_CacheLumpNum(lump, PU_STATIC);
-  numthings := W_LumpLength(lump) div SizeOf(mapthing_t);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+  numthings := TWadRoutines.W_LumpLength(lump) div SizeOf(mapthing_t);
   mt := Pmapthing_t(data);
   polyIndex := 0; // index polyobj number
   // Find the startSpot points, and spawn each polyobj

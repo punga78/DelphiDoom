@@ -363,7 +363,7 @@ begin
   if foundSec then
   begin
     skytexture := skytexture2;
-    S_StartSound(nil, SND_THUNDR);
+    TSoundRoutines.S_StartSound(nil, SND_THUNDR);
   end;
   // Calculate the next lighting flash
   if NextLightningFlash = 0 then
@@ -496,10 +496,10 @@ begin
       sprintf(LockedBuffer, 'YOU NEED THE %s', [TextKeyMessages[lock - 1]]);
       Pplayer_t(mo.player)._message := LockedBuffer;
       {$IFDEF DOOM_OR_STRIFE}
-      S_StartSound(mo, Ord(sfx_oof));
+      TSoundRoutines.S_StartSound(mo, Ord(sfx_oof));
       {$ENDIF}
       {$IFDEF HERETIC}
-      S_StartSound(mo, Ord(sfx_plroof));
+      TSoundRoutines.S_StartSound(mo, Ord(sfx_plroof));
       {$ENDIF}
       result := false;
       exit;
@@ -529,7 +529,7 @@ begin
   if actor.info.activesound <> 0 then
     A_ActiveSound(actor, actor)
   else
-    S_StartSound(actor, SND_QUAKE);
+    TSoundRoutines.S_StartSound(actor, SND_QUAKE);
 
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then

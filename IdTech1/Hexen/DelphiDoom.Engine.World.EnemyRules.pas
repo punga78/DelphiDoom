@@ -1737,7 +1737,7 @@ begin
     end
     else if actor._type = Ord(MT_PIG) then
     begin
-      S_StartSound(actor, Ord(SFX_PIG_ACTIVE1) + (P_Random and 1));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_PIG_ACTIVE1) + (P_Random and 1));
     end
     else
       A_ActiveSound1(actor);
@@ -1851,7 +1851,7 @@ begin
   memcpy(@mo.args, @oldMonster.args, 5);
   TMobjRoutines.P_InsertMobjIntoTIDList(mo, oldMonster.tid);
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(SFX_TELEPORT));
+  TSoundRoutines.S_StartSound(fog, Ord(SFX_TELEPORT));
   result := true;
 end;
 
@@ -1897,7 +1897,7 @@ begin
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, 2 + (P_Random and 1));
-    S_StartSound(actor, Ord(SFX_PIG_ATTACK));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_PIG_ATTACK));
   end;
 end;
 
@@ -2198,7 +2198,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(SFX_MAULATOR_HAMMER_SWING));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_MAULATOR_HAMMER_SWING));
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     P_DamageMobj(actor.target, actor, actor, HITDICE(4));
 end;
@@ -2292,7 +2292,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(SFX_MAULATOR_HAMMER_SWING));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_MAULATOR_HAMMER_SWING));
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(3));
@@ -2338,7 +2338,7 @@ begin
   begin
     mo := P_SpawnMissile(actor, actor.target, Ord(MT_MNTRFX2));
     if mo <> nil then
-      S_StartSound(mo, Ord(SFX_MAULATOR_HAMMER_HIT));
+      TSoundRoutines.S_StartSound(mo, Ord(SFX_MAULATOR_HAMMER_HIT));
   end;
   if (P_Random < 192) and (actor.special2 = 0) then
   begin
@@ -2377,7 +2377,7 @@ var
   sound: integer;
   p: Pplayer_t;
 begin
-  S_StopSound(actor);
+  TSoundRoutines.S_StopSound(actor);
   p := actor.player;
   if p <> nil then
   begin
@@ -2432,7 +2432,7 @@ begin
         end;
         sound := sound + P_Random mod 3; // Three different extreme deaths
       end;
-      S_StartSound(actor, sound);
+      TSoundRoutines.S_StartSound(actor, sound);
     end;
   end
   else
@@ -2597,7 +2597,7 @@ begin
   if actor.z <= actor.floorz then
   begin
     P_SetMobjState(actor, S_BLOODYSKULLX1);
-    S_StartSound(actor, Ord(SFX_DRIP));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_DRIP));
   end;
 end;
 
@@ -2961,7 +2961,7 @@ begin
     else
     begin
       P_SetMobjState(actor, S_SERPENT_HUMP1);
-      S_StartSound(actor, Ord(SFX_SERPENT_ACTIVE));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_SERPENT_ACTIVE));
     end;
   end;
 end;
@@ -2973,7 +2973,7 @@ end;
 //==============================================================================
 class procedure THexenMonsterActions.A_SerpentBirthScream(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(SFX_SERPENT_BIRTH));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_SERPENT_BIRTH));
 end;
 
 //==============================================================================
@@ -2983,7 +2983,7 @@ end;
 //==============================================================================
 class procedure THexenMonsterActions.A_SerpentDiveSound(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(SFX_SERPENT_ACTIVE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_SERPENT_ACTIVE));
 end;
 
 //==============================================================================
@@ -3135,7 +3135,7 @@ begin
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
     P_DamageMobj(actor.target, actor, actor, HITDICE(5));
-    S_StartSound(actor, Ord(SFX_SERPENT_MELEEHIT));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_SERPENT_MELEEHIT));
   end;
 
   if P_Random < 96 then
@@ -3279,7 +3279,7 @@ begin
     exit;
 
   P_SpawnMissile(actor, actor.target, Ord(MT_CENTAUR_FX));
-  S_StartSound(actor, Ord(SFX_CENTAURLEADER_ATTACK));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_CENTAURLEADER_ATTACK));
 end;
 
 //==============================================================================
@@ -3435,7 +3435,7 @@ begin
     TCommonMovementActions.P_ThrustMobj(actor, actor.angle - ANG90, 11 * FRACUNIT)
   else // Thrust forward
     TCommonMovementActions.P_ThrustMobj(actor, actor.angle, 11 * FRACUNIT);
-  S_StartSound(actor, Ord(SFX_BISHOP_BLUR));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_BISHOP_BLUR));
 end;
 
 //==============================================================================
@@ -3580,12 +3580,12 @@ begin
       if TMonsterBaseActions.P_CheckMeleeRange(actor) then
       begin
         P_DamageMobj(actor.target, actor, actor, HITDICE(10));
-        S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
+        TSoundRoutines.S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
       end
       else if (P_Random < 128) and P_CheckMissileRange(actor) then
       begin
         P_SpawnMissile(actor, target, Ord(MT_DRAGON_FX));
-        S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
+        TSoundRoutines.S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
       end;
       actor.target := oldTarget;
     end;
@@ -3675,7 +3675,7 @@ begin
     if angbool and TMonsterBaseActions.P_CheckMeleeRange(actor) then
     begin
       P_DamageMobj(actor.target, actor, actor, HITDICE(8));
-      S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
+      TSoundRoutines.S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
     end
     else
     begin
@@ -3688,7 +3688,7 @@ begin
           exit;
         end;
         P_SetMobjState(actor, statenum_t(actor.info.missilestate));
-        S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
+        TSoundRoutines.S_StartSound(actor, Ord(SFX_DRAGON_ATTACK));
       end;
     end;
   end
@@ -3705,7 +3705,7 @@ class procedure THexenMonsterActions.A_DragonFlap(actor: Pmobj_t);
 begin
   A_DragonFlight(actor);
   if P_Random < 240 then
-    S_StartSound(actor, Ord(SFX_DRAGON_WINGFLAP))
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_DRAGON_WINGFLAP))
   else
     A_ActiveSound1(actor)
 end;
@@ -3804,7 +3804,7 @@ begin
   if mo <> nil then
   begin
     mo.z := mo.z + 30 * FRACUNIT;
-    S_StartSound(actor, Ord(SFX_DEMON_MISSILE_FIRE));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_DEMON_MISSILE_FIRE));
   end;
 end;
 
@@ -4056,7 +4056,7 @@ var
 begin
   mo := P_SpawnMissile(actor, actor.target, Ord(MT_WRAITHFX1));
   if mo <> nil then
-    S_StartSound(actor, Ord(SFX_WRAITH_MISSILE_FIRE));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_WRAITH_MISSILE_FIRE));
 end;
 
 //==============================================================================
@@ -4308,7 +4308,7 @@ var
 begin
   mo := P_SpawnMissile(actor, actor.target, Ord(MT_FIREDEMON_FX6));
   if mo <> nil then
-    S_StartSound(actor, Ord(SFX_FIRED_ATTACK));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_FIRED_ATTACK));
 end;
 
 //==============================================================================
@@ -4741,7 +4741,7 @@ begin
 
           if (actor._type = Ord(MT_SORCBALL1)) and (P_Random < 200) then
           begin
-            S_StartSound(nil, Ord(SFX_SORCERER_SPELLCAST));
+            TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_SPELLCAST));
             actor.special2 := SORCFX4_RAPIDFIRE_TIME;
             actor.args[4] := 128;
             parent.args[3] := SORC_FIRING_SPELL;
@@ -4779,7 +4779,7 @@ begin
   begin
     inc(parent.args[1]);      // Bump rotation counter
     // Completed full rotation - make woosh sound
-    S_StartSound(actor, Ord(SFX_SORCERER_BALLWOOSH));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_SORCERER_BALLWOOSH));
   end;
   actor.special1 := angle;    // Set previous angle
   x := parent.x + FixedMul(dist, finecosine[angle]);
@@ -4912,7 +4912,7 @@ begin
   spell := actor._type;
   parent := actor.target;
 
-  S_StartSound(nil, Ord(SFX_SORCERER_SPELLCAST));
+  TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_SPELLCAST));
 
   // Put sorcerer into throw spell animation
   if parent.health > 0 then
@@ -5262,7 +5262,7 @@ end;
 //==============================================================================
 class procedure THexenMonsterActions.A_SorcBallPop(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(SFX_SORCERER_BALLPOP));
+  TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_BALLPOP));
   A_LowGravity(actor);
   actor.momx := ((P_Random mod 10) - 5) * FRACUNIT;
   actor.momy := ((P_Random mod 10) - 5) * FRACUNIT;
@@ -5290,9 +5290,9 @@ begin
         Ord(MT_SORCBALL1),
         Ord(MT_SORCBALL2),
         Ord(MT_SORCBALL3):
-          S_StartSound(nil, Ord(SFX_SORCERER_BIGBALLEXPLODE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_BIGBALLEXPLODE));
         Ord(MT_SORCFX1):
-          S_StartSound(nil, Ord(SFX_SORCERER_HEADSCREAM));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_HEADSCREAM));
       end;
     end
     else
@@ -5492,7 +5492,7 @@ begin
   actor.flags := actor.flags or MF_SOLID or MF_SHOOTABLE or MF_NOBLOOD;
   actor.flags2 := actor.flags2 or MF2_PUSHABLE or MF2_TELESTOMP or MF2_PASSMOBJ or MF2_SLIDE;
   actor.height := actor.height * 4;
-  S_StartSound(actor, Ord(SFX_FREEZE_DEATH));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_FREEZE_DEATH));
 
   p := actor.player;
   if p <> nil then
@@ -5554,7 +5554,7 @@ begin
     exit;
   end;
 
-  S_StartSound(actor, Ord(SFX_FREEZE_SHATTER));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_FREEZE_SHATTER));
 
   for i := 12 + (P_Random and 15) downto 0 do
   begin
@@ -5679,7 +5679,7 @@ begin
   if P_Random < 30 then
     P_SetMobjState(actor, statenum_t(actor.info.missilestate))
   else if P_Random < 30 then
-    S_StartSound(nil, Ord(SFX_KORAX_ACTIVE));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_KORAX_ACTIVE));
 
   // Teleport away
   if actor.health < (actor.info.spawnhealth div 2) then
@@ -5712,7 +5712,7 @@ end;
 //==============================================================================
 class procedure THexenMonsterActions.A_KoraxStep2(actor: Pmobj_t);
 begin
-  S_StartSound(nil, Ord(SFX_KORAX_STEP));
+  TSoundRoutines.S_StartSound(nil, Ord(SFX_KORAX_STEP));
   TMonsterBaseActions.A_Chase(actor);
 end;
 
@@ -5811,7 +5811,7 @@ var
 begin
   _type := P_Random mod 6;
 
-  S_StartSound(actor, Ord(SFX_KORAX_ATTACK));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_KORAX_ATTACK));
 
   case _type of
     0:
@@ -5847,7 +5847,7 @@ begin
   end;
 
   // Fire all 6 missiles at once
-  S_StartSound(nil, sound);
+  TSoundRoutines.S_StartSound(nil, sound);
   KoraxFire1(actor, _type);
   KoraxFire2(actor, _type);
   KoraxFire3(actor, _type);
@@ -5869,7 +5869,7 @@ var
   ang: angle_t;
   numcommands: integer;
 begin
-  S_StartSound(actor, Ord(SFX_KORAX_COMMAND));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_KORAX_COMMAND));
 
   // Shoot stream of lightning to ceiling
   ang := (actor.angle - ANG90) shr ANGLETOFINESHIFT;
@@ -6121,7 +6121,7 @@ begin
   dec(actor.health);
   if actor.health <= 0 then
   begin
-    S_StartSound(actor, Ord(SFX_SPIRIT_DIE));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_SPIRIT_DIE));
     P_SetMobjState(actor, S_KSPIRIT_DEATH1);
   end
   else
@@ -6130,7 +6130,7 @@ begin
       A_KSpiritSeeker(actor, actor.args[0] * ANG1, actor.args[0] * ANG1 * 2);
     A_KSpiritWeave(actor);
     if P_Random < 50 then
-      S_StartSound(nil, Ord(SFX_SPIRIT_ACTIVE));
+      TSoundRoutines.S_StartSound(nil, Ord(SFX_SPIRIT_ACTIVE));
   end;
 end;
 

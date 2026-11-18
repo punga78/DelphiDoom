@@ -179,14 +179,14 @@ begin
   if actor.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.seesound)
   else
-    S_StartSound(origin, actor.info.seesound);
+    TSoundRoutines.S_StartSound(origin, actor.info.seesound);
 
   if actor.flags4_ex and MF4_EX_ALWAYSFINISHSOUND <> 0 then
-    S_UnlinkSound(origin)
+    TSoundRoutines.S_UnlinkSound(origin)
   else if actor.flags4_ex and MF4_EX_NEVERFINISHSOUND <> 0 then
   // From Woof: [FG] make seesounds uninterruptible
   else if full_sounds then
-    S_UnlinkSound(origin);
+    TSoundRoutines.S_UnlinkSound(origin);
 end;
 
 //==============================================================================
@@ -216,7 +216,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMPAINSOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.painsound)
   else
-    S_StartSound(origin, actor.info.painsound);
+    TSoundRoutines.S_StartSound(origin, actor.info.painsound);
 end;
 
 //==============================================================================
@@ -245,7 +245,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMATTACKSOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.attacksound)
   else
-    S_StartSound(origin, actor.info.attacksound);
+    TSoundRoutines.S_StartSound(origin, actor.info.attacksound);
 end;
 
 //==============================================================================
@@ -274,7 +274,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMMELEESOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.meleesound)
   else
-    S_StartSound(origin, actor.info.meleesound);
+    TSoundRoutines.S_StartSound(origin, actor.info.meleesound);
 end;
 
 //==============================================================================
@@ -303,7 +303,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMDEATHSOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.deathsound)
   else
-    S_StartSound(origin, actor.info.deathsound);
+    TSoundRoutines.S_StartSound(origin, actor.info.deathsound);
 end;
 
 //==============================================================================
@@ -333,7 +333,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMACTIVESOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.activesound)
   else
-    S_StartSound(origin, actor.info.activesound);
+    TSoundRoutines.S_StartSound(origin, actor.info.activesound);
 end;
 
 //==============================================================================
@@ -362,7 +362,7 @@ begin
   if actor.flags4_ex and MF4_EX_RANDOMRIPSOUND <> 0 then
     TCommonSoundActions.P_RandomSound(origin, actor.info.ripsound)
   else
-    S_StartSound(origin, actor.info.ripsound);
+    TSoundRoutines.S_StartSound(origin, actor.info.ripsound);
 end;
 
 //==============================================================================

@@ -300,26 +300,26 @@ var
 {$ENDIF}
 begin
 {$IF DEFINED(HEXEN)}
-  tinttable := W_CacheLumpName('TINTTAB', PU_STATIC);
+  tinttable := TWadRoutines.W_CacheLumpName('TINTTAB', PU_STATIC);
   translationtables := Z_Malloc(256 * 3 * (MAXPLAYERS - 1), PU_STATIC, nil);
 
-  trlmp := W_GetNumForName('TRANTBL0');
+  trlmp := TWadRoutines.W_GetNumForName('TRANTBL0');
   idx := trlmp;
   for i := 0 to 3 * (MAXPLAYERS - 1) - 1 do
   begin
-    transLump := W_CacheLumpNum(idx, PU_STATIC);
+    transLump := TWadRoutines.W_CacheLumpNum(idx, PU_STATIC);
     memcpy(@translationtables[i * 256], transLump, 256);
     Z_Free(transLump);
     // JVAL: Circle thru translation tables
     inc(idx);
-    if Pos('TRANTBL', strupper(char8tostring(W_GetNameForNum(idx)))) = 0 then
+    if Pos('TRANTBL', strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(idx)))) = 0 then
       idx := trlmp;
   end;
 {$ELSE}
   if player_translations = nil then
     I_Error('R_InitTranslationTables(): the player translations are not configured (ComposeEngine was not called)');
 {$IF DEFINED(STRIFE)}
-  xlatab := W_CacheLumpName('XLATAB', PU_STATIC);
+  xlatab := TWadRoutines.W_CacheLumpName('XLATAB', PU_STATIC);
   translationtables := Z_Malloc(256 * 8, PU_STATIC, nil);
 {$ELSE}
   translationtables := Z_Malloc(256 * 3 + 255, PU_STATIC, nil);
@@ -330,7 +330,7 @@ begin
   memcpy(translationtables, @tables[0], Length(tables));
 {$ENDIF}
   // JVAL: Initialize ColorRegions
-  lump := W_CheckNumForName('CR_START');
+  lump := TWadRoutines.W_CheckNumForName('CR_START');
   for i := 0 to Ord(CR_LIMIT) - 1 do
     colorregions[i] := Z_Malloc(256, PU_STATIC, nil);
   if lump = -1 then
@@ -352,15 +352,15 @@ begin
     SetLength(crsources, Ord(CR_LIMIT));
     for i := 0 to Ord(CR_LIMIT) - 1 do
     begin
-      if lump + 1 + i >= W_NumLumps then
+      if lump + 1 + i >= TWadRoutines.W_NumLumps then
         Break;
-      lump2 := W_CheckNumForName(W_GetNameForNum(lump + 1 + i));
-      crnames[i] := char8tostring(W_GetNameForNum(lump + 1 + i));
-      if W_LumpLength(lump2) = 256 then
+      lump2 := TWadRoutines.W_CheckNumForName(TWadRoutines.W_GetNameForNum(lump + 1 + i));
+      crnames[i] := TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(lump + 1 + i));
+      if TWadRoutines.W_LumpLength(lump2) = 256 then
         crsources[i] := lump2
       else
         crsources[i] := lump + 1 + i;
-      crlengths[i] := W_LumpLength(crsources[i]);
+      crlengths[i] := TWadRoutines.W_LumpLength(crsources[i]);
       inc(numcrlumps);
     end;
     SetLength(crnames, numcrlumps);
@@ -369,7 +369,7 @@ begin
 
     for i := 0 to Ord(CR_LIMIT) - 1 do
       if i < numcrlumps then
-        W_ReadLump(crsources[i], colorregions[i])
+        TWadRoutines.W_ReadLump(crsources[i], colorregions[i])
       else
         for j := 0 to 255 do
           colorregions[i][j] := j;
@@ -538,14 +538,14 @@ begin
 {$ENDIF}
 {$ELSE}
 {$IF DEFINED(HERETIC)}
-  src := W_CacheLumpName(name, PU_CACHE);
+  src := TWadRoutines.W_CacheLumpName(name, PU_CACHE);
 {$ELSEIF DEFINED(HEXEN)}
-  src := W_CacheLumpName('F_022', PU_CACHE);
+  src := TWadRoutines.W_CacheLumpName('F_022', PU_CACHE);
 {$ELSE}
 
   needsbackscreen := false;
 
-  src := W_CacheLumpName(name, PU_STATIC);
+  src := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
 {$ENDIF}
 
   dest := screens[SCN_TMP];
@@ -578,9 +578,9 @@ begin
   tscaledviewwidth := scaledviewwidth * 320 div SCREENWIDTH - 2;
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  patch := W_CacheLumpName('bordt', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('bordt', PU_STATIC);
 {$ELSE}
-  patch := W_CacheLumpName('brdr_t', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('brdr_t', PU_STATIC);
 {$ENDIF}
   x := 0;
   while x < tscaledviewwidth do
@@ -596,9 +596,9 @@ begin
   Z_ChangeTag(patch, PU_CACHE);
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  patch := W_CacheLumpName('bordb', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('bordb', PU_STATIC);
 {$ELSE}
-  patch := W_CacheLumpName('brdr_b', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('brdr_b', PU_STATIC);
 {$ENDIF}
   x := 0;
   while x < tscaledviewwidth do
@@ -613,9 +613,9 @@ begin
   Z_ChangeTag(patch, PU_CACHE);
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  patch := W_CacheLumpName('bordl', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('bordl', PU_STATIC);
 {$ELSE}
-  patch := W_CacheLumpName('brdr_l', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('brdr_l', PU_STATIC);
 {$ENDIF}
   y := 0;
   while y < tviewheight do
@@ -631,9 +631,9 @@ begin
   Z_ChangeTag(patch, PU_CACHE);
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  patch := W_CacheLumpName('bordr', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('bordr', PU_STATIC);
 {$ELSE}
-  patch := W_CacheLumpName('brdr_r', PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName('brdr_r', PU_STATIC);
 {$ENDIF}
   y := 0;
   while y < tviewheight do
@@ -737,7 +737,7 @@ begin
     name := 'FLOOR7_2'; // DOOM border patch.
 {$ENDIF}
 
-  src := W_CacheLumpName(name, PU_STATIC);
+  src := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
 
   dest := screens[SCN_ST2];
 
@@ -754,7 +754,7 @@ begin
 
   if screenblocks = 10 then
   begin
-    patch := W_CacheLumpName('brdr_b', PU_STATIC);
+    patch := TWadRoutines.W_CacheLumpName('brdr_b', PU_STATIC);
     x := 0;
     while x < 320 do
     begin
@@ -881,15 +881,15 @@ begin
   if disklump = -2 then
   begin
 {$IFDEF STRIFE}
-    disklump := W_CheckNumForName('STDISK');
+    disklump := TWadRoutines.W_CheckNumForName('STDISK');
 {$ELSE}
     if M_CheckParmCDROM then
-      disklump := W_CheckNumForName('STCDROM');
+      disklump := TWadRoutines.W_CheckNumForName('STCDROM');
     if disklump < 0 then
-      disklump := W_CheckNumForName('STDISK');
+      disklump := TWadRoutines.W_CheckNumForName('STDISK');
 {$ENDIF}
     if disklump >= 0 then
-      diskpatch := W_CacheLumpNum(disklump, PU_STATIC)
+      diskpatch := TWadRoutines.W_CacheLumpNum(disklump, PU_STATIC)
     else
     begin
       I_Warning('Disk busy lump not found!'#13#10);

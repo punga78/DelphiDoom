@@ -93,10 +93,10 @@ begin
     exit;
   end;
 
-  panel0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('PANEL0'));
+  panel0lump := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString('PANEL0'));
 
   if panel0lump < 0 then
-    panel0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('HLPBCK'));
+    panel0lump := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString('HLPBCK'));
 
   result := panel0lump;
 end;
@@ -117,10 +117,10 @@ begin
     exit;
   end;
 
-  help0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('HELP0'));
+  help0lump := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString('HELP0'));
 
   if help0lump < 0 then
-    help0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('HLPBCK'));
+    help0lump := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString('HLPBCK'));
 
   result := help0lump;
 end;
@@ -134,14 +134,14 @@ function D_UseOldTexture1: boolean;
 var
   lumpnum: integer;
 begin
-  lumpnum := W_CheckNumForName('TEXTURE1');
+  lumpnum := TWadRoutines.W_CheckNumForName('TEXTURE1');
   if lumpnum < 0 then
   begin
     result := false;
     exit;
   end;
 
-  result := (W_LumpLength(lumpnum) = 11564) and (W_LumpCRC32(lumpnum) = 'a5c7ddf4');
+  result := (TWadRoutines.W_LumpLength(lumpnum) = 11564) and (TWadRoutines.W_LumpCRC32(lumpnum) = 'a5c7ddf4');
 end;
 
 //==============================================================================
@@ -151,25 +151,25 @@ end;
 //==============================================================================
 procedure D_IdentifyTeaser;
 begin
-  if W_CheckNumForName('MAP35') >= 0 then
-    if W_CheckNumForName('MAP36') >= 0 then
-      if W_CheckNumForName('HELP0') < 0 then
-        if W_CheckNumForName('PANEL0') < 0 then
-          if W_CheckNumForName('MAP02') < 0 then
-            if W_CheckNumForName('SCRIPT00') >= 0 then
-              if W_LumpCRC32(W_CheckNumForName('SCRIPT00')) = '66042225' then
+  if TWadRoutines.W_CheckNumForName('MAP35') >= 0 then
+    if TWadRoutines.W_CheckNumForName('MAP36') >= 0 then
+      if TWadRoutines.W_CheckNumForName('HELP0') < 0 then
+        if TWadRoutines.W_CheckNumForName('PANEL0') < 0 then
+          if TWadRoutines.W_CheckNumForName('MAP02') < 0 then
+            if TWadRoutines.W_CheckNumForName('SCRIPT00') >= 0 then
+              if TWadRoutines.W_LumpCRC32(TWadRoutines.W_CheckNumForName('SCRIPT00')) = '66042225' then
               begin
                 teaser := 1;
                 exit;
               end;
 
-  if W_CheckNumForName('MAP33') >= 0 then
-    if W_CheckNumForName('MAP34') >= 0 then
-      if W_CheckNumForName('MAP35') < 0 then
-        if W_CheckNumForName('HELP0') >= 0 then
-          if W_CheckNumForName('PANEL0') >= 0 then
-            if W_CheckNumForName('SCRIPT00') >= 0 then
-              if W_LumpCRC32(W_CheckNumForName('SCRIPT00')) = '4f407f19' then
+  if TWadRoutines.W_CheckNumForName('MAP33') >= 0 then
+    if TWadRoutines.W_CheckNumForName('MAP34') >= 0 then
+      if TWadRoutines.W_CheckNumForName('MAP35') < 0 then
+        if TWadRoutines.W_CheckNumForName('HELP0') >= 0 then
+          if TWadRoutines.W_CheckNumForName('PANEL0') >= 0 then
+            if TWadRoutines.W_CheckNumForName('SCRIPT00') >= 0 then
+              if TWadRoutines.W_LumpCRC32(TWadRoutines.W_CheckNumForName('SCRIPT00')) = '4f407f19' then
               begin
                 teaser := 2;
                 exit;

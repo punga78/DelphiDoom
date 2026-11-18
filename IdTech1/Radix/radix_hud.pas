@@ -141,7 +141,7 @@ var
 //==============================================================================
 function RX_HudPatch(const name: string): Ppatch_t;
 begin
-  result := W_CacheLumpName(name, PU_STATIC);
+  result := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
 end;
 
 //==============================================================================
@@ -159,7 +159,7 @@ begin
     exit;
   hud_initialized := true;
 
-  playpal := W_CacheLumpName('PLAYPAL', PU_STATIC);
+  playpal := TWadRoutines.W_CacheLumpName('PLAYPAL', PU_STATIC);
   for i := 0 to 255 do
     cpal[i] := (LongWord(playpal[i * 3]) shl 16) or (LongWord(playpal[i * 3 + 1]) shl 8) or playpal[i * 3 + 2];
   Z_ChangeTag(playpal, PU_CACHE);

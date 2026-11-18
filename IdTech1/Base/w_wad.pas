@@ -62,7 +62,6 @@ const
   TYPE_VOXEL = 1 shl IND_VOXEL;
   TYPE_HIRES = 1 shl IND_HIRES;
 
-
 type
   wadinfo_t = packed record
     // Should be "IWAD" or "PWAD".
@@ -106,134 +105,9 @@ type
 
   PTransProcedure = procedure (const src: pointer; const size: integer; const dest: PPointer; const tag: integer);
 
-//==============================================================================
-//
-// char8tostring
-//
-//==============================================================================
-function char8tostring(src: char8_t): string;
-
-//==============================================================================
-//
-// stringtochar8
-//
-//==============================================================================
-function stringtochar8(src: string): char8_t;
-
-//==============================================================================
-//
-// W_Configure
-// Gives the unit the WAD services it works on. The composition root calls it
-// before anything else of this unit
-//
-//==============================================================================
-procedure W_Configure(const AServices: IEngineWadServices);
-
-//==============================================================================
-//
-// W_ConfigureConverter
-// Gives the unit the converter of the data container of the game (Radix:
-// RADIX.DAT, Speed: SPEEDH.JCL); a game whose data are WADs does not call it
-//
-//==============================================================================
-procedure W_ConfigureConverter(const AConverter: IEngineWadConverter);
-
-//==============================================================================
-//
-// W_ConfigureAliases
-// Gives the unit the other names of the lumps of the game (Radix: the names of
-// RADIX.DAT, longer than 8 characters); a game without them does not call it
-//
-//==============================================================================
-procedure W_ConfigureAliases(const AAliases: IEngineLumpAliases);
-
-//==============================================================================
-//
-// W_InitMultipleFiles
-//
-//==============================================================================
-function W_InitMultipleFiles(const filenames: TDStringList): integer;
-
-//==============================================================================
-//
-// W_ShutDown
-//
-//==============================================================================
-procedure W_ShutDown;
-
-//==============================================================================
-//
-// W_Reload
-//
-//==============================================================================
-procedure W_Reload;
-
 const
   F_ORIGIN_WAD = 0;
   F_ORIGIN_PAK = 1;
-
-//==============================================================================
-//
-// W_RuntimeLoad
-//
-//==============================================================================
-procedure W_RuntimeLoad(fname: string; const origin: integer);
-
-//==============================================================================
-//
-// W_AddPendingWADfromPAK
-//
-//==============================================================================
-procedure W_AddPendingWADfromPAK(const fname: string);
-
-//==============================================================================
-//
-// W_NumLumps
-//
-//==============================================================================
-function W_NumLumps: integer;
-
-//==============================================================================
-//
-// W_CheckNumForName
-//
-//==============================================================================
-function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer;
-
-//==============================================================================
-//
-// W_CheckNumForName2
-//
-//==============================================================================
-function W_CheckNumForName2(const name: string; first: integer; last: integer): integer;
-
-//==============================================================================
-//
-// W_CheckFirstNumForName
-//
-//==============================================================================
-function W_CheckFirstNumForName(const name: string): integer;
-
-//==============================================================================
-//
-// W_GetNumForName
-//
-//==============================================================================
-function W_GetNumForName(const name: string; const flags: LongWord = $0): integer;
-
-//==============================================================================
-//
-// W_GetFirstNumForName
-//
-//==============================================================================
-function W_GetFirstNumForName(const name: string): integer;
-
-//==============================================================================
-//
-// W_GetNameForNum
-//
-//==============================================================================
-function W_GetNameForNum(const lump: integer): char8_t;
 
 //==============================================================================
 //
@@ -244,73 +118,9 @@ function W_GetNameForNum(const lump: integer): char8_t;
 
 //==============================================================================
 //
-// W_LumpFlags
-// TYPE_* bits of the marker pairs (F_START/F_END, S_START/S_END, ...) around the lump
-//
-//==============================================================================
-function W_LumpFlags(const lump: integer): LongWord;
-
-//==============================================================================
-//
-// W_LumpLength
-//
-//==============================================================================
-function W_LumpLength(const lump: integer): integer;
-
-//==============================================================================
-//
-// W_LumpCRC32
-//
-//==============================================================================
-function W_LumpCRC32(const lump: integer): string;
-
-//==============================================================================
-//
-// W_ReadLump
-//
-//==============================================================================
-procedure W_ReadLump(const lump: integer; dest: pointer);
-
-//==============================================================================
-//
-// W_CacheLumpNum
-//
-//==============================================================================
-function W_CacheLumpNum(const lump: integer; const tag: integer): pointer;
-
-//==============================================================================
-//
 // W_CacheLumpNum2
 //
 //==============================================================================
-
-//==============================================================================
-//
-// W_CacheLumpName
-//
-//==============================================================================
-function W_CacheLumpName(const name: string; const tag: integer; const flags: LongWord = $0): pointer;
-
-//==============================================================================
-//
-// W_TextLumpNum
-//
-//==============================================================================
-function W_TextLumpNum(const lump: integer): string;
-
-//==============================================================================
-//
-// W_TextLumpName
-//
-//==============================================================================
-function W_TextLumpName(const name: string): string;
-
-//==============================================================================
-//
-// ExtractFileBase8
-//
-//==============================================================================
-procedure ExtractFileBase8(const path: string; var dest: char8_t);
 
 const
   IWAD = integer(Ord('I') or
@@ -328,6 +138,204 @@ const
                 (Ord('W') shl 8) or
                 (Ord('A') shl 16) or
                 (Ord('D') shl 24));
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWadRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // char8tostring
+    //
+    //==============================================================================
+    class function char8tostring(src: char8_t): string; static;
+
+    //==============================================================================
+    //
+    // stringtochar8
+    //
+    //==============================================================================
+    class function stringtochar8(src: string): char8_t; static;
+
+    //==============================================================================
+    //
+    // W_Configure
+    // Gives the unit the WAD services it works on. The composition root calls it
+    // before anything else of this unit
+    //
+    //==============================================================================
+    class procedure W_Configure(const AServices: IEngineWadServices); static;
+
+    //==============================================================================
+    //
+    // W_ConfigureConverter
+    // Gives the unit the converter of the data container of the game (Radix:
+    // RADIX.DAT, Speed: SPEEDH.JCL); a game whose data are WADs does not call it
+    //
+    //==============================================================================
+    class procedure W_ConfigureConverter(const AConverter: IEngineWadConverter); static;
+
+    //==============================================================================
+    //
+    // W_ConfigureAliases
+    // Gives the unit the other names of the lumps of the game (Radix: the names of
+    // RADIX.DAT, longer than 8 characters); a game without them does not call it
+    //
+    //==============================================================================
+    class procedure W_ConfigureAliases(const AAliases: IEngineLumpAliases); static;
+
+    //==============================================================================
+    //
+    // W_InitMultipleFiles
+    //
+    //==============================================================================
+    class function W_InitMultipleFiles(const filenames: TDStringList): integer; static;
+
+    //==============================================================================
+    //
+    // W_ShutDown
+    //
+    //==============================================================================
+    class procedure W_ShutDown; static;
+
+    //==============================================================================
+    //
+    // W_Reload
+    //
+    //==============================================================================
+    class procedure W_Reload; static;
+
+    //==============================================================================
+    //
+    // W_RuntimeLoad
+    //
+    //==============================================================================
+    class procedure W_RuntimeLoad(fname: string; const origin: integer); static;
+
+    //==============================================================================
+    //
+    // W_AddPendingWADfromPAK
+    //
+    //==============================================================================
+    class procedure W_AddPendingWADfromPAK(const fname: string); static;
+
+    //==============================================================================
+    //
+    // W_NumLumps
+    //
+    //==============================================================================
+    class function W_NumLumps: integer; static;
+
+    //==============================================================================
+    //
+    // W_CheckNumForName
+    //
+    //==============================================================================
+    class function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer; static;
+
+    //==============================================================================
+    //
+    // W_CheckNumForName2
+    //
+    //==============================================================================
+    class function W_CheckNumForName2(const name: string; first: integer; last: integer): integer; static;
+
+    //==============================================================================
+    //
+    // W_CheckFirstNumForName
+    //
+    //==============================================================================
+    class function W_CheckFirstNumForName(const name: string): integer; static;
+
+    //==============================================================================
+    //
+    // W_GetNumForName
+    //
+    //==============================================================================
+    class function W_GetNumForName(const name: string; const flags: LongWord = $0): integer; static;
+
+    //==============================================================================
+    //
+    // W_GetFirstNumForName
+    //
+    //==============================================================================
+    class function W_GetFirstNumForName(const name: string): integer; static;
+
+    //==============================================================================
+    //
+    // W_GetNameForNum
+    //
+    //==============================================================================
+    class function W_GetNameForNum(const lump: integer): char8_t; static;
+
+    //==============================================================================
+    //
+    // W_LumpFlags
+    // TYPE_* bits of the marker pairs (F_START/F_END, S_START/S_END, ...) around the lump
+    //
+    //==============================================================================
+    class function W_LumpFlags(const lump: integer): LongWord; static;
+
+    //==============================================================================
+    //
+    // W_LumpLength
+    //
+    //==============================================================================
+    class function W_LumpLength(const lump: integer): integer; static;
+
+    //==============================================================================
+    //
+    // W_LumpCRC32
+    //
+    //==============================================================================
+    class function W_LumpCRC32(const lump: integer): string; static;
+
+    //==============================================================================
+    //
+    // W_ReadLump
+    //
+    //==============================================================================
+    class procedure W_ReadLump(const lump: integer; dest: pointer); static;
+
+    //==============================================================================
+    //
+    // W_CacheLumpNum
+    //
+    //==============================================================================
+    class function W_CacheLumpNum(const lump: integer; const tag: integer): pointer; static;
+
+    //==============================================================================
+    //
+    // W_CacheLumpName
+    //
+    //==============================================================================
+    class function W_CacheLumpName(const name: string; const tag: integer; const flags: LongWord = $0): pointer; static;
+
+    //==============================================================================
+    //
+    // W_TextLumpNum
+    //
+    //==============================================================================
+    class function W_TextLumpNum(const lump: integer): string; static;
+
+    //==============================================================================
+    //
+    // W_TextLumpName
+    //
+    //==============================================================================
+    class function W_TextLumpName(const name: string): string; static;
+
+    //==============================================================================
+    //
+    // ExtractFileBase8
+    //
+    //==============================================================================
+    class procedure ExtractFileBase8(const path: string; var dest: char8_t); static;
+  end;
+
 
 implementation
 
@@ -367,12 +375,26 @@ var
 var
   lumpcacherealsize: integer;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TWadLocalRoutines = class sealed
+  public
+    class function filelength(handle: TCachedFile): integer; static;
+    class procedure ExtractFileBase(const path: string; var dest: string); static;
+    class procedure W_SyncLumpInfo; static;
+    class function W_CreateWadSource(const aname: string; handle: TDStream; const singlelump: boolean): IWadSource; static;
+    class function W_AddFile(var filename: string): TDStream; static;
+  end;
+
 //==============================================================================
 //
 // char8tostring
 //
 //==============================================================================
-function char8tostring(src: char8_t): string;
+class function TWadRoutines.char8tostring(src: char8_t): string;
 var
   i: integer;
 begin
@@ -390,7 +412,7 @@ end;
 // stringtochar8
 //
 //==============================================================================
-function stringtochar8(src: string): char8_t;
+class function TWadRoutines.stringtochar8(src: string): char8_t;
 var
   i: integer;
   len: integer;
@@ -415,7 +437,7 @@ end;
 // filelength
 //
 //==============================================================================
-function filelength(handle: TCachedFile): integer;
+class function TWadLocalRoutines.filelength(handle: TCachedFile): integer;
 begin
   try
     result := handle.Size;
@@ -430,7 +452,7 @@ end;
 // ExtractFileBase
 //
 //==============================================================================
-procedure ExtractFileBase(const path: string; var dest: string);
+class procedure TWadLocalRoutines.ExtractFileBase(const path: string; var dest: string);
 begin
   // the rule of the base name is TWadFileBase of Framework\Wad
   try
@@ -446,12 +468,12 @@ end;
 // ExtractFileBase8
 //
 //==============================================================================
-procedure ExtractFileBase8(const path: string; var dest: char8_t);
+class procedure TWadRoutines.ExtractFileBase8(const path: string; var dest: char8_t);
 var
   dst: string;
 begin
   dst := char8tostring(dest);
-  ExtractFileBase(path, dst);
+  TWadLocalRoutines.ExtractFileBase(path, dst);
   dest := stringtochar8(dst);
 end;
 
@@ -461,7 +483,7 @@ end;
 // Makes lumpinfo[] again from the directory of the library
 //
 //==============================================================================
-procedure W_SyncLumpInfo;
+class procedure TWadLocalRoutines.W_SyncLumpInfo;
 var
   i: integer;
   count: integer;
@@ -484,7 +506,7 @@ begin
     lump_p.position := wad_directory.LumpOffset(i);
     lump_p.size := wad_directory.LumpSize(i);
     lump_p.flags := wad_directory.LumpFlags(i);
-    lump_p.name := stringtochar8(wad_directory.LumpName(i));
+    lump_p.name := TWadRoutines.stringtochar8(wad_directory.LumpName(i));
   end;
 
   numlumps := count;
@@ -499,7 +521,7 @@ end;
 // adapter, not the stream
 //
 //==============================================================================
-function W_CreateWadSource(const aname: string; handle: TDStream; const singlelump: boolean): IWadSource;
+class function TWadLocalRoutines.W_CreateWadSource(const aname: string; handle: TDStream; const singlelump: boolean): IWadSource;
 begin
   result := wad_services.OpenStream(aname, handle, singlelump);
 end;
@@ -531,7 +553,7 @@ var
 // W_AddFile
 //
 //==============================================================================
-function W_AddFile(var filename: string): TDStream;
+class function TWadLocalRoutines.W_AddFile(var filename: string): TDStream;
 var
   header: wadinfo_t;
   handle: TCachedFile;
@@ -609,8 +631,8 @@ begin
   begin
     // single lump file, named after the file
     ZeroMemory(@base8, SizeOf(base8));
-    ExtractFileBase8(filename, base8);
-    source := W_CreateWadSource(char8tostring(base8) + '.lmp', handle, true);
+    TWadRoutines.ExtractFileBase8(filename, base8);
+    source := W_CreateWadSource(TWadRoutines.char8tostring(base8) + '.lmp', handle, true);
     printf(' adding %s'#13#10, [filename]);
   end
   else
@@ -649,7 +671,7 @@ end;
 //  and reloads the directory.
 //
 //==============================================================================
-procedure W_Reload;
+class procedure TWadRoutines.W_Reload;
 var
   lumpcount: integer;
   i: integer;
@@ -673,7 +695,7 @@ begin
   handle.OnBeginBusy := I_BeginDiskBusy;
 
   try
-    source := W_CreateWadSource(reloadname, handle, false);
+    source := TWadLocalRoutines.W_CreateWadSource(reloadname, handle, false);
     lumpcount := source.Count;
     if lumpcount <> wad_directory.Sources[reloadsource].Count then
       I_Error('W_Reload(): File %s has %d lumps, it had %d'#13#10,
@@ -693,7 +715,7 @@ begin
   // The file is opened again whenever a lump is read
   handle.Free;
 
-  W_SyncLumpInfo;
+  TWadLocalRoutines.W_SyncLumpInfo;
 end;
 
 var
@@ -740,7 +762,7 @@ end;
 // W_RuntimeLoad
 //
 //==============================================================================
-procedure W_RuntimeLoad(fname: string; const origin: integer);
+class procedure TWadRoutines.W_RuntimeLoad(fname: string; const origin: integer);
 var
   lumpcount: integer;
   i: integer;
@@ -789,7 +811,7 @@ begin
   handle.OnBeginBusy := I_BeginDiskBusy;
 
   try
-    source := W_CreateWadSource(fname, handle, false);
+    source := TWadLocalRoutines.W_CreateWadSource(fname, handle, false);
   except
     on E: EWadException do
     begin
@@ -852,7 +874,7 @@ begin
     if lumpcache[i] <> nil then
       Z_Free(lumpcache[i]);
 
-  W_SyncLumpInfo;
+  TWadLocalRoutines.W_SyncLumpInfo;
 end;
 
 var
@@ -863,7 +885,7 @@ var
 // W_AddPendingWADfromPAK
 //
 //==============================================================================
-procedure W_AddPendingWADfromPAK(const fname: string);
+class procedure TWadRoutines.W_AddPendingWADfromPAK(const fname: string);
 begin
   if pendingwadsfrompak = nil then
     pendingwadsfrompak := TDStringList.Create;
@@ -875,7 +897,7 @@ end;
 // W_Configure
 //
 //==============================================================================
-procedure W_Configure(const AServices: IEngineWadServices);
+class procedure TWadRoutines.W_Configure(const AServices: IEngineWadServices);
 begin
   wad_services := AServices;
 end;
@@ -885,7 +907,7 @@ end;
 // W_ConfigureConverter
 //
 //==============================================================================
-procedure W_ConfigureConverter(const AConverter: IEngineWadConverter);
+class procedure TWadRoutines.W_ConfigureConverter(const AConverter: IEngineWadConverter);
 begin
   wad_converter := AConverter;
 end;
@@ -895,7 +917,7 @@ end;
 // W_ConfigureAliases
 //
 //==============================================================================
-procedure W_ConfigureAliases(const AAliases: IEngineLumpAliases);
+class procedure TWadRoutines.W_ConfigureAliases(const AAliases: IEngineLumpAliases);
 begin
   wad_aliases := AAliases;
 end;
@@ -915,7 +937,7 @@ end;
 //  does override all earlier ones.
 //
 //==============================================================================
-function W_InitMultipleFiles(const filenames: TDStringList): integer;
+class function TWadRoutines.W_InitMultipleFiles(const filenames: TDStringList): integer;
 var
   size: integer;
   filename: string;
@@ -937,7 +959,7 @@ begin
   for i := 0 to filenames.Count - 1 do
   begin
     filename := filenames[i];
-    filenames.Objects[i] := W_AddFile(filename);
+    filenames.Objects[i] := TWadLocalRoutines.W_AddFile(filename);
     filenames[i] := filename;
   end;
 
@@ -968,7 +990,7 @@ end;
 // W_ShutDown
 //
 //==============================================================================
-procedure W_ShutDown;
+class procedure TWadRoutines.W_ShutDown;
 var
   i: integer;
 begin
@@ -995,7 +1017,7 @@ end;
 // W_NumLumps
 //
 //==============================================================================
-function W_NumLumps: integer;
+class function TWadRoutines.W_NumLumps: integer;
 begin
   result := numlumps;
 end;
@@ -1006,7 +1028,7 @@ end;
 // Returns -1 if name not found.
 //
 //==============================================================================
-function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer;
+class function TWadRoutines.W_CheckNumForName(const name: string; const flags: LongWord = $0): integer;
 var
   lname: string;
 begin
@@ -1039,7 +1061,7 @@ end;
 // W_CheckFirstNumForName
 //
 //==============================================================================
-function W_CheckFirstNumForName(const name: string): integer;
+class function TWadRoutines.W_CheckFirstNumForName(const name: string): integer;
 var
   lname: string;
 begin
@@ -1058,7 +1080,7 @@ end;
 // W_CheckNumForName2
 //
 //==============================================================================
-function W_CheckNumForName2(const name: string; first: integer; last: integer): integer;
+class function TWadRoutines.W_CheckNumForName2(const name: string; first: integer; last: integer): integer;
 var
   lname: string;
 begin
@@ -1078,7 +1100,7 @@ end;
 // Calls W_CheckNumForName, but bombs out if not found.
 //
 //==============================================================================
-function W_GetNumForName(const name: string; const flags: LongWord = $0): integer;
+class function TWadRoutines.W_GetNumForName(const name: string; const flags: LongWord = $0): integer;
 begin
   result := W_CheckNumForName(name, flags);
   if result = -1 then
@@ -1090,7 +1112,7 @@ end;
 // W_GetFirstNumForName
 //
 //==============================================================================
-function W_GetFirstNumForName(const name: string): integer;
+class function TWadRoutines.W_GetFirstNumForName(const name: string): integer;
 begin
   result := W_CheckFirstNumForName(name);
   if result = -1 then
@@ -1102,7 +1124,7 @@ end;
 // W_GetNameForNum
 //
 //==============================================================================
-function W_GetNameForNum(const lump: integer): char8_t;
+class function TWadRoutines.W_GetNameForNum(const lump: integer): char8_t;
 begin
   result := lumpinfo[lump].name;
 end;
@@ -1112,7 +1134,7 @@ end;
 // W_LumpFlags
 //
 //==============================================================================
-function W_LumpFlags(const lump: integer): LongWord;
+class function TWadRoutines.W_LumpFlags(const lump: integer): LongWord;
 begin
   if (lump < 0) or (lump >= numlumps) then
     I_Error('W_LumpFlags(): %d is not a lump (numlumps = %d)', [lump, numlumps]);
@@ -1125,7 +1147,7 @@ end;
 // W_LumpLength
 //
 //==============================================================================
-function W_LumpLength(const lump: integer): integer;
+class function TWadRoutines.W_LumpLength(const lump: integer): integer;
 begin
   if lump >= numlumps then
     I_Error('W_LumpLength(): %d >= numlumps', [lump]);
@@ -1140,7 +1162,7 @@ end;
 // digits in lower case; 'DEADDEAD' if lump < 0 (the old GetLumpCRC32 of m_crc32)
 //
 //==============================================================================
-function W_LumpCRC32(const lump: integer): string;
+class function TWadRoutines.W_LumpCRC32(const lump: integer): string;
 var
   data: pointer;
 begin
@@ -1161,7 +1183,7 @@ end;
 //  which must be >= W_LumpLength().
 //
 //==============================================================================
-procedure W_ReadLump(const lump: integer; dest: pointer);
+class procedure TWadRoutines.W_ReadLump(const lump: integer; dest: pointer);
 begin
   if lump >= numlumps then
     I_Error('W_ReadLump(): %d >= numlumps', [lump]);
@@ -1180,7 +1202,7 @@ end;
 // W_CacheLumpNum
 //
 //==============================================================================
-function W_CacheLumpNum(const lump: integer; const tag: integer): pointer;
+class function TWadRoutines.W_CacheLumpNum(const lump: integer; const tag: integer): pointer;
 begin
   if lump >= numlumps then
     I_Error('W_CacheLumpNum(): lump = %d, >= numlumps', [lump]);
@@ -1209,7 +1231,7 @@ end;
 // W_CacheLumpName
 //
 //==============================================================================
-function W_CacheLumpName(const name: string; const tag: integer; const flags: LongWord = $0): pointer;
+class function TWadRoutines.W_CacheLumpName(const name: string; const tag: integer; const flags: LongWord = $0): pointer;
 begin
   result := W_CacheLumpNum(W_GetNumForName(name, flags), tag);
 end;
@@ -1219,7 +1241,7 @@ end;
 // W_TextLumpNum
 //
 //==============================================================================
-function W_TextLumpNum(const lump: integer): string;
+class function TWadRoutines.W_TextLumpNum(const lump: integer): string;
 var
   p: PByteArray;
 begin
@@ -1241,7 +1263,7 @@ end;
 // W_TextLumpName
 //
 //==============================================================================
-function W_TextLumpName(const name: string): string;
+class function TWadRoutines.W_TextLumpName(const name: string): string;
 begin
   result := W_TextLumpNum(W_GetNumForName(name));
 end;

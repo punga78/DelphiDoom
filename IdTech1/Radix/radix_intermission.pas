@@ -165,7 +165,7 @@ begin
 
   if in_tic = 1 then
     // intermission music
-    S_ChangeMusic(Ord(mus_intro), true);
+    TSoundRoutines.S_ChangeMusic(Ord(mus_intro), true);
 
   // the key that ended the level is still down in the first tics
   if in_tic > TICRATE div 2 then
@@ -191,7 +191,7 @@ begin
     exit;
 
   sprintf(backscreen, 'DebriefScreen%d', [TGameSession.GameEpisode]);
-  if W_CheckNumForName(backscreen) >= 0 then
+  if TWadRoutines.W_CheckNumForName(backscreen) >= 0 then
     V_DrawPatchFullScreenTMP320x200(backscreen);
 
   M_WriteSmallTextCenter(30, 'MISSION ' + itoa(in_struct.last + 1) + ' COMPLETED', SCN_TMP);

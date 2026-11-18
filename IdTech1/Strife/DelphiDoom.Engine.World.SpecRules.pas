@@ -338,12 +338,12 @@ begin
 // JVAL
 // Check for 'ANIMATED' lump
   animdefs := nil;
-  lump := W_CheckNumForName('ANIMATED');
+  lump := TWadRoutines.W_CheckNumForName('ANIMATED');
   if lump >= 0 then
   begin
-    len := W_LumpLength(lump);
+    len := TWadRoutines.W_LumpLength(lump);
     len := len div SizeOf(wad_animdef_t);
-    wadanims := W_CacheLumpNum(lump, PU_STATIC);
+    wadanims := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
     animdefs := Z_Malloc((len + 1) * SizeOf(animdef_t), PU_STATIC, nil);
     anims := Z_Malloc((len + 1) * SizeOf(anim_t), PU_STATIC, nil);
     ianimdef := @animdefs[0];
@@ -392,7 +392,7 @@ begin
     end
     else
     begin
-      if W_CheckNumForName(ianimdef.startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(ianimdef.startname) = -1 then
       begin
         inc(ianimdef);
         continue;
@@ -473,7 +473,7 @@ begin
            not player.cards[Ord(key_WarehouseKey)] then
         begin
           player._message := PD_ANY; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -510,7 +510,7 @@ begin
            not player.cards[Ord(key_WarehouseKey)] then
         begin
           player._message := PD_ALL6; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
         end;
@@ -1102,7 +1102,7 @@ begin
             if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
             begin
               // load voice
-              S_StartVoice('VOC' + itoa(line.tag));
+              TSoundRoutines.S_StartVoice('VOC' + itoa(line.tag));
 
               // load objective
               P_GiveObjective('LOG' + itoa(line.tag), 0);
@@ -1126,7 +1126,7 @@ begin
             if Pplayer_t(thing.player).weaponowned[Ord(wp_flame)] then
             begin
               // load voice
-              S_StartVoice('VOC' + itoa(line.tag));
+              TSoundRoutines.S_StartVoice('VOC' + itoa(line.tag));
 
               // load objective
               P_GiveObjective('LOG' + itoa(line.tag), 0);
@@ -1158,7 +1158,7 @@ begin
                (Pplayer_t(thing.player).questflags and _SHLW(1, line.tag mod 100 - 1) <> 0) then // test for questflag
             begin
               // start voice
-              S_StartVoice('VOC' + itoa(line.tag div 100));
+              TSoundRoutines.S_StartVoice('VOC' + itoa(line.tag div 100));
 
               // give objective
               P_GiveObjective('LOG' + itoa(line.tag div 100), 0);
@@ -1174,7 +1174,7 @@ begin
         // haleyjd 09/21/10: [STRIFE] W1 Change Music (unused!)
         if thing.player = @TGameSession.Players[0] then
         begin
-          S_ChangeMusic(line.tag, true);
+          TSoundRoutines.S_ChangeMusic(line.tag, true);
           line.special := 0;
         end;
       end;
@@ -1185,9 +1185,9 @@ begin
         if Pplayer_t(thing.player).questflags and QF_QUEST24 <> 0 then // Not killed Macil??? // STRIFE-TODO: verify...
         begin
           if Pplayer_t(thing.player).questflags and QF_QUEST28 = 0 then // ????? STRIFE-TODO
-            S_StartVoice('VOC128')
+            TSoundRoutines.S_StartVoice('VOC128')
           else
-            S_StartVoice('VOC130');
+            TSoundRoutines.S_StartVoice('VOC130');
 
           line.special := 0;
         end;
@@ -1515,7 +1515,7 @@ begin
       begin
         // haleyjd 09/21/10: [STRIFE] WR Change Music
         if thing.player = @TGameSession.Players[0] then
-          S_ChangeMusic(line.tag, true);
+          TSoundRoutines.S_ChangeMusic(line.tag, true);
       end;
 
     231:
@@ -2120,7 +2120,7 @@ begin
         // SECRET SECTOR
         player._message := MSGSECRETSECTOR;
         if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-          S_StartSound(nil, Ord(sfx_yeah));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_yeah));
         sector.special := 0;
       end;
 
@@ -2306,7 +2306,7 @@ begin
           bottom:
             sides[button.line.sidenum[0]].bottomtexture := button.btexture;
         end;
-        S_StartSound(@button.soundorg, Ord(sfx_swtchn));
+        TSoundRoutines.S_StartSound(@button.soundorg, Ord(sfx_swtchn));
         ZeroMemory(button, SizeOf(button_t));
       end;
 

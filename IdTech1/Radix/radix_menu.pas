@@ -279,7 +279,7 @@ procedure RX_MenuDrawPicture(const x, y: integer; const name: string);
 var
   lump: integer;
 begin
-  lump := W_CheckNumForName(name);
+  lump := TWadRoutines.W_CheckNumForName(name);
   if lump >= 0 then
     V_DrawPatch(x, y, SCN_TMP, lump, false);
 end;
@@ -309,7 +309,7 @@ begin
 
   if name = 'M_DOOM' then
   begin
-    p := W_CacheLumpName('M_RADIX', PU_STATIC);
+    p := TWadRoutines.W_CacheLumpName('M_RADIX', PU_STATIC);
     V_DrawPatch((320 - p.width) div 2, 6, SCN_TMP, p, false);
     Z_ChangeTag(p, PU_CACHE);
   end

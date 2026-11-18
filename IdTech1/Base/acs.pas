@@ -51,10 +51,10 @@ uses
 //==============================================================================
 function acc_isscriptlump(const lump: integer): boolean;
 begin
-  if IsIntegerInRange(lump, 0, W_NumLumps - 1) then
-    if (W_GetNameForNum(lump) = 'SCRIPT') or (W_GetNameForNum(lump) = 'SCRIPTS') then
+  if IsIntegerInRange(lump, 0, TWadRoutines.W_NumLumps - 1) then
+    if (TWadRoutines.W_GetNameForNum(lump) = 'SCRIPT') or (TWadRoutines.W_GetNameForNum(lump) = 'SCRIPTS') then
     begin
-      Result := W_LumpLength(lump) > 8;
+      Result := TWadRoutines.W_LumpLength(lump) > 8;
       Exit;
     end;
   Result := False;

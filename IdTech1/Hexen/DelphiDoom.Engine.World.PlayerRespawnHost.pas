@@ -197,7 +197,7 @@ begin
     AHeight + TELEFOGHEIGHT, Ord(MT_TFOG));
 
   if TGameSession.Players[FConsolePlayer^].viewz <> 1 then
-    S_StartSound(LFog, Ord(SFX_TELEPORT));  // don't start sound on first frame
+    TSoundRoutines.S_StartSound(LFog, Ord(SFX_TELEPORT));  // don't start sound on first frame
 end;
 
 end.

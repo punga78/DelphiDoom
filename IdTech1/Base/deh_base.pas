@@ -614,7 +614,7 @@ function DEH_ParseLumpName(const lumpname: string): boolean;
 var
   lump: integer;
 begin
-  lump := W_CheckNumForName(lumpname);
+  lump := TWadRoutines.W_CheckNumForName(lumpname);
   if lump >= 0 then
   begin
     DEH_ParseLumpNum(lump);
@@ -637,16 +637,16 @@ var
 begin
   cnt := 0;
   uName := strupper(lumpname);
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = uName then
+  for i := 0 to TWadRoutines.W_NumLumps - 1 do
+    if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = uName then
     begin
-      DEH_ParseText(W_TextLumpNum(i));
+      DEH_ParseText(TWadRoutines.W_TextLumpNum(i));
       inc(cnt);
     end;
 
-  cnt := cnt + PAK_StringIterator(lumpname, DEH_ParseText);
-  cnt := cnt + PAK_StringIterator(lumpname + '.DEH', DEH_ParseText);
-  cnt := cnt + PAK_StringIterator(lumpname + '.BEX', DEH_ParseText);
+  cnt := cnt + TPakRoutines.PAK_StringIterator(lumpname, DEH_ParseText);
+  cnt := cnt + TPakRoutines.PAK_StringIterator(lumpname + '.DEH', DEH_ParseText);
+  cnt := cnt + TPakRoutines.PAK_StringIterator(lumpname + '.BEX', DEH_ParseText);
 
   result := cnt > 0;
 end;
@@ -661,7 +661,7 @@ begin
   if lump < 0 then
     exit;
 
-  DEH_ParseText(W_TextLumpNum(lump));
+  DEH_ParseText(TWadRoutines.W_TextLumpNum(lump));
 end;
 
 //==============================================================================

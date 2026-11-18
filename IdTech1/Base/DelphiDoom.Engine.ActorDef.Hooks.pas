@@ -133,7 +133,7 @@ end;
 
 procedure TEngineActorDefHooks.AddExternalScript(const AName, AFileName: string; AType: TActorDefScriptType);
 begin
-  PS_AddSourceScript(AName, PAK_ReadFileAsString(AFileName), ScriptTypeOf(AType));
+  PS_AddSourceScript(AName, TPakRoutines.PAK_ReadFileAsString(AFileName), ScriptTypeOf(AType));
 end;
 
 procedure TEngineActorDefHooks.AddCompiledScript(const AName, AFileName: string);
@@ -143,12 +143,12 @@ end;
 
 procedure TEngineActorDefHooks.ParseDehFile(const AFileName: string);
 begin
-  DEH_ParseText(PAK_ReadFileAsString(AFileName));
+  DEH_ParseText(TPakRoutines.PAK_ReadFileAsString(AFileName));
 end;
 
 procedure TEngineActorDefHooks.ParseAllDehFiles(const AFileName: string);
 begin
-  DEH_ParseText(PAK_ReadAllFilesAsString(AFileName));
+  DEH_ParseText(TPakRoutines.PAK_ReadAllFilesAsString(AFileName));
 end;
 
 procedure TEngineActorDefHooks.ParseText(const AText: string);

@@ -256,7 +256,7 @@ begin
   end;
 
   result := P_SpawnMobj(x, y, ONFLOATZ, m_ambient);
-  S_StartSound(result, sndname);
+  TSoundRoutines.S_StartSound(result, sndname);
 end;
 
 var
@@ -332,7 +332,7 @@ begin
     m_ambient := Info_GetMobjNumForName(STR_AMBIENTSOUND);
   if m_ambient <> -1 then
     P_SpawnMobj(actor.x + dx, actor.y + dy, ONFLOATZ, m_ambient);
-  S_StartSound(nil, snd);
+  TSoundRoutines.S_StartSound(nil, snd);
 end;
 
 //==============================================================================
@@ -765,7 +765,7 @@ end;
 //==============================================================================
 procedure A_PlayerPain(actor: Pmobj_t);
 begin
-  S_StartSound(actor, 'radix/SndPlaneHit');
+  TSoundRoutines.S_StartSound(actor, 'radix/SndPlaneHit');
 end;
 
 //==============================================================================

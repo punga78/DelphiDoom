@@ -491,7 +491,7 @@ begin
       if (player <> nil) and (mo.momz < - P_GetMobjGravity(mo) * 8) and (mo.flags2 and MF2_FLY = 0) then // squat down
       begin
         player.deltaviewheight := mo.momz div 8;
-        S_StartSound(mo, Ord(sfx_plroof));
+        TSoundRoutines.S_StartSound(mo, Ord(sfx_plroof));
         player.centering := true; // JVAL: check
       end;
       if mo.flags3_ex and MF3_EX_FLOORBOUNCE <> 0 then
@@ -536,7 +536,7 @@ begin
 
         if TTickState.LevelTime > player.nextoof then
         begin
-          S_StartSound(mo, Ord(sfx_plroof));
+          TSoundRoutines.S_StartSound(mo, Ord(sfx_plroof));
           player.nextoof := TTickState.LevelTime + 4 * TICRATE;
         end;
       end;
@@ -828,7 +828,7 @@ begin
   if plnum = TGameSession.ConsolePlayer then
   begin
     // wake up the heads up text
-    HU_Start;
+    THudRoutines.HU_Start;
 
     p_justspawned := true;
   end;
@@ -952,7 +952,7 @@ begin
 
   puff := P_SpawnMobj(x, y, z, Ord(PuffType));
   if puff.info.attacksound <> 0 then
-    S_StartSound(puff, puff.info.attacksound);
+    TSoundRoutines.S_StartSound(puff, puff.info.attacksound);
 
   case PuffType of
     MT_BEAKPUFF,
@@ -1108,7 +1108,7 @@ begin
     if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
       TCommonSoundActions.P_RandomSound(th, th.info.seesound)
     else
-      S_StartSound(th, th.info.seesound);
+      TSoundRoutines.S_StartSound(th, th.info.seesound);
   end;
 
   th.target := source;  // where it came from
@@ -1191,7 +1191,7 @@ begin
       if MissileMobj.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
         TCommonSoundActions.P_RandomSound(MissileMobj, MissileMobj.info.seesound)
       else
-        S_StartSound(MissileMobj, MissileMobj.info.seesound);
+        TSoundRoutines.S_StartSound(MissileMobj, MissileMobj.info.seesound);
     end;
 
     MissileMobj.target := source;
@@ -1275,7 +1275,7 @@ begin
         mo.momx := (P_Random - P_Random) * 256;
         mo.momy := (P_Random - P_Random) * 256;
         mo.momz := 2 * FRACUNIT + (P_Random * 256);
-        S_StartSound(mo, Ord(sfx_gloop));
+        TSoundRoutines.S_StartSound(mo, Ord(sfx_gloop));
         result := FLOOR_WATER;
         exit;
       end;
@@ -1284,7 +1284,7 @@ begin
         P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASPLASH));
         mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASMOKE));
         mo.momz := FRACUNIT + (P_Random * 128);
-        S_StartSound(mo, Ord(sfx_burn));
+        TSoundRoutines.S_StartSound(mo, Ord(sfx_burn));
         result := FLOOR_LAVA;
         exit;
       end;
@@ -1343,7 +1343,7 @@ begin
 
   th := P_SpawnMobj(x, y, z, _type);
   if th.info.seesound <> 0 then
-    S_StartSound(th, th.info.seesound);
+    TSoundRoutines.S_StartSound(th, th.info.seesound);
 
   th.target := source;
   th.angle := an;
@@ -1384,7 +1384,7 @@ begin
     if mo.flags_ex and MF_EX_RANDOMDEATHSOUND <> 0 then
       TCommonSoundActions.P_RandomSound(mo, mo.info.deathsound)
     else
-      S_StartSound(mo, mo.info.deathsound);
+      TSoundRoutines.S_StartSound(mo, mo.info.deathsound);
   end;
 end;
 
@@ -1412,7 +1412,7 @@ var
 begin
   mo := P_SpawnMobj(x, y, z, Ord(MT_TFOG), mthing);
   // initiate teleport sound
-  S_StartSound(mo, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_telept));
 end;
 
 class function TMobjGameRules.SpawnHeightOfType(const i: integer): fixed_t;
@@ -1457,7 +1457,7 @@ begin
     if mo.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
       TCommonSoundActions.P_RandomSound(mo, mo.info.seesound)
     else
-      S_StartSound(mo, mo.info.seesound);
+      TSoundRoutines.S_StartSound(mo, mo.info.seesound);
   end;
 end;
 

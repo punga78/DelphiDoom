@@ -456,7 +456,7 @@ begin
   P_RemoveMobj(special);
   p.bonuscount := p.bonuscount + BONUSADD;
   if (p = @TGameSession.Players[TGameSession.ConsolePlayer]) and (info.PickupSound <> '') then
-    S_StartSound(nil, info.PickupSound);
+    TSoundRoutines.S_StartSound(nil, info.PickupSound);
 end;
 
 //==============================================================================

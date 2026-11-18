@@ -44,12 +44,12 @@ end;
 
 function TEngineIncludeSource.ReadFile(const AName: string): string;
 begin
-  Result := PAK_ReadFileAsString(AName);
+  Result := TPakRoutines.PAK_ReadFileAsString(AName);
 end;
 
 function TEngineIncludeSource.ReadAllFiles(const AName: string): string;
 begin
-  Result := PAK_ReadAllFilesAsString(AName);
+  Result := TPakRoutines.PAK_ReadAllFilesAsString(AName);
 end;
 
 function TEngineIncludeSource.ReadLump(const AName: string): string;

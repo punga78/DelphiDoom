@@ -172,9 +172,9 @@ begin
   for LIndex := 0 to 4 do
 {$IFDEF RADIX}
     // the system WAD of Radix has no crosshairs of the engine (the cockpit draws its own)
-    FCrosshairs[LIndex] := W_CacheLumpNum(RX_LumpNumOrEmpty('XCROSS' + itoa(LIndex)), PU_STATIC);
+    FCrosshairs[LIndex] := TWadRoutines.W_CacheLumpNum(RX_LumpNumOrEmpty('XCROSS' + itoa(LIndex)), PU_STATIC);
 {$ELSE}
-    FCrosshairs[LIndex] := W_CacheLumpName('XCROSS' + itoa(LIndex), PU_STATIC);
+    FCrosshairs[LIndex] := TWadRoutines.W_CacheLumpName('XCROSS' + itoa(LIndex), PU_STATIC);
 {$ENDIF}
 end;
 
@@ -385,7 +385,7 @@ var
   i: integer;
   x, y: integer;
 begin
-  dp := W_CacheLumpName('DEMOTIME', PU_STATIC);
+  dp := TWadRoutines.W_CacheLumpName('DEMOTIME', PU_STATIC);
   x := viewwindowx{$IFDEF OPENGL} * 320 div SCREENWIDTH{$ENDIF};
   y := (viewwindowy + viewheight){$IFDEF OPENGL} * 200 div SCREENHEIGHT{$ENDIF};
 {$IFDEF OPENGL}
@@ -424,10 +424,10 @@ begin
     AHighlightDigits, FLayout);
 
   if FTranslationLump < 0 then
-    FTranslationLump := W_GetNumForName('TRN_MENU');
+    FTranslationLump := TWadRoutines.W_GetNumForName('TRN_MENU');
 
   oldtranslation := v_translation;
-  newtranslation := W_CacheLumpNum(FTranslationLump, PU_STATIC);
+  newtranslation := TWadRoutines.W_CacheLumpNum(FTranslationLump, PU_STATIC);
 
   LGlyphs := FLayout.Glyphs;
   for LIndex := 0 to FLayout.Count - 1 do

@@ -99,9 +99,9 @@ end;
 //==============================================================================
 function RX_LumpNumOrEmpty(const name: string): integer;
 begin
-  result := W_CheckNumForName(name);
+  result := TWadRoutines.W_CheckNumForName(name);
   if result < 0 then
-    result := W_GetNumForName(S_NOCHARLUMP);
+    result := TWadRoutines.W_GetNumForName(S_NOCHARLUMP);
 end;
 
 //==============================================================================
@@ -114,7 +114,7 @@ var
   i: integer;
 begin
   for i := 0 to DOS_FONTSIZE - 1 do
-    font[i] := W_CacheLumpNum(RX_FontLumpNum(prefix, Ord(DOS_FONTSTART) + i), PU_STATIC);
+    font[i] := TWadRoutines.W_CacheLumpNum(RX_FontLumpNum(prefix, Ord(DOS_FONTSTART) + i), PU_STATIC);
 end;
 
 //==============================================================================

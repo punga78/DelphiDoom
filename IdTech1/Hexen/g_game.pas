@@ -853,7 +853,7 @@ begin
     side := side - sidemove[pclass, speed];
 
   // buttons
-  cmd.chatchar := Ord(HU_dequeueChatChar);
+  cmd.chatchar := Ord(THudRoutines.HU_dequeueChatChar);
 
   if gamekeydown[key_fire] or
      (usemouse and mousebuttons[mousebfire]) or
@@ -1308,7 +1308,7 @@ begin
 
   if TGameSession.GameState = GS_LEVEL then
   begin
-    if HU_Responder(ev) then
+    if THudRoutines.HU_Responder(ev) then
     begin
       result := true; // chat ate the event
       exit;
@@ -1953,7 +1953,7 @@ begin
   end;
 
   map := atoi(parm1, -1);
-  if W_CheckNumForName(P_GetMapName(map)) < 0 then
+  if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) < 0 then
   begin
     mapname := strupper(parm1);
 
@@ -1964,7 +1964,7 @@ begin
             map := atoi(mapname[4] + mapname[5], -1);
   end;
 
-  if W_CheckNumForName(P_GetMapName(map)) > -1 then
+  if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
     TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
     G_DeferedInitNewUntranslated(TGameSession.GameSkill, map);
@@ -1988,7 +1988,7 @@ begin
   if TGameSession.Paused then
   begin
     TGameSession.Paused := false;
-    S_ResumeSound;
+    TSoundRoutines.S_ResumeSound;
   end;
 
   if skill < sk_baby then
@@ -1999,8 +1999,8 @@ begin
   TNewGameLimits.Hexen(map);
 
   levelinf := P_GetLevelInfo(P_GetMapName(map));
-  levelinf.musname := stringtochar8('');
-  levelinf.skyflat := stringtochar8('');
+  levelinf.musname := TWadRoutines.stringtochar8('');
+  levelinf.skyflat := TWadRoutines.stringtochar8('');
 
   TRendererInterpolation.R_ResetInterpolationBuffer;
 
@@ -2154,9 +2154,9 @@ begin
             begin
               TGameSession.Paused := not TGameSession.Paused;
               if TGameSession.Paused then
-                S_PauseSound
+                TSoundRoutines.S_PauseSound
               else
-                S_ResumeSound;
+                TSoundRoutines.S_ResumeSound;
             end;
           BTS_SAVEGAME:
             begin
@@ -2191,7 +2191,7 @@ begin
         TTickRoutines.P_Ticker;
         TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
-        HU_Ticker;
+        THudRoutines.HU_Ticker;
       end;
     GS_INTERMISSION:
       begin

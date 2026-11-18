@@ -89,11 +89,11 @@ begin
     begin
       result := Z_Malloc(SizeOf(levelinfo_t), PU_STATIC, nil);
       ZeroMemory(result, SizeOf(levelinfo_t));
-      result.levelname := stringtochar8(check);
+      result.levelname := TWadRoutines.stringtochar8(check);
       result.next := levelinfo;
       levelinfo := result;
     end;
-    if char8tostring(result.levelname) = check then
+    if TWadRoutines.char8tostring(result.levelname) = check then
       break;
     result := result.next;
   end;
@@ -113,13 +113,13 @@ var
 begin
   levelname := P_GetMapName({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap);
   linfo := P_GetLevelInfo(levelname);
-  musname := strtrim(strupper(char8tostring(linfo.musname)));
+  musname := strtrim(strupper(TWadRoutines.char8tostring(linfo.musname)));
   if musname = '' then
     exit;
   for i := 0 to nummusic - 1 do
     if musname = strupper(S_music[i].name) then
     begin
-      S_ChangeMusic(i, true);
+      TSoundRoutines.S_ChangeMusic(i, true);
       exit;
     end;
 end;

@@ -175,12 +175,12 @@ begin
       if (oldCluster >= 1) and (oldCluster <= 5) then
       begin
         sprintf(msgLumpName, 'clus%dmsg', [oldCluster]);
-        HubText := W_TextLumpName(msgLumpName);
+        HubText := TWadRoutines.W_TextLumpName(msgLumpName);
         msgSize := Length(HubText);
         if msgSize >= MAX_INTRMSN_MESSAGE_SIZE then
           I_Error('IN_InitStats(): Cluster message too long (%s)', [msgLumpName]);
         HubCount := msgSize * TEXTSPEED + TEXTWAIT;
-        S_ChangeMusic(Ord(mus_hub), true);
+        TSoundRoutines.S_ChangeMusic(Ord(mus_hub), true);
       end;
     end;
   end
@@ -221,7 +221,7 @@ begin
     begin // don't do the slaughter stuff if everyone is equal
       slaughterboy := 0;
     end;
-    S_ChangeMusic(Ord(mus_hub), true);
+    TSoundRoutines.S_ChangeMusic(Ord(mus_hub), true);
   end;
 end;
 
@@ -236,16 +236,16 @@ var
 begin
   if (HubCount <> 0) or (gametype = gt_deathmatch) then
   begin
-    patchINTERPIC := W_CacheLumpName('INTERPIC', PU_STATIC);
-    FontBLumpBase := W_GetNumForName('FONTB16');
+    patchINTERPIC := TWadRoutines.W_CacheLumpName('INTERPIC', PU_STATIC);
+    FontBLumpBase := TWadRoutines.W_GetNumForName('FONTB16');
     for i := 0 to 9 do
-      FontBNumbers[i] := W_CacheLumpNum(FontBLumpBase + i, PU_STATIC);
-    FontBLump := W_GetNumForName('FONTB_S') + 1;
-    FontBNegative := W_CacheLumpName('FONTB13', PU_STATIC);
-    FontABaseLump := W_GetNumForName('FONTA_S') + 1;
+      FontBNumbers[i] := TWadRoutines.W_CacheLumpNum(FontBLumpBase + i, PU_STATIC);
+    FontBLump := TWadRoutines.W_GetNumForName('FONTB_S') + 1;
+    FontBNegative := TWadRoutines.W_CacheLumpName('FONTB13', PU_STATIC);
+    FontABaseLump := TWadRoutines.W_GetNumForName('FONTA_S') + 1;
 
-    FontBSlash := W_CacheLumpName('FONTB15', PU_STATIC);
-    FontBPercent := W_CacheLumpName('FONTB05', PU_STATIC);
+    FontBSlash := TWadRoutines.W_CacheLumpName('FONTB15', PU_STATIC);
+    FontBPercent := TWadRoutines.W_CacheLumpName('FONTB05', PU_STATIC);
   end;
 end;
 
@@ -467,7 +467,7 @@ begin
       continue;
     end;
 
-    w := W_CacheLumpNum(FontABaseLump + Ord(c) - 33, PU_CACHE);
+    w := TWadRoutines.W_CacheLumpNum(FontABaseLump + Ord(c) - 33, PU_CACHE);
     if cx + w.width > SCREENWIDTH then
       break;
     V_DrawPatch(cx, cy, SCN_TMP, w, false);
@@ -574,7 +574,7 @@ begin
   if (intertime >= TALLY_EFFECT_TICKS) and not showTotals then
   begin
     showTotals := true;
-    S_StartSound(nil, Ord(SFX_PLATFORM_STOP));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_PLATFORM_STOP));
   end;
   y := FixedInt(yPos);
   for i := 0 to MAXPLAYERS - 1 do
@@ -636,8 +636,8 @@ var
 begin
   if travelpic = -2 then
   begin
-    travelpic := W_CheckNumForName('TRAVLPIC');
-    travelpal := W_CheckNumForName('TRAVLPAL');
+    travelpic := TWadRoutines.W_CheckNumForName('TRAVLPIC');
+    travelpal := TWadRoutines.W_CheckNumForName('TRAVLPAL');
     if (travelpic = -1) or (travelpal = -1) then
     begin
       travelpic := -1;
@@ -651,8 +651,8 @@ begin
   end
   else
   begin
-    memcpy(@screens[SCN_TMP][0], W_CacheLumpNum(travelpic, PU_CACHE), 320 * 200);
-    pal := W_CacheLumpNum(travelpal, PU_STATIC);
+    memcpy(@screens[SCN_TMP][0], TWadRoutines.W_CacheLumpNum(travelpic, PU_CACHE), 320 * 200);
+    pal := TWadRoutines.W_CacheLumpNum(travelpal, PU_STATIC);
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(pal, PU_CACHE);

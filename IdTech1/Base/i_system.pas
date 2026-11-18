@@ -578,7 +578,7 @@ end;
 procedure I_StartFrame;
 begin
   I_ProcessWindows;
-  S_ProcessMusic;
+  TSoundRoutines.S_ProcessMusic;
   // the poller reads nothing before I_Init
   if system_input <> nil then
     system_input.Process;
@@ -724,9 +724,9 @@ begin
   printf('I_DetectOS: Detecting operating system.'#13#10);
   I_DetectOS;
   printf('I_InitSound: Initializing the sound output.'#13#10);
-  S_InitSoundDevice;
+  TSoundRoutines.S_InitSoundDevice;
   printf('I_InitMusic: Initializing music.'#13#10);
-  S_InitMusicDevice;
+  TSoundRoutines.S_InitMusicDevice;
   printf('I_InitInput: Initializing Input Devices.'#13#10);
   if system_input = nil then
     I_Error('I_InitInput(): the input was not configured');

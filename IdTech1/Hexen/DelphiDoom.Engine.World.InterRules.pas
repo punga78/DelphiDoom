@@ -472,7 +472,7 @@ begin
   oldFlags2 := pmo.flags2;
   P_SetMobjState(pmo, S_FREETARGMOBJ);
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(SFX_TELEPORT));
+  TSoundRoutines.S_StartSound(fog, Ord(SFX_TELEPORT));
   beast := P_SpawnMobj(x, y, z, Ord(MT_PIGPLAYER));
   beast.special1 := Ord(player.readyweapon);
   beast.angle := angle;
@@ -605,7 +605,7 @@ begin
   TMobjRoutines.P_RemoveMobjFromTIDList(actor);
   P_SetMobjState(actor, S_FREETARGMOBJ);
   fog := P_SpawnMobj(x, y, z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(SFX_TELEPORT));
+  TSoundRoutines.S_StartSound(fog, Ord(SFX_TELEPORT));
   beast := P_SpawnMobj(x, y, z, Ord(MT_PIG));
   beast.special2 := moType;
   beast.special1 := MORPHTICS + P_Random;
@@ -731,7 +731,7 @@ begin
   player.bonuscount := player.bonuscount + BONUSADD;
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
-    S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
     TStatusBarRoutines.SB_PaletteFlash(false);
   end;
 end;
@@ -845,14 +845,14 @@ begin
   begin
     P_SetMessage(player, fourthWeaponText[Ord(matchClass)], false);
     // Play the build-sound full volume for all players
-    S_StartSound(nil, Ord(SFX_WEAPON_BUILD));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_WEAPON_BUILD));
   end
   else
   begin
     P_SetMessage(player, weaponPieceText[Ord(matchClass)], false);
     if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     begin
-      S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
+      TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
     end;
   end;
 end;
@@ -1026,12 +1026,12 @@ begin
     if artifactType < artitype_t(arti_firstpuzzitem) then
     begin
       P_SetDormantArtifact(artifact);
-      S_StartSound(artifact, Ord(SFX_PICKUP_ARTIFACT));
+      TSoundRoutines.S_StartSound(artifact, Ord(SFX_PICKUP_ARTIFACT));
       P_SetMessage(player, artifactMessages[Ord(artifactType)], false);
     end
     else
     begin // Puzzle item
-      S_StartSound(nil, Ord(SFX_PICKUP_ITEM));
+      TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_ITEM));
       P_SetMessage(player, artifactMessages[Ord(artifactType)], true);
       if not TGameSession.NetGame or (TGameSession.DeathMatch <> 0) then
       begin // Remove puzzle items if not cooperative netplay
@@ -1147,7 +1147,7 @@ begin
           player.bonuscount := player.bonuscount + BONUSADD;
           if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           begin
-            S_StartSound(nil, sound);
+            TSoundRoutines.S_StartSound(nil, sound);
             TStatusBarRoutines.SB_PaletteFlash(false);
           end;
         end;
@@ -1498,7 +1498,7 @@ begin
   player.bonuscount := player.bonuscount + BONUSADD;
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
-    S_StartSound(nil, sound);
+    TSoundRoutines.S_StartSound(nil, sound);
     TStatusBarRoutines.SB_PaletteFlash(false);
   end;
 end;
@@ -1630,19 +1630,19 @@ begin
       case pl._class of
         PCLASS_FIGHTER:
           begin
-            S_StartSound(target, Ord(SFX_PLAYER_FIGHTER_BURN_DEATH));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_FIGHTER_BURN_DEATH));
             P_SetMobjState(target, S_PLAY_F_FDTH1);
             exit;
           end;
         PCLASS_CLERIC:
           begin
-            S_StartSound(target, Ord(SFX_PLAYER_CLERIC_BURN_DEATH));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_CLERIC_BURN_DEATH));
             P_SetMobjState(target, S_PLAY_C_FDTH1);
             exit;
           end;
         PCLASS_MAGE:
           begin
-            S_StartSound(target, Ord(SFX_PLAYER_MAGE_BURN_DEATH));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_MAGE_BURN_DEATH));
             P_SetMobjState(target, S_PLAY_M_FDTH1);
             exit;
           end;
@@ -1686,21 +1686,21 @@ begin
 
         Ord(MT_FIGHTER_BOSS):
           begin
-            S_StartSound(target, Ord(SFX_PLAYER_FIGHTER_BURN_DEATH));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_FIGHTER_BURN_DEATH));
             P_SetMobjState(target, S_PLAY_F_FDTH1);
             exit;
           end;
 
         Ord(MT_CLERIC_BOSS):
           begin
-            S_StartSound(target, Ord(SFX_PLAYER_CLERIC_BURN_DEATH));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_CLERIC_BURN_DEATH));
             P_SetMobjState(target, S_PLAY_C_FDTH1);
             exit;
           end;
 
         Ord(MT_MAGE_BOSS):
           begin
-            S_StartSound(target, Ord(SFX_PLAYER_MAGE_BURN_DEATH));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_MAGE_BURN_DEATH));
             P_SetMobjState(target, S_PLAY_M_FDTH1);
             exit;
           end;
@@ -1711,7 +1711,7 @@ begin
     begin
       P_SetMobjState(target, S_ZTREEDES_X1);
       target.height := 24 * FRACUNIT;
-      S_StartSound(target, Ord(SFX_TREE_EXPLODE));
+      TSoundRoutines.S_StartSound(target, Ord(SFX_TREE_EXPLODE));
       exit;
     end;
   end;
@@ -2046,7 +2046,7 @@ begin
             begin
               TInterRoutines.P_PoisonDamage(player, source, 15 + (P_Random and 15), false); // Don't play painsound
               TInterRoutines.P_PoisonPlayer(player, source, 50);
-              S_StartSound(target, Ord(SFX_PLAYER_POISONCOUGH));
+              TSoundRoutines.S_StartSound(target, Ord(SFX_PLAYER_POISONCOUGH));
             end;
             exit;
           end
@@ -2208,12 +2208,12 @@ begin
         target.frame := target.frame or FF_FULLBRIGHT;
         if (target.flags and MF_COUNTKILL <> 0) and
            (P_Random < 128) and
-           (not S_GetSoundPlayingInfo(target, Ord(SFX_PUPPYBEAT))) then
+           (not TSoundRoutines.S_GetSoundPlayingInfo(target, Ord(SFX_PUPPYBEAT))) then
         begin
           if (target._type = Ord(MT_CENTAUR)) or
              (target._type = Ord(MT_CENTAURLEADER)) or
              (target._type = Ord(MT_ETTIN)) then
-            S_StartSound(target, Ord(SFX_PUPPYBEAT));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PUPPYBEAT));
         end;
       end;
     end
@@ -2225,13 +2225,13 @@ begin
       begin
         if (target.flags and MF_COUNTKILL <> 0) and
            (P_Random < 128) and
-           (not S_GetSoundPlayingInfo(target, Ord(SFX_PUPPYBEAT))) then
+           (not TSoundRoutines.S_GetSoundPlayingInfo(target, Ord(SFX_PUPPYBEAT))) then
         begin
           if (target._type = Ord(MT_CENTAUR)) or
              (target._type = Ord(MT_CENTAURLEADER)) or
              (target._type = Ord(MT_ETTIN)) then
           begin
-            S_StartSound(target, Ord(SFX_PUPPYBEAT));
+            TSoundRoutines.S_StartSound(target, Ord(SFX_PUPPYBEAT));
           end;
         end;
       end;
@@ -2294,7 +2294,7 @@ begin
   begin // No-death threshold
     damage := player.mo.health - 1;
   end;
-  S_StartSound(player.mo, Ord(SFX_PLAYER_LAND));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_PLAYER_LAND));
   P_DamageMobj(player.mo, nil, nil, damage);
 end;
 
