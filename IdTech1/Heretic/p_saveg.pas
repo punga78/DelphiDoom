@@ -1530,7 +1530,7 @@ begin
     end;
 
     // JVAL: 20220218 - Handle UDMF special effects
-    if @th._function.acp1 = @TH_MoveFloor then
+    if @th._function.acp1 = @TUdmfFloorRoutines.TH_MoveFloor then
     begin
       save_p[0] := Ord(tch_movefloor);
       save_p := @save_p[1];
@@ -1540,7 +1540,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_PlatRaise then
+    if @th._function.acp1 = @TUdmfPlatRoutines.TH_PlatRaise then
     begin
       save_p[0] := Ord(tch_platraise);
       save_p := @save_p[1];
@@ -1550,7 +1550,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_MoveCeiling then
+    if @th._function.acp1 = @TUdmfCeilingRoutines.TH_MoveCeiling then
     begin
       save_p[0] := Ord(tch_moveceiling);
       save_p := @save_p[1];
@@ -1560,7 +1560,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_Light then
+    if @th._function.acp1 = @TUdmfLightRoutines.TH_Light then
     begin
       save_p[0] := Ord(tch_light);
       save_p := @save_p[1];
@@ -1570,7 +1570,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_VerticalDoor then
+    if @th._function.acp1 = @TUdmfDoorRoutines.TH_VerticalDoor then
     begin
       save_p[0] := Ord(tch_verticaldoor);
       save_p := @save_p[1];
@@ -1580,7 +1580,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_Phase then
+    if @th._function.acp1 = @TUdmfLightRoutines.TH_Phase then
     begin
       save_p[0] := Ord(tch_phase);
       save_p := @save_p[1];
@@ -1615,7 +1615,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_BuildPillar then
+    if @th._function.acp1 = @TUdmfFloorRoutines.TH_BuildPillar then
     begin
       save_p[0] := Ord(tch_buildpillar);
       save_p := @save_p[1];
@@ -1643,7 +1643,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_FloorWaggle then
+    if @th._function.acp1 = @TUdmfFloorRoutines.TH_FloorWaggle then
     begin
       save_p[0] := Ord(tch_floorwaggle);
       save_p := @save_p[1];
@@ -1833,10 +1833,10 @@ begin
             ceiling.sector.specialdata := ceiling;
 
           if Assigned(ceiling.thinker._function.acp1) then
-            @ceiling.thinker._function.acp1 := @TH_MoveCeiling;
+            @ceiling.thinker._function.acp1 := @TUdmfCeilingRoutines.TH_MoveCeiling;
 
           TTickRoutines.P_AddThinker(@ceiling.thinker);
-          PH_AddActiveCeiling(ceiling);
+          TUdmfCeilingRoutines.PH_AddActiveCeiling(ceiling);
         end;
 
       Ord(tch_movefloor):
@@ -1849,7 +1849,7 @@ begin
             floor.sector.specialdata := floor;
 
           if Assigned(floor.thinker._function.acp1) then
-            @floor.thinker._function.acp1 := @TH_MoveFloor;
+            @floor.thinker._function.acp1 := @TUdmfFloorRoutines.TH_MoveFloor;
 
           TTickRoutines.P_AddThinker(@floor.thinker);
         end;
@@ -1864,10 +1864,10 @@ begin
             plat.sector.specialdata := plat;
 
           if Assigned(plat.thinker._function.acp1) then
-            @plat.thinker._function.acp1 := @TH_PlatRaise;
+            @plat.thinker._function.acp1 := @TUdmfPlatRoutines.TH_PlatRaise;
 
           TTickRoutines.P_AddThinker(@plat.thinker);
-          PH_AddActivePlat(plat);
+          TUdmfPlatRoutines.PH_AddActivePlat(plat);
         end;
 
       Ord(tch_light):
@@ -1880,7 +1880,7 @@ begin
             light.sector.specialdata := light;}
 
           if Assigned(light.thinker._function.acp1) then
-            @light.thinker._function.acp1 := @TH_Light;
+            @light.thinker._function.acp1 := @TUdmfLightRoutines.TH_Light;
 
           TTickRoutines.P_AddThinker(@light.thinker);
         end;
@@ -1895,7 +1895,7 @@ begin
             door.sector.specialdata := door;
 
           if Assigned(door.thinker._function.acp1) then
-            @door.thinker._function.acp1 := @TH_VerticalDoor;
+            @door.thinker._function.acp1 := @TUdmfDoorRoutines.TH_VerticalDoor;
 
           TTickRoutines.P_AddThinker(@door.thinker);
         end;
@@ -1910,7 +1910,7 @@ begin
             phase.sector.specialdata := phase;}
 
           if Assigned(phase.thinker._function.acp1) then
-            @phase.thinker._function.acp1 := @TH_Phase;
+            @phase.thinker._function.acp1 := @TUdmfLightRoutines.TH_Phase;
 
           TTickRoutines.P_AddThinker(@phase.thinker);
         end;
@@ -1956,7 +1956,7 @@ begin
             pillar.sector.specialdata := pillar;
 
           if Assigned(pillar.thinker._function.acp1) then
-            @pillar.thinker._function.acp1 := @TH_BuildPillar;
+            @pillar.thinker._function.acp1 := @TUdmfFloorRoutines.TH_BuildPillar;
 
           TTickRoutines.P_AddThinker(@pillar.thinker);
         end;
@@ -1995,7 +1995,7 @@ begin
             floorwaggle.sector.specialdata := floorwaggle;
 
           if Assigned(floorwaggle.thinker._function.acp1) then
-            @floorwaggle.thinker._function.acp1 := @TH_FloorWaggle;
+            @floorwaggle.thinker._function.acp1 := @TUdmfFloorRoutines.TH_FloorWaggle;
 
           TTickRoutines.P_AddThinker(@floorwaggle.thinker);
         end;

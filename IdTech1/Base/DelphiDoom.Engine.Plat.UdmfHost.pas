@@ -54,7 +54,7 @@ uses
 function TEngineUdmfPlatHost.MovePlane(ASector: Pointer; ASpeed, ADestination: Integer;
   ACrush: Boolean; ADirection: Integer): TPlatMoveResult;
 begin
-  case TH_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, 0, ADirection) of
+  case TUdmfFloorRoutines.TH_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, 0, ADirection) of
     RES_CRUSHED:
       Result := TPlatMoveResult.Crushed;
     RES_PASTDEST:
@@ -102,7 +102,7 @@ end;
 
 procedure TEngineUdmfPlatHost.RemovePlat(APlat: Pointer);
 begin
-  PH_RemoveActivePlat(Pplat_t(APlat));
+  TUdmfPlatRoutines.PH_RemoveActivePlat(Pplat_t(APlat));
 end;
 
 end.

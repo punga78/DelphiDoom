@@ -699,7 +699,7 @@ begin
           player.sigiltype := special.frame;
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -714,7 +714,7 @@ begin
         begin
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -861,7 +861,7 @@ begin
 
   if special.special <> 0 then
   begin
-    P_ExecuteActorSpecial(special.special, @special.args, toucher);
+    TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
     special.special := 0;
   end;
 
@@ -899,7 +899,7 @@ begin
   target.flags := target.flags or (MF_CORPSE or MF_DROPOFF);
   target.height := FRACUNIT;  // villsa [STRIFE] set to fracunit instead of >>= 2
 
-  P_ExecuteActorSpecial(target.special, @target.args, target);
+  TUdmfSpecRoutines.P_ExecuteActorSpecial(target.special, @target.args, target);
 
   if (source <> nil) and (source.player <> nil) then
   begin

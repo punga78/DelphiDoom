@@ -376,7 +376,7 @@ end;
 class function TMapGameRules.UseSpecialLine(usething: Pmobj_t; li: Pline_t; side: integer): boolean;
 begin
   TSwitchRoutines.P_UseSpecialLine(usething, li, side);
-  P_ActivateLine(li, usething, 0, ULAC_USE);
+  TUdmfSpecRoutines.P_ActivateLine(li, usething, 0, ULAC_USE);
 
   // can't use for than one special line in a row
   //WAS can't use for than one special line in a row
@@ -616,15 +616,15 @@ begin
   TSpecRoutines.P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
   if thing.player <> nil then
   begin
-    P_ActivateLine(ld, thing, oldside, ULAC_CROSS);
+    TUdmfSpecRoutines.P_ActivateLine(ld, thing, oldside, ULAC_CROSS);
   end
   else if thing.flags5_ex and MF5_EX_MCROSS <> 0 then
   begin
-    P_ActivateLine(ld, thing, oldside, ULAC_MCROSS);
+    TUdmfSpecRoutines.P_ActivateLine(ld, thing, oldside, ULAC_MCROSS);
   end
   else if thing.flags5_ex and MF5_EX_PCROSS <> 0 then
   begin
-    P_ActivateLine(ld, thing, oldside, ULAC_PCROSS);
+    TUdmfSpecRoutines.P_ActivateLine(ld, thing, oldside, ULAC_PCROSS);
   end;
 end;
 
@@ -792,7 +792,7 @@ end;
 class procedure TMapGameRules.ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t);
 begin
   TSpecRoutines.P_ShootSpecialLine(shootthing, li);
-  P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
+  TUdmfSpecRoutines.P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
 end;
 
 class function TMapGameRules.ShotPassesThrough(th: Pmobj_t): boolean;
@@ -847,9 +847,9 @@ begin
   if line.special <> 0 then
   begin
     if mobj.flags5_ex and MF5_EX_PUSHWALL <> 0 then
-      P_ActivateLine(line, mobj, side, ULAC_PUSH)
+      TUdmfSpecRoutines.P_ActivateLine(line, mobj, side, ULAC_PUSH)
     else if mobj.flags5_ex and MF5_EX_IMPACT <> 0 then
-      P_ActivateLine(line, mobj, side, ULAC_IMPACT);
+      TUdmfSpecRoutines.P_ActivateLine(line, mobj, side, ULAC_IMPACT);
   end;
 end;
 

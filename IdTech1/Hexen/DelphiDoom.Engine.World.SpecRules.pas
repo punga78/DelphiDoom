@@ -442,23 +442,23 @@ begin
 
     10: // Door Close
       begin
-        result := EVH_DoDoor(line, args, DREV_CLOSE);
+        result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_CLOSE);
       end;
 
     11: // Door Open
       begin
         if args[0] = 0 then
-          result := EVH_VerticalDoor(line, mo)
+          result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
         else
-          result := EVH_DoDoor(line, args, DREV_OPEN);
+          result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_OPEN);
       end;
 
     12: // Door Raise
       begin
         if args[0] = 0 then
-          result := EVH_VerticalDoor(line, mo)
+          result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
         else
-          result := EVH_DoDoor(line, args, DREV_NORMAL);
+          result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
       end;
 
     13: // Door Locked_Raise
@@ -466,177 +466,177 @@ begin
         if CheckedLockedDoor(mo, args[3]) then
         begin
           if args[0] = 0 then
-            result := EVH_VerticalDoor(line, mo)
+            result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
           else
-            result := EVH_DoDoor(line, args, DREV_NORMAL);
+            result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
         end;
       end;
 
     20: // Floor Lower by Value
       begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
       end;
 
     21: // Floor Lower to Lowest
       begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
       end;
 
     22: // Floor Lower to Nearest
       begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
       end;
 
     23: // Floor Raise by Value
       begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
       end;
 
     24: // Floor Raise to Highest
       begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
       end;
 
     25: // Floor Raise to Nearest
       begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
       end;
 
     26: // Stairs Build Down Normal
       begin
-        result := EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
+        result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
       end;
 
     27: // Build Stairs Up Normal
       begin
-        result := EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
+        result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
       end;
 
     28: // Floor Raise and Crush
       begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
       end;
 
     29: // Build Pillar (no crushing)
       begin
-        result := EVH_BuildPillar(line, args, false);
+        result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, false);
       end;
 
     30: // Open Pillar
       begin
-        result := EVH_OpenPillar(line, args);
+        result := TUdmfFloorRoutines.EVH_OpenPillar(line, args);
       end;
 
     31: // Stairs Build Down Sync
       begin
-        result := EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
+        result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
       end;
 
     32: // Build Stairs Up Sync
       begin
-        result := EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
+        result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
       end;
 
     35: // Raise Floor by Value Times 8
       begin
-        result := EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
       end;
 
     36: // Lower Floor by Value Times 8
       begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
       end;
 
     40: // Ceiling Lower by Value
       begin
-        result := EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+        result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
       end;
 
     41: // Ceiling Raise by Value
       begin
-        result := EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+        result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
       end;
 
     42: // Ceiling Crush and Raise
       begin
-        result := EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
+        result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
       end;
 
     43: // Ceiling Lower and Crush
       begin
-        result := EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
+        result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
       end;
 
     44: // Ceiling Crush Stop
       begin
-        result := EVH_CeilingCrushStop(line, args);
+        result := TUdmfCeilingRoutines.EVH_CeilingCrushStop(line, args);
       end;
 
     45: // Ceiling Crush Raise and Stay
       begin
-        result := EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
+        result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
       end;
 
     46: // Floor Crush Stop
       begin
-        result := EVH_FloorCrushStop(line, args);
+        result := TUdmfFloorRoutines.EVH_FloorCrushStop(line, args);
       end;
 
     60: // Plat Perpetual Raise
       begin
-        result := EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
+        result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
       end;
 
     61: // Plat Stop
       begin
-        EVH_StopPlat(line, args);
+        TUdmfPlatRoutines.EVH_StopPlat(line, args);
       end;
 
     62: // Plat Down-Wait-Up-Stay
       begin
-        result := EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
+        result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
       end;
 
     63: // Plat Down-by-Value*8-Wait-Up-Stay
       begin
-        result := EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
+        result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
       end;
 
     64: // Plat Up-Wait-Down-Stay
       begin
-        result := EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
+        result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
       end;
 
     65: // Plat Up-by-Value*8-Wait-Down-Stay
       begin
-        result := EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
+        result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
       end;
 
     66: // Floor Lower Instant * 8
       begin
-        result := EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
       end;
 
     67: // Floor Raise Instant * 8
       begin
-        result := EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
       end;
 
     68: // Floor Move to Value * 8
       begin
-        result := EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
+        result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
       end;
 
     69: // Ceiling Move to Value * 8
       begin
-        result := EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
+        result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
       end;
 
     70: // Teleport
       begin
         if side = 0 then
         begin // Only teleport when crossing the front side of a line
-          result := EVH_Teleport(args[0], mo, true);
+          result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, true);
         end;
       end;
 
@@ -644,7 +644,7 @@ begin
       begin
         if side = 0 then
         begin // Only teleport when crossing the front side of a line
-          result := EVH_Teleport(args[0], mo, false);
+          result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, false);
         end;
       end;
 
@@ -747,17 +747,17 @@ begin
 
     94: // Build Pillar Crush
       begin
-        result := EVH_BuildPillar(line, args, true);
+        result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, true);
       end;
 
     95: // Lower Floor and Ceiling
       begin
-        result := EVH_DoFloorAndCeiling(line, args, false);
+        result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, false);
       end;
 
     96: // Raise Floor and Ceiling
       begin
-        result := EVH_DoFloorAndCeiling(line, args, true);
+        result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, true);
       end;
 
     109: // Force Lightning
@@ -768,37 +768,37 @@ begin
 
     110: // Light Raise by Value
       begin
-        result := EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
       end;
 
     111: // Light Lower by Value
       begin
-        result := EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
       end;
 
     112: // Light Change to Value
       begin
-        result := EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
       end;
 
     113: // Light Fade
       begin
-        result := EVH_SpawnLight(line, args, LITE_FADE);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FADE);
       end;
 
     114: // Light Glow
       begin
-        result := EVH_SpawnLight(line, args, LITE_GLOW);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_GLOW);
       end;
 
     115: // Light Flicker
       begin
-        result := EVH_SpawnLight(line, args, LITE_FLICKER);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FLICKER);
       end;
 
     116: // Light Strobe
       begin
-        result := EVH_SpawnLight(line, args, LITE_STROBE);
+        result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_STROBE);
       end;
 
     120: // Quake Tremor
@@ -853,7 +853,7 @@ begin
 
     138: // Floor_Waggle
       begin
-        result := EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
+        result := TUdmfFloorRoutines.EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
       end;
 
     140: // Sector_SoundChange
@@ -1103,10 +1103,10 @@ begin
     case sector.special of
       1: // Phased light
          // Hardcoded base, use sector.lightlevel as the index
-        P_SpawnPhasedLight(sector, 80, -1);
+        TUdmfLightRoutines.P_SpawnPhasedLight(sector, 80, -1);
 
       2: // Phased light sequence start
-        P_SpawnLightSequence(sector, 1);
+        TUdmfLightRoutines.P_SpawnLightSequence(sector, 1);
       // Specials 3 & 4 are used by the phased light sequences
 
     end;

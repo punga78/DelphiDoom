@@ -200,7 +200,7 @@ end;
 procedure THereticLevelRules.AfterLevel;
 begin
   // Check if the level is a lightning level
-  P_InitLightning;
+  TUdmfSpecRoutines.P_InitLightning;
 end;
 
 procedure THereticLevelRules.InitializeSector(ASector: Psector_t);

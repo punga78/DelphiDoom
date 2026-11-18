@@ -828,8 +828,8 @@ end;
 procedure RestorePlatRaise(plat: Pplat_t);
 begin
   plat.sector := @sectors[NativeInt(plat.sector)];
-  plat.sector.specialdata := @TH_PlatRaise;
-  PH_AddActivePlat(plat);
+  plat.sector.specialdata := @TUdmfPlatRoutines.TH_PlatRaise;
+  TUdmfPlatRoutines.PH_AddActivePlat(plat);
 end;
 
 //==============================================================================
@@ -840,8 +840,8 @@ end;
 procedure RestoreMoveCeiling(ceiling: Pceiling_t);
 begin
   ceiling.sector := @sectors[NativeInt(ceiling.sector)];
-  ceiling.sector.specialdata := @TH_MoveCeiling;
-  PH_AddActiveCeiling(ceiling);
+  ceiling.sector.specialdata := @TUdmfCeilingRoutines.TH_MoveCeiling;
+  TUdmfCeilingRoutines.PH_AddActiveCeiling(ceiling);
 end;
 
 const
@@ -862,7 +862,7 @@ begin
 // This list has been prioritized using frequency estimates
   pti := @ThinkerInfo[0];
   pti.tClass := TC_MOVE_FLOOR;
-  pti.thinkerFunc.acp1 := @TH_MoveFloor;
+  pti.thinkerFunc.acp1 := @TUdmfFloorRoutines.TH_MoveFloor;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(floormove_t);
@@ -870,7 +870,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_PLAT_RAISE;
-  pti.thinkerFunc.acp1 := @TH_PlatRaise;
+  pti.thinkerFunc.acp1 := @TUdmfPlatRoutines.TH_PlatRaise;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestorePlatRaise;
   pti.size := SizeOf(plat_t);
@@ -878,7 +878,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_MOVE_CEILING;
-  pti.thinkerFunc.acp1 :=  @TH_MoveCeiling;
+  pti.thinkerFunc.acp1 :=  @TUdmfCeilingRoutines.TH_MoveCeiling;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreMoveCeiling;
   pti.size := SizeOf(ceiling_t);
@@ -886,7 +886,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_LIGHT;
-  pti.thinkerFunc.acp1 := @TH_Light;
+  pti.thinkerFunc.acp1 := @TUdmfLightRoutines.TH_Light;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinkerNoSD;
   pti.size := SizeOf(light_t);
@@ -894,7 +894,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_VERTICAL_DOOR;
-  pti.thinkerFunc.acp1 :=  @TH_VerticalDoor;
+  pti.thinkerFunc.acp1 :=  @TUdmfDoorRoutines.TH_VerticalDoor;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(vldoor_t);
@@ -902,7 +902,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_PHASE;
-  pti.thinkerFunc.acp1 := @TH_Phase;
+  pti.thinkerFunc.acp1 := @TUdmfLightRoutines.TH_Phase;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinkerNoSD;
   pti.size := SizeOf(phase_t);
@@ -926,7 +926,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_BUILD_PILLAR;
-  pti.thinkerFunc.acp1 :=  @TH_BuildPillar;
+  pti.thinkerFunc.acp1 :=  @TUdmfFloorRoutines.TH_BuildPillar;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(pillar_t);
@@ -950,7 +950,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_FLOOR_WAGGLE;
-  pti.thinkerFunc.acp1 :=  @TH_FloorWaggle;
+  pti.thinkerFunc.acp1 :=  @TUdmfFloorRoutines.TH_FloorWaggle;
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(floorWaggle_t);

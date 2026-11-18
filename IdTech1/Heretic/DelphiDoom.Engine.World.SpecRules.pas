@@ -1078,7 +1078,7 @@ begin
   if LevelHasLightning then
   begin
     if (NextLightningFlash = 0) or (LightningFlash <> 0) then
-      P_LightningFlash
+      TUdmfSpecRoutines.P_LightningFlash
     else
       dec(NextLightningFlash);
   end;
@@ -1297,7 +1297,7 @@ begin
     LIGHT_SEQUENCE_START:
       begin
         // Phased light sequence start
-        P_SpawnLightSequence(sector, 1);
+        TUdmfLightRoutines.P_SpawnLightSequence(sector, 1);
       end;
     end;
   end;

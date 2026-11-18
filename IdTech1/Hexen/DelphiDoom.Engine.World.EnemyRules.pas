@@ -5659,7 +5659,7 @@ begin
     lastfound := 0;
     spot := P_FindMobjFromTID(KORAX_FIRST_TELEPORT_TID, @lastfound);
     if spot <> nil then
-      PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
+      TUdmfTeleportRoutines.PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
 
     P_StartACS(249, 0, @args, actor, nil, 0);
     actor.special2 := 1;  // Don't run again
@@ -5690,7 +5690,7 @@ begin
       spot := P_FindMobjFromTID(KORAX_TELEPORT_TID, @lastfound);
       actor.special1 := lastfound;
       if spot <> nil then
-        PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
+        TUdmfTeleportRoutines.PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
     end;
   end;
 end;
@@ -6195,7 +6195,7 @@ begin
       args[2] := 0;
       args[3] := 0;
       args[4] := 0;
-      EVH_DoFloor(@dummyLine, @args, FLEV_LOWERFLOORTOLOWEST, 666);
+      TUdmfFloorRoutines.EVH_DoFloor(@dummyLine, @args, FLEV_LOWERFLOORTOLOWEST, 666);
       exit;
     end;
     if actor.flags4_ex and MF4_EX_MAP07BOSS2 <> 0 then
@@ -6205,7 +6205,7 @@ begin
       args[2] := 0;
       args[3] := 0;
       args[4] := 0;
-      EVH_DoFloor(@dummyLine, @args, FLEV_RAISETOTEXTURE, 667);
+      TUdmfFloorRoutines.EVH_DoFloor(@dummyLine, @args, FLEV_RAISETOTEXTURE, 667);
       exit;
     end;
   end;

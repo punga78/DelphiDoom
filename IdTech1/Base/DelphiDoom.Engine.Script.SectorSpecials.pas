@@ -142,69 +142,69 @@ const
 function TEngineScriptSectorSpecials.DoCeiling(var AArguments: TScriptSpecialArguments;
   const AKind: TScriptCeilingKind): Boolean;
 begin
-  Result := EVH_DoCeiling(nil, @AArguments, CEILING_KINDS[AKind]);
+  Result := TUdmfCeilingRoutines.EVH_DoCeiling(nil, @AArguments, CEILING_KINDS[AKind]);
 end;
 
 function TEngineScriptSectorSpecials.CeilingCrushStop(var AArguments: TScriptSpecialArguments): Boolean;
 begin
-  Result := EVH_CeilingCrushStop(nil, @AArguments);
+  Result := TUdmfCeilingRoutines.EVH_CeilingCrushStop(nil, @AArguments);
 end;
 
 function TEngineScriptSectorSpecials.DoDoor(var AArguments: TScriptSpecialArguments;
   const AKind: TScriptDoorKind): Boolean;
 begin
-  Result := EVH_DoDoor(nil, @AArguments, DOOR_KINDS[AKind]);
+  Result := TUdmfDoorRoutines.EVH_DoDoor(nil, @AArguments, DOOR_KINDS[AKind]);
 end;
 
 function TEngineScriptSectorSpecials.DoFloor(var AArguments: TScriptSpecialArguments;
   const AKind: TScriptFloorKind): Boolean;
 begin
-  Result := EVH_DoFloor(nil, @AArguments, FLOOR_KINDS[AKind]);
+  Result := TUdmfFloorRoutines.EVH_DoFloor(nil, @AArguments, FLOOR_KINDS[AKind]);
 end;
 
 function TEngineScriptSectorSpecials.DoFloorAndCeiling(var AArguments: TScriptSpecialArguments;
   const ARaise: Boolean): Boolean;
 begin
-  Result := EVH_DoFloorAndCeiling(nil, @AArguments, ARaise);
+  Result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(nil, @AArguments, ARaise);
 end;
 
 function TEngineScriptSectorSpecials.FloorCrushStop(var AArguments: TScriptSpecialArguments): Boolean;
 begin
-  Result := EVH_FloorCrushStop(nil, @AArguments);
+  Result := TUdmfFloorRoutines.EVH_FloorCrushStop(nil, @AArguments);
 end;
 
 function TEngineScriptSectorSpecials.StartFloorWaggle(const ATag, AAmplitude, AFrequency, AOffset,
   ATime: Integer): Boolean;
 begin
-  Result := EVH_StartFloorWaggle(ATag, AAmplitude, AFrequency, AOffset, ATime);
+  Result := TUdmfFloorRoutines.EVH_StartFloorWaggle(ATag, AAmplitude, AFrequency, AOffset, ATime);
 end;
 
 function TEngineScriptSectorSpecials.SpawnLight(var AArguments: TScriptSpecialArguments;
   const AKind: TScriptLightKind): Boolean;
 begin
-  Result := EVH_SpawnLight(nil, @AArguments, LIGHT_KINDS[AKind]);
+  Result := TUdmfLightRoutines.EVH_SpawnLight(nil, @AArguments, LIGHT_KINDS[AKind]);
 end;
 
 procedure TEngineScriptSectorSpecials.ForceLightning(const ATics: Integer);
 begin
-  P_ForceLightning(ATics);
+  TUdmfSpecRoutines.P_ForceLightning(ATics);
 end;
 
 function TEngineScriptSectorSpecials.BuildPillar(var AArguments: TScriptSpecialArguments;
   const ACrush: Boolean): Boolean;
 begin
-  Result := EVH_BuildPillar(nil, @AArguments, ACrush);
+  Result := TUdmfFloorRoutines.EVH_BuildPillar(nil, @AArguments, ACrush);
 end;
 
 function TEngineScriptSectorSpecials.OpenPillar(var AArguments: TScriptSpecialArguments): Boolean;
 begin
-  Result := EVH_OpenPillar(nil, @AArguments);
+  Result := TUdmfFloorRoutines.EVH_OpenPillar(nil, @AArguments);
 end;
 
 function TEngineScriptSectorSpecials.DoPlat(var AArguments: TScriptSpecialArguments;
   const AKind: TScriptPlatKind): Boolean;
 begin
-  Result := EVH_DoPlat(nil, @AArguments, PLAT_KINDS[AKind], 0);
+  Result := TUdmfPlatRoutines.EVH_DoPlat(nil, @AArguments, PLAT_KINDS[AKind], 0);
 end;
 
 function TEngineScriptSectorSpecials.OpenPolyDoor(var AArguments: TScriptSpecialArguments;

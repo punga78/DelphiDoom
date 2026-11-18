@@ -55,27 +55,6 @@ type
     LITE_STROBEDOOM
   );
 
-//==============================================================================
-//
-// EVH_SpawnLight
-//
-//==============================================================================
-function EVH_SpawnLight(line: Pline_t; arg: PByteArray; _type: lighttype_t): boolean;
-
-//==============================================================================
-//
-// P_SpawnPhasedLight
-//
-//==============================================================================
-procedure P_SpawnPhasedLight(sector: Psector_t; base: integer; index: integer);
-
-//==============================================================================
-//
-// P_SpawnLightSequence
-//
-//==============================================================================
-procedure P_SpawnLightSequence(sector: Psector_t; indexStep: integer);
-
 type
   light_t = record
     thinker: thinker_t;
@@ -89,13 +68,6 @@ type
   end;
   Plight_t = ^light_t;
 
-//==============================================================================
-//
-// TH_Light
-//
-//==============================================================================
-procedure TH_Light(light: Plight_t);
-
 type
   phase_t = record
     thinker: thinker_t;
@@ -104,13 +76,6 @@ type
     base: integer;
   end;
   Pphase_t = ^phase_t;
-
-//==============================================================================
-//
-// TH_Phase
-//
-//==============================================================================
-procedure TH_Phase(phase: Pphase_t);
 
 const
   {$IFDEF DOOM_OR_STRIFE}
@@ -128,6 +93,49 @@ const
   LIGHT_SEQUENCE = 3;
   LIGHT_SEQUENCE_ALT = 4;
   {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfLightRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // EVH_SpawnLight
+    //
+    //==============================================================================
+    class function EVH_SpawnLight(line: Pline_t; arg: PByteArray; _type: lighttype_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_SpawnPhasedLight
+    //
+    //==============================================================================
+    class procedure P_SpawnPhasedLight(sector: Psector_t; base: integer; index: integer); static;
+
+    //==============================================================================
+    //
+    // P_SpawnLightSequence
+    //
+    //==============================================================================
+    class procedure P_SpawnLightSequence(sector: Psector_t; indexStep: integer); static;
+
+    //==============================================================================
+    //
+    // TH_Light
+    //
+    //==============================================================================
+    class procedure TH_Light(light: Plight_t); static;
+
+    //==============================================================================
+    //
+    // TH_Phase
+    //
+    //==============================================================================
+    class procedure TH_Phase(phase: Pphase_t); static;
+  end;
 
 implementation
 
@@ -153,7 +161,7 @@ uses
 //  TH_Light
 //
 //==============================================================================
-procedure TH_Light(light: Plight_t);
+class procedure TUdmfLightRoutines.TH_Light(light: Plight_t);
 begin
   if TLightScripted.Tick(TLightKind(Ord(light._type)), light.value1, light.value2,
     light.tics1, light.tics2, light.count, light.sector.lightlevel, LightRandom) then
@@ -165,7 +173,7 @@ end;
 //  EVH_SpawnLight
 //
 //==============================================================================
-function EVH_SpawnLight(line: Pline_t; arg: PByteArray; _type: lighttype_t): boolean;
+class function TUdmfLightRoutines.EVH_SpawnLight(line: Pline_t; arg: PByteArray; _type: lighttype_t): boolean;
 var
   light: Plight_t;
   secNum: integer;
@@ -181,7 +189,7 @@ begin
   arguments.Arg4 := arg[4];
 
   secNum := -1;
-  while P_FindSectorFromTag2(arg[0], secNum) >= 0 do
+  while TUdmfSpecRoutines.P_FindSectorFromTag2(arg[0], secNum) >= 0 do
   begin
     outcome := TLightScripted.Spawn(TLightKind(Ord(_type)),
       TEngineLightSector.Wrap(@sectors[secNum]), arguments, LightRandom, state);
@@ -208,7 +216,7 @@ end;
 // TH_Phase
 //
 //==============================================================================
-procedure TH_Phase(phase: Pphase_t);
+class procedure TUdmfLightRoutines.TH_Phase(phase: Pphase_t);
 begin
   TLightPhase.Tick(phase.index, phase.base, phase.sector.lightlevel);
 end;
@@ -218,7 +226,7 @@ end;
 // P_SpawnPhasedLight
 //
 //==============================================================================
-procedure P_SpawnPhasedLight(sector: Psector_t; base: integer; index: integer);
+class procedure TUdmfLightRoutines.P_SpawnPhasedLight(sector: Psector_t; base: integer; index: integer);
 var
   phase: Pphase_t;
   phaseindex: integer;
@@ -239,7 +247,7 @@ end;
 // P_SpawnLightSequence
 //
 //==============================================================================
-procedure P_SpawnLightSequence(sector: Psector_t; indexStep: integer);
+class procedure TUdmfLightRoutines.P_SpawnLightSequence(sector: Psector_t; indexStep: integer);
 begin
   TLightSequence.Spawn(TEngineLightSector.Wrap(sector), indexStep, LightSequenceProfile,
     LightPhaseSpawner);

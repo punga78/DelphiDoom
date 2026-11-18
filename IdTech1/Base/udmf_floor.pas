@@ -43,86 +43,94 @@ uses
   m_fixed,
   r_defs;
 
-//==============================================================================
-// TH_MovePlane
-//
-// FLOORS
-//
-//==============================================================================
-function TH_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
-  crush: boolean; floorOrCeiling: integer; dir: integer): result_e;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfFloorRoutines = class sealed
+  public
+    //==============================================================================
+    // TH_MovePlane
+    //
+    // FLOORS
+    //
+    //==============================================================================
+    class function TH_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
+      crush: boolean; floorOrCeiling: integer; dir: integer): result_e; static;
 
-//==============================================================================
-//
-// TH_MoveFloor
-//
-//==============================================================================
-procedure TH_MoveFloor(floor: Pfloormove_t);
+    //==============================================================================
+    //
+    // TH_MoveFloor
+    //
+    //==============================================================================
+    class procedure TH_MoveFloor(floor: Pfloormove_t); static;
 
-//==============================================================================
-//
-// EVH_DoFloor
-//
-//==============================================================================
-function EVH_DoFloor(line: Pline_t; args: PByteArray; floortype: floor_e; const tag1: integer = -1): boolean;
+    //==============================================================================
+    //
+    // EVH_DoFloor
+    //
+    //==============================================================================
+    class function EVH_DoFloor(line: Pline_t; args: PByteArray; floortype: floor_e; const tag1: integer = -1): boolean; static;
 
-//==============================================================================
-//
-// EVH_BuildStairs
-//
-//==============================================================================
-function EVH_BuildStairs(line: Pline_t; args: PByteArray; dir: integer;
-  stairsType: stairs_e): boolean;
+    //==============================================================================
+    //
+    // EVH_BuildStairs
+    //
+    //==============================================================================
+    class function EVH_BuildStairs(line: Pline_t; args: PByteArray; dir: integer;
+      stairsType: stairs_e): boolean; static;
 
-//==============================================================================
-//
-// EVH_BuildPillar
-//
-//==============================================================================
-function EVH_BuildPillar(line: Pline_t; args: PByteArray; crush: boolean): boolean;
+    //==============================================================================
+    //
+    // EVH_BuildPillar
+    //
+    //==============================================================================
+    class function EVH_BuildPillar(line: Pline_t; args: PByteArray; crush: boolean): boolean; static;
 
-//==============================================================================
-//
-// EVH_OpenPillar
-//
-//==============================================================================
-function EVH_OpenPillar(line: Pline_t; args: PByteArray): boolean;
+    //==============================================================================
+    //
+    // EVH_OpenPillar
+    //
+    //==============================================================================
+    class function EVH_OpenPillar(line: Pline_t; args: PByteArray): boolean; static;
 
-//==============================================================================
-//
-// EVH_FloorCrushStop
-//
-//==============================================================================
-function EVH_FloorCrushStop(line: Pline_t; args: PByteArray): boolean;
+    //==============================================================================
+    //
+    // EVH_FloorCrushStop
+    //
+    //==============================================================================
+    class function EVH_FloorCrushStop(line: Pline_t; args: PByteArray): boolean; static;
 
-//==============================================================================
-//
-// EVH_DoFloorAndCeiling
-//
-//==============================================================================
-function EVH_DoFloorAndCeiling(line: Pline_t; args: PByteArray; doraise: boolean): boolean;
+    //==============================================================================
+    //
+    // EVH_DoFloorAndCeiling
+    //
+    //==============================================================================
+    class function EVH_DoFloorAndCeiling(line: Pline_t; args: PByteArray; doraise: boolean): boolean; static;
 
-//==============================================================================
-//
-// EVH_StartFloorWaggle
-//
-//==============================================================================
-function EVH_StartFloorWaggle(tag: integer; height: integer; speed: integer;
-  offset: integer; timer: integer): boolean;
+    //==============================================================================
+    //
+    // EVH_StartFloorWaggle
+    //
+    //==============================================================================
+    class function EVH_StartFloorWaggle(tag: integer; height: integer; speed: integer;
+      offset: integer; timer: integer): boolean; static;
 
-//==============================================================================
-//
-// TH_BuildPillar
-//
-//==============================================================================
-procedure TH_BuildPillar(pillar: Ppillar_t);
+    //==============================================================================
+    //
+    // TH_BuildPillar
+    //
+    //==============================================================================
+    class procedure TH_BuildPillar(pillar: Ppillar_t); static;
 
-//==============================================================================
-//
-// TH_FloorWaggle
-//
-//==============================================================================
-procedure TH_FloorWaggle(waggle: PfloorWaggle_t);
+    //==============================================================================
+    //
+    // TH_FloorWaggle
+    //
+    //==============================================================================
+    class procedure TH_FloorWaggle(waggle: PfloorWaggle_t); static;
+  end;
 
 implementation
 
@@ -151,13 +159,26 @@ uses
   DelphiDoom.Thinkers.Plane.Waggle,
   DelphiDoom.Engine.Plane.Services;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfFloorLocalRoutines = class sealed
+  public
+    class procedure QueueStairSector(sec: Psector_t; _type: integer; height: integer); static;
+    class function DequeueStairSector(_type: PInteger; height: PInteger): Psector_t; static;
+    class procedure ProcessStairSector(sec: Psector_t; _type: integer; height: integer;
+      stairsType: stairs_e; delay: integer; resetDelay: integer); static;
+  end;
+
 //==============================================================================
 // TH_MovePlane
 //
 // Move a plane (floor or ceiling) and check for crushing
 //
 //==============================================================================
-function TH_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
+class function TUdmfFloorRoutines.TH_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
   crush: boolean; floorOrCeiling: integer; dir: integer): result_e;
 begin
   case PlaneMove(sector, speed, dest, crush, floorOrCeiling, dir, TPlaneRules.Udmf) of
@@ -176,7 +197,7 @@ end;
 // MOVE A FLOOR TO IT'S DESTINATION (UP OR DOWN)
 //
 //==============================================================================
-procedure TH_MoveFloor(floor: Pfloormove_t);
+class procedure TUdmfFloorRoutines.TH_MoveFloor(floor: Pfloormove_t);
 var
   res: result_e;
 begin
@@ -240,7 +261,7 @@ end;
 //      HANDLE FLOOR TYPES
 //
 //==============================================================================
-function EVH_DoFloor(line: Pline_t; args: PByteArray; floortype: floor_e; const tag1: integer = -1): boolean;
+class function TUdmfFloorRoutines.EVH_DoFloor(line: Pline_t; args: PByteArray; floortype: floor_e; const tag1: integer = -1): boolean;
 var
   secnum: integer;
   sec: Psector_t;
@@ -252,9 +273,9 @@ var
   function _FindSectorFromTag: integer;
   begin
     if tag1 < 0 then
-      secnum := P_FindSectorFromTag(args[0], secnum)
+      secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum)
     else
-      secnum := P_FindSectorFromTag(tag1, secnum);
+      secnum := TUdmfSpecRoutines.P_FindSectorFromTag(tag1, secnum);
     result := secnum;
   end;
 
@@ -463,7 +484,7 @@ end;
 // EVH_DoFloorAndCeiling
 //
 //==============================================================================
-function EVH_DoFloorAndCeiling(line: Pline_t; args: PByteArray; doraise: boolean): boolean;
+class function TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line: Pline_t; args: PByteArray; doraise: boolean): boolean;
 var
   floor, ceiling: boolean;
   secnum: integer;
@@ -471,7 +492,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := P_FindSectorFromTag(args[0], secnum);
+    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -485,7 +506,7 @@ begin
       sec := @sectors[secnum];
       sec.specialdata := nil;
     end;
-    ceiling := EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+    ceiling := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
   end
   else
   begin
@@ -496,7 +517,7 @@ begin
       sec := @sectors[secnum];
       sec.specialdata := nil;
     end;
-    ceiling := EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+    ceiling := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
   end;
   result := floor or ceiling;
 end;
@@ -539,7 +560,7 @@ var
 // QueueStairSector
 //
 //==============================================================================
-procedure QueueStairSector(sec: Psector_t; _type: integer; height: integer);
+class procedure TUdmfFloorLocalRoutines.QueueStairSector(sec: Psector_t; _type: integer; height: integer);
 begin
   if (QueueTail + 1) mod STAIR_QUEUE_SIZE = QueueHead then
     I_Error('BuildStairs(): Too many branches located.');
@@ -556,7 +577,7 @@ end;
 // DequeueStairSector
 //
 //==============================================================================
-function DequeueStairSector(_type: PInteger; height: PInteger): Psector_t;
+class function TUdmfFloorLocalRoutines.DequeueStairSector(_type: PInteger; height: PInteger): Psector_t;
 begin
   if QueueHead = QueueTail then
   begin // queue is empty
@@ -575,7 +596,7 @@ end;
 // ProcessStairSector
 //
 //==============================================================================
-procedure ProcessStairSector(sec: Psector_t; _type: integer; height: integer;
+class procedure TUdmfFloorLocalRoutines.ProcessStairSector(sec: Psector_t; _type: integer; height: integer;
   stairsType: stairs_e; delay: integer; resetDelay: integer);
 var
   i: integer;
@@ -590,7 +611,7 @@ begin
   memset(floor, 0, SizeOf(floormove_t));
   TTickRoutines.P_AddThinker(@floor.thinker);
   sec.specialdata := floor;
-  floor.thinker._function.acp1 := @TH_MoveFloor;
+  floor.thinker._function.acp1 := @TUdmfFloorRoutines.TH_MoveFloor;
   floor._type := FLEV_RAISEBUILDSTEP;
   floor.direction := Direction;
   floor.sector := sec;
@@ -658,7 +679,7 @@ end;
 //      up or down.
 //
 //==============================================================================
-function EVH_BuildStairs(line: Pline_t; args: PByteArray; dir: integer;
+class function TUdmfFloorRoutines.EVH_BuildStairs(line: Pline_t; args: PByteArray; dir: integer;
   stairsType: stairs_e): boolean;
 var
   secnum: integer;
@@ -671,13 +692,13 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := P_FindSectorFromTag(args[0], secnum);
+    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
   function _DequeueStairSector: Psector_t;
   begin
-    qSec := DequeueStairSector(@_type, @height);
+    qSec := TUdmfFloorLocalRoutines.DequeueStairSector(@_type, @height);
     result := qSec;
   end;
 
@@ -712,12 +733,12 @@ begin
     if sec.specialdata <> nil then
       continue;
 
-    QueueStairSector(sec, 0, sec.floorheight);
+    TUdmfFloorLocalRoutines.QueueStairSector(sec, 0, sec.floorheight);
     sec.special := 0;
   end;
 
   while _DequeueStairSector <> nil do
-    ProcessStairSector(qSec, _type, height, stairsType, delay, resetDelay);
+    TUdmfFloorLocalRoutines.ProcessStairSector(qSec, _type, height, stairsType, delay, resetDelay);
 
   result := true;
 end;
@@ -727,7 +748,7 @@ end;
 // TH_BuildPillar
 //
 //==============================================================================
-procedure TH_BuildPillar(pillar: Ppillar_t);
+class procedure TUdmfFloorRoutines.TH_BuildPillar(pillar: Ppillar_t);
 var
   res1, res2: result_e;
 begin
@@ -755,7 +776,7 @@ end;
 // EVH_BuildPillar
 //
 //==============================================================================
-function EVH_BuildPillar(line: Pline_t; args: PByteArray; crush: boolean): boolean;
+class function TUdmfFloorRoutines.EVH_BuildPillar(line: Pline_t; args: PByteArray; crush: boolean): boolean;
 var
   secnum: integer;
   sec: Psector_t;
@@ -764,7 +785,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := P_FindSectorFromTag(args[0], secnum);
+    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -825,7 +846,7 @@ end;
 // EVH_OpenPillar
 //
 //==============================================================================
-function EVH_OpenPillar(line: Pline_t; args: PByteArray): boolean;
+class function TUdmfFloorRoutines.EVH_OpenPillar(line: Pline_t; args: PByteArray): boolean;
 var
   secnum: integer;
   sec: Psector_t;
@@ -833,7 +854,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := P_FindSectorFromTag(args[0], secnum);
+    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -894,7 +915,7 @@ end;
 // EVH_FloorCrushStop
 //
 //==============================================================================
-function EVH_FloorCrushStop(line: Pline_t; args: PByteArray): boolean;
+class function TUdmfFloorRoutines.EVH_FloorCrushStop(line: Pline_t; args: PByteArray): boolean;
 var
   think: Pthinker_t;
   floor: Pfloormove_t;
@@ -945,7 +966,7 @@ const
 // TH_FloorWaggle
 //
 //==============================================================================
-procedure TH_FloorWaggle(waggle: PfloorWaggle_t);
+class procedure TUdmfFloorRoutines.TH_FloorWaggle(waggle: PfloorWaggle_t);
 var
   LState: TPlaneWaggleState;
   LFinished: boolean;
@@ -981,7 +1002,7 @@ end;
 // EVH_StartFloorWaggle
 //
 //==============================================================================
-function EVH_StartFloorWaggle(tag: integer; height: integer; speed: integer;
+class function TUdmfFloorRoutines.EVH_StartFloorWaggle(tag: integer; height: integer; speed: integer;
   offset: integer; timer: integer): boolean;
 var
   sectorIndex: integer;
@@ -990,7 +1011,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    result := P_FindSectorFromTag(tag, sectorIndex);
+    result := TUdmfSpecRoutines.P_FindSectorFromTag(tag, sectorIndex);
     sectorIndex := result;
   end;
 

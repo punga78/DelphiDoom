@@ -35,7 +35,7 @@ uses
 
 procedure TEngineLightPhaseSpawner.SpawnPhased(const ASector: ILightSector; ABase, AIndex: Integer);
 begin
-  P_SpawnPhasedLight(Psector_t(ASector.Handle), ABase, AIndex);
+  TUdmfLightRoutines.P_SpawnPhasedLight(Psector_t(ASector.Handle), ABase, AIndex);
 end;
 
 end.
