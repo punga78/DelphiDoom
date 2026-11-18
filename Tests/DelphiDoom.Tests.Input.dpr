@@ -30,12 +30,14 @@ uses
   DelphiDoom.Input.Factory in '..\Framework\Input\DelphiDoom.Input.Factory.pas',
   DelphiDoom.Input.KeyboardLayout in '..\Framework\Input\DelphiDoom.Input.KeyboardLayout.pas',
   DelphiDoom.Input.EventScaling in '..\Framework\Input\DelphiDoom.Input.EventScaling.pas',
+  DelphiDoom.Input.KeyNames in '..\Framework\Input\DelphiDoom.Input.KeyNames.pas',
   DelphiDoom.Tests.Input.Fakes in 'Source\DelphiDoom.Tests.Input.Fakes.pas',
   DelphiDoom.Tests.Input.Poller in 'Source\DelphiDoom.Tests.Input.Poller.pas',
   DelphiDoom.Tests.Input.Devices in 'Source\DelphiDoom.Tests.Input.Devices.pas',
   DelphiDoom.Tests.Input.WindowsSystem in 'Source\DelphiDoom.Tests.Input.WindowsSystem.pas',
   DelphiDoom.Tests.Input.KeyboardLayout in 'Source\DelphiDoom.Tests.Input.KeyboardLayout.pas',
-  DelphiDoom.Tests.Input.EventScaling in 'Source\DelphiDoom.Tests.Input.EventScaling.pas';
+  DelphiDoom.Tests.Input.EventScaling in 'Source\DelphiDoom.Tests.Input.EventScaling.pas',
+  DelphiDoom.Tests.Input.KeyNames in 'Source\DelphiDoom.Tests.Input.KeyNames.pas';
 
 var
   Runner: ITestRunner;

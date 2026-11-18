@@ -730,6 +730,7 @@ uses
   DelphiDoom.Serializer.SaveGameVersions in '..\..\Framework\Serializer\DelphiDoom.Serializer.SaveGameVersions.pas',
   DelphiDoom.Input.KeyboardLayout in '..\..\Framework\Input\DelphiDoom.Input.KeyboardLayout.pas',
   DelphiDoom.Input.EventScaling in '..\..\Framework\Input\DelphiDoom.Input.EventScaling.pas',
+  DelphiDoom.Input.KeyNames in '..\..\Framework\Input\DelphiDoom.Input.KeyNames.pas',
   DelphiDoom.Thinkers.LevelTotals in '..\Thinkers\DelphiDoom.Thinkers.LevelTotals.pas',
   DelphiDoom.Thinkers.PlayerRespawn.Intf in '..\Thinkers\DelphiDoom.Thinkers.PlayerRespawn.Intf.pas',
   DelphiDoom.Thinkers.PlayerRespawn in '..\Thinkers\DelphiDoom.Thinkers.PlayerRespawn.pas',

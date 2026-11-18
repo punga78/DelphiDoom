@@ -276,6 +276,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Input.KeyNames,
   doomdef,
   am_map,
   c_cmds,
@@ -1773,57 +1774,7 @@ var
 //==============================================================================
 class function TMenuLocalRoutines.M_KeyToString(const k: integer): string;
 begin
-  if (k >= 33) and (k <= 126) then
-  begin
-    result := Chr(k);
-    if result = '=' then
-      result := '+'
-    else if result = ',' then
-      result := '<'
-    else if result = '.' then
-      result := '>';
-    exit;
-  end;
-
-  case k of
-    32: result := 'SPACE';
-    KEY_RIGHTARROW: result := 'RIGHTARROW';
-    KEY_LEFTARROW: result := 'LEFTARROW';
-    KEY_UPARROW: result := 'UPARROW';
-    KEY_DOWNARROW: result := 'DOWNARROW';
-    KEY_ESCAPE: result := 'ESCAPE';
-    KEY_ENTER: result := 'ENTER';
-    KEY_TAB: result := 'TAB';
-    KEY_F1: result := 'F1';
-    KEY_F2: result := 'F2';
-    KEY_F3: result := 'F3';
-    KEY_F4: result := 'F4';
-    KEY_F5: result := 'F5';
-    KEY_F6: result := 'F6';
-    KEY_F7: result := 'F7';
-    KEY_F8: result := 'F8';
-    KEY_F9: result := 'F9';
-    KEY_F10: result := 'F10';
-    KEY_F11: result := 'F11';
-    KEY_F12: result := 'F12';
-    KEY_PRNT: result := 'PRNT';
-    KEY_CON: result := 'CON';
-    KEY_BACKSPACE: result := 'BACKSPACE';
-    KEY_PAUSE: result := 'PAUSE';
-    KEY_EQUALS: result := 'EQUALS';
-    KEY_MINUS: result := 'MINUS';
-    KEY_RSHIFT: result := 'SHIFT';
-    KEY_RCTRL: result := 'CTRL';
-    KEY_RALT: result := 'ALT';
-    KEY_PAGEDOWN: result := 'PAGEDOWN';
-    KEY_PAGEUP: result := 'PAGEUP';
-    KEY_INS: result := 'INS';
-    KEY_HOME: result := 'HOME';
-    KEY_END: result := 'END';
-    KEY_DELETE: result := 'DELETE';
-  else
-    result := '';
-  end;
+  result := TInputKeyNames.NameOf(k);
 end;
 
 //==============================================================================
