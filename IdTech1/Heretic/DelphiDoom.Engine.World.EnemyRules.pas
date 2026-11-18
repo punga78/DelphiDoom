@@ -2792,12 +2792,12 @@ begin
     if actor.flags4_ex and MF4_EX_MAP07BOSS1 <> 0 then
     begin
       dummyLine.tag := 666;
-      EV_DoFloor(@dummyLine, lowerFloorToLowest);
+      TFloorRoutines.EV_DoFloor(@dummyLine, lowerFloorToLowest);
     end
     else if actor.flags4_ex and MF4_EX_MAP07BOSS2 <> 0 then
     begin
       dummyLine.tag := 667;
-      EV_DoFloor(@dummyLine, raiseToTexture);
+      TFloorRoutines.EV_DoFloor(@dummyLine, raiseToTexture);
     end;
     exit;
   end;
@@ -2825,7 +2825,7 @@ begin
     P_Massacre;
 
   dummyLine.tag := 666;
-  EV_DoFloor(@dummyLine, lowerFloor);
+  TFloorRoutines.EV_DoFloor(@dummyLine, lowerFloor);
 end;
 
 //==============================================================================

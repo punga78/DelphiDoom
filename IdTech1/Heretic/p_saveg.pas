@@ -1469,7 +1469,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_MoveFloor then
+    if @th._function.acp1 = @TFloorRoutines.T_MoveFloor then
     begin
       save_p[0] := Ord(tc_floor);
       save_p := @save_p[1];
@@ -1479,7 +1479,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_PlatRaise then
+    if @th._function.acp1 = @TPlatRoutines.T_PlatRaise then
     begin
       save_p[0] := Ord(tc_plat);
       save_p := @save_p[1];
@@ -1759,7 +1759,7 @@ begin
           end;
           floor.sector := @sectors[NativeInt(floor.sector)];
           floor.sector.specialdata := floor;
-          @floor.thinker._function.acp1 := @T_MoveFloor;
+          @floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
           TTickRoutines.P_AddThinker(@floor.thinker);
         end;
 
@@ -1772,10 +1772,10 @@ begin
           plat.sector.specialdata := plat;
 
           if Assigned(plat.thinker._function.acp1) then  // JVAL ??? from serialization
-            @plat.thinker._function.acp1 := @T_PlatRaise;
+            @plat.thinker._function.acp1 := @TPlatRoutines.T_PlatRaise;
 
           TTickRoutines.P_AddThinker(@plat.thinker);
-          P_AddActivePlat(plat);
+          TPlatRoutines.P_AddActivePlat(plat);
         end;
 
       Ord(tc_flash):

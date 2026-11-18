@@ -288,19 +288,19 @@ begin
      7:
       begin
         // Build Stairs
-        if EV_BuildStairs(line, 8 * FRACUNIT) <> 0 then
+        if TFloorRoutines.EV_BuildStairs(line, 8 * FRACUNIT) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
    107:
       begin
         // Build Stairs
-        if EV_BuildStairs(line, 16 * FRACUNIT) <> 0 then
+        if TFloorRoutines.EV_BuildStairs(line, 16 * FRACUNIT) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
      9:
       begin
         // Change Donut
-        if EV_DoDonut(line) <> 0 then
+        if TFloorRoutines.EV_DoDonut(line) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
     11:
@@ -313,42 +313,42 @@ begin
     14:
       begin
         // Raise Floor 32 and change texture
-        if EV_DoPlat(line, raiseAndChange, 32) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, raiseAndChange, 32) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     15:
       begin
         // Raise Floor 24 and change texture
-        if EV_DoPlat(line, raiseAndChange, 24) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, raiseAndChange, 24) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     18:
       begin
         // Raise Floor to next highest floor
-        if EV_DoFloor(line, raiseFloorToNearest) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, raiseFloorToNearest) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     20:
       begin
         // Raise Plat next highest floor and change texture
-        if EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     21:
       begin
         // PlatDownWaitUpStay
-        if EV_DoPlat(line, downWaitUpStay, 0) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     23:
       begin
         // Lower Floor to Lowest
-        if EV_DoFloor(line, lowerFloorToLowest) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -369,7 +369,7 @@ begin
     71:
       begin
         // Turbo Lower Floor
-        if EV_DoFloor(line, turboLower) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, turboLower) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -397,21 +397,21 @@ begin
     55:
       begin
         // Raise Floor Crush
-        if EV_DoFloor(line, raiseFloorCrush) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, raiseFloorCrush) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
    101:
       begin
         // Raise Floor
-        if EV_DoFloor(line, raiseFloor) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, raiseFloor) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
    102:
       begin
         // Lower Floor to Surrounding floor height
-        if EV_DoFloor(line, lowerFloor) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, lowerFloor) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -440,14 +440,14 @@ begin
     45:
       begin
         // Lower Floor to Surrounding floor height
-        if EV_DoFloor(line, lowerFloor) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, lowerFloor) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     60:
       begin
         // Lower Floor to Lowest
-        if EV_DoFloor(line, lowerFloorToLowest) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -461,7 +461,7 @@ begin
     62:
       begin
         // PlatDownWaitUpStay
-        if EV_DoPlat(line, downWaitUpStay, 1) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 1) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -475,49 +475,49 @@ begin
     64:
       begin
         // Raise Floor to ceiling
-        if EV_DoFloor(line, raiseFloor) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, raiseFloor) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     66:
       begin
         // Raise Floor 24 and change texture
-        if EV_DoPlat(line, raiseAndChange, 24) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, raiseAndChange, 24) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     67:
       begin
         // Raise Floor 32 and change texture
-        if EV_DoPlat(line, raiseAndChange, 32) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, raiseAndChange, 32) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     65:
       begin
         // Raise Floor Crush
-        if EV_DoFloor(line, raiseFloorCrush) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, raiseFloorCrush) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     68:
       begin
         // Raise Plat to next highest floor and change texture
-        if EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     69:
       begin
         // Raise Floor to next highest floor
-        if EV_DoFloor(line, raiseFloorToNearest) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, raiseFloorToNearest) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     70:
       begin
         // Turbo Lower Floor
-        if EV_DoFloor(line, turboLower) <> 0 then
+        if TFloorRoutines.EV_DoFloor(line, turboLower) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 

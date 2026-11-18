@@ -3582,12 +3582,12 @@ begin
     if actor.flags4_ex and MF4_EX_MAP07BOSS1 <> 0 then
     begin
       junk.tag := 666;
-      EV_DoFloor(@junk, lowerFloorToLowest);
+      TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
     end
     else if actor.flags4_ex and MF4_EX_MAP07BOSS2 <> 0 then
     begin
       junk.tag := 667;
-      EV_DoFloor(@junk, raiseToTexture);
+      TFloorRoutines.EV_DoFloor(@junk, raiseToTexture);
     end;
   end;
 
@@ -3632,14 +3632,14 @@ begin
     Ord(MT_CRUSADER):
       begin
         junk.tag := 667;
-        EV_DoFloor(@junk, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
       end;
 
     Ord(MT_SPECTRE_A):
       begin
         P_GiveVoiceObjective('VOC95', 'LOG95', 0);
         junk.tag := 999;
-        EV_DoFloor(@junk, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
       end;
 
     Ord(MT_SPECTRE_B):
@@ -3719,7 +3719,7 @@ begin
         else
           P_GiveVoiceObjective('VOC83', 'LOG83', 0);
         junk.tag := 666;
-        EV_DoFloor(@junk, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
       end;
 
     Ord(MT_SUBENTITY):

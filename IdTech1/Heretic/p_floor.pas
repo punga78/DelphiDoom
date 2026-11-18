@@ -44,35 +44,43 @@ uses
   s_sound,
   sounddata;
 
-//==============================================================================
-// T_MovePlane
-//
-// FLOORS
-//
-//==============================================================================
-function T_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
-  crush: boolean; floorOrCeiling: integer; direction: integer): result_e;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFloorRoutines = class sealed
+  public
+    //==============================================================================
+    // T_MovePlane
+    //
+    // FLOORS
+    //
+    //==============================================================================
+    class function T_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
+      crush: boolean; floorOrCeiling: integer; direction: integer): result_e; static;
 
-//==============================================================================
-//
-// T_MoveFloor
-//
-//==============================================================================
-procedure T_MoveFloor(floor: Pfloormove_t);
+    //==============================================================================
+    //
+    // T_MoveFloor
+    //
+    //==============================================================================
+    class procedure T_MoveFloor(floor: Pfloormove_t); static;
 
-//==============================================================================
-//
-// EV_DoFloor
-//
-//==============================================================================
-function EV_DoFloor(line: Pline_t; floortype: floor_e): integer;
+    //==============================================================================
+    //
+    // EV_DoFloor
+    //
+    //==============================================================================
+    class function EV_DoFloor(line: Pline_t; floortype: floor_e): integer; static;
 
-//==============================================================================
-//
-// EV_BuildStairs
-//
-//==============================================================================
-function EV_BuildStairs(line: Pline_t; step: fixed_t): integer;
+    //==============================================================================
+    //
+    // EV_BuildStairs
+    //
+    //==============================================================================
+    class function EV_BuildStairs(line: Pline_t; step: fixed_t): integer; static;
+  end;
 
 implementation
 
@@ -94,7 +102,7 @@ uses
 // Move a plane (floor or ceiling) and check for crushing
 //
 //==============================================================================
-function T_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
+class function TFloorRoutines.T_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
   crush: boolean; floorOrCeiling: integer; direction: integer): result_e;
 begin
   case PlaneMove(sector, speed, dest, crush, floorOrCeiling, direction,
@@ -114,7 +122,7 @@ end;
 // MOVE A FLOOR TO IT'S DESTINATION (UP OR DOWN)
 //
 //==============================================================================
-procedure T_MoveFloor(floor: Pfloormove_t);
+class procedure TFloorRoutines.T_MoveFloor(floor: Pfloormove_t);
 var
   res: result_e;
 begin
@@ -158,7 +166,7 @@ end;
 // HANDLE FLOOR TYPES
 //
 //==============================================================================
-function EV_DoFloor(line: Pline_t; floortype: floor_e): integer;
+class function TFloorRoutines.EV_DoFloor(line: Pline_t; floortype: floor_e): integer;
 var
   secnum: integer;
   i: integer;
@@ -318,7 +326,7 @@ end;
 // BUILD A STAIRCASE!
 //
 //==============================================================================
-function EV_BuildStairs(line: Pline_t; step: fixed_t): integer;
+class function TFloorRoutines.EV_BuildStairs(line: Pline_t; step: fixed_t): integer;
 var
   secnum: integer;
   height: integer;

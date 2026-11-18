@@ -1529,7 +1529,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_MoveFloor then
+    if @th._function.acp1 = @TFloorRoutines.T_MoveFloor then
     begin
       save_p[0] := Ord(tc_floor);
       save_p := @save_p[1];
@@ -1539,7 +1539,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_PlatRaise then
+    if @th._function.acp1 = @TPlatRoutines.T_PlatRaise then
     begin
       save_p[0] := Ord(tc_plat);
       save_p := @save_p[1];
@@ -1616,7 +1616,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_MoveElevator then
+    if @th._function.acp1 = @TFloorRoutines.T_MoveElevator then
     begin
       save_p[0] := Ord(tc_elevator);
       save_p := @save_p[1];
@@ -1888,7 +1888,7 @@ begin
           end;
           floor.sector := @sectors[NativeInt(floor.sector)];
           floor.sector.floordata := floor;
-          @floor.thinker._function.acp1 := @T_MoveFloor;
+          @floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
           TTickRoutines.P_AddThinker(@floor.thinker);
         end;
 
@@ -1901,10 +1901,10 @@ begin
           plat.sector.floordata := plat;
 
           if Assigned(plat.thinker._function.acp1) then
-            @plat.thinker._function.acp1 := @T_PlatRaise;
+            @plat.thinker._function.acp1 := @TPlatRoutines.T_PlatRaise;
 
           TTickRoutines.P_AddThinker(@plat.thinker);
-          P_AddActivePlat(plat);
+          TPlatRoutines.P_AddActivePlat(plat);
         end;
 
       Ord(tc_flash):
@@ -1991,7 +1991,7 @@ begin
           elevator := Z_Malloc(SizeOf(elevator_t), PU_LEVEL, nil);
           P_GetRecord(pointer(save_p), TypeInfo(elevator_t), elevator);
 
-          @elevator.thinker._function.acp1 := @T_MoveElevator;
+          @elevator.thinker._function.acp1 := @TFloorRoutines.T_MoveElevator;
           elevator.sector := @sectors[NativeInt(elevator.sector)];
           elevator.sector.floordata := elevator; //jff 2/22/98
           elevator.sector.ceilingdata := elevator; //jff 2/22/98

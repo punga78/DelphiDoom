@@ -725,7 +725,7 @@ begin
     5:
       begin
         // Raise Floor - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloor);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor);
         line.special := 0;
       end;
 
@@ -739,14 +739,14 @@ begin
     8:
       begin
         // Build Stairs - [STRIFE] Verified unmodified.
-        EV_BuildStairs(line, build8);
+        TFloorRoutines.EV_BuildStairs(line, build8);
         line.special := 0;
       end;
 
     10:
       begin
         // PlatDownWaitUp - [STRIFE] Verified unmodified.
-        EV_DoPlat(line, downWaitUpStay, 0);
+        TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0);
         line.special := 0;
       end;
 
@@ -781,7 +781,7 @@ begin
     19:
       begin
         // Lower Floor - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, lowerFloor);
+        TFloorRoutines.EV_DoFloor(line, lowerFloor);
         line.special := 0;
       end;
 
@@ -789,7 +789,7 @@ begin
       begin
         // villsa [STRIFE] Verified unmodified.
         // Raise floor to nearest height and change texture
-        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0);
         line.special := 0;
       end;
 
@@ -804,7 +804,7 @@ begin
       begin
         // Raise floor to shortest texture height - [STRIFE] Verified unmodified.
         //  on either side of lines.
-        EV_DoFloor(line, raiseToTexture);
+        TFloorRoutines.EV_DoFloor(line, raiseToTexture);
         line.special := 0;
       end;
 
@@ -818,14 +818,14 @@ begin
     36:
       begin
         // Lower Floor (TURBO) - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, turboLower);
+        TFloorRoutines.EV_DoFloor(line, turboLower);
         line.special := 0;
       end;
 
     37:
       begin
         // LowerAndChange - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, lowerAndChange);
+        TFloorRoutines.EV_DoFloor(line, lowerAndChange);
         line.special := 0;
       end;
 
@@ -838,7 +838,7 @@ begin
         // must have the questflag indicated in the line's y offset
         if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
         begin
-          EV_DoFloor(line, lowerFloorToLowest);
+          TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
           line.special := 0;
         end;
       end;
@@ -847,7 +847,7 @@ begin
     38:
       begin
         // Lower Floor To Lowest - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
         line.special := 0;
       end;
 
@@ -874,21 +874,21 @@ begin
     53:
       begin
         // Perpetual Platform Raise - [STRIFE] Verified unmodified.
-        EV_DoPlat(line, perpetualRaise, 0);
+        TPlatRoutines.EV_DoPlat(line, perpetualRaise, 0);
         line.special := 0;
       end;
 
     54:
       begin
         // Platform Stop - [STRIFE] Verified unmodified.
-        EV_StopPlat(line);
+        TPlatRoutines.EV_StopPlat(line);
         line.special := 0;
       end;
 
     56:
       begin
         // Raise Floor Crush - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloorCrush);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorCrush);
         line.special := 0;
       end;
 
@@ -903,14 +903,14 @@ begin
       begin
         // [STRIFE] raiseFloor24 was modified into raiseFloor64
         // Raise Floor 64
-        EV_DoFloor(line, raiseFloor64);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor64);
         line.special := 0;
       end;
 
     59:
       begin
         // Raise Floor 24 And Change - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloor24AndChange);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24AndChange);
         line.special := 0;
       end;
 
@@ -938,7 +938,7 @@ begin
     100:
       begin
         // Build Stairs Turbo 16 - [STRIFE] Verified unmodified.
-        EV_BuildStairs(line, turbo16);
+        TFloorRoutines.EV_BuildStairs(line, turbo16);
         line.special := 0;
       end;
 
@@ -963,7 +963,7 @@ begin
     119:
       begin
         // Raise floor to nearest surr. floor - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloorToNearest);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorToNearest);
         line.special := 0;
       end;
 
@@ -971,7 +971,7 @@ begin
       begin
         // villsa [STRIFE] Verified unmodified.
         // Blazing PlatDownWaitUpStay
-        EV_DoPlat(line, blazeDWUS, 0);
+        TPlatRoutines.EV_DoPlat(line, blazeDWUS, 0);
         line.special := 0;
       end;
 
@@ -996,7 +996,7 @@ begin
     130:
       begin
         // Raise Floor Turbo - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloorTurbo);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorTurbo);
         line.special := 0;
       end;
 
@@ -1024,7 +1024,7 @@ begin
     178:
       begin
         // haleyjd 09/24/10: [STRIFE] W1 Build Stairs Down 16
-        EV_BuildStairs(line, buildDown16);
+        TFloorRoutines.EV_BuildStairs(line, buildDown16);
         line.special := 0;
       end;
 
@@ -1075,7 +1075,7 @@ begin
         // haleyjd 09/26/10: [STRIFE] W1 Floor Lower to Lowest if Sigil Type > 0
         if Pplayer_t(thing.player).sigiltype > 0 then
         begin
-            EV_DoFloor(line, lowerFloorToLowest);
+            TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
             line.special := 0;
         end;
       end;
@@ -1142,7 +1142,7 @@ begin
         // haleyjd 09/25/10: [STRIFE] W1 Floor Lower to Lowest if Have Flamethrower
         if Pplayer_t(thing.player).weaponowned[Ord(wp_flame)] then
         begin
-            EV_DoFloor(line, lowerFloorToLowest);
+            TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
             line.special := 0;
         end;
       end;
@@ -1253,19 +1253,19 @@ begin
     82:
       begin
         // Lower Floor To Lowest - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
       end;
 
     83:
       begin
         // Lower Floor - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, lowerFloor);
+        TFloorRoutines.EV_DoFloor(line, lowerFloor);
       end;
 
     84:
       begin
         // LowerAndChange - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, lowerAndChange);
+        TFloorRoutines.EV_DoFloor(line, lowerAndChange);
       end;
 
     86:
@@ -1277,19 +1277,19 @@ begin
     87:
       begin
         // Perpetual Platform Raise - [STRIFE] Verified unmodified.
-        EV_DoPlat(line, perpetualRaise, 0);
+        TPlatRoutines.EV_DoPlat(line, perpetualRaise, 0);
       end;
 
     88:
       begin
         // PlatDownWaitUp - [STRIFE] Verified unmodified.
-        EV_DoPlat(line, downWaitUpStay, 0);
+        TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0);
       end;
 
     89:
       begin
         // Platform Stop - [STRIFE] Verified unmodified.
-        EV_StopPlat(line);
+        TPlatRoutines.EV_StopPlat(line);
       end;
 
     216:
@@ -1311,26 +1311,26 @@ begin
     91:
       begin
         // Raise Floor - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloor);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor);
       end;
 
     92:
       begin
         // [STRIFE] raiseFloor24 changed to raiseFloor64
         // Raise Floor 64
-        EV_DoFloor(line, raiseFloor64);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor64);
       end;
 
     93:
       begin
         // Raise Floor 24 And Change - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloor24AndChange);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24AndChange);
       end;
 
     94:
       begin
         // Raise Floor Crush - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloorCrush);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorCrush);
       end;
 
     95:
@@ -1338,14 +1338,14 @@ begin
         // villsa [STRIFE] Verified unmodified.
         // Raise floor to nearest height
         // and change texture.
-        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0);
       end;
 
     96:
       begin
         // Raise floor to shortest texture height - [STRIFE] Verified unmodified.
         // on either side of lines.
-        EV_DoFloor(line, raiseToTexture);
+        TFloorRoutines.EV_DoFloor(line, raiseToTexture);
       end;
 
     97:
@@ -1357,7 +1357,7 @@ begin
     98:
       begin
         // Lower Floor (TURBO) - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, turboLower);
+        TFloorRoutines.EV_DoFloor(line, turboLower);
       end;
 
     105:
@@ -1382,7 +1382,7 @@ begin
       begin
         // villsa [STRIFE] Verified unmodified.
         // Blazing PlatDownWaitUpStay.
-        EV_DoPlat(line, blazeDWUS, 0);
+        TPlatRoutines.EV_DoPlat(line, blazeDWUS, 0);
       end;
 
     126:
@@ -1395,13 +1395,13 @@ begin
     128:
       begin
         // Raise To Nearest Floor - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloorToNearest);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorToNearest);
       end;
 
     129:
       begin
         // Raise Floor Turbo - [STRIFE] Verified unmodified.
-        EV_DoFloor(line, raiseFloorTurbo);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorTurbo);
       end;
 
     186,
@@ -1437,7 +1437,7 @@ begin
             end;
 
             // raise switch from floor
-            EV_DoFloor(line, raiseFloor64);
+            TFloorRoutines.EV_DoFloor(line, raiseFloor64);
           end
           else
           begin
@@ -1494,7 +1494,7 @@ begin
     184:
       begin
         // villsa [STRIFE] plat up wait down stay
-        if EV_DoPlat(line, upWaitDownStay, 0) <> 0 then
+        if TPlatRoutines.EV_DoPlat(line, upWaitDownStay, 0) <> 0 then
           TSwitchRoutines.P_ChangeSwitchTexture(line, true); // In P_CrossSpecialLine? Copypasta error? // JVAL: SOS
       end;
 
@@ -1538,7 +1538,7 @@ begin
             begin
               // Raise Floor 512
               // 142 W1  EV_DoFloor(raiseFloor512)
-              if EV_DoFloor(line,raiseFloor512) <> 0 then
+              if TFloorRoutines.EV_DoFloor(line,raiseFloor512) <> 0 then
                 line.special := 0;
             end;
 
@@ -1546,7 +1546,7 @@ begin
             begin
               // Raise Floor 24 and change
               // 143 W1  EV_DoPlat(raiseAndChange,24)
-              if EV_DoPlat(line,raiseAndChange, 24) <> 0 then
+              if TPlatRoutines.EV_DoPlat(line,raiseAndChange, 24) <> 0 then
                 line.special := 0;
             end;                  }
 
@@ -1554,7 +1554,7 @@ begin
             begin
               // Raise Floor 32 and change
               // 144 W1  EV_DoPlat(raiseAndChange,32)
-              if EV_DoPlat(line,raiseAndChange, 32) <> 0 then
+              if TPlatRoutines.EV_DoPlat(line,raiseAndChange, 32) <> 0 then
                 line.special := 0;
             end;
 
@@ -1570,7 +1570,7 @@ begin
             begin
               // Lower Pillar, Raise Donut
               // 146 W1  EV_DoDonut
-              if EV_DoDonut(line) <> 0 then
+              if TFloorRoutines.EV_DoDonut(line) <> 0 then
                 line.special := 0;
             end;
 
@@ -1603,7 +1603,7 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Trig)
               // 153 W1 Change Texture/Type Only
-              if EV_DoChange(line, trigChangeOnly) <> 0 then
+              if TFloorRoutines.EV_DoChange(line, trigChangeOnly) <> 0 then
                 line.special := 0;
             end;
 
@@ -1612,7 +1612,7 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Numeric)
               // 239 W1 Change Texture/Type Only
-              if EV_DoChange(line, numChangeOnly) <> 0 then
+              if TFloorRoutines.EV_DoChange(line, numChangeOnly) <> 0 then
                 line.special := 0;
             end;
 
@@ -1620,7 +1620,7 @@ begin
             begin
               // Lower floor to next lower neighbor
               // 219 W1 Lower Floor Next Lower Neighbor
-              if EV_DoFloor(line, lowerFloorToNearest) <> 0 then
+              if TFloorRoutines.EV_DoFloor(line, lowerFloorToNearest) <> 0 then
                 line.special := 0;
             end;
 
@@ -1628,7 +1628,7 @@ begin
             begin
               // Raise elevator next floor
               // 227 W1 Raise Elevator next floor
-              if EV_DoElevator(line, elevateUp) <> 0 then
+              if TFloorRoutines.EV_DoElevator(line, elevateUp) <> 0 then
                 line.special := 0;
             end;
 
@@ -1636,7 +1636,7 @@ begin
             begin
               // Lower elevator next floor
               // 231 W1 Lower Elevator next floor
-              if EV_DoElevator(line, elevateDown) <> 0 then
+              if TFloorRoutines.EV_DoElevator(line, elevateDown) <> 0 then
                 line.special := 0;
             end;
 
@@ -1644,7 +1644,7 @@ begin
             begin
               // Elevator to current floor
               // 235 W1 Elevator to current floor
-              if EV_DoElevator(line, elevateCurrent) <> 0 then
+              if TFloorRoutines.EV_DoElevator(line, elevateCurrent) <> 0 then
                 line.special := 0;
             end;
 
@@ -1697,21 +1697,21 @@ begin
             begin
               // Raise Floor 512
               // 147 WR  EV_DoFloor(raiseFloor512)
-              EV_DoFloor(line, raiseFloor512);
+              TFloorRoutines.EV_DoFloor(line, raiseFloor512);
             end;
 
           148:
             begin
               // Raise Floor 24 and Change
               // 148 WR  EV_DoPlat(raiseAndChange,24)
-              EV_DoPlat(line, raiseAndChange, 24);
+              TPlatRoutines.EV_DoPlat(line, raiseAndChange, 24);
             end;
 
           149:
             begin
               // Raise Floor 32 and Change
               // 149 WR  EV_DoPlat(raiseAndChange,32)
-              EV_DoPlat(line, raiseAndChange, 32);
+              TPlatRoutines.EV_DoPlat(line, raiseAndChange, 32);
             end;
 
           150:
@@ -1727,7 +1727,7 @@ begin
               // 151 WR  EV_DoCeiling(raiseToHighest),
               //         EV_DoFloor(lowerFloortoLowest)
               EV_DoCeiling(line, raiseToHighest);
-              EV_DoFloor(line, lowerFloorToLowest);
+              TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
             end;
 
           152:
@@ -1742,7 +1742,7 @@ begin
             begin
               // Build stairs, step 8
               // 256 WR EV_BuildStairs(build8)
-              EV_BuildStairs(line, build8);
+              TFloorRoutines.EV_BuildStairs(line, build8);
             end;
 
             //jff 3/16/98 renumber 154.257
@@ -1750,14 +1750,14 @@ begin
             begin
               // Build stairs, step 16
               // 257 WR EV_BuildStairs(turbo16)
-              EV_BuildStairs(line, turbo16);
+              TFloorRoutines.EV_BuildStairs(line, turbo16);
             end;
 
           155:
             begin
               // Lower Pillar, Raise Donut
               // 155 WR  EV_DoDonut
-              EV_DoDonut(line);
+              TFloorRoutines.EV_DoDonut(line);
             end;
 
           156:
@@ -1799,7 +1799,7 @@ begin
               //jff 3/14/98 create instant toggle floor type
               // Toggle floor between C and F instantly
               // 212 WR Instant Toggle Floor
-              EV_DoPlat(line, toggleUpDn, 0);
+              TPlatRoutines.EV_DoPlat(line, toggleUpDn, 0);
             end;
 
           //jff 3/16/98 renumber 216.154
@@ -1808,7 +1808,7 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Trigger)
               // 154 WR Change Texture/Type Only
-              EV_DoChange(line, trigChangeOnly);
+              TFloorRoutines.EV_DoChange(line, trigChangeOnly);
             end;
 
           240:
@@ -1816,35 +1816,35 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Numeric)
               // 240 WR Change Texture/Type Only
-              EV_DoChange(line, numChangeOnly);
+              TFloorRoutines.EV_DoChange(line, numChangeOnly);
             end;
 
           220:
             begin
               // Lower floor to next lower neighbor
               // 220 WR Lower Floor Next Lower Neighbor
-              EV_DoFloor(line, lowerFloorToNearest);
+              TFloorRoutines.EV_DoFloor(line, lowerFloorToNearest);
             end;
 
           228:
             begin
               // Raise elevator next floor
               // 228 WR Raise Elevator next floor
-              EV_DoElevator(line, elevateUp);
+              TFloorRoutines.EV_DoElevator(line, elevateUp);
             end;
 
           232:
             begin
               // Lower elevator next floor
               // 232 WR Lower Elevator next floor
-              EV_DoElevator(line, elevateDown);
+              TFloorRoutines.EV_DoElevator(line, elevateDown);
             end;
 
           236:
             begin
               // Elevator to current floor
               // 236 WR Elevator to current floor
-              EV_DoElevator(line,elevateCurrent);
+              TFloorRoutines.EV_DoElevator(line,elevateCurrent);
             end;
 
           244:
@@ -2018,7 +2018,7 @@ begin
     24:
       begin
         // RAISE FLOOR
-        if (EV_DoFloor(line, raiseFloor) <> 0) or G_NeedsCompatibilityMode then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloor) <> 0) or G_NeedsCompatibilityMode then
           TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
@@ -2032,14 +2032,14 @@ begin
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
-        if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or G_NeedsCompatibilityMode then
+        if (TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or G_NeedsCompatibilityMode then
           TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     180:
       begin
         // haleyjd 09/22/10: [STRIFE] G1 Raise Floor 512 & Change
-        EV_DoFloor(line, raiseFloor512AndChange);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor512AndChange);
         TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 

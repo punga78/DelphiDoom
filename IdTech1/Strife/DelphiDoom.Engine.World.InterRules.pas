@@ -1113,7 +1113,7 @@ begin
             TDoorRoutines.EV_DoDoor(@junk, vld_close);
 
             junk.tag := 44;
-            EV_DoFloor(@junk, lowerFloor);
+            TFloorRoutines.EV_DoFloor(@junk, lowerFloor);
 
             P_GiveVoiceObjective('VOC13', 'LOG13', 0);
 

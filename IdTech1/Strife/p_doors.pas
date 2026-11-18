@@ -1153,7 +1153,7 @@ begin
             speed := cheight - sec.floorheight - (10 * FRACUNIT);
 
             // something blocking it?
-            if T_MovePlane(sec, speed, sec.floorheight, false, 1, -1) = crushed then
+            if TFloorRoutines.T_MovePlane(sec, speed, sec.floorheight, false, 1, -1) = crushed then
             begin
               door.timer := SDOORWAIT;
               exit;
@@ -1161,7 +1161,7 @@ begin
             else
             begin
               // Instantly move plane
-              T_MovePlane(sec, 128 * FRACUNIT, cheight, false, 1, 1);
+              TFloorRoutines.T_MovePlane(sec, 128 * FRACUNIT, cheight, false, 1, 1);
 
               // turn line blocking back on
               door.line1.flags := door.line1.flags or ML_BLOCKING;
@@ -1186,7 +1186,7 @@ begin
           if door.frame < 0 then
           begin
             // IF DOOR IS DONE CLOSING...
-            T_MovePlane(sec, 128 * FRACUNIT, sec.floorheight, false, 1, -1);
+            TFloorRoutines.T_MovePlane(sec, 128 * FRACUNIT, sec.floorheight, false, 1, -1);
             door.frontsector.ceilingdata := nil;
             TTickRoutines.P_RemoveThinker(@door.thinker);
             exit;
@@ -1341,7 +1341,7 @@ begin
     door.line2.flags := door.line2.flags or ML_BLOCKING;
 
     // villsa [STRIFE] set the closing sector
-    T_MovePlane(
+    TFloorRoutines.T_MovePlane(
             door.frontsector,
             128 * FRACUNIT,
             P_FindLowestCeilingSurrounding(door.frontsector),

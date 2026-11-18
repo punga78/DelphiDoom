@@ -325,7 +325,7 @@ begin
             // "specialdata" might not actually point at a door.
             if @door.thinker._function.acp1 = @ T_VerticalDoor then
               door.direction := -1  // start going down immediately
-            else if @door.thinker._function.acp1 = @T_PlatRaise then
+            else if @door.thinker._function.acp1 = @TPlatRoutines.T_PlatRaise then
             begin
               // Erm, this is a plat, not a door.
               // This notably causes a problem in ep1-0500.lmp where
