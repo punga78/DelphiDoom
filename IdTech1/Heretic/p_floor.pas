@@ -308,7 +308,7 @@ begin
           end;
         end;
     end;
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   until secnum < 0;
 end;
 

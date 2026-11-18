@@ -445,7 +445,7 @@ begin
       else
         result := false;
     end;
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   end;
 
   if result then

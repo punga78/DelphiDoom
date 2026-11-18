@@ -64,7 +64,7 @@ begin
   ASector.cic := APlane.InverseC;
   ASector.cd := APlane.D;
   ASector.renderflags := ASector.renderflags or SRF_SLOPECEILING;
-  P_SlopesAlignPlane(ASector, nil, SRF_SLOPECEILING, false);
+  TSlopeRoutines.P_SlopesAlignPlane(ASector, nil, SRF_SLOPECEILING, false);
   ASector.slopeline := ASector.lines[0];
   ASector.slopeline.renderflags := ASector.slopeline.renderflags or LRF_SLOPED;
 end;
@@ -76,7 +76,7 @@ begin
   ASector.fic := APlane.InverseC;
   ASector.fd := APlane.D;
   ASector.renderflags := ASector.renderflags or SRF_SLOPEFLOOR;
-  P_SlopesAlignPlane(ASector, nil, SRF_SLOPEFLOOR, false);
+  TSlopeRoutines.P_SlopesAlignPlane(ASector, nil, SRF_SLOPEFLOOR, false);
   ASector.slopeline := ASector.lines[0];
   ASector.slopeline.renderflags := ASector.slopeline.renderflags or LRF_SLOPED;
 end;

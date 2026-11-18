@@ -665,10 +665,10 @@ begin
     begin
       vmidx := (v1.x + v2.x) div 2;
       vmidy := (v1.y + v2.y) div 2;
-      front_floorheight := P_FloorHeight(front, vmidx, vmidy);
-      back_floorheight := P_FloorHeight(back, vmidx, vmidy);
-      front_ceilingheight := P_CeilingHeight(front, vmidx, vmidy);
-      back_ceilingheight := P_CeilingHeight(back, vmidx, vmidy);
+      front_floorheight := TSlopeRoutines.P_FloorHeight(front, vmidx, vmidy);
+      back_floorheight := TSlopeRoutines.P_FloorHeight(back, vmidx, vmidy);
+      front_ceilingheight := TSlopeRoutines.P_CeilingHeight(front, vmidx, vmidy);
+      back_ceilingheight := TSlopeRoutines.P_CeilingHeight(back, vmidx, vmidy);
     end
     else
     begin
@@ -757,10 +757,10 @@ begin
     begin
       vmidx := (v1.x + v2.x) div 2;
       vmidy := (v1.y + v2.y) div 2;
-      front_floorheight := P_FloorHeight(front, vmidx, vmidy);
-      back_floorheight := P_FloorHeight(back, vmidx, vmidy);
-      front_ceilingheight := P_CeilingHeight(front, vmidx, vmidy);
-      back_ceilingheight := P_CeilingHeight(back, vmidx, vmidy);
+      front_floorheight := TSlopeRoutines.P_FloorHeight(front, vmidx, vmidy);
+      back_floorheight := TSlopeRoutines.P_FloorHeight(back, vmidx, vmidy);
+      front_ceilingheight := TSlopeRoutines.P_CeilingHeight(front, vmidx, vmidy);
+      back_ceilingheight := TSlopeRoutines.P_CeilingHeight(back, vmidx, vmidy);
     end
     else
     begin

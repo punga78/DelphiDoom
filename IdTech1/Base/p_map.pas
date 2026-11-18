@@ -468,11 +468,11 @@ begin
   // Any contacted lines the step closer together
   // will adjust them.
   //**TMapCheck.DropOffZ := newsubsec.sector.floorheight;
-  TMapCheck.DropOffZ := P_FloorHeight(newsec, x, y); // JVAL: Slopes
+  TMapCheck.DropOffZ := TSlopeRoutines.P_FloorHeight(newsec, x, y); // JVAL: Slopes
   TMapCheck.FloorZ := TMapCheck.DropOffZ;
 
   //**TMapCheck.CeilingZ := newsubsec.sector.ceilingheight + P_SectorJumpOverhead(newsubsec.sector);
-  TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
+  TMapCheck.CeilingZ := TSlopeRoutines.P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
   TMapCheck.FloorPic := newsec.floorpic;
 
   inc(validcount);
@@ -1257,9 +1257,9 @@ begin
 // the base floor / ceiling is from the subsector that contains the
 // point.  Any contacted lines the step closer together will adjust them
 //
-  TMapCheck.FloorZ := P_FloorHeight(newsec, x, y);  // JVAL: Slopes
+  TMapCheck.FloorZ := TSlopeRoutines.P_FloorHeight(newsec, x, y);  // JVAL: Slopes
   TMapCheck.DropOffZ := TMapCheck.FloorZ;
-  TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
+  TMapCheck.CeilingZ := TSlopeRoutines.P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
 
   inc(validcount);
   TMapCheck.NumSpecHit := 0;
@@ -1471,7 +1471,7 @@ begin
 
   // the move is ok,
   // so link the thing into its new position
-  oldfloorz := P_FloorHeight(thing.x, thing.y); // JVAL: Slopes
+  oldfloorz := TSlopeRoutines.P_FloorHeight(thing.x, thing.y); // JVAL: Slopes
   oldonfloorz := oldfloorz >= thing.z; // JVAL: Slopes
   P_UnsetThingPosition(thing);
 

@@ -345,7 +345,7 @@ begin
 {$ENDIF}
 
   Trace('P_SlopesSetup');
-  P_SlopesSetup; // JVAL: Slopes
+  TSlopeRoutines.P_SlopesSetup; // JVAL: Slopes
 
   Trace('UDMF_MakeSectors');
   FUdmf.ApplySectors;

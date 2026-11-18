@@ -643,7 +643,7 @@ end;
 //==============================================================================
 class function TMobjGameRules.RespawnFogFloor(ss: Psector_t; fog: Pmobj_t): fixed_t;
 begin
-  result := P_FloorHeight(ss, fog.x, fog.y);
+  result := TSlopeRoutines.P_FloorHeight(ss, fog.x, fog.y);
 end;
 
 //==============================================================================

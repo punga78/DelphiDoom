@@ -1387,16 +1387,16 @@ begin
       if isfloatbob then
         z := z + msec.ceilingheight
       else if z = FLOATRANDZ then
-        z := (msec.ceilingheight + P_CeilingHeight(ss.sector, x, y)) div 2  // JVAL: Slopes
+        z := (msec.ceilingheight + TSlopeRoutines.P_CeilingHeight(ss.sector, x, y)) div 2  // JVAL: Slopes
       else if z = ONFLOORZ then
         z := msec.ceilingheight;
     end
     else
     begin
       if isfloatbob then
-        z := z + P_FloorHeight(ss.sector, x, y) // JVAL: Slopes
+        z := z + TSlopeRoutines.P_FloorHeight(ss.sector, x, y) // JVAL: Slopes
       else if z = FLOATRANDZ then
-        z := (P_FloorHeight(ss.sector, x, y) + msec.floorheight) div 2 // JVAL: Slopes
+        z := (TSlopeRoutines.P_FloorHeight(ss.sector, x, y) + msec.floorheight) div 2 // JVAL: Slopes
       else if z = ONCEILINGZ then
         z := msec.floorheight;
     end;

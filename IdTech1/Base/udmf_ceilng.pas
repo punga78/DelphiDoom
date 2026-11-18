@@ -371,7 +371,7 @@ begin
       {$ELSE}
       S_StartSound(@ceiling.sector.soundorg, ceiling.sector.seqType);
       {$ENDIF}
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   end;
 end;
 

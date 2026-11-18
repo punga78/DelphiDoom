@@ -280,7 +280,7 @@ begin
     ceiling.tag := sec.tag;
     ceiling._type := _type;
     P_AddActiveCeiling(ceiling);
-    P_DynamicSlope(sec);  // JVAL: Slopes
+    TSlopeRoutines.P_DynamicSlope(sec);  // JVAL: Slopes
   end;
 end;
 

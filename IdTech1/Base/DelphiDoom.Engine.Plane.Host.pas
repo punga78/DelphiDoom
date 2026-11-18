@@ -42,7 +42,7 @@ end;
 procedure TEnginePlaneHost.PlaneMoved(ASector: Pointer);
 begin
   // JVAL: Slopes
-  P_DynamicSlope(Psector_t(ASector));
+  TSlopeRoutines.P_DynamicSlope(Psector_t(ASector));
 end;
 
 end.

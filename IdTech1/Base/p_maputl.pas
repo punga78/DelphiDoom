@@ -685,17 +685,17 @@ begin
   y := TMapCheck.Thing.y;
   if moside = 0 then
   begin
-    frontfloorheight := P_FloorHeight(front, x, y);
-    frontceilingheight := P_CeilingHeight(front, x, y);
-    backfloorheight := P_FloorHeight(back, TMapCheck.X, TMapCheck.Y);
-    backceilingheight := P_CeilingHeight(back, TMapCheck.X, TMapCheck.Y);
+    frontfloorheight := TSlopeRoutines.P_FloorHeight(front, x, y);
+    frontceilingheight := TSlopeRoutines.P_CeilingHeight(front, x, y);
+    backfloorheight := TSlopeRoutines.P_FloorHeight(back, TMapCheck.X, TMapCheck.Y);
+    backceilingheight := TSlopeRoutines.P_CeilingHeight(back, TMapCheck.X, TMapCheck.Y);
   end
   else
   begin
-    frontfloorheight := P_FloorHeight(front, TMapCheck.X, TMapCheck.Y);
-    frontceilingheight := P_CeilingHeight(front, TMapCheck.X, TMapCheck.Y);
-    backfloorheight := P_FloorHeight(back, x, y);
-    backceilingheight := P_CeilingHeight(back, x, y);
+    frontfloorheight := TSlopeRoutines.P_FloorHeight(front, TMapCheck.X, TMapCheck.Y);
+    frontceilingheight := TSlopeRoutines.P_CeilingHeight(front, TMapCheck.X, TMapCheck.Y);
+    backfloorheight := TSlopeRoutines.P_FloorHeight(back, x, y);
+    backceilingheight := TSlopeRoutines.P_CeilingHeight(back, x, y);
   end;
 
   if frontceilingheight < backceilingheight then

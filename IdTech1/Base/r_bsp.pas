@@ -1183,9 +1183,9 @@ begin
 {$ENDIF}
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  if (P_FloorHeight(frontsector, viewx, viewy) < viewz) then  // JVAL: Slopes
+  if (TSlopeRoutines.P_FloorHeight(frontsector, viewx, viewy) < viewz) then  // JVAL: Slopes
 {$ELSE}
-  if (P_FloorHeight(frontsector, viewx, viewy) < viewz) or  // JVAL: Slopes
+  if (TSlopeRoutines.P_FloorHeight(frontsector, viewx, viewy) < viewz) or  // JVAL: Slopes
      ((frontsector.heightsec <> -1) and
      (sectors[frontsector.heightsec].ceilingpic = skyflatnum)) then
 {$ENDIF}
@@ -1262,7 +1262,7 @@ begin
   else
     floorplane := nil;
 
-  if (P_CeilingHeight(frontsector, viewx, viewy) > viewz) or  // JVAL: Slopes
+  if (TSlopeRoutines.P_CeilingHeight(frontsector, viewx, viewy) > viewz) or  // JVAL: Slopes
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
      (frontsector.ceilingpic = skyflatnum) then
 {$ELSE}

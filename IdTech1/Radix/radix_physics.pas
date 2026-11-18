@@ -270,12 +270,12 @@ begin
       rnd := Sys_Random;
       if dir < 0 then
       begin
-        z := P_FloorHeight(sec, x, y) + 4 * FRACUNIT;
+        z := TSlopeRoutines.P_FloorHeight(sec, x, y) + 4 * FRACUNIT;
         momz := FRACUNIT div 2 + rnd * 64;
       end
       else
       begin
-        z := P_CeilingHeight(sec, x, y) - 4 * FRACUNIT;
+        z := TSlopeRoutines.P_CeilingHeight(sec, x, y) - 4 * FRACUNIT;
         momz := -FRACUNIT div 2 - rnd * 64;
       end;
       if Sys_Random < 128 then

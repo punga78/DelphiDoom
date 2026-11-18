@@ -190,7 +190,7 @@ begin
   ss := TRendererMain.R_PointInSubsector(x, y);
   if m.options and MTF_ONMIDSECTOR = 0 then
   begin
-    result := P_FloorHeight(ss.sector, x, y);
+    result := TSlopeRoutines.P_FloorHeight(ss.sector, x, y);
     exit;
   end;
 
@@ -200,7 +200,7 @@ begin
     result := msec.ceilingheight;
   end
   else
-    result := P_FloorHeight(ss.sector, x, y);
+    result := TSlopeRoutines.P_FloorHeight(ss.sector, x, y);
 end;
 
 //==============================================================================
@@ -219,7 +219,7 @@ begin
   ss := TRendererMain.R_PointInSubsector(x, y);
   if m.options and MTF_ONMIDSECTOR <> 0 then
   begin
-    result := P_CeilingHeight(ss.sector, x, y);
+    result := TSlopeRoutines.P_CeilingHeight(ss.sector, x, y);
     exit;
   end;
 
@@ -229,7 +229,7 @@ begin
     result := msec.floorheight;
   end
   else
-    result := P_CeilingHeight(ss.sector, x, y);
+    result := TSlopeRoutines.P_CeilingHeight(ss.sector, x, y);
 end;
 
 //==============================================================================
@@ -247,12 +247,12 @@ begin
   begin
     msec := @sectors[ss.sector.midsec];
     if z <= msec.floorheight then
-      result := P_FloorHeight(ss.sector, x, y)
+      result := TSlopeRoutines.P_FloorHeight(ss.sector, x, y)
     else
       result := msec.ceilingheight;
   end
   else
-    result := P_FloorHeight(ss.sector, x, y);
+    result := TSlopeRoutines.P_FloorHeight(ss.sector, x, y);
 end;
 
 //==============================================================================
@@ -270,12 +270,12 @@ begin
   begin
     msec := @sectors[ss.sector.midsec];
     if z > msec.floorheight then
-      result := P_CeilingHeight(ss.sector, x, y)
+      result := TSlopeRoutines.P_CeilingHeight(ss.sector, x, y)
     else
       result := msec.floorheight;
   end
   else
-    result := P_CeilingHeight(ss.sector, x, y);
+    result := TSlopeRoutines.P_CeilingHeight(ss.sector, x, y);
 end;
 
 //==============================================================================
@@ -311,12 +311,12 @@ begin
   begin
     msec := @sectors[s.midsec];
     if z <= msec.floorheight then
-      result := P_FloorHeight(s, x, y)
+      result := TSlopeRoutines.P_FloorHeight(s, x, y)
     else
       result := msec.ceilingheight;
   end
   else
-    result := P_FloorHeight(s, x, y);
+    result := TSlopeRoutines.P_FloorHeight(s, x, y);
 end;
 
 //==============================================================================
@@ -332,12 +332,12 @@ begin
   begin
     msec := @sectors[s.midsec];
     if z > msec.floorheight then
-      result := P_CeilingHeight(s, x, y)
+      result := TSlopeRoutines.P_CeilingHeight(s, x, y)
     else
       result := msec.floorheight;
   end
   else
-    result := P_CeilingHeight(s, x, y);
+    result := TSlopeRoutines.P_CeilingHeight(s, x, y);
 end;
 
 //==============================================================================

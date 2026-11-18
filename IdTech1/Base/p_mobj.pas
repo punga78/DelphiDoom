@@ -959,8 +959,8 @@ begin
   sec := Psubsector_t(mobj.subsector).sector;
 
   // JVAL: Slopes
-  spawnfloorheight := P_FloorHeight(sec, x, y);
-  spawnceilingheight := P_CeilingHeight(sec, x, y);
+  spawnfloorheight := TSlopeRoutines.P_FloorHeight(sec, x, y);
+  spawnceilingheight := TSlopeRoutines.P_CeilingHeight(sec, x, y);
   mobj.floorz := spawnfloorheight;  // JVAL: Slopes
   mobj.ceilingz := spawnceilingheight;  // JVAL: Slopes
   onmidfloor := false;

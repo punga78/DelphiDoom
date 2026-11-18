@@ -234,14 +234,14 @@ begin
     if mthing.options and MTF_ONMIDSECTOR <> 0 then
     begin
       if z = ONFLOATZ then
-        z := (msec.ceilingheight + P_CeilingHeight(ss, x, y)) div 2
+        z := (msec.ceilingheight + TSlopeRoutines.P_CeilingHeight(ss, x, y)) div 2
       else if z = ONFLOORZ then
         z := msec.ceilingheight;
     end
     else
     begin
       if z = ONFLOATZ then
-        z := (P_FloorHeight(ss, x, y) + msec.floorheight) div 2
+        z := (TSlopeRoutines.P_FloorHeight(ss, x, y) + msec.floorheight) div 2
       else if z = ONCEILINGZ then
         z := msec.floorheight;
     end;

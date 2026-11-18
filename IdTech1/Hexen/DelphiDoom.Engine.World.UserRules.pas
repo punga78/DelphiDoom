@@ -635,7 +635,7 @@ begin
   // JVAL: 3d Floors
   sec := Psubsector_t(player.mo.subsector).sector;
   if sec.special <> 0 then
-    TSpecRoutines.P_PlayerInSpecialSector(player, sec, P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
+    TSpecRoutines.P_PlayerInSpecialSector(player, sec, TSlopeRoutines.P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
   if sec.midsec >= 0 then
     if sectors[sec.midsec].special <> 0 then
       TSpecRoutines.P_PlayerInSpecialSector(player, @sectors[sec.midsec], sectors[sec.midsec].ceilingheight);  // JVAL: 3d Floors
