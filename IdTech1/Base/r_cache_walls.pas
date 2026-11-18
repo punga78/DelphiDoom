@@ -629,7 +629,7 @@ begin
     end;
 
     inc(c_cmiss); // Cache miss
-    R_GetColumn(rtex, rcol);
+    TRendererData.R_GetColumn(rtex, rcol);
     {$IFDEF FPC}
     pdc32 := R_Get_dc32(dc32cache[hash][index], dc_height);
     plw := @pdc32[0];
@@ -639,7 +639,7 @@ begin
     textures[rtex].factorbits := 0;
     if dc_mod = 0 then
     begin
-      dc_source := R_GetColumn(rtex, rcol);
+      dc_source := TRendererData.R_GetColumn(rtex, rcol);
       src1 := @dc_source[0];
       if dc_height = 128 then
       begin
@@ -809,9 +809,9 @@ begin
     else
     begin
       tbl := @hirestable[dc_mod];
-      dc_source := R_GetColumn(rtex, rcol);
+      dc_source := TRendererData.R_GetColumn(rtex, rcol);
       src1 := @dc_source[0];
-      dc_source2 := R_GetColumn(rtex, rcol + 1);
+      dc_source2 := TRendererData.R_GetColumn(rtex, rcol + 1);
       src2 := @dc_source2[0];
       if dc_height = 128 then
       begin

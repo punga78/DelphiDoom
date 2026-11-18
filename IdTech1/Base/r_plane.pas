@@ -1394,7 +1394,7 @@ begin
             begin
               angle := (viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
               dc_x := x;
-              dc_source := R_GetColumn(skytexture, angle);
+              dc_source := TRendererData.R_GetColumn(skytexture, angle);
               // JVAL
               //  Store columns to buffer
               R_StoreSkyColumn8;
@@ -1461,7 +1461,7 @@ begin
             begin
               angle := (viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
               dc_x := x;
-              dc_source := R_GetColumn(skytexture, angle);
+              dc_source := TRendererData.R_GetColumn(skytexture, angle);
               // JVAL
               //  Store columns to buffer
               R_StoreSkyColumn8;
@@ -1560,7 +1560,7 @@ begin
               else
                 angle := (deltaangle + viewangle + xtoviewangle[x]) div ANGLETOSKYUNIT;
               dc_x := x;
-              dc_source := R_GetColumn(skytexture1, angle);
+              dc_source := TRendererData.R_GetColumn(skytexture1, angle);
               // JVAL
               //  Store columns to buffer
               R_StoreSkyColumn8;

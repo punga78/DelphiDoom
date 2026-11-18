@@ -117,7 +117,7 @@ begin
     {$ENDIF}
     textures[rtex].factorbits := 0;
 
-    dc_source := R_GetColumn(rtex, rcol);
+    dc_source := TRendererData.R_GetColumn(rtex, rcol);
     src1 := @dc_source[0];
     frac := 0;
     fracstep := FRACUNIT * 200 div 256;

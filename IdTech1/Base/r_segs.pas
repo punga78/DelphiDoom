@@ -582,7 +582,7 @@ begin
       else
       begin
         // draw the texture
-        col := Pcolumn_t(NativeInt(R_GetColumn(texnum, texturecolumn)) - 3);
+        col := Pcolumn_t(NativeInt(TRendererData.R_GetColumn(texnum, texturecolumn)) - 3);
         TRendererThings.R_DrawMaskedColumn(col, spryscale);
       end;
 

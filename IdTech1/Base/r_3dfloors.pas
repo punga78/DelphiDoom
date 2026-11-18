@@ -471,7 +471,7 @@ begin
         end
         else
         begin
-          dc_source := R_GetColumn(texnum, texturecolumn);
+          dc_source := TRendererData.R_GetColumn(texnum, texturecolumn);
         end;
         if depthbufferactive then
           TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
@@ -742,7 +742,7 @@ begin
       end
       else
       begin
-        dc_source := R_GetColumn(texnum, texturecolumn);
+        dc_source := TRendererData.R_GetColumn(texnum, texturecolumn);
       end;
       dc_texturemid := texturemid[0];
 
@@ -965,7 +965,7 @@ begin
         end
         else
         begin
-          dc_source := R_GetColumn(texnum, texturecolumn);
+          dc_source := TRendererData.R_GetColumn(texnum, texturecolumn);
         end;
         if depthbufferactive then
           TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
@@ -1141,7 +1141,7 @@ begin
       end
       else
       begin
-        dc_source := R_GetColumn(texnum, texturecolumn);
+        dc_source := TRendererData.R_GetColumn(texnum, texturecolumn);
       end;
       dc_texturemid := texturemid[0];
 

@@ -114,9 +114,9 @@ begin
     {$ENDIF}
     textures[rtex].factorbits := 0;
     tbl := @hirestable[dc_mod];
-    dc_source := R_GetColumn(rtex, rcol);
+    dc_source := TRendererData.R_GetColumn(rtex, rcol);
     src1 := @dc_source[0];
-    dc_source2 := R_GetColumn(rtex, rcol + 1);
+    dc_source2 := TRendererData.R_GetColumn(rtex, rcol + 1);
     src2 := @dc_source2[0];
     frac := 0;
     fracstep := FRACUNIT * 200 div 256 - 1;

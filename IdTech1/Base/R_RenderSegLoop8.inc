@@ -191,7 +191,7 @@ begin
       dc_texturemid := rw_midtexturemid;
       dc_height := rw_midtextureheight;
 
-      dc_source := R_GetColumn(midtexture, texturecolumn);
+      dc_source := TRendererData.R_GetColumn(midtexture, texturecolumn);
 {$IFDEF FLOORS3DVIS}
       if pds.midvis <> nil then
       begin
@@ -296,9 +296,9 @@ begin
           {$IFDEF SPECIALOFFSETS}
           toptexturecolumn := rw_offset_top - tandist;
           toptexturecolumn := toptexturecolumn shr FRACBITS;
-          dc_source := R_GetColumn(toptexture, toptexturecolumn);
+          dc_source := TRendererData.R_GetColumn(toptexture, toptexturecolumn);
           {$ELSE}
-          dc_source := R_GetColumn(toptexture, texturecolumn);
+          dc_source := TRendererData.R_GetColumn(toptexture, texturecolumn);
           {$ENDIF}
 
     {$IFDEF FLOORS3DVIS}
@@ -442,9 +442,9 @@ begin
           {$IFDEF SPECIALOFFSETS}
           bottomtexturecolumn := rw_offset_bot - tandist;
           bottomtexturecolumn := bottomtexturecolumn shr FRACBITS;
-          dc_source := R_GetColumn(toptexture, bottomtexturecolumn);
+          dc_source := TRendererData.R_GetColumn(toptexture, bottomtexturecolumn);
           {$ELSE}
-          dc_source := R_GetColumn(bottomtexture, texturecolumn);
+          dc_source := TRendererData.R_GetColumn(bottomtexture, texturecolumn);
           {$ENDIF}
 
     {$IFDEF FLOORS3DVIS}

@@ -54,12 +54,6 @@ uses
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_GetColumn
-//
-//==============================================================================
-function R_GetColumn(const tex: integer; col: integer): PByteArray;
 {$ENDIF}
 
 {$IFNDEF OPENGL}
@@ -325,6 +319,24 @@ procedure R_ChangeColormap(const lumpname: string);
   aprox_black: byte = 247;
   aprox_red: byte = 176;
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererData = class sealed
+  public
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_GetColumn
+    //
+    //==============================================================================
+    class function R_GetColumn(const tex: integer; col: integer): PByteArray; static;
+{$ENDIF}
+  end;
+
 
 implementation
 
@@ -717,7 +729,7 @@ const
 // R_GetColumn
 //
 //==============================================================================
-function R_GetColumn(const tex: integer; col: integer): PByteArray;
+class function TRendererData.R_GetColumn(const tex: integer; col: integer): PByteArray;
 var
   lump: integer;
   ofs: integer;
@@ -794,7 +806,7 @@ end;
 procedure R_GetDCs(const tex: integer; const col: integer);
 begin
   if videomode = vm8bit then
-    dc_source := R_GetColumn(tex, col)
+    dc_source := TRendererData.R_GetColumn(tex, col)
   else
     R_ReadDC32Cache(tex, col);
 end;
