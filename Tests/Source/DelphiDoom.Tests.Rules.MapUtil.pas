@@ -19,6 +19,8 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.MathCore.Types,
   m_fixed,
+  p_mobj_h,
+  p_map,
   r_defs,
   p_setup,
   p_maputl;
@@ -30,10 +32,14 @@ type
   strict private
     FVertices: array[0..1] of vertex_t;
     FLine: line_t;
+    FSectors: array[0..3] of sector_t;
+    FThing: mobj_t;
     FSeed: Cardinal;
     function NextRandom(const ARange: Integer): Integer;
     procedure MakeLine(const AX1, AY1, AX2, AY2: fixed_t);
     function ReferenceSide(const AX, AY: fixed_t): Integer;
+    procedure MakeSector(const AIndex: Integer; const AFloor, ACeiling: fixed_t; const AFloorPic: Integer);
+    procedure MakeTwoSidedLine(const AFront, ABack: Integer);
     class function ShiftRight16(const AValue: Int64): Int64; static;
   public
     [Setup]
@@ -57,6 +63,20 @@ type
     procedure DovrebbeDareMenoUnoSeLaScatolaAttraversaLaLinea;
     [Test]
     procedure DovrebbeDareIlLatoDellaScatolaSuLineeObblique;
+    [Test]
+    procedure DovrebbeDareApertura0SuUnaLineaAUnSoloLato;
+    [Test]
+    procedure DovrebbeUsareIlSoffittoPiuBassoEIlPavimentoPiuAltoNellApertura;
+    [Test]
+    procedure DovrebbeSceglierePavimentoEFlatDelLatoPiuAlto;
+    [Test]
+    procedure DovrebbeAbbassareIlSoffittoConUnPianoIntermedioSopraLaCosa;
+    [Test]
+    procedure DovrebbeAlzareIlPavimentoConUnPianoIntermedioSottoLaCosa;
+    [Test]
+    procedure DovrebbeAlzareIlPavimentoBassoConUnPianoIntermedioQuandoQuelloAltoEPiuInAlto;
+    [Test]
+    procedure DovrebbeIgnorareIPianiIntermediSenzaIlControlloDei3dFloor;
   end;
 
 implementation
@@ -125,6 +145,23 @@ begin
     Result := 0
   else
     Result := 1;
+end;
+
+procedure TTestRulesMapUtil.MakeSector(const AIndex: Integer; const AFloor, ACeiling: fixed_t; const AFloorPic: Integer);
+begin
+  FSectors[AIndex].floorheight := AFloor;
+  FSectors[AIndex].ceilingheight := ACeiling;
+  FSectors[AIndex].floorpic := AFloorPic;
+  FSectors[AIndex].midsec := -1;
+end;
+
+procedure TTestRulesMapUtil.MakeTwoSidedLine(const AFront, ABack: Integer);
+begin
+  MakeLine(0, 0, 64 * FRACUNIT, 0);
+  FLine.sidenum[0] := 0;
+  FLine.sidenum[1] := 1;
+  FLine.frontsector := @FSectors[AFront];
+  FLine.backsector := @FSectors[ABack];
 end;
 
 procedure TTestRulesMapUtil.DovrebbeStimareLaDistanzaConIlMinoreDimezzato;
@@ -278,4 +315,121 @@ begin
   end;
 end;
 
+procedure TTestRulesMapUtil.DovrebbeDareApertura0SuUnaLineaAUnSoloLato;
+begin
+  MakeLine(0, 0, 64 * FRACUNIT, 0);
+  FLine.sidenum[0] := 0;
+  FLine.sidenum[1] := -1;
+  openrange := 77;
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(0, openrange);
+end;
+
+procedure TTestRulesMapUtil.DovrebbeUsareIlSoffittoPiuBassoEIlPavimentoPiuAltoNellApertura;
+begin
+  MakeSector(0, 0, 128 * FRACUNIT, 5);
+  MakeSector(1, 16 * FRACUNIT, 96 * FRACUNIT, 6);
+  MakeTwoSidedLine(0, 1);
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(96 * FRACUNIT, opentop);
+  Assert.AreEqual(16 * FRACUNIT, openbottom);
+  Assert.AreEqual(0, lowfloor);
+  Assert.AreEqual(80 * FRACUNIT, openrange);
+  // the same line seen from the other side gives the same opening
+  MakeTwoSidedLine(1, 0);
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(96 * FRACUNIT, opentop);
+  Assert.AreEqual(16 * FRACUNIT, openbottom);
+  Assert.AreEqual(0, lowfloor);
+  Assert.AreEqual(80 * FRACUNIT, openrange);
+end;
+
+procedure TTestRulesMapUtil.DovrebbeSceglierePavimentoEFlatDelLatoPiuAlto;
+begin
+  MakeSector(0, 24 * FRACUNIT, 128 * FRACUNIT, 5);
+  MakeSector(1, 8 * FRACUNIT, 128 * FRACUNIT, 6);
+  MakeTwoSidedLine(0, 1);
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(24 * FRACUNIT, openbottom);
+  Assert.AreEqual(8 * FRACUNIT, lowfloor);
+  Assert.AreEqual(5, TMapCheck.FloorPic);
+  MakeTwoSidedLine(1, 0);
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(24 * FRACUNIT, openbottom);
+  Assert.AreEqual(5, TMapCheck.FloorPic);
+  // equal floors: the back sector wins (the engine takes the back floor when the front is not higher)
+  MakeSector(1, 24 * FRACUNIT, 128 * FRACUNIT, 6);
+  MakeTwoSidedLine(0, 1);
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(6, TMapCheck.FloorPic);
+  Assert.AreEqual(24 * FRACUNIT, lowfloor);
+end;
+
+procedure TTestRulesMapUtil.DovrebbeAbbassareIlSoffittoConUnPianoIntermedioSopraLaCosa;
+begin
+  // a 3d floor (sector 2) from 40 to 56 in the front sector; the thing is from 0 to 56: its middle is below the
+  // middle of the 3d floor, so the 3d floor is a ceiling for it
+  MakeSector(0, 0, 128 * FRACUNIT, 5);
+  MakeSector(1, 0, 128 * FRACUNIT, 5);
+  MakeSector(2, 40 * FRACUNIT, 56 * FRACUNIT, 5);
+  FSectors[0].midsec := 2;
+  MakeTwoSidedLine(0, 1);
+  sectors := @FSectors[0];
+  FThing.z := 0;
+  FThing.height := 56 * FRACUNIT;
+  TMapCheck.Thing := @FThing;
+  TMapUtilRoutines.P_LineOpening(@FLine, True);
+  Assert.AreEqual(40 * FRACUNIT, opentop);
+  Assert.AreEqual(0, openbottom);
+  Assert.AreEqual(40 * FRACUNIT, openrange);
+end;
+
+procedure TTestRulesMapUtil.DovrebbeAlzareIlPavimentoConUnPianoIntermedioSottoLaCosa;
+begin
+  // the thing is from 48 to 56: it is on the 3d floor from 40 to 56, whose top becomes the floor
+  MakeSector(0, 0, 128 * FRACUNIT, 5);
+  MakeSector(1, 16 * FRACUNIT, 128 * FRACUNIT, 5);
+  MakeSector(2, 40 * FRACUNIT, 56 * FRACUNIT, 5);
+  FSectors[0].midsec := 2;
+  MakeTwoSidedLine(0, 1);
+  sectors := @FSectors[0];
+  FThing.z := 48 * FRACUNIT;
+  FThing.height := 8 * FRACUNIT;
+  TMapCheck.Thing := @FThing;
+  TMapUtilRoutines.P_LineOpening(@FLine, True);
+  Assert.AreEqual(56 * FRACUNIT, openbottom);
+  Assert.AreEqual(128 * FRACUNIT, opentop);
+  Assert.AreEqual(72 * FRACUNIT, openrange);
+  Assert.AreEqual(0, lowfloor);
+end;
+
+procedure TTestRulesMapUtil.DovrebbeAlzareIlPavimentoBassoConUnPianoIntermedioQuandoQuelloAltoEPiuInAlto;
+begin
+  // the back floor (64) is above the top of the 3d floor of the back sector (56): the 3d floor only raises the low floor
+  MakeSector(0, 0, 128 * FRACUNIT, 5);
+  MakeSector(1, 64 * FRACUNIT, 128 * FRACUNIT, 5);
+  MakeSector(2, 40 * FRACUNIT, 56 * FRACUNIT, 5);
+  FSectors[0].midsec := 2;
+  MakeTwoSidedLine(0, 1);
+  sectors := @FSectors[0];
+  FThing.z := 48 * FRACUNIT;
+  FThing.height := 8 * FRACUNIT;
+  TMapCheck.Thing := @FThing;
+  TMapUtilRoutines.P_LineOpening(@FLine, True);
+  Assert.AreEqual(64 * FRACUNIT, openbottom);
+  Assert.AreEqual(56 * FRACUNIT, lowfloor);
+end;
+
+procedure TTestRulesMapUtil.DovrebbeIgnorareIPianiIntermediSenzaIlControlloDei3dFloor;
+begin
+  MakeSector(0, 0, 128 * FRACUNIT, 5);
+  MakeSector(1, 0, 128 * FRACUNIT, 5);
+  MakeSector(2, 40 * FRACUNIT, 56 * FRACUNIT, 5);
+  FSectors[0].midsec := 2;
+  MakeTwoSidedLine(0, 1);
+  sectors := @FSectors[0];
+  TMapUtilRoutines.P_LineOpening(@FLine, False);
+  Assert.AreEqual(128 * FRACUNIT, opentop);
+  Assert.AreEqual(0, openbottom);
+end;
 end.
