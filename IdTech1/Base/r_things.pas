@@ -638,7 +638,7 @@ begin
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -696,7 +696,7 @@ begin
       colfunc;
 
     if domaskedzbuffer then
-      R_DrawMaskedColumnToZBuffer(nil, depthscale);
+      TRendererZBuffer.R_DrawMaskedColumnToZBuffer(nil, depthscale);
   end;
 
   dc_texturemid := basetexturemid;
@@ -764,7 +764,7 @@ begin
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -883,7 +883,7 @@ begin
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -970,7 +970,7 @@ begin
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin

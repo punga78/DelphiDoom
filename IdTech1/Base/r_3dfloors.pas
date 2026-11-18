@@ -479,7 +479,7 @@ begin
           wallcolfunc;
 
         if domaskedzbuffer then
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
       end;
 
       maskedtexturecol[dc_x] := MAXSHORT;
@@ -757,7 +757,7 @@ begin
           wallcolfunc;
 
         if domaskedzbuffer then
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
       end;
 
       if fixedcolormap = nil then
@@ -798,7 +798,7 @@ begin
           wallcolfunc;
 
         if domaskedzbuffer then
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
       end;
 
       maskedtexturecol[dc_x] := MAXSHORT;
@@ -973,7 +973,7 @@ begin
           wallcolfunc;
 
         if domaskedzbuffer then
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
       end;
 
       maskedtexturecol[dc_x] := MAXSHORT;
@@ -1156,7 +1156,7 @@ begin
           wallcolfunc;
 
         if domaskedzbuffer then
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
       end;
 
       sprtopscreen := centeryfrac - texscale[1];
@@ -1186,7 +1186,7 @@ begin
           wallcolfunc;
 
         if domaskedzbuffer then
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
       end;
 
       maskedtexturecol[dc_x] := MAXSHORT;

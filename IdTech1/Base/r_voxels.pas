@@ -1429,7 +1429,7 @@ begin
                   putpixelfunc(left, top);
 
                 if dovoxelzbuffer then
-                  R_DrawVoxelPixelToZBuffer(scaleyz, left, top, thing);
+                  TRendererZBuffer.R_DrawVoxelPixelToZBuffer(scaleyz, left, top, thing);
               end;
 
           col := col.next;
@@ -1685,7 +1685,7 @@ begin
               batchcolfunc;
 
             if dovoxelzbuffer then
-              R_DrawBatchVoxelColumnToZBuffer(scaleyz, thing);  // Use scaleyz instead of depth for better accuracy
+              TRendererZBuffer.R_DrawBatchVoxelColumnToZBuffer(scaleyz, thing);  // Use scaleyz instead of depth for better accuracy
           end;
 
           col := col.next;
@@ -1733,7 +1733,7 @@ begin
                 batchcolfunc;
 
               if dovoxelzbuffer then
-                R_DrawBatchVoxelColumnToZBuffer(scaleyz, thing);  // Use scaleyz instead of depth for better accuracy
+                TRendererZBuffer.R_DrawBatchVoxelColumnToZBuffer(scaleyz, thing);  // Use scaleyz instead of depth for better accuracy
             end;
 
             last_top := cur_top;
@@ -1763,7 +1763,7 @@ begin
               batchcolfunc;
 
             if dovoxelzbuffer then
-              R_DrawBatchVoxelColumnToZBuffer(scaleyz, thing);  // Use scaleyz instead of depth for better accuracy
+              TRendererZBuffer.R_DrawBatchVoxelColumnToZBuffer(scaleyz, thing);  // Use scaleyz instead of depth for better accuracy
           end;
         end;
 

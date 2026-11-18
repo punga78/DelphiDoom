@@ -213,7 +213,7 @@ begin
           midwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
           dc_yl := r.ceilingheight[1];
           dc_yh := r.floorheight[1];
@@ -228,7 +228,7 @@ begin
           midwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
         end
         else
@@ -257,7 +257,7 @@ begin
         midwallcolfunc;
         {$ENDIF}
         {$IFDEF USEZBUFFER}
-        R_DrawColumnToZBuffer;
+        TRendererZBuffer.R_DrawColumnToZBuffer;
         {$ENDIF}
 {$IFDEF USEDOUBLE}
       end;
@@ -322,7 +322,7 @@ begin
               topwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
               dc_yl := r.ceilingheight[1];
               dc_yh := r.floorheight[1];
@@ -337,7 +337,7 @@ begin
               topwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
             end
             else
@@ -360,7 +360,7 @@ begin
           topwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
     {$IFDEF FLOORS3DVIS}
           end;
@@ -468,7 +468,7 @@ begin
               bottomwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
               dc_yl := r.ceilingheight[1];
               dc_yh := r.floorheight[1];
@@ -483,7 +483,7 @@ begin
               bottomwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
             end
             else
@@ -505,7 +505,7 @@ begin
           bottomwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
     {$IFDEF FLOORS3DVIS}
           end;

@@ -686,7 +686,7 @@ begin
     result := pfdb.db;
     exit;
   end;
-  result := R_ZBufferAt(x, y);
+  result := TRendererZBuffer.R_ZBufferAt(x, y);
   pfdb.db := result;
   if result.seg <> nil then
     pfdb.next := result.stop
@@ -1052,7 +1052,7 @@ begin
   if yh < yl then
     exit;
 
-  R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
+  TRendererZBuffer.R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
 
   tbl_r := precalc32op1A[parms.r];
   tbl_g := precalc32op1A[parms.g];
@@ -1437,7 +1437,7 @@ begin
   if yh < yl then
     exit;
 
-  R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
+  TRendererZBuffer.R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
 
   tbl_r := precalc32op1A[parms.r];
   tbl_g := precalc32op1A[parms.g];

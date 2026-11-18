@@ -501,7 +501,7 @@ begin
 
   // JVAL: version 205
   if zbufferactive then
-    R_DrawSpanToZBuffer;
+    TRendererZBuffer.R_DrawSpanToZBuffer;
 end;
 
 //==============================================================================
@@ -630,7 +630,7 @@ begin
 
   // JVAL: version 205
   if zbufferactive then
-    R_DrawSpanToZBuffer;
+    TRendererZBuffer.R_DrawSpanToZBuffer;
 end;
 {$ENDIF}
 

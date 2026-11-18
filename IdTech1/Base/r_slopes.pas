@@ -497,7 +497,7 @@ begin
     if zbufferactive then
     begin
       planeheight := FixedDivEx(distance, yslopey);
-      R_DrawSlopeToZBuffer;
+      TRendererZBuffer.R_DrawSlopeToZBuffer;
     end;
 
   end;
@@ -682,7 +682,7 @@ begin
       if zbufferactive then
       begin
         planeheight := FixedDivEx(distance, yslopey);
-        R_DrawSlopeToZBuffer;
+        TRendererZBuffer.R_DrawSlopeToZBuffer;
       end;
 
       cnt := 0;
@@ -872,7 +872,7 @@ begin
       if zbufferactive then
       begin
         planeheight := FixedDivEx(distance, yslopey);
-        R_DrawSlopeToZBuffer;
+        TRendererZBuffer.R_DrawSlopeToZBuffer;
       end;
 
       cnt := 0;

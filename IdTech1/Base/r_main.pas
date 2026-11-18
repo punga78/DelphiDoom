@@ -2164,7 +2164,7 @@ begin
   printf('R_InitDepthBuffer'#13#10); // JVAL: 3d Floors
   TRendererDepthBuffer.R_InitDepthBuffer;
   printf('R_InitZBuffer'#13#10); // JVAL: version 205
-  R_InitZBuffer;
+  TRendererZBuffer.R_InitZBuffer;
   printf('R_InitDynamicLights'#13#10);
   if main_dynlights = nil then
     I_Error('R_InitDynamicLights(): the dynamic lights are not configured (ComposeEngine was not called)');
@@ -2254,7 +2254,7 @@ begin
   printf(#13#10 + 'R_ShutDownDepthBuffer'); // JVAL: 3d Floors
   TRendererDepthBuffer.R_ShutDownDepthBuffer;
   printf(#13#10 + 'R_ShutDownZBuffer'); // JVAL: version 205
-  R_ShutDownZBuffer;
+  TRendererZBuffer.R_ShutDownZBuffer;
   printf(#13#10 + 'R_DynamicLightsDone');
   if main_dynlights <> nil then
     main_dynlights.Clear;
@@ -2907,7 +2907,7 @@ begin
     R_DoRenderPlayerView_SingleThread(player);
 {$IFNDEF OPENGL}
   if zbufferactive then
-    R_StopZBuffer;
+    TRendererZBuffer.R_StopZBuffer;
 {$ENDIF}
   if mn_makescreenshot then
     R_MakeMenuThumbnail;
