@@ -1278,10 +1278,10 @@ begin
 
       PCLASS_FIGHTER:    // Radius armor boost
         begin
-          if (P_GiveArmor(mo.player, ARMOR_ARMOR, 1)) or
-             (P_GiveArmor(mo.player, ARMOR_SHIELD, 1)) or
-             (P_GiveArmor(mo.player, ARMOR_HELMET, 1)) or
-             (P_GiveArmor(mo.player, ARMOR_AMULET, 1)) then
+          if (TInterRoutines.P_GiveArmor(mo.player, ARMOR_ARMOR, 1)) or
+             (TInterRoutines.P_GiveArmor(mo.player, ARMOR_SHIELD, 1)) or
+             (TInterRoutines.P_GiveArmor(mo.player, ARMOR_HELMET, 1)) or
+             (TInterRoutines.P_GiveArmor(mo.player, ARMOR_AMULET, 1)) then
           begin
             result := true;
             TSoundRoutines.S_StartSound(mo, Ord(SFX_MYSTICINCANT));
@@ -1535,7 +1535,7 @@ begin
 
         for i := 0 to Ord(NUMARMOR) - 1 do
         begin
-          if P_GiveArmor(player, armortype_t(i), 1) then; // 1 point per armor type
+          if TInterRoutines.P_GiveArmor(player, armortype_t(i), 1) then; // 1 point per armor type
             inc(count);
         end;
         if count = 0 then

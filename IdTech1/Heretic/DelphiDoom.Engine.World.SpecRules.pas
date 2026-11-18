@@ -47,21 +47,6 @@ uses
   r_defs,
   p_spec_h;
 
-//==============================================================================
-//
-// getSector
-//
-//==============================================================================
-function getSector(currentSector: integer; line: integer; side: integer): Psector_t;
-
-//==============================================================================
-// EV_DoDonut
-//
-// SPECIAL
-//
-//==============================================================================
-function EV_DoDonut(line: Pline_t): integer;
-
 type
   /// <summary>
   ///   What Heretic does differently in the sector utilities of IdTech1\Base\p_spec.pas (issue #185, step 2g)
@@ -108,6 +93,19 @@ type
   /// </summary>
   TSpecRoutines = class sealed
   public
+    //==============================================================================
+    //
+    // getSector
+    //
+    //==============================================================================
+    class function getSector(currentSector: integer; line: integer; side: integer): Psector_t; static;
+    //==============================================================================
+    // EV_DoDonut
+    //
+    // SPECIAL
+    //
+    //==============================================================================
+    class function EV_DoDonut(line: Pline_t): integer; static;
     //==============================================================================
     // P_InitPicAnims
     //
@@ -343,7 +341,7 @@ end;
 //  the line number and the side (0/1) that you want.
 //
 //==============================================================================
-function getSector(currentSector: integer; line: integer; side: integer): Psector_t;
+class function TSpecRoutines.getSector(currentSector: integer; line: integer; side: integer): Psector_t;
 begin
   result := sides[(sectors[currentSector].lines[line]).sidenum[side]].sector;
 end;
@@ -1118,7 +1116,7 @@ end;
 // Special Stuff that can not be categorized
 //
 //==============================================================================
-function EV_DoDonut(line: Pline_t): integer;
+class function TSpecRoutines.EV_DoDonut(line: Pline_t): integer;
 var
   s1: Psector_t;
   s2: Psector_t;

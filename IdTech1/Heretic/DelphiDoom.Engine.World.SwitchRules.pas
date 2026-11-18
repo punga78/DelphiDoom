@@ -300,7 +300,7 @@ begin
      9:
       begin
         // Change Donut
-        if EV_DoDonut(line) <> 0 then
+        if TSpecRoutines.EV_DoDonut(line) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
     11:
