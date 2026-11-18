@@ -1002,11 +1002,11 @@ begin
   TRendererMain.R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
   R_ConfigurePrecalc(TPaletteFactory.CreatePrecalcTables);
 {$IF DEFINED(DOOM)}
-  R_ConfigurePlayerTranslations(TPaletteFactory.CreateDoomPlayerTranslations);
+  TRendererDraw.R_ConfigurePlayerTranslations(TPaletteFactory.CreateDoomPlayerTranslations);
 {$ELSEIF DEFINED(HERETIC)}
-  R_ConfigurePlayerTranslations(TPaletteFactory.CreateHereticPlayerTranslations);
+  TRendererDraw.R_ConfigurePlayerTranslations(TPaletteFactory.CreateHereticPlayerTranslations);
 {$ELSEIF DEFINED(STRIFE)}
-  R_ConfigurePlayerTranslations(TPaletteFactory.CreateStrifePlayerTranslations);
+  TRendererDraw.R_ConfigurePlayerTranslations(TPaletteFactory.CreateStrifePlayerTranslations);
 {$ENDIF}
 end;
 

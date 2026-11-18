@@ -1858,7 +1858,7 @@ begin
 {$ENDIF}
   end;
 
-  R_InitBuffer(scaledviewwidth, viewheight);
+  TRendererDraw.R_InitBuffer(scaledviewwidth, viewheight);
 
   TRendererMainLocal.R_InitTextureMapping;
 
@@ -2185,7 +2185,7 @@ begin
   printf('R_InitSkyMap'#13#10);
   R_InitSkyMap;
   printf('R_InitTranslationsTables'#13#10);
-  R_InitTranslationTables;
+  TRendererDraw.R_InitTranslationTables;
   printf('R_InitTranslations'#13#10);
   R_InitTranslations;
 {$IFNDEF OPENGL}

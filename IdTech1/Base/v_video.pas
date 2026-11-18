@@ -3577,7 +3577,7 @@ begin
   //   if not (amstate = am_only) then
        exit;
 
-  R_FillBackStatusbar;
+  TRendererDraw.R_FillBackStatusbar;
 
   l := ((pct div 2) * 320) div 100;
   start := l * SCREENWIDTH div 320;

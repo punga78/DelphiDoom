@@ -2225,7 +2225,7 @@ begin
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
-  R_FillBackScreen;
+  TRendererDraw.R_FillBackScreen;
 {$ENDIF}
 end;
 
@@ -2385,7 +2385,7 @@ begin
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
-  R_FillBackScreen;
+  TRendererDraw.R_FillBackScreen;
 {$ENDIF}
 end;
 

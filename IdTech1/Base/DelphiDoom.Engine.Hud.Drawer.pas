@@ -213,21 +213,21 @@ begin
     begin
       if (y < viewwindowy) or (y >= viewwindowy + viewheight) then
         {$IFDEF OPENGL}
-        R_VideoErase(V_PreserveGLY(yoffset), GLDRAWWIDTH) // erase entire line
+        TRendererDraw.R_VideoErase(V_PreserveGLY(yoffset), GLDRAWWIDTH) // erase entire line
         {$ELSE}
-        R_VideoErase(yoffset, SCREENWIDTH) // erase entire line
+        TRendererDraw.R_VideoErase(yoffset, SCREENWIDTH) // erase entire line
         {$ENDIF}
       else
       begin
         // erase left border
         {$IFDEF OPENGL}
-        R_VideoErase(V_PreserveGLY(yoffset), V_PreserveGLX(viewwindowx));
+        TRendererDraw.R_VideoErase(V_PreserveGLY(yoffset), V_PreserveGLX(viewwindowx));
         // erase right border     asfa
-        R_VideoErase(V_PreserveGLY(yoffset + viewwindowx + viewwidth), V_PreserveGLX(viewwindowx));
+        TRendererDraw.R_VideoErase(V_PreserveGLY(yoffset + viewwindowx + viewwidth), V_PreserveGLX(viewwindowx));
         {$ELSE}
-        R_VideoErase(yoffset, viewwindowx);
+        TRendererDraw.R_VideoErase(yoffset, viewwindowx);
         // erase right border
-        R_VideoErase(yoffset + viewwindowx + viewwidth, viewwindowx);
+        TRendererDraw.R_VideoErase(yoffset + viewwindowx + viewwidth, viewwindowx);
         {$ENDIF}
       end;
       inc(y);

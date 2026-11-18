@@ -38,88 +38,14 @@ uses
   v_video,
   DelphiDoom.Palette.Intf;
 
-//==============================================================================
-//
-// R_VideoErase
-//
-//==============================================================================
-procedure R_VideoErase(const ofs: integer; const count: integer);
-
-//==============================================================================
-//
-// R_VideoBlanc
-//
-//==============================================================================
-procedure R_VideoBlanc(const scn: integer; const ofs: integer; const count: integer; const black: byte = 0);
-
-//==============================================================================
-//
-// R_PlayerViewBlanc
-//
-//==============================================================================
-procedure R_PlayerViewBlanc(const black: byte);
-
-//==============================================================================
-//
-// R_InitBuffer
-//
-//==============================================================================
-procedure R_InitBuffer(width, height: integer);
-
-//==============================================================================
-//
-// R_ConfigurePlayerTranslations
-// The color ramps of the players of Framework\Palette, given by the composition root
-// (not in Hexen: it reads its tables from the lumps TRANTBL)
-//
-//==============================================================================
-procedure R_ConfigurePlayerTranslations(const ATranslations: IPlayerTranslations);
-
-//==============================================================================
-// R_InitTranslationTables
-//
-// Initialize color translation tables,
-//  for player rendering etc.
-//
-//==============================================================================
-procedure R_InitTranslationTables;
-
-//==============================================================================
-// R_FillBackScreen
-//
-// Rendering function.
-//
-//==============================================================================
-procedure R_FillBackScreen;
 {$IFDEF DOOM}
 
 {$IFNDEF OPENGL}
-//==============================================================================
-//
-// R_FillBackStatusbar
-//
-//==============================================================================
-procedure R_FillBackStatusbar;
 {$ENDIF}
 
 {$ELSE}
 
 {$ENDIF}
-//==============================================================================
-// R_DrawViewBorder
-//
-// If the view size is not full screen, draws a border around it.
-//
-//==============================================================================
-procedure R_DrawViewBorder;
-
-//==============================================================================
-// R_DrawDiskBusy
-//
-// Draw disk busy patch
-//
-//==============================================================================
-procedure R_DrawDiskBusy;
 
 var
   displaydiskbusyicon: boolean = true;
@@ -197,6 +123,89 @@ var
   xlatab: PByteArray;
 
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererDraw = class sealed
+  public
+    //==============================================================================
+    //
+    // R_VideoErase
+    //
+    //==============================================================================
+    class procedure R_VideoErase(const ofs: integer; const count: integer); static;
+    //==============================================================================
+    //
+    // R_VideoBlanc
+    //
+    //==============================================================================
+    class procedure R_VideoBlanc(const scn: integer; const ofs: integer; const count: integer; const black: byte = 0); static;
+    //==============================================================================
+    //
+    // R_PlayerViewBlanc
+    //
+    //==============================================================================
+    class procedure R_PlayerViewBlanc(const black: byte); static;
+    //==============================================================================
+    //
+    // R_InitBuffer
+    //
+    //==============================================================================
+    class procedure R_InitBuffer(width, height: integer); static;
+    //==============================================================================
+    //
+    // R_ConfigurePlayerTranslations
+    // The color ramps of the players of Framework\Palette, given by the composition root
+    // (not in Hexen: it reads its tables from the lumps TRANTBL)
+    //
+    //==============================================================================
+    class procedure R_ConfigurePlayerTranslations(const ATranslations: IPlayerTranslations); static;
+    //==============================================================================
+    // R_InitTranslationTables
+    //
+    // Initialize color translation tables,
+    //  for player rendering etc.
+    //
+    //==============================================================================
+    class procedure R_InitTranslationTables; static;
+    //==============================================================================
+    // R_FillBackScreen
+    //
+    // Rendering function.
+    //
+    //==============================================================================
+    class procedure R_FillBackScreen; static;
+{$IFDEF DOOM}
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_FillBackStatusbar
+    //
+    //==============================================================================
+    class procedure R_FillBackStatusbar; static;
+{$ENDIF}
+{$ELSE}
+{$ENDIF}
+    //==============================================================================
+    // R_DrawViewBorder
+    //
+    // If the view size is not full screen, draws a border around it.
+    //
+    //==============================================================================
+    class procedure R_DrawViewBorder; static;
+    //==============================================================================
+    // R_DrawDiskBusy
+    //
+    // Draw disk busy patch
+    //
+    //==============================================================================
+    class procedure R_DrawDiskBusy; static;
+  end;
+
+
 implementation
 
 uses
@@ -240,12 +249,22 @@ uses
 var
   player_translations: IPlayerTranslations = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererDrawLocal = class sealed
+  public
+    class procedure R_ScreenBlanc(const scn: integer; const black: byte = 0); static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigurePlayerTranslations
 //
 //==============================================================================
-procedure R_ConfigurePlayerTranslations(const ATranslations: IPlayerTranslations);
+class procedure TRendererDraw.R_ConfigurePlayerTranslations(const ATranslations: IPlayerTranslations);
 begin
   player_translations := ATranslations;
 end;
@@ -259,7 +278,7 @@ end;
 // Could be read from a lump instead.
 //
 //==============================================================================
-procedure R_InitTranslationTables;
+class procedure TRendererDraw.R_InitTranslationTables;
 var
   i, j: integer;
 {$IFDEF HEXEN}
@@ -367,7 +386,7 @@ end;
 //  of a pixel to draw.
 //
 //==============================================================================
-procedure R_InitBuffer(width, height: integer);
+class procedure TRendererDraw.R_InitBuffer(width, height: integer);
 var
   i: integer;
 begin
@@ -417,14 +436,14 @@ end;
 // R_ScreenBlanc
 //
 //==============================================================================
-procedure R_ScreenBlanc(const scn: integer; const black: byte = 0);
+class procedure TRendererDrawLocal.R_ScreenBlanc(const scn: integer; const black: byte = 0);
 var
   x, i: integer;
 begin
   x := viewwindowy * SCREENWIDTH + viewwindowx;
   for i := 0 to viewheight - 1 do
   begin
-    R_VideoBlanc(scn, x, scaledviewwidth, black);
+    TRendererDraw.R_VideoBlanc(scn, x, scaledviewwidth, black);
     inc(x, SCREENWIDTH);
   end;
 end;
@@ -437,7 +456,7 @@ end;
 // Also draws a beveled edge.
 //
 //==============================================================================
-procedure R_FillBackScreen;
+class procedure TRendererDraw.R_FillBackScreen;
 {$IFDEF HEXEN}
 {$IFNDEF OPENGL}
 var
@@ -663,7 +682,7 @@ begin
   V_RemoveTransparency(SCN_TMP, 0, -1);
   V_CopyRect(0, 0, SCN_TMP, V_GetScreenWidth(SCN_TMP), V_GetScreenHeight(SCN_TMP), 0, 0, SCN_BG, true);
 
-  R_ScreenBlanc(SCN_BG);
+  TRendererDrawLocal.R_ScreenBlanc(SCN_BG);
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   x := V_PreserveY(SB_Y) * SCREENWIDTH;
   R_VideoBlanc(SCN_BG, x, (SCREENHEIGHT - V_PreserveY(SB_Y)) * SCREENWIDTH);
@@ -684,7 +703,7 @@ var
 // R_FillBackStatusbar
 //
 //==============================================================================
-procedure R_FillBackStatusbar;
+class procedure TRendererDraw.R_FillBackStatusbar;
 var
   src: PByteArray;
   dest: PByteArray;
@@ -756,7 +775,7 @@ end;
 // Copy a screen buffer.
 //
 //==============================================================================
-procedure R_VideoErase(const ofs: integer; const count: integer);
+class procedure TRendererDraw.R_VideoErase(const ofs: integer; const count: integer);
 var
   i: integer;
   src: PByte;
@@ -791,7 +810,7 @@ end;
 // R_VideoBlanc
 //
 //==============================================================================
-procedure R_VideoBlanc(const scn: integer; const ofs: integer; const count: integer; const black: byte = 0);
+class procedure TRendererDraw.R_VideoBlanc(const scn: integer; const ofs: integer; const count: integer; const black: byte = 0);
 var
   start: PByte;
   lstrart: PLongWord;
@@ -820,9 +839,9 @@ end;
 // R_PlayerViewBlanc
 //
 //==============================================================================
-procedure R_PlayerViewBlanc(const black: byte);
+class procedure TRendererDraw.R_PlayerViewBlanc(const black: byte);
 begin
-  R_ScreenBlanc(SCN_FG, black);
+  TRendererDrawLocal.R_ScreenBlanc(SCN_FG, black);
 end;
 
 //==============================================================================
@@ -832,7 +851,7 @@ end;
 //  for different size windows?
 //
 //==============================================================================
-procedure R_DrawViewBorder;
+class procedure TRendererDraw.R_DrawViewBorder;
 begin
   if scaledviewwidth < SCREENWIDTH then
     if (TGameSession.GameState = GS_LEVEL) and (amstate <> am_only) then
@@ -848,7 +867,7 @@ var
 // R_DrawDiskBusy
 //
 //==============================================================================
-procedure R_DrawDiskBusy;
+class procedure TRendererDraw.R_DrawDiskBusy;
 begin
 {$IFDEF DOOM}
   {$IFDEF OPENGL}

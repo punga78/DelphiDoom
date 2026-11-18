@@ -787,7 +787,7 @@ var
 begin
   if norender then
   begin
-    R_PlayerViewBlanc(aprox_black);
+    TRendererDraw.R_PlayerViewBlanc(aprox_black);
     exit;
   end;
 
@@ -796,12 +796,12 @@ begin
   begin
     stime := I_GetSysTime;
     if round(stime) = Trunc(stime) then
-      R_PlayerViewBlanc(aprox_black)
+      TRendererDraw.R_PlayerViewBlanc(aprox_black)
     else
-      R_PlayerViewBlanc(aprox_red);
+      TRendererDraw.R_PlayerViewBlanc(aprox_red);
   end
   else if blancbeforerender then
-    R_PlayerViewBlanc(aprox_black);
+    TRendererDraw.R_PlayerViewBlanc(aprox_black);
 {$ENDIF}
 
   if player <> nil then
@@ -936,7 +936,7 @@ begin
     if needsbackscreen or (TGameSession.OldGameState <> Ord(GS_LEVEL)) then
     begin
       viewactivestate := false; // view was not active
-      R_FillBackScreen;         // draw the pattern into the back screen
+      TRendererDraw.R_FillBackScreen;         // draw the pattern into the back screen
     end;
 {$ENDIF}
   // see if the border needs to be updated to the screen
@@ -948,7 +948,7 @@ begin
           borderdrawcount := 3;
         if borderdrawcount > 0 then
         begin
-          R_DrawViewBorder; // erase old menu stuff
+          TRendererDraw.R_DrawViewBorder; // erase old menu stuff
           redrawbkscn := true;
           dec(borderdrawcount);
         end;
@@ -999,13 +999,13 @@ begin
     TMainLocalRoutines.D_Console.Draw;   // Console is drawn even on top of menus
 
     // Draw disk busy patch
-    R_DrawDiskBusy; // Draw disk busy on top of console
+    TRendererDraw.R_DrawDiskBusy; // Draw disk busy on top of console
   end
   else if (diskbusyend <= nowtime) and (diskbusyend <> -1) then
   begin
     if not redrawbkscn then
     begin
-      R_DrawViewBorder;
+      TRendererDraw.R_DrawViewBorder;
       if drawhu then
         HU_Drawer;
     end;
@@ -1076,7 +1076,7 @@ begin
   begin
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
-      R_FillBackScreen; // draw the pattern into the back screen
+      TRendererDraw.R_FillBackScreen; // draw the pattern into the back screen
       TMainLocalRoutines.D_RenderPlayerView(@TGameSession.Players[displayplayer]);
     end;
   end;

@@ -136,7 +136,7 @@ begin
     until loops > 64;
     {$IFNDEF OPENGL}
     if loops > 1 then
-      R_PlayerViewBlanc(aprox_black);
+      TRendererDraw.R_PlayerViewBlanc(aprox_black);
     {$ENDIF}
     viewx := cx;
     viewy := cy;

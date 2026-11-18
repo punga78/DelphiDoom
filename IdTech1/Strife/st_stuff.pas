@@ -1312,7 +1312,7 @@ var
 begin
   if firstinterpolation then
   begin
-    R_VideoBlanc(SCN_ST, 320 * 194, 320 * 6);
+    TRendererDraw.R_VideoBlanc(SCN_ST, 320 * 194, 320 * 6);
 
     ST_drawNumFontY2(15, 194, SCN_ST, plyr.health);
     ammo := weaponinfo[Ord(plyr.readyweapon)].ammo;
@@ -1346,7 +1346,7 @@ begin
   begin
     // TODO: only sometimes drawing?
     {$IFDEF OPENGL}
-    R_VideoBlanc(SCN_ST, 320 * 55, 320 * 114);
+    TRendererDraw.R_VideoBlanc(SCN_ST, 320 * 55, 320 * 114);
     {$ENDIF}
 
     plyr.st_update := false;
@@ -1735,7 +1735,7 @@ begin
 
     if firstinterpolation then
     begin
-      R_VideoBlanc(SCN_ST, 75 * 320, 85 * 320);
+      TRendererDraw.R_VideoBlanc(SCN_ST, 75 * 320, 85 * 320);
       {$IFDEF OPENGL}
        V_DrawPatch(0, 56, SCN_ST, invpop, false);
       {$ENDIF}

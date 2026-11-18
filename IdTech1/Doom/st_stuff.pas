@@ -1624,9 +1624,9 @@ end;
 class procedure TStatusBarLocalRoutines.ST_RefreshBackgroundSmall;
 begin
   if wide_stbar = 426 then
-    R_VideoBlanc(SCN_ST426, 0, ST_WIDTH426 * ST_HEIGHT)
+    TRendererDraw.R_VideoBlanc(SCN_ST426, 0, ST_WIDTH426 * ST_HEIGHT)
   else
-    R_VideoBlanc(SCN_ST, 0, ST_WIDTH * ST_HEIGHT);
+    TRendererDraw.R_VideoBlanc(SCN_ST, 0, ST_WIDTH * ST_HEIGHT);
 end;
 
 //==============================================================================
