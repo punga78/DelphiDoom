@@ -680,8 +680,8 @@ begin
 
     // JVAL: Slopes
     // JVAL 20191209 - Fix 3d floor problem
-    TMapCheck.FloorZ := P_3dFloorHeight(ptryx, ptryy, mo.z);
-    TMapCheck.CeilingZ := P_3dCeilingHeight(ptryx, ptryy, mo.z);
+    TMapCheck.FloorZ := T3dFloorRoutines.P_3dFloorHeight(ptryx, ptryy, mo.z);
+    TMapCheck.CeilingZ := T3dFloorRoutines.P_3dCeilingHeight(ptryx, ptryy, mo.z);
 
     if not P_TryMove(mo, ptryx, ptryy) then
       if TMobjGameRules.BlockedMove(mo, ptryx, ptryy, xmove, ymove) then
@@ -730,7 +730,7 @@ begin
        (mo.momy > FRACUNIT div 4) or
        (mo.momy < -FRACUNIT div 4) then
     begin
-      if mo.floorz <> P_3dFloorHeight(mo) then // JVAL: 3d floors
+      if mo.floorz <> T3dFloorRoutines.P_3dFloorHeight(mo) then // JVAL: 3d floors
         exit;
     end;
   end;

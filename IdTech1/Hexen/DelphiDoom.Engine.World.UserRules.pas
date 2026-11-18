@@ -929,7 +929,7 @@ begin
     else
       destAngle := ANG45 * (playerstarts[0][0].angle div 45);
   end;
-  PH_Teleport(player.mo, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(mt), P_3dFloorFindMapthingCeilingZ(mt));
+  PH_Teleport(player.mo, destX, destY, destAngle, true, T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(mt), T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(mt));
   if player.morphTics <> 0 then
   begin // Teleporting away will undo any morph effects (pig)
     TUserRoutines.P_UndoPlayerMorph(player);
@@ -975,7 +975,7 @@ begin
     destAngle := ANG1 * playerstarts[0][i].angle
   else
     destAngle := ANG45 * (playerstarts[0][i].angle div 45);
-  PH_Teleport(victim, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(@playerstarts[0][i]), P_3dFloorFindMapthingCeilingZ(@playerstarts[0][i]));
+  PH_Teleport(victim, destX, destY, destAngle, true, T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(@playerstarts[0][i]), T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(@playerstarts[0][i]));
 end;
 
 //==============================================================================
@@ -999,7 +999,7 @@ begin
       destAngle := ANG1 * deathmatchstarts[i].angle
     else
       destAngle := ANG45 * (deathmatchstarts[i].angle div 45);
-    PH_Teleport(victim, destX, destY, destAngle, true, P_3dFloorFindMapthingFloorZ(@deathmatchstarts[i]), P_3dFloorFindMapthingCeilingZ(@deathmatchstarts[i]));
+    PH_Teleport(victim, destX, destY, destAngle, true, T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(@deathmatchstarts[i]), T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(@deathmatchstarts[i]));
   end
   else
     P_TeleportToPlayerStarts(victim);

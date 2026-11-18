@@ -195,10 +195,10 @@ begin
   else
   begin
     player.mo.height := player.mo.info.height - player.crouchheight;
-    clheight := P_3dCeilingHeight(player.mo);
+    clheight := T3dFloorRoutines.P_3dCeilingHeight(player.mo);
     if player.mo.z + player.mo.height > clheight then
     begin
-      flheight := P_3dFloorHeight(player.mo);
+      flheight := T3dFloorRoutines.P_3dFloorHeight(player.mo);
       player.mo.z := clheight - player.mo.height;
       if player.mo.z < flheight then
       begin

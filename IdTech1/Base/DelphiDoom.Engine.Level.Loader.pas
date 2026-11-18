@@ -332,7 +332,7 @@ begin
   FUdmf.ApplySegs;
 
   Trace('P_3dFloorSetupSegs');
-  P_3dFloorSetupSegs; // JVAL: 3d Floors
+  T3dFloorRoutines.P_3dFloorSetupSegs; // JVAL: 3d Floors
 
   Trace('P_RemoveSlimeTrails');
   FBlockmap.RemoveSlimeTrails; // killough 10/98: remove slime trails from wad

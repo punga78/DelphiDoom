@@ -993,9 +993,9 @@ begin
   // Any contacted lines the step closer together
   // will adjust them.
   // JVAL 20191209 - Fix 3d floor problems with A_SpawnItem & A_SpawnItemEx
-  TMapCheck.DropOffZ := P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
+  TMapCheck.DropOffZ := T3dFloorRoutines.P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
   TMapCheck.FloorZ := TMapCheck.DropOffZ;
-  TMapCheck.CeilingZ := P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
+  TMapCheck.CeilingZ := T3dFloorRoutines.P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
 
   TMapCheck.BounceLine := nil;
 

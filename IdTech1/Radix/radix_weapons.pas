@@ -469,8 +469,8 @@ begin
 
   sec := TRendererMain.R_PointInSubsector(source.x, source.y).sector;
 
-  sfloor := P_3dFloorHeight(sec, source.x, source.y, newz);
-  sceiling := P_3dCeilingHeight(sec, source.x, source.y, newz);
+  sfloor := T3dFloorRoutines.P_3dFloorHeight(sec, source.x, source.y, newz);
+  sceiling := T3dFloorRoutines.P_3dCeilingHeight(sec, source.x, source.y, newz);
 
   if newz - mobjinfo[_type].height < sfloor then
     newz := newz + mobjinfo[_type].height;

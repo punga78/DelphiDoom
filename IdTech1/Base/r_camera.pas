@@ -115,19 +115,19 @@ begin
 
       sec := TRendererMain.R_PointInSubSector(cx, cy).sector;
       cz := viewz + chasecamera_viewz * FRACUNIT; // JVAL: Slopes
-      ceilz := P_3dCeilingHeight(sec, cx, cy, cz) +
+      ceilz := T3dFloorRoutines.P_3dCeilingHeight(sec, cx, cy, cz) +
                P_SectorJumpOverhead(sec{$IFDEF HERETIC_OR_HEXEN}, viewplayer{$ENDIF}) - 1 - CAMERARADIOUS; // JVAL: 3d floors
       if cz > ceilz then
         cz := ceilz
       else
       begin
-        floorz := P_3dFloorHeight(sec, cx, cy, cz) + CAMERARADIOUS; // JVAL: Slopes
+        floorz := T3dFloorRoutines.P_3dFloorHeight(sec, cx, cy, cz) + CAMERARADIOUS; // JVAL: Slopes
         if cz < floorz then
           cz := floorz
       end;
 
       if {(sec.renderflags and SRF_SLOPED <> 0) or} P_CheckCameraSight(cx, cy, cz, viewplayer.mo) then // JVAL: Slopes
-        if not P_PtInSolidFloor2(cx, cy, cz, CAMERARADIOUS) then  // JVAL: 3d Floors
+        if not T3dFloorRoutines.P_PtInSolidFloor2(cx, cy, cz, CAMERARADIOUS) then  // JVAL: 3d Floors
           break;
 
       dx := dx * 31 div 32;
@@ -142,10 +142,10 @@ begin
     viewy := cy;
 
     sec2 := TRendererMain.R_PointInSubsector(viewx, viewy).sector;
-    floorz := P_3dFloorHeight(sec2, viewx, viewy, cz);  // JVAL: Slopes
+    floorz := T3dFloorRoutines.P_3dFloorHeight(sec2, viewx, viewy, cz);  // JVAL: Slopes
     if cz < floorz then
       cz := floorz + CAMERARADIOUS; // JVAL: Slopes
-    ceilz := P_3dCeilingHeight(sec2, viewx, viewy, cz) +
+    ceilz := T3dFloorRoutines.P_3dCeilingHeight(sec2, viewx, viewy, cz) +
              P_SectorJumpOverhead(sec2{$IFDEF HERETIC_OR_HEXEN}, viewplayer{$ENDIF});  // JVAL: Slopes
     if cz > ceilz then
       cz := ceilz - CAMERARADIOUS;  // JVAL: Slopes

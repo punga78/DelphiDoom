@@ -1364,8 +1364,8 @@ begin
           R_InitMobjTranslation(mobj);
           P_SetThingPosition(mobj);
           mobj.info := @mobjinfo[Ord(mobj._type)];
-          mobj.floorz := P_3dFloorHeight(mobj);
-          mobj.ceilingz := P_3dCeilingHeight(mobj);
+          mobj.floorz := T3dFloorRoutines.P_3dFloorHeight(mobj);
+          mobj.ceilingz := T3dFloorRoutines.P_3dCeilingHeight(mobj);
           @mobj.thinker._function.acp1 := @P_MobjThinker;
           TTickRoutines.P_AddThinker(@mobj.thinker);
         end;

@@ -163,7 +163,7 @@ begin
         end;
 
         // JVAL: 3d Floors
-        if (G_PlayingEngineVersion >= VERSION122) and (P_3dFloorNumber(m) > 0) then
+        if (G_PlayingEngineVersion >= VERSION122) and (T3dFloorRoutines.P_3dFloorNumber(m) > 0) then
         begin
           thing.floorz := m.floorz;
           thing.ceilingz := m.ceilingz;

@@ -1783,8 +1783,8 @@ begin
 
           R_InitMobjTranslation(mobj);
           P_SetThingPosition(mobj);
-          mobj.floorz := P_3dFloorHeight(mobj); // JVAL: 3d floors
-          mobj.ceilingz := P_3dCeilingHeight(mobj); // JVAL: 3d floors
+          mobj.floorz := T3dFloorRoutines.P_3dFloorHeight(mobj); // JVAL: 3d floors
+          mobj.ceilingz := T3dFloorRoutines.P_3dCeilingHeight(mobj); // JVAL: 3d floors
           @mobj.thinker._function.acp1 := @P_MobjThinker;
           TTickRoutines.P_AddThinker(@mobj.thinker);
         end;

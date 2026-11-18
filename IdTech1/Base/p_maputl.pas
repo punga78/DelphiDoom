@@ -1782,14 +1782,14 @@ begin
   newy := LTtoy;
   if LTline = nil then
   begin
-    floor := P_3dFloorHeight(newx, newy, LTfromz);
-    ceiling := P_3dCeilingHeight(newx, newy, LTfromz);
+    floor := T3dFloorRoutines.P_3dFloorHeight(newx, newy, LTfromz);
+    ceiling := T3dFloorRoutines.P_3dCeilingHeight(newx, newy, LTfromz);
     newz := GetIntegerInRange(LTtoz, floor, ceiling);
   end
   else
   begin
-    floor := P_3dFloorHeight(LTline.frontsector, newx, newy, LTfromz);
-    ceiling := P_3dCeilingHeight(LTline.frontsector, newx, newy, LTfromz);
+    floor := T3dFloorRoutines.P_3dFloorHeight(LTline.frontsector, newx, newy, LTfromz);
+    ceiling := T3dFloorRoutines.P_3dCeilingHeight(LTline.frontsector, newx, newy, LTfromz);
     newz := GetIntegerInRange(LTtoz, floor, ceiling);
   end;
 end;

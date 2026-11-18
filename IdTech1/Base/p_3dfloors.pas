@@ -37,89 +37,87 @@ uses
   p_mobj_h,
   r_defs;
 
-//==============================================================================
-//
-// P_3dFloorNumber
-//
-//==============================================================================
-function P_3dFloorNumber(const m: Pmobj_t): integer; overload;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  T3dFloorRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_3dFloorNumber
+    //
+    //==============================================================================
+    class function P_3dFloorNumber(const m: Pmobj_t): integer; overload; static;
+    //==============================================================================
+    //
+    // P_3dFloorNumber
+    //
+    //==============================================================================
+    class function P_3dFloorNumber(const s: Psector_t; const z: fixed_t): integer; overload; static;
+    //==============================================================================
+    //
+    // P_3dFloorFindMapthingFloorZ
+    //
+    //==============================================================================
+    class function P_3dFloorFindMapthingFloorZ(const m: Pmapthing_t): fixed_t; static;
+    //==============================================================================
+    //
+    // P_3dFloorFindMapthingCeilingZ
+    //
+    //==============================================================================
+    class function P_3dFloorFindMapthingCeilingZ(const m: Pmapthing_t): fixed_t; static;
+    //==============================================================================
+    //
+    // P_3dFloorHeight
+    //
+    //==============================================================================
+    class function P_3dFloorHeight(const x, y, z: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_3dCeilingHeight
+    //
+    //==============================================================================
+    class function P_3dCeilingHeight(const x, y, z: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_3dFloorHeight
+    //
+    //==============================================================================
+    class function P_3dFloorHeight(const m: Pmobj_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_3dCeilingHeight
+    //
+    //==============================================================================
+    class function P_3dCeilingHeight(const m: Pmobj_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_3dFloorHeight
+    //
+    //==============================================================================
+    class function P_3dFloorHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_3dCeilingHeight
+    //
+    //==============================================================================
+    class function P_3dCeilingHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t; overload; static;
+    //==============================================================================
+    //
+    // P_PtInSolidFloor2
+    //
+    //==============================================================================
+    class function P_PtInSolidFloor2(const x, y, z: fixed_t; const radious: fixed_t): boolean; static;
+    //==============================================================================
+    //
+    // P_3dFloorSetupSegs
+    //
+    //==============================================================================
+    class procedure P_3dFloorSetupSegs; static;
+  end;
 
-//==============================================================================
-//
-// P_3dFloorNumber
-//
-//==============================================================================
-function P_3dFloorNumber(const s: Psector_t; const z: fixed_t): integer; overload;
-
-//==============================================================================
-//
-// P_3dFloorFindMapthingFloorZ
-//
-//==============================================================================
-function P_3dFloorFindMapthingFloorZ(const m: Pmapthing_t): fixed_t;
-
-//==============================================================================
-//
-// P_3dFloorFindMapthingCeilingZ
-//
-//==============================================================================
-function P_3dFloorFindMapthingCeilingZ(const m: Pmapthing_t): fixed_t;
-
-//==============================================================================
-//
-// P_3dFloorHeight
-//
-//==============================================================================
-function P_3dFloorHeight(const x, y, z: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_3dCeilingHeight
-//
-//==============================================================================
-function P_3dCeilingHeight(const x, y, z: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_3dFloorHeight
-//
-//==============================================================================
-function P_3dFloorHeight(const m: Pmobj_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_3dCeilingHeight
-//
-//==============================================================================
-function P_3dCeilingHeight(const m: Pmobj_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_3dFloorHeight
-//
-//==============================================================================
-function P_3dFloorHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_3dCeilingHeight
-//
-//==============================================================================
-function P_3dCeilingHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t; overload;
-
-//==============================================================================
-//
-// P_PtInSolidFloor2
-//
-//==============================================================================
-function P_PtInSolidFloor2(const x, y, z: fixed_t; const radious: fixed_t): boolean;
-
-//==============================================================================
-//
-// P_3dFloorSetupSegs
-//
-//==============================================================================
-procedure P_3dFloorSetupSegs;
 
 implementation
 
@@ -137,7 +135,7 @@ uses
 // Which floor?
 //
 //==============================================================================
-function P_3dFloorNumber(const m: Pmobj_t): integer;
+class function T3dFloorRoutines.P_3dFloorNumber(const m: Pmobj_t): integer;
 var
   ss: Psubsector_t;
   msec: Psector_t;
@@ -160,7 +158,7 @@ end;
 // P_3dFloorNumber
 //
 //==============================================================================
-function P_3dFloorNumber(const s: Psector_t; const z: fixed_t): integer; overload;
+class function T3dFloorRoutines.P_3dFloorNumber(const s: Psector_t; const z: fixed_t): integer;
 var
   msec: Psector_t;
 begin
@@ -181,7 +179,7 @@ end;
 // P_3dFloorFindMapthingFloorZ
 //
 //==============================================================================
-function P_3dFloorFindMapthingFloorZ(const m: Pmapthing_t): fixed_t;
+class function T3dFloorRoutines.P_3dFloorFindMapthingFloorZ(const m: Pmapthing_t): fixed_t;
 var
   ss: Psubsector_t;
   msec: Psector_t;
@@ -210,7 +208,7 @@ end;
 // P_3dFloorFindMapthingCeilingZ
 //
 //==============================================================================
-function P_3dFloorFindMapthingCeilingZ(const m: Pmapthing_t): fixed_t;
+class function T3dFloorRoutines.P_3dFloorFindMapthingCeilingZ(const m: Pmapthing_t): fixed_t;
 var
   ss: Psubsector_t;
   msec: Psector_t;
@@ -239,7 +237,7 @@ end;
 // P_3dFloorHeight
 //
 //==============================================================================
-function P_3dFloorHeight(const x, y, z: fixed_t): fixed_t;
+class function T3dFloorRoutines.P_3dFloorHeight(const x, y, z: fixed_t): fixed_t;
 var
   ss: Psubsector_t;
   msec: Psector_t;
@@ -262,7 +260,7 @@ end;
 // P_3dCeilingHeight
 //
 //==============================================================================
-function P_3dCeilingHeight(const x, y, z: fixed_t): fixed_t;
+class function T3dFloorRoutines.P_3dCeilingHeight(const x, y, z: fixed_t): fixed_t;
 var
   ss: Psubsector_t;
   msec: Psector_t;
@@ -285,7 +283,7 @@ end;
 // P_3dFloorHeight
 //
 //==============================================================================
-function P_3dFloorHeight(const m: Pmobj_t): fixed_t;
+class function T3dFloorRoutines.P_3dFloorHeight(const m: Pmobj_t): fixed_t;
 begin
   result := P_3dFloorHeight(m.x, m.y, m.z);
 end;
@@ -295,7 +293,7 @@ end;
 // P_3dCeilingHeight
 //
 //==============================================================================
-function P_3dCeilingHeight(const m: Pmobj_t): fixed_t; overload;
+class function T3dFloorRoutines.P_3dCeilingHeight(const m: Pmobj_t): fixed_t;
 begin
   result := P_3dCeilingHeight(m.x, m.y, m.z);
 end;
@@ -305,7 +303,7 @@ end;
 // P_3dFloorHeight
 //
 //==============================================================================
-function P_3dFloorHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t; overload;
+class function T3dFloorRoutines.P_3dFloorHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t;
 var
   msec: Psector_t;
 begin
@@ -326,7 +324,7 @@ end;
 // P_3dCeilingHeight
 //
 //==============================================================================
-function P_3dCeilingHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t; overload;
+class function T3dFloorRoutines.P_3dCeilingHeight(const s: Psector_t; const x, y, z: fixed_t): fixed_t;
 var
   msec: Psector_t;
 begin
@@ -347,7 +345,7 @@ end;
 // P_PtInSolidFloor2
 //
 //==============================================================================
-function P_PtInSolidFloor2(const x, y, z: fixed_t; const radious: fixed_t): boolean;
+class function T3dFloorRoutines.P_PtInSolidFloor2(const x, y, z: fixed_t; const radious: fixed_t): boolean;
 var
   s: Psubsector_t;
   sec: Psector_t;
@@ -367,7 +365,7 @@ end;
 // P_3dFloorSetupSegs
 //
 //==============================================================================
-procedure P_3dFloorSetupSegs;
+class procedure T3dFloorRoutines.P_3dFloorSetupSegs;
 var
   i: integer;
   s, sec: integer;

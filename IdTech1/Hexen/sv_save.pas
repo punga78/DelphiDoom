@@ -716,8 +716,8 @@ begin
   R_InitMobjTranslation(mobj);
   P_SetThingPosition(mobj);
   mobj.info := @mobjinfo[mobj._type];
-  mobj.floorz := P_3dFloorHeight(mobj);
-  mobj.ceilingz := P_3dCeilingHeight(mobj);
+  mobj.floorz := T3dFloorRoutines.P_3dFloorHeight(mobj);
+  mobj.ceilingz := T3dFloorRoutines.P_3dCeilingHeight(mobj);
   SetMobjPtr(PNativeInt(@mobj.target));
   SetMobjPtr(PNativeInt(@mobj.tracer));
   SetMobjPtr(PNativeInt(@mobj.master));
