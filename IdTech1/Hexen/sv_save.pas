@@ -918,7 +918,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_ROTATE_POLY;
-  pti.thinkerFunc.acp1 :=  @TH_RotatePoly;
+  pti.thinkerFunc.acp1 :=  @TPolyobjRoutines.TH_RotatePoly;
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := SizeOf(polyevent_t);
@@ -934,7 +934,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_MOVE_POLY;
-  pti.thinkerFunc.acp1 :=  @TH_MovePoly;
+  pti.thinkerFunc.acp1 :=  @TPolyobjRoutines.TH_MovePoly;
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := SizeOf(polyevent_t);
@@ -942,7 +942,7 @@ begin
 
   inc(pti);
   pti.tClass := TC_POLY_DOOR;
-  pti.thinkerFunc.acp1 :=  @TH_PolyDoor;
+  pti.thinkerFunc.acp1 :=  @TPolyobjRoutines.TH_PolyDoor;
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := SizeOf(polydoor_t);
@@ -2284,10 +2284,10 @@ begin
     begin
       I_Error('UnarchivePolyobjs(): Invalid polyobj tag');
     end;
-    PO_RotatePolyobj(polyobjs[i].tag, angle_t(GET_LONG));
+    TPolyobjRoutines.PO_RotatePolyobj(polyobjs[i].tag, angle_t(GET_LONG));
     deltaX := GET_LONG - polyobjs[i].startSpot.x;
     deltaY := GET_LONG - polyobjs[i].startSpot.y;
-    PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
+    TPolyobjRoutines.PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
     polyobjs[i].prevangle := polyobjs[i].angle; // Interpolation
     polyobjs[i].prevx := polyobjs[i].startSpot.x;
     polyobjs[i].prevy := polyobjs[i].startSpot.y;

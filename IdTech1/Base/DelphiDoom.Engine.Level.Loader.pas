@@ -396,7 +396,7 @@ begin
   P_AdjustEasyWind;
 
   FRules.AfterThings;
-  PO_Init(AMapLump + Ord(ML_THINGS)); // Initialize the polyobjs
+  TPolyobjRoutines.PO_Init(AMapLump + Ord(ML_THINGS)); // Initialize the polyobjs
   Trace('P_LoadACScripts');
   P_LoadACScripts(AMapLump + Ord(ML_BEHAVIOR)); // ACS object code
 

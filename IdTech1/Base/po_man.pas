@@ -45,85 +45,6 @@ type
     PODOOR_SWING
   );
 
-//==============================================================================
-//
-// PO_MovePolyobj
-//
-//==============================================================================
-function PO_MovePolyobj(num: integer; x, y: integer): boolean;
-
-//==============================================================================
-//
-// PO_MovePolyIntrpl
-//
-//==============================================================================
-procedure PO_MovePolyIntrpl(po: Ppolyobj_t);
-
-//==============================================================================
-//
-// PO_RotatePolyobj
-//
-//==============================================================================
-function PO_RotatePolyobj(num: integer; angle: angle_t): boolean;
-
-//==============================================================================
-//
-// PO_RotatePolyIntrpl
-//
-//==============================================================================
-procedure PO_RotatePolyIntrpl(po: Ppolyobj_t);
-
-//==============================================================================
-//
-// PO_SaveSegsIntrpl
-//
-//==============================================================================
-procedure PO_SaveSegsIntrpl(po: Ppolyobj_t);
-
-//==============================================================================
-//
-// PO_RestoreSegsIntrpl
-//
-//==============================================================================
-procedure PO_RestoreSegsIntrpl(po: Ppolyobj_t);
-
-//==============================================================================
-//
-// PO_Init
-//
-//==============================================================================
-procedure PO_Init(lump: integer);
-
-//==============================================================================
-//
-// PO_Busy
-//
-//==============================================================================
-function PO_Busy(polyobj: integer): boolean;
-
-//==============================================================================
-//
-// EVH_RotatePoly
-//
-//==============================================================================
-function EVH_RotatePoly(line: Pline_t; args: PByteArray; direction: integer;
-  overriden: boolean): boolean;
-
-//==============================================================================
-//
-// EVH_MovePoly
-//
-//==============================================================================
-function EVH_MovePoly(line: Pline_t; args: PByteArray; timesEight: boolean;
-  overriden: boolean): boolean;
-
-//==============================================================================
-//
-// EVH_OpenPolyDoor
-//
-//==============================================================================
-function EVH_OpenPolyDoor(line: Pline_t; args: PByteArray; _type: podoortype_t): boolean;
-
 var
   PolyBlockMap: Ppolyblock_tPArray;
   po_NumPolyobjs: integer;
@@ -151,20 +72,6 @@ type
   end;
   Ppolyevent_t = ^polyevent_t;
 
-//==============================================================================
-//
-// TH_RotatePoly
-//
-//==============================================================================
-procedure TH_RotatePoly(pe: Ppolyevent_t);
-
-//==============================================================================
-//
-// TH_MovePoly
-//
-//==============================================================================
-procedure TH_MovePoly(pe: Ppolyevent_t);
-
 type
   polydoor_t = record
     thinker: thinker_t;
@@ -181,15 +88,116 @@ type
   end;
   Ppolydoor_t = ^polydoor_t;
 
-//==============================================================================
-//
-// TH_PolyDoor
-//
-//==============================================================================
-procedure TH_PolyDoor(pd: Ppolydoor_t);
-
 var
   polyobjs: Ppolyobj_tArray; // list of all poly-objects on the level
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TPolyobjRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // PO_MovePolyobj
+    //
+    //==============================================================================
+    class function PO_MovePolyobj(num: integer; x, y: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // PO_MovePolyIntrpl
+    //
+    //==============================================================================
+    class procedure PO_MovePolyIntrpl(po: Ppolyobj_t); static;
+
+    //==============================================================================
+    //
+    // PO_RotatePolyobj
+    //
+    //==============================================================================
+    class function PO_RotatePolyobj(num: integer; angle: angle_t): boolean; static;
+
+    //==============================================================================
+    //
+    // PO_RotatePolyIntrpl
+    //
+    //==============================================================================
+    class procedure PO_RotatePolyIntrpl(po: Ppolyobj_t); static;
+
+    //==============================================================================
+    //
+    // PO_SaveSegsIntrpl
+    //
+    //==============================================================================
+    class procedure PO_SaveSegsIntrpl(po: Ppolyobj_t); static;
+
+    //==============================================================================
+    //
+    // PO_RestoreSegsIntrpl
+    //
+    //==============================================================================
+    class procedure PO_RestoreSegsIntrpl(po: Ppolyobj_t); static;
+
+    //==============================================================================
+    //
+    // PO_Init
+    //
+    //==============================================================================
+    class procedure PO_Init(lump: integer); static;
+
+    //==============================================================================
+    //
+    // PO_Busy
+    //
+    //==============================================================================
+    class function PO_Busy(polyobj: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // EVH_RotatePoly
+    //
+    //==============================================================================
+    class function EVH_RotatePoly(line: Pline_t; args: PByteArray; direction: integer;
+      overriden: boolean): boolean; static;
+
+    //==============================================================================
+    //
+    // EVH_MovePoly
+    //
+    //==============================================================================
+    class function EVH_MovePoly(line: Pline_t; args: PByteArray; timesEight: boolean;
+      overriden: boolean): boolean; static;
+
+    //==============================================================================
+    //
+    // EVH_OpenPolyDoor
+    //
+    //==============================================================================
+    class function EVH_OpenPolyDoor(line: Pline_t; args: PByteArray; _type: podoortype_t): boolean; static;
+
+    //==============================================================================
+    //
+    // TH_RotatePoly
+    //
+    //==============================================================================
+    class procedure TH_RotatePoly(pe: Ppolyevent_t); static;
+
+    //==============================================================================
+    //
+    // TH_MovePoly
+    //
+    //==============================================================================
+    class procedure TH_MovePoly(pe: Ppolyevent_t); static;
+
+    //==============================================================================
+    //
+    // TH_PolyDoor
+    //
+    //==============================================================================
+    class procedure TH_PolyDoor(pd: Ppolydoor_t); static;
+  end;
 
 implementation
 
@@ -235,12 +243,34 @@ var
 
 // ===== Higher Level Poly Interface code =====
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TPolyobjLocalRoutines = class sealed
+  public
+    class function GetPolyobj(polyNum: integer): Ppolyobj_t; static;
+    class function GetPolyobjMirror(poly: integer; mir: PInteger): integer; static;
+    class procedure ThrustMobj(mobj: Pmobj_t; seg: Pseg_t; po: Ppolyobj_t); static;
+    class procedure UpdateSegBBox(seg: Pseg_t); static;
+    class procedure UnLinkPolyobj(po: Ppolyobj_t); static;
+    class procedure LinkPolyobj(po: Ppolyobj_t); static;
+    class function PO_CheckMobjBlocking(seg: Pseg_t; po: Ppolyobj_t): boolean; static;
+    class procedure RotatePt(an: angle_t; x, y: Pfixed_t; startSpotX, startSpotY: fixed_t); static;
+    class procedure RotatePtFixed(an: angle_t; x, y: Pfixed_t; startSpotX, startSpotY: fixed_t); static;
+    class procedure InitBlockMap; static;
+    class procedure IterFindPolySegs(x, y: integer; segList: PPseg_t); static;
+    class procedure SpawnPolyobj(index: integer; tag: integer; crush: boolean); static;
+    class procedure TranslateToStartSpot(tag: integer; originX, originY: integer); static;
+  end;
+
 //==============================================================================
 //
 // GetPolyobj
 //
 //==============================================================================
-function GetPolyobj(polyNum: integer): Ppolyobj_t;
+class function TPolyobjLocalRoutines.GetPolyobj(polyNum: integer): Ppolyobj_t;
 var
   i: integer;
 begin
@@ -260,7 +290,7 @@ end;
 // GetPolyobjMirror
 //
 //==============================================================================
-function GetPolyobjMirror(poly: integer; mir: PInteger): integer;
+class function TPolyobjLocalRoutines.GetPolyobjMirror(poly: integer; mir: PInteger): integer;
 var
   i: integer;
 begin
@@ -284,7 +314,7 @@ end;
 // TH_RotatePoly
 //
 //==============================================================================
-procedure TH_RotatePoly(pe: Ppolyevent_t);
+class procedure TPolyobjRoutines.TH_RotatePoly(pe: Ppolyevent_t);
 var
   absSpeed: integer;
   poly: Ppolyobj_t;
@@ -301,7 +331,7 @@ begin
     pe.dist := pe.dist - absSpeed;
     if pe.dist <= 0 then
     begin
-      poly := GetPolyobj(pe.polyobj);
+      poly := TPolyobjLocalRoutines.GetPolyobj(pe.polyobj);
       if poly.specialdata = pe then
       begin
         poly.specialdata := nil;
@@ -329,7 +359,7 @@ end;
 // EVH_RotatePoly
 //
 //==============================================================================
-function EVH_RotatePoly(line: Pline_t; args: PByteArray; direction: integer;
+class function TPolyobjRoutines.EVH_RotatePoly(line: Pline_t; args: PByteArray; direction: integer;
   overriden: boolean): boolean;
 var
   mirror: integer;
@@ -338,7 +368,7 @@ var
   poly: Ppolyobj_t;
 begin
   polyNum := args[0];
-  poly := GetPolyobj(polyNum);
+  poly := TPolyobjLocalRoutines.GetPolyobj(polyNum);
   if poly <> nil then
   begin
     if (poly.specialdata <> nil) and not overriden then
@@ -371,9 +401,9 @@ begin
   TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
   {$ENDIF}
 
-  while GetPolyobjMirror(polyNum, @mirror) <> 0 do
+  while TPolyobjLocalRoutines.GetPolyobjMirror(polyNum, @mirror) <> 0 do
   begin
-    poly := GetPolyobj(mirror);
+    poly := TPolyobjLocalRoutines.GetPolyobj(mirror);
     if (poly <> nil) and (poly.specialdata <> nil) and not overriden then
     begin // mirroring poly is already in motion
       break;
@@ -398,7 +428,7 @@ begin
     begin
       pe.dist := -2;
     end;
-    poly := GetPolyobj(polyNum);
+    poly := TPolyobjLocalRoutines.GetPolyobj(polyNum);
     if poly <> nil then
     begin
       poly.specialdata := pe;
@@ -424,7 +454,7 @@ end;
 // TH_MovePoly
 //
 //==============================================================================
-procedure TH_MovePoly(pe: Ppolyevent_t);
+class procedure TPolyobjRoutines.TH_MovePoly(pe: Ppolyevent_t);
 var
   absSpeed: integer;
   poly: Ppolyobj_t;
@@ -435,7 +465,7 @@ begin
     pe.dist := pe.dist - absSpeed;
     if pe.dist <= 0 then
     begin
-      poly := GetPolyobj(pe.polyobj);
+      poly := TPolyobjLocalRoutines.GetPolyobj(pe.polyobj);
       if poly.specialdata = pe then
       begin
         poly.specialdata := nil;
@@ -465,7 +495,7 @@ end;
 // EVH_MovePoly
 //
 //==============================================================================
-function EVH_MovePoly(line: Pline_t; args: PByteArray; timesEight: boolean;
+class function TPolyobjRoutines.EVH_MovePoly(line: Pline_t; args: PByteArray; timesEight: boolean;
   overriden: boolean): boolean;
 var
   mirror: integer;
@@ -475,7 +505,7 @@ var
   an: angle_t;
 begin
   polyNum := args[0];
-  poly := GetPolyobj(polyNum);
+  poly := TPolyobjLocalRoutines.GetPolyobj(polyNum);
   if poly <> nil then
   begin
     if (poly.specialdata <> nil) and not overriden then
@@ -508,9 +538,9 @@ begin
   TSoundRoutines.S_StartSound(@poly.startSpot, poly.seqType);
   {$ENDIF}
 
-  while GetPolyobjMirror(polyNum, @mirror) <> 0 do
+  while TPolyobjLocalRoutines.GetPolyobjMirror(polyNum, @mirror) <> 0 do
   begin
-    poly := GetPolyobj(mirror);
+    poly := TPolyobjLocalRoutines.GetPolyobj(mirror);
     if (poly <> nil) and (poly.specialdata <> nil) and not overriden then
     begin // mirroring poly is already in motion
       break;
@@ -544,7 +574,7 @@ end;
 // TH_PolyDoor
 //
 //==============================================================================
-procedure TH_PolyDoor(pd: Ppolydoor_t);
+class procedure TPolyobjRoutines.TH_PolyDoor(pd: Ppolydoor_t);
 var
   absSpeed: integer;
   poly: Ppolyobj_t;
@@ -554,7 +584,7 @@ begin
     dec(pd.tics);
     if pd.tics = 0 then
     begin
-      poly := GetPolyobj(pd.polyobj);
+      poly := TPolyobjLocalRoutines.GetPolyobj(pd.polyobj);
       {$IFDEF HEXEN}
       S_StartSequence(Pmobj_t(@poly.startSpot), Ord(SEQ_DOOR_STONE) + poly.seqType);
       {$ELSE}
@@ -573,7 +603,7 @@ begin
           pd.dist := pd.dist - absSpeed;
           if pd.dist <= 0 then
           begin
-            poly := GetPolyobj(pd.polyobj);
+            poly := TPolyobjLocalRoutines.GetPolyobj(pd.polyobj);
             {$IFDEF HEXEN}
             S_StopSequence(Pmobj_t(@poly.startSpot));
             {$ELSE}
@@ -599,7 +629,7 @@ begin
         end
         else
         begin
-          poly := GetPolyobj(pd.polyobj);
+          poly := TPolyobjLocalRoutines.GetPolyobj(pd.polyobj);
           if poly.crush or not pd.close then
           begin // continue moving if the poly is a crusher, or is opening
             exit;
@@ -631,7 +661,7 @@ begin
           pd.dist := pd.dist - absSpeed;
           if pd.dist <= 0 then
           begin
-            poly := GetPolyobj(pd.polyobj);
+            poly := TPolyobjLocalRoutines.GetPolyobj(pd.polyobj);
             {$IFDEF HEXEN}
             S_StopSequence(Pmobj_t(@poly.startSpot));
             {$ELSE}
@@ -655,7 +685,7 @@ begin
         end
         else
         begin
-          poly := GetPolyobj(pd.polyobj);
+          poly := TPolyobjLocalRoutines.GetPolyobj(pd.polyobj);
           if poly.crush or not pd.close then
           begin // continue moving if the poly is a crusher, or is opening
             exit;
@@ -681,7 +711,7 @@ end;
 // EVH_OpenPolyDoor
 //
 //==============================================================================
-function EVH_OpenPolyDoor(line: Pline_t; args: PByteArray; _type: podoortype_t): boolean;
+class function TPolyobjRoutines.EVH_OpenPolyDoor(line: Pline_t; args: PByteArray; _type: podoortype_t): boolean;
 var
   mirror: integer;
   polyNum: integer;
@@ -690,7 +720,7 @@ var
   an: angle_t;
 begin
   polyNum := args[0];
-  poly := GetPolyobj(polyNum);
+  poly := TPolyobjLocalRoutines.GetPolyobj(polyNum);
   if poly <> nil then
   begin
     if poly.specialdata <> nil then
@@ -745,9 +775,9 @@ begin
 
   poly.specialdata := pd;
 
-  while GetPolyobjMirror(polyNum, @mirror) <> 0 do
+  while TPolyobjLocalRoutines.GetPolyobjMirror(polyNum, @mirror) <> 0 do
   begin
-    poly := GetPolyobj(mirror);
+    poly := TPolyobjLocalRoutines.GetPolyobj(mirror);
     if (poly <> nil) and (poly.specialdata <> nil) then
     begin // mirroring poly is already in motion
       break;
@@ -802,7 +832,7 @@ end;
 // ThrustMobj
 //
 //==============================================================================
-procedure ThrustMobj(mobj: Pmobj_t; seg: Pseg_t; po: Ppolyobj_t);
+class procedure TPolyobjLocalRoutines.ThrustMobj(mobj: Pmobj_t; seg: Pseg_t; po: Ppolyobj_t);
 var
   thrustAngle: integer;
   thrustX: integer;
@@ -818,7 +848,7 @@ begin
   pe := po.specialdata;
   if pe <> nil then
   begin
-    if @pe.thinker._function.acp1 = @TH_RotatePoly then
+    if @pe.thinker._function.acp1 = @TPolyobjRoutines.TH_RotatePoly then
       force := _SHR(pe.speed, 8)
     else
       force := _SHR(pe.speed, 3);
@@ -846,7 +876,7 @@ end;
 // UpdateSegBBox
 //
 //==============================================================================
-procedure UpdateSegBBox(seg: Pseg_t);
+class procedure TPolyobjLocalRoutines.UpdateSegBBox(seg: Pseg_t);
 var
   line: Pline_t;
 begin
@@ -894,7 +924,7 @@ end;
 // UnLinkPolyobj
 //
 //==============================================================================
-procedure UnLinkPolyobj(po: Ppolyobj_t);
+class procedure TPolyobjLocalRoutines.UnLinkPolyobj(po: Ppolyobj_t);
 var
   link: Ppolyblock_t;
   i, j: integer;
@@ -931,7 +961,7 @@ end;
 // LinkPolyobj
 //
 //==============================================================================
-procedure LinkPolyobj(po: Ppolyobj_t);
+class procedure TPolyobjLocalRoutines.LinkPolyobj(po: Ppolyobj_t);
 var
   leftX, rightX: integer;
   topY, bottomY: integer;
@@ -1024,7 +1054,7 @@ end;
 // PO_CheckMobjBlocking
 //
 //==============================================================================
-function PO_CheckMobjBlocking(seg: Pseg_t; po: Ppolyobj_t): boolean;
+class function TPolyobjLocalRoutines.PO_CheckMobjBlocking(seg: Pseg_t; po: Ppolyobj_t): boolean;
 var
   mobj: Pmobj_t;
   i, j, k: integer;
@@ -1117,7 +1147,7 @@ end;
 // PO_MovePolyobj
 //
 //==============================================================================
-function PO_MovePolyobj(num: integer; x, y: integer): boolean;
+class function TPolyobjRoutines.PO_MovePolyobj(num: integer; x, y: integer): boolean;
 var
   count: integer;
   segList: PPseg_t;    // JVAL SOS
@@ -1127,11 +1157,11 @@ var
   blocked: boolean;
   l: Pline_t;
 begin
-  po := GetPolyobj(num);
+  po := TPolyobjLocalRoutines.GetPolyobj(num);
   if po = nil then
     I_Error('PO_MovePolyobj(): Invalid polyobj number: %d', [num]);
 
-  UnLinkPolyobj(po);
+  TPolyobjLocalRoutines.UnLinkPolyobj(po);
 
   segList := po.segs;
   prevPts := @po.prevPts[0];
@@ -1177,7 +1207,7 @@ begin
   begin
     if not segList^.miniseg then
     begin
-      if PO_CheckMobjBlocking(segList^, po) then
+      if TPolyobjLocalRoutines.PO_CheckMobjBlocking(segList^, po) then
       begin
         blocked := true;
       end;
@@ -1224,7 +1254,7 @@ begin
       inc(prevPts);
       dec(count);
     end;
-    LinkPolyobj(po);
+    TPolyobjLocalRoutines.LinkPolyobj(po);
     result := false;
     exit;
   end;
@@ -1232,7 +1262,7 @@ begin
   po.prevy := po.startSpot.y;
   po.startSpot.x := po.startSpot.x + x;
   po.startSpot.y := po.startSpot.y + y;
-  LinkPolyobj(po);
+  TPolyobjLocalRoutines.LinkPolyobj(po);
   result := true;
 end;
 
@@ -1241,7 +1271,7 @@ end;
 // PO_MovePolyIntrpl
 //
 //==============================================================================
-procedure PO_MovePolyIntrpl(po: Ppolyobj_t);
+class procedure TPolyobjRoutines.PO_MovePolyIntrpl(po: Ppolyobj_t);
 var
   count: integer;
   segList: PPseg_t;
@@ -1273,7 +1303,7 @@ begin
     begin
       if segList^.linedef.validcount <> validcount then
       begin
-        UpdateSegBBox(segList^);
+        TPolyobjLocalRoutines.UpdateSegBBox(segList^);
         segList^.linedef.validcount := validcount;
       end;
     end;
@@ -1287,7 +1317,7 @@ end;
 // RotatePt
 //
 //==============================================================================
-procedure RotatePt(an: angle_t; x, y: Pfixed_t; startSpotX, startSpotY: fixed_t);
+class procedure TPolyobjLocalRoutines.RotatePt(an: angle_t; x, y: Pfixed_t; startSpotX, startSpotY: fixed_t);
 var
   tr_x, tr_y: fixed_t;
   gxt, gyt: fixed_t;
@@ -1309,7 +1339,7 @@ end;
 // RotatePtFixed
 //
 //==============================================================================
-procedure RotatePtFixed(an: angle_t; x, y: Pfixed_t; startSpotX, startSpotY: fixed_t);
+class procedure TPolyobjLocalRoutines.RotatePtFixed(an: angle_t; x, y: Pfixed_t; startSpotX, startSpotY: fixed_t);
 var
   tr_x, tr_y: fixed_t;
   gxt, gyt: fixed_t;
@@ -1331,7 +1361,7 @@ end;
 // PO_RotatePolyobj
 //
 //==============================================================================
-function PO_RotatePolyobj(num: integer; angle: angle_t): boolean;
+class function TPolyobjRoutines.PO_RotatePolyobj(num: integer; angle: angle_t): boolean;
 var
   count: integer;
   segList: PPseg_t;
@@ -1341,13 +1371,13 @@ var
   po: Ppolyobj_t;
   blocked: boolean;
 begin
-  po := GetPolyobj(num);
+  po := TPolyobjLocalRoutines.GetPolyobj(num);
   if po = nil then
     I_Error('PO_RotatePolyobj(): Invalid polyobj number: %d', [num]);
 
   an := (po.angle + angle) shr ANGLETOFINESHIFT;
 
-  UnLinkPolyobj(po);
+  TPolyobjLocalRoutines.UnLinkPolyobj(po);
 
   segList := po.segs;
   originalPts := @po.originalPts[0];
@@ -1362,7 +1392,7 @@ begin
       prevPts.y := segList^.v1.y;
       segList^.v1.x := originalPts.x;
       segList^.v1.y := originalPts.y;
-      RotatePt(an, @segList^.v1.x, @segList^.v1.y, po.startSpot.x, po.startSpot.y);
+      TPolyobjLocalRoutines.RotatePt(an, @segList^.v1.x, @segList^.v1.y, po.startSpot.x, po.startSpot.y);
     end;
     inc(segList);
     inc(originalPts);
@@ -1379,12 +1409,12 @@ begin
   begin
     if not segList^.miniseg then
     begin
-      if PO_CheckMobjBlocking(segList^, po) then
+      if TPolyobjLocalRoutines.PO_CheckMobjBlocking(segList^, po) then
         blocked := true;
 
       if segList^.linedef.validcount <> validcount then
       begin
-        UpdateSegBBox(segList^);
+        TPolyobjLocalRoutines.UpdateSegBBox(segList^);
         segList^.linedef.validcount := validcount;
       end;
       segList^.angle := segList^.angle + angle;
@@ -1418,7 +1448,7 @@ begin
       begin
         if segList^.linedef.validcount <> validcount then
         begin
-          UpdateSegBBox(segList^);
+          TPolyobjLocalRoutines.UpdateSegBBox(segList^);
           segList^.linedef.validcount := validcount;
         end;
         segList^.angle := segList^.angle - angle;
@@ -1426,14 +1456,14 @@ begin
       inc(segList);
       dec(count);
     end;
-    LinkPolyobj(po);
+    TPolyobjLocalRoutines.LinkPolyobj(po);
     result := false;
     exit;
   end;
 
   po.prevangle := po.angle;
   po.angle := po.angle + angle;
-  LinkPolyobj(po);
+  TPolyobjLocalRoutines.LinkPolyobj(po);
   result := true;
 end;
 
@@ -1442,7 +1472,7 @@ end;
 // PO_RotatePolyIntrpl
 //
 //==============================================================================
-procedure PO_RotatePolyIntrpl(po: Ppolyobj_t);
+class procedure TPolyobjRoutines.PO_RotatePolyIntrpl(po: Ppolyobj_t);
 var
   count: integer;
   segList: PPseg_t;
@@ -1462,7 +1492,7 @@ begin
     begin
       segList^.v1.x := originalPts.x;
       segList^.v1.y := originalPts.y;
-      RotatePtFixed(an, @segList^.v1.x, @segList^.v1.y, po.startSpot.x, po.startSpot.y);
+      TPolyobjLocalRoutines.RotatePtFixed(an, @segList^.v1.x, @segList^.v1.y, po.startSpot.x, po.startSpot.y);
     end;
     inc(segList);
     inc(originalPts);
@@ -1479,7 +1509,7 @@ begin
     begin
       if segList^.linedef.validcount <> validcount then
       begin
-        UpdateSegBBox(segList^);
+        TPolyobjLocalRoutines.UpdateSegBBox(segList^);
         segList^.linedef.validcount := validcount;
       end;
       segList^.angle := TRendererMain.R_PointToAngle2(segList^.v1.x, segList^.v1.y, segList^.v2.x, segList^.v2.y);
@@ -1494,7 +1524,7 @@ end;
 // PO_SaveSegsIntrpl
 //
 //==============================================================================
-procedure PO_SaveSegsIntrpl(po: Ppolyobj_t);
+class procedure TPolyobjRoutines.PO_SaveSegsIntrpl(po: Ppolyobj_t);
 var
   count: integer;
   segList: PPseg_t;
@@ -1523,7 +1553,7 @@ end;
 // PO_RestoreSegsIntrpl
 //
 //==============================================================================
-procedure PO_RestoreSegsIntrpl(po: Ppolyobj_t);
+class procedure TPolyobjRoutines.PO_RestoreSegsIntrpl(po: Ppolyobj_t);
 var
   count: integer;
   segList: PPseg_t;
@@ -1556,7 +1586,7 @@ begin
     begin
       if segList^.linedef.validcount <> validcount then
       begin
-        UpdateSegBBox(segList^);
+        TPolyobjLocalRoutines.UpdateSegBBox(segList^);
         segList^.linedef.validcount := validcount;
       end;
     end;
@@ -1570,7 +1600,7 @@ end;
 // InitBlockMap
 //
 //==============================================================================
-procedure InitBlockMap;
+class procedure TPolyobjLocalRoutines.InitBlockMap;
 var
   i, j: integer;
   segList: PPseg_t;
@@ -1621,7 +1651,7 @@ end;
 //      count the number of segs in the polyobj
 //
 //==============================================================================
-procedure IterFindPolySegs(x, y: integer; segList: PPseg_t);
+class procedure TPolyobjLocalRoutines.IterFindPolySegs(x, y: integer; segList: PPseg_t);
 var
   i: integer;
 begin
@@ -1653,7 +1683,7 @@ end;
 // SpawnPolyobj
 //
 //==============================================================================
-procedure SpawnPolyobj(index: integer; tag: integer; crush: boolean);
+class procedure TPolyobjLocalRoutines.SpawnPolyobj(index: integer; tag: integer; crush: boolean);
 var
   i, j: integer;
   psIndex, psIndexOld: integer;
@@ -1772,7 +1802,7 @@ end;
 // TranslateToStartSpot
 //
 //==============================================================================
-procedure TranslateToStartSpot(tag: integer; originX, originY: integer);
+class procedure TPolyobjLocalRoutines.TranslateToStartSpot(tag: integer; originX, originY: integer);
 var
   tempSeg: PPseg_t;
   veryTempSeg: PPseg_t;
@@ -1864,7 +1894,7 @@ end;
 // PO_Init
 //
 //==============================================================================
-procedure PO_Init(lump: integer);
+class procedure TPolyobjRoutines.PO_Init(lump: integer);
 var
   data: PByteArray;
   i: integer;
@@ -1887,7 +1917,7 @@ begin
     begin // Polyobj StartSpot Pt.
       polyobjs[polyIndex].startSpot.x := mt.x * FRACUNIT;
       polyobjs[polyIndex].startSpot.y := mt.y * FRACUNIT;
-      SpawnPolyobj(polyIndex, mt.angle, (mt._type = PO_SPAWNCRUSH_TYPE));
+      TPolyobjLocalRoutines.SpawnPolyobj(polyIndex, mt.angle, (mt._type = PO_SPAWNCRUSH_TYPE));
       inc(polyIndex);
     end;
     inc(mt);
@@ -1896,7 +1926,7 @@ begin
   for i := 0 to numthings - 1 do
   begin
     if mt._type = PO_ANCHOR_TYPE then // Polyobj Anchor Pt.
-      TranslateToStartSpot(mt.angle, mt.x * FRACUNIT, mt.y * FRACUNIT);
+      TPolyobjLocalRoutines.TranslateToStartSpot(mt.angle, mt.x * FRACUNIT, mt.y * FRACUNIT);
     inc(mt);
   end;
   Z_Free(data);
@@ -1906,7 +1936,7 @@ begin
     if polyobjs[i].originalPts = nil then
       I_Error('PO_Init(): StartSpot located without an Anchor point: %d', [polyobjs[i].tag]);
   end;
-  InitBlockMap;
+  TPolyobjLocalRoutines.InitBlockMap;
 end;
 
 //==============================================================================
@@ -1914,11 +1944,11 @@ end;
 // PO_Busy
 //
 //==============================================================================
-function PO_Busy(polyobj: integer): boolean;
+class function TPolyobjRoutines.PO_Busy(polyobj: integer): boolean;
 var
   poly: Ppolyobj_t;
 begin
-  poly := GetPolyobj(polyobj);
+  poly := TPolyobjLocalRoutines.GetPolyobj(polyobj);
   result := poly.specialdata <> nil;
 end;
 

@@ -408,17 +408,17 @@ begin
 
     2: // Poly Rotate Left
       begin
-        result := EVH_RotatePoly(line, args, 1, false);
+        result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, false);
       end;
 
     3: // Poly Rotate Right
       begin
-        result := EVH_RotatePoly(line, args, -1, false);
+        result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, false);
       end;
 
     4: // Poly Move
       begin
-        result := EVH_MovePoly(line, args, false, false);
+        result := TPolyobjRoutines.EVH_MovePoly(line, args, false, false);
       end;
 
     5: // Poly Explicit Line:  Only used in initialization
@@ -427,17 +427,17 @@ begin
 
     6: // Poly Move Times 8
       begin
-        result := EVH_MovePoly(line, args, true, false);
+        result := TPolyobjRoutines.EVH_MovePoly(line, args, true, false);
       end;
 
     7: // Poly Door Swing
       begin
-        result := EVH_OpenPolyDoor(line, args, PODOOR_SWING);
+        result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SWING);
       end;
 
     8: // Poly Door Slide
       begin
-        result := EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
+        result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
       end;
 
     10: // Door Close
@@ -727,22 +727,22 @@ begin
 
     90: // Poly Rotate Left Override
       begin
-        result := EVH_RotatePoly(line, args, 1, true);
+        result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, true);
       end;
 
     91: // Poly Rotate Right Override
       begin
-        result := EVH_RotatePoly(line, args, -1, true);
+        result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, true);
       end;
 
     92: // Poly Move Override
       begin
-        result := EVH_MovePoly(line, args, false, true);
+        result := TPolyobjRoutines.EVH_MovePoly(line, args, false, true);
       end;
 
     93: // Poly Move Times 8 Override
       begin
-        result := EVH_MovePoly(line, args, true, true);
+        result := TPolyobjRoutines.EVH_MovePoly(line, args, true, true);
       end;
 
     94: // Build Pillar Crush

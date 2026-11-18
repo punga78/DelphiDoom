@@ -647,7 +647,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, 1, false);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, false);
     end);
 
   // Poly Rotate Right
@@ -655,7 +655,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, -1, false);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, false);
     end);
 
   // Poly Move
@@ -663,7 +663,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, false, false);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, false, false);
     end);
 
   // Poly Explicit Line:  Only used in initialization
@@ -678,7 +678,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, true, false);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, true, false);
     end);
 
   // Poly Door Swing
@@ -686,7 +686,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_OpenPolyDoor(line, args, PODOOR_SWING);
+      result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SWING);
     end);
 
   // Poly Door Slide
@@ -694,7 +694,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
+      result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
     end);
 
   // Door Close
@@ -1112,7 +1112,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, 1, true);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, true);
     end);
 
   // Poly Rotate Right Override
@@ -1120,7 +1120,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, -1, true);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, true);
     end);
 
   // Poly Move Override
@@ -1128,7 +1128,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, false, true);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, false, true);
     end);
 
   // Poly Move Times 8 Override
@@ -1136,7 +1136,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, true, true);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, true, true);
     end);
 
   // Build Pillar Crush

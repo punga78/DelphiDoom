@@ -210,19 +210,19 @@ end;
 function TEngineScriptSectorSpecials.OpenPolyDoor(var AArguments: TScriptSpecialArguments;
   const AKind: TScriptPolyDoorKind): Boolean;
 begin
-  Result := EVH_OpenPolyDoor(nil, @AArguments, POLYDOOR_KINDS[AKind]);
+  Result := TPolyobjRoutines.EVH_OpenPolyDoor(nil, @AArguments, POLYDOOR_KINDS[AKind]);
 end;
 
 function TEngineScriptSectorSpecials.MovePoly(var AArguments: TScriptSpecialArguments;
   const ATimesEight, AOverride: Boolean): Boolean;
 begin
-  Result := EVH_MovePoly(nil, @AArguments, ATimesEight, AOverride);
+  Result := TPolyobjRoutines.EVH_MovePoly(nil, @AArguments, ATimesEight, AOverride);
 end;
 
 function TEngineScriptSectorSpecials.RotatePoly(var AArguments: TScriptSpecialArguments;
   const ADirection: Integer; const AOverride: Boolean): Boolean;
 begin
-  Result := EVH_RotatePoly(nil, @AArguments, ADirection, AOverride);
+  Result := TPolyobjRoutines.EVH_RotatePoly(nil, @AArguments, ADirection, AOverride);
 end;
 
 end.

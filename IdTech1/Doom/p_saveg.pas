@@ -1048,13 +1048,13 @@ begin
     if PInteger(save_p)^ <> polyobjs[i].tag then
       I_Error('P_UnArchiveWorld(): Invalid polyobj tag');
     save_p := @save_p[4];
-    PO_RotatePolyobj(polyobjs[i].tag, PLongWord(save_p)^);
+    TPolyobjRoutines.PO_RotatePolyobj(polyobjs[i].tag, PLongWord(save_p)^);
     save_p := @save_p[4];
     deltaX := PInteger(save_p)^ - polyobjs[i].startSpot.x;
     save_p := @save_p[4];
     deltaY := PInteger(save_p)^ - polyobjs[i].startSpot.y;
     save_p := @save_p[4];
-    PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
+    TPolyobjRoutines.PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
     polyobjs[i].prevangle := polyobjs[i].angle; // Interpolation
     polyobjs[i].prevx := polyobjs[i].startSpot.x;
     polyobjs[i].prevy := polyobjs[i].startSpot.y;
@@ -2102,7 +2102,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_RotatePoly then
+    if @th._function.acp1 = @TPolyobjRoutines.TH_RotatePoly then
     begin
       save_p[0] := Ord(tch_rotatepoly);
       save_p := @save_p[1];
@@ -2121,7 +2121,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_MovePoly then
+    if @th._function.acp1 = @TPolyobjRoutines.TH_MovePoly then
     begin
       save_p[0] := Ord(tch_movepoly);
       save_p := @save_p[1];
@@ -2130,7 +2130,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_PolyDoor then
+    if @th._function.acp1 = @TPolyobjRoutines.TH_PolyDoor then
     begin
       save_p[0] := Ord(tch_polydoor);
       save_p := @save_p[1];
@@ -2561,7 +2561,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(polyevent_t), polyevent);
 
           if Assigned(polyevent.thinker._function.acp1) then
-            @polyevent.thinker._function.acp1 := @TH_RotatePoly;
+            @polyevent.thinker._function.acp1 := @TPolyobjRoutines.TH_RotatePoly;
 
           TTickRoutines.P_AddThinker(@polyevent.thinker);
         end;
@@ -2588,7 +2588,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(polyevent_t), polyevent);
 
           if Assigned(polyevent.thinker._function.acp1) then
-            @polyevent.thinker._function.acp1 := @TH_MovePoly;
+            @polyevent.thinker._function.acp1 := @TPolyobjRoutines.TH_MovePoly;
 
           TTickRoutines.P_AddThinker(@polyevent.thinker);
         end;
@@ -2600,7 +2600,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(polydoor_t), polydoor);
 
           if Assigned(polydoor.thinker._function.acp1) then
-            @polydoor.thinker._function.acp1 := @TH_PolyDoor;
+            @polydoor.thinker._function.acp1 := @TPolyobjRoutines.TH_PolyDoor;
 
           TTickRoutines.P_AddThinker(@polydoor.thinker);
         end;

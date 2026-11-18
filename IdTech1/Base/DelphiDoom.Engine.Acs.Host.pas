@@ -208,7 +208,7 @@ end;
 
 function TEngineAcsHost.IsPolyobjectBusy(APolyobject: Integer): Boolean;
 begin
-  Result := PO_Busy(APolyobject);
+  Result := TPolyobjRoutines.PO_Busy(APolyobject);
 end;
 
 procedure TEngineAcsHost.ChangeSectorFlat(ATag: Integer; const AFlatName: string;

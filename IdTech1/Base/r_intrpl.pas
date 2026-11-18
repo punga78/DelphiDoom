@@ -547,7 +547,7 @@ begin
     exit;
 
   po.angle := R_InterpolationCalcA(po.prevangle, po.nextangle);
-  PO_RotatePolyIntrpl(po);
+  TPolyobjRoutines.PO_RotatePolyIntrpl(po);
 end;
 
 //==============================================================================
@@ -567,7 +567,7 @@ begin
 
   po.x := R_InterpolationCalcIF(po.prevx, po.nextx);
   po.y := R_InterpolationCalcIF(po.prevy, po.nexty);
-  PO_MovePolyIntrpl(po);
+  TPolyobjRoutines.PO_MovePolyIntrpl(po);
 end;
 
 //==============================================================================
@@ -768,19 +768,19 @@ begin
       end;
     ipolyrotate:
       begin
-        PO_SaveSegsIntrpl(Ppolyobj_t(addr));
+        TPolyobjRoutines.PO_SaveSegsIntrpl(Ppolyobj_t(addr));
         Ppolyobj_t(addr).nextangle := Ppolyobj_t(addr).angle;
         Ppolyobj_t(addr).angle := Ppolyobj_t(addr).prevangle;
-        PO_RotatePolyIntrpl(Ppolyobj_t(addr));
+        TPolyobjRoutines.PO_RotatePolyIntrpl(Ppolyobj_t(addr));
       end;
     ipolymove:
       begin
-        PO_SaveSegsIntrpl(Ppolyobj_t(addr));
+        TPolyobjRoutines.PO_SaveSegsIntrpl(Ppolyobj_t(addr));
         Ppolyobj_t(addr).x := Ppolyobj_t(addr).prevx;
         Ppolyobj_t(addr).y := Ppolyobj_t(addr).prevy;
         Ppolyobj_t(addr).nextx := Ppolyobj_t(addr).startspot.x;
         Ppolyobj_t(addr).nexty := Ppolyobj_t(addr).startspot.y;
-        PO_MovePolyIntrpl(Ppolyobj_t(addr));
+        TPolyobjRoutines.PO_MovePolyIntrpl(Ppolyobj_t(addr));
       end;
   end;
   inc(istruct.numitems);
@@ -881,8 +881,8 @@ begin
       for i := 0 to po_NumPolyobjs - 1 do
         if polyobjs[i].specialdata <> nil then
         begin
-          if (@Ppolyevent_t(polyobjs[i].specialdata).thinker._function.acp1 = @TH_MovePoly) or
-             ((@Ppolydoor_t(polyobjs[i].specialdata).thinker._function.acp1 = @TH_PolyDoor) and (Ppolydoor_t(polyobjs[i].specialdata)._type = PODOOR_SLIDE)) then
+          if (@Ppolyevent_t(polyobjs[i].specialdata).thinker._function.acp1 = @TPolyobjRoutines.TH_MovePoly) or
+             ((@Ppolydoor_t(polyobjs[i].specialdata).thinker._function.acp1 = @TPolyobjRoutines.TH_PolyDoor) and (Ppolydoor_t(polyobjs[i].specialdata)._type = PODOOR_SLIDE)) then
             TRendererInterpolationLocal.R_AddInterpolationItem(@polyobjs[i], ipolymove, @istructs[IDS_POLYS])
           else
             TRendererInterpolationLocal.R_AddInterpolationItem(@polyobjs[i], ipolyrotate, @istructs[IDS_POLYS]);
@@ -926,8 +926,8 @@ class procedure TRendererInterpolationLocal.R_RestoreInterpolationPolyRotate(con
 begin
   po.angle := po.nextangle;
   po.prevangle := po.nextangle;
-  PO_RotatePolyIntrpl(po);
-  PO_RestoreSegsIntrpl(po);
+  TPolyobjRoutines.PO_RotatePolyIntrpl(po);
+  TPolyobjRoutines.PO_RestoreSegsIntrpl(po);
 end;
 
 //==============================================================================
@@ -941,8 +941,8 @@ begin
   po.y := po.nexty;
   po.prevx := po.startSpot.x;
   po.prevy := po.startSpot.y;
-  PO_MovePolyIntrpl(po);
-  PO_RestoreSegsIntrpl(po);
+  TPolyobjRoutines.PO_MovePolyIntrpl(po);
+  TPolyobjRoutines.PO_RestoreSegsIntrpl(po);
 end;
 
 //==============================================================================
