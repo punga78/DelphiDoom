@@ -242,7 +242,7 @@ begin
 
   count := 0;
   searcher := {$IFDEF HEXEN}-1{$ELSE}@TTickState.ThinkerCap{$ENDIF};
-  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF}) <> nil do
+  while {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF}) <> nil do
     inc(count);
 
   if count = 0 then
@@ -256,7 +256,7 @@ begin
   mo := nil;
   for i := 0 to count - 1 do
   begin
-    mo := TUdmfMobjRoutines.P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF});
+    mo := {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF});
   end;
   if mo = nil then
     I_Error('EV_Teleport(): Can''t find teleport mapspot');

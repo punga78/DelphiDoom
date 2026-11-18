@@ -189,7 +189,7 @@ begin
   arguments.Arg4 := arg[4];
 
   secNum := -1;
-  while TUdmfSpecRoutines.P_FindSectorFromTag2(arg[0], secNum) >= 0 do
+  while {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag2(arg[0], secNum) >= 0 do
   begin
     outcome := TLightScripted.Spawn(TLightKind(Ord(_type)),
       TEngineLightSector.Wrap(@sectors[secNum]), arguments, LightRandom, state);

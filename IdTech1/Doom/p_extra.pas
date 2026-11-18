@@ -318,7 +318,6 @@ type
   TExtraLocalRoutines = class sealed
   public
     class procedure P_PainShootSkull(actor: Pmobj_t; angle: angle_t; typ: integer); static;
-    class procedure A_PlayPlayerWalkSound(actor: Pmobj_t); static;
   end;
 
 //==============================================================================

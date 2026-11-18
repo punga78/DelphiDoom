@@ -234,7 +234,7 @@ begin
   while (secnum >= 0) or initial do
   begin
     initial := false;
-    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     if secnum < 0 then
       break;
 

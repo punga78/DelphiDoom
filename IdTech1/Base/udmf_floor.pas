@@ -273,9 +273,9 @@ var
   function _FindSectorFromTag: integer;
   begin
     if tag1 < 0 then
-      secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum)
+      secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum)
     else
-      secnum := TUdmfSpecRoutines.P_FindSectorFromTag(tag1, secnum);
+      secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(tag1, secnum);
     result := secnum;
   end;
 
@@ -492,7 +492,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -692,7 +692,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -785,7 +785,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -854,7 +854,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    secnum := TUdmfSpecRoutines.P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     result := secnum;
   end;
 
@@ -1011,7 +1011,7 @@ var
 
   function _FindSectorFromTag: integer;
   begin
-    result := TUdmfSpecRoutines.P_FindSectorFromTag(tag, sectorIndex);
+    result := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(tag, sectorIndex);
     sectorIndex := result;
   end;
 

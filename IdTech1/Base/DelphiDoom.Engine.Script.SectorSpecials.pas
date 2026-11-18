@@ -187,7 +187,7 @@ end;
 
 procedure TEngineScriptSectorSpecials.ForceLightning(const ATics: Integer);
 begin
-  TUdmfSpecRoutines.P_ForceLightning(ATics);
+  {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_ForceLightning(ATics);
 end;
 
 function TEngineScriptSectorSpecials.BuildPillar(var AArguments: TScriptSpecialArguments;

@@ -186,7 +186,7 @@ end;
 procedure TEngineAcsHost.ExecuteLineSpecial(ASpecial: Integer;
   const AArguments: TAcsSpecialArguments; ALine, AActivator: Pointer; ASide: Integer);
 begin
-  TUdmfSpecRoutines.P_ExecuteLineSpecial(ASpecial, PByteArray(@AArguments), Pline_t(ALine), ASide,
+  {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_ExecuteLineSpecial(ASpecial, PByteArray(@AArguments), Pline_t(ALine), ASide,
     Pmobj_t(AActivator));
 end;
 
@@ -195,7 +195,7 @@ var
   LSectorIndex: Integer;
 begin
   LSectorIndex := -1;
-  while TUdmfSpecRoutines.P_FindSectorFromTag2(ATag, LSectorIndex) >= 0 do
+  while {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag2(ATag, LSectorIndex) >= 0 do
   begin
     if sectors[LSectorIndex].specialdata <> nil then
     begin
@@ -219,7 +219,7 @@ var
 begin
   LFlat := R_FlatNumForName(AFlatName);
   LSectorIndex := -1;
-  while TUdmfSpecRoutines.P_FindSectorFromTag2(ATag, LSectorIndex) >= 0 do
+  while {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag2(ATag, LSectorIndex) >= 0 do
   begin
     if AFloor then
       sectors[LSectorIndex].floorpic := LFlat
@@ -256,7 +256,7 @@ begin
     LSearcher := @TTickState.ThinkerCap;
     {$ENDIF}
     repeat
-      LMobj := TUdmfMobjRoutines.P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
+      LMobj := {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
       if LMobj = nil then
         Break;
       if AThingType = 0 then
@@ -295,7 +295,7 @@ var
 begin
   LTexture := R_TextureNumForName(ATextureName);
   LSearcher := -1;
-  LLine := TUdmfSpecRoutines.P_FindLine(ALineTag, @LSearcher);
+  LLine := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindLine(ALineTag, @LSearcher);
   while LLine <> nil do
   begin
     if APosition = ACS_TEXTURE_MIDDLE then
@@ -304,7 +304,7 @@ begin
       sides[LLine.sidenum[ASide]].bottomtexture := LTexture
     else // the top
       sides[LLine.sidenum[ASide]].toptexture := LTexture;
-    LLine := TUdmfSpecRoutines.P_FindLine(ALineTag, @LSearcher);
+    LLine := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindLine(ALineTag, @LSearcher);
   end;
 end;
 
@@ -319,11 +319,11 @@ begin
   else
     LBlocking := 0;
   LSearcher := -1;
-  LLine := TUdmfSpecRoutines.P_FindLine(ALineTag, @LSearcher);
+  LLine := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindLine(ALineTag, @LSearcher);
   while LLine <> nil do
   begin
     LLine.flags := (LLine.flags and not ML_BLOCKING) or LBlocking;
-    LLine := TUdmfSpecRoutines.P_FindLine(ALineTag, @LSearcher);
+    LLine := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindLine(ALineTag, @LSearcher);
   end;
 end;
 
@@ -334,7 +334,7 @@ var
   LSearcher: Integer;
 begin
   LSearcher := -1;
-  LLine := TUdmfSpecRoutines.P_FindLine(ALineTag, @LSearcher);
+  LLine := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindLine(ALineTag, @LSearcher);
   while LLine <> nil do
   begin
     LLine.special := ASpecial;
@@ -349,7 +349,7 @@ begin
     LLine.arg3 := AArguments[2];
     LLine.arg4 := AArguments[3];
     LLine.arg5 := AArguments[4];
-    LLine := TUdmfSpecRoutines.P_FindLine(ALineTag, @LSearcher);
+    LLine := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindLine(ALineTag, @LSearcher);
   end;
 end;
 
@@ -387,11 +387,11 @@ begin
   {$ELSE}
   LSearcher := @TTickState.ThinkerCap;
   {$ENDIF}
-  LMobj := TUdmfMobjRoutines.P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
+  LMobj := {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
   while LMobj <> nil do
   begin
     TSoundRoutines.S_StartSoundAtVolume(LMobj, LSound, AVolume);
-    LMobj := TUdmfMobjRoutines.P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
+    LMobj := {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
   end;
 end;
 

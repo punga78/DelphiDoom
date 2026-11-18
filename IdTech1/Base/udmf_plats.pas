@@ -129,7 +129,7 @@ begin
   result := false;
   secnum := -1;
 
-  while TUdmfSpecRoutines.P_FindSectorFromTag2(args[0], secnum) >= 0 do
+  while {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag2(args[0], secnum) >= 0 do
   begin
     sec := @sectors[secnum];
     if sec.specialdata <> nil then
