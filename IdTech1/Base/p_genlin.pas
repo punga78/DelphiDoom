@@ -430,7 +430,7 @@ manual_floor:
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
     TTickRoutines.P_AddThinker(@floor.thinker);
     sec.floordata := floor;
-    floor.thinker._function.acp1 := @T_MoveFloor;
+    floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
     floor.crush := Crsh <> 0;
     if Dirn <> 0 then
       floor.direction := 1
@@ -793,7 +793,7 @@ begin
   // Activate all <type> plats that are in_stasis
 
   if Targ = Ord(LnF2HnF) then
-    P_ActivateInStasis(line.tag);
+    TPlatRoutines.P_ActivateInStasis(line.tag);
 
   // check if a manual trigger, if so do just the sector on the backside
   manual := false;
@@ -829,7 +829,7 @@ manual_lift:
 
     plat.sector := sec;
     plat.sector.floordata := plat;
-    plat.thinker._function.acp1 := @T_PlatRaise;
+    plat.thinker._function.acp1 := @TPlatRoutines.T_PlatRaise;
     plat.crush := false;
     plat.tag := line.tag;
 
@@ -891,7 +891,7 @@ manual_lift:
     end;
 
     TSoundRoutines.S_StartSound(@sec.soundorg, Ord(sfx_pstart));
-    P_AddActivePlat(plat); // add this plat to the list of active plats
+    TPlatRoutines.P_AddActivePlat(plat); // add this plat to the list of active plats
 
     if manual then
       exit;
@@ -978,7 +978,7 @@ manual_stair:
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
     TTickRoutines.P_AddThinker(@floor.thinker);
     sec.floordata := floor;
-    floor.thinker._function.acp1 := @T_MoveFloor;
+    floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
     if Dirn <> 0 then
       floor.direction := 1
     else
@@ -1062,7 +1062,7 @@ manual_stair:
         TTickRoutines.P_AddThinker(@floor.thinker);
 
         sec.floordata := floor;
-        floor.thinker._function.acp1 := @T_MoveFloor;
+        floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
         if Dirn <> 0 then
           floor.direction := 1
         else
@@ -1250,7 +1250,7 @@ manual_locked:
     door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
     TTickRoutines.P_AddThinker (@door.thinker);
     sec.ceilingdata := door; //jff 2/22/98
-    door.thinker._function.acp1 := @T_VerticalDoor;
+    door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
     door.sector := sec;
     door.topwait := VDOORWAIT;
     door.line := line;
@@ -1370,7 +1370,7 @@ manual_door:
     TTickRoutines.P_AddThinker(@door.thinker);
     sec.ceilingdata := door; //jff 2/22/98
 
-    door.thinker._function.acp1 := @T_VerticalDoor;
+    door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
     door.sector := sec;
     // setup delay for door remaining open/closed
     case Dely of

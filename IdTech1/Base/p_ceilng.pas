@@ -171,13 +171,13 @@ begin
   case ceiling.direction of
     1:
     // UP
-      res := T_MovePlane(ceiling.sector,
+      res := TFloorRoutines.T_MovePlane(ceiling.sector,
         ceiling.speed,
         ceiling.topheight,
         false, 1, ceiling.direction);
    -1:
     // DOWN
-      res := T_MovePlane(ceiling.sector,
+      res := TFloorRoutines.T_MovePlane(ceiling.sector,
         ceiling.speed,
         ceiling.bottomheight,
         ceiling.crush, 1, ceiling.direction);

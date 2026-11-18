@@ -251,7 +251,7 @@ end;
 procedure TDoomLevelRules.AfterLevel;
 begin
   // Check if the level is a lightning level
-  P_InitLightning;
+  TUdmfSpecRoutines.P_InitLightning;
 end;
 
 procedure TDoomLevelRules.InitializeSector(ASector: Psector_t);

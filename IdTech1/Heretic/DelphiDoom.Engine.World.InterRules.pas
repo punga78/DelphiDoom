@@ -744,7 +744,7 @@ begin
         begin
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -761,7 +761,7 @@ begin
         begin
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -778,7 +778,7 @@ begin
         begin
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -794,7 +794,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTIHEALTH);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -809,7 +809,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTIFLY);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -824,7 +824,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTIINVULNERABILITY);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -839,7 +839,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTITOMEOFPOWER);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -854,7 +854,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTIINVISIBILITY, false);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -869,7 +869,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTIEGG, false);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -884,7 +884,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTISUPERHEALTH, false);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -899,7 +899,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTITORCH);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -914,7 +914,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTIFIREBOMB);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -929,7 +929,7 @@ begin
           TInterRoutines.P_SetMessage(player, TXT_ARTITELEPORT);
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           TInterLocalRoutines.P_SetDormantArtifact(special);
@@ -1097,7 +1097,7 @@ begin
 
   if special.special <> 0 then
   begin
-    P_ExecuteActorSpecial(special.special, @special.args, toucher);
+    TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
     special.special := 0;
   end;
 
@@ -1136,7 +1136,7 @@ begin
   target.flags2 := target.flags2 and not MF2_PASSMOBJ;
   target.height := _SHR(target.height, 2);
 
-  P_ExecuteActorSpecial(target.special, @target.args, target);
+  TUdmfSpecRoutines.P_ExecuteActorSpecial(target.special, @target.args, target);
 
   if (source <> nil) and (source.player <> nil) then
   begin

@@ -41,48 +41,55 @@ uses
   p_spec,
   r_defs;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TPlatRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // T_PlatRaise
+    //
+    //==============================================================================
+    class procedure T_PlatRaise(plat: Pplat_t); static;
 
-//==============================================================================
-//
-// T_PlatRaise
-//
-//==============================================================================
-procedure T_PlatRaise(plat: Pplat_t);
+    //==============================================================================
+    //
+    // EV_DoPlat
+    //
+    //==============================================================================
+    class function EV_DoPlat(line: Pline_t; _type: plattype_e; amount: integer): integer; static;
 
-//==============================================================================
-//
-// EV_DoPlat
-//
-//==============================================================================
-function EV_DoPlat(line: Pline_t; _type: plattype_e; amount: integer): integer;
+    //==============================================================================
+    //
+    // P_ActivateInStasis
+    //
+    //==============================================================================
+    class procedure P_ActivateInStasis(tag: integer); static;
 
-//==============================================================================
-//
-// P_ActivateInStasis
-//
-//==============================================================================
-procedure P_ActivateInStasis(tag: integer);
+    //==============================================================================
+    //
+    // EV_StopPlat
+    //
+    //==============================================================================
+    class function EV_StopPlat(line: Pline_t): integer; static;
 
-//==============================================================================
-//
-// EV_StopPlat
-//
-//==============================================================================
-function EV_StopPlat(line: Pline_t): integer;
+    //==============================================================================
+    //
+    // P_AddActivePlat
+    //
+    //==============================================================================
+    class procedure P_AddActivePlat(plat: Pplat_t); static;
 
-//==============================================================================
-//
-// P_AddActivePlat
-//
-//==============================================================================
-procedure P_AddActivePlat(plat: Pplat_t);
-
-//==============================================================================
-//
-// P_RemoveActivePlat
-//
-//==============================================================================
-procedure P_RemoveActivePlat(plat: Pplat_t);
+    //==============================================================================
+    //
+    // P_RemoveActivePlat
+    //
+    //==============================================================================
+    class procedure P_RemoveActivePlat(plat: Pplat_t); static;
+  end;
 
 implementation
 
@@ -103,7 +110,7 @@ uses
 // thinker stays the record that the savegames know
 //
 //==============================================================================
-procedure T_PlatRaise(plat: Pplat_t);
+class procedure TPlatRoutines.T_PlatRaise(plat: Pplat_t);
 var
   state: TPlatState;
 begin
@@ -119,7 +126,7 @@ end;
 //  "amount" is only used for SOME platforms.
 //
 //==============================================================================
-function EV_DoPlat(line: Pline_t; _type: plattype_e; amount: integer): integer;
+class function TPlatRoutines.EV_DoPlat(line: Pline_t; _type: plattype_e; amount: integer): integer;
 var
   plat: Pplat_t;
   secnum: integer;
@@ -182,7 +189,7 @@ end;
 // P_ActivateInStasis
 //
 //==============================================================================
-procedure P_ActivateInStasis(tag: integer);
+class procedure TPlatRoutines.P_ActivateInStasis(tag: integer);
 var
   i: integer;
   plt: Pplat_t;
@@ -207,7 +214,7 @@ end;
 // EV_StopPlat
 //
 //==============================================================================
-function EV_StopPlat(line: Pline_t): integer;
+class function TPlatRoutines.EV_StopPlat(line: Pline_t): integer;
 var
   i: integer;
   plt: Pplat_t;
@@ -236,7 +243,7 @@ end;
 // P_AddActivePlat
 //
 //==============================================================================
-procedure P_AddActivePlat(plat: Pplat_t);
+class procedure TPlatRoutines.P_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
@@ -255,7 +262,7 @@ end;
 // P_RemoveActivePlat
 //
 //==============================================================================
-procedure P_RemoveActivePlat(plat: Pplat_t);
+class procedure TPlatRoutines.P_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin

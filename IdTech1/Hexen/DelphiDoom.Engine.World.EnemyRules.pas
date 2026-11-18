@@ -1768,7 +1768,7 @@ begin
 
   if (actor._type = Ord(MT_CENTAUR)) or
      (actor._type = Ord(MT_CENTAURLEADER)) then
-    A_SetInvulnerable(actor);
+    TExtraRoutines.A_SetInvulnerable(actor);
 end;
 
 //==============================================================================
@@ -1782,7 +1782,7 @@ begin
 
   if (actor._type = Ord(MT_CENTAUR)) or
      (actor._type = Ord(MT_CENTAURLEADER)) then
-    A_UnSetInvulnerable(actor);
+    TExtraRoutines.A_UnSetInvulnerable(actor);
 end;
 
 //==============================================================================
@@ -3324,7 +3324,7 @@ begin
   A_FaceTarget(actor);
   if TMonsterBaseActions.P_CheckMeleeRange(actor) and (P_Random < 32) then
   begin
-    A_UnSetInvulnerable(actor);
+    TExtraRoutines.A_UnSetInvulnerable(actor);
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
   end;
 end;
@@ -5263,7 +5263,7 @@ end;
 class procedure THexenMonsterActions.A_SorcBallPop(actor: Pmobj_t);
 begin
   TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_BALLPOP));
-  A_LowGravity(actor);
+  TExtraRoutines.A_LowGravity(actor);
   actor.momx := ((P_Random mod 10) - 5) * FRACUNIT;
   actor.momy := ((P_Random mod 10) - 5) * FRACUNIT;
   actor.momz := (2 + (P_Random mod 3)) * FRACUNIT;
@@ -5659,7 +5659,7 @@ begin
     lastfound := 0;
     spot := P_FindMobjFromTID(KORAX_FIRST_TELEPORT_TID, @lastfound);
     if spot <> nil then
-      PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
+      TUdmfTeleportRoutines.PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
 
     P_StartACS(249, 0, @args, actor, nil, 0);
     actor.special2 := 1;  // Don't run again
@@ -5690,7 +5690,7 @@ begin
       spot := P_FindMobjFromTID(KORAX_TELEPORT_TID, @lastfound);
       actor.special1 := lastfound;
       if spot <> nil then
-        PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
+        TUdmfTeleportRoutines.PH_Teleport(actor, spot.x, spot.y, spot.angle, true, spot.floorz, spot.ceilingz);
     end;
   end;
 end;
@@ -6195,7 +6195,7 @@ begin
       args[2] := 0;
       args[3] := 0;
       args[4] := 0;
-      EVH_DoFloor(@dummyLine, @args, FLEV_LOWERFLOORTOLOWEST, 666);
+      TUdmfFloorRoutines.EVH_DoFloor(@dummyLine, @args, FLEV_LOWERFLOORTOLOWEST, 666);
       exit;
     end;
     if actor.flags4_ex and MF4_EX_MAP07BOSS2 <> 0 then
@@ -6205,7 +6205,7 @@ begin
       args[2] := 0;
       args[3] := 0;
       args[4] := 0;
-      EVH_DoFloor(@dummyLine, @args, FLEV_RAISETOTEXTURE, 667);
+      TUdmfFloorRoutines.EVH_DoFloor(@dummyLine, @args, FLEV_RAISETOTEXTURE, 667);
       exit;
     end;
   end;

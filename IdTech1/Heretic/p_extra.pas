@@ -39,117 +39,125 @@ uses
   m_fixed,
   p_mobj_h;
 
-//==============================================================================
-//
-// A_LowGravity
-//
-//==============================================================================
-procedure A_LowGravity(actor: Pmobj_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TExtraRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // A_LowGravity
+    //
+    //==============================================================================
+    class procedure A_LowGravity(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_NoGravity
-//
-//==============================================================================
-procedure A_NoGravity(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_NoGravity
+    //
+    //==============================================================================
+    class procedure A_NoGravity(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_Gravity
-//
-//==============================================================================
-procedure A_Gravity(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_Gravity
+    //
+    //==============================================================================
+    class procedure A_Gravity(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_MeleeAttack
-//
-//==============================================================================
-procedure A_MeleeAttack(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_MeleeAttack
+    //
+    //==============================================================================
+    class procedure A_MeleeAttack(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_Die
-//
-//==============================================================================
-procedure A_Die(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_Die
+    //
+    //==============================================================================
+    class procedure A_Die(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_CustomBulletAttack
-//
-//==============================================================================
-procedure A_CustomBulletAttack(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_CustomBulletAttack
+    //
+    //==============================================================================
+    class procedure A_CustomBulletAttack(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_Countdown
-//
-//==============================================================================
-procedure A_Countdown(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_Countdown
+    //
+    //==============================================================================
+    class procedure A_Countdown(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_FastChase
-//
-//==============================================================================
-procedure A_FastChase(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_FastChase
+    //
+    //==============================================================================
+    class procedure A_FastChase(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_SetInvulnerable
-//
-//==============================================================================
-procedure A_SetInvulnerable(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_SetInvulnerable
+    //
+    //==============================================================================
+    class procedure A_SetInvulnerable(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_UnSetInvulnerable
-//
-//==============================================================================
-procedure A_UnSetInvulnerable(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_UnSetInvulnerable
+    //
+    //==============================================================================
+    class procedure A_UnSetInvulnerable(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_FloatBob
-//
-//==============================================================================
-procedure A_FloatBob(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_FloatBob
+    //
+    //==============================================================================
+    class procedure A_FloatBob(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_NoFloatBob
-//
-//==============================================================================
-procedure A_NoFloatBob(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_NoFloatBob
+    //
+    //==============================================================================
+    class procedure A_NoFloatBob(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_ComboAttack
-//
-//==============================================================================
-procedure A_ComboAttack(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_ComboAttack
+    //
+    //==============================================================================
+    class procedure A_ComboAttack(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_BulletAttack
-//
-//==============================================================================
-procedure A_BulletAttack(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_BulletAttack
+    //
+    //==============================================================================
+    class procedure A_BulletAttack(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_MediumGravity
-//
-//==============================================================================
-procedure A_MediumGravity(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_MediumGravity
+    //
+    //==============================================================================
+    class procedure A_MediumGravity(actor: Pmobj_t); static;
 
-//==============================================================================
-//
-// A_PlayerMessage
-//
-//==============================================================================
-procedure A_PlayerMessage(actor: Pmobj_t);
+    //==============================================================================
+    //
+    // A_PlayerMessage
+    //
+    //==============================================================================
+    class procedure A_PlayerMessage(actor: Pmobj_t); static;
+  end;
 
 implementation
 
@@ -171,6 +179,17 @@ uses
   s_sound,
   tables;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TExtraLocalRoutines = class sealed
+  public
+    class procedure A_Missile(actor: Pmobj_t); static;
+    class procedure A_NoMissile(actor: Pmobj_t); static;
+  end;
+
 //==============================================================================
 // A_LowGravity
 //
@@ -178,7 +197,7 @@ uses
 // Low gravity
 //
 //==============================================================================
-procedure A_LowGravity(actor: Pmobj_t);
+class procedure TExtraRoutines.A_LowGravity(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_NOGRAVITY;
   actor.flags2 := actor.flags2 or MF2_LOGRAV;
@@ -193,7 +212,7 @@ end;
 // Remove gravity
 //
 //==============================================================================
-procedure A_NoGravity(actor: Pmobj_t);
+class procedure TExtraRoutines.A_NoGravity(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_NOGRAVITY;
   actor.flags2 := actor.flags2 and not MF2_LOGRAV;
@@ -208,7 +227,7 @@ end;
 // Normal gravity
 //
 //==============================================================================
-procedure A_Gravity(actor: Pmobj_t);
+class procedure TExtraRoutines.A_Gravity(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_NOGRAVITY;
   actor.flags2 := actor.flags2 and not MF2_LOGRAV;
@@ -223,7 +242,7 @@ end;
 // A_MeleeAttack(mindamage=0; maxdamage=0);
 //
 //==============================================================================
-procedure A_MeleeAttack(actor: Pmobj_t);
+class procedure TExtraRoutines.A_MeleeAttack(actor: Pmobj_t);
 var
   dmin, dmax: integer;  // Minimum and maximum damage
   damage: integer;
@@ -272,7 +291,7 @@ end;
 // A_Die
 //
 //==============================================================================
-procedure A_Die(actor: Pmobj_t);
+class procedure TExtraRoutines.A_Die(actor: Pmobj_t);
 begin
   actor.flags_ex := actor.flags_ex and not MF_EX_INVULNERABLE;  // Clear invulnerability flag
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_NODAMAGE;   // Clear no damage flag
@@ -288,7 +307,7 @@ end;
 // CustomBulletAttack(spread_xy, numbullets, damageperbullet, range)
 //
 //==============================================================================
-procedure A_CustomBulletAttack(actor: Pmobj_t);
+class procedure TExtraRoutines.A_CustomBulletAttack(actor: Pmobj_t);
 var
   spread_xy: angle_t;
   numbullets: integer;
@@ -337,7 +356,7 @@ end;
 // A_Countdown(void)
 //
 //==============================================================================
-procedure A_Countdown(actor: Pmobj_t);
+class procedure TExtraRoutines.A_Countdown(actor: Pmobj_t);
 begin
   dec(actor.reactiontime);
   if actor.reactiontime <= 0 then
@@ -352,7 +371,7 @@ end;
 // A_FastChase
 //
 //==============================================================================
-procedure A_FastChase(actor: Pmobj_t);
+class procedure TExtraRoutines.A_FastChase(actor: Pmobj_t);
 begin
   THereticMonsterActions.P_DoChase(actor, true);
 end;
@@ -362,7 +381,7 @@ end;
 // A_SetInvulnerable
 //
 //==============================================================================
-procedure A_SetInvulnerable(actor: Pmobj_t);
+class procedure TExtraRoutines.A_SetInvulnerable(actor: Pmobj_t);
 begin
   actor.flags_ex := actor.flags_ex or MF_EX_INVULNERABLE;
 end;
@@ -372,7 +391,7 @@ end;
 // A_UnSetInvulnerable
 //
 //==============================================================================
-procedure A_UnSetInvulnerable(actor: Pmobj_t);
+class procedure TExtraRoutines.A_UnSetInvulnerable(actor: Pmobj_t);
 begin
   actor.flags_ex := actor.flags_ex and not MF_EX_INVULNERABLE;
 end;
@@ -382,7 +401,7 @@ end;
 // A_FloatBob
 //
 //==============================================================================
-procedure A_FloatBob(actor: Pmobj_t);
+class procedure TExtraRoutines.A_FloatBob(actor: Pmobj_t);
 begin
   actor.flags_ex := actor.flags_ex or MF_EX_FLOATBOB;
   actor.flags2 := actor.flags2 or MF2_FLOATBOB;
@@ -393,7 +412,7 @@ end;
 // A_NoFloatBob
 //
 //==============================================================================
-procedure A_NoFloatBob(actor: Pmobj_t);
+class procedure TExtraRoutines.A_NoFloatBob(actor: Pmobj_t);
 begin
   actor.flags_ex := actor.flags_ex and not MF_EX_FLOATBOB;
   actor.flags2 := actor.flags2 and not MF2_FLOATBOB;
@@ -404,7 +423,7 @@ end;
 // A_Missile
 //
 //==============================================================================
-procedure A_Missile(actor: Pmobj_t);
+class procedure TExtraLocalRoutines.A_Missile(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_MISSILE;
 end;
@@ -414,7 +433,7 @@ end;
 // A_NoMissile
 //
 //==============================================================================
-procedure A_NoMissile(actor: Pmobj_t);
+class procedure TExtraLocalRoutines.A_NoMissile(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_MISSILE;
 end;
@@ -424,7 +443,7 @@ end;
 // A_ComboAttack(void)
 //
 //==============================================================================
-procedure A_ComboAttack(actor: Pmobj_t);
+class procedure TExtraRoutines.A_ComboAttack(actor: Pmobj_t);
 var
   missile: Pmobj_t;
   mobj_no: integer;
@@ -469,7 +488,7 @@ end;
 // A_BulletAttack(numbullets: integer [optional])
 //
 //==============================================================================
-procedure A_BulletAttack(actor: Pmobj_t);
+class procedure TExtraRoutines.A_BulletAttack(actor: Pmobj_t);
 var
   i: integer;
   angle, bangle: angle_t;
@@ -512,7 +531,7 @@ end;
 // Medium gravity
 //
 //==============================================================================
-procedure A_MediumGravity(actor: Pmobj_t);
+class procedure TExtraRoutines.A_MediumGravity(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_NOGRAVITY;
   actor.flags_ex := actor.flags_ex and not MF_EX_LOWGRAVITY;
@@ -524,7 +543,7 @@ end;
 // A_PlayerMessage
 //
 //==============================================================================
-procedure A_PlayerMessage(actor: Pmobj_t);
+class procedure TExtraRoutines.A_PlayerMessage(actor: Pmobj_t);
 var
   p: Pplayer_t;
   msg: string;

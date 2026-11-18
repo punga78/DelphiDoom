@@ -1878,7 +1878,7 @@ begin
     LRegistry, LRandom, LLumps, LZone, LShutdown);
 {$IFNDEF HEXEN}
   // Hexen has its own specials (p_spec): the UDMF ones are only for the other games
-  P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
+  TUdmfSpecRoutines.P_ConfigureLineSpecials(TSpecialsFactory.CreateRegistry);
   ComposeMapInfo(LLog, LPreprocessor, LLumps);
 {$ENDIF}
 end;

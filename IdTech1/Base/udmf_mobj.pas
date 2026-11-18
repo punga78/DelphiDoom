@@ -33,19 +33,27 @@ interface
 uses
   p_mobj_h;
 
-//==============================================================================
-//
-// P_FindMobjFromTID
-//
-//==============================================================================
-function P_FindMobjFromTID(tid: integer; var searchPosition: pointer): Pmobj_t; overload;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfMobjRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_FindMobjFromTID
+    //
+    //==============================================================================
+    class function P_FindMobjFromTID(tid: integer; var searchPosition: pointer): Pmobj_t; overload; static;
 
-//==============================================================================
-//
-// P_FindMobjFromTID
-//
-//==============================================================================
-function P_FindMobjFromTID(tid: integer; var searchPosition: pointer; var ret: Pmobj_t): Pmobj_t; overload;
+    //==============================================================================
+    //
+    // P_FindMobjFromTID
+    //
+    //==============================================================================
+    class function P_FindMobjFromTID(tid: integer; var searchPosition: pointer; var ret: Pmobj_t): Pmobj_t; overload; static;
+  end;
 
 implementation
 
@@ -60,7 +68,7 @@ uses
 // P_FindMobjFromTID
 //
 //==============================================================================
-function P_FindMobjFromTID(tid: integer; var searchPosition: pointer): Pmobj_t;
+class function TUdmfMobjRoutines.P_FindMobjFromTID(tid: integer; var searchPosition: pointer): Pmobj_t;
 var
   th: Pthinker_t;
   mo: Pmobj_t;
@@ -90,7 +98,7 @@ end;
 // P_FindMobjFromTID
 //
 //==============================================================================
-function P_FindMobjFromTID(tid: integer; var searchPosition: pointer; var ret: Pmobj_t): Pmobj_t; overload;
+class function TUdmfMobjRoutines.P_FindMobjFromTID(tid: integer; var searchPosition: pointer; var ret: Pmobj_t): Pmobj_t;
 begin
   result := P_FindMobjFromTID(tid, searchPosition);
   ret := result;

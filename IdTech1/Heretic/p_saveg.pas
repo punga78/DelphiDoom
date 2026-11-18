@@ -929,13 +929,13 @@ begin
     if PInteger(save_p)^ <> polyobjs[i].tag then
       I_Error('P_UnArchiveWorld(): Invalid polyobj tag');
     save_p := @save_p[4];
-    PO_RotatePolyobj(polyobjs[i].tag, PLongWord(save_p)^);
+    TPolyobjRoutines.PO_RotatePolyobj(polyobjs[i].tag, PLongWord(save_p)^);
     save_p := @save_p[4];
     deltaX := PInteger(save_p)^ - polyobjs[i].startSpot.x;
     save_p := @save_p[4];
     deltaY := PInteger(save_p)^ - polyobjs[i].startSpot.y;
     save_p := @save_p[4];
-    PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
+    TPolyobjRoutines.PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
     polyobjs[i].prevangle := polyobjs[i].angle; // Interpolation
     polyobjs[i].prevx := polyobjs[i].startSpot.x;
     polyobjs[i].prevy := polyobjs[i].startSpot.y;
@@ -1459,7 +1459,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_VerticalDoor then
+    if @th._function.acp1 = @TDoorRoutines.T_VerticalDoor then
     begin
       save_p[0] := Ord(tc_door);
       save_p := @save_p[1];
@@ -1469,7 +1469,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_MoveFloor then
+    if @th._function.acp1 = @TFloorRoutines.T_MoveFloor then
     begin
       save_p[0] := Ord(tc_floor);
       save_p := @save_p[1];
@@ -1479,7 +1479,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_PlatRaise then
+    if @th._function.acp1 = @TPlatRoutines.T_PlatRaise then
     begin
       save_p[0] := Ord(tc_plat);
       save_p := @save_p[1];
@@ -1530,7 +1530,7 @@ begin
     end;
 
     // JVAL: 20220218 - Handle UDMF special effects
-    if @th._function.acp1 = @TH_MoveFloor then
+    if @th._function.acp1 = @TUdmfFloorRoutines.TH_MoveFloor then
     begin
       save_p[0] := Ord(tch_movefloor);
       save_p := @save_p[1];
@@ -1540,7 +1540,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_PlatRaise then
+    if @th._function.acp1 = @TUdmfPlatRoutines.TH_PlatRaise then
     begin
       save_p[0] := Ord(tch_platraise);
       save_p := @save_p[1];
@@ -1550,7 +1550,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_MoveCeiling then
+    if @th._function.acp1 = @TUdmfCeilingRoutines.TH_MoveCeiling then
     begin
       save_p[0] := Ord(tch_moveceiling);
       save_p := @save_p[1];
@@ -1560,7 +1560,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_Light then
+    if @th._function.acp1 = @TUdmfLightRoutines.TH_Light then
     begin
       save_p[0] := Ord(tch_light);
       save_p := @save_p[1];
@@ -1570,7 +1570,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_VerticalDoor then
+    if @th._function.acp1 = @TUdmfDoorRoutines.TH_VerticalDoor then
     begin
       save_p[0] := Ord(tch_verticaldoor);
       save_p := @save_p[1];
@@ -1580,7 +1580,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_Phase then
+    if @th._function.acp1 = @TUdmfLightRoutines.TH_Phase then
     begin
       save_p[0] := Ord(tch_phase);
       save_p := @save_p[1];
@@ -1606,7 +1606,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_RotatePoly then
+    if @th._function.acp1 = @TPolyobjRoutines.TH_RotatePoly then
     begin
       save_p[0] := Ord(tch_rotatepoly);
       save_p := @save_p[1];
@@ -1615,7 +1615,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_BuildPillar then
+    if @th._function.acp1 = @TUdmfFloorRoutines.TH_BuildPillar then
     begin
       save_p[0] := Ord(tch_buildpillar);
       save_p := @save_p[1];
@@ -1625,7 +1625,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_MovePoly then
+    if @th._function.acp1 = @TPolyobjRoutines.TH_MovePoly then
     begin
       save_p[0] := Ord(tch_movepoly);
       save_p := @save_p[1];
@@ -1634,7 +1634,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_PolyDoor then
+    if @th._function.acp1 = @TPolyobjRoutines.TH_PolyDoor then
     begin
       save_p[0] := Ord(tch_polydoor);
       save_p := @save_p[1];
@@ -1643,7 +1643,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @TH_FloorWaggle then
+    if @th._function.acp1 = @TUdmfFloorRoutines.TH_FloorWaggle then
     begin
       save_p[0] := Ord(tch_floorwaggle);
       save_p := @save_p[1];
@@ -1730,7 +1730,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(vldoor_t), door);
           door.sector := @sectors[NativeInt(door.sector)];
           door.sector.specialdata := door;
-          @door.thinker._function.acp1 := @T_VerticalDoor;
+          @door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
           TTickRoutines.P_AddThinker(@door.thinker);
         end;
 
@@ -1759,7 +1759,7 @@ begin
           end;
           floor.sector := @sectors[NativeInt(floor.sector)];
           floor.sector.specialdata := floor;
-          @floor.thinker._function.acp1 := @T_MoveFloor;
+          @floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
           TTickRoutines.P_AddThinker(@floor.thinker);
         end;
 
@@ -1772,10 +1772,10 @@ begin
           plat.sector.specialdata := plat;
 
           if Assigned(plat.thinker._function.acp1) then  // JVAL ??? from serialization
-            @plat.thinker._function.acp1 := @T_PlatRaise;
+            @plat.thinker._function.acp1 := @TPlatRoutines.T_PlatRaise;
 
           TTickRoutines.P_AddThinker(@plat.thinker);
-          P_AddActivePlat(plat);
+          TPlatRoutines.P_AddActivePlat(plat);
         end;
 
       Ord(tc_flash):
@@ -1833,10 +1833,10 @@ begin
             ceiling.sector.specialdata := ceiling;
 
           if Assigned(ceiling.thinker._function.acp1) then
-            @ceiling.thinker._function.acp1 := @TH_MoveCeiling;
+            @ceiling.thinker._function.acp1 := @TUdmfCeilingRoutines.TH_MoveCeiling;
 
           TTickRoutines.P_AddThinker(@ceiling.thinker);
-          PH_AddActiveCeiling(ceiling);
+          TUdmfCeilingRoutines.PH_AddActiveCeiling(ceiling);
         end;
 
       Ord(tch_movefloor):
@@ -1849,7 +1849,7 @@ begin
             floor.sector.specialdata := floor;
 
           if Assigned(floor.thinker._function.acp1) then
-            @floor.thinker._function.acp1 := @TH_MoveFloor;
+            @floor.thinker._function.acp1 := @TUdmfFloorRoutines.TH_MoveFloor;
 
           TTickRoutines.P_AddThinker(@floor.thinker);
         end;
@@ -1864,10 +1864,10 @@ begin
             plat.sector.specialdata := plat;
 
           if Assigned(plat.thinker._function.acp1) then
-            @plat.thinker._function.acp1 := @TH_PlatRaise;
+            @plat.thinker._function.acp1 := @TUdmfPlatRoutines.TH_PlatRaise;
 
           TTickRoutines.P_AddThinker(@plat.thinker);
-          PH_AddActivePlat(plat);
+          TUdmfPlatRoutines.PH_AddActivePlat(plat);
         end;
 
       Ord(tch_light):
@@ -1880,7 +1880,7 @@ begin
             light.sector.specialdata := light;}
 
           if Assigned(light.thinker._function.acp1) then
-            @light.thinker._function.acp1 := @TH_Light;
+            @light.thinker._function.acp1 := @TUdmfLightRoutines.TH_Light;
 
           TTickRoutines.P_AddThinker(@light.thinker);
         end;
@@ -1895,7 +1895,7 @@ begin
             door.sector.specialdata := door;
 
           if Assigned(door.thinker._function.acp1) then
-            @door.thinker._function.acp1 := @TH_VerticalDoor;
+            @door.thinker._function.acp1 := @TUdmfDoorRoutines.TH_VerticalDoor;
 
           TTickRoutines.P_AddThinker(@door.thinker);
         end;
@@ -1910,7 +1910,7 @@ begin
             phase.sector.specialdata := phase;}
 
           if Assigned(phase.thinker._function.acp1) then
-            @phase.thinker._function.acp1 := @TH_Phase;
+            @phase.thinker._function.acp1 := @TUdmfLightRoutines.TH_Phase;
 
           TTickRoutines.P_AddThinker(@phase.thinker);
         end;
@@ -1941,7 +1941,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(polyevent_t), polyevent);
 
           if Assigned(polyevent.thinker._function.acp1) then
-            @polyevent.thinker._function.acp1 := @TH_RotatePoly;
+            @polyevent.thinker._function.acp1 := @TPolyobjRoutines.TH_RotatePoly;
 
           TTickRoutines.P_AddThinker(@polyevent.thinker);
         end;
@@ -1956,7 +1956,7 @@ begin
             pillar.sector.specialdata := pillar;
 
           if Assigned(pillar.thinker._function.acp1) then
-            @pillar.thinker._function.acp1 := @TH_BuildPillar;
+            @pillar.thinker._function.acp1 := @TUdmfFloorRoutines.TH_BuildPillar;
 
           TTickRoutines.P_AddThinker(@pillar.thinker);
         end;
@@ -1968,7 +1968,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(polyevent_t), polyevent);
 
           if Assigned(polyevent.thinker._function.acp1) then
-            @polyevent.thinker._function.acp1 := @TH_MovePoly;
+            @polyevent.thinker._function.acp1 := @TPolyobjRoutines.TH_MovePoly;
 
           TTickRoutines.P_AddThinker(@polyevent.thinker);
         end;
@@ -1980,7 +1980,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(polydoor_t), polydoor);
 
           if Assigned(polydoor.thinker._function.acp1) then
-            @polydoor.thinker._function.acp1 := @TH_PolyDoor;
+            @polydoor.thinker._function.acp1 := @TPolyobjRoutines.TH_PolyDoor;
 
           TTickRoutines.P_AddThinker(@polydoor.thinker);
         end;
@@ -1995,7 +1995,7 @@ begin
             floorwaggle.sector.specialdata := floorwaggle;
 
           if Assigned(floorwaggle.thinker._function.acp1) then
-            @floorwaggle.thinker._function.acp1 := @TH_FloorWaggle;
+            @floorwaggle.thinker._function.acp1 := @TUdmfFloorRoutines.TH_FloorWaggle;
 
           TTickRoutines.P_AddThinker(@floorwaggle.thinker);
         end;

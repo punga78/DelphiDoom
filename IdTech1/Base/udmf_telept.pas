@@ -38,27 +38,35 @@ uses
   tables,
   p_mobj_h;
 
-//==============================================================================
-//
-// PH_Teleport
-//
-// TELEPORTATION
-//
-//==============================================================================
-function PH_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; useFog: boolean; floorz, ceilingz: fixed_t): boolean;
-
-//==============================================================================
-//
-// EVH_Teleport
-//
-//==============================================================================
-function EVH_Teleport(tid: integer; thing: Pmobj_t; fog: boolean): boolean;
-
 const
   TELEPORTZOOM = 15 * FRACUNIT;
 
 const
   TELEFOGHEIGHT = 32 * FRACUNIT;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfTeleportRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // PH_Teleport
+    //
+    // TELEPORTATION
+    //
+    //==============================================================================
+    class function PH_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; useFog: boolean; floorz, ceilingz: fixed_t): boolean; static;
+
+    //==============================================================================
+    //
+    // EVH_Teleport
+    //
+    //==============================================================================
+    class function EVH_Teleport(tid: integer; thing: Pmobj_t; fog: boolean): boolean; static;
+  end;
 
 implementation
 
@@ -88,7 +96,7 @@ uses
 // PH_Teleport
 //
 //==============================================================================
-function PH_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; useFog: boolean; floorz, ceilingz: fixed_t): boolean;
+class function TUdmfTeleportRoutines.PH_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; useFog: boolean; floorz, ceilingz: fixed_t): boolean;
 var
   oldx: fixed_t;
   oldy: fixed_t;
@@ -209,7 +217,7 @@ end;
 // EVH_Teleport
 //
 //==============================================================================
-function EVH_Teleport(tid: integer; thing: Pmobj_t; fog: boolean): boolean;
+class function TUdmfTeleportRoutines.EVH_Teleport(tid: integer; thing: Pmobj_t; fog: boolean): boolean;
 var
   i: integer;
   count: integer;
@@ -234,7 +242,7 @@ begin
 
   count := 0;
   searcher := {$IFDEF HEXEN}-1{$ELSE}@TTickState.ThinkerCap{$ENDIF};
-  while P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF}) <> nil do
+  while {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF}) <> nil do
     inc(count);
 
   if count = 0 then
@@ -248,7 +256,7 @@ begin
   mo := nil;
   for i := 0 to count - 1 do
   begin
-    mo := P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF});
+    mo := {$IFNDEF HEXEN}TUdmfMobjRoutines.{$ENDIF}P_FindMobjFromTID(tid, {$IFDEF HEXEN}@searcher{$ELSE}Pointer(searcher){$ENDIF});
   end;
   if mo = nil then
     I_Error('EV_Teleport(): Can''t find teleport mapspot');

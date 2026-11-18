@@ -37,41 +37,48 @@ uses
   p_spec,
   r_defs;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfPlatRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // TH_PlatRaise
+    //
+    //==============================================================================
+    class procedure TH_PlatRaise(plat: Pplat_t); static;
 
-//==============================================================================
-//
-// TH_PlatRaise
-//
-//==============================================================================
-procedure TH_PlatRaise(plat: Pplat_t);
+    //==============================================================================
+    //
+    // EVH_DoPlat
+    //
+    //==============================================================================
+    class function EVH_DoPlat(line: Pline_t; args: PByteArray; _type: plattype_e; amount: integer): boolean; static;
 
-//==============================================================================
-//
-// EVH_DoPlat
-//
-//==============================================================================
-function EVH_DoPlat(line: Pline_t; args: PByteArray; _type: plattype_e; amount: integer): boolean;
+    //==============================================================================
+    //
+    // EVH_StopPlat
+    //
+    //==============================================================================
+    class procedure EVH_StopPlat(line: Pline_t; args: PByteArray); static;
 
-//==============================================================================
-//
-// EVH_StopPlat
-//
-//==============================================================================
-procedure EVH_StopPlat(line: Pline_t; args: PByteArray);
+    //==============================================================================
+    //
+    // PH_AddActivePlat
+    //
+    //==============================================================================
+    class procedure PH_AddActivePlat(plat: Pplat_t); static;
 
-//==============================================================================
-//
-// PH_AddActivePlat
-//
-//==============================================================================
-procedure PH_AddActivePlat(plat: Pplat_t);
-
-//==============================================================================
-//
-// PH_RemoveActivePlat
-//
-//==============================================================================
-procedure PH_RemoveActivePlat(plat: Pplat_t);
+    //==============================================================================
+    //
+    // PH_RemoveActivePlat
+    //
+    //==============================================================================
+    class procedure PH_RemoveActivePlat(plat: Pplat_t); static;
+  end;
 
 implementation
 
@@ -96,7 +103,7 @@ uses
 //      the record that the savegames know
 //
 //==============================================================================
-procedure TH_PlatRaise(plat: Pplat_t);
+class procedure TUdmfPlatRoutines.TH_PlatRaise(plat: Pplat_t);
 var
   state: TPlatState;
 begin
@@ -112,7 +119,7 @@ end;
 //      "amount" is only used for SOME platforms.
 //
 //==============================================================================
-function EVH_DoPlat(line: Pline_t; args: PByteArray; _type: plattype_e; amount: integer): boolean;
+class function TUdmfPlatRoutines.EVH_DoPlat(line: Pline_t; args: PByteArray; _type: plattype_e; amount: integer): boolean;
 var
   plat: Pplat_t;
   secnum: integer;
@@ -122,7 +129,7 @@ begin
   result := false;
   secnum := -1;
 
-  while P_FindSectorFromTag2(args[0], secnum) >= 0 do
+  while {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag2(args[0], secnum) >= 0 do
   begin
     sec := @sectors[secnum];
     if sec.specialdata <> nil then
@@ -154,7 +161,7 @@ end;
 // EVH_StopPlat
 //
 //==============================================================================
-procedure EVH_StopPlat(line: Pline_t; args: PByteArray);
+class procedure TUdmfPlatRoutines.EVH_StopPlat(line: Pline_t; args: PByteArray);
 var
   i: integer;
 begin
@@ -179,7 +186,7 @@ end;
 // PH_AddActivePlat
 //
 //==============================================================================
-procedure PH_AddActivePlat(plat: Pplat_t);
+class procedure TUdmfPlatRoutines.PH_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
@@ -197,7 +204,7 @@ end;
 // PH_RemoveActivePlat
 //
 //==============================================================================
-procedure PH_RemoveActivePlat(plat: Pplat_t);
+class procedure TUdmfPlatRoutines.PH_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin

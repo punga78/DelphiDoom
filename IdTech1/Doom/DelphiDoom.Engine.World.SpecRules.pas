@@ -856,28 +856,28 @@ begin
      2:
       begin
         // Open Door
-        if (EV_DoDoor(line, open) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, open) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
      3:
       begin
         // Close Door
-        if (EV_DoDoor(line, close) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, close) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
      4:
       begin
         // Raise Door
-        if (EV_DoDoor(line, normal) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, normal) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
      5:
       begin
         // Raise Floor
-        if (EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -891,14 +891,14 @@ begin
      8:
       begin
         // Build Stairs
-        if (EV_BuildStairs(line, build8) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_BuildStairs(line, build8) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     10:
       begin
         // PlatDownWaitUp
-        if (EV_DoPlat(line, downWaitUpStay, 0) <> 0) or oldcompatibility then
+        if (TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -919,7 +919,7 @@ begin
     16:
       begin
         // Close Door 30
-        if (EV_DoDoor(line, close30ThenOpen) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, close30ThenOpen) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -933,14 +933,14 @@ begin
     19:
       begin
         // Lower Floor
-        if (EV_DoFloor(line, lowerFloor) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, lowerFloor) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     22:
       begin
         // Raise floor to nearest height and change texture
-        if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
+        if (TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -955,7 +955,7 @@ begin
       begin
         // Raise floor to shortest texture height
         //  on either side of lines.
-        if (EV_DoFloor(line, raiseToTexture) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseToTexture) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -969,28 +969,28 @@ begin
     36:
       begin
         // Lower Floor (TURBO)
-        if (EV_DoFloor(line, turboLower) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, turboLower) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     37:
       begin
         // LowerAndChange
-        if (EV_DoFloor(line, lowerAndChange) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, lowerAndChange) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     38:
       begin
         // Lower Floor To Lowest
-        if (EV_DoFloor(line, lowerFloorToLowest) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     39:
       begin
         // TELEPORT!
-        if (EV_Teleport(line, side, thing ) <> 0) or oldcompatibility then
+        if (TTeleportRoutines.EV_Teleport(line, side, thing ) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1000,7 +1000,7 @@ begin
         if oldcompatibility then
         begin
           EV_DoCeiling(line, raiseToHighest);
-          EV_DoFloor(line, lowerFloorToLowest);
+          TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
           line.special := 0;
         end
         else if EV_DoCeiling(line, raiseToHighest) <> 0 then
@@ -1023,21 +1023,21 @@ begin
     53:
       begin
         // Perpetual Platform Raise
-        if (EV_DoPlat(line, perpetualRaise, 0) <> 0) or oldcompatibility then
+        if (TPlatRoutines.EV_DoPlat(line, perpetualRaise, 0) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     54:
       begin
         // Platform Stop
-        if (EV_StopPlat(line) <> 0) or oldcompatibility then
+        if (TPlatRoutines.EV_StopPlat(line) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     56:
       begin
         // Raise Floor Crush
-        if (EV_DoFloor(line, raiseFloorCrush) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloorCrush) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1051,14 +1051,14 @@ begin
     58:
       begin
         // Raise Floor 24
-        if (EV_DoFloor(line, raiseFloor24) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloor24) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
     59:
       begin
         // Raise Floor 24 And Change
-        if (EV_DoFloor(line, raiseFloor24AndChange) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloor24AndChange) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1072,42 +1072,42 @@ begin
    108:
       begin
         // Blazing Door Raise (faster than TURBO!)
-        if (EV_DoDoor(line, blazeRaise) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, blazeRaise) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
    109:
       begin
         // Blazing Door Open (faster than TURBO!)
-        if (EV_DoDoor(line, blazeOpen) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, blazeOpen) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
    100:
       begin
         // Build Stairs Turbo 16
-        if (EV_BuildStairs(line, turbo16) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_BuildStairs(line, turbo16) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
    110:
       begin
         // Blazing Door Close (faster than TURBO!)
-        if (EV_DoDoor(line, blazeClose) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, blazeClose) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
    119:
       begin
         // Raise floor to nearest surr. floor
-        if (EV_DoFloor(line, raiseFloorToNearest) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloorToNearest) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
    121:
       begin
         // Blazing PlatDownWaitUpStay
-        if (EV_DoPlat(line, blazeDWUS, 0) <> 0) or oldcompatibility then
+        if (TPlatRoutines.EV_DoPlat(line, blazeDWUS, 0) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1122,7 +1122,7 @@ begin
         // TELEPORT MonsterONLY
         if thing.player = nil then
         begin
-          if (EV_Teleport(line, side, thing) <> 0) or oldcompatibility then
+          if (TTeleportRoutines.EV_Teleport(line, side, thing) <> 0) or oldcompatibility then
             line.special := 0;
         end;
       end;
@@ -1130,7 +1130,7 @@ begin
    130:
       begin
         // Raise Floor Turbo
-        if (EV_DoFloor(line, raiseFloorTurbo) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloorTurbo) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1163,13 +1163,13 @@ begin
     75:
       begin
         // Close Door
-        EV_DoDoor(line, close);
+        TDoorRoutines.EV_DoDoor(line, close);
       end;
 
     76:
       begin
         // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, close30ThenOpen);
       end;
 
     77:
@@ -1199,142 +1199,142 @@ begin
     82:
       begin
         // Lower Floor To Lowest
-        EV_DoFloor(line, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
       end;
 
     83:
       begin
         // Lower Floor
-        EV_DoFloor(line, lowerFloor);
+        TFloorRoutines.EV_DoFloor(line, lowerFloor);
       end;
 
     84:
       begin
         // LowerAndChange
-        EV_DoFloor(line, lowerAndChange);
+        TFloorRoutines.EV_DoFloor(line, lowerAndChange);
       end;
 
     86:
       begin
         // Open Door
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
       end;
 
     87:
       begin
         // Perpetual Platform Raise
-        EV_DoPlat(line, perpetualRaise, 0);
+        TPlatRoutines.EV_DoPlat(line, perpetualRaise, 0);
       end;
 
     88:
       begin
         // PlatDownWaitUp
-        EV_DoPlat(line, downWaitUpStay, 0);
+        TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0);
       end;
 
     89:
       begin
         // Platform Stop
-        EV_StopPlat(line);
+        TPlatRoutines.EV_StopPlat(line);
       end;
 
     90:
       begin
         // Raise Door
-        EV_DoDoor(line, normal);
+        TDoorRoutines.EV_DoDoor(line, normal);
       end;
 
     91:
       begin
         // Raise Floor
-        EV_DoFloor(line, raiseFloor);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor);
       end;
 
     92:
       begin
         // Raise Floor 24
-        EV_DoFloor(line, raiseFloor24);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24);
       end;
 
     93:
       begin
         // Raise Floor 24 And Change
-        EV_DoFloor(line, raiseFloor24AndChange);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24AndChange);
       end;
 
     94:
       begin
         // Raise Floor Crush
-        EV_DoFloor(line, raiseFloorCrush);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorCrush);
       end;
 
     95:
       begin
         // Raise floor to nearest height
         // and change texture.
-        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0);
       end;
 
     96:
       begin
         // Raise floor to shortest texture height
         // on either side of lines.
-        EV_DoFloor(line, raiseToTexture);
+        TFloorRoutines.EV_DoFloor(line, raiseToTexture);
       end;
 
     97:
       begin
         // TELEPORT!
-        EV_Teleport(line, side, thing);
+        TTeleportRoutines.EV_Teleport(line, side, thing);
       end;
 
     98:
       begin
         // Lower Floor (TURBO)
-        EV_DoFloor(line, turboLower);
+        TFloorRoutines.EV_DoFloor(line, turboLower);
       end;
 
    105:
       begin
         // Blazing Door Raise (faster than TURBO!)
-        EV_DoDoor(line, blazeRaise);
+        TDoorRoutines.EV_DoDoor(line, blazeRaise);
       end;
 
    106:
       begin
         // Blazing Door Open (faster than TURBO!)
-        EV_DoDoor(line, blazeOpen);
+        TDoorRoutines.EV_DoDoor(line, blazeOpen);
       end;
 
    107:
       begin
         // Blazing Door Close (faster than TURBO!)
-        EV_DoDoor(line, blazeClose);
+        TDoorRoutines.EV_DoDoor(line, blazeClose);
       end;
 
    120:
       begin
         // Blazing PlatDownWaitUpStay.
-        EV_DoPlat(line, blazeDWUS, 0);
+        TPlatRoutines.EV_DoPlat(line, blazeDWUS, 0);
       end;
 
    126:
       begin
         // TELEPORT MonsterONLY.
         if thing.player = nil then
-          EV_Teleport(line, side, thing);
+          TTeleportRoutines.EV_Teleport(line, side, thing);
       end;
 
    128:
       begin
         // Raise To Nearest Floor
-        EV_DoFloor(line, raiseFloorToNearest);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorToNearest);
       end;
 
    129:
       begin
         // Raise Floor Turbo
-        EV_DoFloor(line, raiseFloorTurbo);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorTurbo);
       end;
   else
     begin
@@ -1346,7 +1346,7 @@ begin
             begin
               // Raise Floor 512
               // 142 W1  EV_DoFloor(raiseFloor512)
-              if EV_DoFloor(line,raiseFloor512) <> 0 then
+              if TFloorRoutines.EV_DoFloor(line,raiseFloor512) <> 0 then
                 line.special := 0;
             end;
 
@@ -1354,7 +1354,7 @@ begin
             begin
               // Raise Floor 24 and change
               // 143 W1  EV_DoPlat(raiseAndChange,24)
-              if EV_DoPlat(line,raiseAndChange, 24) <> 0 then
+              if TPlatRoutines.EV_DoPlat(line,raiseAndChange, 24) <> 0 then
                 line.special := 0;
             end;
 
@@ -1362,7 +1362,7 @@ begin
             begin
               // Raise Floor 32 and change
               // 144 W1  EV_DoPlat(raiseAndChange,32)
-              if EV_DoPlat(line,raiseAndChange, 32) <> 0 then
+              if TPlatRoutines.EV_DoPlat(line,raiseAndChange, 32) <> 0 then
                 line.special := 0;
             end;
 
@@ -1378,7 +1378,7 @@ begin
             begin
               // Lower Pillar, Raise Donut
               // 146 W1  EV_DoDonut
-              if EV_DoDonut(line) <> 0 then
+              if TFloorRoutines.EV_DoDonut(line) <> 0 then
                 line.special := 0;
             end;
 
@@ -1411,7 +1411,7 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Trig)
               // 153 W1 Change Texture/Type Only
-              if EV_DoChange(line, trigChangeOnly) <> 0 then
+              if TFloorRoutines.EV_DoChange(line, trigChangeOnly) <> 0 then
                 line.special := 0;
             end;
 
@@ -1420,7 +1420,7 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Numeric)
               // 239 W1 Change Texture/Type Only
-              if EV_DoChange(line, numChangeOnly) <> 0 then
+              if TFloorRoutines.EV_DoChange(line, numChangeOnly) <> 0 then
                 line.special := 0;
             end;
 
@@ -1428,7 +1428,7 @@ begin
             begin
               // Lower floor to next lower neighbor
               // 219 W1 Lower Floor Next Lower Neighbor
-              if EV_DoFloor(line, lowerFloorToNearest) <> 0 then
+              if TFloorRoutines.EV_DoFloor(line, lowerFloorToNearest) <> 0 then
                 line.special := 0;
             end;
 
@@ -1436,7 +1436,7 @@ begin
             begin
               // Raise elevator next floor
               // 227 W1 Raise Elevator next floor
-              if EV_DoElevator(line, elevateUp) <> 0 then
+              if TFloorRoutines.EV_DoElevator(line, elevateUp) <> 0 then
                 line.special := 0;
             end;
 
@@ -1444,7 +1444,7 @@ begin
             begin
               // Lower elevator next floor
               // 231 W1 Lower Elevator next floor
-              if EV_DoElevator(line, elevateDown) <> 0 then
+              if TFloorRoutines.EV_DoElevator(line, elevateDown) <> 0 then
                 line.special := 0;
             end;
 
@@ -1452,7 +1452,7 @@ begin
             begin
               // Elevator to current floor
               // 235 W1 Elevator to current floor
-              if EV_DoElevator(line, elevateCurrent) <> 0 then
+              if TFloorRoutines.EV_DoElevator(line, elevateCurrent) <> 0 then
                 line.special := 0;
             end;
 
@@ -1505,21 +1505,21 @@ begin
             begin
               // Raise Floor 512
               // 147 WR  EV_DoFloor(raiseFloor512)
-              EV_DoFloor(line, raiseFloor512);
+              TFloorRoutines.EV_DoFloor(line, raiseFloor512);
             end;
 
           148:
             begin
               // Raise Floor 24 and Change
               // 148 WR  EV_DoPlat(raiseAndChange,24)
-              EV_DoPlat(line, raiseAndChange, 24);
+              TPlatRoutines.EV_DoPlat(line, raiseAndChange, 24);
             end;
 
           149:
             begin
               // Raise Floor 32 and Change
               // 149 WR  EV_DoPlat(raiseAndChange,32)
-              EV_DoPlat(line, raiseAndChange, 32);
+              TPlatRoutines.EV_DoPlat(line, raiseAndChange, 32);
             end;
 
           150:
@@ -1535,7 +1535,7 @@ begin
               // 151 WR  EV_DoCeiling(raiseToHighest),
               //         EV_DoFloor(lowerFloortoLowest)
               EV_DoCeiling(line, raiseToHighest);
-              EV_DoFloor(line, lowerFloorToLowest);
+              TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
             end;
 
           152:
@@ -1550,7 +1550,7 @@ begin
             begin
               // Build stairs, step 8
               // 256 WR EV_BuildStairs(build8)
-              EV_BuildStairs(line, build8);
+              TFloorRoutines.EV_BuildStairs(line, build8);
             end;
 
             //jff 3/16/98 renumber 154.257
@@ -1558,14 +1558,14 @@ begin
             begin
               // Build stairs, step 16
               // 257 WR EV_BuildStairs(turbo16)
-              EV_BuildStairs(line, turbo16);
+              TFloorRoutines.EV_BuildStairs(line, turbo16);
             end;
 
           155:
             begin
               // Lower Pillar, Raise Donut
               // 155 WR  EV_DoDonut
-              EV_DoDonut(line);
+              TFloorRoutines.EV_DoDonut(line);
             end;
 
           156:
@@ -1607,7 +1607,7 @@ begin
               //jff 3/14/98 create instant toggle floor type
               // Toggle floor between C and F instantly
               // 212 WR Instant Toggle Floor
-              EV_DoPlat(line, toggleUpDn, 0);
+              TPlatRoutines.EV_DoPlat(line, toggleUpDn, 0);
             end;
 
           //jff 3/16/98 renumber 216.154
@@ -1616,7 +1616,7 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Trigger)
               // 154 WR Change Texture/Type Only
-              EV_DoChange(line, trigChangeOnly);
+              TFloorRoutines.EV_DoChange(line, trigChangeOnly);
             end;
 
           240:
@@ -1624,35 +1624,35 @@ begin
               //jff 3/15/98 create texture change no motion type
               // Texture/Type Change Only (Numeric)
               // 240 WR Change Texture/Type Only
-              EV_DoChange(line, numChangeOnly);
+              TFloorRoutines.EV_DoChange(line, numChangeOnly);
             end;
 
           220:
             begin
               // Lower floor to next lower neighbor
               // 220 WR Lower Floor Next Lower Neighbor
-              EV_DoFloor(line, lowerFloorToNearest);
+              TFloorRoutines.EV_DoFloor(line, lowerFloorToNearest);
             end;
 
           228:
             begin
               // Raise elevator next floor
               // 228 WR Raise Elevator next floor
-              EV_DoElevator(line, elevateUp);
+              TFloorRoutines.EV_DoElevator(line, elevateUp);
             end;
 
           232:
             begin
               // Lower elevator next floor
               // 232 WR Lower Elevator next floor
-              EV_DoElevator(line, elevateDown);
+              TFloorRoutines.EV_DoElevator(line, elevateDown);
             end;
 
           236:
             begin
               // Elevator to current floor
               // 236 WR Elevator to current floor
-              EV_DoElevator(line,elevateCurrent);
+              TFloorRoutines.EV_DoElevator(line,elevateCurrent);
             end;
 
           244:
@@ -1831,21 +1831,21 @@ begin
     24:
       begin
         // RAISE FLOOR
-        if (EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
+        if (TFloorRoutines.EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
           TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     46:
       begin
         // OPEN DOOR
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
         TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
-        if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
+        if (TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
           TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
   else
@@ -2135,7 +2135,7 @@ begin
   if LevelHasLightning then
   begin
     if (NextLightningFlash = 0) or (LightningFlash <> 0) then
-      P_LightningFlash
+      TUdmfSpecRoutines.P_LightningFlash
     else
       dec(NextLightningFlash);
   end;
@@ -2268,7 +2268,7 @@ begin
     10:
       begin
         // DOOR CLOSE IN 30 SECONDS
-        P_SpawnDoorCloseIn30(sector);
+        TDoorRoutines.P_SpawnDoorCloseIn30(sector);
       end;
 
     12:
@@ -2286,7 +2286,7 @@ begin
     14:
       begin
         // DOOR RAISE IN 5 MINUTES
-        P_SpawnDoorRaiseIn5Mins(sector, i);
+        TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sector, i);
       end;
 
     17:
@@ -2298,7 +2298,7 @@ begin
     LIGHT_SEQUENCE_START:
       begin
         // Phased light sequence start
-        P_SpawnLightSequence(sector, 1);
+        TUdmfLightRoutines.P_SpawnLightSequence(sector, 1);
       end;
     end;
   end;

@@ -51,82 +51,90 @@ uses
   s_sound,
   sounddata;
 
-//==============================================================================
-//
-// T_VerticalDoor
-//
-//==============================================================================
-procedure T_VerticalDoor(door: Pvldoor_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDoorRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // T_VerticalDoor
+    //
+    //==============================================================================
+    class procedure T_VerticalDoor(door: Pvldoor_t); static;
 
-//==============================================================================
-//
-// EV_DoLockedDoor
-//
-//==============================================================================
-function EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer;
+    //==============================================================================
+    //
+    // EV_DoLockedDoor
+    //
+    //==============================================================================
+    class function EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer; static;
 
-//==============================================================================
-//
-// EV_DoDoor
-//
-//==============================================================================
-function EV_DoDoor(line: Pline_t; _type: vldoor_e): integer;
+    //==============================================================================
+    //
+    // EV_DoDoor
+    //
+    //==============================================================================
+    class function EV_DoDoor(line: Pline_t; _type: vldoor_e): integer; static;
 
-//==============================================================================
-//
-// EV_VerticalDoor
-//
-//==============================================================================
-procedure EV_VerticalDoor(line: Pline_t; thing: Pmobj_t);
+    //==============================================================================
+    //
+    // EV_VerticalDoor
+    //
+    //==============================================================================
+    class procedure EV_VerticalDoor(line: Pline_t; thing: Pmobj_t); static;
 
-//==============================================================================
-//
-// EV_SlidingDoor
-//
-//==============================================================================
-procedure EV_SlidingDoor(line: Pline_t; thing: Pmobj_t);
+    //==============================================================================
+    //
+    // EV_SlidingDoor
+    //
+    //==============================================================================
+    class procedure EV_SlidingDoor(line: Pline_t; thing: Pmobj_t); static;
 
-//==============================================================================
-//
-// EV_ClearForceFields
-//
-//==============================================================================
-function EV_ClearForceFields(line: Pline_t): integer;
+    //==============================================================================
+    //
+    // EV_ClearForceFields
+    //
+    //==============================================================================
+    class function EV_ClearForceFields(line: Pline_t): integer; static;
 
-//==============================================================================
-//
-// EV_RemoteSlidingDoor
-//
-//==============================================================================
-function EV_RemoteSlidingDoor(line: Pline_t; thing: Pmobj_t): integer;
+    //==============================================================================
+    //
+    // EV_RemoteSlidingDoor
+    //
+    //==============================================================================
+    class function EV_RemoteSlidingDoor(line: Pline_t; thing: Pmobj_t): integer; static;
 
-//==============================================================================
-//
-// P_SpawnDoorCloseIn30
-//
-//==============================================================================
-procedure P_SpawnDoorCloseIn30(sec: Psector_t);
+    //==============================================================================
+    //
+    // P_SpawnDoorCloseIn30
+    //
+    //==============================================================================
+    class procedure P_SpawnDoorCloseIn30(sec: Psector_t); static;
 
-//==============================================================================
-//
-// P_SpawnDoorRaiseIn5Mins
-//
-//==============================================================================
-procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
+    //==============================================================================
+    //
+    // P_SpawnDoorRaiseIn5Mins
+    //
+    //==============================================================================
+    class procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer); static;
 
-//==============================================================================
-//
-// P_InitSlidingDoorFrames
-//
-//==============================================================================
-procedure P_InitSlidingDoorFrames;
+    //==============================================================================
+    //
+    // P_InitSlidingDoorFrames
+    //
+    //==============================================================================
+    class procedure P_InitSlidingDoorFrames; static;
 
-//==============================================================================
-//
-// T_SlidingDoor
-//
-//==============================================================================
-procedure T_SlidingDoor(door: Pslidedoor_t);
+    //==============================================================================
+    //
+    // T_SlidingDoor
+    //
+    //==============================================================================
+    class procedure T_SlidingDoor(door: Pslidedoor_t); static;
+  end;
 
 implementation
 
@@ -151,6 +159,17 @@ uses
   DelphiDoom.Thinkers.Door.Types,
   DelphiDoom.Engine.Door.Thinker;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDoorLocalRoutines = class sealed
+  public
+    class procedure P_SoundNumForDoor(door: Pvldoor_t); static;
+    class function P_FindSlidingDoorType(line: Pline_t): integer; static;
+  end;
+
 //==============================================================================
 //
 // VERTICAL DOORS
@@ -158,7 +177,7 @@ uses
 // T_VerticalDoor
 //
 //==============================================================================
-procedure T_VerticalDoor(door: Pvldoor_t);
+class procedure TDoorRoutines.T_VerticalDoor(door: Pvldoor_t);
 begin
   // the state machine of the door is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*)
   if DoorTickClassic(door) then
@@ -177,7 +196,7 @@ end;
 // deal with all of them...
 //
 //==============================================================================
-function EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer;
+class function TDoorRoutines.EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer;
 var
   p: Pplayer_t;
 begin
@@ -379,7 +398,7 @@ end;
 // JVAL: changed to P_SoundNumForDoor
 //
 //==============================================================================
-procedure P_SoundNumForDoor(door: Pvldoor_t);
+class procedure TDoorLocalRoutines.P_SoundNumForDoor(door: Pvldoor_t);
 var
   i: integer;
   sector: Psector_t;
@@ -462,7 +481,7 @@ end;
 // EV_DoDoor
 //
 //==============================================================================
-function EV_DoDoor(line: Pline_t; _type: vldoor_e): integer;
+class function TDoorRoutines.EV_DoDoor(line: Pline_t; _type: vldoor_e): integer;
 var
   initial: boolean;
   secnum: integer;
@@ -493,7 +512,7 @@ begin
     door.thinker._function.acp1 := @T_VerticalDoor;
     door.sector := sec;
     door.line := nil;
-    P_SoundNumForDoor(door);    // villsa [STRIFE] set door sounds
+    TDoorLocalRoutines.P_SoundNumForDoor(door);    // villsa [STRIFE] set door sounds
     // direction, top, speed and sound of the kind: IdTech1\Thinkers
     DoorInitTagged(door, _type, VDOORSPEED, VDOORWAIT, false);
   end;
@@ -506,7 +525,7 @@ end;
 // villsa [STRIFE] new function
 //
 //==============================================================================
-function EV_ClearForceFields(line: Pline_t): integer;
+class function TDoorRoutines.EV_ClearForceFields(line: Pline_t): integer;
 var
   secnum: integer;
   sec: Psector_t;
@@ -560,7 +579,7 @@ end;
 // [STRIFE] Tons of new door types were added.
 //
 //==============================================================================
-procedure EV_VerticalDoor(line: Pline_t; thing: Pmobj_t);
+class procedure TDoorRoutines.EV_VerticalDoor(line: Pline_t; thing: Pmobj_t);
 var
   player: Pplayer_t;
   sec: Psector_t;
@@ -805,7 +824,7 @@ begin
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
   door.line := nil;
-  P_SoundNumForDoor(door);   // haleyjd 09/15/10: [STRIFE] Get door sounds
+  TDoorLocalRoutines.P_SoundNumForDoor(door);   // haleyjd 09/15/10: [STRIFE] Get door sounds
 
   // kind (pretty important to have a default one), speed, top and sound of the
   // special of the line: IdTech1\Thinkers
@@ -819,7 +838,7 @@ end;
 // Spawn a door that closes after 30 seconds
 //
 //==============================================================================
-procedure P_SpawnDoorCloseIn30(sec: Psector_t);
+class procedure TDoorRoutines.P_SpawnDoorCloseIn30(sec: Psector_t);
 var
   door: Pvldoor_t;
 begin
@@ -842,7 +861,7 @@ end;
 // Spawn a door that opens after 5 minutes
 //
 //==============================================================================
-procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
+class procedure TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
 var
   door: Pvldoor_t;
 begin
@@ -1000,7 +1019,7 @@ var
 // JVAL: Allow missing from IWAD, calls R_CheckTextureNumForName instead of R_TextureNumForName
 //
 //==============================================================================
-procedure P_InitSlidingDoorFrames;
+class procedure TDoorRoutines.P_InitSlidingDoorFrames;
 var
   i: integer;
 begin
@@ -1042,7 +1061,7 @@ end;
 // villsa [STRIFE] resurrected
 //
 //==============================================================================
-function P_FindSlidingDoorType(line: Pline_t): integer;
+class function TDoorLocalRoutines.P_FindSlidingDoorType(line: Pline_t): integer;
 var
   i: integer;
 begin
@@ -1063,7 +1082,7 @@ end;
 // villsa [STRIFE] resurrected
 //
 //==============================================================================
-procedure T_SlidingDoor(door: Pslidedoor_t);
+class procedure TDoorRoutines.T_SlidingDoor(door: Pslidedoor_t);
 var
   sec: Psector_t;
   speed: fixed_t;
@@ -1134,7 +1153,7 @@ begin
             speed := cheight - sec.floorheight - (10 * FRACUNIT);
 
             // something blocking it?
-            if T_MovePlane(sec, speed, sec.floorheight, false, 1, -1) = crushed then
+            if TFloorRoutines.T_MovePlane(sec, speed, sec.floorheight, false, 1, -1) = crushed then
             begin
               door.timer := SDOORWAIT;
               exit;
@@ -1142,7 +1161,7 @@ begin
             else
             begin
               // Instantly move plane
-              T_MovePlane(sec, 128 * FRACUNIT, cheight, false, 1, 1);
+              TFloorRoutines.T_MovePlane(sec, 128 * FRACUNIT, cheight, false, 1, 1);
 
               // turn line blocking back on
               door.line1.flags := door.line1.flags or ML_BLOCKING;
@@ -1167,7 +1186,7 @@ begin
           if door.frame < 0 then
           begin
             // IF DOOR IS DONE CLOSING...
-            T_MovePlane(sec, 128 * FRACUNIT, sec.floorheight, false, 1, -1);
+            TFloorRoutines.T_MovePlane(sec, 128 * FRACUNIT, sec.floorheight, false, 1, -1);
             door.frontsector.ceilingdata := nil;
             TTickRoutines.P_RemoveThinker(@door.thinker);
             exit;
@@ -1202,7 +1221,7 @@ end;
 // villsa [STRIFE] new function
 //
 //==============================================================================
-function EV_RemoteSlidingDoor(line: Pline_t; thing: Pmobj_t): integer;
+class function TDoorRoutines.EV_RemoteSlidingDoor(line: Pline_t; thing: Pmobj_t): integer;
 var
   secnum: integer;
   sec: Psector_t;
@@ -1226,7 +1245,7 @@ begin
     begin
       secline := sec.lines[i];
 
-      if P_FindSlidingDoorType(secline) < 0 then
+      if TDoorLocalRoutines.P_FindSlidingDoorType(secline) < 0 then
         continue;
 
       sec.renderflags := sec.renderflags or SRF_NO_INTERPOLATE;
@@ -1243,7 +1262,7 @@ end;
 // villsa [STRIFE]
 //
 //==============================================================================
-procedure EV_SlidingDoor(line: Pline_t; thing: Pmobj_t);
+class procedure TDoorRoutines.EV_SlidingDoor(line: Pline_t; thing: Pmobj_t);
 var
   sec: Psector_t;
   door: Pslidedoor_t;
@@ -1285,7 +1304,7 @@ begin
 
     door._type := sdt_openAndClose;
     door.status := sd_opening;
-    door.whichDoorIndex := P_FindSlidingDoorType(line);
+    door.whichDoorIndex := TDoorLocalRoutines.P_FindSlidingDoorType(line);
 
     // villsa [STRIFE] different error message
     if door.whichDoorIndex < 0 then
@@ -1322,7 +1341,7 @@ begin
     door.line2.flags := door.line2.flags or ML_BLOCKING;
 
     // villsa [STRIFE] set the closing sector
-    T_MovePlane(
+    TFloorRoutines.T_MovePlane(
             door.frontsector,
             128 * FRACUNIT,
             P_FindLowestCeilingSurrounding(door.frontsector),

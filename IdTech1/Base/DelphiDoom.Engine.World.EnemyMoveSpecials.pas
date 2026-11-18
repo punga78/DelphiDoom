@@ -70,7 +70,7 @@ begin
     // if the special is not a door
     // that can be opened,
     // return false
-    ret1 := P_ActivateLine(ld, actor, 0, ULAC_USE);
+    ret1 := TUdmfSpecRoutines.P_ActivateLine(ld, actor, 0, ULAC_USE);
     ret2 := TSwitchRoutines.P_UseSpecialLine(actor, ld, 0);
     result := ret1 or ret2;
   end;

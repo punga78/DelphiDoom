@@ -196,7 +196,7 @@ end;
 procedure TStrifeLevelRules.AfterLevel;
 begin
   // Check if the level is a lightning level
-  P_InitLightning;
+  TUdmfSpecRoutines.P_InitLightning;
 end;
 
 procedure TStrifeLevelRules.InitializeSector(ASector: Psector_t);

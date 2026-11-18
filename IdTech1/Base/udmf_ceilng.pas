@@ -41,34 +41,41 @@ uses
   p_spec,
   r_defs;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfCeilingRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // TH_MoveCeiling
+    //
+    //==============================================================================
+    class procedure TH_MoveCeiling(ceiling: Pceiling_t); static;
 
-//==============================================================================
-//
-// TH_MoveCeiling
-//
-//==============================================================================
-procedure TH_MoveCeiling(ceiling: Pceiling_t);
+    //==============================================================================
+    //
+    // EVH_DoCeiling
+    //
+    //==============================================================================
+    class function EVH_DoCeiling(line: Pline_t; args: PByteArray; _type: ceiling_e): boolean; static;
 
-//==============================================================================
-//
-// EVH_DoCeiling
-//
-//==============================================================================
-function EVH_DoCeiling(line: Pline_t; args: PByteArray; _type: ceiling_e): boolean;
+    //==============================================================================
+    //
+    // PH_AddActiveCeiling
+    //
+    //==============================================================================
+    class procedure PH_AddActiveCeiling(c: Pceiling_t); static;
 
-//==============================================================================
-//
-// PH_AddActiveCeiling
-//
-//==============================================================================
-procedure PH_AddActiveCeiling(c: Pceiling_t);
-
-//==============================================================================
-//
-// EVH_CeilingCrushStop
-//
-//==============================================================================
-function EVH_CeilingCrushStop(line: Pline_t; args: PByteArray): boolean;
+    //==============================================================================
+    //
+    // EVH_CeilingCrushStop
+    //
+    //==============================================================================
+    class function EVH_CeilingCrushStop(line: Pline_t; args: PByteArray): boolean; static;
+  end;
 
 implementation
 
@@ -88,13 +95,23 @@ uses
   {$ENDIF}
   udmf_floor;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfCeilingLocalRoutines = class sealed
+  public
+    class procedure PH_RemoveActiveCeiling(c: Pceiling_t); static;
+  end;
+
 //==============================================================================
 // PH_AddActiveCeiling
 //
 // Add an active ceiling
 //
 //==============================================================================
-procedure PH_AddActiveCeiling(c: Pceiling_t);
+class procedure TUdmfCeilingRoutines.PH_AddActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
@@ -113,7 +130,7 @@ end;
 // Remove a ceiling's thinker
 //
 //==============================================================================
-procedure PH_RemoveActiveCeiling(c: Pceiling_t);
+class procedure TUdmfCeilingLocalRoutines.PH_RemoveActiveCeiling(c: Pceiling_t);
 var
   i: integer;
 begin
@@ -133,7 +150,7 @@ end;
 // TH_MoveCeiling
 //
 //==============================================================================
-procedure TH_MoveCeiling(ceiling: Pceiling_t);
+class procedure TUdmfCeilingRoutines.TH_MoveCeiling(ceiling: Pceiling_t);
 var
   res: result_e;
 begin
@@ -145,7 +162,7 @@ begin
     1:
     // UP
       begin
-        res := TH_MovePlane(ceiling.sector,
+        res := TUdmfFloorRoutines.TH_MovePlane(ceiling.sector,
           ceiling.speed,
           ceiling.topheight,
           false, 1, ceiling.direction);
@@ -163,13 +180,13 @@ begin
             ceiling.speed := ceiling.speed * 2;
           end
           else
-            PH_RemoveActiveCeiling(ceiling);
+            TUdmfCeilingLocalRoutines.PH_RemoveActiveCeiling(ceiling);
         end;
       end;
    -1:
     // DOWN
       begin
-        res := TH_MovePlane(ceiling.sector,
+        res := TUdmfFloorRoutines.TH_MovePlane(ceiling.sector,
           ceiling.speed,
           ceiling.bottomheight,
           ceiling.crush, 1, ceiling.direction);
@@ -189,7 +206,7 @@ begin
                 ceiling.speed := ceiling.speed div 2;
               end;
           else
-            PH_RemoveActiveCeiling(ceiling);
+            TUdmfCeilingLocalRoutines.PH_RemoveActiveCeiling(ceiling);
           end;
         end;
       end;
@@ -202,7 +219,7 @@ end;
 // Move a ceiling up/down and all around!
 //
 //==============================================================================
-function EVH_DoCeiling(line: Pline_t; args: PByteArray; _type: ceiling_e): boolean;
+class function TUdmfCeilingRoutines.EVH_DoCeiling(line: Pline_t; args: PByteArray; _type: ceiling_e): boolean;
 var
   initial: boolean;
   secnum: integer;
@@ -217,7 +234,7 @@ begin
   while (secnum >= 0) or initial do
   begin
     initial := false;
-    secnum := P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     if secnum < 0 then
       break;
 
@@ -381,7 +398,7 @@ end;
 // Stop a ceiling from crushing!
 //
 //==============================================================================
-function EVH_CeilingCrushStop(line: Pline_t; args: PByteArray): boolean;
+class function TUdmfCeilingRoutines.EVH_CeilingCrushStop(line: Pline_t; args: PByteArray): boolean;
 var
   i: integer;
 begin

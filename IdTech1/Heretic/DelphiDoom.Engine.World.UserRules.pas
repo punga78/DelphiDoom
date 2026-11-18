@@ -245,7 +245,7 @@ begin
     else
       destAngle := ANG45 * (playerstarts[0].angle div 45);
   end;
-  P_Teleport(player.mo, destX, destY, destAngle);
+  TTeleportRoutines.P_Teleport(player.mo, destX, destY, destAngle);
   TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup)); // Full volume laugh
 end;
 

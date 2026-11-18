@@ -606,47 +606,55 @@ const
   );
 {$ENDIF}
 
-//==============================================================================
-//
-// EVH_ThingActivate
-//
-//==============================================================================
-function EVH_ThingActivate(tid: integer): boolean;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfThingRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // EVH_ThingActivate
+    //
+    //==============================================================================
+    class function EVH_ThingActivate(tid: integer): boolean; static;
 
-//==============================================================================
-//
-// EVH_ThingDeactivate
-//
-//==============================================================================
-function EVH_ThingDeactivate(tid: integer): boolean;
+    //==============================================================================
+    //
+    // EVH_ThingDeactivate
+    //
+    //==============================================================================
+    class function EVH_ThingDeactivate(tid: integer): boolean; static;
 
-//==============================================================================
-//
-// EVH_ThingRemove
-//
-//==============================================================================
-function EVH_ThingRemove(tid: integer): boolean;
+    //==============================================================================
+    //
+    // EVH_ThingRemove
+    //
+    //==============================================================================
+    class function EVH_ThingRemove(tid: integer): boolean; static;
 
-//==============================================================================
-//
-// EVH_ThingDestroy
-//
-//==============================================================================
-function EVH_ThingDestroy(tid: integer): boolean;
+    //==============================================================================
+    //
+    // EVH_ThingDestroy
+    //
+    //==============================================================================
+    class function EVH_ThingDestroy(tid: integer): boolean; static;
 
-//==============================================================================
-//
-// EVH_ThingProjectile
-//
-//==============================================================================
-function EVH_ThingProjectile(args: PByteArray; gravity: boolean): boolean;
+    //==============================================================================
+    //
+    // EVH_ThingProjectile
+    //
+    //==============================================================================
+    class function EVH_ThingProjectile(args: PByteArray; gravity: boolean): boolean; static;
 
-//==============================================================================
-//
-// EVH_ThingSpawn
-//
-//==============================================================================
-function EVH_ThingSpawn(args: PByteArray; fog: boolean): boolean;
+    //==============================================================================
+    //
+    // EVH_ThingSpawn
+    //
+    //==============================================================================
+    class function EVH_ThingSpawn(args: PByteArray; fog: boolean): boolean; static;
+  end;
 
 implementation
 
@@ -671,12 +679,23 @@ uses
   udmf_telept,
   doomdef;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfThingLocalRoutines = class sealed
+  public
+    class function P_ActivateThing(mobj: Pmobj_t): boolean; static;
+    class function P_DeactivateThing(mobj: Pmobj_t): boolean; static;
+  end;
+
 //==============================================================================
 //
 // EVH_ThingProjectile
 //
 //==============================================================================
-function EVH_ThingProjectile(args: PByteArray; gravity: boolean): boolean;
+class function TUdmfThingRoutines.EVH_ThingProjectile(args: PByteArray; gravity: boolean): boolean;
 var
   tid: integer;
   angle: angle_t;
@@ -701,7 +720,7 @@ begin
   fineAngle := angle shr ANGLETOFINESHIFT;
   speed := args[3] * 8192;
   vspeed := args[4] * 8192;
-  while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
+  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
   begin
     newMobj := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(moType));
     A_SeeSound(newMobj, newMobj);
@@ -712,7 +731,7 @@ begin
     newMobj.momz := vspeed;
     newMobj.flags := newMobj.flags or MF_DROPPED; // Don't respawn
     if gravity then
-      A_LowGravity(newMobj);
+      TExtraRoutines.A_LowGravity(newMobj);
     if P_CheckMissileSpawn(newMobj) then
       result := true;
   end;
@@ -723,7 +742,7 @@ end;
 // EVH_ThingSpawn
 //
 //==============================================================================
-function EVH_ThingSpawn(args: PByteArray; fog: boolean): boolean;
+class function TUdmfThingRoutines.EVH_ThingSpawn(args: PByteArray; fog: boolean): boolean;
 var
   tid: integer;
   angle: angle_t;
@@ -744,7 +763,7 @@ begin
   end;
 
   angle := args[2] * $1000000;
-  while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
+  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
   begin
     if mobjinfo[Ord(moType)].flags_ex and MF_EX_FLOATBOB <> 0 then
       z := mobj.z - mobj.floorz
@@ -774,7 +793,7 @@ end;
 // P_ActivateThing
 //
 //==============================================================================
-function P_ActivateThing(mobj: Pmobj_t): boolean;
+class function TUdmfThingLocalRoutines.P_ActivateThing(mobj: Pmobj_t): boolean;
 begin
   if mobj.flags and MF_COUNTKILL <> 0 then
   begin // Monster
@@ -797,15 +816,15 @@ end;
 // EVH_ThingActivate
 //
 //==============================================================================
-function EVH_ThingActivate(tid: integer): boolean;
+class function TUdmfThingRoutines.EVH_ThingActivate(tid: integer): boolean;
 var
   mobj: Pmobj_t;
   searcher: Pthinker_t;
 begin
   result := false;
   searcher := @TTickState.ThinkerCap;
-  while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
-    if P_ActivateThing(mobj) then
+  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
+    if TUdmfThingLocalRoutines.P_ActivateThing(mobj) then
       result := true;
 end;
 
@@ -814,7 +833,7 @@ end;
 // P_DeactivateThing
 //
 //==============================================================================
-function P_DeactivateThing(mobj: Pmobj_t): boolean;
+class function TUdmfThingLocalRoutines.P_DeactivateThing(mobj: Pmobj_t): boolean;
 begin
   if mobj.flags and MF_COUNTKILL <> 0 then
   begin // Monster
@@ -837,15 +856,15 @@ end;
 // EVH_ThingDeactivate
 //
 //==============================================================================
-function EVH_ThingDeactivate(tid: integer): boolean;
+class function TUdmfThingRoutines.EVH_ThingDeactivate(tid: integer): boolean;
 var
   mobj: Pmobj_t;
   searcher: Pthinker_t;
 begin
   result := false;
   searcher := @TTickState.ThinkerCap;
-  while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
-    if P_DeactivateThing(mobj) then
+  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
+    if TUdmfThingLocalRoutines.P_DeactivateThing(mobj) then
       result := true;
 end;
 
@@ -854,14 +873,14 @@ end;
 // EVH_ThingRemove
 //
 //==============================================================================
-function EVH_ThingRemove(tid: integer): boolean;
+class function TUdmfThingRoutines.EVH_ThingRemove(tid: integer): boolean;
 var
   mobj: Pmobj_t;
   searcher: Pthinker_t;
 begin
   result := false;
   searcher := @TTickState.ThinkerCap;
-  while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
+  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
   begin
     result := true;
     P_RemoveMobj(mobj);
@@ -873,14 +892,14 @@ end;
 // EVH_ThingDestroy
 //
 //==============================================================================
-function EVH_ThingDestroy(tid: integer): boolean;
+class function TUdmfThingRoutines.EVH_ThingDestroy(tid: integer): boolean;
 var
   mobj: Pmobj_t;
   searcher: Pthinker_t;
 begin
   result := false;
   searcher := @TTickState.ThinkerCap;
-  while P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
+  while TUdmfMobjRoutines.P_FindMobjFromTID(tid, Pointer(searcher), mobj) <> nil do
   begin
     if mobj.flags and MF_SHOOTABLE <> 0 then
     begin

@@ -47,47 +47,55 @@ uses
   dstrings,
   d_englsh;
 
-//==============================================================================
-//
-// T_VerticalDoor
-//
-//==============================================================================
-procedure T_VerticalDoor(door: Pvldoor_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDoorRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // T_VerticalDoor
+    //
+    //==============================================================================
+    class procedure T_VerticalDoor(door: Pvldoor_t); static;
 
-//==============================================================================
-//
-// EV_DoLockedDoor
-//
-//==============================================================================
-function EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer;
+    //==============================================================================
+    //
+    // EV_DoLockedDoor
+    //
+    //==============================================================================
+    class function EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer; static;
 
-//==============================================================================
-//
-// EV_DoDoor
-//
-//==============================================================================
-function EV_DoDoor(line: Pline_t; _type: vldoor_e): integer;
+    //==============================================================================
+    //
+    // EV_DoDoor
+    //
+    //==============================================================================
+    class function EV_DoDoor(line: Pline_t; _type: vldoor_e): integer; static;
 
-//==============================================================================
-//
-// EV_VerticalDoor
-//
-//==============================================================================
-procedure EV_VerticalDoor(line: Pline_t; thing: Pmobj_t);
+    //==============================================================================
+    //
+    // EV_VerticalDoor
+    //
+    //==============================================================================
+    class procedure EV_VerticalDoor(line: Pline_t; thing: Pmobj_t); static;
 
-//==============================================================================
-//
-// P_SpawnDoorCloseIn30
-//
-//==============================================================================
-procedure P_SpawnDoorCloseIn30(sec: Psector_t);
+    //==============================================================================
+    //
+    // P_SpawnDoorCloseIn30
+    //
+    //==============================================================================
+    class procedure P_SpawnDoorCloseIn30(sec: Psector_t); static;
 
-//==============================================================================
-//
-// P_SpawnDoorRaiseIn5Mins
-//
-//==============================================================================
-procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
+    //==============================================================================
+    //
+    // P_SpawnDoorRaiseIn5Mins
+    //
+    //==============================================================================
+    class procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer); static;
+  end;
 
 implementation
 
@@ -110,7 +118,7 @@ uses
 // T_VerticalDoor
 //
 //==============================================================================
-procedure T_VerticalDoor(door: Pvldoor_t);
+class procedure TDoorRoutines.T_VerticalDoor(door: Pvldoor_t);
 begin
   // the state machine of the door is in IdTech1\Thinkers (DelphiDoom.Thinkers.Door.*)
   if DoorTickClassic(door) then
@@ -126,7 +134,7 @@ end;
 // Move a locked door up/down
 //
 //==============================================================================
-function EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer;
+class function TDoorRoutines.EV_DoLockedDoor(line: Pline_t; _type: vldoor_e; thing: Pmobj_t): integer;
 var
   p: Pplayer_t;
 begin
@@ -188,7 +196,7 @@ end;
 // EV_DoDoor
 //
 //==============================================================================
-function EV_DoDoor(line: Pline_t; _type: vldoor_e): integer;
+class function TDoorRoutines.EV_DoDoor(line: Pline_t; _type: vldoor_e): integer;
 var
   initial: boolean;
   secnum: integer;
@@ -229,7 +237,7 @@ end;
 // EV_VerticalDoor : open a door manually, no tag value
 //
 //==============================================================================
-procedure EV_VerticalDoor(line: Pline_t; thing: Pmobj_t);
+class procedure TDoorRoutines.EV_VerticalDoor(line: Pline_t; thing: Pmobj_t);
 var
   player: Pplayer_t;
   sec: Psector_t;
@@ -317,7 +325,7 @@ begin
             // "specialdata" might not actually point at a door.
             if @door.thinker._function.acp1 = @ T_VerticalDoor then
               door.direction := -1  // start going down immediately
-            else if @door.thinker._function.acp1 = @T_PlatRaise then
+            else if @door.thinker._function.acp1 = @TPlatRoutines.T_PlatRaise then
             begin
               // Erm, this is a plat, not a door.
               // This notably causes a problem in ep1-0500.lmp where
@@ -354,7 +362,7 @@ end;
 // Spawn a door that closes after 30 seconds
 //
 //==============================================================================
-procedure P_SpawnDoorCloseIn30(sec: Psector_t);
+class procedure TDoorRoutines.P_SpawnDoorCloseIn30(sec: Psector_t);
 var
   door: Pvldoor_t;
 begin
@@ -377,7 +385,7 @@ end;
 // Spawn a door that opens after 5 minutes
 //
 //==============================================================================
-procedure P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
+class procedure TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sec: Psector_t; secnum: integer);
 var
   door: Pvldoor_t;
 begin

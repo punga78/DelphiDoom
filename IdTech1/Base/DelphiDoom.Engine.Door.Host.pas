@@ -78,7 +78,7 @@ begin
 {$IFNDEF HEXEN}
   if FFlavor = TDoorFlavor.Classic then
   begin
-    LResult := T_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, AFloorOrCeiling,
+    LResult := TFloorRoutines.T_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, AFloorOrCeiling,
       ADirection);
     if LResult = crushed then
       Result := TDoorPlaneResult.Crushed
@@ -88,7 +88,7 @@ begin
   else
 {$ENDIF}
   begin
-    LResult := TH_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, AFloorOrCeiling,
+    LResult := TUdmfFloorRoutines.TH_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, AFloorOrCeiling,
       ADirection);
     if LResult = RES_CRUSHED then
       Result := TDoorPlaneResult.Crushed

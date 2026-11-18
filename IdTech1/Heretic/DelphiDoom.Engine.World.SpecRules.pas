@@ -443,28 +443,28 @@ begin
      2:
       begin
         // Open Door
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
         line.special := 0;
       end;
 
      3:
       begin
         // Close Door
-        EV_DoDoor(line, close);
+        TDoorRoutines.EV_DoDoor(line, close);
         line.special := 0;
       end;
 
      4:
       begin
         // Raise Door
-        EV_DoDoor(line, normal);
+        TDoorRoutines.EV_DoDoor(line, normal);
         line.special := 0;
       end;
 
      5:
       begin
         // Raise Floor
-        EV_DoFloor(line, raiseFloor);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor);
         line.special := 0;
       end;
 
@@ -478,21 +478,21 @@ begin
      8:
       begin
         // Build Stairs
-        EV_BuildStairs(line, 8 * FRACUNIT);
+        TFloorRoutines.EV_BuildStairs(line, 8 * FRACUNIT);
         line.special := 0;
       end;
 
    106:
       begin
         // Build Stairs
-        EV_BuildStairs(line, 16 * FRACUNIT);
+        TFloorRoutines.EV_BuildStairs(line, 16 * FRACUNIT);
         line.special := 0;
       end;
 
     10:
       begin
         // PlatDownWaitUp
-        EV_DoPlat(line, downWaitUpStay, 0);
+        TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0);
         line.special := 0;
       end;
 
@@ -513,7 +513,7 @@ begin
     16:
       begin
         // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, close30ThenOpen);
         line.special := 0;
       end;
 
@@ -527,14 +527,14 @@ begin
     19:
       begin
         // Lower Floor
-        EV_DoFloor(line, lowerFloor);
+        TFloorRoutines.EV_DoFloor(line, lowerFloor);
         line.special := 0;
       end;
 
     22:
       begin
         // Raise floor to nearest height and change texture
-        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0);
         line.special := 0;
       end;
 
@@ -549,7 +549,7 @@ begin
       begin
         // Raise floor to shortest texture height
         //  on either side of lines.
-        EV_DoFloor(line, raiseToTexture);
+        TFloorRoutines.EV_DoFloor(line, raiseToTexture);
         line.special := 0;
       end;
 
@@ -563,28 +563,28 @@ begin
     36:
       begin
         // Lower Floor (TURBO)
-        EV_DoFloor(line, turboLower);
+        TFloorRoutines.EV_DoFloor(line, turboLower);
         line.special := 0;
       end;
 
     37:
       begin
         // LowerAndChange
-        EV_DoFloor(line, lowerAndChange);
+        TFloorRoutines.EV_DoFloor(line, lowerAndChange);
         line.special := 0;
       end;
 
     38:
       begin
         // Lower Floor To Lowest
-        EV_DoFloor(line, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
         line.special := 0;
       end;
 
     39:
       begin
         // TELEPORT!
-        EV_Teleport(line, side, thing);
+        TTeleportRoutines.EV_Teleport(line, side, thing);
         line.special := 0;
       end;
 
@@ -592,7 +592,7 @@ begin
       begin
         // RaiseCeilingLowerFloor
         EV_DoCeiling(line, raiseToHighest);
-        EV_DoFloor(line, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
         line.special := 0;
       end;
 
@@ -613,21 +613,21 @@ begin
     53:
       begin
         // Perpetual Platform Raise
-        EV_DoPlat(line, perpetualRaise, 0);
+        TPlatRoutines.EV_DoPlat(line, perpetualRaise, 0);
         line.special := 0;
       end;
 
     54:
       begin
         // Platform Stop
-        EV_StopPlat(line);
+        TPlatRoutines.EV_StopPlat(line);
         line.special := 0;
       end;
 
     56:
       begin
         // Raise Floor Crush
-        EV_DoFloor(line, raiseFloorCrush);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorCrush);
         line.special := 0;
       end;
 
@@ -641,14 +641,14 @@ begin
     58:
       begin
         // Raise Floor 24
-        EV_DoFloor(line, raiseFloor24);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24);
         line.special := 0;
       end;
 
     59:
       begin
         // Raise Floor 24 And Change
-        EV_DoFloor(line, raiseFloor24AndChange);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24AndChange);
         line.special := 0;
       end;
 
@@ -687,13 +687,13 @@ begin
     75:
       begin
         // Close Door
-        EV_DoDoor(line, close);
+        TDoorRoutines.EV_DoDoor(line, close);
       end;
 
     76:
       begin
         // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, close30ThenOpen);
       end;
 
     77:
@@ -723,105 +723,105 @@ begin
     82:
       begin
         // Lower Floor To Lowest
-        EV_DoFloor(line, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(line, lowerFloorToLowest);
       end;
 
     83:
       begin
         // Lower Floor
-        EV_DoFloor(line, lowerFloor);
+        TFloorRoutines.EV_DoFloor(line, lowerFloor);
       end;
 
     84:
       begin
         // LowerAndChange
-        EV_DoFloor(line, lowerAndChange);
+        TFloorRoutines.EV_DoFloor(line, lowerAndChange);
       end;
 
     86:
       begin
         // Open Door
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
       end;
 
     87:
       begin
         // Perpetual Platform Raise
-        EV_DoPlat(line, perpetualRaise, 0);
+        TPlatRoutines.EV_DoPlat(line, perpetualRaise, 0);
       end;
 
     88:
       begin
         // PlatDownWaitUp
-        EV_DoPlat(line, downWaitUpStay, 0);
+        TPlatRoutines.EV_DoPlat(line, downWaitUpStay, 0);
       end;
 
     89:
       begin
         // Platform Stop
-        EV_StopPlat(line);
+        TPlatRoutines.EV_StopPlat(line);
       end;
 
     90:
       begin
         // Raise Door
-        EV_DoDoor(line, normal);
+        TDoorRoutines.EV_DoDoor(line, normal);
       end;
 
    100:
       begin
         // Retrigger_Raise_Door_Turbo
-        EV_DoDoor(line, normal, VDOORSPEED * 3);
+        TDoorRoutines.EV_DoDoor(line, normal, VDOORSPEED * 3);
       end;
 
     91:
       begin
         // Raise Floor
-        EV_DoFloor(line, raiseFloor);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor);
       end;
 
     92:
       begin
         // Raise Floor 24
-        EV_DoFloor(line, raiseFloor24);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24);
       end;
 
     93:
       begin
         // Raise Floor 24 And Change
-        EV_DoFloor(line, raiseFloor24AndChange);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor24AndChange);
       end;
 
     94:
       begin
         // Raise Floor Crush
-        EV_DoFloor(line, raiseFloorCrush);
+        TFloorRoutines.EV_DoFloor(line, raiseFloorCrush);
       end;
 
     95:
       begin
         // Raise floor to nearest height
         // and change texture.
-        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0);
       end;
 
     96:
       begin
         // Raise floor to shortest texture height
         // on either side of lines.
-        EV_DoFloor(line, raiseToTexture);
+        TFloorRoutines.EV_DoFloor(line, raiseToTexture);
       end;
 
     97:
       begin
         // TELEPORT!
-        EV_Teleport(line, side, thing);
+        TTeleportRoutines.EV_Teleport(line, side, thing);
       end;
 
     98:
       begin
         // Lower Floor (TURBO)
-        EV_DoFloor(line, turboLower);
+        TFloorRoutines.EV_DoFloor(line, turboLower);
       end;
 
   end;
@@ -847,21 +847,21 @@ begin
     24:
       begin
         // RAISE FLOOR
-        EV_DoFloor(line, raiseFloor);
+        TFloorRoutines.EV_DoFloor(line, raiseFloor);
         TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
 
     46:
       begin
         // OPEN DOOR
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
         TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
-        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        TPlatRoutines.EV_DoPlat(line, raiseToNearestAndChange, 0);
         TSwitchRoutines.P_ChangeSwitchTexture(line, false);
       end;
   end;
@@ -1078,7 +1078,7 @@ begin
   if LevelHasLightning then
   begin
     if (NextLightningFlash = 0) or (LightningFlash <> 0) then
-      P_LightningFlash
+      TUdmfSpecRoutines.P_LightningFlash
     else
       dec(NextLightningFlash);
   end;
@@ -1153,7 +1153,7 @@ begin
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
       TTickRoutines.P_AddThinker(@floor.thinker);
       s2.specialdata := floor;
-      floor.thinker._function.acp1 := @T_MoveFloor;
+      floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
       floor._type := donutRaise;
       floor.crush := false;
       floor.direction := 1;
@@ -1167,7 +1167,7 @@ begin
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
       TTickRoutines.P_AddThinker(@floor.thinker);
       s1.specialdata := floor;
-      floor.thinker._function.acp1 := @T_MoveFloor;
+      floor.thinker._function.acp1 := @TFloorRoutines.T_MoveFloor;
       floor._type := lowerFloor;
       floor.crush := false;
       floor.direction := -1;
@@ -1267,7 +1267,7 @@ begin
     10:
       begin
         // DOOR CLOSE IN 30 SECONDS
-        P_SpawnDoorCloseIn30(sector);
+        TDoorRoutines.P_SpawnDoorCloseIn30(sector);
       end;
 
     12:
@@ -1285,7 +1285,7 @@ begin
     14:
       begin
         // DOOR RAISE IN 5 MINUTES
-        P_SpawnDoorRaiseIn5Mins(sector, i);
+        TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sector, i);
       end;
 
     17:
@@ -1297,7 +1297,7 @@ begin
     LIGHT_SEQUENCE_START:
       begin
         // Phased light sequence start
-        P_SpawnLightSequence(sector, 1);
+        TUdmfLightRoutines.P_SpawnLightSequence(sector, 1);
       end;
     end;
   end;

@@ -6064,7 +6064,11 @@ end;
 class procedure TCommonDamageActions.A_ScreamAndUnblock(actor: Pmobj_t);
 begin
   TMonsterBaseActions.A_Scream(actor);
+  {$IFDEF HERETIC}
   A_NoBlocking(actor);
+  {$ELSE}
+  TExtraRoutines.A_NoBlocking(actor);
+  {$ENDIF}
 end;
 
 //==============================================================================
@@ -7164,7 +7168,7 @@ begin
         offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[0]);
 
     if offset = actor.info.deathstate then
-      A_Gravity(actor); // JVAL SOS
+      TExtraRoutines.A_Gravity(actor); // JVAL SOS
 
     if @states[offset] <> actor.state then
       P_SetMobjState(actor, statenum_t(offset));

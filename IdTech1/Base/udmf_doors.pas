@@ -44,26 +44,34 @@ uses
   p_spec,
   r_defs;
 
-//==============================================================================
-//
-// TH_VerticalDoor
-//
-//==============================================================================
-procedure TH_VerticalDoor(door: Pvldoor_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfDoorRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // TH_VerticalDoor
+    //
+    //==============================================================================
+    class procedure TH_VerticalDoor(door: Pvldoor_t); static;
 
-//==============================================================================
-//
-// EVH_DoDoor
-//
-//==============================================================================
-function EVH_DoDoor(line: Pline_t; args: PByteArray; _type: vldoor_e): boolean;
+    //==============================================================================
+    //
+    // EVH_DoDoor
+    //
+    //==============================================================================
+    class function EVH_DoDoor(line: Pline_t; args: PByteArray; _type: vldoor_e): boolean; static;
 
-//==============================================================================
-//
-// EVH_VerticalDoor
-//
-//==============================================================================
-function EVH_VerticalDoor(line: Pline_t; thing: Pmobj_t): boolean;
+    //==============================================================================
+    //
+    // EVH_VerticalDoor
+    //
+    //==============================================================================
+    class function EVH_VerticalDoor(line: Pline_t; thing: Pmobj_t): boolean; static;
+  end;
 
 implementation
 
@@ -87,7 +95,7 @@ uses
 // stays the vldoor_t of the zone memory
 //
 //==============================================================================
-procedure TH_VerticalDoor(door: Pvldoor_t);
+class procedure TUdmfDoorRoutines.TH_VerticalDoor(door: Pvldoor_t);
 begin
   if DoorTickUdmf(door) then
   begin
@@ -104,7 +112,7 @@ end;
 // Move a door up/down
 //
 //==============================================================================
-function EVH_DoDoor(line: Pline_t; args: PByteArray; _type: vldoor_e): boolean;
+class function TUdmfDoorRoutines.EVH_DoDoor(line: Pline_t; args: PByteArray; _type: vldoor_e): boolean;
 var
   initial: boolean;
   secnum: integer;
@@ -120,7 +128,7 @@ begin
   while (secnum >= 0) or initial do
   begin
     initial := false;
-    secnum := P_FindSectorFromTag(args[0], secnum);
+    secnum := {$IFNDEF HEXEN}TUdmfSpecRoutines.{$ENDIF}P_FindSectorFromTag(args[0], secnum);
     if secnum < 0 then
       break;
 
@@ -146,7 +154,7 @@ end;
 // EVH_VerticalDoor : open a door manually, no tag value
 //
 //==============================================================================
-function EVH_VerticalDoor(line: Pline_t; thing: Pmobj_t): boolean;
+class function TUdmfDoorRoutines.EVH_VerticalDoor(line: Pline_t; thing: Pmobj_t): boolean;
 var
   sec: Psector_t;
   door: Pvldoor_t;

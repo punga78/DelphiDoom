@@ -57,7 +57,7 @@ uses
 function TEnginePlatHost.MovePlane(ASector: Pointer; ASpeed, ADestination: Integer;
   ACrush: Boolean; ADirection: Integer): TPlatMoveResult;
 begin
-  case T_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, 0, ADirection) of
+  case TFloorRoutines.T_MovePlane(Psector_t(ASector), ASpeed, ADestination, ACrush, 0, ADirection) of
     crushed:
       Result := TPlatMoveResult.Crushed;
     pastdest:
@@ -101,7 +101,7 @@ end;
 
 procedure TEnginePlatHost.RemovePlat(APlat: Pointer);
 begin
-  P_RemoveActivePlat(Pplat_t(APlat));
+  TPlatRoutines.P_RemoveActivePlat(Pplat_t(APlat));
 end;
 
 end.

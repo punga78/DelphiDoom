@@ -832,7 +832,7 @@ begin
   end;
 
   junk.tag := 666;
-  EV_DoDoor(@junk, open);
+  TDoorRoutines.EV_DoDoor(@junk, open);
 end;
 
 //==============================================================================
@@ -2372,13 +2372,13 @@ begin
       if mo.flags4_ex and MF4_EX_MAP07BOSS1 <> 0 then
       begin
         junk.tag := 666;
-        EV_DoFloor(@junk, lowerFloorToLowest);
+        TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
         exit;
       end;
       if mo.flags4_ex and MF4_EX_MAP07BOSS2 <> 0 then
       begin
         junk.tag := 667;
-        EV_DoFloor(@junk, raiseToTexture);
+        TFloorRoutines.EV_DoFloor(@junk, raiseToTexture);
         exit;
       end;
     end;
@@ -2389,7 +2389,7 @@ begin
       1:
         begin
           junk.tag := 666;
-          EV_DoFloor(@junk, lowerFloorToLowest);
+          TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
           exit;
         end;
       4:
@@ -2397,13 +2397,13 @@ begin
           if TGameSession.GameMap = 6 then
           begin
             junk.tag := 666;
-            EV_DoDoor(@junk, blazeOpen);
+            TDoorRoutines.EV_DoDoor(@junk, blazeOpen);
             exit;
           end
           else if TGameSession.GameMap = 8 then
           begin
             junk.tag := 666;
-            EV_DoFloor(@junk, lowerFloorToLowest);
+            TFloorRoutines.EV_DoFloor(@junk, lowerFloorToLowest);
             exit;
           end;
         end;

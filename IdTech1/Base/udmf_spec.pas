@@ -40,72 +40,6 @@ uses
   udmf_doors,
   DelphiDoom.Specials.Intf;
 
-//==============================================================================
-//
-// P_FindSectorFromTag
-//
-//==============================================================================
-function P_FindSectorFromTag(tag: integer; var start: integer): integer;
-
-//==============================================================================
-//
-// P_FindSectorFromTag2
-//
-//==============================================================================
-function P_FindSectorFromTag2(tag: integer; var start: integer): integer;
-
-//==============================================================================
-//
-// P_FindLine
-//
-//==============================================================================
-function P_FindLine(lineTag: integer; searchPosition: PInteger): Pline_t;
-
-//==============================================================================
-//
-// P_ConfigureLineSpecials
-//
-// Gives the registry that runs the line specials (the composition root creates it)
-//
-//==============================================================================
-procedure P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
-
-//==============================================================================
-//
-// P_ExecuteLineSpecial
-//
-//==============================================================================
-function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
-  side: integer; mo: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_ActivateLine
-//
-//==============================================================================
-function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean;
-
-//==============================================================================
-//
-// P_LineToArgs
-//
-//==============================================================================
-procedure P_LineToArgs(line: Pline_t; const args: PByteArray);
-
-//==============================================================================
-//
-// P_ArgsToLine
-//
-//==============================================================================
-procedure P_ArgsToLine(line: Pline_t; const args: PByteArray);
-
-//==============================================================================
-//
-// P_ExecuteActorSpecial
-//
-//==============================================================================
-function P_ExecuteActorSpecial(special: integer; args: PIntegerArray; mo: Pmobj_t): boolean;
-
 const
   {$IFDEF DOOM_OR_STRIFE}
   LIGHTNING_SPECIAL = 20;
@@ -123,27 +57,103 @@ var
   NextLightningFlash: integer;
   LightningFlash: integer;
 
-//==============================================================================
-//
-// P_ForceLightning
-//
-//==============================================================================
-procedure P_ForceLightning(const tics: Integer = 0);
-
-//==============================================================================
-//
-// P_InitLightning
-//
-//==============================================================================
-procedure P_InitLightning;
-
-//==============================================================================
-//
-// P_LightningFlash
-//
-//==============================================================================
-procedure P_LightningFlash;
   
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfSpecRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_FindSectorFromTag
+    //
+    //==============================================================================
+    class function P_FindSectorFromTag(tag: integer; var start: integer): integer; static;
+
+    //==============================================================================
+    //
+    // P_FindSectorFromTag2
+    //
+    //==============================================================================
+    class function P_FindSectorFromTag2(tag: integer; var start: integer): integer; static;
+
+    //==============================================================================
+    //
+    // P_FindLine
+    //
+    //==============================================================================
+    class function P_FindLine(lineTag: integer; searchPosition: PInteger): Pline_t; static;
+
+    //==============================================================================
+    //
+    // P_ConfigureLineSpecials
+    //
+    // Gives the registry that runs the line specials (the composition root creates it)
+    //
+    //==============================================================================
+    class procedure P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry); static;
+
+    //==============================================================================
+    //
+    // P_ExecuteLineSpecial
+    //
+    //==============================================================================
+    class function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
+      side: integer; mo: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_ActivateLine
+    //
+    //==============================================================================
+    class function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // P_LineToArgs
+    //
+    //==============================================================================
+    class procedure P_LineToArgs(line: Pline_t; const args: PByteArray); static;
+
+    //==============================================================================
+    //
+    // P_ArgsToLine
+    //
+    //==============================================================================
+    class procedure P_ArgsToLine(line: Pline_t; const args: PByteArray); static;
+
+    //==============================================================================
+    //
+    // P_ExecuteActorSpecial
+    //
+    //==============================================================================
+    class function P_ExecuteActorSpecial(special: integer; args: PIntegerArray; mo: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_ForceLightning
+    //
+    //==============================================================================
+    class procedure P_ForceLightning(const tics: Integer = 0); static;
+
+    //==============================================================================
+    //
+    // P_InitLightning
+    //
+    //==============================================================================
+    class procedure P_InitLightning; static;
+
+    //==============================================================================
+    //
+    // P_LightningFlash
+    //
+    //==============================================================================
+    class procedure P_LightningFlash; static;
+  end;
+
 implementation
 
 uses
@@ -190,6 +200,19 @@ type
 var
   lineSpecials: ISpecialRegistry;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TUdmfSpecLocalRoutines = class sealed
+  public
+    class function EVH_SectorSoundChange(args: PByteArray): boolean; static;
+    class function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean; static;
+    class procedure P_LocalEarthQuakeEx(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxtdist, maxddist: fixed_t); static;
+    class function U_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean; static;
+  end;
+
 //==============================================================================
 //
 // RegisterLineSpecial
@@ -209,7 +232,7 @@ end;
 // P_FindSectorFromTag
 //
 //==============================================================================
-function P_FindSectorFromTag(tag: integer; var start: integer): integer;
+class function TUdmfSpecRoutines.P_FindSectorFromTag(tag: integer; var start: integer): integer;
 begin
   result := P_FindSectorFromTag2(tag, start);
 end;
@@ -219,7 +242,7 @@ end;
 // P_FindSectorFromTag2
 //
 //==============================================================================
-function P_FindSectorFromTag2(tag: integer; var start: integer): integer;
+class function TUdmfSpecRoutines.P_FindSectorFromTag2(tag: integer; var start: integer): integer;
 var
   i: integer;
   b: Byte;
@@ -263,7 +286,7 @@ end;
 // P_FindLine
 //
 //==============================================================================
-function P_FindLine(lineTag: integer; searchPosition: PInteger): Pline_t;
+class function TUdmfSpecRoutines.P_FindLine(lineTag: integer; searchPosition: PInteger): Pline_t;
 var
   i: integer;
 begin
@@ -283,7 +306,7 @@ end;
 // P_LightningFlash
 //
 //==============================================================================
-procedure P_LightningFlash;
+class procedure TUdmfSpecRoutines.P_LightningFlash;
 const
   SND_THUNDR = 'THUNDR';
 var
@@ -387,7 +410,7 @@ end;
 // P_ForceLightning
 //
 //==============================================================================
-procedure P_ForceLightning(const tics: Integer = 0);
+class procedure TUdmfSpecRoutines.P_ForceLightning(const tics: Integer = 0);
 begin
   NextLightningFlash := tics;
 end;
@@ -397,7 +420,7 @@ end;
 // P_InitLightning
 //
 //==============================================================================
-procedure P_InitLightning;
+class procedure TUdmfSpecRoutines.P_InitLightning;
 var
   i: integer;
   secCount: integer;
@@ -439,7 +462,7 @@ end;
 // EVH_SectorSoundChange
 //
 //==============================================================================
-function EVH_SectorSoundChange(args: PByteArray): boolean;
+class function TUdmfSpecLocalRoutines.EVH_SectorSoundChange(args: PByteArray): boolean;
 var
   secNum: integer;
 begin
@@ -452,7 +475,7 @@ begin
 
   result := false;
   secNum := -1;
-  while P_FindSectorFromTag2(args[0], secNum) >= 0 do
+  while TUdmfSpecRoutines.P_FindSectorFromTag2(args[0], secNum) >= 0 do
   begin
     sectors[secNum].seqType := args[1];
     result := true;
@@ -464,7 +487,7 @@ end;
 // CheckedLockedDoor
 //
 //==============================================================================
-function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean;
+class function TUdmfSpecLocalRoutines.CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean;
 var
   LockedBuffer: string;
 begin
@@ -513,7 +536,7 @@ end;
 // P_LocalEarthQuakeEx
 //
 //==============================================================================
-procedure P_LocalEarthQuakeEx(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxtdist, maxddist: fixed_t);
+class procedure TUdmfSpecLocalRoutines.P_LocalEarthQuakeEx(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxtdist, maxddist: fixed_t);
 const
   SND_QUAKE = 'QUAKE2';
 var
@@ -571,7 +594,7 @@ end;
 //    args[4]    TID of map thing for focus of quake
 //
 //==============================================================================
-function U_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean;
+class function TUdmfSpecLocalRoutines.U_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean;
 const
   QUAKEINTENSITIES: array[2..9] of fixed_t = (
     FRACUNIT div 4,
@@ -590,7 +613,7 @@ begin
   result := false;
   lastfound := @TTickState.ThinkerCap;
   repeat
-    focus := P_FindMobjFromTID(args[4], Pointer(lastfound));
+    focus := TUdmfMobjRoutines.P_FindMobjFromTID(args[4], Pointer(lastfound));
     if focus <> nil then
       P_LocalEarthQuakeEx(
         focus,
@@ -622,7 +645,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, 1, false);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, false);
     end);
 
   // Poly Rotate Right
@@ -630,7 +653,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, -1, false);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, false);
     end);
 
   // Poly Move
@@ -638,7 +661,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, false, false);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, false, false);
     end);
 
   // Poly Explicit Line:  Only used in initialization
@@ -653,7 +676,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, true, false);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, true, false);
     end);
 
   // Poly Door Swing
@@ -661,7 +684,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_OpenPolyDoor(line, args, PODOOR_SWING);
+      result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SWING);
     end);
 
   // Poly Door Slide
@@ -669,7 +692,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
+      result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
     end);
 
   // Door Close
@@ -677,7 +700,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoDoor(line, args, DREV_CLOSE);
+      result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_CLOSE);
     end);
 
   // Door Open
@@ -686,9 +709,9 @@ begin
     begin
       result := false;
       if args[0] = 0 then
-        result := EVH_VerticalDoor(line, mo)
+        result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
       else
-        result := EVH_DoDoor(line, args, DREV_OPEN);
+        result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_OPEN);
     end);
 
   // Door Raise
@@ -697,9 +720,9 @@ begin
     begin
       result := false;
       if args[0] = 0 then
-        result := EVH_VerticalDoor(line, mo)
+        result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
       else
-        result := EVH_DoDoor(line, args, DREV_NORMAL);
+        result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
     end);
 
   // Door Locked_Raise
@@ -707,12 +730,12 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      if CheckedLockedDoor(mo, args[3]) then
+      if TUdmfSpecLocalRoutines.CheckedLockedDoor(mo, args[3]) then
       begin
         if args[0] = 0 then
-          result := EVH_VerticalDoor(line, mo)
+          result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
         else
-          result := EVH_DoDoor(line, args, DREV_NORMAL);
+          result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
       end;
     end);
 
@@ -721,7 +744,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
     end);
 
   // Floor Lower to Lowest
@@ -729,7 +752,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
     end);
 
   // Floor Lower to Nearest
@@ -737,7 +760,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
     end);
 
   // Floor Raise by Value
@@ -745,7 +768,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
     end);
 
   // Floor Raise to Highest
@@ -753,7 +776,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
     end);
 
   // Floor Raise to Nearest
@@ -761,7 +784,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
     end);
 
   // Stairs Build Down Normal
@@ -769,7 +792,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
+      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
     end);
 
   // Build Stairs Up Normal
@@ -777,7 +800,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
+      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
     end);
 
   // Floor Raise and Crush
@@ -785,7 +808,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
     end);
 
   // Build Pillar (no crushing)
@@ -793,7 +816,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_BuildPillar(line, args, false);
+      result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, false);
     end);
 
   // Open Pillar
@@ -801,7 +824,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_OpenPillar(line, args);
+      result := TUdmfFloorRoutines.EVH_OpenPillar(line, args);
     end);
 
   // Stairs Build Down Sync
@@ -809,7 +832,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
+      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
     end);
 
   // Build Stairs Up Sync
@@ -817,7 +840,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
+      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
     end);
 
   // Raise Floor by Value Times 8
@@ -825,7 +848,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
     end);
 
   // Lower Floor by Value Times 8
@@ -833,7 +856,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
     end);
 
   // Ceiling Lower by Value
@@ -841,7 +864,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
     end);
 
   // Ceiling Raise by Value
@@ -849,7 +872,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
     end);
 
   // Ceiling Crush and Raise
@@ -857,7 +880,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
+      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
     end);
 
   // Ceiling Lower and Crush
@@ -865,7 +888,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
+      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
     end);
 
   // Ceiling Crush Stop
@@ -873,7 +896,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_CeilingCrushStop(line, args);
+      result := TUdmfCeilingRoutines.EVH_CeilingCrushStop(line, args);
     end);
 
   // Ceiling Crush Raise and Stay
@@ -881,7 +904,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
+      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
     end);
 
   // Floor Crush Stop
@@ -889,7 +912,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_FloorCrushStop(line, args);
+      result := TUdmfFloorRoutines.EVH_FloorCrushStop(line, args);
     end);
 
   // Plat Perpetual Raise
@@ -897,7 +920,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
+      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
     end);
 
   // Plat Stop
@@ -905,7 +928,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      EVH_StopPlat(line, args);
+      TUdmfPlatRoutines.EVH_StopPlat(line, args);
     end);
 
   // Plat Down-Wait-Up-Stay
@@ -913,7 +936,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
+      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
     end);
 
   // Plat Down-by-Value*8-Wait-Up-Stay
@@ -921,7 +944,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
+      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
     end);
 
   // Plat Up-Wait-Down-Stay
@@ -929,7 +952,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
+      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
     end);
 
   // Plat Up-by-Value*8-Wait-Down-Stay
@@ -937,7 +960,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
+      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
     end);
 
   // Floor Lower Instant * 8
@@ -945,7 +968,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
     end);
 
   // Floor Raise Instant * 8
@@ -953,7 +976,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
     end);
 
   // Floor Move to Value * 8
@@ -961,7 +984,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
+      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
     end);
 
   // Ceiling Move to Value * 8
@@ -969,7 +992,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
+      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
     end);
 
   // Teleport
@@ -979,7 +1002,7 @@ begin
       result := false;
       if side = 0 then
       begin // Only teleport when crossing the front side of a line
-        result := EVH_Teleport(args[0], mo, true);
+        result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, true);
       end;
     end);
 
@@ -990,7 +1013,7 @@ begin
       result := false;
       if side = 0 then
       begin // Only teleport when crossing the front side of a line
-        result := EVH_Teleport(args[0], mo, false);
+        result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, false);
       end;
     end);
 
@@ -1087,7 +1110,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, 1, true);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, true);
     end);
 
   // Poly Rotate Right Override
@@ -1095,7 +1118,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_RotatePoly(line, args, -1, true);
+      result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, true);
     end);
 
   // Poly Move Override
@@ -1103,7 +1126,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, false, true);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, false, true);
     end);
 
   // Poly Move Times 8 Override
@@ -1111,7 +1134,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_MovePoly(line, args, true, true);
+      result := TPolyobjRoutines.EVH_MovePoly(line, args, true, true);
     end);
 
   // Build Pillar Crush
@@ -1119,7 +1142,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_BuildPillar(line, args, true);
+      result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, true);
     end);
 
   // Lower Floor and Ceiling
@@ -1127,7 +1150,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloorAndCeiling(line, args, false);
+      result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, false);
     end);
 
   // Raise Floor and Ceiling
@@ -1135,7 +1158,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_DoFloorAndCeiling(line, args, true);
+      result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, true);
     end);
 
   // Force Lightning
@@ -1144,7 +1167,7 @@ begin
     begin
       result := false;
       result := true;
-      P_ForceLightning(args[0]);
+      TUdmfSpecRoutines.P_ForceLightning(args[0]);
     end);
 
   // Light Raise by Value
@@ -1152,7 +1175,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
     end);
 
   // Light Lower by Value
@@ -1160,7 +1183,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
     end);
 
   // Light Change to Value
@@ -1168,7 +1191,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
     end);
 
   // Light Fade
@@ -1176,7 +1199,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_FADE);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FADE);
     end);
 
   // Light Glow
@@ -1184,7 +1207,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_GLOW);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_GLOW);
     end);
 
   // Light Flicker
@@ -1192,7 +1215,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_FLICKER);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FLICKER);
     end);
 
   // Light Strobe
@@ -1200,7 +1223,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SpawnLight(line, args, LITE_STROBE);
+      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_STROBE);
     end);
 
   // Quake Tremor
@@ -1208,7 +1231,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := U_LocalQuake(args, mo);
+      result := TUdmfSpecLocalRoutines.U_LocalQuake(args, mo);
     end);
 
   {  129: // UsePuzzleItem
@@ -1221,7 +1244,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingActivate(args[0]);
+      result := TUdmfThingRoutines.EVH_ThingActivate(args[0]);
     end);
 
   // Thing_Deactivate
@@ -1229,7 +1252,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingDeactivate(args[0]);
+      result := TUdmfThingRoutines.EVH_ThingDeactivate(args[0]);
     end);
 
   // Thing_Remove
@@ -1237,7 +1260,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingRemove(args[0]);
+      result := TUdmfThingRoutines.EVH_ThingRemove(args[0]);
     end);
 
   // Thing_Destroy
@@ -1245,7 +1268,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingDestroy(args[0]);
+      result := TUdmfThingRoutines.EVH_ThingDestroy(args[0]);
     end);
 
   // Thing_Projectile
@@ -1253,7 +1276,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingProjectile(args, false);
+      result := TUdmfThingRoutines.EVH_ThingProjectile(args, false);
     end);
 
   // Thing_Spawn
@@ -1261,7 +1284,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingSpawn(args, true);
+      result := TUdmfThingRoutines.EVH_ThingSpawn(args, true);
     end);
 
   // Thing_ProjectileGravity
@@ -1269,7 +1292,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingProjectile(args, true);
+      result := TUdmfThingRoutines.EVH_ThingProjectile(args, true);
     end);
 
   // Thing_SpawnNoFog
@@ -1277,7 +1300,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_ThingSpawn(args, false);
+      result := TUdmfThingRoutines.EVH_ThingSpawn(args, false);
     end);
 
   // Floor_Waggle
@@ -1285,7 +1308,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
+      result := TUdmfFloorRoutines.EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
     end);
 
   // Sector_SoundChange
@@ -1293,7 +1316,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SectorSoundChange(args);
+      result := TUdmfSpecLocalRoutines.EVH_SectorSoundChange(args);
     end);
 
   // Line specials only processed during level initialization
@@ -1311,7 +1334,7 @@ end;
 // P_ExecuteLineSpecial
 //
 //==============================================================================
-function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
+class function TUdmfSpecRoutines.P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
   side: integer; mo: Pmobj_t): boolean;
 var
   context: TSpecialContext;
@@ -1331,7 +1354,7 @@ end;
 // P_ConfigureLineSpecials
 //
 //==============================================================================
-procedure P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
+class procedure TUdmfSpecRoutines.P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
 begin
   P_RegisterLineSpecials(ARegistry);
   lineSpecials := ARegistry;
@@ -1342,7 +1365,7 @@ end;
 // P_ActivateLine
 //
 //==============================================================================
-function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean;
+class function TUdmfSpecRoutines.P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean;
 var
   dorepeat: boolean;
   buttonSuccess: boolean;
@@ -1398,7 +1421,7 @@ end;
 // P_LineToArgs
 //
 //==============================================================================
-procedure P_LineToArgs(line: Pline_t; const args: PByteArray);
+class procedure TUdmfSpecRoutines.P_LineToArgs(line: Pline_t; const args: PByteArray);
 begin
   args[0] := line.arg1;
   args[1] := line.arg2;
@@ -1413,7 +1436,7 @@ end;
 // P_ArgsToLine
 //
 //==============================================================================
-procedure P_ArgsToLine(line: Pline_t; const args: PByteArray);
+class procedure TUdmfSpecRoutines.P_ArgsToLine(line: Pline_t; const args: PByteArray);
 begin
   line.arg1 := args[0];
   line.arg2 := args[1];
@@ -1429,7 +1452,7 @@ end;
 // Note: args are Integers
 //
 //==============================================================================
-function P_ExecuteActorSpecial(special: integer; args: PIntegerArray; mo: Pmobj_t): boolean;
+class function TUdmfSpecRoutines.P_ExecuteActorSpecial(special: integer; args: PIntegerArray; mo: Pmobj_t): boolean;
 var
   bargs: packed array[0..4] of Byte;
 begin

@@ -699,7 +699,7 @@ begin
           player.sigiltype := special.frame;
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -714,7 +714,7 @@ begin
         begin
           if special.special <> 0 then
           begin
-            P_ExecuteActorSpecial(special.special, @special.args, toucher);
+            TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
             special.special := 0;
           end;
           exit;
@@ -861,7 +861,7 @@ begin
 
   if special.special <> 0 then
   begin
-    P_ExecuteActorSpecial(special.special, @special.args, toucher);
+    TUdmfSpecRoutines.P_ExecuteActorSpecial(special.special, @special.args, toucher);
     special.special := 0;
   end;
 
@@ -899,7 +899,7 @@ begin
   target.flags := target.flags or (MF_CORPSE or MF_DROPOFF);
   target.height := FRACUNIT;  // villsa [STRIFE] set to fracunit instead of >>= 2
 
-  P_ExecuteActorSpecial(target.special, @target.args, target);
+  TUdmfSpecRoutines.P_ExecuteActorSpecial(target.special, @target.args, target);
 
   if (source <> nil) and (source.player <> nil) then
   begin
@@ -1110,10 +1110,10 @@ begin
         Ord(MT_COUPLING):
           begin
             junk.tag := 225;
-            EV_DoDoor(@junk, vld_close);
+            TDoorRoutines.EV_DoDoor(@junk, vld_close);
 
             junk.tag := 44;
-            EV_DoFloor(@junk, lowerFloor);
+            TFloorRoutines.EV_DoFloor(@junk, lowerFloor);
 
             P_GiveVoiceObjective('VOC13', 'LOG13', 0);
 
@@ -1133,7 +1133,7 @@ begin
     Ord(MT_TOKEN_SHOPCLOSE):
       begin
         junk.tag := 222;
-        EV_DoDoor(@junk, vld_close);
+        TDoorRoutines.EV_DoDoor(@junk, vld_close);
         P_NoiseAlert(TGameSession.Players[0].mo, TGameSession.Players[0].mo);
 
         if TGameSession.DeathMatch <> 0 then
@@ -1148,14 +1148,14 @@ begin
     Ord(MT_TOKEN_PRISON_PASS):
       begin
         junk.tag := 223;
-        EV_DoDoor(@junk, vld_open);
+        TDoorRoutines.EV_DoDoor(@junk, vld_open);
         exit;
       end;
 
     Ord(MT_TOKEN_DOOR3):
       begin
         junk.tag := 224;
-        EV_DoDoor(@junk, vld_open);
+        TDoorRoutines.EV_DoDoor(@junk, vld_open);
         exit;
       end;
 
