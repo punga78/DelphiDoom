@@ -207,12 +207,10 @@ type
   /// </summary>
   TUdmfSpecLocalRoutines = class sealed
   public
-    class procedure RegisterLineSpecial(const ARegistry: ISpecialRegistry; ANumber: integer; const AHandler: TLineSpecial); static;
     class function EVH_SectorSoundChange(args: PByteArray): boolean; static;
     class function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean; static;
     class procedure P_LocalEarthQuakeEx(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxtdist, maxddist: fixed_t); static;
     class function U_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean; static;
-    class procedure P_RegisterLineSpecials(const ARegistry: ISpecialRegistry); static;
   end;
 
 //==============================================================================
@@ -220,7 +218,7 @@ type
 // RegisterLineSpecial
 //
 //==============================================================================
-class procedure TUdmfSpecLocalRoutines.RegisterLineSpecial(const ARegistry: ISpecialRegistry; ANumber: integer; const AHandler: TLineSpecial);
+procedure RegisterLineSpecial(const ARegistry: ISpecialRegistry; ANumber: integer; const AHandler: TLineSpecial);
 begin
   ARegistry.Register(ANumber,
     function(const AContext: TSpecialContext): Boolean
@@ -632,7 +630,7 @@ end;
 // P_RegisterLineSpecials
 //
 //==============================================================================
-class procedure TUdmfSpecLocalRoutines.P_RegisterLineSpecials(const ARegistry: ISpecialRegistry);
+procedure P_RegisterLineSpecials(const ARegistry: ISpecialRegistry);
 begin
 
   // Poly Start Line
@@ -732,7 +730,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      if CheckedLockedDoor(mo, args[3]) then
+      if TUdmfSpecLocalRoutines.CheckedLockedDoor(mo, args[3]) then
       begin
         if args[0] = 0 then
           result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
@@ -1233,7 +1231,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := U_LocalQuake(args, mo);
+      result := TUdmfSpecLocalRoutines.U_LocalQuake(args, mo);
     end);
 
   {  129: // UsePuzzleItem
@@ -1318,7 +1316,7 @@ begin
     function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
     begin
       result := false;
-      result := EVH_SectorSoundChange(args);
+      result := TUdmfSpecLocalRoutines.EVH_SectorSoundChange(args);
     end);
 
   // Line specials only processed during level initialization
@@ -1358,7 +1356,7 @@ end;
 //==============================================================================
 class procedure TUdmfSpecRoutines.P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
 begin
-  TUdmfSpecLocalRoutines.P_RegisterLineSpecials(ARegistry);
+  P_RegisterLineSpecials(ARegistry);
   lineSpecials := ARegistry;
 end;
 
