@@ -25180,9 +25180,9 @@ begin
   states[Ord(S_SPAWNFIRE7)].action.acp1 := @TDoomMonsterActions.A_Fire; // S_SPAWNFIRE7
   states[Ord(S_SPAWNFIRE8)].action.acp1 := @TDoomMonsterActions.A_Fire; // S_SPAWNFIRE8
   states[Ord(S_BRAINEXPLODE3)].action.acp1 := @TDoomMonsterActions.A_BrainExplode; // S_BRAINEXPLODE3
-  states[Ord(S_BEXP)].action.acp1 := @A_FadeOut20;
+  states[Ord(S_BEXP)].action.acp1 := @TCommonAppearanceActions.A_FadeOut20;
   states[Ord(S_BEXP2)].action.acp1 := @TMonsterBaseActions.A_Scream; // S_BEXP2
-  states[Ord(S_BEXP3)].action.acp1 := @A_FadeOut20;
+  states[Ord(S_BEXP3)].action.acp1 := @TCommonAppearanceActions.A_FadeOut20;
   states[Ord(S_BEXP4)].action.acp1 := @TDoomMonsterActions.A_Explode; // S_BEXP4
   // New states
   states[Ord(S_GRENADE)].action.acp1 := @A_Die; // S_GRENADE

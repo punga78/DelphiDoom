@@ -773,69 +773,6 @@ procedure A_CStaffMissileSlither(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetTranslucent
-//
-//==============================================================================
-procedure A_SetTranslucent(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeOut
-//
-//==============================================================================
-procedure A_FadeOut(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeOut10
-//
-//==============================================================================
-procedure A_FadeOut10(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeOut20
-//
-//==============================================================================
-procedure A_FadeOut20(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeOut30
-//
-//==============================================================================
-procedure A_FadeOut30(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeIn
-//
-//==============================================================================
-procedure A_FadeIn(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeIn10
-//
-//==============================================================================
-procedure A_FadeIn10(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeIn20
-//
-//==============================================================================
-procedure A_FadeIn20(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeIn30
-//
-//==============================================================================
-procedure A_FadeIn30(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_MissileAttack
 //
 //==============================================================================
@@ -896,20 +833,6 @@ procedure A_ScreamAndUnblock(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_Wander(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_GhostOn
-//
-//==============================================================================
-procedure A_GhostOn(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_GhostOff
-//
-//==============================================================================
-procedure A_GhostOff(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1064,20 +987,6 @@ procedure A_ScaleVelocity(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_ChangeVelocity(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetScale
-//
-//==============================================================================
-procedure A_SetScale(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_GlowLight
-//
-//==============================================================================
-procedure A_GlowLight(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1364,41 +1273,6 @@ procedure A_LineEffect(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_FlipSprite
-//
-//==============================================================================
-procedure A_FlipSprite(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomFlipSprite
-//
-//==============================================================================
-procedure A_RandomFlipSprite(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_NoFlipSprite
-//
-//==============================================================================
-procedure A_NoFlipSprite(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomNoFlipSprite
-//
-//==============================================================================
-procedure A_RandomNoFlipSprite(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ChangeSpriteFlip
-//
-//==============================================================================
-procedure A_ChangeSpriteFlip(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_CustomMeleeAttack
 //
 //==============================================================================
@@ -1410,20 +1284,6 @@ procedure A_CustomMeleeAttack(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_CustomComboAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetRenderStyle
-//
-//==============================================================================
-procedure A_SetRenderStyle(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FadeTo
-//
-//==============================================================================
-procedure A_FadeTo(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1557,20 +1417,6 @@ procedure A_SetWeaveIndexZ(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_SetWeaveIndexes(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetSpriteDX
-//
-//==============================================================================
-procedure A_SetSpriteDX(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetSpriteDY
-//
-//==============================================================================
-procedure A_SetSpriteDY(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1896,20 +1742,6 @@ procedure A_SetInfightingGroup(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_SetSplashGroup(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTranslation
-//
-//==============================================================================
-procedure A_SetTranslation(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetBloodColor
-//
-//==============================================================================
-procedure A_SetBloodColor(actor: Pmobj_t);
 
 const
   FLOATBOBSIZE = 64;
@@ -2373,6 +2205,182 @@ type
     //
     //==============================================================================
     class procedure A_UnSetMonsterInfight(actor: Pmobj_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonAppearanceActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_SetTranslucent
+    //
+    //==============================================================================
+    class procedure A_SetTranslucent(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeOut
+    //
+    //==============================================================================
+    class procedure A_FadeOut(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeOut10
+    //
+    //==============================================================================
+    class procedure A_FadeOut10(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeOut20
+    //
+    //==============================================================================
+    class procedure A_FadeOut20(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeOut30
+    //
+    //==============================================================================
+    class procedure A_FadeOut30(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeIn
+    //
+    //==============================================================================
+    class procedure A_FadeIn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeIn10
+    //
+    //==============================================================================
+    class procedure A_FadeIn10(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeIn20
+    //
+    //==============================================================================
+    class procedure A_FadeIn20(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeIn30
+    //
+    //==============================================================================
+    class procedure A_FadeIn30(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_GhostOn
+    //
+    //==============================================================================
+    class procedure A_GhostOn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_GhostOff
+    //
+    //==============================================================================
+    class procedure A_GhostOff(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetScale
+    //
+    //==============================================================================
+    class procedure A_SetScale(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_GlowLight
+    //
+    //==============================================================================
+    class procedure A_GlowLight(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FlipSprite
+    //
+    //==============================================================================
+    class procedure A_FlipSprite(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomFlipSprite
+    //
+    //==============================================================================
+    class procedure A_RandomFlipSprite(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_NoFlipSprite
+    //
+    //==============================================================================
+    class procedure A_NoFlipSprite(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomNoFlipSprite
+    //
+    //==============================================================================
+    class procedure A_RandomNoFlipSprite(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ChangeSpriteFlip
+    //
+    //==============================================================================
+    class procedure A_ChangeSpriteFlip(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetRenderStyle
+    //
+    //==============================================================================
+    class procedure A_SetRenderStyle(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FadeTo
+    //
+    //==============================================================================
+    class procedure A_FadeTo(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetSpriteDX
+    //
+    //==============================================================================
+    class procedure A_SetSpriteDX(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetSpriteDY
+    //
+    //==============================================================================
+    class procedure A_SetSpriteDY(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTranslation
+    //
+    //==============================================================================
+    class procedure A_SetTranslation(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetBloodColor
+    //
+    //==============================================================================
+    class procedure A_SetBloodColor(actor: Pmobj_t); static;
   end;
 
 
@@ -5489,7 +5497,7 @@ end;
 // A_SetTranslucent
 //
 //==============================================================================
-procedure A_SetTranslucent(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetTranslucent(actor: Pmobj_t);
 var
   newstyle: integer;
 begin
@@ -5552,7 +5560,7 @@ end;
 // FadeOut(reduce = 10%)
 //
 //==============================================================================
-procedure A_FadeOut(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeOut(actor: Pmobj_t);
 var
   reduce: fixed_t;
 begin
@@ -5573,13 +5581,24 @@ begin
     P_RemoveMobj(actor);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonAppearanceActionsLocal = class sealed
+  public
+    class procedure Do_FadeOut(actor: Pmobj_t; const reduce: integer); static;
+    class procedure Do_FadeIn(actor: Pmobj_t; const incriment: integer); static;
+  end;
+
 //==============================================================================
 // Do_FadeOut
 //
 // reduce -> percentage to reduce fading
 //
 //==============================================================================
-procedure Do_FadeOut(actor: Pmobj_t; const reduce: integer);
+class procedure TCommonAppearanceActionsLocal.Do_FadeOut(actor: Pmobj_t; const reduce: integer);
 begin
   if actor.renderstyle = mrs_normal then
   begin
@@ -5597,9 +5616,9 @@ end;
 // A_FadeOut10
 //
 //==============================================================================
-procedure A_FadeOut10(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeOut10(actor: Pmobj_t);
 begin
-  Do_FadeOut(actor, 10);
+  TCommonAppearanceActionsLocal.Do_FadeOut(actor, 10);
 end;
 
 //==============================================================================
@@ -5607,9 +5626,9 @@ end;
 // A_FadeOut20
 //
 //==============================================================================
-procedure A_FadeOut20(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeOut20(actor: Pmobj_t);
 begin
-  Do_FadeOut(actor, 20);
+  TCommonAppearanceActionsLocal.Do_FadeOut(actor, 20);
 end;
 
 //==============================================================================
@@ -5617,9 +5636,9 @@ end;
 // A_FadeOut30
 //
 //==============================================================================
-procedure A_FadeOut30(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeOut30(actor: Pmobj_t);
 begin
-  Do_FadeOut(actor, 30);
+  TCommonAppearanceActionsLocal.Do_FadeOut(actor, 30);
 end;
 
 //==============================================================================
@@ -5628,7 +5647,7 @@ end;
 // FadeIn(incriment = 10%)
 //
 //==============================================================================
-procedure A_FadeIn(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeIn(actor: Pmobj_t);
 var
   incriment: fixed_t;
 begin
@@ -5655,7 +5674,7 @@ end;
 // incriment -> percentage to inscrease fading
 //
 //==============================================================================
-procedure Do_FadeIn(actor: Pmobj_t; const incriment: integer);
+class procedure TCommonAppearanceActionsLocal.Do_FadeIn(actor: Pmobj_t; const incriment: integer);
 begin
   actor.renderstyle := mrs_translucent;
   actor.alpha := actor.alpha + (incriment * FRACUNIT) div 100;
@@ -5671,9 +5690,9 @@ end;
 // A_FadeIn10
 //
 //==============================================================================
-procedure A_FadeIn10(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeIn10(actor: Pmobj_t);
 begin
-  Do_FadeIn(actor, 10);
+  TCommonAppearanceActionsLocal.Do_FadeIn(actor, 10);
 end;
 
 //==============================================================================
@@ -5681,9 +5700,9 @@ end;
 // A_FadeIn20
 //
 //==============================================================================
-procedure A_FadeIn20(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeIn20(actor: Pmobj_t);
 begin
-  Do_FadeIn(actor, 20);
+  TCommonAppearanceActionsLocal.Do_FadeIn(actor, 20);
 end;
 
 //==============================================================================
@@ -5691,9 +5710,9 @@ end;
 // A_FadeIn30
 //
 //==============================================================================
-procedure A_FadeIn30(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeIn30(actor: Pmobj_t);
 begin
-  Do_FadeIn(actor, 30);
+  TCommonAppearanceActionsLocal.Do_FadeIn(actor, 30);
 end;
 
 //==============================================================================
@@ -6030,7 +6049,7 @@ end;
 // A_GhostOn
 //
 //==============================================================================
-procedure A_GhostOn(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_GhostOn(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_SHADOW;
 end;
@@ -6040,7 +6059,7 @@ end;
 // A_GhostOff
 //
 //==============================================================================
-procedure A_GhostOff(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_GhostOff(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_SHADOW;
 end;
@@ -6585,7 +6604,7 @@ end;
 // A_SetScale
 //
 //==============================================================================
-procedure A_SetScale(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetScale(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -6671,7 +6690,7 @@ end;
 // A_GlowLight
 //
 //==============================================================================
-procedure A_GlowLight(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_GlowLight(actor: Pmobj_t);
 const
   ACL_NONE = 0;
   ACL_WHITE = 1;
@@ -8187,7 +8206,7 @@ end;
 // A_FlipSprite
 //
 //==============================================================================
-procedure A_FlipSprite(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FlipSprite(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex or MF3_EX_FLIPSPRITE;
 end;
@@ -8197,7 +8216,7 @@ end;
 // A_RandomFlipSprite
 //
 //==============================================================================
-procedure A_RandomFlipSprite(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_RandomFlipSprite(actor: Pmobj_t);
 var
   chance: integer;
 begin
@@ -8214,7 +8233,7 @@ end;
 // A_NoFlipSprite
 //
 //==============================================================================
-procedure A_NoFlipSprite(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_NoFlipSprite(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex and not MF3_EX_FLIPSPRITE;
 end;
@@ -8224,7 +8243,7 @@ end;
 // A_RandomNoFlipSprite
 //
 //==============================================================================
-procedure A_RandomNoFlipSprite(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_RandomNoFlipSprite(actor: Pmobj_t);
 var
   chance: integer;
 begin
@@ -8241,7 +8260,7 @@ end;
 // A_ChangeSpriteFlip(propability: integer)
 //
 //==============================================================================
-procedure A_ChangeSpriteFlip(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_ChangeSpriteFlip(actor: Pmobj_t);
 var
   ok: Boolean;
 begin
@@ -8373,7 +8392,7 @@ end;
 //  A_SetRenderStyle(style: renderstyle_t, alpha: float)
 //
 //==============================================================================
-procedure A_SetRenderStyle(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetRenderStyle(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
@@ -8389,7 +8408,7 @@ end;
 // A_FadeTo(targ: integer, ammount: integer, flags: integer)
 //
 //==============================================================================
-procedure A_FadeTo(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_FadeTo(actor: Pmobj_t);
 var
   targ: fixed_t;
   amount: fixed_t;
@@ -9384,7 +9403,7 @@ end;
 // A_SetSpriteDX
 //
 //==============================================================================
-procedure A_SetSpriteDX(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetSpriteDX(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -9397,7 +9416,7 @@ end;
 // A_SetSpriteDY
 //
 //==============================================================================
-procedure A_SetSpriteDY(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetSpriteDY(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -12384,7 +12403,7 @@ end;
 // A_SetTranslation(trans: string);
 //
 //==============================================================================
-procedure A_SetTranslation(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetTranslation(actor: Pmobj_t);
 begin
   if not P_CheckStateArgs(actor.state) then
     exit;
@@ -12398,7 +12417,7 @@ end;
 // A_SetBloodColor(color: string);
 //
 //==============================================================================
-procedure A_SetBloodColor(actor: Pmobj_t);
+class procedure TCommonAppearanceActions.A_SetBloodColor(actor: Pmobj_t);
 begin
   if not P_CheckStateArgs(actor.state) then
     exit;
