@@ -42,7 +42,7 @@ type
   ///   Every call is written to Trace, one line per fact, as the C++ harness does.
   /// </summary>
   TD3GameFakeWorld = class(TObject, IInterface, ID3GamePrinter, ID3EntityDefs, ID3SpawnFunctions, ID3ScriptNames,
-    ID3MapSource, ID3GameSettings, ID3MapSteps, ID3EventCanceller, ID3EventPoster)
+    ID3MapSource, ID3GameSettings, ID3MapSteps, ID3EventCanceller, ID3EventPoster, ID3ScriptFunctions)
   strict private
     FDefs: TList<ID3EntityDef>;
     FFunctions: TStringList;
@@ -76,6 +76,8 @@ type
     function FindEntityDefByIndex(const AIndex: Integer): ID3EntityDef;
     { ID3SpawnFunctions }
     function StartSpawnFunction(const AName: AnsiString): Boolean;
+    { ID3ScriptFunctions }
+    function HasFunction(const AName: AnsiString): Boolean;
     { ID3ScriptNames }
     procedure SetEntity(const AName: AnsiString; const AEntityNumber: Integer);
     { ID3MapSource }
@@ -331,6 +333,11 @@ begin
     Line('CALL idThread ' + string(AName));
     Line('CALL idThread.DelayedStart 0');
   end;
+end;
+
+function TD3GameFakeWorld.HasFunction(const AName: AnsiString): Boolean;
+begin
+  Result := FFunctions.IndexOf(string(AName)) >= 0;
 end;
 
 procedure TD3GameFakeWorld.SetEntity(const AName: AnsiString; const AEntityNumber: Integer);

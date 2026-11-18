@@ -30,7 +30,10 @@ uses
   DelphiDoom.Tests.D3Game.Rig in 'Source\DelphiDoom.Tests.D3Game.Rig.pas',
   DelphiDoom.Tests.D3Game.Scenario in 'Source\DelphiDoom.Tests.D3Game.Scenario.pas',
   DelphiDoom.Tests.D3Game.Parity in 'Source\DelphiDoom.Tests.D3Game.Parity.pas',
-  DelphiDoom.Tests.D3Game.Units in 'Source\DelphiDoom.Tests.D3Game.Units.pas';
+  DelphiDoom.Tests.D3Game.Units in 'Source\DelphiDoom.Tests.D3Game.Units.pas',
+  DelphiDoom.Tests.D3Game.WorldRig in 'Source\DelphiDoom.Tests.D3Game.WorldRig.pas',
+  DelphiDoom.Tests.D3Game.Triggers in 'Source\DelphiDoom.Tests.D3Game.Triggers.pas',
+  DelphiDoom.Tests.D3Game.Movers in 'Source\DelphiDoom.Tests.D3Game.Movers.pas';
 
 var
   Runner: ITestRunner;

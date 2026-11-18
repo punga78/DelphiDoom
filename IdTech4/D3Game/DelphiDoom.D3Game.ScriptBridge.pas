@@ -33,7 +33,7 @@ type
   ///   with the same names and superclasses and gives them the handlers of their <c>EVENT</c> lines).</para>
   /// </summary>
   TD3ScriptBridge = class(TObject, IInterface, ID3ScriptNames, ID3EntityObserver, ID3SpawnFunctions, ID3MapSteps,
-    ID3EventCanceller, ID3EventPoster)
+    ID3EventCanceller, ID3EventPoster, ID3EventQueue, ID3ScriptFunctions, ID3ScriptThreads)
   strict private
     FMachine: TDoomScriptMachine;
     FGame: TD3GameLocal;
@@ -74,13 +74,28 @@ type
     { ID3EventCanceller }
     procedure CancelEvents(const AObject: TObject);
     { ID3EventPoster }
-    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer);
+    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer); overload;
+    { ID3EventQueue }
+    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer;
+      const AArgs: array of TDoomScriptEventArg); overload;
+    procedure PostEventSec(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ASeconds: Single;
+      const AArgs: array of TDoomScriptEventArg);
+    procedure CancelEvent(const AObject: TObject; const AEvent: TDoomScriptEventDef);
+    { ID3ScriptFunctions }
+    function HasFunction(const AName: AnsiString): Boolean;
+    { ID3ScriptThreads }
+    procedure ReturnFloat(const AValue: Single);
+    procedure ReturnInteger(const AValue: Integer);
+    procedure ReturnString(const AText: AnsiString);
+    procedure ReturnEntity(const AEntityNumber: Integer);
+    function CurrentThreadNum: Integer;
+    procedure ObjectMoveDone(const AThreadNum, AEntityNumber: Integer);
   end;
 
 implementation
 
 uses
-  DelphiDoom.DoomScript.Defs, DelphiDoom.D3Game.Entity;
+  DelphiDoom.DoomScript.Defs, DelphiDoom.DoomScript.Thread, DelphiDoom.D3Game.Entity;
 
 constructor TD3ScriptBridge.Create(const AMachine: TDoomScriptMachine);
 begin
@@ -259,6 +274,68 @@ var
 begin
   if FTargetByObject.TryGetValue(AObject, LTarget) then
     FMachine.Queue.PostEventMS(LTarget, AEvent, ATime);
+end;
+
+procedure TD3ScriptBridge.PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef;
+  const ATime: Integer; const AArgs: array of TDoomScriptEventArg);
+var
+  LTarget: TDoomScriptEventTarget;
+begin
+  if FTargetByObject.TryGetValue(AObject, LTarget) then
+    FMachine.Queue.PostEventMS(LTarget, AEvent, ATime, AArgs);
+end;
+
+procedure TD3ScriptBridge.PostEventSec(const AObject: TObject; const AEvent: TDoomScriptEventDef;
+  const ASeconds: Single; const AArgs: array of TDoomScriptEventArg);
+var
+  LTarget: TDoomScriptEventTarget;
+begin
+  if FTargetByObject.TryGetValue(AObject, LTarget) then
+    FMachine.Queue.PostEventSec(LTarget, AEvent, ASeconds, AArgs);
+end;
+
+procedure TD3ScriptBridge.CancelEvent(const AObject: TObject; const AEvent: TDoomScriptEventDef);
+var
+  LTarget: TDoomScriptEventTarget;
+begin
+  if FTargetByObject.TryGetValue(AObject, LTarget) then
+    FMachine.Queue.CancelEvents(LTarget, AEvent);
+end;
+
+function TD3ScriptBridge.HasFunction(const AName: AnsiString): Boolean;
+begin
+  Result := Assigned(FMachine.ScriptProgram.FindFunction(AName));
+end;
+
+procedure TD3ScriptBridge.ReturnFloat(const AValue: Single);
+begin
+  FMachine.ScriptProgram.ReturnFloat(AValue);
+end;
+
+procedure TD3ScriptBridge.ReturnInteger(const AValue: Integer);
+begin
+  // idThread::ReturnInt writes a float: the language has no integers
+  FMachine.ScriptProgram.ReturnFloat(AValue);
+end;
+
+procedure TD3ScriptBridge.ReturnString(const AText: AnsiString);
+begin
+  FMachine.ScriptProgram.ReturnString(AText);
+end;
+
+procedure TD3ScriptBridge.ReturnEntity(const AEntityNumber: Integer);
+begin
+  FMachine.ScriptProgram.ReturnEntity(AEntityNumber);
+end;
+
+function TD3ScriptBridge.CurrentThreadNum: Integer;
+begin
+  Result := TDoomScriptThread.CurrentThreadNum(FMachine.Context);
+end;
+
+procedure TD3ScriptBridge.ObjectMoveDone(const AThreadNum, AEntityNumber: Integer);
+begin
+  TDoomScriptThread.ObjectMoveDone(FMachine.Context, AThreadNum, AEntityNumber);
 end;
 
 end.
