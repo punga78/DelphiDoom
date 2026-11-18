@@ -2124,7 +2124,7 @@ begin
   R_InitCustomColormaps;
 {$ENDIF}
   printf('R_InitRippleEffects'#13#10);
-  R_InitRippleEffects;
+  TRendererRipple.R_InitRippleEffects;
   printf('R_InitInterpolations'#13#10);
   R_InitInterpolations;
   printf('R_InitPointToAngle'#13#10);
