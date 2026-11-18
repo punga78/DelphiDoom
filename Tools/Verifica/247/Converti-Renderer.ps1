@@ -47,6 +47,18 @@ function Get-DirectiveKind([string]$Line) {
 }
 
 $script:GroupCounter = 0
+# fine del corpo di una routine: `end;` a colonna 0, oppure un `{$I file.inc}` a colonna 0 seguito da riga vuota,
+# banner o nuova routine (gli .inc dei cicli portano con se' il `begin` e l'`end;`)
+function Test-BodyEnd($Lines, [int]$Index) {
+  $l = $Lines[$Index]
+  if ($l -match '^end;\s*(//.*)?$') { return $true }
+  if ($l -match '^\{\$I\s+\S+\.inc\s*\}') {
+    if ($Index + 1 -ge $Lines.Count) { return $true }
+    $n = $Lines[$Index + 1]
+    return ($n -eq '' -or $n -match '^(//|procedure|function|class\s|type|var|const|\{\$(IF|ENDIF|ELSE))')
+  }
+  return $false
+}
 # segue le direttive di una riga (anche a meta' riga, come `else {$ENDIF}`) e aggiunge una voce per ognuna
 function Track-Directives([string]$Line, $Entries, $Stack) {
   foreach ($m in [regex]::Matches($Line, '\{\$(IFDEF|IFNDEF|IFOPT|IF|ELSEIF|ELSE|ENDIF|IFEND)\b[^}]*\}')) {
@@ -85,7 +97,7 @@ function Convert-CodeLine([string]$Line) {
   $sb.ToString()
 }
 function Set-Names([string[]]$All) {
-  $script:NameRegex = New-Object Text.RegularExpressions.Regex(('(?<![\w.])(' + ($All -join '|') + ')\b'))
+  $script:NameRegex = New-Object Text.RegularExpressions.Regex(('(?i)(?<![\w.])(' + ($All -join '|') + ')\b'))
   $script:NameProbe = '\b(' + ($All -join '|') + ')\b'
 }
 # la dichiarazione finisce al ';' fuori dalle parentesi
@@ -138,6 +150,7 @@ if ($Mode -eq 'Impl') {
   if ($all.Count -eq 0) { throw "Nessuna routine solo-implementazione da convertire" }
   Set-Names $all
   $impl = New-Object System.Collections.Generic.List[string]
+  $hoisted = New-Object System.Collections.Generic.List[string]
   $entries = New-Object System.Collections.Generic.List[object]
   $stack = New-Object System.Collections.Generic.List[int]
   $groupCounter = 0
@@ -147,8 +160,18 @@ if ($Mode -eq 'Impl') {
   $j = $implementation
   while ($j -lt $lines.Count) {
     $l = $lines[$j]
-    if (-not $inConverted) {
+    if ($true) {
+      $wasEmpty = ($stack.Count -eq 0)
       Track-Directives $l $entries $stack
+      if ($wasEmpty -and $stack.Count -gt 0) { $outerStart = $impl.Count }
+    }
+    # i blocchi `type` tra le routine salgono sopra la classe: le firme dei metodi possono usare i loro tipi
+    if (-not $inConverted -and $firstHeader -ge 0 -and $stack.Count -eq 0 -and $l -match '^(type|const)\s*$') {
+      $hoisted.Add($l)
+      $j++
+      while ($j -lt $lines.Count -and ($lines[$j] -eq '' -or $lines[$j] -match '^\s')) { $hoisted.Add($lines[$j]); $j++ }
+      $hoisted.Add('')
+      continue
     }
     if (-not $inConverted -and $l -match '^(procedure|function)\s+\w+.*;\s*forward;') {
       $fn = ($l -split '\s+')[1] -replace '[^\w].*$', ''
@@ -156,15 +179,18 @@ if ($Mode -eq 'Impl') {
     }
     if (-not $inConverted -and $firstHeader -lt 0 -and $l -match '^(class\s+)?(procedure|function)\s') {
       $firstHeader = $impl.Count
+      # dentro un gruppo di direttive la classe sale sopra l'apertura del gruppo piu' esterno (la riproduce lei)
+      if ($stack.Count -gt 0) { $firstHeader = $outerStart }
       while ($firstHeader -gt 0 -and $impl[$firstHeader - 1] -match '^//') { $firstHeader-- }
     }
-    if (-not $inConverted -and $l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
+    if ($l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
       $inConverted = $true
       $d = Read-Declaration $lines $j
       $k = $d.End
       $declLines = New-Object System.Collections.Generic.List[string]
       foreach ($x in $d.Lines) { $declLines.Add('    ' + ($x -replace '^(procedure|function)\s+', 'class $1 ')) }
       $declLines[$declLines.Count - 1] = ($declLines[$declLines.Count - 1] -replace ';\s*(//.*)?$', '; static;')
+      $declLines[$declLines.Count - 1] = ($declLines[$declLines.Count - 1] -replace '; assembler; static;$', '; static;')
       $entries.Add(@{ Kind = 'decl'; Lines = $declLines; Groups = @($stack) })
       # `overload;` si dichiara nella classe, non nell'intestazione dell'implementazione
       $impl.Add((($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';'))
@@ -174,7 +200,7 @@ if ($Mode -eq 'Impl') {
     }
     if ($inConverted) {
       $impl.Add($l)
-      if ($l -match '^end;\s*(//.*)?$') { $inConverted = $false }
+      if (Test-BodyEnd $lines $j) { $inConverted = $false }
       $j++
       continue
     }
@@ -194,6 +220,7 @@ if ($Mode -eq 'Impl') {
   foreach ($c in $classBody) { $classText.Add($c) }
   $classText.Add('  end;')
   $classText.Add('')
+  $classText.InsertRange(0, $hoisted)
   $impl.InsertRange($firstHeader, $classText)
   $head = (($lines[0..($implementation - 1)]) -join $nl)
   Write-Source $path ($head + $nl + ($impl -join $nl)) $src.Bom
@@ -223,6 +250,7 @@ while ($i -lt $implementation) {
       foreach ($h in $header) { $declLines.Add('    ' + $h) }
       foreach ($x in $d.Lines) { $declLines.Add('    ' + ($x -replace '^(procedure|function)\s+', 'class $1 ')) }
       $declLines[$declLines.Count - 1] = ($declLines[$declLines.Count - 1] -replace ';\s*(//.*)?$', '; static;')
+      $declLines[$declLines.Count - 1] = ($declLines[$declLines.Count - 1] -replace '; assembler; static;$', '; static;')
       $entries.Add(@{ Kind = 'decl'; Lines = $declLines; Groups = @($stack) })
       if (-not $selected.Contains($name)) { $selected.Add($name) }
       $i++
@@ -258,14 +286,14 @@ $impl = New-Object System.Collections.Generic.List[string]
 $inConverted = $false
 for ($j = $implementation; $j -lt $lines.Count; $j++) {
   $l = $lines[$j]
-  if (-not $inConverted -and $l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
+  if ($l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
     $inConverted = $true
     $impl.Add((($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';'))
     continue
   }
   if ($inConverted) {
     $impl.Add($l)
-    if ($l -match '^end;\s*(//.*)?$') { $inConverted = $false }
+    if (Test-BodyEnd $lines $j) { $inConverted = $false }
     continue
   }
   if ($l -match '^\s*(//|\{\$I\b|\{[^$])') { $impl.Add($l); continue }
