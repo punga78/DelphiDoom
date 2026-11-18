@@ -924,7 +924,7 @@ begin
   mo := player.mo;
   S_StartSound(mo, Ord(sfx_gldhit));
   player.ammo[Ord(am_blaster)] := player.ammo[Ord(am_blaster)] - USE_BLSR_AMMO_1;
-  P_BulletSlope(mo);
+  TCommonAttackActions.P_BulletSlope(mo);
   damage := HITDICE(4);
   angle := mo.angle;
   if player.refire <> 0 then
@@ -974,7 +974,7 @@ var
 begin
   mo := player.mo;
   player.ammo[Ord(am_goldwand)] := player.ammo[Ord(am_goldwand)] - USE_GWND_AMMO_1;
-  P_BulletSlope(mo);
+  TCommonAttackActions.P_BulletSlope(mo);
   damage := 7 + (P_Random and 7);
   angle := mo.angle;
   if player.refire <> 0 then
@@ -1005,7 +1005,7 @@ begin
   else
     player.ammo[Ord(am_goldwand)] := player.ammo[Ord(am_goldwand)] - USE_GWND_AMMO_2;
   PuffType := MT_GOLDWANDPUFF2;
-  P_BulletSlope(mo);
+  TCommonAttackActions.P_BulletSlope(mo);
   momz := FixedMul(mobjinfo[Ord(MT_GOLDWANDFX2)].speed, bulletslope);
   TMobjRoutines.P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle - (ANG45 div 8), momz);
   TMobjRoutines.P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle + (ANG45 div 8), momz);

@@ -797,7 +797,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player,0);  // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
   TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;
 
@@ -817,7 +817,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
 
   for i := 0 to 6 do
     TWeaponLocalActions.P_GunShot(player.mo, false);
@@ -841,7 +841,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player, 0); // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
 
   for i := 0 to 19 do
   begin
@@ -871,7 +871,7 @@ begin
 
   TWeaponLocalActions.A_FireSomething(player, pDiff(psp.state, @states[Ord(S_CHAIN1)], SizeOf(state_t))); // phares
 
-  P_BulletSlope(player.mo);
+  TCommonAttackActions.P_BulletSlope(player.mo);
 
   TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
 end;

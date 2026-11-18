@@ -1283,7 +1283,7 @@ begin
       else
       begin
         // haleyjd 09/06/10: Note that this sets actor->target in Strife!
-        P_BulletSlope(actor);
+        TCommonAttackActions.P_BulletSlope(actor);
         if TMapAim.LineTarget <> nil then
           actor.target := TMapAim.LineTarget;
 
@@ -1311,7 +1311,7 @@ begin
       end;
 
       // haleyjd 09/06/10: Note that this sets actor->target in Strife!
-      P_BulletSlope(actor);
+      TCommonAttackActions.P_BulletSlope(actor);
       if TMapAim.LineTarget <> nil then
         actor.target := TMapAim.LineTarget;
 

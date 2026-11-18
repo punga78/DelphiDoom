@@ -52,13 +52,6 @@ procedure A_CStaffMissileSlither(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_MissileAttack
-//
-//==============================================================================
-procedure A_MissileAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_ChangeFlag
 //
 //==============================================================================
@@ -85,30 +78,9 @@ procedure A_DropItem(actor: Pmobj_t);
 //==============================================================================
 procedure A_Detonate(actor: Pmobj_t);
 
-//==============================================================================
-//
-// A_Scratch
-//
-//==============================================================================
-procedure A_Scratch(actor: Pmobj_t);
-
 {$IFNDEF HEXEN}
 
 {$ENDIF}
-
-//==============================================================================
-//
-// A_CustomMeleeAttack
-//
-//==============================================================================
-procedure A_CustomMeleeAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CustomComboAttack
-//
-//==============================================================================
-procedure A_CustomComboAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -116,13 +88,6 @@ procedure A_CustomComboAttack(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_HealThing(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_BasicAttack
-//
-//==============================================================================
-procedure A_BasicAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -176,20 +141,6 @@ function P_SplashImmune(target, spot: Pmobj_t): boolean;
 
 //==============================================================================
 //
-// A_MonsterBulletAttack
-//
-//==============================================================================
-procedure A_MonsterBulletAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_MonsterMeleeAttack
-//
-//==============================================================================
-procedure A_MonsterMeleeAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_AddFlags
 //
 //==============================================================================
@@ -201,13 +152,6 @@ procedure A_AddFlags(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_RemoveFlags(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_WeaponBulletAttack
-//
-//==============================================================================
-procedure A_WeaponBulletAttack(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -412,13 +356,6 @@ const
 
 var
   bulletslope: fixed_t;
-
-//==============================================================================
-//
-// P_BulletSlope
-//
-//==============================================================================
-procedure P_BulletSlope(mo: Pmobj_t);
 
 //==============================================================================
 //
@@ -2448,6 +2385,77 @@ type
     class procedure A_WeaponProjectile(player: Pplayer_t; psp: Ppspdef_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonAttackActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_MissileAttack
+    //
+    //==============================================================================
+    class procedure A_MissileAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Scratch
+    //
+    //==============================================================================
+    class procedure A_Scratch(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CustomMeleeAttack
+    //
+    //==============================================================================
+    class procedure A_CustomMeleeAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CustomComboAttack
+    //
+    //==============================================================================
+    class procedure A_CustomComboAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_BasicAttack
+    //
+    //==============================================================================
+    class procedure A_BasicAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MonsterBulletAttack
+    //
+    //==============================================================================
+    class procedure A_MonsterBulletAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MonsterMeleeAttack
+    //
+    //==============================================================================
+    class procedure A_MonsterMeleeAttack(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_WeaponBulletAttack
+    //
+    //==============================================================================
+    class procedure A_WeaponBulletAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_BulletSlope
+    //
+    //==============================================================================
+    class procedure P_BulletSlope(mo: Pmobj_t); static;
+  end;
+
 
 implementation
 
@@ -2542,6 +2550,19 @@ begin
 end;
 
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonAttackActionsLocal = class sealed
+  public
+    class procedure P_DoBulletSlope(mo: Pmobj_t; const igflags: integer); static;
+    class procedure P_DoAttack(const actor: Pmobj_t; const domelee, domissile: boolean;
+      const meleedamage: integer; const meleesound: integer; const missiletype: integer;
+      const missileheight: integer); static;
+  end;
+
 //==============================================================================
 // P_DoBulletSlope
 //
@@ -2550,7 +2571,7 @@ end;
 // the height of the intended target
 //
 //==============================================================================
-procedure P_DoBulletSlope(mo: Pmobj_t; const igflags: integer);
+class procedure TCommonAttackActionsLocal.P_DoBulletSlope(mo: Pmobj_t; const igflags: integer);
 var
   an: angle_t;
 begin
@@ -2578,16 +2599,16 @@ end;
 // P_BulletSlope
 //
 //==============================================================================
-procedure P_BulletSlope(mo: Pmobj_t);
+class procedure TCommonAttackActions.P_BulletSlope(mo: Pmobj_t);
 begin
   if G_PlayingEngineVersion >= 207 then
   begin
-    P_DoBulletSlope(mo, MF2_EX_FRIEND);
+    TCommonAttackActionsLocal.P_DoBulletSlope(mo, MF2_EX_FRIEND);
     if TMapAim.LineTarget = nil then
-      P_DoBulletSlope(mo, 0);
+      TCommonAttackActionsLocal.P_DoBulletSlope(mo, 0);
   end
   else
-    P_DoBulletSlope(mo, 0);
+    TCommonAttackActionsLocal.P_DoBulletSlope(mo, 0);
 end;
 
 //==============================================================================
@@ -2711,7 +2732,7 @@ begin
   else
   begin
     // Does the player aim at something that can be shot?
-    P_BulletSlope(actor);
+    TCommonAttackActions.P_BulletSlope(actor);
     target := TMapAim.LineTarget;
   end;
 
@@ -5797,7 +5818,7 @@ end;
 // A_MissileAttack(missilename = actor.info.missiletype)
 //
 //==============================================================================
-procedure A_MissileAttack(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_MissileAttack(actor: Pmobj_t);
 var
   missile: Pmobj_t;
   mobj_no: integer;
@@ -5948,7 +5969,7 @@ begin
   else
   begin
     // Does the player aim at something that can be shot?
-    P_BulletSlope(actor);
+    TCommonAttackActions.P_BulletSlope(actor);
     target := TMapAim.LineTarget;
   end;
 
@@ -6313,7 +6334,7 @@ begin
   else
   begin
     // Does the player aim at something that can be shot?
-    P_BulletSlope(actor);
+    TCommonAttackActions.P_BulletSlope(actor);
     result := TMapAim.LineTarget;
   end;
 end;
@@ -8197,7 +8218,7 @@ end;
 // A_Scratch
 //
 //==============================================================================
-procedure A_Scratch(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_Scratch(actor: Pmobj_t);
 begin
   if actor.target <> nil then
   begin
@@ -8387,7 +8408,7 @@ end;
 //  A_CustomMeleeAttack(damage: integer, meleesound: string, misssound: string)
 //
 //==============================================================================
-procedure A_CustomMeleeAttack(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_CustomMeleeAttack(actor: Pmobj_t);
 var
   damage: integer;
   sndidx: integer;
@@ -8432,7 +8453,7 @@ end;
 //  A_CustomComboAttack(missiletype: string, spawnheight: integer, damage: integer, meleesound: string)
 //
 //==============================================================================
-procedure A_CustomComboAttack(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_CustomComboAttack(actor: Pmobj_t);
 var
   damage: integer;
   sndidx: integer;
@@ -8829,7 +8850,7 @@ end;
 // P_DoAttack
 //
 //==============================================================================
-procedure P_DoAttack(const actor: Pmobj_t; const domelee, domissile: boolean;
+class procedure TCommonAttackActionsLocal.P_DoAttack(const actor: Pmobj_t; const domelee, domissile: boolean;
   const meleedamage: integer; const meleesound: integer; const missiletype: integer;
   const missileheight: integer);
 var
@@ -8855,7 +8876,7 @@ end;
 // A_BasicAttack(MeleeDamage: integer, MeleeSound: integer, MissileType: integer, MissileHeight: float)
 //
 //==============================================================================
-procedure A_BasicAttack(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_BasicAttack(actor: Pmobj_t);
 var
   MeleeDamage: integer;
   MeleeSound: integer;
@@ -10565,7 +10586,7 @@ end;
 //   args[4]: Attack damage modulus (e.g. for 3d5, customize the 5); if not set, defaults to 5
 //
 //==============================================================================
-procedure A_MonsterBulletAttack(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_MonsterBulletAttack(actor: Pmobj_t);
 var
   hspread, vspread, numbullets, damagebase, damagemod: integer;
   aimslope, i, damage, angle, slope: integer;
@@ -10607,7 +10628,7 @@ end;
 //   args[3]: Range (fixed point); if not set, defaults to monster's melee range
 //
 //==============================================================================
-procedure A_MonsterMeleeAttack(actor: Pmobj_t);
+class procedure TCommonAttackActions.A_MonsterMeleeAttack(actor: Pmobj_t);
 var
   damagebase, damagemod, hitsound, range: integer;
   damage: integer;
@@ -12001,7 +12022,7 @@ end;
 //   args[4]: Attack damage modulus (e.g. for 5d3, customize the 3); if not set, defaults to 3
 //
 //==============================================================================
-procedure A_WeaponBulletAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonAttackActions.A_WeaponBulletAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   hspread, vspread, numbullets, damagebase, damagemod: integer;
   i, damage, angle, slope: integer;
