@@ -1284,7 +1284,7 @@ begin
     if pl.renderflags and SRF_SLOPED = 0 then
       R_DoDrawPlane(pl)
     else
-      R_DoDrawSlope(pl);  //JVAL: Slopes
+      TRendererSlopes.R_DoDrawSlope(pl);  //JVAL: Slopes
   end;
 end;
 

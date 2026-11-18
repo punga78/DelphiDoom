@@ -506,9 +506,9 @@ begin
     Exit('R_DrawSpanMedium');
   if AValue = @TRendererSpanDrawers.R_DrawSpanMedium_Ripple then
     Exit('R_DrawSpanMedium_Ripple');
-  if AValue = @R_DrawSlopeMedium then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium then
     Exit('R_DrawSlopeMedium');
-  if AValue = @R_DrawSlopeMedium_Ripple then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
@@ -848,9 +848,9 @@ begin
     Exit('R_DrawSpanMedium');
   if AValue = @TRendererSpanDrawers.R_DrawSpanMedium_Ripple then
     Exit('R_DrawSpanMedium_Ripple');
-  if AValue = @R_DrawSlopeMedium then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium then
     Exit('R_DrawSlopeMedium');
-  if AValue = @R_DrawSlopeMedium_Ripple then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
@@ -1168,9 +1168,9 @@ begin
     Exit('R_DrawSpanMedium');
   if AValue = @TRendererSpanDrawers.R_DrawSpanMedium_Ripple then
     Exit('R_DrawSpanMedium_Ripple');
-  if AValue = @R_DrawSlopeMedium then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium then
     Exit('R_DrawSlopeMedium');
-  if AValue = @R_DrawSlopeMedium_Ripple then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');

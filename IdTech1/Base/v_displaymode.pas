@@ -139,7 +139,7 @@ begin
   MT_WaitTasks;            // Wait for running tasks to stop
   R_ShutDownDepthBuffer;   // Shut down depthbuffer
   TRendererPlane.R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
-  R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
+  TRendererSlopes.R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
   R_ClearVisPlanes3d;      // Clear arrays
   R_ShutDownFake3D;        // Clear fake 3d planes
   R_Clear32Cache;          // JVAL: unneeded ?

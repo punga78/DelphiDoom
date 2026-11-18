@@ -1173,7 +1173,7 @@ begin
 {$ENDIF}
 {$IFNDEF OPENGL}
   R_3dVisplaneFromSubsector(sub, @floorlightlevel);
-  R_VisSlopesFromSubsector(sub);  // JVAL: Slopes
+  TRendererSlopes.R_VisSlopesFromSubsector(sub);  // JVAL: Slopes
 {$ENDIF}
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 {$IFDEF OPENGL}

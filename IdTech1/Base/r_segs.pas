@@ -1366,7 +1366,7 @@ begin
 
   if curline.linedef.renderflags and LRF_SLOPED <> 0 then
   begin
-    R_StoreSlopeRange(start, stop); // JVAL: Slopes
+    TRendererSlopes.R_StoreSlopeRange(start, stop); // JVAL: Slopes
     Exit;
   end;
 
