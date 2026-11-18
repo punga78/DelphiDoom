@@ -76,7 +76,7 @@ end;
 procedure TEngineNetServices.PollInput;
 begin
   I_StartTic;
-  D_ProcessEvents;
+  TMainRoutines.D_ProcessEvents;
 end;
 
 function TEngineNetServices.IsGameFinished: Boolean;

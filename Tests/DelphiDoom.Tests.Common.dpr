@@ -21,7 +21,9 @@ uses
   DelphiDoom.MathCore.MemoryFill in '..\Framework\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
 {$ENDIF}
   d_delphi in '..\IdTech1\Common\d_delphi.pas',
-  DelphiDoom.Tests.Common.Pos1 in 'Source\DelphiDoom.Tests.Common.Pos1.pas';
+  DelphiDoom.Engine.Dehacked.TokenLists in '..\IdTech1\Base\DelphiDoom.Engine.Dehacked.TokenLists.pas',
+  DelphiDoom.Tests.Common.Pos1 in 'Source\DelphiDoom.Tests.Common.Pos1.pas',
+  DelphiDoom.Tests.Common.DehackedTokenLists in 'Source\DelphiDoom.Tests.Common.DehackedTokenLists.pas';
 
 var
   Runner: ITestRunner;

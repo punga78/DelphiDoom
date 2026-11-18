@@ -779,7 +779,7 @@ begin
   NATIVEWIDTH := I_ScreenWidth;
   NATIVEHEIGHT := I_ScreenHeight;
 
-  D_DoomMain;
+  TMainRoutines.D_DoomMain;
 end;
 
 initialization

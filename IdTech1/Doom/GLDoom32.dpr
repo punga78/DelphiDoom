@@ -1221,6 +1221,7 @@ uses
   DelphiDoom.Engine.ActorDef.Intf in '..\Base\DelphiDoom.Engine.ActorDef.Intf.pas',
   DelphiDoom.Engine.ActorDef.Lumps in '..\Base\DelphiDoom.Engine.ActorDef.Lumps.pas',
   DelphiDoom.Engine.Dehacked.Intf in '..\Base\DelphiDoom.Engine.Dehacked.Intf.pas',
+  DelphiDoom.Engine.Dehacked.TokenLists in '..\Base\DelphiDoom.Engine.Dehacked.TokenLists.pas',
   DelphiDoom.Engine.Dehacked.ThingFields in '..\Base\DelphiDoom.Engine.Dehacked.ThingFields.pas',
   DelphiDoom.Engine.Dehacked.Applier in 'DelphiDoom.Engine.Dehacked.Applier.pas',
   DelphiDoom.Engine.ActorDef.SoundInfoListener in '..\Base\DelphiDoom.Engine.ActorDef.SoundInfoListener.pas',

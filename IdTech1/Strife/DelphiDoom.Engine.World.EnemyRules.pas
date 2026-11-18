@@ -3246,7 +3246,7 @@ var
   i: integer;
   msg: string;
 begin
-  msg := DEH_GetString('You''ve freed the prisoners!');
+  msg := TDehMainRoutines.DEH_GetString('You''ve freed the prisoners!');
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
@@ -3269,7 +3269,7 @@ var
   i: integer;
   msg: string;
 begin
-  msg := DEH_GetString('You''ve destroyed the Converter!');
+  msg := TDehMainRoutines.DEH_GetString('You''ve destroyed the Converter!');
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
@@ -3296,7 +3296,7 @@ var
   quest: LongWord;
 begin
   // get name
-  name := DEH_GetString(mobjinfo[Ord(MT_TOKEN_QUEST1) - 1 + actor.info.speed].name2);
+  name := TDehMainRoutines.DEH_GetString(mobjinfo[Ord(MT_TOKEN_QUEST1) - 1 + actor.info.speed].name2);
 
   // give quest and display message to players
   quest := _SHLW(1, actor.info.speed - 1);

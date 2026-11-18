@@ -1377,7 +1377,7 @@ begin
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
         TGameSession.GameState := GS_DEMOSCREEN;
-        D_StartTitle;
+        TMainRoutines.D_StartTitle;
         exit;
       end;
 
@@ -1443,7 +1443,7 @@ begin
        ((ev._type = ev_joystick) and (ev.data1 <> 0)) then
     begin
       if devparm and (ev.data1 = Ord('g')) then
-        D_PageTicker  // [STRIFE]: wat? o_O
+        TMainRoutines.D_PageTicker  // [STRIFE]: wat? o_O
       else
         M_StartControlPanel;
       result := true;
@@ -1701,7 +1701,7 @@ begin
       end;
     GS_DEMOSCREEN:
       begin
-        D_PageTicker;
+        TMainRoutines.D_PageTicker;
       end;
   end;
 end;
@@ -1760,7 +1760,7 @@ begin
     p.inventory[i]._type := nummobjtypes;
 
   // villsa [STRIFE]: Default objective
-  mission_objective := DEH_GetString('Find help');
+  mission_objective := TDehMainRoutines.DEH_GetString('Find help');
 end;
 
 //==============================================================================
@@ -3124,7 +3124,7 @@ begin
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
     TGameSession.ResetForNewGame;
-    D_AdvanceDemo;
+    TMainRoutines.D_AdvanceDemo;
     result := true;
     exit;
   end;

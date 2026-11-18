@@ -58,7 +58,8 @@ uses
   DelphiDoom.Tests.Dehacked.Strings in 'Source\DelphiDoom.Tests.Dehacked.Strings.pas',
   DelphiDoom.Tests.Dehacked.LineSource in 'Source\DelphiDoom.Tests.Dehacked.LineSource.pas',
   DelphiDoom.Tests.Dehacked.Parser in 'Source\DelphiDoom.Tests.Dehacked.Parser.pas',
-  DelphiDoom.Tests.Dehacked.ExtraThingFields in 'Source\DelphiDoom.Tests.Dehacked.ExtraThingFields.pas';
+  DelphiDoom.Tests.Dehacked.ExtraThingFields in 'Source\DelphiDoom.Tests.Dehacked.ExtraThingFields.pas',
+  DelphiDoom.Tests.Dehacked.TokenTables in 'Source\DelphiDoom.Tests.Dehacked.TokenTables.pas';
 
 var
   Runner: ITestRunner;

@@ -613,7 +613,7 @@ procedure P_GiveObjective(const x: string; const minlumpnum: integer);
 var
   obj_ln: integer;
 begin
-  obj_ln := W_CheckNumForName(DEH_GetString(x));
+  obj_ln := W_CheckNumForName(TDehMainRoutines.DEH_GetString(x));
   if obj_ln > minlumpnum then
     mission_objective := W_TextLumpNum(obj_ln);
 end;
@@ -628,8 +628,8 @@ procedure P_GiveVoiceObjective(const voice, log: string; const minlumpnum: integ
 var
   obj_ln: integer;
 begin
-  obj_ln := W_CheckNumForName(DEH_GetString(log));
-  S_StartVoice(DEH_GetString(voice));
+  obj_ln := W_CheckNumForName(TDehMainRoutines.DEH_GetString(log));
+  S_StartVoice(TDehMainRoutines.DEH_GetString(voice));
   if obj_ln > minlumpnum then
     mission_objective := W_TextLumpNum(obj_ln);
 end;
@@ -1191,7 +1191,7 @@ begin
         if Pos(nameloc, rndMessages[i].type_name) = 1 then
         begin
           // found a match, so return a random message
-          result := DEH_GetString(rndMessages[i].messages[M_Random mod MAXRNDMESSAGES]);
+          result := TDehMainRoutines.DEH_GetString(rndMessages[i].messages[M_Random mod MAXRNDMESSAGES]);
           exit;
         end;
     end;
@@ -1315,7 +1315,7 @@ begin
   begin
     if mobjinfo[Ord(_type)].name2 <> '' then
     begin
-      pickupstring := DEH_GetString(mobjinfo[Ord(_type)].name2);
+      pickupstring := TDehMainRoutines.DEH_GetString(mobjinfo[Ord(_type)].name2);
       player._message := pickupstring;
     end;
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
@@ -1812,7 +1812,7 @@ begin
         P_TakeDialogItem(dialogplayer, currentchoice.needitems[count], currentchoice.needamounts[count]);
     end
     else
-      _message := DEH_GetString('You seem to have enough!');
+      _message := TDehMainRoutines.DEH_GetString('You seem to have enough!');
 
     // store next dialog into the talking actor
     nextdialog := currentchoice.next;
@@ -1921,7 +1921,7 @@ begin
       finaly := 199 - height; // height it will bump down to if necessary.
 
     // draw divider
-    M_WriteText(42, finaly - 6, DEH_GetString('______________________________'));
+    M_WriteText(42, finaly - 6, TDehMainRoutines.DEH_GetString('______________________________'));
 
     dialogmenu.y := finaly + 6;
     y := 0;
@@ -2067,7 +2067,7 @@ begin
     if mobjinfo[TMapAim.LineTarget._type].name2 <> '' then
       dialogname := mobjinfo[TMapAim.LineTarget._type].name2 // mobjtype name
     else
-      dialogname := DEH_GetString('Person'); // default name - like Joe in Doom 3 :P
+      dialogname := TDehMainRoutines.DEH_GetString('Person'); // default name - like Joe in Doom 3 :P
   end;
 
   // setup number of choices to choose from
@@ -2107,11 +2107,11 @@ begin
 
   // get bye text
   if rnd = 2 then
-    byetext := DEH_GetString('BYE!')
+    byetext := TDehMainRoutines.DEH_GetString('BYE!')
   else if rnd = 1 then
-    byetext := DEH_GetString('Thanks, Bye!')
+    byetext := TDehMainRoutines.DEH_GetString('Thanks, Bye!')
   else
-    byetext := DEH_GetString('See you later!');
+    byetext := TDehMainRoutines.DEH_GetString('See you later!');
 
   sprintf(dialoglastmsgbuffer, '%d) %s', [i + 1, byetext]);
 end;

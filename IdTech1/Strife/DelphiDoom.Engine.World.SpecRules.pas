@@ -1108,7 +1108,7 @@ begin
               P_GiveObjective('LOG' + itoa(line.tag), 0);
 
               // Put up a message
-              Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message...');
+              Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('Incoming Message...');
 
               line.special := 0;
             end;
@@ -1132,7 +1132,7 @@ begin
               P_GiveObjective('LOG' + itoa(line.tag), 0);
 
               // Put up a message
-              Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message from BlackBird...');
+              Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('Incoming Message from BlackBird...');
               line.special := 0;
             end;
       end;
@@ -1164,7 +1164,7 @@ begin
               P_GiveObjective('LOG' + itoa(line.tag div 100), 0);
 
               // Put up a message
-              Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message from BlackBird...');
+              Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('Incoming Message from BlackBird...');
               line.special := 0;
             end;
       end;

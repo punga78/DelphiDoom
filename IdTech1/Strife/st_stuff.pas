@@ -883,9 +883,9 @@ begin
       begin
         devparm := not devparm;
         if devparm then
-          plyr._message := DEH_GetString('devparm ON')
+          plyr._message := TDehMainRoutines.DEH_GetString('devparm ON')
         else
-          plyr._message := DEH_GetString('devparm OFF');
+          plyr._message := TDehMainRoutines.DEH_GetString('devparm OFF');
       end
       // 'omnipotent' cheat for toggleable god mode
       else if check_cheat(@cheat_god, Chr(ev.data1)) then
@@ -912,9 +912,9 @@ begin
         // villsa [STRIFE]: "GRIPPER" cheat; nothing to do with stealth...
         plyr.cheats := plyr.cheats xor CF_NOMOMENTUM;
         if plyr.cheats and CF_NOMOMENTUM <> 0 then
-          plyr._message := DEH_GetString('STEALTH BOOTS ON')
+          plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS ON')
         else
-          plyr._message := DEH_GetString('STEALTH BOOTS OFF');
+          plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS OFF');
       end
       // topo
       else if check_cheat(@cheat_amap, Chr(ev.data1)) then
@@ -939,9 +939,9 @@ begin
         // villsa [STRIFE]: "GRIPPER" cheat; nothing to do with stealth...
         plyr.cheats := plyr.cheats xor CF_NOMOMENTUM;
         if plyr.cheats and CF_NOMOMENTUM <> 0 then
-          plyr._message := DEH_GetString('STEALTH BOOTS ON')
+          plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS ON')
         else
-          plyr._message := DEH_GetString('STEALTH BOOTS OFF');
+          plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS OFF');
       end;
 
       // [STRIFE]: Handle berserk, invisibility, and envirosuit
@@ -963,7 +963,7 @@ begin
         P_GiveItemToPlayer(plyr, Ord(SPR_STMP), MT_INV_MED1);
         P_GiveItemToPlayer(plyr, Ord(SPR_MDKT), MT_INV_MED2);
         P_GiveItemToPlayer(plyr, Ord(SPR_FULL), MT_INV_MED3);
-        plyr._message := DEH_GetString('you got the stuff!');
+        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_P], Chr(ev.data1)) then
       begin
@@ -977,20 +977,20 @@ begin
 
         for i := 0 to Ord(NUMAMMO) - 1 do
           TInterRoutines.P_GiveAmmo(plyr, ammotype_t(i), 1);
-        plyr._message := DEH_GetString('you got the stuff!');
+        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_S], Chr(ev.data1)) then
       begin
         // [STRIFE]: PUMPUPS gives stamina and accuracy upgrades
         P_GiveItemToPlayer(plyr, Ord(SPR_TOKN), MT_TOKEN_STAMINA);
         P_GiveItemToPlayer(plyr, Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
-        plyr._message := DEH_GetString('you got the stuff!');
+        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_T], Chr(ev.data1)) then
       begin
         // [STRIFE] PUMPUPT gives targeter
         TInterRoutines.P_GivePower(plyr, Ord(pw_targeter));
-        plyr._message := DEH_GetString('you got the stuff!');
+        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
       end
       // [STRIFE]: PUMPUP
       else if check_cheat(@cheat_powerup[ST_PUMPUP], Chr(ev.data1)) then
@@ -1031,7 +1031,7 @@ begin
 
           if spot < 10 then
           begin
-            plyr._message := DEH_GetString('Spawning to spot');
+            plyr._message := TDehMainRoutines.DEH_GetString('Spawning to spot');
             G_RiftCheat(spot);
             result := false;
             exit;
@@ -1042,14 +1042,14 @@ begin
       else if check_cheat(@cheat_nuke, Chr(ev.data1)) then
       begin
         stonecold := stonecold xor true;
-        plyr._message := DEH_GetString('Kill ''em.  Kill ''em All');
+        plyr._message := TDehMainRoutines.DEH_GetString('Kill ''em.  Kill ''em All');
         result := false;
         exit;
       end
       // villsa [STRIFE]
       else if check_cheat(@cheat_midas, Chr(ev.data1)) then
       begin
-        plyr._message := DEH_GetString('YOU GOT THE MIDAS TOUCH, BABY');
+        plyr._message := TDehMainRoutines.DEH_GetString('YOU GOT THE MIDAS TOUCH, BABY');
         P_GiveItemToPlayer(plyr, Ord(SPR_HELT), MT_TOKEN_TOUGHNESS);
       end
       // villsa [STRIFE]

@@ -571,7 +571,7 @@ function DEH_CurrentSettings: TDStringList;
 begin
   if not Assigned(GDehWriter) then
     I_Error('DEH_CurrentSettings(): the export is not configured (ComposeEngine was not called)');
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
   result := LinesToList(GDehWriter.Write);
 end;
 
@@ -928,7 +928,7 @@ function DEH_MobjInfoCSV: TDStringList;
 var
   cs: TDStringList;
 begin
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
   cs := DEH_CurrentSettings;
   try
     result := LinesToList(GCsvWriter.MobjInfo(ListToLines(cs)));
@@ -957,7 +957,7 @@ function DEH_StatesCSV: TDStringList;
 var
   cs: TDStringList;
 begin
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
   cs := DEH_CurrentSettings;
   try
     result := LinesToList(GCsvWriter.States(ListToLines(cs)));

@@ -127,7 +127,7 @@ begin
 
   ShowCursor(False);  // Turn of the cursor (gets in the way)
 
-  caption := D_Version + ' - ' + D_VersionBuilt;
+  caption := TMainRoutines.D_Version + ' - ' + TMainRoutines.D_VersionBuilt;
 
   // Attempt to create the actual window
   hMainWnd := CreateWindowEx(

@@ -37,25 +37,12 @@ interface
 
 uses
   d_delphi,
+  DelphiDoom.Dehacked.GameData,
   info_h;
 
 // A patch is read and applied by TEngineDehackedApplier
 // (DelphiDoom.Engine.Dehacked.Applier); here are the tables of the names that it
 // and the table export use
-
-//==============================================================================
-//
-// DEH_Init
-//
-//==============================================================================
-procedure DEH_Init;
-
-//==============================================================================
-//
-// DEH_ShutDown
-//
-//==============================================================================
-procedure DEH_ShutDown;
 
 type
   deh_string_t = record
@@ -104,10 +91,44 @@ var
 var
   ismbf21: boolean = false; // MBF21
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDehMainRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // DEH_ConfigureTokens
+    // Gives the names of the fields and of the flags of the game (TDehackedGames.DataOf: ComposeEngine);
+    // DEH_Init fills the lists of names from them
+    //
+    //==============================================================================
+    class procedure DEH_ConfigureTokens(const AData: TDehackedGameData); static;
+
+    //==============================================================================
+    //
+    // DEH_Init
+    //
+    //==============================================================================
+    class procedure DEH_Init; static;
+
+    //==============================================================================
+    //
+    // DEH_ShutDown
+    //
+    //==============================================================================
+    class procedure DEH_ShutDown; static;
+  end;
+
+
 implementation
 
 uses
   TypInfo,
+  DelphiDoom.Engine.Dehacked.TokenLists,
+  i_system,
   c_cmds,
   doomdef,
   deh_base,
@@ -142,12 +163,22 @@ uses
   v_data,
   sv_save;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDehMainLocalRoutines = class sealed
+  public
+    class procedure DEH_AddString(deh_strings: Pdeh_strings_t; pstr: PString; const name: string); static;
+  end;
+
 //==============================================================================
 //
 // DEH_AddString
 //
 //==============================================================================
-procedure DEH_AddString(deh_strings: Pdeh_strings_t; pstr: PString; const name: string);
+class procedure TDehMainLocalRoutines.DEH_AddString(deh_strings: Pdeh_strings_t; pstr: PString; const name: string);
 begin
   if deh_strings.numstrings = deh_strings.realnumstrings then
   begin
@@ -164,6 +195,22 @@ begin
 end;
 
 var
+  // given by the composition root (DEH_ConfigureTokens)
+  deh_tokens: TDehackedGameData;
+  deh_tokens_given: boolean = false;
+
+//==============================================================================
+//
+// DEH_ConfigureTokens
+//
+//==============================================================================
+class procedure TDehMainRoutines.DEH_ConfigureTokens(const AData: TDehackedGameData);
+begin
+  deh_tokens := AData;
+  deh_tokens_given := true;
+end;
+
+var
   deh_initialized: boolean = false;
 
 //==============================================================================
@@ -174,314 +221,62 @@ var
 // Initializing DEH tokens
 //
 //==============================================================================
-procedure DEH_Init;
+class procedure TDehMainRoutines.DEH_Init;
 var
   i: integer;
 begin
   if deh_initialized then
     exit;
 
+  if not deh_tokens_given then
+    I_Error('DEH_Init(): the names of the tables were not given (DEH_ConfigureTokens was not called)');
+
   deh_initialized := true;
 
   mobj_tokens := TDTextList.Create;
+  TEngineDehackedTokenLists.Fill(mobj_tokens, deh_tokens.ThingFields);
 
-  mobj_tokens.Add('ID #');               // .doomednum                // 0
-  mobj_tokens.Add('INITIAL FRAME');      // .spawnstate               // 1
-  mobj_tokens.Add('HIT POINTS');         // .spawnhealth              // 2
-  mobj_tokens.Add('FIRST MOVING FRAME'); // .seestate                 // 3
-  mobj_tokens.Add('ALERT SOUND');        // .seesound                 // 4
-  mobj_tokens.Add('REACTION TIME');      // .reactiontime             // 5
-  mobj_tokens.Add('ATTACK SOUND');       // .attacksound              // 6
-  mobj_tokens.Add('INJURY FRAME');       // .painstate                // 7
-  mobj_tokens.Add('PAIN CHANCE');        // .painchance               // 8
-  mobj_tokens.Add('PAIN SOUND');         // .painsound                // 9
-  mobj_tokens.Add('CLOSE ATTACK FRAME'); // .meleestate               // 10
-  mobj_tokens.Add('FAR ATTACK FRAME');   // .missilestate             // 11
-  mobj_tokens.Add('DEATH FRAME');        // .deathstate               // 12
-  mobj_tokens.Add('EXPLODING FRAME');    // .xdeathstate              // 13
-  mobj_tokens.Add('DEATH SOUND');        // .deathsound               // 14
-  mobj_tokens.Add('SPEED');              // .speed                    // 15
-  mobj_tokens.Add('WIDTH');              // .radius                   // 16
-  mobj_tokens.Add('HEIGHT');             // .height                   // 17
-  mobj_tokens.Add('MASS');               // .mass                     // 18
-  mobj_tokens.Add('MISSILE DAMAGE');     // .damage                   // 19
-  mobj_tokens.Add('ACTION SOUND');       // .activesound              // 20
-  mobj_tokens.Add('BITS');               // .flags                    // 21
-  mobj_tokens.Add('BITS2');              // .flags                    // 22
-  mobj_tokens.Add('RESPAWN FRAME');      // .raisestate               // 23
-  mobj_tokens.Add('FLAGS_EX');           // .flags_ex (DelphiDoom)    // 24
-  mobj_tokens.Add('CUSTOM SOUND 1');     // .customsound1             // 25
-  mobj_tokens.Add('CUSTOM SOUND 2');     // .customsound2             // 26
-  mobj_tokens.Add('CUSTOM SOUND 3');     // .customsound3             // 27
-  mobj_tokens.Add('EXPLOSION DAMAGE');   // .explosiondamage          // 28
-  mobj_tokens.Add('EXPLOSION RADIUS');   // .explosionradius          // 29
-  mobj_tokens.Add('MELEE DAMAGE');       // .meleedamage              // 30
-  mobj_tokens.Add('INHERITSFROM');       // .inheritsfrom             // 31
-  mobj_tokens.Add('NAME');               // .name                     // 32
-  mobj_tokens.Add('MELEE SOUND');        // .meleesound               // 33
-  mobj_tokens.Add('RENDERSTYLE');        // .renderstyle              // 34
-  mobj_tokens.Add('ALPHA');              // .alpha                    // 35
-  mobj_tokens.Add('DROPITEM');           // .dropitem                 // 36
-  mobj_tokens.Add('MISSILETYPE');        // .missiletype              // 37
-  mobj_tokens.Add('HEAL FRAME');         // .healstate                // 38
-  mobj_tokens.Add('FLAGS2_EX');          // .flags2_ex (DelphiDoom)   // 39
-  mobj_tokens.Add('CRASH FRAME');        // .crashstate               // 40
-  mobj_tokens.Add('VSPEED');             // .vspeed                   // 41
-  mobj_tokens.Add('PUSHFACTOR');         // .pushfactor               // 42
-  mobj_tokens.Add('SCALE');              // .scale                    // 43
-  mobj_tokens.Add('GRAVITY');            // .gravity                  // 44
-  mobj_tokens.Add('FLAGS3_EX');          // .flags3_ex (DelphiDoom)   // 45
-  mobj_tokens.Add('FLAGS4_EX');          // .flags4_ex (DelphiDoom)   // 46
-  mobj_tokens.Add('MINMISSILECHANCE');   // .minmissilechance         // 47
-  mobj_tokens.Add('FLOAT SPEED');        // .floatspeed               // 48
-  mobj_tokens.Add('NORMAL SPEED');       // .normalspeed              // 49
-  mobj_tokens.Add('FAST SPEED');         // .fastspeed                // 50
-  mobj_tokens.Add('OBITUARY');           // .obituary                 // 51
-  mobj_tokens.Add('HIT OBITUARY');       // .hitobituary              // 52
-  mobj_tokens.Add('GENDER');             // .gender                   // 53
-  mobj_tokens.Add('MELEE RANGE');        // .meleerange               // 54
-  mobj_tokens.Add('MAX STEP HEIGHT');    // .maxstepheight            // 55
-  mobj_tokens.Add('MAX DROPOFF HEIGHT'); // .maxdropoffheight         // 56
-  mobj_tokens.Add('GIB HEALTH');         // .gibhealth                // 57
-  mobj_tokens.Add('MAX TARGET RANGE');   // .maxtargetrange           // 58
-  mobj_tokens.Add('WEAVE INDEX XY');     // .WeaveIndexXY             // 59
-  mobj_tokens.Add('WEAVE INDEX Z');      // .WeaveIndexZ              // 60
-  mobj_tokens.Add('FRICTION');           // .Friction                 // 61
-  mobj_tokens.Add('SPRITE DX');          // .spriteDX                 // 62
-  mobj_tokens.Add('SPRITE DY');          // .spriteDY                 // 63
-  mobj_tokens.Add('INTERACT FRAME');     // .interactstate (DelphiDoom) // 64
-  mobj_tokens.Add('FLAGS5_EX');          // .flags5_ex (DelphiDoom)   // 65
-  mobj_tokens.Add('FLAGS6_EX');          // .flags6_ex (DelphiDoom)   // 66
-  mobj_tokens.Add('MBF21 BITS');         // .mbf21flags               // 67
-  mobj_tokens.Add('INFIGHTING GROUP');   // .infighting_group         // 68
-  mobj_tokens.Add('PROJECTILE GROUP');   // .projectile_group         // 69
-  mobj_tokens.Add('SPLASH GROUP');       // .splash_group             // 70
-  mobj_tokens.Add('RIP SOUND');          // .ripsound                 // 71
-  mobj_tokens.Add('CRUSH FRAME');        // .crushstate               // 72
-  mobj_tokens.Add('ACTIVE SOUND');       // .activesound              // 73 - Alias for 20
-  mobj_tokens.Add('RADIUS');             // .radius                   // 74 - Alias for 16
-  mobj_tokens.Add('BLOOD COLOR');        // .bloodcolor               // 75
-  mobj_tokens.Add('TRANSLATION');        // .translationname          // 76
-  mobj_tokens.Add('DROPPED ITEM');       // .dropitem                 // 77 - Alias for 36
-  mobj_tokens.Add('MISSILEHEIGHT');      // .missileheight (DelphiDoom) // 78
-  mobj_tokens.Add('MELEE THRESHOLD');    // .meleethreshold           // 79
-  mobj_tokens.Add('PAIN FRAME');         // .painstate                // 80 - Alias for 7
 
 
   mobj_flags := TDTextList.Create;
-  mobj_flags.Add('MF_SPECIAL');
-  mobj_flags.Add('MF_SOLID');
-  mobj_flags.Add('MF_SHOOTABLE');
-  mobj_flags.Add('MF_NOSECTOR');
-  mobj_flags.Add('MF_NOBLOCKMAP');
-  mobj_flags.Add('MF_AMBUSH');
-  mobj_flags.Add('MF_JUSTHIT');
-  mobj_flags.Add('MF_JUSTATTACKED');
-  mobj_flags.Add('MF_SPAWNCEILING');
-  mobj_flags.Add('MF_NOGRAVITY');
-  mobj_flags.Add('MF_DROPOFF');
-  mobj_flags.Add('MF_PICKUP');
-  mobj_flags.Add('MF_NOCLIP');
-  mobj_flags.Add('MF_SLIDEONWALLS');
-  mobj_flags.Add('MF_FLOAT');
-  mobj_flags.Add('MF_TELEPORT');
-  mobj_flags.Add('MF_MISSILE');
-  mobj_flags.Add('MF_ALTSHADOW');
-  mobj_flags.Add('MF_SHADOW');
-  mobj_flags.Add('MF_NOBLOOD');
-  mobj_flags.Add('MF_CORPSE');
-  mobj_flags.Add('MF_INFLOAT');
-  mobj_flags.Add('MF_COUNTKILL');
-  mobj_flags.Add('MF_ICECORPSE');
-  mobj_flags.Add('MF_SKULLFLY');
-  mobj_flags.Add('MF_NOTDMATCH');
-  mobj_flags.Add('MF_TRANSLATION1');
-  mobj_flags.Add('MF_TRANSLATION2');
-  mobj_flags.Add('MF_TRANSLATION3');
-  mobj_flags.Add('MF_UNUSED3');
-  mobj_flags.Add('MF_UNUSED4');
-  mobj_flags.Add('MF_TRANSLUCENT');
+  TEngineDehackedTokenLists.Fill(mobj_flags, deh_tokens.MobjFlags);
 
 
   mobj_flags2 := TDTextList.Create;
-  mobj_flags2.Add('MF2_LOGRAV');
-  mobj_flags2.Add('MF2_WINDTHRUST');
-  mobj_flags2.Add('MF2_FLOORBOUNCE');
-  mobj_flags2.Add('MF2_BLASTED');
-  mobj_flags2.Add('MF2_FLY');
-  mobj_flags2.Add('MF2_FLOORCLIP');
-  mobj_flags2.Add('MF2_SPAWNFLOAT');
-  mobj_flags2.Add('MF2_NOTELEPORT');
-  mobj_flags2.Add('MF2_RIP');
-  mobj_flags2.Add('MF2_PUSHABLE');
-  mobj_flags2.Add('MF2_SLIDE');
-  mobj_flags2.Add('MF2_ONMOBJ');
-  mobj_flags2.Add('MF2_PASSMOBJ');
-  mobj_flags2.Add('MF2_CANNOTPUSH');
-  mobj_flags2.Add('MF2_DROPPED');
-  mobj_flags2.Add('MF2_BOSS');
-  mobj_flags2.Add('MF2_FIREDAMAGE');
-  mobj_flags2.Add('MF2_NODMGTHRUST');
-  mobj_flags2.Add('MF2_TELESTOMP');
-  mobj_flags2.Add('MF2_FLOATBOB');
-  mobj_flags2.Add('MF2_DONTDRAW');
-  mobj_flags2.Add('MF2_IMPACT');
-  mobj_flags2.Add('MF2_PUSHWALL');
-  mobj_flags2.Add('MF2_MCROSS');
-  mobj_flags2.Add('MF2_PCROSS');
-  mobj_flags2.Add('MF2_CANTLEAVEFLOORPIC');
-  mobj_flags2.Add('MF2_NONSHOOTABLE');
-  mobj_flags2.Add('MF2_INVULNERABLE');
-  mobj_flags2.Add('MF2_DORMANT');
-  mobj_flags2.Add('MF2_ICEDAMAGE');
-  mobj_flags2.Add('MF2_SEEKERMISSILE');
+  TEngineDehackedTokenLists.Fill(mobj_flags2, deh_tokens.MobjFlags2);
 
 
   mobj_flags_ex := TDTextList.Create;
-  mobj_flags_ex.Add('MF_EX_TRANSPARENT');
-  mobj_flags_ex.Add('MF_EX_WHITELIGHT');
-  mobj_flags_ex.Add('MF_EX_REDLIGHT');
-  mobj_flags_ex.Add('MF_EX_GREENLIGHT');
-  mobj_flags_ex.Add('MF_EX_BLUELIGHT');
-  mobj_flags_ex.Add('MF_EX_YELLOWLIGHT');
-  mobj_flags_ex.Add('MF_EX_FLOATBOB');
-  mobj_flags_ex.Add('MF_EX_NORADIUSDMG');
-  mobj_flags_ex.Add('MF_EX_FIRERESIST');
-  mobj_flags_ex.Add('MF_EX_RANDOMSEESOUND');
-  mobj_flags_ex.Add('MF_EX_RANDOMPAINSOUND');
-  mobj_flags_ex.Add('MF_EX_RANDOMATTACKSOUND');
-  mobj_flags_ex.Add('MF_EX_RANDOMDEATHSOUND');
-  mobj_flags_ex.Add('MF_EX_RANDOMACTIVESOUND');
-  mobj_flags_ex.Add('MF_EX_RANDOMCUSTOMSOUND1');
-  mobj_flags_ex.Add('MF_EX_RANDOMCUSTOMSOUND2');
-  mobj_flags_ex.Add('MF_EX_RANDOMCUSTOMSOUND3');
-  mobj_flags_ex.Add('MF_EX_CUSTOMEXPLODE');
-  mobj_flags_ex.Add('MF_EX_BOSS');
-  mobj_flags_ex.Add('MF_EX_FLOORHUGGER');
-  mobj_flags_ex.Add('MF_EX_CEILINGHUGGER');
-  mobj_flags_ex.Add('MF_EX_SEEKERMISSILE');
-  mobj_flags_ex.Add('MF_EX_SPAWNFLOAT');
-  mobj_flags_ex.Add('MF_EX_DONTHURTSPECIES');
-  mobj_flags_ex.Add('MF_EX_LOWGRAVITY');
-  mobj_flags_ex.Add('MF_EX_INVULNERABLE');
-  mobj_flags_ex.Add('MF_EX_RANDOMMELEESOUND');
-  mobj_flags_ex.Add('MF_EX_DONOTREMOVE');
-  mobj_flags_ex.Add('MF_EX_GHOST');
-  mobj_flags_ex.Add('MF_EX_THRUGHOST');
-  mobj_flags_ex.Add('MF_EX_LOOKALLAROUND');
+  TEngineDehackedTokenLists.Fill(mobj_flags_ex, deh_tokens.MobjFlagsEx);
 
 
   mobj_flags2_ex := TDTextList.Create;
-  mobj_flags2_ex.Add('MF2_EX_MEDIUMGRAVITY');
-  mobj_flags2_ex.Add('MF2_EX_REFLECTIVE');
-  mobj_flags2_ex.Add('MF2_EX_FRIGHTENED');
-  mobj_flags2_ex.Add('MF2_EX_NODAMAGE');
-  mobj_flags2_ex.Add('MF2_EX_DONTRUNSCRIPTS');
-  mobj_flags2_ex.Add('MF2_EX_PRECISESPAWNANGLE');
-  mobj_flags2_ex.Add('MF2_EX_CUSTOMDROPITEM');
+  TEngineDehackedTokenLists.Fill(mobj_flags2_ex, deh_tokens.MobjFlags2Ex);
   // JVAL: VERSION 204
-  mobj_flags2_ex.Add('MF2_EX_JUMPDOWN');
-  mobj_flags2_ex.Add('MF2_EX_FULLVOLACTIVE');
-  mobj_flags2_ex.Add('MF2_EX_FULLVOLDEATH');
-  mobj_flags2_ex.Add('MF2_EX_FULLVOLSEE');
-  mobj_flags2_ex.Add('MF2_EX_FULLVOLPAIN');
-  mobj_flags2_ex.Add('MF2_EX_FULLVOLATTACK');
-  mobj_flags2_ex.Add('MF2_EX_DONOTRENDERSHADOW');
   // JVAL: VERSION 205
-  mobj_flags2_ex.Add('MF2_EX_SEEINVISIBLE');
-  mobj_flags2_ex.Add('MF2_EX_MISSILEHURTSPECIES');
-  mobj_flags2_ex.Add('MF2_EX_NOHITFLOOR');
-  mobj_flags2_ex.Add('MF2_EX_JUMPUP');
-  mobj_flags2_ex.Add('MF2_EX_DONTBLOCKPLAYER');
-  mobj_flags2_ex.Add('MF2_EX_INTERACTIVE'); // JVAL: VERSION 207
-  mobj_flags2_ex.Add('MF2_EX_JUSTAPPEARED');
-  mobj_flags2_ex.Add('MF2_EX_DONTINFIGHTMONSTERS'); // JVAL: VERSION 207
-  mobj_flags2_ex.Add('MF2_EX_FRIEND'); // JVAL: VERSION 207
 
 
   mobj_flags3_ex := TDTextList.Create;
-  mobj_flags3_ex.Add('MF3_EX_FLOORBOUNCE');
-  mobj_flags3_ex.Add('MF3_EX_CEILINGBOUNCE');
-  mobj_flags3_ex.Add('MF3_EX_WALLBOUNCE');
-  mobj_flags3_ex.Add('MF3_EX_NOMAXMOVE');
-  mobj_flags3_ex.Add('MF3_EX_NOCRUSH');
+  TEngineDehackedTokenLists.Fill(mobj_flags3_ex, deh_tokens.MobjFlags3Ex);
   // JVAL: VERSION 206
-  mobj_flags3_ex.Add('MF3_EX_NORENDERINTERPOLATION');
-  mobj_flags3_ex.Add('MF3_EX_LINEDONE');
-  mobj_flags3_ex.Add('MF3_EX_FLIPSPRITE');
-  mobj_flags3_ex.Add('MF3_EX_MISSILEMORE');
-  mobj_flags3_ex.Add('MF3_EX_MISSILEEVENMORE');
-  mobj_flags3_ex.Add('MF3_EX_STRIFEDAMAGE');
-  mobj_flags3_ex.Add('MF3_EX_NOTIMEFREEZE');
-  mobj_flags3_ex.Add('MF3_EX_NOFEAR');
-  mobj_flags3_ex.Add('MF3_EX_CAUSEFEAR');
-  mobj_flags3_ex.Add('MF3_EX_THRUACTORS');
-  mobj_flags3_ex.Add('MF3_EX_THRUSPECIES');
-  mobj_flags3_ex.Add('MF3_EX_NOBLOCKMONST');
-  mobj_flags3_ex.Add('MF3_EX_NOTAUTOAIMED');
-  mobj_flags3_ex.Add('MF3_EX_SLIDING');
   // JVAL: VERSION 207
-  mobj_flags3_ex.Add('MF3_EX_ABSOLUTEDAMAGE');
-  mobj_flags3_ex.Add('MF3_EX_NOGRAVITYDEATH');
-  mobj_flags3_ex.Add('MF3_EX_FREEZEDAMAGE');
-  mobj_flags3_ex.Add('MF3_EX_NOFREEZEDAMAGE');
-  mobj_flags3_ex.Add('MF3_EX_FREEZEDAMAGERESIST');
-  mobj_flags3_ex.Add('MF3_EX_FLAMEDAMAGE');
-  mobj_flags3_ex.Add('MF3_EX_NOFLAMEDAMAGE');
 
 
   mobj_flags4_ex := TDTextList.Create;
-  mobj_flags4_ex.Add('MF4_EX_FLAMEDAMAGERESIST');
-  mobj_flags4_ex.Add('MF4_EX_THRUMONSTERS');
-  mobj_flags4_ex.Add('MF4_EX_ABSOLUTEDROPITEMPOS');
-  mobj_flags4_ex.Add('MF4_EX_CANNOTSTEP');
-  mobj_flags4_ex.Add('MF4_EX_CANNOTDROPOFF');
-  mobj_flags4_ex.Add('MF4_EX_FORCERADIUSDMG');
-  mobj_flags4_ex.Add('MF4_EX_SHORTMRANGE');
-  mobj_flags4_ex.Add('MF4_EX_DMGIGNORED');
-  mobj_flags4_ex.Add('MF4_EX_HIGHERMPROB');
-  mobj_flags4_ex.Add('MF4_EX_RANGEHALF');
-  mobj_flags4_ex.Add('MF4_EX_NOTHRESHOLD');
-  mobj_flags4_ex.Add('MF4_EX_LONGMELEERANGE');
-  mobj_flags4_ex.Add('MF4_EX_TRACEDEFINED');
-  mobj_flags4_ex.Add('MF4_EX_MAP07BOSS1');
-  mobj_flags4_ex.Add('MF4_EX_MAP07BOSS2');
-  mobj_flags4_ex.Add('MF4_EX_SELFAPPLYINGLIGHT');
-  mobj_flags4_ex.Add('MF4_EX_FULLVOLRIP');
-  mobj_flags4_ex.Add('MF4_EX_RANDOMRIPSOUND');
-  mobj_flags4_ex.Add('MF4_EX_ALWAYSFINISHSOUND');
-  mobj_flags4_ex.Add('MF4_EX_NEVERFINISHSOUND');
-  mobj_flags4_ex.Add('MF4_EX_DONTGIB');
-  mobj_flags4_ex.Add('MF4_EX_BACKINGMELEE');
+  TEngineDehackedTokenLists.Fill(mobj_flags4_ex, deh_tokens.MobjFlags4Ex);
 
 
   mobj_flags5_ex := TDTextList.Create;
+  TEngineDehackedTokenLists.Fill(mobj_flags5_ex, deh_tokens.MobjFlags5Ex);
 
 
   mobj_flags6_ex := TDTextList.Create;
+  TEngineDehackedTokenLists.Fill(mobj_flags6_ex, deh_tokens.MobjFlags6Ex);
 
 
   // MBF21
   mobj_flags_mbf21 := TDTextList.Create;
-  mobj_flags_mbf21.Add('LOGRAV');
-  mobj_flags_mbf21.Add('SHORTMRANGE');
-  mobj_flags_mbf21.Add('DMGIGNORED');
-  mobj_flags_mbf21.Add('NORADIUSDMG');
-  mobj_flags_mbf21.Add('FORCERADIUSDMG');
-  mobj_flags_mbf21.Add('HIGHERMPROB');
-  mobj_flags_mbf21.Add('RANGEHALF');
-  mobj_flags_mbf21.Add('NOTHRESHOLD');
-  mobj_flags_mbf21.Add('LONGMELEE');
-  mobj_flags_mbf21.Add('BOSS');
-  mobj_flags_mbf21.Add('MAP07BOSS1');
-  mobj_flags_mbf21.Add('MAP07BOSS2');
-  mobj_flags_mbf21.Add('E1M8BOSS');
-  mobj_flags_mbf21.Add('E2M8BOSS');
-  mobj_flags_mbf21.Add('E3M8BOSS');
-  mobj_flags_mbf21.Add('E4M6BOSS');
-  mobj_flags_mbf21.Add('E4M8BOSS');
-  mobj_flags_mbf21.Add('RIP');
-  mobj_flags_mbf21.Add('FULLVOLSOUNDS');
+  TEngineDehackedTokenLists.Fill(mobj_flags_mbf21, deh_tokens.MobjFlagsMbf21);
 
 
   infighting_groups := TDTextList.Create;
@@ -496,38 +291,13 @@ begin
 
   // JVAL: 20200330 - State flags
   state_flags_ex := TDTextList.Create;
-  state_flags_ex.Add('MF_EX_TRANSPARENT');
-  state_flags_ex.Add('MF_EX_WHITELIGHT');
-  state_flags_ex.Add('MF_EX_REDLIGHT');
-  state_flags_ex.Add('MF_EX_GREENLIGHT');
-  state_flags_ex.Add('MF_EX_BLUELIGHT');
-  state_flags_ex.Add('MF_EX_YELLOWLIGHT');
-  state_flags_ex.Add('MF_EX_STATE_RANDOM_SELECT');
-  state_flags_ex.Add('MF_EX_STATE_RANDOM_RANGE');
+  TEngineDehackedTokenLists.Fill(state_flags_ex, deh_tokens.StateFlagsEx);
 
   state_flags_mbf21 := TDTextList.Create; // MBF21
-  state_flags_mbf21.Add('STATEF_SKILL5FAST'); // MBF21
+  TEngineDehackedTokenLists.Fill(state_flags_mbf21, deh_tokens.StateFlagsMbf21);
 
   state_tokens := TDTextList.Create;
-  state_tokens.Add('SPRITE NUMBER');    // 0 //.sprite
-  state_tokens.Add('SPRITE SUBNUMBER'); // 1 //.frame
-  state_tokens.Add('DURATION');         // 2 //.tics
-  state_tokens.Add('NEXT FRAME');       // 3 //.nextstate
-  state_tokens.Add('CODEP FRAME');      // 4 //.action
-  state_tokens.Add('UNKNOWN 1');        // 5 //.misc1
-  state_tokens.Add('UNKNOWN 2');        // 6 //.misc2
-  state_tokens.Add('FLAGS_EX');         // 7 //.flags_ex (DelphiDoom)
-  state_tokens.Add('OWNER');            // 8 //.Add an owner (DelphiDoom)
-  state_tokens.Add('DURATION 2');       // 9 //.tics2
-  state_tokens.Add('ARGS1');            // 10 // .args[0]
-  state_tokens.Add('ARGS2');            // 11 // .args[1]
-  state_tokens.Add('ARGS3');            // 12 // .args[2]
-  state_tokens.Add('ARGS4');            // 13 // .args[3]
-  state_tokens.Add('ARGS5');            // 14 // .args[4]
-  state_tokens.Add('ARGS6');            // 15 // .args[5]
-  state_tokens.Add('ARGS7');            // 16 // .args[6]
-  state_tokens.Add('ARGS8');            // 17 // .args[7]
-  state_tokens.Add('MBF21 BITS');       // 18 // .mbf21bits
+  TEngineDehackedTokenLists.Fill(state_tokens, deh_tokens.FrameFields);
 
   DEH_AddNullAction;
 
@@ -1098,238 +868,224 @@ begin
   deh_strings._array := nil;
 
   for i := 0 to 2 do
-      DEH_AddString(@deh_strings, @fourthWeaponText[i], 'FOURTHWEAPONTEXT_' + itoa(i));
+      TDehMainLocalRoutines.DEH_AddString(@deh_strings, @fourthWeaponText[i], 'FOURTHWEAPONTEXT_' + itoa(i));
   for i := 0 to 2 do
-      DEH_AddString(@deh_strings, @weaponPieceText[i], 'WEAPONPIECETEXT_' + itoa(i));
+      TDehMainLocalRoutines.DEH_AddString(@deh_strings, @weaponPieceText[i], 'WEAPONPIECETEXT_' + itoa(i));
 
-  DEH_AddString(@deh_strings, @pg_CREDIT, 'PAGE_CREDIT');
-  DEH_AddString(@deh_strings, @pg_TITLE, 'PAGE_TITLE');
-  DEH_AddString(@deh_strings, @pg_HELP1, 'PAGE_HELP1');
-  DEH_AddString(@deh_strings, @pg_HELP2, 'PAGE_HELP2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_CREDIT, 'PAGE_CREDIT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_TITLE, 'PAGE_TITLE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_HELP1, 'PAGE_HELP1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_HELP2, 'PAGE_HELP2');
 
   for i := 0 to 9 do
   begin
-    DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + itoa(i));
-    DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + IntToStrZFill(2, i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + itoa(i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + IntToStrZFill(2, i));
   end;
 
-  DEH_AddString(@deh_strings, @QUITMSG, 'QUITMSG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QUITMSG, 'QUITMSG');
 
   for i := 0 to NUM_STARTUPMESSAGES - 1 do
   begin
-    DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + itoa(i));
-    DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + IntToStrZFill(2, i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + itoa(i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + IntToStrZFill(2, i));
   end;
 
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF1, 'HUSTR_TALKTOSELF1');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF2, 'HUSTR_TALKTOSELF2');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF3, 'HUSTR_TALKTOSELF3');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF4, 'HUSTR_TALKTOSELF4');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF5, 'HUSTR_TALKTOSELF5');
-  DEH_AddString(@deh_strings, @HUSTR_MESSAGESENT, 'HUSTR_MESSAGESENT');
-  DEH_AddString(@deh_strings, @HUSTR_MSGU, 'HUSTR_MSGU');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF1, 'HUSTR_TALKTOSELF1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF2, 'HUSTR_TALKTOSELF2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF3, 'HUSTR_TALKTOSELF3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF4, 'HUSTR_TALKTOSELF4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF5, 'HUSTR_TALKTOSELF5');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_MESSAGESENT, 'HUSTR_MESSAGESENT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_MSGU, 'HUSTR_MSGU');
 
-  DEH_AddString(@deh_strings, @HUSTR_PLRGREEN, 'HUSTR_PLRGREEN');
-  DEH_AddString(@deh_strings, @HUSTR_PLRINDIGO, 'HUSTR_PLRINDIGO');
-  DEH_AddString(@deh_strings, @HUSTR_PLRBROWN, 'HUSTR_PLRBROWN');
-  DEH_AddString(@deh_strings, @HUSTR_PLRRED, 'HUSTR_PLRRED');
-  DEH_AddString(@deh_strings, @destination_keys[0], 'HUSTR_KEYGREEN');
-  DEH_AddString(@deh_strings, @destination_keys[1], 'HUSTR_KEYINDIGO');
-  DEH_AddString(@deh_strings, @destination_keys[2], 'HUSTR_KEYBROWN');
-  DEH_AddString(@deh_strings, @destination_keys[3], 'HUSTR_KEYRED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRGREEN, 'HUSTR_PLRGREEN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRINDIGO, 'HUSTR_PLRINDIGO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRBROWN, 'HUSTR_PLRBROWN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRRED, 'HUSTR_PLRRED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[0], 'HUSTR_KEYGREEN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[1], 'HUSTR_KEYINDIGO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[2], 'HUSTR_KEYBROWN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[3], 'HUSTR_KEYRED');
 
-  DEH_AddString(@deh_strings, @AMSTR_FOLLOWON, 'AMSTR_FOLLOWON');
-  DEH_AddString(@deh_strings, @AMSTR_FOLLOWOFF, 'AMSTR_FOLLOWOFF');
-  DEH_AddString(@deh_strings, @AMSTR_GRIDON, 'AMSTR_GRIDON');
-  DEH_AddString(@deh_strings, @AMSTR_GRIDOFF, 'AMSTR_GRIDOFF');
-  DEH_AddString(@deh_strings, @AMSTR_ROTATEON, 'AMSTR_ROTATEON');
-  DEH_AddString(@deh_strings, @AMSTR_ROTATEOFF, 'AMSTR_ROTATEOFF');
-  DEH_AddString(@deh_strings, @AMSTR_MARKEDSPOT, 'AMSTR_MARKEDSPOT');
-  DEH_AddString(@deh_strings, @AMSTR_MARKSCLEARED, 'AMSTR_MARKSCLEARED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_FOLLOWON, 'AMSTR_FOLLOWON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_FOLLOWOFF, 'AMSTR_FOLLOWOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_GRIDON, 'AMSTR_GRIDON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_GRIDOFF, 'AMSTR_GRIDOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_ROTATEON, 'AMSTR_ROTATEON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_ROTATEOFF, 'AMSTR_ROTATEOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_MARKEDSPOT, 'AMSTR_MARKEDSPOT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_MARKSCLEARED, 'AMSTR_MARKSCLEARED');
 
-  DEH_AddString(@deh_strings, @STSTR_MUS, 'STSTR_MUS');
-  DEH_AddString(@deh_strings, @STSTR_NOMUS, 'STSTR_NOMUS');
-  DEH_AddString(@deh_strings, @STSTR_KFAADDED, 'STSTR_KFAADDED');
-  DEH_AddString(@deh_strings, @STSTR_NCON, 'STSTR_NCON');
-  DEH_AddString(@deh_strings, @STSTR_NCOFF, 'STSTR_NCOFF');
-  DEH_AddString(@deh_strings, @STSTR_CHOPPERS, 'STSTR_CHOPPERS');
-  DEH_AddString(@deh_strings, @STSTR_CLEV, 'STSTR_CLEV');
-  DEH_AddString(@deh_strings, @STSTR_LGON, 'STSTR_LGON');
-  DEH_AddString(@deh_strings, @STSTR_LGOFF, 'STSTR_LGOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_MUS, 'STSTR_MUS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_NOMUS, 'STSTR_NOMUS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_KFAADDED, 'STSTR_KFAADDED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_NCON, 'STSTR_NCON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_NCOFF, 'STSTR_NCOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_CHOPPERS, 'STSTR_CHOPPERS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_CLEV, 'STSTR_CLEV');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_LGON, 'STSTR_LGON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_LGOFF, 'STSTR_LGOFF');
 
   for i := 0 to Ord(NUMKEYCARDS) - 1 do
-      DEH_AddString(@deh_strings, @TextKeyMessages[i], 'TXT_GOTKEY_' + itoa(i));
+      TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TextKeyMessages[i], 'TXT_GOTKEY_' + itoa(i));
 
 // Artifacts
 
-  DEH_AddString(@deh_strings, @artifactMessages[1], 'TXT_ARTIINVULNERABILITY');
-  DEH_AddString(@deh_strings, @artifactMessages[2], 'TXT_ARTIHEALTH');
-  DEH_AddString(@deh_strings, @artifactMessages[3], 'TXT_ARTISUPERHEALTH');
-  DEH_AddString(@deh_strings, @artifactMessages[4], 'TXT_ARTIHEALINGRADIUS');
-  DEH_AddString(@deh_strings, @artifactMessages[5], 'TXT_ARTISUMMON');
-  DEH_AddString(@deh_strings, @artifactMessages[6], 'TXT_ARTITORCH');
-  DEH_AddString(@deh_strings, @artifactMessages[7], 'TXT_ARTIEGG');
-  DEH_AddString(@deh_strings, @artifactMessages[8], 'TXT_ARTIFLY');
-  DEH_AddString(@deh_strings, @artifactMessages[9], 'TXT_ARTIBLASTRADIUS');
-  DEH_AddString(@deh_strings, @artifactMessages[10], 'TXT_ARTIPOISONBAG');
-  DEH_AddString(@deh_strings, @artifactMessages[11], 'TXT_ARTITELEPORTOTHER');
-  DEH_AddString(@deh_strings, @artifactMessages[12], 'TXT_ARTISPEED');
-  DEH_AddString(@deh_strings, @artifactMessages[13], 'TXT_ARTIBOOSTMANA');
-  DEH_AddString(@deh_strings, @artifactMessages[14], 'TXT_ARTIBOOSTARMOR');
-  DEH_AddString(@deh_strings, @artifactMessages[15], 'TXT_ARTITELEPORT');
-  DEH_AddString(@deh_strings, @artifactMessages[16], 'TXT_ARTIPUZZSKULL');
-  DEH_AddString(@deh_strings, @artifactMessages[17], 'TXT_ARTIPUZZGEMBIG');
-  DEH_AddString(@deh_strings, @artifactMessages[18], 'TXT_ARTIPUZZGEMRED');
-  DEH_AddString(@deh_strings, @artifactMessages[19], 'TXT_ARTIPUZZGEMGREEN1');
-  DEH_AddString(@deh_strings, @artifactMessages[20], 'TXT_ARTIPUZZGEMGREEN2');
-  DEH_AddString(@deh_strings, @artifactMessages[21], 'TXT_ARTIPUZZGEMBLUE1');
-  DEH_AddString(@deh_strings, @artifactMessages[22], 'TXT_ARTIPUZZGEMBLUE2');
-  DEH_AddString(@deh_strings, @artifactMessages[23], 'TXT_ARTIPUZZBOOK1');
-  DEH_AddString(@deh_strings, @artifactMessages[24], 'TXT_ARTIPUZZBOOK2');
-  DEH_AddString(@deh_strings, @artifactMessages[25], 'TXT_ARTIPUZZSKULL2');
-  DEH_AddString(@deh_strings, @artifactMessages[26], 'TXT_ARTIPUZZFWEAPON');
-  DEH_AddString(@deh_strings, @artifactMessages[27], 'TXT_ARTIPUZZCWEAPON');
-  DEH_AddString(@deh_strings, @artifactMessages[28], 'TXT_ARTIPUZZMWEAPON');
-  DEH_AddString(@deh_strings, @artifactMessages[29], 'TXT_ARTIPUZZGEAR');  // All gear pickups use the same text
-  DEH_AddString(@deh_strings, @artifactMessages[30], 'TXT_ARTIPUZZGEAR');
-  DEH_AddString(@deh_strings, @artifactMessages[31], 'TXT_ARTIPUZZGEAR');
-  DEH_AddString(@deh_strings, @artifactMessages[32], 'TXT_ARTIPUZZGEAR');
-  DEH_AddString(@deh_strings, @TXT_ARTIALL, 'TXT_ARTIALL');
-  DEH_AddString(@deh_strings, @TXT_ARTIALLPUZZLE, 'TXT_ARTIALLPUZZLE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[1], 'TXT_ARTIINVULNERABILITY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[2], 'TXT_ARTIHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[3], 'TXT_ARTISUPERHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[4], 'TXT_ARTIHEALINGRADIUS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[5], 'TXT_ARTISUMMON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[6], 'TXT_ARTITORCH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[7], 'TXT_ARTIEGG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[8], 'TXT_ARTIFLY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[9], 'TXT_ARTIBLASTRADIUS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[10], 'TXT_ARTIPOISONBAG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[11], 'TXT_ARTITELEPORTOTHER');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[12], 'TXT_ARTISPEED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[13], 'TXT_ARTIBOOSTMANA');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[14], 'TXT_ARTIBOOSTARMOR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[15], 'TXT_ARTITELEPORT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[16], 'TXT_ARTIPUZZSKULL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[17], 'TXT_ARTIPUZZGEMBIG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[18], 'TXT_ARTIPUZZGEMRED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[19], 'TXT_ARTIPUZZGEMGREEN1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[20], 'TXT_ARTIPUZZGEMGREEN2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[21], 'TXT_ARTIPUZZGEMBLUE1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[22], 'TXT_ARTIPUZZGEMBLUE2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[23], 'TXT_ARTIPUZZBOOK1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[24], 'TXT_ARTIPUZZBOOK2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[25], 'TXT_ARTIPUZZSKULL2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[26], 'TXT_ARTIPUZZFWEAPON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[27], 'TXT_ARTIPUZZCWEAPON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[28], 'TXT_ARTIPUZZMWEAPON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[29], 'TXT_ARTIPUZZGEAR');  // All gear pickups use the same text
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[30], 'TXT_ARTIPUZZGEAR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[31], 'TXT_ARTIPUZZGEAR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @artifactMessages[32], 'TXT_ARTIPUZZGEAR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIALL, 'TXT_ARTIALL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIALLPUZZLE, 'TXT_ARTIALLPUZZLE');
 
 // Items
 
-  DEH_AddString(@deh_strings, @TXT_ITEMHEALTH, 'TXT_ITEMHEALTH');
-  DEH_AddString(@deh_strings, @TXT_ITEMBAGOFHOLDING, 'TXT_ITEMBAGOFHOLDING');
-  DEH_AddString(@deh_strings, @TXT_ITEMSHIELD1, 'TXT_ITEMSHIELD1');
-  DEH_AddString(@deh_strings, @TXT_ITEMSHIELD2, 'TXT_ITEMSHIELD2');
-  DEH_AddString(@deh_strings, @TXT_ITEMSUPERMAP, 'TXT_ITEMSUPERMAP');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMHEALTH, 'TXT_ITEMHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMBAGOFHOLDING, 'TXT_ITEMBAGOFHOLDING');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMSHIELD1, 'TXT_ITEMSHIELD1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMSHIELD2, 'TXT_ITEMSHIELD2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMSUPERMAP, 'TXT_ITEMSUPERMAP');
 
 // Weapons
 
-  DEH_AddString(@deh_strings, @TXT_WEAPON_F2, 'TXT_WEAPON_F2');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_F3, 'TXT_WEAPON_F3');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_F4, 'TXT_WEAPON_F4');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_C2, 'TXT_WEAPON_C2');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_C3, 'TXT_WEAPON_C3');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_C4, 'TXT_WEAPON_C4');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_M2, 'TXT_WEAPON_M2');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_M3, 'TXT_WEAPON_M3');
-  DEH_AddString(@deh_strings, @TXT_WEAPON_M4, 'TXT_WEAPON_M4');
-  DEH_AddString(@deh_strings, @TXT_QUIETUS_PIECE, 'TXT_QUIETUS_PIECE');
-  DEH_AddString(@deh_strings, @TXT_WRAITHVERGE_PIECE, 'TXT_WRAITHVERGE_PIECE');
-  DEH_AddString(@deh_strings, @TXT_BLOODSCOURGE_PIECE, 'TXT_BLOODSCOURGE_PIECE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_F2, 'TXT_WEAPON_F2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_F3, 'TXT_WEAPON_F3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_F4, 'TXT_WEAPON_F4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_C2, 'TXT_WEAPON_C2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_C3, 'TXT_WEAPON_C3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_C4, 'TXT_WEAPON_C4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_M2, 'TXT_WEAPON_M2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_M3, 'TXT_WEAPON_M3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WEAPON_M4, 'TXT_WEAPON_M4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_QUIETUS_PIECE, 'TXT_QUIETUS_PIECE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WRAITHVERGE_PIECE, 'TXT_WRAITHVERGE_PIECE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_BLOODSCOURGE_PIECE, 'TXT_BLOODSCOURGE_PIECE');
 
 // Cheats
 
-  DEH_AddString(@deh_strings, @TXT_CHEATGODON, 'TXT_CHEATGODON');
-  DEH_AddString(@deh_strings, @TXT_CHEATGODOFF, 'TXT_CHEATGODOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPON, 'TXT_CHEATNOCLIPON');
-  DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPOFF, 'TXT_CHEATNOCLIPOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATWEAPONS, 'TXT_CHEATWEAPONS');
-  DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTON, 'TXT_CHEATFLIGHTON');
-  DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTOFF, 'TXT_CHEATFLIGHTOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATPOWERON, 'TXT_CHEATPOWERON');
-  DEH_AddString(@deh_strings, @TXT_CHEATPOWEROFF, 'TXT_CHEATPOWEROFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATHEALTH, 'TXT_CHEATHEALTH');
-  DEH_AddString(@deh_strings, @TXT_CHEATKEYS, 'TXT_CHEATKEYS');
-  DEH_AddString(@deh_strings, @TXT_CHEATSOUNDON, 'TXT_CHEATSOUNDON');
-  DEH_AddString(@deh_strings, @TXT_CHEATSOUNDOFF, 'TXT_CHEATSOUNDOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATTICKERON, 'TXT_CHEATTICKERON');
-  DEH_AddString(@deh_strings, @TXT_CHEATTICKEROFF, 'TXT_CHEATTICKEROFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS1, 'TXT_CHEATARTIFACTS1');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS2, 'TXT_CHEATARTIFACTS2');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS3, 'TXT_CHEATARTIFACTS3');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTSFAIL, 'TXT_CHEATARTIFACTSFAIL');
-  DEH_AddString(@deh_strings, @TXT_CHEATWARP, 'TXT_CHEATWARP');
-  DEH_AddString(@deh_strings, @TXT_CHEATSCREENSHOT, 'TXT_CHEATSCREENSHOT');
-  DEH_AddString(@deh_strings, @TXT_CHEATCHICKENON, 'TXT_CHEATCHICKENON');
-  DEH_AddString(@deh_strings, @TXT_CHEATCHICKENOFF, 'TXT_CHEATCHICKENOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATMASSACRE, 'TXT_CHEATMASSACRE');
-  DEH_AddString(@deh_strings, @TXT_CHEATIDDQD, 'TXT_CHEATIDDQD');
-  DEH_AddString(@deh_strings, @TXT_CHEATIDKFA, 'TXT_CHEATIDKFA');
-  DEH_AddString(@deh_strings, @TXT_CHEATPIG, 'TXT_CHEATPIG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATGODON, 'TXT_CHEATGODON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATGODOFF, 'TXT_CHEATGODOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPON, 'TXT_CHEATNOCLIPON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPOFF, 'TXT_CHEATNOCLIPOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATWEAPONS, 'TXT_CHEATWEAPONS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTON, 'TXT_CHEATFLIGHTON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTOFF, 'TXT_CHEATFLIGHTOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATPOWERON, 'TXT_CHEATPOWERON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATPOWEROFF, 'TXT_CHEATPOWEROFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATHEALTH, 'TXT_CHEATHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATKEYS, 'TXT_CHEATKEYS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATSOUNDON, 'TXT_CHEATSOUNDON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATSOUNDOFF, 'TXT_CHEATSOUNDOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATTICKERON, 'TXT_CHEATTICKERON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATTICKEROFF, 'TXT_CHEATTICKEROFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS1, 'TXT_CHEATARTIFACTS1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS2, 'TXT_CHEATARTIFACTS2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS3, 'TXT_CHEATARTIFACTS3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTSFAIL, 'TXT_CHEATARTIFACTSFAIL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATWARP, 'TXT_CHEATWARP');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATSCREENSHOT, 'TXT_CHEATSCREENSHOT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATCHICKENON, 'TXT_CHEATCHICKENON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATCHICKENOFF, 'TXT_CHEATCHICKENOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATMASSACRE, 'TXT_CHEATMASSACRE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATIDDQD, 'TXT_CHEATIDDQD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATIDKFA, 'TXT_CHEATIDKFA');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATPIG, 'TXT_CHEATPIG');
 
-  DEH_AddString(@deh_strings, @MSG_MODIFIEDGAME, 'MSG_MODIFIEDGAME');
-  DEH_AddString(@deh_strings, @MSG_HEXDD, 'MSG_HEXDD');
-  DEH_AddString(@deh_strings, @MSG_SHAREWARE, 'MSG_SHAREWARE');
-  DEH_AddString(@deh_strings, @MSG_COMMERCIAL, 'MSG_COMMERCIAL');
-  DEH_AddString(@deh_strings, @MSG_UNDETERMINED, 'MSG_UNDETERMINED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_MODIFIEDGAME, 'MSG_MODIFIEDGAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_HEXDD, 'MSG_HEXDD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_SHAREWARE, 'MSG_SHAREWARE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_COMMERCIAL, 'MSG_COMMERCIAL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_UNDETERMINED, 'MSG_UNDETERMINED');
 
-  DEH_AddString(@deh_strings, @MSGSECRETSECTOR, 'MSGSECRETSECTOR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSGSECRETSECTOR, 'MSGSECRETSECTOR');
 
-  DEH_AddString(@deh_strings, @DETAILULTRA, 'DETAILULTRA');
-  DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHI');
-  DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHIGH');
-  DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORM');
-  DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORMAL');
-  DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMED');
-  DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMEDIUM');
-  DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLO');
-  DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLOW');
-  DEH_AddString(@deh_strings, @DETAILLOWEST, 'DETAILLOWEST');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILULTRA, 'DETAILULTRA');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHI');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHIGH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORM');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORMAL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMEDIUM');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLOW');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILLOWEST, 'DETAILLOWEST');
 
-  DEH_AddString(@deh_strings, @GAMMALVL0, 'GAMMALVL0');
-  DEH_AddString(@deh_strings, @GAMMALVL1, 'GAMMALVL1');
-  DEH_AddString(@deh_strings, @GAMMALVL2, 'GAMMALVL2');
-  DEH_AddString(@deh_strings, @GAMMALVL3, 'GAMMALVL3');
-  DEH_AddString(@deh_strings, @GAMMALVL4, 'GAMMALVL4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL0, 'GAMMALVL0');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL1, 'GAMMALVL1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL2, 'GAMMALVL2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL3, 'GAMMALVL3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL4, 'GAMMALVL4');
 
-  DEH_AddString(@deh_strings, @EMPTYSTRING, 'EMPTYSTRING');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @EMPTYSTRING, 'EMPTYSTRING');
 
-  DEH_AddString(@deh_strings, @D_DEVSTR, 'D_DEVSTR');
-  DEH_AddString(@deh_strings, @D_CDROM, 'D_CDROM');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @D_DEVSTR, 'D_DEVSTR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @D_CDROM, 'D_CDROM');
 
-  DEH_AddString(@deh_strings, @PRESSKEY, 'PRESSKEY');
-  DEH_AddString(@deh_strings, @PRESSYN, 'PRESSYN');
-  DEH_AddString(@deh_strings, @LOADNET, 'LOADNET');
-  DEH_AddString(@deh_strings, @QLOADNET, 'QLOADNET');
-  DEH_AddString(@deh_strings, @QSAVESPOT, 'QSAVESPOT');
-  DEH_AddString(@deh_strings, @SAVEDEAD, 'SAVEDEAD');
-  DEH_AddString(@deh_strings, @QSPROMPT, 'QSPROMPT');
-  DEH_AddString(@deh_strings, @QLPROMPT, 'QLPROMPT');
-  DEH_AddString(@deh_strings, @SNEWGAME, 'SNEWGAME');
-  DEH_AddString(@deh_strings, @SNIGHTMARE, 'SNIGHTMARE');
-  DEH_AddString(@deh_strings, @MSGOFF, 'MSGOFF');
-  DEH_AddString(@deh_strings, @MSGON, 'MSGON');
-  DEH_AddString(@deh_strings, @NETEND, 'NETEND');
-  DEH_AddString(@deh_strings, @SENDGAME, 'SENDGAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @PRESSKEY, 'PRESSKEY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @PRESSYN, 'PRESSYN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @LOADNET, 'LOADNET');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QLOADNET, 'QLOADNET');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QSAVESPOT, 'QSAVESPOT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEDEAD, 'SAVEDEAD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QSPROMPT, 'QSPROMPT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QLPROMPT, 'QLPROMPT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SNEWGAME, 'SNEWGAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SNIGHTMARE, 'SNIGHTMARE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSGOFF, 'MSGOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSGON, 'MSGON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @NETEND, 'NETEND');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SENDGAME, 'SENDGAME');
 
-  DEH_AddString(@deh_strings, @DOSY, 'DOSY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DOSY, 'DOSY');
 
-  DEH_AddString(@deh_strings, @GGSAVED, 'GGSAVED');
-  DEH_AddString(@deh_strings, @GACCESSDENIEDDEMO, 'GACCESSDENIEDDEMO');
-  DEH_AddString(@deh_strings, @SAVEGAMENAME, 'SAVEGAMENAME');
-  DEH_AddString(@deh_strings, @SAVEGAMEMAP, 'SAVEGAMEMAP');
-  DEH_AddString(@deh_strings, @SAVEGAMENAMEDD, 'SAVEGAMENAMEDD');
-  DEH_AddString(@deh_strings, @SAVEGAMEMAPDD, 'SAVEGAMEMAPDD');
-  DEH_AddString(@deh_strings, @SAVEPATH, 'SAVEPATH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GGSAVED, 'GGSAVED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GACCESSDENIEDDEMO, 'GACCESSDENIEDDEMO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEGAMENAME, 'SAVEGAMENAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEGAMEMAP, 'SAVEGAMEMAP');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEGAMENAMEDD, 'SAVEGAMENAMEDD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEGAMEMAPDD, 'SAVEGAMEMAPDD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEPATH, 'SAVEPATH');
 
   weapon_tokens := TDTextList.Create;
+  TEngineDehackedTokenLists.Fill(weapon_tokens, deh_tokens.WeaponFields);
 
-  weapon_tokens.Add('MANA TYPE');           // .mana
-  weapon_tokens.Add('DESELECT FRAME');      // .upstate
-  weapon_tokens.Add('SELECT FRAME');        // .downstate
-  weapon_tokens.Add('BOBBING FRAME');       // .readystate
-  weapon_tokens.Add('SHOOTING FRAME');      // .atkstate
-  weapon_tokens.Add('FIRING FRAME');        // .flashstate
-  weapon_tokens.Add('HOLD SHOOTING FRAME'); // .holdatkstate
-  weapon_tokens.Add('AMMO PER SHOT'); // .ammopershot (MBF21)
-  weapon_tokens.Add('MBF21 BITS');    // .mbf21bits (MBF21)
 
   // MBF21
   weapon_flags_mbf21 := TDTextList.Create;
-  weapon_flags_mbf21.Add('NOTHRUST');
-  weapon_flags_mbf21.Add('SILENT');
-  weapon_flags_mbf21.Add('NOAUTOFIRE');
-  weapon_flags_mbf21.Add('FLEEMELEE');
-  weapon_flags_mbf21.Add('AUTOSWITCHFROM');
-  weapon_flags_mbf21.Add('NOAUTOSWITCHTO');
+  TEngineDehackedTokenLists.Fill(weapon_flags_mbf21, deh_tokens.WeaponFlagsMbf21);
 
   sound_tokens := TDTextList.Create;
+  TEngineDehackedTokenLists.Fill(sound_tokens, deh_tokens.SoundFields);
 
-  sound_tokens.Add('VALUE');
-  sound_tokens.Add('NAME'); // DelphiDoom specific
 
   renderstyle_tokens := TDTextList.Create;
 
@@ -1339,12 +1095,8 @@ begin
   renderstyle_tokens.Add('SUBTRACT');
 
   misc_tokens := TDTextList.Create;
+  TEngineDehackedTokenLists.Fill(misc_tokens, deh_tokens.MiscFields);
 
-  misc_tokens.Add('MAX MORPH HEALTH');    // p_maxmorphhealth
-  misc_tokens.Add('MAX ARTIFACTS');       // p_maxartifacts
-  misc_tokens.Add('QUARTZ FLASK HEALTH'); // p_quartzflaskhealth
-  misc_tokens.Add('MYSTIC URN HEALTH');   // p_mysticurnhealth
-  misc_tokens.Add('MAX MANA');            // MAX_MANA
 
   C_AddCmd('DEH_ParseFile, BEX_ParseFile', @DEH_ParseFile);
   C_AddCmd('DEH_ParseLump, BEX_ParseLump', @DEH_ParseLumpName);
@@ -1361,7 +1113,7 @@ end;
 // DEH_ShutDown
 //
 //==============================================================================
-procedure DEH_ShutDown;
+class procedure TDehMainRoutines.DEH_ShutDown;
 begin
   if not deh_initialized then
     exit;
