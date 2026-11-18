@@ -517,7 +517,7 @@ begin
     result := 'FALSE';
     exit;
   end;
-  if P_CheckFlag(Pmobj_t(AContext), Param(p, 0)) then
+  if TCommonGameDependentActions.P_CheckFlag(Pmobj_t(AContext), Param(p, 0)) then
     result := 'TRUE'
   else
     result := 'FALSE';

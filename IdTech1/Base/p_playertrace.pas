@@ -120,7 +120,7 @@ var
   pmo: Pmobj_t;
   item: Pplayertrace_t;
 begin
-  pid := PlayerToId(p);
+  pid := TCommonFriendActions.PlayerToId(p);
   if (pid < 0) or not TGameSession.PlayerInGame[pid] then
     exit;
 
@@ -164,7 +164,7 @@ var
   pid: integer;
   history: Pplayertracehistory_t;
 begin
-  pid := PlayerToId(p);
+  pid := TCommonFriendActions.PlayerToId(p);
   if (pid < 0) or not TGameSession.PlayerInGame[pid] then
     exit;
 
@@ -237,7 +237,7 @@ begin
     if seeplayer then
       exit;
 
-  pid := PlayerToId(p);
+  pid := TCommonFriendActions.PlayerToId(p);
   if (pid < 0) or not TGameSession.PlayerInGame[pid] then
     exit;
 
@@ -343,7 +343,7 @@ var
   history: Pplayertracehistory_t;
   rover: integer;
 begin
-  pid := PlayerToId(p);
+  pid := TCommonFriendActions.PlayerToId(p);
   if (pid < 0) or not TGameSession.PlayerInGame[pid] then
   begin
     result := nil;

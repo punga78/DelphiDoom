@@ -116,7 +116,7 @@ begin
   Add('D_ShutDown: Shut down doom engine.'#13#10,
     procedure
     begin
-      D_ShutDown;
+      TMainRoutines.D_ShutDown;
     end);
   Add('I_ShutDownNetwork: Shut down network.'#13#10,
     procedure

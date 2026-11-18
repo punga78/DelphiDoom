@@ -25180,14 +25180,14 @@ begin
   states[Ord(S_SPAWNFIRE7)].action.acp1 := @TDoomMonsterActions.A_Fire; // S_SPAWNFIRE7
   states[Ord(S_SPAWNFIRE8)].action.acp1 := @TDoomMonsterActions.A_Fire; // S_SPAWNFIRE8
   states[Ord(S_BRAINEXPLODE3)].action.acp1 := @TDoomMonsterActions.A_BrainExplode; // S_BRAINEXPLODE3
-  states[Ord(S_BEXP)].action.acp1 := @A_FadeOut20;
+  states[Ord(S_BEXP)].action.acp1 := @TCommonAppearanceActions.A_FadeOut20;
   states[Ord(S_BEXP2)].action.acp1 := @TMonsterBaseActions.A_Scream; // S_BEXP2
-  states[Ord(S_BEXP3)].action.acp1 := @A_FadeOut20;
+  states[Ord(S_BEXP3)].action.acp1 := @TCommonAppearanceActions.A_FadeOut20;
   states[Ord(S_BEXP4)].action.acp1 := @TDoomMonsterActions.A_Explode; // S_BEXP4
   // New states
   states[Ord(S_GRENADE)].action.acp1 := @A_Die; // S_GRENADE
   states[Ord(S_DETONATE)].action.acp1 := @TMonsterBaseActions.A_Scream; // S_DETONATE
-  states[Ord(S_DETONATE2)].action.acp1 := @A_Detonate; // S_DETONATE2
+  states[Ord(S_DETONATE2)].action.acp1 := @TCommonGameDependentActions.A_Detonate; // S_DETONATE2
   states[Ord(S_DOGS_STND)].action.acp1 := @TDoomMonsterActions.A_Look; // S_DOGS_STND
   states[Ord(S_DOGS_STND2)].action.acp1 := @TDoomMonsterActions.A_Look; // S_DOGS_STND2
   states[Ord(S_DOGS_RUN1)].action.acp1 := @TMonsterBaseActions.A_Chase; // S_DOGS_RUN1
@@ -25257,7 +25257,7 @@ begin
   states[Ord(S_BSKUL_PAIN2)].action.acp1 := @TDoomMonsterActions.A_Pain; // S_BSKUL_PAIN2
   states[Ord(S_BSKUL_DIE5)].action.acp1 := @TMonsterBaseActions.A_Scream; // S_BSKUL_DIE5
   states[Ord(S_BSKUL_DIE7)].action.acp1 := @TDoomMonsterActions.A_Fall; // S_BSKUL_DIE7
-  states[Ord(S_BSKUL_DIE8)].action.acp1 := @A_Stop; // S_BSKUL_DIE8
+  states[Ord(S_BSKUL_DIE8)].action.acp1 := @TCommonMovementActions.A_Stop; // S_BSKUL_DIE8
   states[Ord(S_MUSHROOM)].action.acp1 := @A_Mushroom; // S_MUSHROOM
 
   Info_InitExportCommands;

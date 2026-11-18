@@ -1496,7 +1496,7 @@ begin
             mo.angle := player.mo.angle + _SHLW((P_Random and 7) - 4, 24);
             mo.momz := 4 * FRACUNIT + player.lookdir * 4096;
             mo.z := mo.z + player.lookdir * 4096;
-            P_ThrustMobj(mo, mo.angle, mo.info.speed);
+            TCommonMovementActions.P_ThrustMobj(mo, mo.angle, mo.info.speed);
             mo.momx := mo.momx + _SHR1(player.mo.momx);
             mo.momy := mo.momy + _SHR1(player.mo.momy);
             mo.target := player.mo;

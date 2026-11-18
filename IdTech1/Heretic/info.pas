@@ -27966,9 +27966,9 @@ begin
   states[Ord(S_WIZARD_ATK7)].action.acp1 := @THereticMonsterActions.A_WizAtk1;
   states[Ord(S_WIZARD_ATK8)].action.acp1 := @THereticMonsterActions.A_WizAtk2;
   states[Ord(S_WIZARD_ATK9)].action.acp1 := @THereticMonsterActions.A_WizAtk3;
-  states[Ord(S_WIZARD_PAIN1)].action.acp1 := @A_GhostOff;
+  states[Ord(S_WIZARD_PAIN1)].action.acp1 := @TCommonAppearanceActions.A_GhostOff;
   states[Ord(S_WIZARD_PAIN2)].action.acp1 := @THereticMonsterActions.A_Pain;
-  states[Ord(S_WIZARD_DIE1)].action.acp1 := @A_GhostOff;
+  states[Ord(S_WIZARD_DIE1)].action.acp1 := @TCommonAppearanceActions.A_GhostOff;
   states[Ord(S_WIZARD_DIE2)].action.acp1 := @TMonsterBaseActions.A_Scream;
   states[Ord(S_WIZARD_DIE5)].action.acp1 := @A_NoBlocking;
   states[Ord(S_IMP_LOOK1)].action.acp1 := @THereticMonsterActions.A_Look;

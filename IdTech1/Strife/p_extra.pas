@@ -388,7 +388,7 @@ var
   slope: fixed_t;
   rnd: byte;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   if actor.target = nil then
@@ -588,7 +588,7 @@ var
   mo: Pmobj_t;
   LX, LY, LZ: fixed_t;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   if actor.state.params.IsComputed[0] then
@@ -667,7 +667,7 @@ var
   speed: fixed_t;
   height: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   // JVAL 20180222 -> IntVal Changed to FixedVal
@@ -711,7 +711,7 @@ var
   msg: string;
   i: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   p := actor.player;
@@ -737,7 +737,7 @@ end;
 //==============================================================================
 procedure A_PlayerFaceMe(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if actor.target = nil then

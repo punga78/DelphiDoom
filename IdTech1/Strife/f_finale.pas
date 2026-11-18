@@ -328,7 +328,7 @@ begin
   end;
 
   if finalecount > 700 then
-    D_StartTitle;
+    TMainRoutines.D_StartTitle;
 end;
 
 var
@@ -444,94 +444,94 @@ begin
       begin
         slideshow_tics := 700;
         slideshow_state := SLIDE_EXIT;
-        slideshow_panel := DEH_GetString('SS2F1');
-        S_StartVoice(DEH_GetString('MAC10'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F1');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC10'));
         slideshow_state := SLIDE_PROGRAMMER2;
         slideshow_tics := 315;
       end;
     SLIDE_PROGRAMMER1: // state #1
       begin
-        slideshow_panel := DEH_GetString('SS2F1');
-        S_StartVoice(DEH_GetString('MAC10'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F1');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC10'));
         slideshow_state := SLIDE_PROGRAMMER2;
         slideshow_tics := 315;
       end;
     SLIDE_PROGRAMMER2: // state #2
       begin
-        slideshow_panel := DEH_GetString('SS2F2');
-        S_StartVoice(DEH_GetString('MAC11'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F2');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC11'));
         slideshow_state := SLIDE_PROGRAMMER3;
         slideshow_tics := 350;
       end;
     SLIDE_PROGRAMMER3: // state #3
       begin
-        slideshow_panel := DEH_GetString('SS2F3');
-        S_StartVoice(DEH_GetString('MAC12'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F3');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC12'));
         slideshow_state := SLIDE_PROGRAMMER4;
         slideshow_tics := 420;
       end;
     SLIDE_PROGRAMMER4: // state #4
       begin
-        slideshow_panel := DEH_GetString('SS2F4');
-        S_StartVoice(DEH_GetString('MAC13'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS2F4');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC13'));
         slideshow_state := SLIDE_EXITHACK; // End of slides
         slideshow_tics := 595;
       end;
 
     SLIDE_SIGIL1: // state #5
       begin
-        slideshow_panel := DEH_GetString('SS3F1');
-        S_StartVoice(DEH_GetString('MAC16'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F1');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC16'));
         slideshow_state := SLIDE_SIGIL2;
         slideshow_tics := 350;
       end;
     SLIDE_SIGIL2: // state #6
       begin
-        slideshow_panel := DEH_GetString('SS3F2');
-        S_StartVoice(DEH_GetString('MAC17'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F2');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC17'));
         slideshow_state := SLIDE_SIGIL3;
         slideshow_tics := 420;
       end;
     SLIDE_SIGIL3: // state #7
       begin
-        slideshow_panel := DEH_GetString('SS3F3');
-        S_StartVoice(DEH_GetString('MAC18'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F3');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC18'));
         slideshow_tics := 420;
         slideshow_state := SLIDE_SIGIL4;
       end;
     SLIDE_SIGIL4: // state #8
       begin
-        slideshow_panel := DEH_GetString('SS3F4');
-        S_StartVoice(DEH_GetString('MAC19'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS3F4');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('MAC19'));
         slideshow_tics := 385;
         slideshow_state := SLIDE_EXITHACK; // End of slides
       end;
 
     SLIDE_GOODEND1: // state #10
       begin
-        slideshow_panel := DEH_GetString('SS4F1');
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F1');
         S_StartMusic(Ord(mus_happy));
-        S_StartVoice(DEH_GetString('RIE01'));
+        S_StartVoice(TDehMainRoutines.DEH_GetString('RIE01'));
         slideshow_state := SLIDE_GOODEND2;
         slideshow_tics := 455;
       end;
     SLIDE_GOODEND2: // state #11
       begin
-        slideshow_panel := DEH_GetString('SS4F2');
-        S_StartVoice(DEH_GetString('BBX01'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F2');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('BBX01'));
         slideshow_state := SLIDE_GOODEND3;
         slideshow_tics := 385;
       end;
     SLIDE_GOODEND3: // state #12
       begin
-        slideshow_panel := DEH_GetString('SS4F3');
-        S_StartVoice(DEH_GetString('BBX02'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F3');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('BBX02'));
         slideshow_state := SLIDE_GOODEND4;
         slideshow_tics := 490;
       end;
     SLIDE_GOODEND4: // state #13
       begin
-        slideshow_panel := DEH_GetString('SS4F4');
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS4F4');
         slideshow_state := SLIDE_EXIT; // Go to end credits
         slideshow_tics := 980;
       end;
@@ -539,58 +539,58 @@ begin
     SLIDE_BADEND1: // state #14
       begin
         S_StartMusic(Ord(mus_sad));
-        slideshow_panel := DEH_GetString('SS5F1');
-        S_StartVoice(DEH_GetString('SS501b'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS5F1');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('SS501b'));
         slideshow_state := SLIDE_BADEND2;
         slideshow_tics := 385;
       end;
     SLIDE_BADEND2: // state #15
       begin
-        slideshow_panel := DEH_GetString('SS5F2');
-        S_StartVoice(DEH_GetString('SS502b'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS5F2');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('SS502b'));
         slideshow_state := SLIDE_BADEND3;
         slideshow_tics := 350;
       end;
     SLIDE_BADEND3: // state #16
       begin
-        slideshow_panel := DEH_GetString('SS5F3');
-        S_StartVoice(DEH_GetString('SS503b'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS5F3');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('SS503b'));
         slideshow_state := SLIDE_EXIT; // Go to end credits
         slideshow_tics := 385;
       end;
     SLIDE_BLAHEND1: // state #17
       begin
         S_StartMusic(Ord(mus_end));
-        slideshow_panel := DEH_GetString('SS6F1');
-        S_StartVoice(DEH_GetString('SS601A'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS6F1');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('SS601A'));
         slideshow_state := SLIDE_BLAHEND2;
         slideshow_tics := 280;
       end;
     SLIDE_BLAHEND2: // state #18
       begin
         S_StartMusic(Ord(mus_end));
-        slideshow_panel := DEH_GetString('SS6F2');
-        S_StartVoice(DEH_GetString('SS602A'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS6F2');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('SS602A'));
         slideshow_state := SLIDE_BLAHEND3;
         slideshow_tics := 280;
       end;
     SLIDE_BLAHEND3: // state #19
       begin
         S_StartMusic(Ord(mus_end));
-        slideshow_panel := DEH_GetString('SS6F3');
-        S_StartVoice(DEH_GetString('SS603A'));
+        slideshow_panel := TDehMainRoutines.DEH_GetString('SS6F3');
+        S_StartVoice(TDehMainRoutines.DEH_GetString('SS603A'));
         slideshow_state := SLIDE_EXIT; // Go to credits
         slideshow_tics := 315;
       end;
     SLIDE_DEMOEND1: // state #25 - only exists in 1.31
       begin
-        slideshow_panel := DEH_GetString('PANEL7');
+        slideshow_panel := TDehMainRoutines.DEH_GetString('PANEL7');
         slideshow_tics := 175;
         slideshow_state := SLIDE_DEMOEND2;
       end;
     SLIDE_DEMOEND2: // state #26 - ditto
       begin
-        slideshow_panel := DEH_GetString('VELLOGO');
+        slideshow_panel := TDehMainRoutines.DEH_GetString('VELLOGO');
         slideshow_tics := 175;
         slideshow_state := SLIDE_EXIT; // Go to end credits
       end;
@@ -1018,8 +1018,8 @@ var
   name: string;
   stage: integer;
 begin
-  p1 := W_CacheLumpName(DEH_GetString('credit'), PU_LEVEL);
-  p2 := W_CacheLumpName(DEH_GetString('vellogo'), PU_LEVEL);
+  p1 := W_CacheLumpName(TDehMainRoutines.DEH_GetString('credit'), PU_LEVEL);
+  p2 := W_CacheLumpName(TDehMainRoutines.DEH_GetString('vellogo'), PU_LEVEL);
 
   scrolled := 320 - (finalecount - 230) div 2;
   if scrolled > 320 then
@@ -1105,7 +1105,7 @@ begin
         if TGameSession.GameMap <= 29 then
         begin
           // draw credits
-          patch := W_CacheLumpName(DEH_GetString('CREDIT'), PU_STATIC);
+          patch := W_CacheLumpName(TDehMainRoutines.DEH_GetString('CREDIT'), PU_STATIC);
           V_DrawPatchFullScreenTMP320x200(patch);
           Z_ChangeTag(patch, PU_CACHE);
           V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);

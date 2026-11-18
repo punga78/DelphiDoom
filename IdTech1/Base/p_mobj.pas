@@ -515,7 +515,7 @@ begin
     st := @states[Ord(state)];
 
     mobj.state := st;
-    mobj.tics := P_TicsFromState(st);
+    mobj.tics := TCommonStateParamActions.P_TicsFromState(st);
     mobj.sprite := st.sprite;
     mobj.frame := st.frame;
 
@@ -577,7 +577,7 @@ begin
   begin
     st := @states[Ord(state)];
     mobj.state := st;
-    mobj.tics := P_TicsFromState(st);
+    mobj.tics := TCommonStateParamActions.P_TicsFromState(st);
     mobj.sprite := st.sprite;
     mobj.frame := st.frame;
     result := true;
@@ -637,7 +637,7 @@ begin
   // JVAL: 20220222 - Wind thrust
   if TMobjGameRules.HasWindThrust(mo) then
     if oldsector.windthrust <> 0 then
-      P_ThrustMobj(mo, oldsector.windangle, oldsector.windthrust);
+      TCommonMovementActions.P_ThrustMobj(mo, oldsector.windangle, oldsector.windthrust);
 
   wasonslope := oldsector.renderflags and SRF_SLOPED <> 0;
 
@@ -948,7 +948,7 @@ begin
   st := @states[info.spawnstate];
 
   mobj.state := st;
-  mobj.tics := P_TicsFromState(st);
+  mobj.tics := TCommonStateParamActions.P_TicsFromState(st);
   mobj.sprite := st.sprite;
   mobj.frame := st.frame;
   TMobjGameRules.InitStateMemory(mobj, st);
@@ -1337,7 +1337,7 @@ begin
     exit;
   end;
 
-  dir := P_FaceMobj(actor, target, delta);
+  dir := TCommonMovementActions.P_FaceMobj(actor, target, delta);
   if delta > thresh then
   begin
     delta := delta shr 1;

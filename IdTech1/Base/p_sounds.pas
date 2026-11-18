@@ -177,7 +177,7 @@ begin
     exit;
 
   if actor.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-    P_RandomSound(origin, actor.info.seesound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.seesound)
   else
     S_StartSound(origin, actor.info.seesound);
 
@@ -214,7 +214,7 @@ begin
     exit;
 
   if actor.flags_ex and MF_EX_RANDOMPAINSOUND <> 0 then
-    P_RandomSound(origin, actor.info.painsound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.painsound)
   else
     S_StartSound(origin, actor.info.painsound);
 end;
@@ -243,7 +243,7 @@ begin
     exit;
 
   if actor.flags_ex and MF_EX_RANDOMATTACKSOUND <> 0 then
-    P_RandomSound(origin, actor.info.attacksound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.attacksound)
   else
     S_StartSound(origin, actor.info.attacksound);
 end;
@@ -272,7 +272,7 @@ begin
     exit;
 
   if actor.flags_ex and MF_EX_RANDOMMELEESOUND <> 0 then
-    P_RandomSound(origin, actor.info.meleesound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.meleesound)
   else
     S_StartSound(origin, actor.info.meleesound);
 end;
@@ -301,7 +301,7 @@ begin
     exit;
 
   if actor.flags_ex and MF_EX_RANDOMDEATHSOUND <> 0 then
-    P_RandomSound(origin, actor.info.deathsound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.deathsound)
   else
     S_StartSound(origin, actor.info.deathsound);
 end;
@@ -331,7 +331,7 @@ begin
     exit;
 
   if actor.flags_ex and MF_EX_RANDOMACTIVESOUND <> 0 then
-    P_RandomSound(origin, actor.info.activesound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.activesound)
   else
     S_StartSound(origin, actor.info.activesound);
 end;
@@ -360,7 +360,7 @@ begin
     exit;
 
   if actor.flags4_ex and MF4_EX_RANDOMRIPSOUND <> 0 then
-    P_RandomSound(origin, actor.info.ripsound)
+    TCommonSoundActions.P_RandomSound(origin, actor.info.ripsound)
   else
     S_StartSound(origin, actor.info.ripsound);
 end;

@@ -157,7 +157,7 @@ var
   LWriter: IConfigurationWriter;
   LLines: TArray<string>;
 begin
-  LWriter := FFormat.CreateWriter(FFormat.FormatHeader(AppTitle, D_EngineVersion));
+  LWriter := FFormat.CreateWriter(FFormat.FormatHeader(AppTitle, TMainRoutines.D_EngineVersion));
   FStore.Write(LWriter);
 
   LText := TDStringList.Create;
@@ -268,7 +268,7 @@ begin
       for LIndex := 0 to LText.Count - 1 do
         LLines[LIndex] := LText[LIndex];
       LDocument := FFormat.Parse(LLines);
-      if FFormat.AcceptsHeader(LDocument.Header, D_EngineVersion) then
+      if FFormat.AcceptsHeader(LDocument.Header, TMainRoutines.D_EngineVersion) then
       begin
         FConfigNotFound := False;
         FStore.Apply(LDocument);

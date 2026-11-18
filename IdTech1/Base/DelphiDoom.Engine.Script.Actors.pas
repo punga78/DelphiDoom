@@ -418,7 +418,7 @@ begin
     Exit;
   end;
   case ARelation of
-    acrTarget: LRelated := P_ActorTarget(LMobj);
+    acrTarget: LRelated := TCommonStateParamActions.P_ActorTarget(LMobj);
     acrTracer: LRelated := LMobj.tracer;
   else
     LRelated := LMobj.master;

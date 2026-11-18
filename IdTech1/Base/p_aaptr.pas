@@ -153,7 +153,7 @@ begin
       case selector and AAPTR_PLAYER_SELECTORS of
       AAPTR_PLAYER_GETTARGET:
         begin
-          P_BulletSlope(origin);
+          TCommonAttackActions.P_BulletSlope(origin);
           result := TMapAim.LineTarget;
           exit;
         end;
@@ -215,7 +215,7 @@ begin
     end;
   AAPTR_GET_LINETARGET:
     begin
-      P_BulletSlope(origin);
+      TCommonAttackActions.P_BulletSlope(origin);
       result := TMapAim.LineTarget;
       exit;
     end;

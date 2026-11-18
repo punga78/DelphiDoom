@@ -351,7 +351,7 @@ var
     if isbouncy then
       mobjinfo[mobj_no].flags3_ex := mobjinfo[mobj_no].flags3_ex or MF3_EX_BOUNCE;
 
-    P_ResolveMBF21Flags(@mobjinfo[mobj_no]);
+    TCommonGameDependentActions.P_ResolveMBF21Flags(@mobjinfo[mobj_no]);
   end;
 
   procedure ApplyFrame;
@@ -922,7 +922,7 @@ var
 
 begin
   // DEH_Init does nothing after the first call
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
 
   deh_initialstates := numstates;
 

@@ -39,7 +39,7 @@ begin
   LEvent.data1 := AEvent.Data1;
   LEvent.data2 := AEvent.Data2;
   LEvent.data3 := AEvent.Data3;
-  D_PostEvent(@LEvent);
+  TMainRoutines.D_PostEvent(@LEvent);
 end;
 
 end.

@@ -2666,7 +2666,7 @@ begin
   end;
 
   P_SetMobjState(mo, S_POD_GROW1);
-  P_ThrustMobj(mo, LongWord(P_Random) * $1000000, $48000);
+  TCommonMovementActions.P_ThrustMobj(mo, LongWord(P_Random) * $1000000, $48000);
   S_StartSound(mo, Ord(sfx_newpod));
   inc(actor.special1); // Increment generated pod count
   mo.special2 := NativeInt(actor); // Link the generator to the pod

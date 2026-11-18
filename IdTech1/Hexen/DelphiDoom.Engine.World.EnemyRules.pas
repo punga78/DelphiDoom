@@ -3430,11 +3430,11 @@ class procedure THexenMonsterActions.A_BishopDoBlur(actor: Pmobj_t);
 begin
   actor.special1 := (P_Random and 3) + 3; // Random number of blurs
   if P_Random < 120 then
-    P_ThrustMobj(actor, actor.angle + ANG90, 11 * FRACUNIT)
+    TCommonMovementActions.P_ThrustMobj(actor, actor.angle + ANG90, 11 * FRACUNIT)
   else if P_Random > 125 then
-    P_ThrustMobj(actor, actor.angle - ANG90, 11 * FRACUNIT)
+    TCommonMovementActions.P_ThrustMobj(actor, actor.angle - ANG90, 11 * FRACUNIT)
   else // Thrust forward
-    P_ThrustMobj(actor, actor.angle, 11 * FRACUNIT);
+    TCommonMovementActions.P_ThrustMobj(actor, actor.angle, 11 * FRACUNIT);
   S_StartSound(actor, Ord(SFX_BISHOP_BLUR));
 end;
 
@@ -3538,7 +3538,7 @@ begin
   if target = nil then
     exit;
 
-  dir := P_FaceMobj(actor, target, delta);
+  dir := TCommonMovementActions.P_FaceMobj(actor, target, delta);
   if delta > thresh then
   begin
     delta := _SHR1(delta);
@@ -6073,7 +6073,7 @@ begin
   if target = nil then
     exit;
 
-  dir := P_FaceMobj(actor, target, delta);
+  dir := TCommonMovementActions.P_FaceMobj(actor, target, delta);
   if delta > thresh then
   begin
     delta := _SHR1(delta);
@@ -6246,9 +6246,9 @@ begin
     begin
       // must adjust height
       if actor.z < TMapCheck.FloorZ then
-        actor.z := actor.z + P_FloatSpeed(actor)
+        actor.z := actor.z + TCommonMovementActions.P_FloatSpeed(actor)
       else
-        actor.z := actor.z - P_FloatSpeed(actor);
+        actor.z := actor.z - TCommonMovementActions.P_FloatSpeed(actor);
 
       actor.flags := actor.flags or MF_INFLOAT;
       result := true;

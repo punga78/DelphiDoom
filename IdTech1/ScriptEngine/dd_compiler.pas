@@ -272,7 +272,7 @@ begin
   PS_InitProcLists;
   SC_DefaultStatedefLump;
   Info_Init(true);
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
   // the constants of the scripts (the console commands of the game are not needed here)
   SC_InitConsts;
   SC_ParseStatedefLump;
@@ -287,7 +287,7 @@ procedure DD_ShutDownDoomEngine;
 begin
   statenames.Free;
   SC_ShutDownConsts;
-  DEH_ShutDown;
+  TDehMainRoutines.DEH_ShutDown;
   Info_ShutDown;
   PS_ShutDownProcLists;
 end;

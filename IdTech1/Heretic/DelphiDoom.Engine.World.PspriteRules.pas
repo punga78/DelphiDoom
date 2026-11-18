@@ -809,7 +809,7 @@ var
 begin
   damage := 1 + (P_Random and 3);
   angle := player.mo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -838,7 +838,7 @@ var
 begin
   damage := HITDICE(4);
   angle := player.mo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -866,7 +866,7 @@ begin
   damage := 5 + (P_Random and 15);
   angle := player.mo.angle;
   angle := angle + LongWord((P_Random - P_Random) * $40000);
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_STAFFPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -896,7 +896,7 @@ begin
   damage := 18 + (P_Random and 63);
   angle := player.mo.angle;
   angle := angle + LongWord((P_Random - P_Random) * $40000);
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_STAFFPUFF2;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -924,7 +924,7 @@ begin
   mo := player.mo;
   S_StartSound(mo, Ord(sfx_gldhit));
   player.ammo[Ord(am_blaster)] := player.ammo[Ord(am_blaster)] - USE_BLSR_AMMO_1;
-  P_BulletSlope(mo);
+  TCommonAttackActions.P_BulletSlope(mo);
   damage := HITDICE(4);
   angle := mo.angle;
   if player.refire <> 0 then
@@ -974,7 +974,7 @@ var
 begin
   mo := player.mo;
   player.ammo[Ord(am_goldwand)] := player.ammo[Ord(am_goldwand)] - USE_GWND_AMMO_1;
-  P_BulletSlope(mo);
+  TCommonAttackActions.P_BulletSlope(mo);
   damage := 7 + (P_Random and 7);
   angle := mo.angle;
   if player.refire <> 0 then
@@ -1005,7 +1005,7 @@ begin
   else
     player.ammo[Ord(am_goldwand)] := player.ammo[Ord(am_goldwand)] - USE_GWND_AMMO_2;
   PuffType := MT_GOLDWANDPUFF2;
-  P_BulletSlope(mo);
+  TCommonAttackActions.P_BulletSlope(mo);
   momz := FixedMul(mobjinfo[Ord(MT_GOLDWANDFX2)].speed, bulletslope);
   TMobjRoutines.P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle - (ANG45 div 8), momz);
   TMobjRoutines.P_SpawnMissileAngle(mo, Ord(MT_GOLDWANDFX2), mo.angle + (ANG45 div 8), momz);
@@ -1735,14 +1735,14 @@ begin
   if player.powers[Ord(pw_weaponlevel2)] <> 0 then
   begin
     damage := HITDICE(2);
-    dist := 4 * P_GetPlayerMeleeRange(player);
+    dist := 4 * TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
     angle := angle + LongWord((P_Random - P_Random) * $20000);
     PuffType := MT_GAUNTLETPUFF2;
   end
   else
   begin
     damage := HITDICE(2);
-    dist := P_GetPlayerMeleeRange(player) + 1;
+    dist := TCommonGameDependentActions.P_GetPlayerMeleeRange(player) + 1;
     angle := angle + LongWord((P_Random - P_Random) * $40000);
     PuffType := MT_GAUNTLETPUFF1;
   end;

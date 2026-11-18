@@ -511,7 +511,7 @@ begin
 
   angle := player.mo.angle;
   angle := angle + _SHLW(P_Random - P_Random, 18);
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   P_LineAttack(player.mo, angle, mrange, slope, damage);
 
@@ -744,7 +744,7 @@ begin
   begin
     P_SetMobjState(player.mo, S_PLAY_06); // 293
     dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)]);
-    P_BulletSlope(player.mo);
+    TCommonAttackActions.P_BulletSlope(player.mo);
     if TMapAim.LineTarget <> nil then
       player.mo.target := TMapAim.LineTarget;
     TWeaponLocalActions.P_GunShot(player.mo, player.refire = 0);
@@ -768,7 +768,7 @@ begin
   if player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)] >= 20 then
   begin
     dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)], 20);
-    P_BulletSlope(player.mo);
+    TCommonAttackActions.P_BulletSlope(player.mo);
     if TMapAim.LineTarget <> nil then
       player.mo.target := TMapAim.LineTarget;
     S_StartSound(player.mo, Ord(sfx_pgrdat));
@@ -842,7 +842,7 @@ begin
     // falling lightning bolts from the sky
     0:
       begin
-        P_BulletSlope(player.mo);
+        TCommonAttackActions.P_BulletSlope(player.mo);
         if TMapAim.LineTarget <> nil then
           player.mo.target := TMapAim.LineTarget;
         if TMapAim.LineTarget <> nil then
@@ -886,7 +886,7 @@ begin
     // tracer attack
     3:
       begin
-        P_BulletSlope(player.mo);
+        TCommonAttackActions.P_BulletSlope(player.mo);
         if TMapAim.LineTarget <> nil then
           player.mo.target := TMapAim.LineTarget;
         if TMapAim.LineTarget <> nil then

@@ -64,81 +64,6 @@ const
   AppTitle = 'Free Pascal Hexen';
 {$ENDIF}
 
-//==============================================================================
-//
-// D_ProcessEvents
-//
-//==============================================================================
-procedure D_ProcessEvents;
-
-//==============================================================================
-//
-// D_DoAdvanceDemo
-//
-//==============================================================================
-procedure D_DoAdvanceDemo;
-
-//==============================================================================
-//
-// D_AddFile
-//
-//==============================================================================
-procedure D_AddFile(const fname1: string);
-
-//==============================================================================
-//
-// D_DoomMain()
-// Not a globally visible function, just included for source reference,
-// calls all startup code, parses command line options.
-// If not overrided by user input, calls N_AdvanceDemo.
-//
-//==============================================================================
-procedure D_DoomMain;
-
-//==============================================================================
-// D_PostEvent
-//
-// Called by IO functions when input is detected.
-//
-//==============================================================================
-procedure D_PostEvent(ev: Pevent_t);
-
-//==============================================================================
-// D_PageTicker
-//
-// BASE LEVEL
-//
-//==============================================================================
-procedure D_PageTicker;
-
-//==============================================================================
-//
-// D_PageDrawer
-//
-//==============================================================================
-procedure D_PageDrawer;
-
-//==============================================================================
-//
-// D_AdvanceDemo
-//
-//==============================================================================
-procedure D_AdvanceDemo;
-
-//==============================================================================
-//
-// D_StartTitle
-//
-//==============================================================================
-procedure D_StartTitle;
-
-//==============================================================================
-//
-// D_Display
-//
-//==============================================================================
-procedure D_Display;
-
 // wipegamestate can be set to -1 to force a wipe on the next draw
 var
   wipegamestate: integer = -1;   // JVAL was gamestate_t = GS_DEMOSCREEN;
@@ -158,43 +83,6 @@ var
 
   basedefault: string;          // default file
 
-//==============================================================================
-//
-// D_Configure
-// Gives the unit the engine this port runs on. The composition root calls it
-//
-//==============================================================================
-procedure D_Configure(const AEngine: IIdTechEngine);
-
-//==============================================================================
-//
-// D_EngineVersion
-// The version number of the engine (207 for 2.07)
-//
-//==============================================================================
-function D_EngineVersion: integer;
-
-//==============================================================================
-//
-// D_Version
-//
-//==============================================================================
-function D_Version: string;
-
-//==============================================================================
-//
-// D_VersionBuilt
-//
-//==============================================================================
-function D_VersionBuilt: string;
-
-//==============================================================================
-//
-// D_ShutDown
-//
-//==============================================================================
-procedure D_ShutDown;
-
 var
   autoloadgwafiles: boolean = true;
   searchdoomwaddir: boolean = true;
@@ -206,109 +94,9 @@ var
   wads_autoload: string = '';
   paks_autoload: string = '';
 
-//==============================================================================
-//
-// D_FileInDoomPath
-//
-//==============================================================================
-function D_FileInDoomPath(const fn: string): string;
-
-//==============================================================================
-//
-// D_ConfigureIwad
-//
-//==============================================================================
-procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
-
 {$IFDEF OPENGL}
-//==============================================================================
-//
-// D_ConfigureGlbsp
-// Gives the glBSP runner that builds the GL nodes of the files added at startup
-// (ComposeEngine, OpenGL only)
-//
-//==============================================================================
-procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
 
 {$ENDIF}
-//==============================================================================
-//
-// D_ConfigureGameDefines
-//
-// The defines of the game (D_FillGameDefines adds them), that the script
-// preprocessor reads: given by the composition root; without it the start of the
-// game stops with I_Error.
-//
-//==============================================================================
-procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
-
-//==============================================================================
-//
-// D_ConfigureActorDef
-//
-// The reader of the ACTORDEF, DECORATE and SNDINFO lumps, given by the
-// composition root; without it the start of the game stops with I_Error.
-//
-//==============================================================================
-procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
-//==============================================================================
-//
-// D_ConfigureAutoLoad
-//
-// The reader of the AUTOLOAD lumps, given by the composition root; without it the
-// start of the game stops with I_Error.
-//
-//==============================================================================
-procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
-
-//==============================================================================
-//
-// D_ConfigureStartup
-//
-// The expander of the response files (@name) and the resolver of the screen size from the
-// command line, given by the composition root; without them the start of the game stops
-// with I_Error.
-//
-//==============================================================================
-procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
-  const AScreenSize: IScreenSizeResolver);
-
-//==============================================================================
-//
-// D_ConfigureConsole
-//
-// The console, given by the composition root: D_DoomMain starts it, the loop gives it
-// the keys and draws it, D_ShutDown frees it.
-//
-//==============================================================================
-procedure D_ConfigureConsole(const AConsole: IEngineConsole);
-
-//==============================================================================
-//
-// D_ConfigureNetGame
-//
-// The loop of the game around the network, given by the composition root.
-//
-//==============================================================================
-procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
-
-//==============================================================================
-//
-// D_ConfigureDefaults
-//
-// The defaults of the configuration file, given by the composition root.
-//
-//==============================================================================
-procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
-
-//==============================================================================
-//
-// D_ConfigureScreenshot
-//
-// The screenshots (-shot), given by the composition root.
-//
-//==============================================================================
-procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
 
 var
   hexdd_pack: boolean = false; // Death Kings of the Dark Citadel pack
@@ -319,15 +107,241 @@ var
   showfullhdlogo: boolean = false;
 {$ENDIF}
 
-//==============================================================================
-//
-// D_ConfigureLevel
-//
-// The loading of the levels, given by the composition root: D_DoomMain starts it and frees it.
-// Without it the game stops with I_Error.
-//
-//==============================================================================
-procedure D_ConfigureLevel(const ALoader: ILevelLoader);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMainRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // D_ProcessEvents
+    //
+    //==============================================================================
+    class procedure D_ProcessEvents; static;
+
+    //==============================================================================
+    //
+    // D_DoAdvanceDemo
+    //
+    //==============================================================================
+    class procedure D_DoAdvanceDemo; static;
+
+    //==============================================================================
+    //
+    // D_AddFile
+    //
+    //==============================================================================
+    class procedure D_AddFile(const fname1: string); static;
+
+    //==============================================================================
+    //
+    // D_DoomMain()
+    // Not a globally visible function, just included for source reference,
+    // calls all startup code, parses command line options.
+    // If not overrided by user input, calls N_AdvanceDemo.
+    //
+    //==============================================================================
+    class procedure D_DoomMain; static;
+
+    //==============================================================================
+    // D_PostEvent
+    //
+    // Called by IO functions when input is detected.
+    //
+    //==============================================================================
+    class procedure D_PostEvent(ev: Pevent_t); static;
+
+    //==============================================================================
+    // D_PageTicker
+    //
+    // BASE LEVEL
+    //
+    //==============================================================================
+    class procedure D_PageTicker; static;
+
+    //==============================================================================
+    //
+    // D_PageDrawer
+    //
+    //==============================================================================
+    class procedure D_PageDrawer; static;
+
+    //==============================================================================
+    //
+    // D_AdvanceDemo
+    //
+    //==============================================================================
+    class procedure D_AdvanceDemo; static;
+
+    //==============================================================================
+    //
+    // D_StartTitle
+    //
+    //==============================================================================
+    class procedure D_StartTitle; static;
+
+    //==============================================================================
+    //
+    // D_Display
+    //
+    //==============================================================================
+    class procedure D_Display; static;
+
+    //==============================================================================
+    //
+    // D_Configure
+    // Gives the unit the engine this port runs on. The composition root calls it
+    //
+    //==============================================================================
+    class procedure D_Configure(const AEngine: IIdTechEngine); static;
+
+    //==============================================================================
+    //
+    // D_EngineVersion
+    // The version number of the engine (207 for 2.07)
+    //
+    //==============================================================================
+    class function D_EngineVersion: integer; static;
+
+    //==============================================================================
+    //
+    // D_Version
+    //
+    //==============================================================================
+    class function D_Version: string; static;
+
+    //==============================================================================
+    //
+    // D_VersionBuilt
+    //
+    //==============================================================================
+    class function D_VersionBuilt: string; static;
+
+    //==============================================================================
+    //
+    // D_ShutDown
+    //
+    //==============================================================================
+    class procedure D_ShutDown; static;
+
+    //==============================================================================
+    //
+    // D_FileInDoomPath
+    //
+    //==============================================================================
+    class function D_FileInDoomPath(const fn: string): string; static;
+
+    //==============================================================================
+    //
+    // D_ConfigureIwad
+    //
+    //==============================================================================
+    class procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier); static;
+
+{$IFDEF OPENGL}
+    //==============================================================================
+    //
+    // D_ConfigureGlbsp
+    // Gives the glBSP runner that builds the GL nodes of the files added at startup
+    // (ComposeEngine, OpenGL only)
+    //
+    //==============================================================================
+    class procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner); static;
+{$ENDIF}
+
+    //==============================================================================
+    //
+    // D_ConfigureGameDefines
+    //
+    // The defines of the game (D_FillGameDefines adds them), that the script
+    // preprocessor reads: given by the composition root; without it the start of the
+    // game stops with I_Error.
+    //
+    //==============================================================================
+    class procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureActorDef
+    //
+    // The reader of the ACTORDEF, DECORATE and SNDINFO lumps, given by the
+    // composition root; without it the start of the game stops with I_Error.
+    //
+    //==============================================================================
+    class procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureAutoLoad
+    //
+    // The reader of the AUTOLOAD lumps, given by the composition root; without it the
+    // start of the game stops with I_Error.
+    //
+    //==============================================================================
+    class procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureStartup
+    //
+    // The expander of the response files (@name) and the resolver of the screen size from the
+    // command line, given by the composition root; without them the start of the game stops
+    // with I_Error.
+    //
+    //==============================================================================
+    class procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
+      const AScreenSize: IScreenSizeResolver); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureConsole
+    //
+    // The console, given by the composition root: D_DoomMain starts it, the loop gives it
+    // the keys and draws it, D_ShutDown frees it.
+    //
+    //==============================================================================
+    class procedure D_ConfigureConsole(const AConsole: IEngineConsole); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureNetGame
+    //
+    // The loop of the game around the network, given by the composition root.
+    //
+    //==============================================================================
+    class procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureDefaults
+    //
+    // The defaults of the configuration file, given by the composition root.
+    //
+    //==============================================================================
+    class procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureScreenshot
+    //
+    // The screenshots (-shot), given by the composition root.
+    //
+    //==============================================================================
+    class procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot); static;
+
+    //==============================================================================
+    //
+    // D_ConfigureLevel
+    //
+    // The loading of the levels, given by the composition root: D_DoomMain starts it and frees it.
+    // Without it the game stops with I_Error.
+    //
+    //==============================================================================
+    class procedure D_ConfigureLevel(const ALoader: ILevelLoader); static;
+  end;
+
 
 implementation
 
@@ -411,17 +425,62 @@ var
 // D_ConfigureGameDefines
 //
 //==============================================================================
-procedure D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
+class procedure TMainRoutines.D_ConfigureGameDefines(const ADefines: IScriptGameDefines);
 begin
   main_gamedefines := ADefines;
 end;
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMainLocalRoutines = class sealed
+  public
+    class function D_GameDefines: IScriptGameDefines; static;
+    class function D_ActorDef: IEngineActorDefLumps; static;
+    class function D_AutoLoad: IAutoLoadReader; static;
+    class function D_ResponseFiles: IResponseFileExpander; static;
+    class function D_ScreenSize: IScreenSizeResolver; static;
+    class function D_Console: IEngineConsole; static;
+    class function D_NetGame: IEngineNetGame; static;
+    class function D_Defaults: IEngineDefaults; static;
+    class function D_Screenshot: IEngineScreenshot; static;
+    class procedure D_FinishUpdate; static;
+    class procedure D_RenderPlayerView(player: Pplayer_t); static;
+    class procedure D_DoomLoop; static;
+{$IFDEF OPENGL}
+    class function D_GlbspRunner: IEngineGlbspRunner; static;
+{$ENDIF}
+    class procedure D_WadsAutoLoad(fnames: string); static;
+    class procedure D_PaksAutoload(fnames: string); static;
+    class procedure D_AddSystemWAD; static;
+    class procedure IdentifyVersion; static;
+    class procedure FindResponseFile; static;
+{$IFNDEF OPENGL}
+    class procedure D_CmdHOM; static;
+{$ENDIF}
+    class procedure D_CmdVersion; static;
+    class procedure D_CmdAddPakFile(const parm: string); static;
+    class procedure D_StartThinkers; static;
+    class procedure D_StopThinkers; static;
+    class procedure D_AddWADFiles(const parm: string); static;
+    class procedure D_AddPAKFiles(const parm: string); static;
+    class procedure D_AddDEHFiles(const parm: string); static;
+    class procedure D_IdentifyGameDirectories; static;
+    class procedure D_CheckCommonParams; static;
+    class procedure D_CheckInteterminedMode; static;
+    class procedure D_FillGameDefines; static;
+    class procedure M_FindDefaultFile; static;
+    class function D_LevelLoader: ILevelLoader; static;
+  end;
 
 //==============================================================================
 //
 // D_GameDefines
 //
 //==============================================================================
-function D_GameDefines: IScriptGameDefines;
+class function TMainLocalRoutines.D_GameDefines: IScriptGameDefines;
 begin
   if main_gamedefines = nil then
     I_Error('D_ConfigureGameDefines() was not called: the defines of the game are missing');
@@ -437,7 +496,7 @@ var
 // D_ConfigureActorDef
 //
 //==============================================================================
-procedure D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
+class procedure TMainRoutines.D_ConfigureActorDef(const ALumps: IEngineActorDefLumps);
 begin
   main_actordef := ALumps;
 end;
@@ -447,7 +506,7 @@ end;
 // D_ActorDef
 //
 //==============================================================================
-function D_ActorDef: IEngineActorDefLumps;
+class function TMainLocalRoutines.D_ActorDef: IEngineActorDefLumps;
 begin
   if main_actordef = nil then
     I_Error('D_ConfigureActorDef() was not called: the ACTORDEF lumps cannot be read');
@@ -462,7 +521,7 @@ var
 // D_ConfigureAutoLoad
 //
 //==============================================================================
-procedure D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
+class procedure TMainRoutines.D_ConfigureAutoLoad(const AReader: IAutoLoadReader);
 begin
   main_autoload := AReader;
 end;
@@ -472,7 +531,7 @@ end;
 // D_AutoLoad
 //
 //==============================================================================
-function D_AutoLoad: IAutoLoadReader;
+class function TMainLocalRoutines.D_AutoLoad: IAutoLoadReader;
 begin
   if main_autoload = nil then
     I_Error('D_ConfigureAutoLoad() was not called: the AUTOLOAD lumps cannot be read');
@@ -489,7 +548,7 @@ var
 // D_ConfigureStartup
 //
 //==============================================================================
-procedure D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
+class procedure TMainRoutines.D_ConfigureStartup(const AResponseFiles: IResponseFileExpander;
   const AScreenSize: IScreenSizeResolver);
 begin
   main_responsefiles := AResponseFiles;
@@ -501,7 +560,7 @@ end;
 // D_ResponseFiles
 //
 //==============================================================================
-function D_ResponseFiles: IResponseFileExpander;
+class function TMainLocalRoutines.D_ResponseFiles: IResponseFileExpander;
 begin
   if main_responsefiles = nil then
     I_Error('D_ConfigureStartup() was not called: the response files cannot be read');
@@ -513,7 +572,7 @@ end;
 // D_ScreenSize
 //
 //==============================================================================
-function D_ScreenSize: IScreenSizeResolver;
+class function TMainLocalRoutines.D_ScreenSize: IScreenSizeResolver;
 begin
   if main_screensize = nil then
     I_Error('D_ConfigureStartup() was not called: the screen size cannot be read');
@@ -532,7 +591,7 @@ var
 // D_ConfigureConsole
 //
 //==============================================================================
-procedure D_ConfigureConsole(const AConsole: IEngineConsole);
+class procedure TMainRoutines.D_ConfigureConsole(const AConsole: IEngineConsole);
 begin
   main_console := AConsole;
 end;
@@ -542,7 +601,7 @@ end;
 // D_Console
 //
 //==============================================================================
-function D_Console: IEngineConsole;
+class function TMainLocalRoutines.D_Console: IEngineConsole;
 begin
   if main_console = nil then
     I_Error('D_ConfigureConsole() was not called: the console is missing');
@@ -554,7 +613,7 @@ end;
 // D_ConfigureNetGame
 //
 //==============================================================================
-procedure D_ConfigureNetGame(const ANetGame: IEngineNetGame);
+class procedure TMainRoutines.D_ConfigureNetGame(const ANetGame: IEngineNetGame);
 begin
   main_netgame := ANetGame;
 end;
@@ -564,7 +623,7 @@ end;
 // D_NetGame
 //
 //==============================================================================
-function D_NetGame: IEngineNetGame;
+class function TMainLocalRoutines.D_NetGame: IEngineNetGame;
 begin
   if main_netgame = nil then
     I_Error('D_ConfigureNetGame() was not called: the network is missing');
@@ -576,7 +635,7 @@ end;
 // D_ConfigureDefaults
 //
 //==============================================================================
-procedure D_ConfigureDefaults(const ADefaults: IEngineDefaults);
+class procedure TMainRoutines.D_ConfigureDefaults(const ADefaults: IEngineDefaults);
 begin
   main_defaults := ADefaults;
 end;
@@ -586,7 +645,7 @@ end;
 // D_Defaults
 //
 //==============================================================================
-function D_Defaults: IEngineDefaults;
+class function TMainLocalRoutines.D_Defaults: IEngineDefaults;
 begin
   if main_defaults = nil then
     I_Error('D_ConfigureDefaults() was not called: the defaults are missing');
@@ -598,7 +657,7 @@ end;
 // D_ConfigureScreenshot
 //
 //==============================================================================
-procedure D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
+class procedure TMainRoutines.D_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
 begin
   main_screenshot := AScreenshot;
 end;
@@ -608,7 +667,7 @@ end;
 // D_Screenshot
 //
 //==============================================================================
-function D_Screenshot: IEngineScreenshot;
+class function TMainLocalRoutines.D_Screenshot: IEngineScreenshot;
 begin
   if main_screenshot = nil then
     I_Error('D_ConfigureScreenshot() was not called: the screenshots are missing');
@@ -634,7 +693,7 @@ const
 // Called by the I/O functions when input is detected
 //
 //==============================================================================
-procedure D_PostEvent(ev: Pevent_t);
+class procedure TMainRoutines.D_PostEvent(ev: Pevent_t);
 begin
   events[eventhead] := ev^;
   inc(eventhead);
@@ -647,7 +706,7 @@ end;
 // Send all the events of the given timestamp down the responder chain
 //
 //==============================================================================
-procedure D_ProcessEvents;
+class procedure TMainRoutines.D_ProcessEvents;
 var
   ev: Pevent_t;
 begin
@@ -657,7 +716,7 @@ begin
   while eventtail <> eventhead do
   begin
     ev := @events[eventtail];
-    if D_Console.Respond(ev) then
+    if TMainLocalRoutines.D_Console.Respond(ev) then
       // console ate the event
     else if TMenuRoutines.M_Responder(ev) then
       // menu ate the event
@@ -699,7 +758,7 @@ var
 // D_FinishUpdate
 //
 //==============================================================================
-procedure D_FinishUpdate;
+class procedure TMainLocalRoutines.D_FinishUpdate;
 begin
   Parity_AfterFrame; // the parity tools (nothing when they are off)
   if not noblit then
@@ -720,7 +779,7 @@ end;
 // D_RenderPlayerView
 //
 //==============================================================================
-procedure D_RenderPlayerView(player: Pplayer_t);
+class procedure TMainLocalRoutines.D_RenderPlayerView(player: Pplayer_t);
 {$IFNDEF OPENGL}
 var
   stime: extended;
@@ -760,7 +819,7 @@ var
 // D_Display
 //
 //==============================================================================
-procedure D_Display;
+class procedure TMainRoutines.D_Display;
 
 {$IFDEF OPENGL}
 
@@ -863,7 +922,7 @@ begin
   begin
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
-      D_RenderPlayerView(@TGameSession.Players[displayplayer]);
+      TMainLocalRoutines.D_RenderPlayerView(@TGameSession.Players[displayplayer]);
       if amstate = am_overlay then
         AM_Drawer;
     end;
@@ -885,7 +944,7 @@ begin
     begin
       if scaledviewwidth <> SCREENWIDTH then
       begin
-        if sbiconsactive or menuactive or menuactivestate or not viewactivestate or D_Console.IsActive then
+        if sbiconsactive or menuactive or menuactivestate or not viewactivestate or TMainLocalRoutines.D_Console.IsActive then
           borderdrawcount := 3;
         if borderdrawcount > 0 then
         begin
@@ -937,7 +996,7 @@ begin
     TMenuRoutines.M_Drawer; // Menu is drawn even on top of everything
 
     // Console goes directly to the screen
-    D_Console.Draw;   // Console is drawn even on top of menus
+    TMainLocalRoutines.D_Console.Draw;   // Console is drawn even on top of menus
 
     // Draw disk busy patch
     R_DrawDiskBusy; // Draw disk busy on top of console
@@ -958,7 +1017,7 @@ begin
       TStatusBarRoutines.SB_Drawer;
 
     TMenuRoutines.M_Drawer;
-    D_Console.Draw;
+    TMainLocalRoutines.D_Console.Draw;
     diskbusyend := -1;
   end
   else
@@ -970,16 +1029,16 @@ begin
       TStatusBarRoutines.SB_Drawer;
 
     TMenuRoutines.M_Drawer;
-    D_Console.Draw;
+    TMainLocalRoutines.D_Console.Draw;
   end;
 
-  D_NetGame.Update; // send out any new accumulation
+  TMainLocalRoutines.D_NetGame.Update; // send out any new accumulation
 
   {$IFNDEF OPENGL}
   // normal update
   if not wipe then
   begin
-    D_FinishUpdate; // page flip or blit buffer
+    TMainLocalRoutines.D_FinishUpdate; // page flip or blit buffer
     exit;
   end;
 
@@ -999,8 +1058,8 @@ begin
     wipestart := nowtime;
     done := wipe_Ticker(tics);
     TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
-    D_Console.Draw;         // Console draw on top of wipes and menus
-    D_FinishUpdate;   // page flip or blit buffer
+    TMainLocalRoutines.D_Console.Draw;         // Console draw on top of wipes and menus
+    TMainLocalRoutines.D_FinishUpdate;   // page flip or blit buffer
     HU_DoFPSStuff;
   until done;
   videomode := oldvideomode;
@@ -1018,14 +1077,14 @@ begin
     if (amstate <> am_only) and (TGameSession.GameTic <> 0) then
     begin
       R_FillBackScreen; // draw the pattern into the back screen
-      D_RenderPlayerView(@TGameSession.Players[displayplayer]);
+      TMainLocalRoutines.D_RenderPlayerView(@TGameSession.Players[displayplayer]);
     end;
   end;
   if TGameSession.GameState = GS_LEVEL then
     if amstate = am_overlay then
       AM_Drawer;
   D_DisplayHU;
-  D_FinishUpdate; // page flip or blit buffer
+  TMainLocalRoutines.D_FinishUpdate; // page flip or blit buffer
 end;
 {$ENDIF}
 
@@ -1043,7 +1102,7 @@ var
 // D_DoomLoop
 //
 //==============================================================================
-procedure D_DoomLoop;
+class procedure TMainLocalRoutines.D_DoomLoop;
 {$IFNDEF DEBUG}
 var
   iscritical: boolean;
@@ -1104,7 +1163,7 @@ var
 // Handles timing for warped projection
 //
 //==============================================================================
-procedure D_PageTicker;
+class procedure TMainRoutines.D_PageTicker;
 begin
   dec(pagetic);
   if pagetic < 0 then
@@ -1124,7 +1183,7 @@ var
 // D_PageDrawer
 //
 //==============================================================================
-procedure D_PageDrawer;
+class procedure TMainRoutines.D_PageDrawer;
 {$IFNDEF OPENGL}
 var
   pt: Ppatch_t;
@@ -1156,7 +1215,7 @@ end;
 // Called after each demo or intro demosequence finishes
 //
 //==============================================================================
-procedure D_AdvanceDemo;
+class procedure TMainRoutines.D_AdvanceDemo;
 begin
   advancedemo := true;
 end;
@@ -1168,7 +1227,7 @@ end;
 // FIXME - version dependend demo numbers?
 //
 //==============================================================================
-procedure D_DoAdvanceDemo;
+class procedure TMainRoutines.D_DoAdvanceDemo;
 begin
   TGameSession.Players[TGameSession.ConsolePlayer].playerstate := PST_LIVE;  // not reborn
   advancedemo := false;
@@ -1224,7 +1283,7 @@ end;
 // D_StartTitle
 //
 //==============================================================================
-procedure D_StartTitle;
+class procedure TMainRoutines.D_StartTitle;
 begin
   TGameSession.GameAction := ga_nothing;
   demosequence := -1;
@@ -1244,7 +1303,7 @@ var
 // D_ConfigureGlbsp
 //
 //==============================================================================
-procedure D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
+class procedure TMainRoutines.D_ConfigureGlbsp(const ARunner: IEngineGlbspRunner);
 begin
   glbsp_runner := ARunner;
 end;
@@ -1254,7 +1313,7 @@ end;
 // D_GlbspRunner
 //
 //==============================================================================
-function D_GlbspRunner: IEngineGlbspRunner;
+class function TMainLocalRoutines.D_GlbspRunner: IEngineGlbspRunner;
 begin
   if glbsp_runner = nil then
     I_Error('D_AddFile(): the glBSP runner was not given (D_ConfigureGlbsp)');
@@ -1267,7 +1326,7 @@ end;
 // D_AddFile
 //
 //==============================================================================
-procedure D_AddFile(const fname1: string);
+class procedure TMainRoutines.D_AddFile(const fname1: string);
 var
   fname2: string;
 {$IFDEF OPENGL}
@@ -1316,7 +1375,7 @@ begin
             gwafname := path + fname(gwafname);
             if fexists(gwafname) then
               wadfiles.Add(gwafname)
-            else if D_GlbspRunner.BuildGlFriendly(fname2, gwafname) then
+            else if TMainLocalRoutines.D_GlbspRunner.BuildGlFriendly(fname2, gwafname) then
               wadfiles.Add(gwafname);
           end;
         end;
@@ -1333,14 +1392,14 @@ end;
 // D_WadsAutoLoad
 //
 //==============================================================================
-procedure D_WadsAutoLoad(fnames: string);
+class procedure TMainLocalRoutines.D_WadsAutoLoad(fnames: string);
 var
   names: TArray<string>;
   i: integer;
 begin
   names := TCommandLineFileList.Split(fnames);
   for i := 0 to Length(names) - 1 do
-    D_AddFile(names[i]);
+    TMainRoutines.D_AddFile(names[i]);
 end;
 
 //==============================================================================
@@ -1348,7 +1407,7 @@ end;
 // D_PaksAutoload
 //
 //==============================================================================
-procedure D_PaksAutoload(fnames: string);
+class procedure TMainLocalRoutines.D_PaksAutoload(fnames: string);
 var
   names: TArray<string>;
   i: integer;
@@ -1368,7 +1427,7 @@ var
 // D_ConfigureIwad
 //
 //==============================================================================
-procedure D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
+class procedure TMainRoutines.D_ConfigureIwad(const ALocator: IIwadLocator; const AIdentifier: IIwadIdentifier);
 begin
   iwad_locator := ALocator;
   iwad_identifier := AIdentifier;
@@ -1379,7 +1438,7 @@ end;
 // D_FileInDoomPath
 //
 //==============================================================================
-function D_FileInDoomPath(const fn: string): string;
+class function TMainRoutines.D_FileInDoomPath(const fn: string): string;
 begin
   if iwad_locator = nil then
     I_Error('D_FileInDoomPath(): the IWAD locator was not given (D_ConfigureIwad)');
@@ -1394,13 +1453,13 @@ const
 // D_AddSystemWAD
 //
 //==============================================================================
-procedure D_AddSystemWAD;
+class procedure TMainLocalRoutines.D_AddSystemWAD;
 var
   ddsyswad: string;
 begin
-  ddsyswad := D_FileInDoomPath(SYSWAD);
+  ddsyswad := TMainRoutines.D_FileInDoomPath(SYSWAD);
   if fexists(ddsyswad) then
-    D_AddFile(ddsyswad)
+    TMainRoutines.D_AddFile(ddsyswad)
   else
     I_Warning('D_AddSystemWAD(): System WAD %s not found.'#13#10, [SYSWAD]);
 end;
@@ -1413,7 +1472,7 @@ end;
 // should be executed (notably loading PWAD's).
 //
 //==============================================================================
-procedure IdentifyVersion;
+class procedure TMainLocalRoutines.IdentifyVersion;
 var
   customname: string;
   ident: TIwadIdentification;
@@ -1439,7 +1498,7 @@ begin
     begin
       if i = High(ident.Files) then
         printf(' External main wad in use: %s'#13#10, [ident.CustomPath]);
-      D_AddFile(ident.Files[i]);
+      TMainRoutines.D_AddFile(ident.Files[i]);
     end;
     exit;
   end;
@@ -1455,7 +1514,7 @@ begin
     igmShareware: gamemode := shareware;
     igmIndetermined: gamemode := indetermined; // Will check if register or extended wad later
   end;
-  D_AddFile(ident.Files[0]);
+  TMainRoutines.D_AddFile(ident.Files[0]);
 end;
 
 //==============================================================================
@@ -1466,7 +1525,7 @@ end;
 // JVAL: Changed to handle more than 1 response files
 //
 //==============================================================================
-procedure FindResponseFile;
+class procedure TMainLocalRoutines.FindResponseFile;
 var
   arguments: TArray<string>;
   i: integer;
@@ -1487,7 +1546,7 @@ end;
 // D_CmdHOM
 //
 //==============================================================================
-procedure D_CmdHOM;
+class procedure TMainLocalRoutines.D_CmdHOM;
 begin
   hom := not hom;
   if hom then
@@ -1506,7 +1565,7 @@ var
 // D_Configure
 //
 //==============================================================================
-procedure D_Configure(const AEngine: IIdTechEngine);
+class procedure TMainRoutines.D_Configure(const AEngine: IIdTechEngine);
 begin
   idtech_engine := AEngine;
 end;
@@ -1516,7 +1575,7 @@ end;
 // D_EngineVersion
 //
 //==============================================================================
-function D_EngineVersion: integer;
+class function TMainRoutines.D_EngineVersion: integer;
 begin
   if idtech_engine <> nil then
     result := idtech_engine.Version.Number
@@ -1529,7 +1588,7 @@ end;
 // D_Version
 //
 //==============================================================================
-function D_Version: string;
+class function TMainRoutines.D_Version: string;
 begin
   sprintf(result, Apptitle + ' version %d.%.*d', [D_EngineVersion div 100, 2, D_EngineVersion mod 100]);
 end;
@@ -1539,7 +1598,7 @@ end;
 // D_VersionBuilt
 //
 //==============================================================================
-function D_VersionBuilt: string;
+class function TMainRoutines.D_VersionBuilt: string;
 begin
   sprintf(result, ' built %s', [I_VersionBuilt]);
 end;
@@ -1549,9 +1608,9 @@ end;
 // D_CmdVersion
 //
 //==============================================================================
-procedure D_CmdVersion;
+class procedure TMainLocalRoutines.D_CmdVersion;
 begin
-  printf('%s,%s'#13#10, [D_Version, D_VersionBuilt]);
+  printf('%s,%s'#13#10, [TMainRoutines.D_Version, TMainRoutines.D_VersionBuilt]);
 end;
 
 //==============================================================================
@@ -1559,7 +1618,7 @@ end;
 // D_CmdAddPakFile
 //
 //==============================================================================
-procedure D_CmdAddPakFile(const parm: string);
+class procedure TMainLocalRoutines.D_CmdAddPakFile(const parm: string);
 var
   files: TDStringList;
   i: integer;
@@ -1603,7 +1662,7 @@ end;
 // D_StartThinkers
 //
 //==============================================================================
-procedure D_StartThinkers;
+class procedure TMainLocalRoutines.D_StartThinkers;
 begin
   Info_Init(true);
   printf('Thinkers initialized'#13#10);
@@ -1614,7 +1673,7 @@ end;
 // D_StopThinkers
 //
 //==============================================================================
-procedure D_StopThinkers;
+class procedure TMainLocalRoutines.D_StopThinkers;
 begin
   if TGameSession.DemoPlayback then
   begin
@@ -1637,7 +1696,7 @@ end;
 // D_AddWADFiles
 //
 //==============================================================================
-procedure D_AddWADFiles(const parm: string);
+class procedure TMainLocalRoutines.D_AddWADFiles(const parm: string);
 var
   p: integer;
 begin
@@ -1647,7 +1706,7 @@ begin
     inc(p);
     while (p < myargc) and (myargv[p][1] <> '-') do
     begin
-      D_AddFile(D_FileInDoomPath(myargv[p]));
+      TMainRoutines.D_AddFile(TMainRoutines.D_FileInDoomPath(myargv[p]));
       inc(p);
     end;
   end;
@@ -1658,7 +1717,7 @@ end;
 // D_AddPAKFiles
 //
 //==============================================================================
-procedure D_AddPAKFiles(const parm: string);
+class procedure TMainLocalRoutines.D_AddPAKFiles(const parm: string);
 var
   p: integer;
 begin
@@ -1683,7 +1742,7 @@ end;
 // D_AddDEHFiles
 //
 //==============================================================================
-procedure D_AddDEHFiles(const parm: string);
+class procedure TMainLocalRoutines.D_AddDEHFiles(const parm: string);
 var
   p: integer;
 begin
@@ -1708,7 +1767,7 @@ end;
 // D_IdentifyGameDirectories
 //
 //==============================================================================
-procedure D_IdentifyGameDirectories;
+class procedure TMainLocalRoutines.D_IdentifyGameDirectories;
 var
   gamedirectorystring: string;
   wadnames: TArray<string>;
@@ -1739,7 +1798,7 @@ end;
 // D_CheckCommonParams
 //
 //==============================================================================
-procedure D_CheckCommonParams;
+class procedure TMainLocalRoutines.D_CheckCommonParams;
 var
   p: integer;
 begin
@@ -1896,7 +1955,7 @@ var
 // D_CheckInteterminedMode
 //
 //==============================================================================
-procedure D_CheckInteterminedMode;
+class procedure TMainLocalRoutines.D_CheckInteterminedMode;
 var
   i: integer;
 begin
@@ -1923,7 +1982,7 @@ end;
 // D_FillGameDefines
 //
 //==============================================================================
-procedure D_FillGameDefines;
+class procedure TMainLocalRoutines.D_FillGameDefines;
 begin
   D_GameDefines.Add('hexen');
   if hexdd_pack then D_GameDefines.Add('hexdd');
@@ -1942,7 +2001,7 @@ end;
 // M_FindDefaultFile
 //
 //==============================================================================
-procedure M_FindDefaultFile;
+class procedure TMainLocalRoutines.M_FindDefaultFile;
 begin
   if M_CheckParmCDROM then
   begin
@@ -1962,7 +2021,7 @@ var
 // D_ConfigureLevel
 //
 //==============================================================================
-procedure D_ConfigureLevel(const ALoader: ILevelLoader);
+class procedure TMainRoutines.D_ConfigureLevel(const ALoader: ILevelLoader);
 begin
   main_levelloader := ALoader;
 end;
@@ -1972,7 +2031,7 @@ end;
 // D_LevelLoader
 //
 //==============================================================================
-function D_LevelLoader: ILevelLoader;
+class function TMainLocalRoutines.D_LevelLoader: ILevelLoader;
 begin
   if main_levelloader = nil then
     I_Error('D_ConfigureLevel() was not called: the loading of the levels is missing');
@@ -1984,7 +2043,7 @@ end;
 // D_DoomMain
 //
 //==============================================================================
-procedure D_DoomMain;
+class procedure TMainRoutines.D_DoomMain;
 var
   p: integer;
   filename: string;
@@ -2007,12 +2066,12 @@ begin
 
   printf('Starting %s, %s'#13#10, [D_Version, D_VersionBuilt]);
 {$IFNDEF OPENGL}
-  C_AddCmd('tnthom, hom', @D_CmdHOM);
+  C_AddCmd('tnthom, hom', @TMainLocalRoutines.D_CmdHOM);
 {$ENDIF}
-  C_AddCmd('ver, version', @D_CmdVersion);
-  C_AddCmd('addpakfile, loadpakfile, addpak, loadpak', @D_CmdAddPakFile);
-  C_AddCmd('startthinkers', @D_StartThinkers);
-  C_AddCmd('stopthinkers', @D_StopThinkers);
+  C_AddCmd('ver, version', @TMainLocalRoutines.D_CmdVersion);
+  C_AddCmd('addpakfile, loadpakfile, addpak, loadpak', @TMainLocalRoutines.D_CmdAddPakFile);
+  C_AddCmd('startthinkers', @TMainLocalRoutines.D_StartThinkers);
+  C_AddCmd('stopthinkers', @TMainLocalRoutines.D_StopThinkers);
 
   SUC_Progress(1);
 
@@ -2021,7 +2080,7 @@ begin
 
   SUC_Progress(2);
 
-  FindResponseFile;
+  TMainLocalRoutines.FindResponseFile;
 
   printf('I_InitializeIO: Initializing input/output streams.'#13#10);
   I_InitializeIO;
@@ -2029,14 +2088,14 @@ begin
   SUC_Progress(3);
 
   printf('M_LoadDefaults: Load system defaults.'#13#10);
-  M_FindDefaultFile;
-  D_Defaults.Load;              // load before initing other systems
+  TMainLocalRoutines.M_FindDefaultFile;
+  TMainLocalRoutines.D_Defaults.Load;              // load before initing other systems
 
-  D_AddSystemWAD; // Add system wad first
+  TMainLocalRoutines.D_AddSystemWAD; // Add system wad first
 
   SUC_Progress(4);
 
-  IdentifyVersion;
+  TMainLocalRoutines.IdentifyVersion;
 
   SUC_Progress(5);
 
@@ -2121,10 +2180,10 @@ begin
 
   SUC_Progress(8);
 
-  D_AddWADFiles('-file');
+  TMainLocalRoutines.D_AddWADFiles('-file');
   for p := 1 to 9 do
-    D_AddWADFiles('-file' + itoa(p));
-  D_AddWADFiles('-lfile');  // JVAL launcher specific
+    TMainLocalRoutines.D_AddWADFiles('-file' + itoa(p));
+  TMainLocalRoutines.D_AddWADFiles('-lfile');  // JVAL launcher specific
 
   SUC_Progress(9);
 
@@ -2137,13 +2196,13 @@ begin
 
   SUC_Progress(11);
 
-  D_AddPAKFiles('-pakfile');
+  TMainLocalRoutines.D_AddPAKFiles('-pakfile');
   for p := 1 to 9 do
-    D_AddPAKFiles('-pakfile' + itoa(p));
+    TMainLocalRoutines.D_AddPAKFiles('-pakfile' + itoa(p));
 
   SUC_Progress(15);
 
-  D_AddPAKFiles('-lpakfile'); // JVAL launcher specific
+  TMainLocalRoutines.D_AddPAKFiles('-lpakfile'); // JVAL launcher specific
 
   SUC_Progress(16);
 
@@ -2187,12 +2246,12 @@ begin
   if (p <> 0) and (p <= myargc - 1) and (TGameSession.DeathMatch <> 0) then
     printf('Austin Virtual Gaming: Levels will end after 20 minutes'#13#10);
 
-  D_WadsAutoLoad(wads_autoload);
-  D_PaksAutoload(paks_autoload);
+  TMainLocalRoutines.D_WadsAutoLoad(wads_autoload);
+  TMainLocalRoutines.D_PaksAutoload(paks_autoload);
 
   SUC_Progress(20);
 
-  D_CheckCommonParams;
+  TMainLocalRoutines.D_CheckCommonParams;
 
 // Try to guess minimum zone memory to allocate
 // Give Hexen a little more minimum zone memory than Doom and Heretic
@@ -2281,29 +2340,29 @@ begin
       I_Error('W_InitMultipleFiles(): no files found');
   end;
 
-  D_CheckInteterminedMode;
+  TMainLocalRoutines.D_CheckInteterminedMode;
 
   SUC_Progress(38);
 
   printf('SC_InitGameDefines: Determine global defines.'#13#10);
-  D_GameDefines.Clear;
-  D_FillGameDefines;
+  TMainLocalRoutines.D_GameDefines.Clear;
+  TMainLocalRoutines.D_FillGameDefines;
 
   SUC_Progress(39);
 
   printf('W_AutoLoadPakFiles: Autoload required pak files.'#13#10);
-  D_AutoLoad.Load;
+  TMainLocalRoutines.D_AutoLoad.Load;
 
   SUC_Progress(40);
 
   printf('SC_Init: Initializing script engine.'#13#10);
-  D_ActorDef.Initialize;
+  TMainLocalRoutines.D_ActorDef.Initialize;
 
   SUC_Progress(41);
 
   printf('DEH_Init: Initializing dehacked subsystem.'#13#10);
   SC_DefaultStatedefLump;
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin
@@ -2326,7 +2385,7 @@ begin
   SUC_Progress(43);
 
   printf('SC_ParseSndInfoLumps: Parsing SNDINFO lumps.'#13#10);
-  D_ActorDef.ParseSoundInfoLumps;
+  TMainLocalRoutines.D_ActorDef.ParseSoundInfoLumps;
 
   SUC_Progress(44);
 
@@ -2334,7 +2393,7 @@ begin
   if p <= 0 then
   begin
     printf('SC_ParseActordefLumps: Parsing ACTORDEF lumps.'#13#10);
-    D_ActorDef.ParseActorDefLumps;
+    TMainLocalRoutines.D_ActorDef.ParseActorDefLumps;
   end;
 
   SUC_Progress(45);
@@ -2344,8 +2403,8 @@ begin
       printf('DEH_ParseLumpName: DEHACKED lump(s) not found.'#13#10);
 
   // JVAL Adding dehached files
-  D_AddDEHFiles('-deh');
-  D_AddDEHFiles('-bex');
+  TMainLocalRoutines.D_AddDEHFiles('-deh');
+  TMainLocalRoutines.D_AddDEHFiles('-bex');
 
   printf('Info_CheckStates: Check states tables'#13#10);
   Info_CheckStates;
@@ -2409,7 +2468,7 @@ begin
   SUC_Progress(59);
 
   printf('D_IdentifyGameDirectories: Identify game directories.'#13#10);
-  D_IdentifyGameDirectories;
+  TMainLocalRoutines.D_IdentifyGameDirectories;
 
   SUC_Progress(60);
 
@@ -2506,12 +2565,12 @@ begin
   SUC_Progress(80);
 
   printf('P_Init: Init Playloop state.'#13#10);
-  D_LevelLoader.Initialize;
+  TMainLocalRoutines.D_LevelLoader.Initialize;
 
   SUC_Progress(81);
 
   printf('D_CheckNetGame: Checking network game status.'#13#10);
-  D_NetGame.Start;
+  TMainLocalRoutines.D_NetGame.Start;
 
   SUC_Progress(85);
 
@@ -2572,7 +2631,7 @@ begin
   SUC_Progress(97);
 
   printf('C_Init: Initializing console.'#13#10);
-  D_Console.Initialize;
+  TMainLocalRoutines.D_Console.Initialize;
 
   p := M_CheckParm('-keyboardmode');
   if (p > 0) and (p < myargc - 1) then
@@ -2609,14 +2668,14 @@ begin
   // quit after one demo
     TGameSession.SingleDemo := M_CheckParm('-nosingledemo') = 0;
     G_DeferedPlayDemo(myargv[p + 1]);
-    D_DoomLoop;  // never returns
+    TMainLocalRoutines.D_DoomLoop;  // never returns
   end;
 
   p := M_CheckParm('-timedemo');
   if (p <> 0) and (p < myargc - 1) then
   begin
     G_TimeDemo(myargv[p + 1]);
-    D_DoomLoop;  // never returns
+    TMainLocalRoutines.D_DoomLoop;  // never returns
   end;
 
   p := M_CheckParm('-loadgame');
@@ -2633,7 +2692,7 @@ begin
       D_StartTitle; // start up intro loop
   end;
 
-  D_DoomLoop;  // never returns
+  TMainLocalRoutines.D_DoomLoop;  // never returns
 end;
 
 //==============================================================================
@@ -2641,7 +2700,7 @@ end;
 // D_ShutDown
 //
 //==============================================================================
-procedure D_ShutDown;
+class procedure TMainRoutines.D_ShutDown;
 var
   i: integer;
 begin
@@ -2651,7 +2710,7 @@ begin
   if main_console <> nil then
     main_console.Shutdown;
   printf('P_ShutDown: Shut down Playloop state.'#13#10);
-  D_LevelLoader.ShutDown;
+  TMainLocalRoutines.D_LevelLoader.ShutDown;
   printf('R_ShutDown: Shut down %s refresh daemon.', [strupper(_GAME)]);
   R_ShutDown;
   printf('Info_ShutDownRandom: Shut down randomizers.'#13#10);
@@ -2661,14 +2720,14 @@ begin
   printf('T_ShutDown: Shut down texture manager.'#13#10);
   V_ShutDownDrawTextures;
   printf('SC_ShutDown: Shut down script engine.'#13#10);
-  D_ActorDef.ShutDown;
+  TMainLocalRoutines.D_ActorDef.ShutDown;
   printf('SC_ShutDownGameDefines: Shut down global defines.'#13#10);
-  D_GameDefines.Clear;
+  TMainLocalRoutines.D_GameDefines.Clear;
   // JVAL: PascalScript
   printf('PS_ShutDown: Shut down pascal script compiler.'#13#10);
   PS_ShutDown;
   printf('DEH_ShutDown: Shut down dehacked subsystem.'#13#10);
-  DEH_ShutDown;
+  TDehMainRoutines.DEH_ShutDown;
   printf('Info_ShutDown: Shut down game definition.'#13#10);
   Info_ShutDown;
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);

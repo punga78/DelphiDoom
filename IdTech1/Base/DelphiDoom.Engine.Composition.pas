@@ -65,6 +65,7 @@ uses
   DelphiDoom.Engine.Dehacked.Applier,
   DelphiDoom.Engine.Dehacked.ThingFields,
   deh_base,
+  deh_main,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Iwad.Intf,
   DelphiDoom.Iwad.Games,
@@ -565,7 +566,7 @@ begin
 {$ENDIF}
   // the game fills its defines while it starts (D_FillGameDefines), the preprocessor reads them
   LGameDefines := TScriptGameDefines.Create;
-  D_ConfigureGameDefines(LGameDefines);
+  TMainRoutines.D_ConfigureGameDefines(LGameDefines);
   Result := TScriptTextPreprocessor.Create(TEngineIncludeSource.Create(ALumps), LDirectives,
     LGameDefines, ALog);
 
@@ -619,7 +620,7 @@ begin
       // DEHACKED can change it after the start (END_TEXT_LUMP)
       Result := EndLumpName;
     end, ALumps, AZone, ALog, AShutdown, AScreens);
-  D_ConfigureEndoom(LScreen);
+  TMainRoutines.D_ConfigureEndoom(LScreen);
   G_ConfigureEndoom(LScreen);
 {$IFDEF OPENGL}
   GL_ConfigureEndoom(LScreen);
@@ -658,7 +659,7 @@ var
   LNetGame: IEngineNetGame;
 begin
   LNetGame := TEngineNetGame.Create(AClock, ALog, AGame, AConsole, AEndScreenTick, AShutdown);
-  D_ConfigureNetGame(LNetGame);
+  TMainRoutines.D_ConfigureNetGame(LNetGame);
   G_ConfigureNetGame(LNetGame);
   R_ConfigureNetGame(LNetGame);
   I_ConfigureNetGame(LNetGame);
@@ -793,7 +794,7 @@ begin
   LMapServices.Episodes := nil;
 {$ENDIF}
   LCatalog := TMapInfoFactory.CreateCatalog(LServices);
-  D_ConfigureMapInfo(TEngineMapInfoRecords.Create(
+  TMainRoutines.D_ConfigureMapInfo(TEngineMapInfoRecords.Create(
     TMapInfoFactory.CreateLoader(LTextSource, LTextSource,
       TMapInfoFactory.CreateParser(LMapServices, ALog), LCatalog),
     LCatalog));
@@ -809,6 +810,8 @@ begin
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
   // TEngineDehackedApplier is the class of the game (one unit with this name in each folder).
   // AThingFields knows no field until a game with things of its own fills it (ComposeRadix)
+  // the names of the fields and of the flags: the library is their one source (DEH_Init fills the lists of deh_main)
+  TDehMainRoutines.DEH_ConfigureTokens(TDehackedGames.DataOf(LGame));
   DEH_ConfigureApplier(TEngineDehackedApplier.Create(TDehackedFactory.CreateParser(LGame, ALog, AThingFields),
     AEvaluator));
   DEH_ConfigureActions(TActionsFactory.CreateRegistry);
@@ -971,10 +974,10 @@ begin
       TBlockmapFactory.CreateSlimeTrailRemover, ACommandLine, ALumps, AZone, AShutdown),
     LUdmf, AMusInfo, ARegistry, ARandom, ALumps, AZone);
   G_ConfigureLevel(LLoader);
-  D_ConfigureLevel(LLoader);
+  TMainRoutines.D_ConfigureLevel(LLoader);
 {$IFDEF OPENGL}
   // the GL nodes of the files added at startup (D_AddFile)
-  D_ConfigureGlbsp(LGlbsp);
+  TMainRoutines.D_ConfigureGlbsp(LGlbsp);
 {$ENDIF}
 end;
 
@@ -1054,7 +1057,7 @@ begin
     TConsoleFactory.CreateInputLine(']', AInterpreter, LOutput, TConsoleFactory.CreateHistory,
       TConsoleFactory.CreateCompleter(ARegistry, LVariables)),
     ACommandLine);
-  D_ConfigureConsole(Result);
+  TMainRoutines.D_ConfigureConsole(Result);
 {$IFDEF OPENGL}
   GL_ConfigureConsole(Result);
 {$ELSE}
@@ -1077,7 +1080,7 @@ begin
     TConfigurationFactory.CreateTableStore(ASettings, LFormat), ARegistry, AInterpreter, ACommandLine);
   Result := LDefaults;
   LDefaults.RegisterCommands;
-  D_ConfigureDefaults(Result);
+  TMainRoutines.D_ConfigureDefaults(Result);
   I_ConfigureDefaults(Result);
 end;
 
@@ -1226,7 +1229,7 @@ begin
     TScreenshotFactory.CreateWriter(TPngProvider.Client, TJpegProvider.Client),
     TScreenshotFactory.CreateTargets(TEngineScreenshotFolders.Create(ASaveFileNames)),
     ASaveFileNames);
-  D_ConfigureScreenshot(LScreenshot);
+  TMainRoutines.D_ConfigureScreenshot(LScreenshot);
   G_ConfigureScreenshot(LScreenshot);
   TMenuRoutines.M_ConfigureScreenshot(LScreenshot);
 end;
@@ -1505,7 +1508,7 @@ begin
   LLimits.MinHeight := MINHEIGHT;
   LLimits.MaxWidth := MAXWIDTH;
   LLimits.MaxHeight := MAXHEIGHT;
-  D_ConfigureStartup(
+  TMainRoutines.D_ConfigureStartup(
     TCommandLineFactory.CreateResponseFileExpander(TEngineResponseFileSource.Create, ALog),
     TVideoFactory.CreateScreenSizeResolver(ACommandLine, TVideoFactory.CreateWindowsDisplayMetrics,
       LLimits,
@@ -1598,7 +1601,7 @@ begin
     end,
     APreprocessor, ARegistry, ALumps);
   LLumps := LLumpsObject;
-  D_ConfigureActorDef(LLumps);
+  TMainRoutines.D_ConfigureActorDef(LLumps);
   // the rules of the numbers of the sounds: the table of the game (its own unit in the folder
   // of each game) and the aliases that the ACTORDEF lumps fill
   S_ConfigureSoundNumbers(
@@ -1650,7 +1653,7 @@ begin
   if not TIwadGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Iwad), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of IWADs', [_GAME]);
   LServices := TIwadFactory.CreateWindowsServices(LGame, TEngineIwadOptions.Create);
-  D_ConfigureIwad(LServices.Locator, LServices.Identifier);
+  TMainRoutines.D_ConfigureIwad(LServices.Locator, LServices.Identifier);
 end;
 
 procedure ComposeVoxels(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
@@ -1772,7 +1775,7 @@ begin
   LLumps := TEngineLumps.Create;
   // DelphiDoom is a port of the Doom engine: id Tech 1, at the version of doomdef
   LEngine := TIdTechFactory.CreateDelphiDoom(VERSION);
-  D_Configure(LEngine);
+  TMainRoutines.D_Configure(LEngine);
   ComposeIwad;
   // the command line exists from here on, the arguments are attached by M_InitArgv
   LCommandLine := TCommandLineFactory.CreateQueriedCommandLine;
@@ -1869,7 +1872,7 @@ begin
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
   ComposeStartup(LLog, LCommandLine);
-  D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create(LLumps),
+  TMainRoutines.D_ConfigureAutoLoad(TAutoLoadReader.Create(TEngineAutoLoadLumps.Create(LLumps),
     TEngineAutoLoadSink.Create(LPakContainers), TEngineScannerLog.Create));
   ComposeLevel(LLog, LContext, LTempFiles, LWadServices, LMusInfo, LCommandLine, LSaveFileNames,
     LRegistry, LRandom, LLumps, LZone, LShutdown);

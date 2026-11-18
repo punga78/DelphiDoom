@@ -1228,7 +1228,7 @@ begin
         end
         else
         begin
-          Pplayer_t(thing.player)._message := DEH_GetString('You need a gold key');
+          Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need a gold key');
           S_StartSound(thing, Ord(sfx_oof));
         end;
       end;
@@ -1284,7 +1284,7 @@ begin
         end
         else
         begin
-          Pplayer_t(thing.player)._message := DEH_GetString('You don''t have the key');
+          Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
           S_StartSound(thing, Ord(sfx_oof));
         end;
       end;
@@ -1335,7 +1335,7 @@ begin
         // haleyjd 09/24/10: [STRIFE] S1 Build Stairs Down 16 if Have Chalice
         if not P_PlayerHasItem(thing.player, MT_INV_CHALICE) <> 0 then
         begin
-            Pplayer_t(thing.player)._message := DEH_GetString('You need the chalice!');
+            Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need the chalice!');
             S_StartSound(thing, Ord(sfx_oof));
         end
         else if EV_BuildStairs(line, buildDown16) <> 0 then
@@ -1365,7 +1365,7 @@ begin
         // haleyjd 09/25/10: S1 Lower Floor Blue Crystal
         if not Pplayer_t(thing.player).cards[Ord(key_BlueCrystalKey)] then
         begin
-          Pplayer_t(thing.player)._message := DEH_GetString('You need the Blue Crystal');
+          Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need the Blue Crystal');
           S_StartSound(thing, Ord(sfx_oof));
         end
         else if EV_DoFloor(line, lowerFloor) <> 0 then
@@ -1377,7 +1377,7 @@ begin
         // haleyjd 09/25/10: S1 Lower Floor Red Crystal
         if not Pplayer_t(thing.player).cards[Ord(key_RedCrystalKey)] then
         begin
-          Pplayer_t(thing.player)._message := DEH_GetString('You need the Red Crystal');
+          Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need the Red Crystal');
           S_StartSound(thing, Ord(sfx_oof));
         end
         else if EV_DoFloor(line, lowerFloor) <> 0 then
@@ -1392,7 +1392,7 @@ begin
           P_GiveItemToPlayer(thing.player, Ord(SPR_TOKN), MT_TOKEN_STAMINA);
           P_GiveItemToPlayer(thing.player, Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
           P_ChangeSwitchTexture(line, false);
-          Pplayer_t(thing.player)._message := DEH_GetString('Congratulations! You have completed the training area.');
+          Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('Congratulations! You have completed the training area.');
         end;
       end;
 
@@ -1419,7 +1419,7 @@ begin
         P_GiveVoiceObjective('VOC70', 'LOG70', 0);
 
         // haleyjd: Strife used sprintf here, not a direct set.
-        Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message from BlackBird...');
+        Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('Incoming Message from BlackBird...');
 
       end;
 
@@ -1430,7 +1430,7 @@ begin
         begin
           // BUG: doesn't make sfx_oof sound like all other message-
           // giving door types. I highly doubt this was intentional.
-          Pplayer_t(thing.player)._message := DEH_GetString('That doesn''t seem to work!');
+          Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('That doesn''t seem to work!');
           S_StartSound(thing, Ord(sfx_oof));  // JVAL: added sound
         end
         else if EV_DoDoor(line, vld_normal) <> 0 then

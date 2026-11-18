@@ -1453,7 +1453,7 @@ begin
       begin
         I_Warning('G_DoLoadLevel(): Null player actor, is player start missing?'#13#10);
         TGameSession.GameState := GS_DEMOSCREEN;
-        D_StartTitle;
+        TMainRoutines.D_StartTitle;
         exit;
       end;
 
@@ -1765,7 +1765,7 @@ begin
       end;
     GS_DEMOSCREEN:
       begin
-        D_PageTicker;
+        TMainRoutines.D_PageTicker;
       end;
   end;
 end;
@@ -3206,7 +3206,7 @@ begin
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
     TGameSession.ResetForNewGame;
-    D_AdvanceDemo;
+    TMainRoutines.D_AdvanceDemo;
     result := true;
     exit;
   end;

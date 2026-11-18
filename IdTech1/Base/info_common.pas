@@ -447,7 +447,7 @@ var
   i: integer;
 begin
   for i := 0 to numstates - 1 do
-    P_CheckStateArgs(@states[i]);
+    TCommonStateParamActions.P_CheckStateArgs(@states[i]);
 end;
 
 //==============================================================================

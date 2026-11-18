@@ -839,7 +839,7 @@ var
 begin
   damage := 3 + (P_Random and 3);
   angle := player.mo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_SNOUTPUFF;
   PuffSpawned := nil;
@@ -876,7 +876,7 @@ class function TWeaponLocalActions.HAMMER_RANGE(const p: Pplayer_t): fixed_t;
 var
   mrange: integer;
 begin
-  mrange := P_GetPlayerMeleeRange(p);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(p);
   result := (mrange + mrange div 2);
 end;
 
@@ -919,7 +919,7 @@ begin
       P_AdjustPlayerAngle(pmo);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
       begin
-        P_ThrustMobj(TMapAim.LineTarget, angle, power);
+        TCommonMovementActions.P_ThrustMobj(TMapAim.LineTarget, angle, power);
       end;
       pmo.special1 := 0; // Don't throw a hammer
       hammerdone;
@@ -933,7 +933,7 @@ begin
       P_AdjustPlayerAngle(pmo);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
       begin
-        P_ThrustMobj(TMapAim.LineTarget, angle, power);
+        TCommonMovementActions.P_ThrustMobj(TMapAim.LineTarget, angle, power);
       end;
       pmo.special1 := 0; // Don't throw a hammer
       hammerdone;
@@ -1094,16 +1094,16 @@ begin
     zigZag := P_Random;
     if ((zigZag > 128) and (actor.special1 < 2)) or (actor.special1 < -2) then
     begin
-      P_ThrustMobj(actor, actor.angle + ANG90, ZAGSPEED);
+      TCommonMovementActions.P_ThrustMobj(actor, actor.angle + ANG90, ZAGSPEED);
       if cMo <> nil then
-        P_ThrustMobj(cMo, actor.angle + ANG90, ZAGSPEED);
+        TCommonMovementActions.P_ThrustMobj(cMo, actor.angle + ANG90, ZAGSPEED);
       inc(actor.special1);
     end
     else
     begin
-      P_ThrustMobj(actor, actor.angle - ANG90, ZAGSPEED);
+      TCommonMovementActions.P_ThrustMobj(actor, actor.angle - ANG90, ZAGSPEED);
       if cMo <> nil then
-        P_ThrustMobj(cMo, cMo.angle - ANG90, ZAGSPEED);
+        TCommonMovementActions.P_ThrustMobj(cMo, cMo.angle - ANG90, ZAGSPEED);
       dec(actor.special1);
     end;
 
@@ -1125,7 +1125,7 @@ begin
       actor.angle := R_PointToAngle2(actor.x, actor.y, target.x, target.y);
       actor.momx := 0;
       actor.momy := 0;
-      P_ThrustMobj(actor, actor.angle, _SHR1(actor.info.speed));
+      TCommonMovementActions.P_ThrustMobj(actor, actor.angle, _SHR1(actor.info.speed));
     end;
   end;
 end;
@@ -1458,7 +1458,7 @@ begin
   power := 2 * FRACUNIT;
   PuffType := MT_PUNCHPUFF;
   d_an := 0;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   for i := 0 to 15 do
   begin
     angle := pmo.angle + d_an;
@@ -1474,7 +1474,7 @@ begin
       end;
       P_LineAttack(pmo, angle, 2 * mrange, slope, damage);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
-        P_ThrustMobj(TMapAim.LineTarget, angle, power);
+        TCommonMovementActions.P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       punchdone;
       exit;
@@ -1492,7 +1492,7 @@ begin
       end;
       P_LineAttack(pmo, angle, 2 * mrange, slope, damage);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
-        P_ThrustMobj(TMapAim.LineTarget, angle, power);
+        TCommonMovementActions.P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       punchdone;
       exit;
@@ -1519,7 +1519,7 @@ class function TWeaponLocalActions.AXERANGE(const p: Pplayer_t): fixed_t;
 var
   mrange: integer;
 begin
-  mrange := P_GetPlayerMeleeRange(p);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(p);
   result := 10 * mrange div 4;
 end;
 
@@ -1576,7 +1576,7 @@ begin
     begin
       P_LineAttack(pmo, angle, TWeaponLocalActions.AXERANGE(player), slope, damage);
       if (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) or (TMapAim.LineTarget.player <> nil) then
-        P_ThrustMobj(TMapAim.LineTarget, angle, power);
+        TCommonMovementActions.P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       inc(useMana);
       axedone;
@@ -1588,7 +1588,7 @@ begin
     begin
       P_LineAttack(pmo, angle, TWeaponLocalActions.AXERANGE(player), slope, damage);
       if TMapAim.LineTarget.flags and MF_COUNTKILL <> 0 then
-        P_ThrustMobj(TMapAim.LineTarget, angle, power);
+        TCommonMovementActions.P_ThrustMobj(TMapAim.LineTarget, angle, power);
       P_AdjustPlayerAngle(pmo);
       inc(useMana);
       axedone;
@@ -1600,7 +1600,7 @@ begin
   pmo.special1 := 0;
 
   angle := pmo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(pmo, angle, mrange);
   P_LineAttack(pmo, angle, mrange, slope, damage);
 
@@ -1624,7 +1624,7 @@ begin
   damage := 25 + (P_Random and 15);
   PuffType := MT_HAMMERPUFF;
   d_an := 0;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   for i := 0 to 15 do
   begin
     angle := player.mo.angle + d_an;
@@ -1673,7 +1673,7 @@ begin
   damage := 20 + (P_Random and 15);
   PuffType := MT_CSTAFFPUFF;
   d_an := 0;
-  mrange := 3 * P_GetPlayerMeleeRange(player) div 2;
+  mrange := 3 * TCommonGameDependentActions.P_GetPlayerMeleeRange(player) div 2;
   for i := 0 to 2 do
   begin
     angle := pmo.angle + d_an;
@@ -1928,7 +1928,7 @@ begin
     end;
     mo.z := actor.z;
     mo.angle := actor.angle + (ANG45 + ANG45 div 2) - d_an;
-    P_ThrustMobj(mo, mo.angle, mo.info.speed);
+    TCommonMovementActions.P_ThrustMobj(mo, mo.angle, mo.info.speed);
     mo.target := actor.target;
     mo.args[0] := 10; // initial turn value
     mo.args[1] := 0; // initial look angle
@@ -2061,7 +2061,7 @@ begin
     exit;
   end;
 
-  dir := P_FaceMobj(actor, target, delta);
+  dir := TCommonMovementActions.P_FaceMobj(actor, target, delta);
   if delta > thresh then
   begin
     delta := _SHR1(delta);
@@ -2302,7 +2302,7 @@ begin
 
   damage := 90 + (P_Random and 15);
   angle := pmo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   for i := 0 to 15 do
   begin
     P_AimLineAttack(pmo, angle, mrange);

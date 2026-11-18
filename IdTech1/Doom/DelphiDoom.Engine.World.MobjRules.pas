@@ -397,9 +397,9 @@ begin
       delta := (mo.target.z + _SHR1(mo.height)) - mo.z;
 
       if (delta < 0) and (dist < -(delta * 3)) then
-        mo.z := mo.z - P_FloatSpeed(mo)
+        mo.z := mo.z - TCommonMovementActions.P_FloatSpeed(mo)
       else if (delta > 0) and (dist < (delta * 3)) then
-        mo.z := mo.z + P_FloatSpeed(mo);
+        mo.z := mo.z + TCommonMovementActions.P_FloatSpeed(mo);
     end;
   end;
 end;
@@ -884,9 +884,9 @@ begin
   if th.flags3_ex and MF3_EX_BLOODIGNOREDAMAGE = 0 then
   begin
     if (damage <= 12) and (damage >= 9) then
-      P_SetMobjRelativeState(th, 1)
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 1)
     else if damage < 9 then
-      P_SetMobjRelativeState(th, 2);
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 2);
   end;
 end;
 
@@ -911,9 +911,9 @@ begin
   if th.flags3_ex and MF3_EX_BLOODIGNOREDAMAGE = 0 then
   begin
     if (damage <= 12) and (damage >= 9) then
-      P_SetMobjRelativeState(th, 1)
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 1)
     else if damage < 9 then
-      P_SetMobjRelativeState(th, 2);
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 2);
   end;
 end;
 
