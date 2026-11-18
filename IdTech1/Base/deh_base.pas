@@ -644,9 +644,9 @@ begin
       inc(cnt);
     end;
 
-  cnt := cnt + PAK_StringIterator(lumpname, DEH_ParseText);
-  cnt := cnt + PAK_StringIterator(lumpname + '.DEH', DEH_ParseText);
-  cnt := cnt + PAK_StringIterator(lumpname + '.BEX', DEH_ParseText);
+  cnt := cnt + TPakRoutines.PAK_StringIterator(lumpname, DEH_ParseText);
+  cnt := cnt + TPakRoutines.PAK_StringIterator(lumpname + '.DEH', DEH_ParseText);
+  cnt := cnt + TPakRoutines.PAK_StringIterator(lumpname + '.BEX', DEH_ParseText);
 
   result := cnt > 0;
 end;

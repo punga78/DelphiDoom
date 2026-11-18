@@ -1903,7 +1903,7 @@ begin
   begin
     name := RX_SoundName(snd);
     if (name <> '') and (TGameSession.Players[radixplayer].mo <> nil) then
-      S_StartSound(RX_PilotMessageOrigin(radixplayer, @TGameSession.Players[radixplayer]), name);
+      TSoundRoutines.S_StartSound(RX_PilotMessageOrigin(radixplayer, @TGameSession.Players[radixplayer]), name);
   end;
   nextsoundtime := TTickState.LevelTime + RX_SoundDuration(snd) + 1;
 end;

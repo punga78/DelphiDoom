@@ -99,11 +99,11 @@ begin
   FCountdownStep := Ord(AStep);
   FCountdownTic := TTickState.LevelTime;
   case AStep of
-    TRacingCountdownStep.Engines: begin Say(SSpeedStartEngines); S_StartSound(nil, 'speedhaste/STARTECH.RAW'); end;
-    TRacingCountdownStep.Three: begin Say('3'); S_StartSound(nil, 'speedhaste/THREE.RAW'); end;
-    TRacingCountdownStep.Two: begin Say('2'); S_StartSound(nil, 'speedhaste/TWO.RAW'); end;
-    TRacingCountdownStep.One: begin Say('1'); S_StartSound(nil, 'speedhaste/ONE.RAW'); end;
-    TRacingCountdownStep.Go: begin Say(SSpeedGo); S_StartSound(nil, 'speedhaste/GO.RAW'); end;
+    TRacingCountdownStep.Engines: begin Say(SSpeedStartEngines); TSoundRoutines.S_StartSound(nil, 'speedhaste/STARTECH.RAW'); end;
+    TRacingCountdownStep.Three: begin Say('3'); TSoundRoutines.S_StartSound(nil, 'speedhaste/THREE.RAW'); end;
+    TRacingCountdownStep.Two: begin Say('2'); TSoundRoutines.S_StartSound(nil, 'speedhaste/TWO.RAW'); end;
+    TRacingCountdownStep.One: begin Say('1'); TSoundRoutines.S_StartSound(nil, 'speedhaste/ONE.RAW'); end;
+    TRacingCountdownStep.Go: begin Say(SSpeedGo); TSoundRoutines.S_StartSound(nil, 'speedhaste/GO.RAW'); end;
   end;
 end;
 
@@ -119,7 +119,7 @@ begin
   begin
     FLapRecordTic := TTickState.LevelTime;
     Say(SSpeedLapRecord);
-    S_StartSound(nil, 'speedhaste/LAPREC.RAW');
+    TSoundRoutines.S_StartSound(nil, 'speedhaste/LAPREC.RAW');
   end;
 end;
 
@@ -130,13 +130,13 @@ begin
   begin
     FOutcome := soWon;
     Say(SSpeedYouWin);
-    S_StartSound(nil, 'speedhaste/UNBELI.RAW');
+    TSoundRoutines.S_StartSound(nil, 'speedhaste/UNBELI.RAW');
   end
   else
   begin
     FOutcome := soLost;
     Say(SSpeedGameOver);
-    S_StartSound(nil, 'speedhaste/GAMEOVER.RAW');
+    TSoundRoutines.S_StartSound(nil, 'speedhaste/GAMEOVER.RAW');
   end;
   FLog.Info(Format('Speed Haste: race over at tic %d, position %d, total time %d tics'#13#10,
     [TTickState.LevelTime, AScore.RacePosition, AScore.TotalTime]));
@@ -144,7 +144,7 @@ end;
 
 procedure TEngineSpeedRaceEvents.Collision(AKeyA, AKeyB: Cardinal);
 begin
-  S_StartSound(FFindCar(AKeyA), 'speedhaste/CRASH.RAW');
+  TSoundRoutines.S_StartSound(FFindCar(AKeyA), 'speedhaste/CRASH.RAW');
 end;
 
 procedure TEngineSpeedRaceEvents.LeaveLevel;

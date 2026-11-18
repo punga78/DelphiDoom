@@ -938,7 +938,7 @@ begin
   if (actor.target = nil) or (actor.target._type = Ord(MT_SKULL)) then
     exit;
 
-  S_StartSound(actor, actor.info.attacksound);
+  TSoundRoutines.S_StartSound(actor, actor.info.attacksound);
   A_FaceTarget(actor);
   damage := (P_Random mod 8 + 1) * actor.info.damage;
   P_DamageMobj(actor.target, actor, actor, damage);

@@ -1074,15 +1074,15 @@ begin
   TMobjGameRules.ReleaseSectorList;
 
   if mobj.flags4_ex and MF4_EX_ALWAYSFINISHSOUND <> 0 then
-    S_UnlinkSound(mobj)
+    TSoundRoutines.S_UnlinkSound(mobj)
   else if mobj.flags4_ex and MF4_EX_NEVERFINISHSOUND <> 0 then
-    S_StopSound(mobj)
+    TSoundRoutines.S_StopSound(mobj)
   // From Woof: [FG] removed map objects may finish their sounds
   else if full_sounds then
-    S_UnlinkSound(mobj)
+    TSoundRoutines.S_UnlinkSound(mobj)
   else
     // stop any playing sound
-    S_StopSound(mobj);
+    TSoundRoutines.S_StopSound(mobj);
 
   P_RemoveMobjCustomParams(mobj.customparams);
 

@@ -219,7 +219,7 @@ begin
     {$IFDEF HEXEN}
     S_StopSequence(Pmobj_t(@floor.sector.soundorg));
     {$ELSE}
-    S_StopSound(@floor.sector.soundorg);
+    TSoundRoutines.S_StopSound(@floor.sector.soundorg);
     {$ENDIF}
     if floor.delayTotal <> 0 then
       floor.delayTotal := 0;
@@ -453,7 +453,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@floor.sector.soundorg), Ord(SEQ_PLATFORM) + Ord(floor.sector.seqType));  // JVAL SOS
     {$ELSE}
-    S_StartSound(@floor.sector.soundorg, floor.sector.seqType);
+    TSoundRoutines.S_StartSound(@floor.sector.soundorg, floor.sector.seqType);
     {$ENDIF}
   end;
 end;
@@ -620,7 +620,7 @@ begin
   {$IFDEF HEXEN}
   S_StartSequence(Pmobj_t(@sec.soundorg), Ord(SEQ_PLATFORM) + Ord(sec.seqType));
   {$ELSE}
-  S_StartSound(@sec.soundorg, sec.seqType);
+  TSoundRoutines.S_StartSound(@sec.soundorg, sec.seqType);
   {$ENDIF}
 
   //
@@ -743,7 +743,7 @@ begin
     {$IFDEF HEXEN}
     S_StopSequence(Pmobj_t(@pillar.sector.soundorg));
     {$ELSE}
-    S_StopSound(@pillar.sector.soundorg);
+    TSoundRoutines.S_StopSound(@pillar.sector.soundorg);
     {$ENDIF}
     P_TagFinished(pillar.sector.tag);
     P_RemoveThinker(@pillar.thinker);
@@ -815,7 +815,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@pillar.sector.soundorg), Ord(SEQ_PLATFORM) + Ord(pillar.sector.seqType));
     {$ELSE}
-    S_StartSound(@pillar.sector.soundorg, pillar.sector.seqType);
+    TSoundRoutines.S_StartSound(@pillar.sector.soundorg, pillar.sector.seqType);
     {$ENDIF}
   end;
 end;
@@ -884,7 +884,7 @@ begin
     {$IFDEF HEXEN}
     S_StartSequence(Pmobj_t(@pillar.sector.soundorg), Ord(SEQ_PLATFORM) + Ord(pillar.sector.seqType));
     {$ELSE}
-    S_StartSound(@pillar.sector.soundorg, pillar.sector.seqType);
+    TSoundRoutines.S_StartSound(@pillar.sector.soundorg, pillar.sector.seqType);
     {$ENDIF}
   end;
 end;
@@ -921,7 +921,7 @@ begin
     {$IFDEF HEXEN}
     S_StopSequence(Pmobj_t(@floor.sector.soundorg));
     {$ELSE}
-    S_StopSound(@floor.sector.soundorg);
+    TSoundRoutines.S_StopSound(@floor.sector.soundorg);
     {$ENDIF}
     floor.sector.specialdata := nil;
     P_TagFinished(floor.sector.tag);

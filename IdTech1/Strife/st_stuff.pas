@@ -976,7 +976,7 @@ begin
         if (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0') > 35 then
             plyr._message := STSTR_NOMUS
         else
-          S_ChangeMusic(musnum, true);
+          TSoundRoutines.S_ChangeMusic(musnum, true);
       end
       else if check_cheat(@cheat_stealth, Chr(ev.data1)) then
       begin

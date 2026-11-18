@@ -846,7 +846,7 @@ var
 {$ENDIF}
 begin
 {$IFNDEF OPENGL}
-  HU_DoFPSStuff;
+  THudRoutines.HU_DoFPSStuff;
 {$ENDIF}
 
   if nodrawers then
@@ -886,7 +886,7 @@ begin
 {$ENDIF}
 
   if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
-    HU_Erase;
+    THudRoutines.HU_Erase;
 
   // do buffered drawing
   case TGameSession.GameState of
@@ -974,7 +974,7 @@ begin
   end;
 
   if drawhu then
-    HU_Drawer;
+    THudRoutines.HU_Drawer;
 
   nowtime := I_GetTime;
 
@@ -1007,7 +1007,7 @@ begin
     begin
       TRendererDraw.R_DrawViewBorder;
       if drawhu then
-        HU_Drawer;
+        THudRoutines.HU_Drawer;
     end;
 
     // JVAL: Overlay Drawer before menus
@@ -1060,7 +1060,7 @@ begin
     TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     TMainLocalRoutines.D_Console.Draw;         // Console draw on top of wipes and menus
     TMainLocalRoutines.D_FinishUpdate;   // page flip or blit buffer
-    HU_DoFPSStuff;
+    THudRoutines.HU_DoFPSStuff;
   until done;
   videomode := oldvideomode;
   wipedisplay := false;
@@ -1069,7 +1069,7 @@ end;
 {$IFDEF OPENGL}
 begin
   I_StartUpdate;
-  HU_DoFPSStuff;
+  THudRoutines.HU_DoFPSStuff;
   if firstinterpolation then
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
   if TGameSession.GameState = GS_LEVEL then
@@ -1136,7 +1136,7 @@ begin
       I_SetNormalCPUPriority;
 {$ENDIF}
 
-    S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
+    TSoundRoutines.S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
 
     D_RunNotifications;
 
@@ -1243,7 +1243,7 @@ begin
         pagetic := 280;
         TGameSession.GameState := GS_DEMOSCREEN;
         pagename := pg_TITLE;
-        S_StartMusic(Ord(mus_hexen));
+        TSoundRoutines.S_StartMusic(Ord(mus_hexen));
       end;
     1:
       begin
@@ -1343,7 +1343,7 @@ begin
       exit;
     try
       wadfiles.Add(fname2);
-      PAK_AddFile(fname2);
+      TPakRoutines.PAK_AddFile(fname2);
       if strupper(fname(fname2)) = 'HEXDD.WAD' then
         hexdd_pack := true
       else
@@ -1414,7 +1414,7 @@ var
 begin
   names := TCommandLineFileList.Split(fnames);
   for i := 0 to Length(names) - 1 do
-    PAK_AddFile(names[i]);
+    TPakRoutines.PAK_AddFile(names[i]);
 end;
 
 var
@@ -1648,7 +1648,7 @@ begin
   try
 
     for i := 0 to files.Count - 1 do
-      if not PAK_AddFile(files[i]) then
+      if not TPakRoutines.PAK_AddFile(files[i]) then
         I_Warning('PAK_AddFile(): %s could not be added to PAK file system.'#13#10, [files[i]]);
 
   finally
@@ -1731,7 +1731,7 @@ begin
     inc(p);
     while (p < myargc) and (myargv[p][1] <> '-') do
     begin
-      PAK_AddFile(myargv[p]);
+      TPakRoutines.PAK_AddFile(myargv[p]);
       inc(p);
     end;
   end;
@@ -1782,7 +1782,7 @@ begin
     wadnames[i] := strupper(fname(wadfiles[i]));
   gamedirectorystring := TPakGameDirectories.Compose(gamedirectorystring, wadnames);
 
-  gamedirectories := PAK_GetDirectoryListFromString(gamedirectorystring);
+  gamedirectories := TPakRoutines.PAK_GetDirectoryListFromString(gamedirectorystring);
   for i := 0 to gamedirectories.Count - 1 do
   begin
     wad := gamedirectories[i];
@@ -2188,11 +2188,11 @@ begin
   SUC_Progress(9);
 
   printf('PAK_InitFileSystem: Init PAK/ZIP/PK3/PK4 files.'#13#10);
-  PAK_InitFileSystem;
+  TPakRoutines.PAK_InitFileSystem;
 
   SUC_Progress(10);
 
-  PAK_LoadPendingPaks;
+  TPakRoutines.PAK_LoadPendingPaks;
 
   SUC_Progress(11);
 
@@ -2310,7 +2310,7 @@ begin
     begin
       modifiedgame := true;
       externalpakspresent := true;
-      PAK_AddFile(myargv[p]);
+      TPakRoutines.PAK_AddFile(myargv[p]);
     end;
   end;
 
@@ -2575,7 +2575,7 @@ begin
   SUC_Progress(85);
 
   printf('S_Init: Setting up sound.'#13#10);
-  S_Init(snd_SfxVolume, snd_MusicVolume);
+  TSoundRoutines.S_Init(snd_SfxVolume, snd_MusicVolume);
 
   SUC_Progress(89);
 
@@ -2588,7 +2588,7 @@ begin
   S_InitSequenceScript;
 
   printf('HU_Init: Setting up heads up display.'#13#10);
-  HU_Init;
+  THudRoutines.HU_Init;
 
   SUC_Progress(91);
 
@@ -2731,7 +2731,7 @@ begin
   printf('Info_ShutDown: Shut down game definition.'#13#10);
   Info_ShutDown;
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);
-  PAK_ShutDown;
+  TPakRoutines.PAK_ShutDown;
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);

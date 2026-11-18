@@ -109,7 +109,7 @@ begin
           mo.momx := (P_Random - P_Random) * 256;
           mo.momy := (P_Random - P_Random) * 256;
           mo.momz := 2 * FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_gloop));
+          TSoundRoutines.S_StartSound(mo, Ord(sfx_gloop));
         end;
         result := FLOOR_WATER;
         exit;
@@ -121,7 +121,7 @@ begin
           P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASPLASH));
           mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASMOKE));
           mo.momz := FRACUNIT + (P_Random * 128);
-          S_StartSound(mo, Ord(sfx_burn));
+          TSoundRoutines.S_StartSound(mo, Ord(sfx_burn));
         end;
         result := FLOOR_LAVA;
         exit;
@@ -136,7 +136,7 @@ begin
           mo.momx := (P_Random - P_Random) * 256;
           mo.momy := (P_Random - P_Random) * 256;
           mo.momz := FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_sgloop));
+          TSoundRoutines.S_StartSound(mo, Ord(sfx_sgloop));
         end;
         result := FLOOR_SLUDGE;
         exit;
@@ -151,7 +151,7 @@ begin
           mo.momx := (P_Random - P_Random) * 256;
           mo.momy := (P_Random - P_Random) * 256;
           mo.momz := FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, TMobjGameRules.NukageSplashSound);
+          TSoundRoutines.S_StartSound(mo, TMobjGameRules.NukageSplashSound);
         end;
         result := FLOOR_NUKAGE;
         exit;

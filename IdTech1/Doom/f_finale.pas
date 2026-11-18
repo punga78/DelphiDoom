@@ -249,7 +249,7 @@ begin
 
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.intermusicnum > 0) then
   begin
-    S_ChangeMusic(TGameSession.GameMapInfo.intermusicnum, true);
+    TSoundRoutines.S_ChangeMusic(TGameSession.GameMapInfo.intermusicnum, true);
     mus_changed := true;
   end;
 
@@ -263,7 +263,7 @@ begin
     retail:
       begin
         if not mus_changed then
-          S_ChangeMusic(Ord(mus_victor), true);
+          TSoundRoutines.S_ChangeMusic(Ord(mus_victor), true);
         case TGameSession.GameEpisode of
           1:
             begin
@@ -293,7 +293,7 @@ begin
     commercial:
       begin
         if not mus_changed then
-          S_ChangeMusic(Ord(mus_read_m), true);
+          TSoundRoutines.S_ChangeMusic(Ord(mus_read_m), true);
         case TGameSession.GameMap of
           6:
             begin
@@ -362,7 +362,7 @@ begin
   else
     begin
       if not mus_changed then
-        S_ChangeMusic(Ord(mus_read_m), true);
+        TSoundRoutines.S_ChangeMusic(Ord(mus_read_m), true);
       finaleflat := 'F_SKY1'; // Not used anywhere else.
       finaletext := C1TEXT;   // FIXME - other text, music?
     end;
@@ -426,7 +426,7 @@ begin
       finalestage := 1;
       wipegamestate := -1;  // force a wipe
       if TGameSession.GameMapInfo.endpic = '$BUNNY' then
-        S_StartMusic(Ord(mus_bunny))
+        TSoundRoutines.S_StartMusic(Ord(mus_bunny))
       else if TGameSession.GameMapInfo.endpic = '!' then
         using_FMI := false;
     end;
@@ -492,7 +492,7 @@ begin
       finalestage := 1;
       wipegamestate := -1;    // force a wipe
       if TGameSession.GameEpisode = 3 then
-        S_StartMusic(Ord(mus_bunny));
+        TSoundRoutines.S_StartMusic(Ord(mus_bunny));
     end;
   end;
 end;
@@ -597,7 +597,7 @@ begin
   castframes := 0;
   castonmelee := 0;
   castattacking := false;
-  S_ChangeMusic(Ord(mus_evil), true);
+  TSoundRoutines.S_ChangeMusic(Ord(mus_evil), true);
 end;
 
 //==============================================================================
@@ -622,7 +622,7 @@ begin
     if castorder[castnum].name = '' then
       castnum := 0;
     if mobjinfo[Ord(castorder[castnum]._type)].seesound <> 0 then
-      S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].seesound);
+      TSoundRoutines.S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].seesound);
     caststate := @states[mobjinfo[Ord(castorder[castnum]._type)].seestate];
     castframes := 0;
   end
@@ -675,7 +675,7 @@ begin
       sfx := 0;
     end;
     if sfx <> 0 then
-      S_StartSound(nil, sfx);
+      TSoundRoutines.S_StartSound(nil, sfx);
   end;
 
   if castframes = 12 then
@@ -738,7 +738,7 @@ begin
   castframes := 0;
   castattacking := false;
   if mobjinfo[Ord(castorder[castnum]._type)].deathsound <> 0 then
-    S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].deathsound);
+    TSoundRoutines.S_StartSound(nil, mobjinfo[Ord(castorder[castnum]._type)].deathsound);
 
   result := true;
 end;
@@ -935,7 +935,7 @@ begin
         stage := 6;
       if stage > laststage then
       begin
-        S_StartSound(nil, Ord(sfx_pistol));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
         laststage := stage;
       end;
 

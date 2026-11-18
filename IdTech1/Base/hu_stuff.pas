@@ -29,7 +29,6 @@
 
 {$I Doom32.inc}
 
-
 unit hu_stuff;
 
 interface
@@ -104,90 +103,6 @@ const
   HU_MSGTIMEOUT = 4 * TICRATE;
 {$ENDIF}
 
-//==============================================================================
-//
-// HU_Configure
-//
-// The heads-up display is IdTech1\Hud (the model) and DelphiDoom.Engine.Hud.* (the
-// drawing): ComposeEngine gives them here. Without it HU_Init stops with I_Error.
-//
-//==============================================================================
-procedure HU_Configure(const AHeadsUp: IHeadsUp; const AScreen: IHudScreen);
-
-//==============================================================================
-// HU_Init
-//
-// HEADS UP TEXT
-//
-//==============================================================================
-procedure HU_Init;
-
-//==============================================================================
-//
-// HU_Start
-//
-//==============================================================================
-procedure HU_Start;
-
-//==============================================================================
-//
-// HU_Responder
-//
-//==============================================================================
-function HU_Responder(ev: Pevent_t): boolean;
-
-//==============================================================================
-//
-// HU_Ticker
-//
-//==============================================================================
-procedure HU_Ticker;
-
-//==============================================================================
-//
-// HU_Drawer
-//
-//==============================================================================
-procedure HU_Drawer;
-
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-{$IFDEF OPENGL}
-
-//==============================================================================
-//
-// HU_Height
-//
-//==============================================================================
-function HU_Height: integer;
-{$ENDIF}
-
-{$ENDIF}
-{$IFDEF STRIFE}
-
-//==============================================================================
-//
-// HU_DrawYellowText
-//
-// hu_lib.pas gives HUlib_drawYellowText to it
-//
-//==============================================================================
-procedure HU_DrawYellowText(x, y: integer; const txt: string; const scn: integer);
-{$ENDIF}
-
-//==============================================================================
-//
-// HU_dequeueChatChar
-//
-//==============================================================================
-function HU_dequeueChatChar: char;
-
-//==============================================================================
-//
-// HU_Erase
-//
-//==============================================================================
-procedure HU_Erase;
-
 var
   hu_font: array[0..HU_FONTSIZE - 1] of Ppatch_t;
 {$IF DEFINED(HERETIC)}
@@ -260,36 +175,126 @@ var
 var
   shiftxform: array[0..127] of Char;
 
-//==============================================================================
-//
-// HU_DoFPSStuff
-//
-//==============================================================================
-procedure HU_DoFPSStuff;
-
-//==============================================================================
-//
-// HU_FPS
-//
-//==============================================================================
-function HU_FPS: integer;
-
 var
   drawfps: boolean;
   drawcrosshair: boolean;
 {$IF DEFINED(DOOM)}
   amdrawstats: boolean;
-{$ELSEIF DEFINED(STRIFE)}
-{$ELSE}
-
-//==============================================================================
-//
-// HU_TITLE
-//
-//==============================================================================
-function HU_TITLE: string;
 {$ENDIF}
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  THudRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // HU_Configure
+    //
+    // The heads-up display is IdTech1\Hud (the model) and DelphiDoom.Engine.Hud.* (the
+    // drawing): ComposeEngine gives them here. Without it HU_Init stops with I_Error.
+    //
+    //==============================================================================
+    class procedure HU_Configure(const AHeadsUp: IHeadsUp; const AScreen: IHudScreen); static;
+
+    //==============================================================================
+    // HU_Init
+    //
+    // HEADS UP TEXT
+    //
+    //==============================================================================
+    class procedure HU_Init; static;
+
+    //==============================================================================
+    //
+    // HU_Start
+    //
+    //==============================================================================
+    class procedure HU_Start; static;
+
+    //==============================================================================
+    //
+    // HU_Responder
+    //
+    //==============================================================================
+    class function HU_Responder(ev: Pevent_t): boolean; static;
+
+    //==============================================================================
+    //
+    // HU_Ticker
+    //
+    //==============================================================================
+    class procedure HU_Ticker; static;
+
+    //==============================================================================
+    //
+    // HU_Drawer
+    //
+    //==============================================================================
+    class procedure HU_Drawer; static;
+
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+{$IFDEF OPENGL}
+    //==============================================================================
+    //
+    // HU_Height
+    //
+    //==============================================================================
+    class function HU_Height: integer; static;
+
+{$ENDIF}
+{$ENDIF}
+{$IFDEF STRIFE}
+    //==============================================================================
+    //
+    // HU_DrawYellowText
+    //
+    // hu_lib.pas gives HUlib_drawYellowText to it
+    //
+    //==============================================================================
+    class procedure HU_DrawYellowText(x, y: integer; const txt: string; const scn: integer); static;
+
+{$ENDIF}
+
+    //==============================================================================
+    //
+    // HU_dequeueChatChar
+    //
+    //==============================================================================
+    class function HU_dequeueChatChar: char; static;
+
+    //==============================================================================
+    //
+    // HU_Erase
+    //
+    //==============================================================================
+    class procedure HU_Erase; static;
+
+    //==============================================================================
+    //
+    // HU_DoFPSStuff
+    //
+    //==============================================================================
+    class procedure HU_DoFPSStuff; static;
+
+    //==============================================================================
+    //
+    // HU_FPS
+    //
+    //==============================================================================
+    class function HU_FPS: integer; static;
+
+    //==============================================================================
+    //
+    // HU_TITLE
+    //
+    //==============================================================================
+    class function HU_TITLE: string; static;
+  end;
+
+
 implementation
 
 uses
@@ -339,12 +344,32 @@ var
   GHeadsUp: IHeadsUp = nil;
   GScreen: IHudScreen = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  THudLocalRoutines = class sealed
+  public
+    class procedure HU_CheckConfigured; static;
+    class procedure HU_CmdFPS; static;
+    class procedure HU_CmdPlayerMessage(const parm1, parm2: string); static;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN) OR DEFINED(STRIFE))}
+    class function HU_TITLE2: string; static;
+    class function HU_TITLEP: string; static;
+    class function HU_TITLET: string; static;
+{$ENDIF}
+    class function HU_TITLEY: integer; static;
+    class function HU_LEVELTIMEY: integer; static;
+    class function HU_INPUTX: integer; static;
+    class function HU_INPUTY: integer; static;
+  end;
 //==============================================================================
 //
 // HU_Configure
 //
 //==============================================================================
-procedure HU_Configure(const AHeadsUp: IHeadsUp; const AScreen: IHudScreen);
+class procedure THudRoutines.HU_Configure(const AHeadsUp: IHeadsUp; const AScreen: IHudScreen);
 begin
   GHeadsUp := AHeadsUp;
   GScreen := AScreen;
@@ -355,7 +380,7 @@ end;
 // HU_CheckConfigured
 //
 //==============================================================================
-procedure HU_CheckConfigured;
+class procedure THudLocalRoutines.HU_CheckConfigured;
 begin
   if (GHeadsUp = nil) or (GScreen = nil) then
     I_Error('HU_CheckConfigured(): the heads-up display is not configured (HU_Configure)');
@@ -366,9 +391,9 @@ end;
 // HU_DoFPSStuff
 //
 //==============================================================================
-procedure HU_DoFPSStuff;
+class procedure THudRoutines.HU_DoFPSStuff;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   GHeadsUp.RecordFrameTime(I_GetFracTime);
 end;
 
@@ -377,9 +402,9 @@ end;
 // HU_FPS
 //
 //==============================================================================
-function HU_FPS: integer;
+class function THudRoutines.HU_FPS: integer;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   result := GHeadsUp.FramesPerSecond;
 end;
 
@@ -388,9 +413,9 @@ end;
 // HU_CmdFPS
 //
 //==============================================================================
-procedure HU_CmdFPS;
+class procedure THudLocalRoutines.HU_CmdFPS;
 begin
-  printf('%d fps'#13#10, [HU_FPS]);
+  printf('%d fps'#13#10, [THudRoutines.HU_FPS]);
 end;
 
 //==============================================================================
@@ -398,7 +423,7 @@ end;
 // HU_CmdPlayerMessage
 //
 //==============================================================================
-procedure HU_CmdPlayerMessage(const parm1, parm2: string);
+class procedure THudLocalRoutines.HU_CmdPlayerMessage(const parm1, parm2: string);
 begin
   TGameSession.Players[TGameSession.ConsolePlayer]._message := parm1 + ' ' + parm2;
 end;
@@ -408,7 +433,7 @@ end;
 // HU_TITLE
 //
 //==============================================================================
-function HU_TITLE: string;
+class function THudRoutines.HU_TITLE: string;
 begin
 {$IF DEFINED(HERETIC)}
   result := mapnames[(TGameSession.GameEpisode - 1) * 9 + TGameSession.GameMap - 1];
@@ -427,7 +452,7 @@ end;
 // HU_TITLE2
 //
 //==============================================================================
-function HU_TITLE2: string;
+class function THudLocalRoutines.HU_TITLE2: string;
 begin
   result := THudMapTitle.ForMap(mapnames2, TGameSession.GameMap);
 end;
@@ -437,7 +462,7 @@ end;
 // HU_TITLEP
 //
 //==============================================================================
-function HU_TITLEP: string;
+class function THudLocalRoutines.HU_TITLEP: string;
 begin
   result := THudMapTitle.ForMap(mapnamesp, TGameSession.GameMap);
 end;
@@ -447,7 +472,7 @@ end;
 // HU_TITLET
 //
 //==============================================================================
-function HU_TITLET: string;
+class function THudLocalRoutines.HU_TITLET: string;
 begin
   result := THudMapTitle.ForMap(mapnamest, TGameSession.GameMap);
 end;
@@ -475,7 +500,7 @@ const
 {$ENDIF}
 //
 //==============================================================================
-function HU_TITLEY: integer;
+class function THudLocalRoutines.HU_TITLEY: integer;
 begin
 {$IF DEFINED(HERETIC)}
   result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 157 div 200{$ELSE}157{$ENDIF} - hu_font[0].height;
@@ -493,7 +518,7 @@ end;
 // HU_LEVELTIMEY
 //
 //==============================================================================
-function HU_LEVELTIMEY: integer;
+class function THudLocalRoutines.HU_LEVELTIMEY: integer;
 begin
 {$IF DEFINED(HERETIC)}
   result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG) * 157 div 200{$ELSE}157{$ENDIF} - 2 * hu_font[0].height;
@@ -511,7 +536,7 @@ end;
 // HU_INPUTX
 //
 //==============================================================================
-function HU_INPUTX: integer;
+class function THudLocalRoutines.HU_INPUTX: integer;
 begin
   result := HU_MSGX;
 end;
@@ -521,7 +546,7 @@ end;
 // HU_INPUTY
 //
 //==============================================================================
-function HU_INPUTY: integer;
+class function THudLocalRoutines.HU_INPUTY: integer;
 begin
   result := HU_MSGY + HU_MSGHEIGHT * (hu_font[0].height + 1)
 end;
@@ -531,7 +556,7 @@ end;
 // HU_Init
 //
 //==============================================================================
-procedure HU_Init;
+class procedure THudRoutines.HU_Init;
 var
   i: integer;
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
@@ -545,7 +570,7 @@ var
 {$ENDIF}
   shifttable: THudShiftTable;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
 
   // the keyboard map of the language and the history of the frame times
   GHeadsUp.Initialize;
@@ -662,8 +687,8 @@ begin
   // the widths of the glyphs and the crosshairs
   GScreen.Initialize;
 
-  C_AddCmd('fps', @HU_CmdFPS);
-  C_AddCmd('playermessage', @HU_CmdPlayerMessage);
+  C_AddCmd('fps', @THudLocalRoutines.HU_CmdFPS);
+  C_AddCmd('playermessage', @THudLocalRoutines.HU_CmdPlayerMessage);
 end;
 
 //==============================================================================
@@ -671,12 +696,12 @@ end;
 // HU_Start
 //
 //==============================================================================
-procedure HU_Start;
+class procedure THudRoutines.HU_Start;
 var
   params: THudStartParams;
   s: string;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
 
 {$IF DEFINED(DOOM)}
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.levelname <> '') then
@@ -690,10 +715,10 @@ begin
     else
       begin
         case gamemission of
-          pack_tnt: s := HU_TITLET;
-          pack_plutonia: s := HU_TITLEP;
+          pack_tnt: s := THudLocalRoutines.HU_TITLET;
+          pack_plutonia: s := THudLocalRoutines.HU_TITLEP;
         else
-          s := HU_TITLE2;
+          s := THudLocalRoutines.HU_TITLE2;
         end;
       end;
     end;
@@ -718,15 +743,15 @@ begin
 {$ELSE}
   params.TitleX := HU_TITLEX;
 {$ENDIF}
-  params.TitleY := HU_TITLEY;
+  params.TitleY := THudLocalRoutines.HU_TITLEY;
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   params.LevelTimeX := HU_LEVELTIMEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF};
 {$ELSE}
   params.LevelTimeX := HU_LEVELTIMEX;
 {$ENDIF}
-  params.LevelTimeY := HU_LEVELTIMEY;
-  params.InputX := HU_INPUTX;
-  params.InputY := HU_INPUTY;
+  params.LevelTimeY := THudLocalRoutines.HU_LEVELTIMEY;
+  params.InputX := THudLocalRoutines.HU_INPUTX;
+  params.InputY := THudLocalRoutines.HU_INPUTY;
   params.Title := s;
   GHeadsUp.Start(params);
 {$IFDEF STRIFE}
@@ -749,9 +774,9 @@ end;
 // HU_Height
 //
 //==============================================================================
-function HU_Height: integer;
+class function THudRoutines.HU_Height: integer;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   result := GScreen.Height;
 end;
 {$ENDIF}
@@ -763,9 +788,9 @@ end;
 // HU_DrawYellowText
 //
 //==============================================================================
-procedure HU_DrawYellowText(x, y: integer; const txt: string; const scn: integer);
+class procedure THudRoutines.HU_DrawYellowText(x, y: integer; const txt: string; const scn: integer);
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   GScreen.DrawYellowText(x, y, txt, scn);
 end;
 {$ENDIF}
@@ -775,9 +800,9 @@ end;
 // HU_Drawer
 //
 //==============================================================================
-procedure HU_Drawer;
+class procedure THudRoutines.HU_Drawer;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   GScreen.Draw;
 end;
 
@@ -786,9 +811,9 @@ end;
 // HU_Erase
 //
 //==============================================================================
-procedure HU_Erase;
+class procedure THudRoutines.HU_Erase;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   GScreen.Erase;
 end;
 
@@ -797,9 +822,9 @@ end;
 // HU_Ticker
 //
 //==============================================================================
-procedure HU_Ticker;
+class procedure THudRoutines.HU_Ticker;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   GHeadsUp.Ticker;
 end;
 
@@ -808,9 +833,9 @@ end;
 // HU_dequeueChatChar
 //
 //==============================================================================
-function HU_dequeueChatChar: char;
+class function THudRoutines.HU_dequeueChatChar: char;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   result := GHeadsUp.DequeueChatChar;
 end;
 
@@ -819,9 +844,9 @@ end;
 // HU_Responder
 //
 //==============================================================================
-function HU_Responder(ev: Pevent_t): boolean;
+class function THudRoutines.HU_Responder(ev: Pevent_t): boolean;
 begin
-  HU_CheckConfigured;
+  THudLocalRoutines.HU_CheckConfigured;
   result := GHeadsUp.Responder(ev.data1, ev._type = ev_keydown);
 end;
 

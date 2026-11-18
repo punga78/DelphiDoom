@@ -239,7 +239,7 @@ begin
       if actor.flags_ex and MF_EX_RANDOMMELEESOUND <> 0 then
         TCommonSoundActions.P_RandomSound(actor, actor.info.meleesound)
       else
-        S_StartSound(actor, actor.info.meleesound);
+        TSoundRoutines.S_StartSound(actor, actor.info.meleesound);
     end;
     if actor.state.params = nil then
       damage := actor.info.meleedamage
@@ -321,7 +321,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMATTACKSOUND <> 0 then
     TCommonSoundActions.P_RandomSound(actor, actor.info.attacksound)
   else
-    S_StartSound(actor, actor.info.attacksound);
+    TSoundRoutines.S_StartSound(actor, actor.info.attacksound);
 
   spread_xy := spread_xy div 256;
   for i := 0 to numbullets - 1 do
@@ -438,7 +438,7 @@ begin
       if actor.flags_ex and MF_EX_RANDOMMELEESOUND <> 0 then
         TCommonSoundActions.P_RandomSound(actor, actor.info.meleesound)
       else
-        S_StartSound(actor, actor.info.meleesound);
+        TSoundRoutines.S_StartSound(actor, actor.info.meleesound);
     end;
     P_DamageMobj(actor.target, actor, actor, actor.info.meleedamage);
   end
@@ -488,7 +488,7 @@ begin
   if actor.flags_ex and MF_EX_RANDOMATTACKSOUND <> 0 then
     TCommonSoundActions.P_RandomSound(actor, actor.info.attacksound)
   else
-    S_StartSound(actor, actor.info.attacksound);
+    TSoundRoutines.S_StartSound(actor, actor.info.attacksound);
 
 // Attack with a customizable amount of bullets (specified in damage)
   numbullets := actor.info.damage;

@@ -73,7 +73,7 @@ begin
   mo := TMobjGameRules.RespawnOldFog(mobj);
 
   // initiate teleport sound
-  S_StartSound(mo, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_telept));
 
   // spawn a teleport fog at the new spot
   ss := TMapGameRules.PointInSector(x, y);
@@ -86,7 +86,7 @@ begin
 
   mo := P_SpawnMobj(x, y, h, Ord(MT_TFOG));
 
-  S_StartSound(mo, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_telept));
 
   // spawn the new monster
   mthing := @(mobj.spawnpoint);

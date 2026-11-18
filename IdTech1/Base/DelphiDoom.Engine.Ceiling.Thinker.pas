@@ -196,9 +196,9 @@ procedure CeilingApply(ACeiling: Pceiling_t; const AActions: TCeilingActions);
 begin
   if TCeilingAction.MoveSound in AActions then
 {$IFDEF HERETIC}
-    S_StartSound(@ACeiling.sector.soundorg, Ord(sfx_dormov));
+    TSoundRoutines.S_StartSound(@ACeiling.sector.soundorg, Ord(sfx_dormov));
 {$ELSE}
-    S_StartSound(@ACeiling.sector.soundorg, Ord(sfx_stnmov));
+    TSoundRoutines.S_StartSound(@ACeiling.sector.soundorg, Ord(sfx_stnmov));
 
   if TCeilingAction.TransferSpecial in AActions then
   begin
@@ -211,7 +211,7 @@ begin
     ACeiling.sector.ceilingpic := ACeiling.texture;
 
   if TCeilingAction.StopSound in AActions then
-    S_StartSound(@ACeiling.sector.soundorg, Ord(sfx_pstop));
+    TSoundRoutines.S_StartSound(@ACeiling.sector.soundorg, Ord(sfx_pstop));
 {$ENDIF}
 end;
 

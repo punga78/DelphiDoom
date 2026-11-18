@@ -42,9 +42,9 @@ begin
   fog := P_SpawnMobj(AX, AY, AZ, Ord(MT_TFOG));
   if ASound then
 {$IFDEF HEXEN}
-    S_StartSound(fog, Ord(SFX_TELEPORT));
+    TSoundRoutines.S_StartSound(fog, Ord(SFX_TELEPORT));
 {$ELSE}
-    S_StartSound(fog, Ord(sfx_telept));
+    TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
 {$ENDIF}
 end;
 

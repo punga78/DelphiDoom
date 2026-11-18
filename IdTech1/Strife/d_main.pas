@@ -952,7 +952,7 @@ begin
   end;
 
 {$IFNDEF OPENGL}
-  HU_DoFPSStuff;
+  THudRoutines.HU_DoFPSStuff;
 {$ENDIF}
 
   if nodrawers then
@@ -989,7 +989,7 @@ begin
 {$ENDIF}
 
   if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
-    HU_Erase;
+    THudRoutines.HU_Erase;
 
   // do buffered drawing
   case TGameSession.GameState of
@@ -1093,7 +1093,7 @@ begin
   end;
 
   if drawhu then
-    HU_Drawer;
+    THudRoutines.HU_Drawer;
 
   if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
   begin
@@ -1134,7 +1134,7 @@ begin
     begin
       TRendererDraw.R_DrawViewBorder;
       if drawhu then
-        HU_Drawer;
+        THudRoutines.HU_Drawer;
     end;
 
     // JVAL: Overlay Drawer before menus
@@ -1183,7 +1183,7 @@ begin
     TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     TMainLocalRoutines.D_Console.Draw;         // Console draw on top of wipes and menus
     TMainLocalRoutines.D_FinishUpdate;   // page flip or blit buffer
-    HU_DoFPSStuff;
+    THudRoutines.HU_DoFPSStuff;
   until done;
   videomode := oldvideomode;
   wipedisplay := false;
@@ -1192,7 +1192,7 @@ end;
 {$IFDEF OPENGL}
 begin
   I_StartUpdate;
-  HU_DoFPSStuff;
+  THudRoutines.HU_DoFPSStuff;
   if firstinterpolation then
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
   if TGameSession.GameState = GS_LEVEL then
@@ -1259,7 +1259,7 @@ begin
       I_SetNormalCPUPriority;
 {$ENDIF}
 
-    S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
+    TSoundRoutines.S_UpdateSounds(TGameSession.Players[TGameSession.ConsolePlayer].mo);// move positional sounds
 
     D_RunNotifications;
 
@@ -1369,7 +1369,7 @@ begin
         pagetic := 3 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
         pagename := TDehMainRoutines.DEH_GetString('PANEL7');
-        S_StartMusic(Ord(mus_fast));
+        TSoundRoutines.S_StartMusic(Ord(mus_fast));
         if isdemoversion then
           demosequence := -3 // show Velocity logo
         else
@@ -1389,7 +1389,7 @@ begin
         pagetic := 6 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
         pagename := TDehMainRoutines.DEH_GetString('TITLEPIC');
-        S_StartMusic(Ord(mus_logo));
+        TSoundRoutines.S_StartMusic(Ord(mus_logo));
         demosequence := -1; // start intro cinematic
         exit;
       end;
@@ -1398,7 +1398,7 @@ begin
         pagetic := 10;
         TGameSession.GameState := GS_DEMOSCREEN;
         pagename := TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(D_Panel0Lump));
-        S_StartSound(nil, Ord(sfx_rb2act));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_rb2act));
         wipegamestate := -1;
       end;
     0: // Rogue logo
@@ -1413,43 +1413,43 @@ begin
         pagetic := 7 * TICRATE;               // The comet struck our planet without
         TGameSession.GameState := GS_DEMOSCREEN;           // warning.We lost our paradise in a
         pagename := TDehMainRoutines.DEH_GetString('PANEL1');  // single, violent stroke.
-        S_StartVoice(TDehMainRoutines.DEH_GetString('pro1'));
-        S_StartMusic(Ord(mus_intro));
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('pro1'));
+        TSoundRoutines.S_StartMusic(Ord(mus_intro));
       end;
     2:
       begin
         pagetic := 9 * TICRATE;               // The impact released a virus which
         TGameSession.GameState := GS_DEMOSCREEN;           // swept through the land and killed
         pagename := TDehMainRoutines.DEH_GetString('PANEL2');  // millions. They turned out to be
-        S_StartVoice(TDehMainRoutines.DEH_GetString('pro2'));  // the lucky ones...
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('pro2'));  // the lucky ones...
       end;
     3:
       begin
         pagetic := 12 * TICRATE;              // For those that did not die became
         TGameSession.GameState := GS_DEMOSCREEN;           // mutations of humanity. Some became
         pagename := TDehMainRoutines.DEH_GetString('PANEL3');  // fanatics who heard the voice of a
-        S_StartVoice(TDehMainRoutines.DEH_GetString('pro3'));  // malignant God in their heads, and
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('pro3'));  // malignant God in their heads, and
       end;                                    // called themselves the Order.
     4:
       begin
         pagetic := 11 * TICRATE;            // Those of us who were deaf to this
         pagename := TDehMainRoutines.DEH_GetString('PANEL4');// voice suffer horribly and are
         TGameSession.GameState := GS_DEMOSCREEN;         // forced to serve these ruthless
-        S_StartVoice(TDehMainRoutines.DEH_GetString('pro4'));// psychotics, who wield weapons more
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('pro4'));// psychotics, who wield weapons more
       end;                                  // powerful than anything we can muster.
     5:
       begin
         pagetic := 10 * TICRATE;            // They destroy our women and children,
         TGameSession.GameState := GS_DEMOSCREEN;         // so that we must hide them underground,
         pagename := TDehMainRoutines.DEH_GetString('PANEL5');// and live like animals in constant
-        S_StartVoice(TDehMainRoutines.DEH_GetString('pro5'));// fear for our lives.
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('pro5'));// fear for our lives.
       end;
     6:                                      // But there are whispers of discontent.
       begin
         pagetic := 16 * TICRATE;            // If we organize, can we defeat our
         TGameSession.GameState := GS_DEMOSCREEN;         // masters? Weapons are being stolen,
         pagename := TDehMainRoutines.DEH_GetString('PANEL6');// soldiers are being trained. A
-        S_StartVoice(TDehMainRoutines.DEH_GetString('pro6'));// Movement is born! Born of lifelong
+        TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString('pro6'));// Movement is born! Born of lifelong
       end;                                  // STRIFE!
     7: // titlepic again - unused...
       begin
@@ -1552,7 +1552,7 @@ begin
       exit;
     try
       wadfiles.Add(fname2);
-      PAK_AddFile(fname2);
+      TPakRoutines.PAK_AddFile(fname2);
     {$IFDEF OPENGL}
     // JVAL: If exists automatically loads GWA file
     // GL_xxxx lumps has lower priority from GWA files, that's for we
@@ -1617,7 +1617,7 @@ var
 begin
   names := TCommandLineFileList.Split(fnames);
   for i := 0 to Length(names) - 1 do
-    PAK_AddFile(names[i]);
+    TPakRoutines.PAK_AddFile(names[i]);
 end;
 
 var
@@ -1864,7 +1864,7 @@ begin
   try
 
     for i := 0 to files.Count - 1 do
-      if not PAK_AddFile(files[i]) then
+      if not TPakRoutines.PAK_AddFile(files[i]) then
         I_Warning('PAK_AddFile(): %s could not be added to PAK file system.'#13#10, [files[i]]);
 
   finally
@@ -1950,7 +1950,7 @@ begin
     inc(p);
     while (p < myargc) and (myargv[p][1] <> '-') do
     begin
-      PAK_AddFile(myargv[p]);
+      TPakRoutines.PAK_AddFile(myargv[p]);
       inc(p);
     end;
   end;
@@ -1999,7 +1999,7 @@ begin
     wadnames[i] := strupper(fname(wadfiles[i]));
   gamedirectorystring := TPakGameDirectories.Compose(gamedirectorystring, wadnames);
 
-  gamedirectories := PAK_GetDirectoryListFromString(gamedirectorystring);
+  gamedirectories := TPakRoutines.PAK_GetDirectoryListFromString(gamedirectorystring);
   for i := 0 to gamedirectories.Count - 1 do
   begin
     wad := gamedirectories[i];
@@ -2415,11 +2415,11 @@ begin
   SUC_Progress(9);
 
   printf('PAK_InitFileSystem: Init PAK/ZIP/PK3/PK4 files.'#13#10);
-  PAK_InitFileSystem;
+  TPakRoutines.PAK_InitFileSystem;
 
   SUC_Progress(10);
 
-  PAK_LoadPendingPaks;
+  TPakRoutines.PAK_LoadPendingPaks;
 
   SUC_Progress(11);
 
@@ -2539,7 +2539,7 @@ begin
     begin
       modifiedgame := true;
       externalpakspresent := true;
-      PAK_AddFile(myargv[p]);
+      TPakRoutines.PAK_AddFile(myargv[p]);
     end;
   end;
 
@@ -2833,7 +2833,7 @@ begin
   SUC_Progress(87);
 
   printf('S_Init: Setting up sound.'#13#10);
-  S_Init(snd_SfxVolume, snd_MusicVolume, snd_VoiceVolume);
+  TSoundRoutines.S_Init(snd_SfxVolume, snd_MusicVolume, snd_VoiceVolume);
 
   SUC_Progress(89);
 
@@ -2843,7 +2843,7 @@ begin
   SUC_Progress(90);
 
   printf('HU_Init: Setting up heads up display.'#13#10);
-  HU_Init;
+  THudRoutines.HU_Init;
 
   SUC_Progress(91);
 
@@ -2987,7 +2987,7 @@ begin
   printf('Info_ShutDown: Shut down game definition.'#13#10);
   Info_ShutDown;
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);
-  PAK_ShutDown;
+  TPakRoutines.PAK_ShutDown;
   printf('E_ShutDown: Shut down ENDSTRF screen.'#13#10);
   if main_endoom <> nil then
     main_endoom.Shutdown;

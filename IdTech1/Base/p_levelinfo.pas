@@ -119,7 +119,7 @@ begin
   for i := 0 to nummusic - 1 do
     if musname = strupper(S_music[i].name) then
     begin
-      S_ChangeMusic(i, true);
+      TSoundRoutines.S_ChangeMusic(i, true);
       exit;
     end;
 end;

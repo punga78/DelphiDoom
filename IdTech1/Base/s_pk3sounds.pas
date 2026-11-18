@@ -126,7 +126,7 @@ begin
       Result := TWadRoutines.W_CheckNumForName(AName);
     end);
 
-  PAK_FileNameIterator(@S_AddFileName);
+  TPakRoutines.PAK_FileNameIterator(@S_AddFileName);
 
   lumpnames := s_names.Names;
   if Length(lumpnames) > 0 then

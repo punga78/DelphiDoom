@@ -165,7 +165,7 @@ begin
 
   if in_tic = 1 then
     // intermission music
-    S_ChangeMusic(Ord(mus_intro), true);
+    TSoundRoutines.S_ChangeMusic(Ord(mus_intro), true);
 
   // the key that ended the level is still down in the first tics
   if in_tic > TICRATE div 2 then

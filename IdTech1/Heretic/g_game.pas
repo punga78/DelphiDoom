@@ -1009,7 +1009,7 @@ begin
     side := side - sidemove[speed];
 
   // buttons
-  cmd.chatchar := Ord(HU_dequeueChatChar);
+  cmd.chatchar := Ord(THudRoutines.HU_dequeueChatChar);
 
   if gamekeydown[key_fire] or
      (usemouse and mousebuttons[mousebfire]) or
@@ -1484,7 +1484,7 @@ begin
 
   if TGameSession.GameState = GS_LEVEL then
   begin
-    if HU_Responder(ev) then
+    if THudRoutines.HU_Responder(ev) then
     begin
       result := true; // chat ate the event
       exit;
@@ -1733,9 +1733,9 @@ begin
             begin
               TGameSession.Paused := not TGameSession.Paused;
               if TGameSession.Paused then
-                S_PauseSound
+                TSoundRoutines.S_PauseSound
               else
-                S_ResumeSound;
+                TSoundRoutines.S_ResumeSound;
             end;
           BTS_SAVEGAME:
             begin
@@ -1770,7 +1770,7 @@ begin
         P_Ticker;
         TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
-        HU_Ticker;
+        THudRoutines.HU_Ticker;
       end;
     GS_INTERMISSION:
       begin
@@ -2615,7 +2615,7 @@ begin
   if TGameSession.Paused then
   begin
     TGameSession.Paused := false;
-    S_ResumeSound;
+    TSoundRoutines.S_ResumeSound;
   end;
 
   if skill > sk_nightmare then
@@ -3169,7 +3169,7 @@ begin
   if displayendscreen then
   begin
     TGameSession.GameState := GS_ENDOOM;
-    S_PauseSound; // Stop music in ENDOOM screen
+    TSoundRoutines.S_PauseSound; // Stop music in ENDOOM screen
     printf('E_Init: Initializing ENDTEXT screen.'#13#10, [mb_used]);
     G_EndoomScreen.Initialize;
   end

@@ -61,7 +61,7 @@ uses
 //==============================================================================
 procedure HUlib_drawYellowText(x, y: integer; txt: string; const scn: integer);
 begin
-  HU_DrawYellowText(x, y, txt, scn);
+  THudRoutines.HU_DrawYellowText(x, y, txt, scn);
 end;
 {$ENDIF}
 

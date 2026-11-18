@@ -629,7 +629,7 @@ var
   obj_ln: integer;
 begin
   obj_ln := TWadRoutines.W_CheckNumForName(TDehMainRoutines.DEH_GetString(log));
-  S_StartVoice(TDehMainRoutines.DEH_GetString(voice));
+  TSoundRoutines.S_StartVoice(TDehMainRoutines.DEH_GetString(voice));
   if obj_ln > minlumpnum then
     mission_objective := TWadRoutines.W_TextLumpNum(obj_ln);
 end;
@@ -1321,7 +1321,7 @@ begin
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
     if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-      S_StartSound(nil, sound);
+      TSoundRoutines.S_StartSound(nil, sound);
     result := true;
     exit;
   end;
@@ -1695,7 +1695,7 @@ begin
 
   // Play sound.
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-    S_StartSound(nil, sound);
+    TSoundRoutines.S_StartSound(nil, sound);
 
   result := true;
 end;
@@ -1787,7 +1787,7 @@ begin
 
   currentchoice := @currentdialog.choices[choice];
 
-  S_StopSound(nil);
+  TSoundRoutines.S_StopSound(nil);
 
   // villsa 09/08/10: converted into for loop
   for i := 0 to MDLG_MAXITEMS - 1 do
@@ -1999,7 +1999,7 @@ begin
 
   // play a sound
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-    S_StartSound(nil, Ord(sfx_radio));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_radio));
 
   TMapAim.LineTarget.target := player.mo;           // target the player
   dialogtalker.reactiontime := 2;           // set reactiontime
@@ -2103,7 +2103,7 @@ begin
     V_DrawPatch(0, 0, SCN_TMP, pic, false);
 
   // get voice
-  S_StartVoice(PascalText(PAnsiChar(@currentdialog.voice), SizeOf(currentdialog.voice)));
+  TSoundRoutines.S_StartVoice(PascalText(PAnsiChar(@currentdialog.voice), SizeOf(currentdialog.voice)));
 
   // get bye text
   if rnd = 2 then

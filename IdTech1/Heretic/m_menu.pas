@@ -2169,7 +2169,7 @@ class procedure TMenuLocalRoutines.M_StartSound(origin: pointer; sfx_id: integer
 begin
   if TGameSession.GameState = GS_ENDOOM then
     exit;
-  S_StartSound(origin, sfx_id);
+  TSoundRoutines.S_StartSound(origin, sfx_id);
 end;
 
 //==============================================================================
@@ -2977,7 +2977,7 @@ begin
     0: if snd_SfxVolume <> 0 then dec(snd_SfxVolume);
     1: if snd_SfxVolume < 15 then inc(snd_SfxVolume);
   end;
-  S_SetSfxVolume(snd_SfxVolume);
+  TSoundRoutines.S_SetSfxVolume(snd_SfxVolume);
 end;
 
 //==============================================================================
@@ -2991,7 +2991,7 @@ begin
     0: if snd_MusicVolume <> 0 then dec(snd_MusicVolume);
     1: if snd_MusicVolume < 15 then inc(snd_MusicVolume);
   end;
-  S_SetMusicVolume(snd_MusicVolume);
+  TSoundRoutines.S_SetMusicVolume(snd_MusicVolume);
 end;
 
 //==============================================================================

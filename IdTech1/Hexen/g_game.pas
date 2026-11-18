@@ -853,7 +853,7 @@ begin
     side := side - sidemove[pclass, speed];
 
   // buttons
-  cmd.chatchar := Ord(HU_dequeueChatChar);
+  cmd.chatchar := Ord(THudRoutines.HU_dequeueChatChar);
 
   if gamekeydown[key_fire] or
      (usemouse and mousebuttons[mousebfire]) or
@@ -1308,7 +1308,7 @@ begin
 
   if TGameSession.GameState = GS_LEVEL then
   begin
-    if HU_Responder(ev) then
+    if THudRoutines.HU_Responder(ev) then
     begin
       result := true; // chat ate the event
       exit;
@@ -1988,7 +1988,7 @@ begin
   if TGameSession.Paused then
   begin
     TGameSession.Paused := false;
-    S_ResumeSound;
+    TSoundRoutines.S_ResumeSound;
   end;
 
   if skill < sk_baby then
@@ -2154,9 +2154,9 @@ begin
             begin
               TGameSession.Paused := not TGameSession.Paused;
               if TGameSession.Paused then
-                S_PauseSound
+                TSoundRoutines.S_PauseSound
               else
-                S_ResumeSound;
+                TSoundRoutines.S_ResumeSound;
             end;
           BTS_SAVEGAME:
             begin
@@ -2191,7 +2191,7 @@ begin
         P_Ticker;
         TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
-        HU_Ticker;
+        THudRoutines.HU_Ticker;
       end;
     GS_INTERMISSION:
       begin

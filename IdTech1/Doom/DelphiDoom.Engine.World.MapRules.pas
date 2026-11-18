@@ -368,7 +368,7 @@ end;
 
 class procedure TMapGameRules.UseBlockedByWall(usething: Pmobj_t);
 begin
-  S_StartSound(usething, Ord(sfx_noway));
+  TSoundRoutines.S_StartSound(usething, Ord(sfx_noway));
 end;
 
 class procedure TMapGameRules.UseNonSpecialLine(usething: Pmobj_t);

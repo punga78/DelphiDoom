@@ -844,13 +844,13 @@ begin
   PuffType := MT_SNOUTPUFF;
   PuffSpawned := nil;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
-  S_StartSound(player.mo, Ord(SFX_PIG_ACTIVE1) + (P_Random and 1));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_PIG_ACTIVE1) + (P_Random and 1));
   if TMapAim.LineTarget <> nil then
   begin
     P_AdjustPlayerAngle(player.mo);
     if PuffSpawned <> nil then
     begin // Bit something
-      S_StartSound(player.mo, Ord(SFX_PIG_ATTACK));
+      TSoundRoutines.S_StartSound(player.mo, Ord(SFX_PIG_ATTACK));
     end;
   end;
 end;
@@ -994,7 +994,7 @@ begin
   TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z, Ord(MT_FSWORD_MISSILE), pmo.angle);
   TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z + 5 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle - ANG45 div 8);
   TMobjRoutines.P_SPMAngleXYZ(pmo, pmo.x, pmo.y, pmo.z + 10 * FRACUNIT, Ord(MT_FSWORD_MISSILE), pmo.angle - ANG45 div 4);
-  S_StartSound(pmo, Ord(SFX_FIGHTER_SWORD_FIRE));
+  TSoundRoutines.S_StartSound(pmo, Ord(SFX_FIGHTER_SWORD_FIRE));
 end;
 
 //==============================================================================
@@ -1012,7 +1012,7 @@ begin
   TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle, 0);
   TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle - ANG45 div 8, 0);
   TMobjRoutines.P_SpawnMissileAngle(actor, Ord(MT_FSWORD_MISSILE), angle - ANG45 div 4, 0);
-  S_StartSound(actor, Ord(SFX_FIGHTER_SWORD_FIRE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_FIGHTER_SWORD_FIRE));
 end;
 
 //==============================================================================
@@ -1047,7 +1047,7 @@ begin
   mo := P_SpawnPlayerMissile(player.mo, Ord(MT_MWAND_MISSILE));
   if mo <> nil then
     mo.thinker._function.acp1 := @TMobjRoutines.P_BlasterMobjThinker;
-  S_StartSound(player.mo, Ord(SFX_MAGE_WAND_FIRE));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_MAGE_WAND_FIRE));
 end;
 
 // ===== Mage Lightning Weapon =====
@@ -1061,7 +1061,7 @@ class procedure THexenWeaponActions.A_LightningReady(player: Pplayer_t; psp: Pps
 begin
   A_WeaponReady(player, psp);
   if P_Random < 160 then
-    S_StartSound(player.mo, Ord(SFX_MAGE_LIGHTNING_READY));
+    TSoundRoutines.S_StartSound(player.mo, Ord(SFX_MAGE_LIGHTNING_READY));
 end;
 
 //
@@ -1172,7 +1172,7 @@ begin
   end;
 
   if (actor._type = Ord(MT_LIGHTNING_FLOOR)) and (P_Random < 160) then
-    S_StartSound(actor, Ord(SFX_MAGE_LIGHTNING_CONTINUOUS));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_MAGE_LIGHTNING_CONTINUOUS));
 end;
 
 //==============================================================================
@@ -1201,7 +1201,7 @@ begin
     A_LightningZap(cmo);
   end;
 
-  S_StartSound(actor, Ord(SFX_MAGE_LIGHTNING_FIRE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_MAGE_LIGHTNING_FIRE));
 end;
 
 //==============================================================================
@@ -1310,7 +1310,7 @@ begin
   P_MStaffSpawn(pmo, angle);
   P_MStaffSpawn(pmo, angle - ANG5);
   P_MStaffSpawn(pmo, angle + ANG5);
-  S_StartSound(player.mo, Ord(SFX_MAGE_STAFF_FIRE));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_MAGE_STAFF_FIRE));
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     player.damagecount := 0;
@@ -1423,7 +1423,7 @@ begin
   P_MStaffSpawn2(actor, angle);
   P_MStaffSpawn2(actor, angle - ANG5);
   P_MStaffSpawn2(actor, angle + ANG5);
-  S_StartSound(actor, Ord(SFX_MAGE_STAFF_FIRE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_MAGE_STAFF_FIRE));
 end;
 
 //==============================================================================
@@ -1448,7 +1448,7 @@ var
     begin
       pmo.special1 := 0;
       P_SetPsprite(player, Ord(ps_weapon), S_PUNCHATK2_1);
-      S_StartSound(pmo, Ord(SFX_FIGHTER_GRUNT));
+      TSoundRoutines.S_StartSound(pmo, Ord(SFX_FIGHTER_GRUNT));
     end;
   end;
 
@@ -1735,7 +1735,7 @@ begin
   mo := TMobjRoutines.P_SPMAngle(pmo, Ord(MT_CSTAFF_MISSILE), pmo.angle + (ANG45 div 15));
   if mo <> nil then
     mo.special2 := 0;
-  S_StartSound(player.mo, Ord(SFX_CLERIC_CSTAFF_FIRE));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_CLERIC_CSTAFF_FIRE));
 end;
 
 //==============================================================================
@@ -1789,7 +1789,7 @@ begin
   end;
 
   player.mana[Ord(MANA_2)] := player.mana[Ord(MANA_2)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
-  S_StartSound(player.mo, Ord(SFX_CLERIC_FLAME_FIRE));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_CLERIC_FLAME_FIRE));
 end;
 
 //==============================================================================
@@ -1803,7 +1803,7 @@ begin
   actor.momx := 0;
   actor.momy := 0;
   actor.momz := 0;
-  S_StartSound(actor, Ord(SFX_CLERIC_FLAME_EXPLODE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_CLERIC_FLAME_EXPLODE));
 end;
 
 //==============================================================================
@@ -1819,7 +1819,7 @@ var
   mo: Pmobj_t;
 begin
   THexenActions.A_UnHideThing(actor);
-  S_StartSound(actor, Ord(SFX_CLERIC_FLAME_EXPLODE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_CLERIC_FLAME_EXPLODE));
   if (BlockingMobj <> nil) and (BlockingMobj.flags and MF_SHOOTABLE <> 0) then
   begin // Hit something, so spawn the flame circle around the thing
     dist := BlockingMobj.radius + 18 * FRACUNIT;
@@ -1893,7 +1893,7 @@ end;
 class procedure THexenWeaponActions.A_CHolyAttack3(actor: Pmobj_t);
 begin
   P_SpawnMissile(actor, actor.target, Ord(MT_HOLY_MISSILE));
-  S_StartSound(actor, Ord(SFX_CHOLY_FIRE));
+  TSoundRoutines.S_StartSound(actor, Ord(SFX_CHOLY_FIRE));
 end;
 
 //==============================================================================
@@ -1983,7 +1983,7 @@ begin
     Z_ChangeTag(palette, PU_CACHE);
     TRendererHires.R_SetPalette(STARTHOLYPAL);
   end;
-  S_StartSound(player.mo, Ord(SFX_CHOLY_FIRE));
+  TSoundRoutines.S_StartSound(player.mo, Ord(SFX_CHOLY_FIRE));
 end;
 
 //==============================================================================
@@ -2253,7 +2253,7 @@ class procedure THexenWeaponActions.A_CHolyCheckScream(actor: Pmobj_t);
 begin
   A_CHolySeek(actor);
   if P_Random < 20 then
-    S_StartSound(actor, Ord(SFX_SPIRIT_ACTIVE));
+    TSoundRoutines.S_StartSound(actor, Ord(SFX_SPIRIT_ACTIVE));
 
   if actor.special1 = 0 then
     P_CHolyFindTarget(actor);
@@ -2298,7 +2298,7 @@ begin
   conedone := false;
   pmo := player.mo;
   player.mana[Ord(MANA_1)] := player.mana[Ord(MANA_1)] - WeaponManaUse[Ord(player._class), Ord(player.readyweapon)];
-  S_StartSound(pmo, Ord(SFX_MAGE_SHARDS_FIRE));
+  TSoundRoutines.S_StartSound(pmo, Ord(SFX_MAGE_SHARDS_FIRE));
 
   damage := 90 + (P_Random and 15);
   angle := pmo.angle;

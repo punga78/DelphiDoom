@@ -512,7 +512,7 @@ begin
 
         if TTickState.LevelTime > player.nextoof then
         begin
-          S_StartSound(mo, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(mo, Ord(sfx_oof));
           player.nextoof := TTickState.LevelTime + 4 * TICRATE;
         end;
       end;
@@ -767,7 +767,7 @@ begin
     // wake up the status bar
     TStatusBarRoutines.ST_Start;
     // wake up the heads up text
-    HU_Start;
+    THudRoutines.HU_Start;
 
     p_justspawned := true;
   end;
@@ -1292,7 +1292,7 @@ var
   mo: Pmobj_t;
 begin
   mo := P_SpawnMobj(x, y, z, Ord(MT_IFOG), mthing);
-  S_StartSound(mo, Ord(sfx_itmbk));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_itmbk));
 end;
 
 class function TMobjGameRules.SpawnHeightOfType(const i: integer): fixed_t;
@@ -1572,7 +1572,7 @@ begin
     end
     else
     begin
-      S_StartSound(mobj, Ord(sfx_wsplsh));
+      TSoundRoutines.S_StartSound(mobj, Ord(sfx_wsplsh));
 //      if mobj.flags2_ex and MF2_EX_ // JVAL SOS
       mobj.flags := mobj.flags or MF_FEETCLIPPED;
       mobj.floorclip := FOOTCLIPSIZE;

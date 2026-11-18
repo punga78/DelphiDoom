@@ -145,9 +145,9 @@ begin
   amstate := am_inactive;
 
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.intermusicnum > 0) then
-    S_ChangeMusic(TGameSession.GameMapInfo.intermusicnum, true)
+    TSoundRoutines.S_ChangeMusic(TGameSession.GameMapInfo.intermusicnum, true)
   else
-    S_ChangeMusic(Ord(mus_cptd), true);
+    TSoundRoutines.S_ChangeMusic(Ord(mus_cptd), true);
 
   case TGameSession.GameEpisode of
     1:

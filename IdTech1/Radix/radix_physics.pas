@@ -205,7 +205,7 @@ begin
     impactorigins[pnum].x := pmo.x;
     impactorigins[pnum].y := pmo.y;
     impactorigins[pnum].z := pmo.z;
-    S_StartSound(@impactorigins[pnum], RX_SoundName(sndid));
+    TSoundRoutines.S_StartSound(@impactorigins[pnum], RX_SoundName(sndid));
   end;
 
   if impact.StartsSoundTimer then

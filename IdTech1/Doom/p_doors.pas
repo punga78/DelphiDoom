@@ -147,7 +147,7 @@ begin
            (not p.cards[Ord(it_blueskull)]) then
         begin
           p._message := PD_BLUEO;
-          S_StartSound(nil, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
         end;
@@ -160,7 +160,7 @@ begin
            (not p.cards[Ord(it_redskull)]) then
         begin
           p._message := PD_REDO;
-          S_StartSound(nil, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
         end;
@@ -173,7 +173,7 @@ begin
            (not p.cards[Ord(it_yellowskull)]) then
         begin
           p._message := PD_YELLOWO;
-          S_StartSound(nil, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
         end;
@@ -252,7 +252,7 @@ begin
            not player.cards[Ord(it_blueskull)] then
         begin
           player._message := PD_BLUEK;
-          S_StartSound(player.mo, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));
           exit;
         end;
       end;
@@ -266,7 +266,7 @@ begin
            not player.cards[Ord(it_yellowskull)] then
         begin
           player._message := PD_YELLOWK;
-          S_StartSound(player.mo, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));
           exit;
         end;
       end;
@@ -280,7 +280,7 @@ begin
            not player.cards[Ord(it_redskull)] then
         begin
           player._message := PD_REDK;
-          S_StartSound(player.mo, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));
           exit;
         end;
       end;
@@ -294,7 +294,7 @@ begin
   if sd = -1 then
   begin
     if player <> nil then                     // JVAL: 20210203
-      S_StartSound(player.mo, Ord(sfx_oof));  // killough 3/20/98
+      TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));  // killough 3/20/98
     exit;
   end;
 

@@ -1167,14 +1167,14 @@ begin
       end;
     end;
 
-    S_StartSound(nil, Ord(sfx_barexp));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
     dm_state := 4;
   end;
 
   if dm_state = 2 then
   begin
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     stillticking := false;
 
@@ -1208,7 +1208,7 @@ begin
     end;
     if not stillticking then
     begin
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       inc(dm_state);
     end;
   end
@@ -1216,7 +1216,7 @@ begin
   begin
     if acceleratestage <> 0 then
     begin
-      S_StartSound(nil, Ord(sfx_slop));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_slop));
 
       if gamemode = commercial then
         WI_InitNoState
@@ -1384,14 +1384,14 @@ begin
       if dofrags <> 0 then
         cnt_frags[i] := WI_FragSum(i);
     end;
-    S_StartSound(nil, Ord(sfx_barexp));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
     ng_state := 10;
   end;
 
   if ng_state = 2 then
   begin
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     stillticking := false;
 
@@ -1410,14 +1410,14 @@ begin
 
     if not stillticking then
     begin
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       inc(ng_state);
     end;
   end
   else if ng_state = 4 then
   begin
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     stillticking := false;
 
@@ -1434,14 +1434,14 @@ begin
     end;
     if not stillticking then
     begin
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       inc(ng_state);
     end;
   end
   else if ng_state = 6 then
   begin
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     stillticking := false;
 
@@ -1459,14 +1459,14 @@ begin
     end;
     if not stillticking then
     begin
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       ng_state := ng_state + 1 + 2 * intval(dofrags <> 0);
     end;
   end
   else if ng_state = 8 then
   begin
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     stillticking := false;
 
@@ -1485,7 +1485,7 @@ begin
     end;
     if not stillticking then
     begin
-      S_StartSound(nil, Ord(sfx_pldeth));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pldeth));
       inc(ng_state);
     end;
   end
@@ -1493,7 +1493,7 @@ begin
   begin
     if acceleratestage <> 0 then
     begin
-      S_StartSound(nil, Ord(sfx_sgcock));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_sgcock));
       if gamemode = commercial then
         WI_InitNoState
       else
@@ -1606,7 +1606,7 @@ begin
     cnt_secret[0] := (plrs[me].ssecret * 100) div wbs.maxsecret;
     cnt_time := plrs[me].stime div TICRATE;
     cnt_par := wbs.partime div TICRATE;
-    S_StartSound(nil, Ord(sfx_barexp));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
     sp_state := 10;
   end;
 
@@ -1615,12 +1615,12 @@ begin
     cnt_kills[0] := cnt_kills[0] + 2;
 
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     if cnt_kills[0] >= (plrs[me].skills * 100) div wbs.maxkills then
     begin
       cnt_kills[0] := (plrs[me].skills * 100) div wbs.maxkills;
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       inc(sp_state);
     end;
   end
@@ -1629,12 +1629,12 @@ begin
     cnt_items[0] := cnt_items[0] + 2;
 
     if bcnt and 3 <> 0 then
-      S_StartSound(nil, OrD(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, OrD(sfx_pistol));
 
     if cnt_items[0] >= (plrs[me].sitems * 100) div wbs.maxitems then
     begin
       cnt_items[0] := (plrs[me].sitems * 100) div wbs.maxitems;
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       inc(sp_state);
     end;
   end
@@ -1643,19 +1643,19 @@ begin
     cnt_secret[0] := cnt_secret[0] + 2;
 
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     if cnt_secret[0] >= (plrs[me].ssecret * 100) div wbs.maxsecret then
     begin
       cnt_secret[0] := (plrs[me].ssecret * 100) div wbs.maxsecret;
-      S_StartSound(nil, Ord(sfx_barexp));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
       inc(sp_state);
     end;
   end
   else if sp_state = 8 then
   begin
     if bcnt and 3 = 0 then
-      S_StartSound(nil, Ord(sfx_pistol));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_pistol));
 
     cnt_time := cnt_time + 3;
 
@@ -1670,7 +1670,7 @@ begin
 
       if cnt_time >= plrs[me].stime div TICRATE then
       begin
-        S_StartSound(nil, Ord(sfx_barexp));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_barexp));
         inc(sp_state);
       end;
     end;
@@ -1679,7 +1679,7 @@ begin
   begin
     if acceleratestage <> 0 then
     begin
-      S_StartSound(nil, Ord(sfx_sgcock));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_sgcock));
 
       if gamemode = commercial then
         WI_InitNoState
@@ -1791,9 +1791,9 @@ begin
   begin
     // intermission music
     if gamemode = commercial then
-      S_ChangeMusic(Ord(mus_dm2int), true)
+      TSoundRoutines.S_ChangeMusic(Ord(mus_dm2int), true)
     else
-      S_ChangeMusic(Ord(mus_inter), true);
+      TSoundRoutines.S_ChangeMusic(Ord(mus_inter), true);
   end;
 
   TIntermissionLocalRoutines.WI_checkForAccelerate;

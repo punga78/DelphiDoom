@@ -373,8 +373,8 @@ begin
     if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = MODELDEFLUMPNAME then
       SC_ParseModelDefinition(TWadRoutines.W_TextLumpNum(i));
 
-  PAK_StringIterator(MODELDEFLUMPNAME, SC_ParseModelDefinition);
-  PAK_StringIterator(MODELDEFLUMPNAME + '.txt', SC_ParseModelDefinition);
+  TPakRoutines.PAK_StringIterator(MODELDEFLUMPNAME, SC_ParseModelDefinition);
+  TPakRoutines.PAK_StringIterator(MODELDEFLUMPNAME + '.txt', SC_ParseModelDefinition);
 end;
 
 //==============================================================================

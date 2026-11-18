@@ -124,14 +124,14 @@ var
 begin
   Inc(FEngineSounds);
   LFamily := Ord(not AFormula);
-  S_StartSound(FFindCar(FSelected), Format(ENGINE_SOUND_FORMAT, [LFamily, AFraction]));
+  TSoundRoutines.S_StartSound(FFindCar(FSelected), Format(ENGINE_SOUND_FORMAT, [LFamily, AFraction]));
   Result := DurationOf(Format(ENGINE_LUMP_FORMAT, [LFamily, AFraction]));
 end;
 
 function TEngineSpeedEffects.PlayBrakeSound(AX, AY, AZ: TFixed): Integer;
 begin
   Inc(FBrakeSounds);
-  S_StartSound(FFindCar(FSelected), BRAKE_SOUND);
+  TSoundRoutines.S_StartSound(FFindCar(FSelected), BRAKE_SOUND);
   Result := DurationOf(BRAKE_LUMP);
 end;
 

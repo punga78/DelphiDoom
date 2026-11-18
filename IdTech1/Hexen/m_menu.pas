@@ -2258,7 +2258,7 @@ begin
   if ch = Ord('y') then
   begin
     M_DoSave(quickSaveSlot);
-    S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
   end;
 end;
 
@@ -2273,7 +2273,7 @@ var
 begin
   if not TGameSession.UserGame then
   begin
-    S_StartSound(nil, Ord(SFX_CHAT));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_CHAT));
     exit;
   end;
 
@@ -2304,7 +2304,7 @@ begin
   if ch = Ord('y') then
   begin
     M_LoadSelect(quickSaveSlot);
-    S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
   end;
 end;
 
@@ -3040,7 +3040,7 @@ begin
     0: if snd_SfxVolume <> 0 then dec(snd_SfxVolume);
     1: if snd_SfxVolume < 15 then inc(snd_SfxVolume);
   end;
-  S_SetSfxVolume(snd_SfxVolume);
+  TSoundRoutines.S_SetSfxVolume(snd_SfxVolume);
 end;
 
 //==============================================================================
@@ -3054,7 +3054,7 @@ begin
     0: if snd_MusicVolume <> 0 then dec(snd_MusicVolume);
     1: if snd_MusicVolume < 15 then inc(snd_MusicVolume);
   end;
-  S_SetMusicVolume(snd_MusicVolume);
+  TSoundRoutines.S_SetMusicVolume(snd_MusicVolume);
 end;
 
 //==============================================================================
@@ -3842,7 +3842,7 @@ begin
 
   message_dontfuckwithme := true;
 
-  S_StartSound(nil, Ord(SFX_CHAT));
+  TSoundRoutines.S_StartSound(nil, Ord(SFX_CHAT));
 end;
 
 //==============================================================================
@@ -3870,7 +3870,7 @@ class procedure TMenuLocalRoutines.M_CmdEndGame;
 begin
   if not TGameSession.UserGame then
   begin
-    S_StartSound(nil, Ord(SFX_CHAT));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_CHAT));
     exit;
   end;
 
@@ -3955,7 +3955,7 @@ class procedure TMenuLocalRoutines.M_CmdQuit;
 begin
   if not TGameSession.NetGame then
   begin
-    S_StartSound(nil, Ord(SFX_CHAT));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_CHAT));
     I_WaitVBL(1000);
   end;
   I_Quit;
@@ -4405,7 +4405,7 @@ begin
       exit;
 
     menuactive := false;
-    S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
     exit;
   end;
 
@@ -4420,7 +4420,7 @@ begin
             exit;
           end;
           TMenuLocalRoutines.M_SizeDisplay(0);
-          S_StartSound(nil, Ord(SFX_PICKUP_KEY));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_KEY));
           result := true;
           exit;
         end;
@@ -4432,7 +4432,7 @@ begin
             exit;
           end;
           TMenuLocalRoutines.M_SizeDisplay(1);
-          S_StartSound(nil, Ord(SFX_PICKUP_KEY));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_KEY));
           result := true;
           exit;
         end;
@@ -4447,7 +4447,7 @@ begin
       KEY_F2:  // Save
         begin
           M_StartControlPanel;
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
           TMenuLocalRoutines.M_SaveGame(0);
           result := true;
           exit;
@@ -4455,7 +4455,7 @@ begin
       KEY_F3:  // Load
         begin
           M_StartControlPanel;
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
           TMenuLocalRoutines.M_LoadGame(0);
           result := true;
           exit;
@@ -4465,27 +4465,27 @@ begin
           M_StartControlPanel;
           currentMenu := @SoundVolDef;
           itemOn := Ord(sfx_vol);
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
           result := true;
           exit;
         end;
       KEY_F5:   // Detail toggle
         begin
           TMenuLocalRoutines.M_ChangeDetail(0);
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
           result := true;
           exit;
         end;
       KEY_F6:   // Quicksave
         begin
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
           TMenuLocalRoutines.M_QuickSave;
           result := true;
           exit;
         end;
       KEY_F7:   // End game
         begin
-          S_StartSound(nil, Ord(SFX_CHAT));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_CHAT));
           TMenuLocalRoutines.M_EndGame(0);
           result := true;
           exit;
@@ -4498,14 +4498,14 @@ begin
         end;
       KEY_F9:   // Quickload
         begin
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
           TMenuLocalRoutines.M_QuickLoad;
           result := true;
           exit;
         end;
       KEY_F10:  // Quit Hexen
         begin
-          S_StartSound(nil, Ord(SFX_CHAT));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_CHAT));
           TMenuLocalRoutines.M_QuitGame(0);
           result := true;
           exit;
@@ -4544,7 +4544,7 @@ begin
     if ch = KEY_ESCAPE then
     begin
       M_StartControlPanel;
-      S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+      TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
       result := true;
       exit;
     end;
@@ -4559,7 +4559,7 @@ begin
         itemOn := -1;
         repeat
           inc(itemOn);
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
         until currentMenu.menuitems[itemOn].status <> -1;
         result := true;
         exit;
@@ -4569,7 +4569,7 @@ begin
         itemOn := currentMenu.numitems;
         repeat
           dec(itemOn);
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
         until currentMenu.menuitems[itemOn].status <> -1;
         result := true;
         exit;
@@ -4581,7 +4581,7 @@ begin
             itemOn := 0
           else
             inc(itemOn);
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
         until currentMenu.menuitems[itemOn].status <> -1;
         result := true;
         exit;
@@ -4593,7 +4593,7 @@ begin
             itemOn := currentMenu.numitems - 1
           else
             dec(itemOn);
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
         until currentMenu.menuitems[itemOn].status <> -1;
         result := true;
         exit;
@@ -4603,7 +4603,7 @@ begin
         if Assigned(currentMenu.menuitems[itemOn].routine) and
           (currentMenu.menuitems[itemOn].status = 2) then
         begin
-          S_StartSound(nil, Ord(SFX_PICKUP_KEY));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_KEY));
           currentMenu.menuitems[itemOn].routine(0);
         end
         else if (currentMenu.leftMenu <> nil) and not (ev._type in [ev_mouse, ev_joystick]) then
@@ -4611,7 +4611,7 @@ begin
           currentMenu.lastOn := itemOn;
           currentMenu := currentMenu.leftMenu;
           itemOn := currentMenu.lastOn;
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
         end;
         result := true;
         exit;
@@ -4621,7 +4621,7 @@ begin
         if Assigned(currentMenu.menuitems[itemOn].routine) and
           (currentMenu.menuitems[itemOn].status = 2) then
         begin
-          S_StartSound(nil, Ord(SFX_PICKUP_KEY));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_PICKUP_KEY));
           currentMenu.menuitems[itemOn].routine(1);
         end
         else if (currentMenu.rightMenu <> nil) and not (ev._type in [ev_mouse, ev_joystick]) then
@@ -4629,7 +4629,7 @@ begin
           currentMenu.lastOn := itemOn;
           currentMenu := currentMenu.rightMenu;
           itemOn := currentMenu.lastOn;
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
         end;
         result := true;
         exit;
@@ -4648,7 +4648,7 @@ begin
           begin
             currentMenu.menuitems[itemOn].routine(itemOn);
           end;
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
         end;
         result := true;
         exit;
@@ -4657,7 +4657,7 @@ begin
       begin
         currentMenu.lastOn := itemOn;
         TMenuLocalRoutines.M_ClearMenus;
-        S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+        TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
         result := true;
         exit;
       end;
@@ -4668,13 +4668,13 @@ begin
         if (currentMenu = @ReadDefExt) and (extrahelpscreens_idx > 0) then
         begin
           dec(extrahelpscreens_idx);
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
         end
         else if currentMenu.prevMenu <> nil then
         begin
           currentMenu := currentMenu.prevMenu;
           itemOn := currentMenu.lastOn;
-          S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_DOOR_LIGHT_CLOSE));
         end;
         result := true;
         exit;
@@ -4696,7 +4696,7 @@ begin
               currentMenu.menuitems[itemOn].routine(itemOn);
             end;
 
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
           result := true;
           exit;
         end;
@@ -4715,7 +4715,7 @@ begin
               currentMenu.menuitems[itemOn].routine(itemOn);
             end;
 
-          S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
+          TSoundRoutines.S_StartSound(nil, Ord(SFX_FIGHTER_HAMMER_HITWALL));
           result := true;
           exit;
         end;

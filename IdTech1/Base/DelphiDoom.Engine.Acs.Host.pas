@@ -367,7 +367,7 @@ begin
   LOrigin := nil;
   if ALine <> nil then
     LOrigin := Pmobj_t(@Pline_t(ALine).frontsector.soundorg);
-  S_StartSoundAtVolume(LOrigin, S_GetSoundNumForName(ASoundName), AVolume);
+  TSoundRoutines.S_StartSoundAtVolume(LOrigin, S_GetSoundNumForName(ASoundName), AVolume);
 end;
 
 procedure TEngineAcsHost.PlayThingSound(ATid: Integer; const ASoundName: string;
@@ -390,14 +390,14 @@ begin
   LMobj := P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
   while LMobj <> nil do
   begin
-    S_StartSoundAtVolume(LMobj, LSound, AVolume);
+    TSoundRoutines.S_StartSoundAtVolume(LMobj, LSound, AVolume);
     LMobj := P_FindMobjFromTID(ATid, {$IFDEF HEXEN}@LSearcher{$ELSE}LSearcher{$ENDIF});
   end;
 end;
 
 procedure TEngineAcsHost.PlayAmbientSound(const ASoundName: string; AVolume: Integer);
 begin
-  S_StartSoundAtVolume(nil, S_GetSoundNumForName(ASoundName), AVolume);
+  TSoundRoutines.S_StartSoundAtVolume(nil, S_GetSoundNumForName(ASoundName), AVolume);
 end;
 
 procedure TEngineAcsHost.StartSoundSequence(ALine: Pointer; const ASequenceName: string);
@@ -410,7 +410,7 @@ begin
   {$IFDEF HEXEN}
   S_StartSequenceName(LOrigin, ASequenceName);
   {$ELSE}
-  S_StartSound(LOrigin, ASequenceName);
+  TSoundRoutines.S_StartSound(LOrigin, ASequenceName);
   {$ENDIF}
 end;
 

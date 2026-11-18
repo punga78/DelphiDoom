@@ -76,11 +76,11 @@ procedure TEnginePlatHost.PlaySound(ASector: Pointer; ASound: TPlatSound);
 begin
   case ASound of
     TPlatSound.Move:
-      S_StartSound(@Psector_t(ASector).soundorg, Ord(sfx_stnmov));
+      TSoundRoutines.S_StartSound(@Psector_t(ASector).soundorg, Ord(sfx_stnmov));
     TPlatSound.Start:
-      S_StartSound(@Psector_t(ASector).soundorg, Ord(sfx_pstart));
+      TSoundRoutines.S_StartSound(@Psector_t(ASector).soundorg, Ord(sfx_pstart));
     TPlatSound.Stop:
-      S_StartSound(@Psector_t(ASector).soundorg, Ord(sfx_pstop));
+      TSoundRoutines.S_StartSound(@Psector_t(ASector).soundorg, Ord(sfx_pstop));
   end;
 end;
 

@@ -160,12 +160,12 @@ begin
     begin
       levelname := P_GetMapName({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap);
       if musid = 0 then
-        musnumber := S_DefaultMusicForMap({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap)
+        musnumber := TSoundRoutines.S_DefaultMusicForMap({$IFDEF DOOM_OR_HERETIC}TGameSession.GameEpisode, {$ENDIF}TGameSession.GameMap)
       else
         musnumber := P_FindMusinfoMusic(musid, levelname);
       if musnumber > 0 then
       begin
-        S_ChangeMusic(musnumber, true);
+        TSoundRoutines.S_ChangeMusic(musnumber, true);
         levelinfo := P_GetLevelInfo(levelname);
         levelinfo.musname := TWadRoutines.stringtochar8(strupper(S_music[musnumber].name));
       end;

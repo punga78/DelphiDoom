@@ -204,7 +204,7 @@ procedure THexenLevelRules.AfterLevel;
 begin
   // Check if the level is a lightning level
   P_InitLightning;
-  S_StopAllSounds;
+  TSoundRoutines.S_StopAllSounds;
   S_StopAllSequences;
 end;
 

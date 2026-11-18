@@ -85,11 +85,11 @@ begin
   // killough 4/15/98: fix generalized door opening sounds
   // (previously they always had the blazing door close sound)
   if ASpeed >= VDOORSPEED * 4 then
-    S_StartSound(@ASector.soundorg, Ord(sfx_bdopn))  // killough 4/15/98
+    TSoundRoutines.S_StartSound(@ASector.soundorg, Ord(sfx_bdopn))  // killough 4/15/98
   else
-    S_StartSound(@ASector.soundorg, Ord(sfx_doropn));
+    TSoundRoutines.S_StartSound(@ASector.soundorg, Ord(sfx_doropn));
 {$ELSE}
-  S_StartSound(@ASector.soundorg, Ord(sfx_bdopn));
+  TSoundRoutines.S_StartSound(@ASector.soundorg, Ord(sfx_bdopn));
 {$ENDIF}
 end;
 
@@ -101,9 +101,9 @@ end;
 procedure GenDoorStartCloseSound(ASector: Psector_t);
 begin
 {$IFDEF DOOM}
-  S_StartSound(@ASector.soundorg, Ord(sfx_dorcls));
+  TSoundRoutines.S_StartSound(@ASector.soundorg, Ord(sfx_dorcls));
 {$ELSE}
-  S_StartSound(@ASector.soundorg, Ord(sfx_bdcls));
+  TSoundRoutines.S_StartSound(@ASector.soundorg, Ord(sfx_bdcls));
 {$ENDIF}
 end;
 

@@ -595,7 +595,7 @@ begin
     player.pendingweapon := player.readyweapon;
 
   if player.pendingweapon = wp_gauntlets then
-    S_StartSound(player.mo, Ord(sfx_gntact));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gntact));
 
   if player.powers[Ord(pw_weaponlevel2)] <> 0 then
     newstate := statenum_t(wpnlev2info[Ord(player.pendingweapon)].upstate)
@@ -709,7 +709,7 @@ begin
     P_NoiseAlert(player.mo, player.mo);
     if (player.readyweapon = wp_gauntlets) and (player.refire = 0) then
      // Play the sound for the initial gauntlet attack
-      S_StartSound(player.mo, Ord(sfx_gntuse));
+      TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gntuse));
   end;
 end;
 
@@ -736,7 +736,7 @@ begin
   if (player.readyweapon = wp_staff) and
      (psp.state = @states[Ord(S_STAFFREADY2_1)]) then
     if P_Random < 128 then
-      S_StartSound(player.mo, Ord(sfx_stfcrk));
+      TSoundRoutines.S_StartSound(player.mo, Ord(sfx_stfcrk));
 
   // check for change
   //  if player is dead, put the weapon away
@@ -817,7 +817,7 @@ begin
   begin
     player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
-  S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
   player.chickenPeck := 12;
   psp.tics := psp.tics - P_Random and 7;
 end;
@@ -844,7 +844,7 @@ begin
   P_LineAttack(player.mo, angle, mrange, slope, damage);
   if TMapAim.LineTarget <> nil then
     player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x,  player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
-  S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
   player.chickenPeck := 12;
   psp.tics := psp.tics - P_Random and 3;
 end;
@@ -922,7 +922,7 @@ var
   damage: integer;
 begin
   mo := player.mo;
-  S_StartSound(mo, Ord(sfx_gldhit));
+  TSoundRoutines.S_StartSound(mo, Ord(sfx_gldhit));
   player.ammo[Ord(am_blaster)] := player.ammo[Ord(am_blaster)] - USE_BLSR_AMMO_1;
   TCommonAttackActions.P_BulletSlope(mo);
   damage := HITDICE(4);
@@ -932,7 +932,7 @@ begin
 
   PuffType := MT_BLASTERPUFF1;
   P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
-  S_StartSound(player.mo, Ord(sfx_blssht));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_blssht));
 end;
 
 //----------------------------------------------------------------------------
@@ -956,7 +956,7 @@ begin
   if mo <> nil then
     mo.thinker._function.acp2 := @TMobjRoutines.P_BlasterMobjThinker;
 
-  S_StartSound(player.mo, Ord(sfx_blssht));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_blssht));
 end;
 
 //----------------------------------------------------------------------------
@@ -981,7 +981,7 @@ begin
     angle := angle + LongWord((P_Random - P_Random) * $40000);
   PuffType := MT_GOLDWANDPUFF1;
   P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
-  S_StartSound(player.mo, Ord(sfx_gldhit));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gldhit));
 end;
 
 //----------------------------------------------------------------------------
@@ -1016,7 +1016,7 @@ begin
     P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
     angle := angle + ((ANG45 div 8) * 2) div 4;
   end;
-  S_StartSound(player.mo, Ord(sfx_gldhit));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gldhit));
 end;
 
 //----------------------------------------------------------------------------
@@ -1051,7 +1051,7 @@ begin
   angle := angle shr ANGLETOFINESHIFT;
   ball.momx := (pmo.momx div 2) + FixedMul(ball.info.speed, finecosine[angle]);
   ball.momy := (pmo.momy div 2) + FixedMul(ball.info.speed, finesine[angle]);
-  S_StartSound(ball, Ord(sfx_lobsht));
+  TSoundRoutines.S_StartSound(ball, Ord(sfx_lobsht));
   P_CheckMissileSpawn(ball);
 end;
 
@@ -1130,13 +1130,13 @@ begin
     ball.momz := (ball.momz * 192) div 256;
     ball.flags2 := ball.flags2 and not MF2_FLOORBOUNCE;
     P_SetMobjState(ball, statenum_t(ball.info.spawnstate));
-    S_StartSound(ball, Ord(sfx_bounce));
+    TSoundRoutines.S_StartSound(ball, Ord(sfx_bounce));
   end
   else
   begin // Explode
     ball.flags := ball.flags or MF_NOGRAVITY;
     ball.flags2 := ball.flags2 and not MF2_LOGRAV;
-    S_StartSound(ball, Ord(sfx_lobhit));
+    TSoundRoutines.S_StartSound(ball, Ord(sfx_lobhit));
   end;
 end;
 
@@ -1218,7 +1218,7 @@ begin
     if TMapAim.LineTarget <> nil then
       mo.special1 := NativeInt(TMapAim.LineTarget);
   end;
-  S_StartSound(player.mo, Ord(sfx_lobsht));
+  TSoundRoutines.S_StartSound(player.mo, Ord(sfx_lobsht));
 end;
 
 //----------------------------------------------------------------------------
@@ -1281,13 +1281,13 @@ begin
       ball.momy := FixedMul(ball.info.speed, finesine[angle]);
     end;
     P_SetMobjState(ball, statenum_t(ball.info.spawnstate));
-    S_StartSound(ball, Ord(sfx_pstop));
+    TSoundRoutines.S_StartSound(ball, Ord(sfx_pstop));
   end
   else
   begin // Explode
     ball.flags := ball.flags or MF_NOGRAVITY;
     ball.flags2 := ball.flags2 and not MF2_LOGRAV;
-    S_StartSound(ball, Ord(sfx_phohit));
+    TSoundRoutines.S_StartSound(ball, Ord(sfx_phohit));
   end;
 end;
 
@@ -1431,7 +1431,7 @@ begin
   if TMapAim.LineTarget <> nil then
     MissileMobj.special1 := NativeInt(TMapAim.LineTarget);
 
-  S_StartSound(MissileMobj, Ord(sfx_hrnpow));
+  TSoundRoutines.S_StartSound(MissileMobj, Ord(sfx_hrnpow));
 end;
 
 //----------------------------------------------------------------------------
@@ -1541,7 +1541,7 @@ begin
   mo.special2 := actor.special2; // Transfer player number
   P_CheckMissileSpawn(mo);
   if actor.special1 and 31 = 0 then
-    S_StartSound(actor, Ord(sfx_ramrain));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_ramrain));
 
   inc(actor.special1);
 end;
@@ -1673,7 +1673,7 @@ begin
   mo.momy := pmo.momy + FixedMul(mo.info.speed, finesine[angle shr ANGLETOFINESHIFT]);
   mo.momz := FixedMul(mo.info.speed, slope);
   if(player.refire = 0) or (TTickState.LevelTime mod 38 = 0) then
-    S_StartSound(player.mo, Ord(sfx_phopow));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_phopow));
 
   P_CheckMissileSpawn(mo);
 end;
@@ -1757,7 +1757,7 @@ begin
       else
         player.extralight := 1;
     end;
-    S_StartSound(player.mo, Ord(sfx_gntful));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gntful));
     exit;
   end;
   randVal := P_Random;
@@ -1771,10 +1771,10 @@ begin
   if player.powers[Ord(pw_weaponlevel2)] <> 0 then
   begin
     P_GiveBody(player, damage div 2);
-    S_StartSound(player.mo, Ord(sfx_gntpow));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gntpow));
   end
   else
-    S_StartSound(player.mo, Ord(sfx_gnthit));
+    TSoundRoutines.S_StartSound(player.mo, Ord(sfx_gnthit));
 
   // turn to face target
   angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y,  TMapAim.LineTarget.x, TMapAim.LineTarget.y);

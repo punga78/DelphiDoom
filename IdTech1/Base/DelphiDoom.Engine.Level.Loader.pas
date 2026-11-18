@@ -210,7 +210,7 @@ begin
 
   // Make sure all sounds are stopped before Z_FreeTags.
   Trace('S_Start');
-  S_Start;
+  TSoundRoutines.S_Start;
 
 {$IFDEF OPENGL}
   gld_CleanMemory; // JVAL OPENGL
@@ -434,7 +434,7 @@ begin
     if FGame.IsDeveloperMode then
       printf('S_PrecacheSounds()'#13#10);
     Trace('S_PrecacheSounds');
-    S_PrecacheSounds;
+    TSoundRoutines.S_PrecacheSounds;
   end;
 
 {$IFDEF OPENGL}

@@ -207,7 +207,7 @@ begin
   end;
 
   if P_Random < 48 then // Just noise
-    S_StartSound(pmo, Ord(sfx_chicact));
+    TSoundRoutines.S_StartSound(pmo, Ord(sfx_chicact));
 end;
 
 //----------------------------------------------------------------------------
@@ -246,7 +246,7 @@ begin
       destAngle := ANG45 * (playerstarts[0].angle div 45);
   end;
   P_Teleport(player.mo, destX, destY, destAngle);
-  S_StartSound(nil, Ord(sfx_wpnup)); // Full volume laugh
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup)); // Full volume laugh
 end;
 
 //----------------------------------------------------------------------------
@@ -275,7 +275,7 @@ begin
         P_PlayerRemoveArtifact(player, i);
         if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
-          S_StartSound(nil, Ord(sfx_artiuse));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_artiuse));
           ArtifactFlash := 4;
         end
       end
@@ -343,7 +343,7 @@ begin
           else
           begin // Succeeded
             player.chickenTics := 0;
-            S_StartSound(player.mo, Ord(sfx_wpnup));
+            TSoundRoutines.S_StartSound(player.mo, Ord(sfx_wpnup));
           end;
         end
         else
@@ -485,7 +485,7 @@ begin
   player.mo := mo;
   angle := angle shr ANGLETOFINESHIFT;
   fog := P_SpawnMobj(x + 20 * finecosine[angle], y + 20 * finesine[angle], z + TELEFOGHEIGHT, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
   THereticWeaponActions.P_PostChickenWeapon(player, weapon);
   result := true;
 end;

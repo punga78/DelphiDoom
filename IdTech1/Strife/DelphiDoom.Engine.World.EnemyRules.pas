@@ -1447,9 +1447,9 @@ begin
     begin
       if (actor._type = Ord(MT_INQUISITOR)) or (actor.flags_ex and MF_EX_BOSS <> 0) then
         // full volume
-        S_StartSound(nil, sound)
+        TSoundRoutines.S_StartSound(nil, sound)
       else
-        S_StartSound(actor, sound);
+        TSoundRoutines.S_StartSound(actor, sound);
     end;
   end;
 
@@ -1724,7 +1724,7 @@ begin
   begin
     if (actor.info.activesound >= Ord(sfx_agrac1)) and
        (actor.info.activesound <= Ord(sfx_agrac4)) then
-      S_StartSound(actor, Ord(sfx_agrac1) + P_Random mod 4)
+      TSoundRoutines.S_StartSound(actor, Ord(sfx_agrac1) + P_Random mod 4)
     else
       A_ActiveSound1(actor);
   end;
@@ -1785,7 +1785,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_reavat));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_reavat));
   A_FaceTarget(actor);
 
   slope := P_AimLineAttack(actor, actor.angle, 2048 * FRACUNIT);
@@ -1818,7 +1818,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_rifle));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_rifle));
   A_FaceTarget(actor);
 
   slope := P_AimLineAttack(actor, actor.angle, 2048 * FRACUNIT);
@@ -2037,7 +2037,7 @@ begin
   A_FaceTarget(actor);
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
   begin
-    S_StartSound(actor, Ord(sfx_revbld));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_revbld));
     P_DamageMobj(actor.target, actor, actor, 3 * (P_Random mod 8 + 1));
   end;
 end;
@@ -2060,7 +2060,7 @@ begin
   if actor.target = nil then
     exit;
 
-  S_StartSound(actor, Ord(sfx_pgrdat));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_pgrdat));
   A_FaceTarget(actor);
   bangle := actor.angle;
   slope := P_AimLineAttack(actor, bangle, 2048 * FRACUNIT);
@@ -2248,7 +2248,7 @@ begin
 
   speed := actor.info.speed * (2 * FRACUNIT div 3);
 
-  S_StartSound(actor, Ord(sfx_inqjmp));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_inqjmp));
 
   actor.z := actor.z + 64 * FRACUNIT;
 
@@ -2280,7 +2280,7 @@ end;
 class procedure TStrifeMonsterActions.A_InqFly(actor: Pmobj_t);
 begin
   if TTickState.LevelTime and 7 = 0 then
-    S_StartSound(actor, Ord(sfx_inqjmp));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_inqjmp));
 
   dec(actor.reactiontime);
   if (actor.reactiontime < 0) or (actor.momx = 0) or (actor.momy = 0) or
@@ -2678,7 +2678,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_FireChainShot(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_tend));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_tend));
 
   P_SpawnMobj(actor.x, actor.y, actor.z, Ord(MT_CHAINSHOT)); // haleyjd: fixed type
 
@@ -2702,7 +2702,7 @@ class procedure TStrifeMonsterActions.A_MissileSmoke(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
-  S_StartSound(actor, Ord(sfx_rflite));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_rflite));
   P_SpawnPuff(actor.x, actor.y, actor.z);
   mo := P_SpawnMobj(actor.x - actor.momx,
                     actor.y - actor.momy,
@@ -2755,7 +2755,7 @@ begin
   begin
     damage := 6 * (P_Random mod 10 + 1);
 
-    S_StartSound(actor, Ord(sfx_mtalht));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_mtalht));
     P_DamageMobj(actor.target, actor, actor, damage);
   end;
 end;
@@ -2847,7 +2847,7 @@ begin
     exit;
   end;
 
-  S_StartSound(actor, Ord(sfx_slop));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_slop));
 end;
 
 //==============================================================================
@@ -2870,9 +2870,9 @@ begin
   begin
     sound := Ord(sfx_pespna) + (P_Random mod 4);
     if actor.flags2_ex and MF2_EX_FULLVOLPAIN <> 0 then
-     S_StartSound(nil, sound)
+     TSoundRoutines.S_StartSound(nil, sound)
     else
-     S_StartSound(actor, sound);
+     TSoundRoutines.S_StartSound(actor, sound);
     exit;
   end;
 
@@ -3520,7 +3520,7 @@ begin
   t := P_Random;
   actor.momy := actor.momy + ((t and 3) - (P_Random and 3)) * FRACUNIT;
 
-  S_StartSound(actor, Ord(sfx_lgfire));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_lgfire));
 
   if actor.flags and MF_DROPPED <> 0 then
     exit; // not the parent
@@ -3793,7 +3793,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_InqChase(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_inqact));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_inqact));
   TMonsterBaseActions.A_Chase(actor);
 end;
 
@@ -3805,7 +3805,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_StalkerChase(actor: Pmobj_t);
 begin
-  S_StartSound(actor, Ord(sfx_spdwlk));
+  TSoundRoutines.S_StartSound(actor, Ord(sfx_spdwlk));
   TMonsterBaseActions.A_Chase(actor);
 end;
 
@@ -3829,7 +3829,7 @@ begin
   else
     sound := Ord(sfx_pldeth);
 
-  S_StartSound(mo, sound);
+  TSoundRoutines.S_StartSound(mo, sound);
 end;
 
 //==============================================================================
@@ -3889,7 +3889,7 @@ begin
   fog_y := mobj.y + FixedMul(20 * FRACUNIT, finesine[actor.angle div ANGLETOFINEUNIT]);
 
   fog := P_SpawnMobj(fog_x, fog_y, mobj.z, Ord(MT_TFOG));
-  S_StartSound(fog, Ord(sfx_telept));
+  TSoundRoutines.S_StartSound(fog, Ord(sfx_telept));
 
   dec(actor.health);
   if actor.health < 0 then
@@ -3965,7 +3965,7 @@ begin
   if actor.reactiontime = 2 then
     Psubsector_t(actor.subsector).sector.soundtarget := nil
   else if actor.reactiontime > 50 then
-    S_StartSound(actor, Ord(sfx_alarm));
+    TSoundRoutines.S_StartSound(actor, Ord(sfx_alarm));
 end;
 
 //==============================================================================
@@ -3984,9 +3984,9 @@ begin
     if TTickState.LevelTime and 7 = 0 then // haleyjd: added parens
     begin
       if (actor.flags2_ex and MF2_EX_FULLVOLACTIVE <> 0) then
-        S_StartSound(actor, actor.info.activesound)
+        TSoundRoutines.S_StartSound(actor, actor.info.activesound)
       else
-        S_StartSound(actor, actor.info.activesound);
+        TSoundRoutines.S_StartSound(actor, actor.info.activesound);
     end;
 end;
 

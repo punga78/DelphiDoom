@@ -185,7 +185,7 @@ begin
       sndid := snd_engine_id;
 
     if sndid >= 0 then
-      S_StartSound(@engineorigins[pnum], RX_SoundName(sndid));
+      TSoundRoutines.S_StartSound(@engineorigins[pnum], RX_SoundName(sndid));
     duration := RX_SoundDuration(sndid);
     if duration <= 0 then
       duration := UNKNOWNDURATIONTICS;
@@ -265,7 +265,7 @@ begin
     sirenorigins[pnum].x := p.mo.x;
     sirenorigins[pnum].y := p.mo.y;
     sirenorigins[pnum].z := p.mo.z;
-    S_StartSound(@sirenorigins[pnum], RX_SoundName(snd_siren_id));
+    TSoundRoutines.S_StartSound(@sirenorigins[pnum], RX_SoundName(snd_siren_id));
   end;
 end;
 

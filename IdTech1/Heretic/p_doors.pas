@@ -178,7 +178,7 @@ begin
         if not player.keys[Ord(key_blue)] then
         begin
           player._message := TXT_NEEDBLUEKEY;
-          S_StartSound(nil, Ord(sfx_plroof));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_plroof));
           exit;
         end;
       end;
@@ -191,7 +191,7 @@ begin
         if not player.keys[Ord(key_yellow)] then
         begin
           player._message := TXT_NEEDYELLOWKEY;
-          S_StartSound(nil, Ord(sfx_plroof));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_plroof));
           exit;
         end;
       end;
@@ -204,7 +204,7 @@ begin
         if not player.keys[Ord(key_green)] then
         begin
           player._message := TXT_NEEDGREENKEY;
-          S_StartSound(nil, Ord(sfx_plroof));
+          TSoundRoutines.S_StartSound(nil, Ord(sfx_plroof));
           exit;
         end;
       end;

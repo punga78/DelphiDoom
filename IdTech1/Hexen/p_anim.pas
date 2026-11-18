@@ -244,7 +244,7 @@ begin
   if foundSec then
   begin
     SkyTexture := P_GetMapSky2Texture(TGameSession.GameMap); // set alternate sky
-    S_StartSound(nil, Ord(SFX_THUNDER_CRASH));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_THUNDER_CRASH));
   end;
   // Calculate the next lighting flash
   if NextLightningFlash = 0 then

@@ -203,11 +203,11 @@ procedure TEngineHudEnvironment.PlayChatSound;
 begin
 {$IF DEFINED(DOOM)}
   if gamemode = commercial then
-    S_StartSound(nil, Ord(sfx_radio))
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_radio))
   else
-    S_StartSound(nil, Ord(sfx_tink));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_tink));
 {$ELSEIF DEFINED(STRIFE)}
-  S_StartSound(nil, Ord(sfx_radio));
+  TSoundRoutines.S_StartSound(nil, Ord(sfx_radio));
 {$ENDIF}
 end;
 

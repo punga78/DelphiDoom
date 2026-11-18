@@ -88,12 +88,12 @@ begin
   Add('I_ShutDownSound: Shut down sound.'#13#10,
     procedure
     begin
-      S_ShutDownSoundDevice;
+      TSoundRoutines.S_ShutDownSoundDevice;
     end);
   Add('I_ShutDownMusic: Shut down music.'#13#10,
     procedure
     begin
-      S_ShutDownMusicDevice;
+      TSoundRoutines.S_ShutDownMusicDevice;
     end);
   Add('I_ShutDownInput: Shut down input.'#13#10,
     procedure

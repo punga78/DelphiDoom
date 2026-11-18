@@ -228,7 +228,7 @@ begin
   FinaleLumpNum := TWadRoutines.W_GetNumForName('FINALE1');
   TFinaleLocalRoutines.F_InitializeFade(true);
 
-  S_ChangeMusic(Ord(mus_hall), false); // don't loop the song
+  TSoundRoutines.S_ChangeMusic(Ord(mus_hall), false); // don't loop the song
 end;
 
 //==============================================================================
@@ -281,7 +281,7 @@ begin
           FinaleText := TFinaleLocalRoutines.F_GetFinaleText(1);
           FinaleEndCount := Length(FinaleText) * TEXTSPEED + TEXTWAIT;
           FinaleLumpNum := TWadRoutines.W_GetNumForName('FINALE2');
-          S_ChangeMusic(Ord(mus_orb), false);
+          TSoundRoutines.S_ChangeMusic(Ord(mus_orb), false);
         end;
       3: // Pic 2 -- Fade out
         begin
@@ -295,7 +295,7 @@ begin
           FinaleEndCount := 71;
           TFinaleLocalRoutines.F_DeInitializeFade;
           TFinaleLocalRoutines.F_InitializeFade(true);
-          S_ChangeMusic(Ord(mus_chess), true);
+          TSoundRoutines.S_ChangeMusic(Ord(mus_chess), true);
         end;
       5: // Pic 3 , Text 3
         begin

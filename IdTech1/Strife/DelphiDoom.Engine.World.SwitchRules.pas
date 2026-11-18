@@ -412,7 +412,7 @@ begin
       if sl.sound <> 0 then
         sound := sl.sound;
       // haleyjd 20141026: [STRIFE]: Rogue fixed wrong sound origin
-      S_StartSound(@line.frontsector.soundorg, sound);
+      TSoundRoutines.S_StartSound(@line.frontsector.soundorg, sound);
       sides[line.sidenum[0]].toptexture := switchlist[i xor 1];
 
       if useAgain then
@@ -431,7 +431,7 @@ begin
         if sl.sound <> 0 then
           sound := sl.sound;
         // haleyjd 20141026: [STRIFE]: Rogue fixed wrong sound origin
-        S_StartSound(@line.frontsector.soundorg, sound);
+        TSoundRoutines.S_StartSound(@line.frontsector.soundorg, sound);
         sides[line.sidenum[0]].midtexture := switchlist[i xor 1];
 
         // villsa [STRIFE] affect second side of line
@@ -477,7 +477,7 @@ begin
           if sl.sound <> 0 then
             sound := sl.sound;
           // haleyjd 20141026: [STRIFE]: Rogue fixed wrong sound origin
-          S_StartSound(@line.frontsector.soundorg, sound);
+          TSoundRoutines.S_StartSound(@line.frontsector.soundorg, sound);
           sides[line.sidenum[0]].bottomtexture := switchlist[i xor 1];
 
           if useAgain then
@@ -508,7 +508,7 @@ var
 begin
   v1 := line.v1;
   v2 := line.v2;
-  S_StartSound(thing, Ord(sfx_stnmov));
+  TSoundRoutines.S_StartSound(thing, Ord(sfx_stnmov));
 
   if line.dx <> 0 then
   begin
@@ -1229,7 +1229,7 @@ begin
         else
         begin
           Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need a gold key');
-          S_StartSound(thing, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));
         end;
       end;
 
@@ -1285,7 +1285,7 @@ begin
         else
         begin
           Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
-          S_StartSound(thing, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));
         end;
       end;
 
@@ -1336,7 +1336,7 @@ begin
         if not P_PlayerHasItem(thing.player, MT_INV_CHALICE) <> 0 then
         begin
             Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need the chalice!');
-            S_StartSound(thing, Ord(sfx_oof));
+            TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));
         end
         else if EV_BuildStairs(line, buildDown16) <> 0 then
           P_ChangeSwitchTexture(line, false);
@@ -1348,7 +1348,7 @@ begin
         if @TGameSession.Players[TGameSession.ConsolePlayer] = thing.player then
           if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
           begin
-            S_StartVoice('VOC' + itoa(line.tag));
+            TSoundRoutines.S_StartVoice('VOC' + itoa(line.tag));
             line.special := 0;
           end;
       end;
@@ -1366,7 +1366,7 @@ begin
         if not Pplayer_t(thing.player).cards[Ord(key_BlueCrystalKey)] then
         begin
           Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need the Blue Crystal');
-          S_StartSound(thing, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));
         end
         else if EV_DoFloor(line, lowerFloor) <> 0 then
           P_ChangeSwitchTexture(line, false);
@@ -1378,7 +1378,7 @@ begin
         if not Pplayer_t(thing.player).cards[Ord(key_RedCrystalKey)] then
         begin
           Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('You need the Red Crystal');
-          S_StartSound(thing, Ord(sfx_oof));
+          TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));
         end
         else if EV_DoFloor(line, lowerFloor) <> 0 then
           P_ChangeSwitchTexture(line, false);
@@ -1431,7 +1431,7 @@ begin
           // BUG: doesn't make sfx_oof sound like all other message-
           // giving door types. I highly doubt this was intentional.
           Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('That doesn''t seem to work!');
-          S_StartSound(thing, Ord(sfx_oof));  // JVAL: added sound
+          TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));  // JVAL: added sound
         end
         else if EV_DoDoor(line, vld_normal) <> 0 then
           P_ChangeSwitchTexture(line, true);

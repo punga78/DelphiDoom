@@ -177,7 +177,7 @@ begin
   begin
     if switchlist[i] = texTop then
     begin
-      S_StartSound(buttonlist[0].soundorg, sound);
+      TSoundRoutines.S_StartSound(buttonlist[0].soundorg, sound);
       sides[line.sidenum[0]].toptexture := switchlist[i xor 1];
 
       if useAgain then
@@ -189,7 +189,7 @@ begin
     begin
       if switchlist[i] = texMid then
       begin
-        S_StartSound(buttonlist[0].soundorg, sound);
+        TSoundRoutines.S_StartSound(buttonlist[0].soundorg, sound);
         sides[line.sidenum[0]].midtexture := switchlist[i xor 1];
 
         if useAgain then
@@ -201,7 +201,7 @@ begin
       begin
         if switchlist[i] = texBot then
         begin
-          S_StartSound(buttonlist[0].soundorg, sound);
+          TSoundRoutines.S_StartSound(buttonlist[0].soundorg, sound);
           sides[line.sidenum[0]].bottomtexture := switchlist[i xor 1];
 
           if useAgain then

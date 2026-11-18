@@ -375,16 +375,16 @@ begin
   if (pmo.momx + pmo.momy = 0) and (P_Random < 64) then
   begin // Snout sniff
     THexenWeaponActions.P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
-    S_StartSound(pmo, Ord(SFX_PIG_ACTIVE1)); // snort
+    TSoundRoutines.S_StartSound(pmo, Ord(SFX_PIG_ACTIVE1)); // snort
     exit;
   end;
 
   if P_Random < 48 then
   begin
     if P_Random < 128 then
-      S_StartSound(pmo, Ord(SFX_PIG_ACTIVE1))
+      TSoundRoutines.S_StartSound(pmo, Ord(SFX_PIG_ACTIVE1))
     else
-      S_StartSound(pmo, Ord(SFX_PIG_ACTIVE2));
+      TSoundRoutines.S_StartSound(pmo, Ord(SFX_PIG_ACTIVE2));
   end;
 end;
 
@@ -499,7 +499,7 @@ begin
                      y + 20 * finesine[angle],
                      z + TELEFOGHEIGHT,
                      Ord(MT_TFOG));
-  S_StartSound(fog, Ord(SFX_TELEPORT));
+  TSoundRoutines.S_StartSound(fog, Ord(SFX_TELEPORT));
   THexenWeaponActions.P_PostMorphWeapon(player, weapon);
   result := true;
 end;
@@ -651,8 +651,8 @@ begin
         if (player.mo.momz <= -35 * FRACUNIT) and
            (player.mo.momz >= -40 * FRACUNIT) and
            (player.morphTics = 0) and
-           (not S_GetSoundPlayingInfo(player.mo, Ord(SFX_PLAYER_FIGHTER_FALLING_SCREAM))) then
-          S_StartSound(player.mo, Ord(SFX_PLAYER_FIGHTER_FALLING_SCREAM));
+           (not TSoundRoutines.S_GetSoundPlayingInfo(player.mo, Ord(SFX_PLAYER_FIGHTER_FALLING_SCREAM))) then
+          TSoundRoutines.S_StartSound(player.mo, Ord(SFX_PLAYER_FIGHTER_FALLING_SCREAM));
       end;
 
     PCLASS_CLERIC:
@@ -660,8 +660,8 @@ begin
         if (player.mo.momz <= -35 * FRACUNIT) and
            (player.mo.momz >= -40 * FRACUNIT) and
            (player.morphTics = 0) and
-           (not S_GetSoundPlayingInfo(player.mo, Ord(SFX_PLAYER_CLERIC_FALLING_SCREAM))) then
-          S_StartSound(player.mo, Ord(SFX_PLAYER_CLERIC_FALLING_SCREAM));
+           (not TSoundRoutines.S_GetSoundPlayingInfo(player.mo, Ord(SFX_PLAYER_CLERIC_FALLING_SCREAM))) then
+          TSoundRoutines.S_StartSound(player.mo, Ord(SFX_PLAYER_CLERIC_FALLING_SCREAM));
       end;
 
     PCLASS_MAGE:
@@ -669,8 +669,8 @@ begin
         if (player.mo.momz <= -35 * FRACUNIT) and
            (player.mo.momz >= -40 * FRACUNIT) and
            (player.morphTics = 0) and
-           (not S_GetSoundPlayingInfo(player.mo, Ord(SFX_PLAYER_MAGE_FALLING_SCREAM))) then
-          S_StartSound(player.mo, Ord(SFX_PLAYER_MAGE_FALLING_SCREAM));
+           (not TSoundRoutines.S_GetSoundPlayingInfo(player.mo, Ord(SFX_PLAYER_MAGE_FALLING_SCREAM))) then
+          TSoundRoutines.S_StartSound(player.mo, Ord(SFX_PLAYER_MAGE_FALLING_SCREAM));
       end;
 
   end;
@@ -1152,7 +1152,7 @@ var
   dist: fixed_t;
 begin
   pmo := player.mo;
-  S_StartSound(pmo, Ord(SFX_ARTIFACT_BLAST));
+  TSoundRoutines.S_StartSound(pmo, Ord(SFX_ARTIFACT_BLAST));
   P_NoiseAlert(player.mo, player.mo);
 
   think := TTickState.ThinkerCap.next;
@@ -1284,7 +1284,7 @@ begin
              (P_GiveArmor(mo.player, ARMOR_AMULET, 1)) then
           begin
             result := true;
-            S_StartSound(mo, Ord(SFX_MYSTICINCANT));
+            TSoundRoutines.S_StartSound(mo, Ord(SFX_MYSTICINCANT));
           end;
         end;
 
@@ -1294,7 +1294,7 @@ begin
           if P_GiveBody(mo.player, amount) then
           begin
             result := true;
-            S_StartSound(mo, Ord(SFX_MYSTICINCANT));
+            TSoundRoutines.S_StartSound(mo, Ord(SFX_MYSTICINCANT));
           end;
         end;
 
@@ -1305,7 +1305,7 @@ begin
              (TInterRoutines.P_GiveMana(mo.player, MANA_2, amount)) then
           begin
             result := true;
-            S_StartSound(mo, Ord(SFX_MYSTICINCANT));
+            TSoundRoutines.S_StartSound(mo, Ord(SFX_MYSTICINCANT));
           end;
         end;
 
@@ -1343,9 +1343,9 @@ begin
         if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
         begin
           if Ord(arti) < arti_firstpuzzitem then
-            S_StartSound(nil, Ord(SFX_ARTIFACT_USE))
+            TSoundRoutines.S_StartSound(nil, Ord(SFX_ARTIFACT_USE))
           else
-            S_StartSound(nil, Ord(SFX_PUZZLE_SUCCESS));
+            TSoundRoutines.S_StartSound(nil, Ord(SFX_PUZZLE_SUCCESS));
           ArtifactFlash := 4;
         end;
       end
@@ -1439,7 +1439,7 @@ begin
         end;
         if player.mo.momz <= -35 * FRACUNIT then
         begin // stop falling scream
-          S_StopSound(player.mo);
+          TSoundRoutines.S_StopSound(player.mo);
         end;
       end;
 
@@ -1781,7 +1781,7 @@ begin
         player.mo.flags2 := player.mo.flags2 or MF2_FLY;
         player.mo.flags := player.mo.flags or MF_NOGRAVITY;
         if player.mo.momz <= -39 * FRACUNIT then // stop falling scream
-          S_StopSound(player.mo);
+          TSoundRoutines.S_StopSound(player.mo);
       end;
     end
     else

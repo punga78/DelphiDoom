@@ -1311,7 +1311,7 @@ begin
   if TTickState.LevelTime and 16 <> 0 then
     SB_WriteText(si_xPos[0], 20, '*** SOUND DEBUG INFO ***');
 
-  S_GetChannelInfo(@s);
+  TSoundRoutines.S_GetChannelInfo(@s);
   if s.numchannels = 0 then
     exit;
 
@@ -2095,7 +2095,7 @@ begin
         musnum := Ord(mus_map01) + (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0') - 1;
 
         if (musnum > 0) and (musnum < nummusic) then
-          S_ChangeMusic(musnum, true)
+          TSoundRoutines.S_ChangeMusic(musnum, true)
         else
           CPlayer._message := STSTR_NOMUS;
       end

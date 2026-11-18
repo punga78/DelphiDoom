@@ -522,7 +522,7 @@ begin
     TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     GL_Console.Draw;         // Console draw on top of wipes and menus
     gl_frameender.FinishWipe;
-    HU_DoFPSStuff;
+    THudRoutines.HU_DoFPSStuff;
   until done;
   {$IFDEF STRIFE}
   TFadeRoutines.fade_ClearMemory;

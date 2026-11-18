@@ -286,7 +286,7 @@ begin
   {$IFDEF HEXEN}
   sndid := Ord(SFX_DOOR_LIGHT_CLOSE);
   {$ENDIF}
-  S_StartSound(nil, sndid);
+  TSoundRoutines.S_StartSound(nil, sndid);
   currentMenu := @simpledialogmenus[0];
 end;
 

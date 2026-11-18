@@ -313,7 +313,7 @@ begin
     player.pendingweapon := weapon;
 
     if (player = @TGameSession.Players[TGameSession.ConsolePlayer]) then
-      S_StartSound(nil, Ord(sfx_wpnup));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup));
     result := false;
     exit;
   end;
@@ -869,7 +869,7 @@ begin
   player.bonuscount := player.bonuscount + BONUSADD;
   player._message := pickupmsg;
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
-    S_StartSound(nil, sound);
+    TSoundRoutines.S_StartSound(nil, sound);
 end;
 
 //==============================================================================
@@ -1383,7 +1383,7 @@ begin
            (inflictor._type = Ord(MT_TORPEDO)) or
            (inflictor._type = Ord(MT_TORPEDOSPREAD)) then
         begin
-          S_StartSound(target, Ord(sfx_dsrptr));
+          TSoundRoutines.S_StartSound(target, Ord(sfx_dsrptr));
           target.health := -6666;
         end;
     end;
@@ -1407,7 +1407,7 @@ begin
       end;
 
       P_SetMobjState(target, S_BURN_00);  // 349
-      S_StartSound(target, Ord(sfx_burnme));
+      TSoundRoutines.S_StartSound(target, Ord(sfx_burnme));
 
       exit;
     end;

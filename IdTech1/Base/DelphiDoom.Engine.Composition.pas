@@ -702,7 +702,7 @@ const
   // frames per second of the sound output: the samples of the game (11025 Hz and the like) are resampled to it
   SOUND_OUTPUT_RATE = 44100;
 begin
-  S_ConfigureSound(
+  TSoundRoutines.S_ConfigureSound(
     function(AWithDevice: Boolean): ISfxPlayer
     var
       LDevice: ISoundDevice;
@@ -753,14 +753,14 @@ begin
   LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine, ALog, AShutdown);
   LMus := LMidiStream as IMusicBackend;
   // the order is the one in which a song is looked at: the first backend that knows it plays it
-  S_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
+  TSoundRoutines.S_ConfigureMusic(TAudioFactory.CreateMusicPlayer(TArray<IMusicBackend>.Create(
     TModuleMusicBackend.Create,
     TMp3MusicBackend.Create(TMp3Provider.Mp3),
     TId3MusicBackend.Create,
     TXmiMusicBackend.Create(ATempFiles, LMidiStream, ALog),
     LMus,
     TMidiFileMusicBackend.Create(ATempFiles, LMidiStream, ALog))));
-  S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
+  TSoundRoutines.S_ConfigureExternalMusic(TAudioFactory.CreateExternalMusicCache(
     TEngineExternalMusicSource.Create(AZone)));
 end;
 
@@ -1549,7 +1549,7 @@ begin
   LEcho := LEnvironment;
   THudFactory.CreateHeadsUp(TEngineHudRules.Build, LFlags, LPlayers, LMessages, LSettings, LSound,
     LEcho, LHeadsUp, LView);
-  HU_Configure(LHeadsUp, TEngineHudDrawer.Create(LView, LEnvironment));
+  THudRoutines.HU_Configure(LHeadsUp, TEngineHudDrawer.Create(LView, LEnvironment));
 end;
 
 procedure ComposeActorDef(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
@@ -1693,7 +1693,7 @@ begin
   LFileSystem := TPakFileSystem.Create(AServices);
   AFiles := LFileSystem;
   AContainers := LFileSystem;
-  PAK_Configure(AFiles, AContainers);
+  TPakRoutines.PAK_Configure(AFiles, AContainers);
 end;
 
 // The tables of things and states stay data (info.pas of the game); the searches, the names of

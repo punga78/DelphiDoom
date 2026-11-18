@@ -450,13 +450,13 @@ begin
       Pplayer_t(mo.player)._message := LockedBuffer;
       {$ENDIF}
       {$IFDEF DOOM_OR_STRIFE}
-      S_StartSound(mo, Ord(sfx_oof));
+      TSoundRoutines.S_StartSound(mo, Ord(sfx_oof));
       {$ENDIF}
       {$IFDEF HERETIC}
-      S_StartSound(mo, Ord(sfx_plroof));
+      TSoundRoutines.S_StartSound(mo, Ord(sfx_plroof));
       {$ENDIF}
       {$IFDEF HEXEN}
-      S_StartSound(mo, Ord(SFX_DOOR_LOCKED));
+      TSoundRoutines.S_StartSound(mo, Ord(SFX_DOOR_LOCKED));
       {$ENDIF}
       result := false;
       exit;

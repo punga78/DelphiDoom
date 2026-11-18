@@ -335,7 +335,7 @@ begin
           yovr := OVR_OverlayHeight;
           if yovr > y1 then
             y1 := yovr;
-          sub_y1 := V_PreserveY(HU_Height);
+          sub_y1 := V_PreserveY(THudRoutines.HU_Height);
           if sub_y1 > y1 then
             y1 := sub_y1;
           sub_y1 := V_PreserveY(diskbusy_height);

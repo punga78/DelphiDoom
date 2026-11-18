@@ -339,8 +339,8 @@ begin
     if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = VOXELDEFLUMPNAME then
       SC_ParseVoxelDefinition(TWadRoutines.W_TextLumpNum(i));
 
-  PAK_StringIterator(VOXELDEFLUMPNAME, SC_ParseVoxelDefinition);
-  PAK_StringIterator(VOXELDEFLUMPNAME + '.txt', SC_ParseVoxelDefinition);
+  TPakRoutines.PAK_StringIterator(VOXELDEFLUMPNAME, SC_ParseVoxelDefinition);
+  TPakRoutines.PAK_StringIterator(VOXELDEFLUMPNAME + '.txt', SC_ParseVoxelDefinition);
 
 {$IFNDEF OPENGL}
   for i := 0 to numstates - 1 do

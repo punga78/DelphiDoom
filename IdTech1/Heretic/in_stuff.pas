@@ -402,7 +402,7 @@ begin
   intertime := 0;
   oldintertime := 0;
   AM_Stop;
-  S_ChangeMusic(Ord(mus_intr), true)
+  TSoundRoutines.S_ChangeMusic(Ord(mus_intr), true)
 end;
 
 //========================================================================
@@ -558,13 +558,13 @@ begin
     begin
       interstate := 2;
       skipintermission := false;
-      S_StartSound(nil, Ord(sfx_dorcls));
+      TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
       exit;
     end;
     interstate := 3;
     cnt := 10;
     skipintermission := false;
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
   end;
 end;
 
@@ -856,7 +856,7 @@ begin
 
   if (in_sounds < 1) and (intertime >= 30) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].killcount, 200, 65, 3);
@@ -868,7 +868,7 @@ begin
 
   if (in_sounds < 2) and (intertime >= 60) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
 
@@ -881,7 +881,7 @@ begin
 
   if (in_sounds < 3) and (intertime >= 90) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].secretcount, 200, 115, 3);
@@ -893,7 +893,7 @@ begin
 
   if (in_sounds < 4) and (intertime >= 150) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds);
   end;
 
@@ -948,7 +948,7 @@ begin
       end
       else if (intertime >= 40) and (in_sounds2 < 1) then
       begin
-        S_StartSound(nil, Ord(sfx_dorcls));
+        TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
         inc(in_sounds2);
       end;
       IN_DrawNumber(killPercent[i], 85, ypos + 10, 3);
@@ -1011,13 +1011,13 @@ begin
 
   if (intertime >= 20) and (in_sounds3 < 1) then
   begin
-    S_StartSound(nil, Ord(sfx_dorcls));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_dorcls));
     inc(in_sounds3);
   end;
 
   if (intertime >= 100) and (slaughterboy <> 0) and (in_sounds3 < 2) then
   begin
-    S_StartSound(nil, Ord(sfx_wpnup));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_wpnup));
     inc(in_sounds3);
   end;
 
@@ -1180,7 +1180,7 @@ begin
   MT_ZeroMemory(screens[SCN_TMP], 320 * 200);
 
   if (oldinterstate <> 2) and (interstate = 2) then
-    S_StartSound(nil, Ord(sfx_pstop));
+    TSoundRoutines.S_StartSound(nil, Ord(sfx_pstop));
 
   oldinterstate := interstate;
   case interstate of

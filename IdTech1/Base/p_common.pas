@@ -4669,7 +4669,7 @@ begin
     if mo.flags_ex and MF_EX_RANDOMCUSTOMSOUND1 <> 0 then
       A_RandomCustomSound1(mo)
     else
-      S_StartSound(mo, mo.info.customsound1);
+      TSoundRoutines.S_StartSound(mo, mo.info.customsound1);
   end;
 end;
 
@@ -4685,7 +4685,7 @@ begin
     if mo.flags_ex and MF_EX_RANDOMCUSTOMSOUND2 <> 0 then
       A_RandomCustomSound2(mo)
     else
-      S_StartSound(mo, mo.info.customsound2);
+      TSoundRoutines.S_StartSound(mo, mo.info.customsound2);
   end;
 end;
 
@@ -4701,7 +4701,7 @@ begin
     if mo.flags_ex and MF_EX_RANDOMCUSTOMSOUND3 <> 0 then
       A_RandomCustomSound3(mo)
     else
-      S_StartSound(mo, mo.info.customsound3);
+      TSoundRoutines.S_StartSound(mo, mo.info.customsound3);
   end;
 end;
 
@@ -4723,7 +4723,7 @@ begin
       if randomlist.Count > 0 then
       begin
         rndidx := N_Random mod randomlist.Count;
-        S_StartSound(actor, randomlist[rndidx]);
+        TSoundRoutines.S_StartSound(actor, randomlist[rndidx]);
       end
       else
       // JVAL: This should never happen, see S_GetRandomSoundList() in sounds.pas
@@ -4893,9 +4893,9 @@ begin
   if actor.state.params = nil then
   begin
     if actor.state.misc2 <> 0 then
-      S_StartSound(nil, actor.state.misc1)
+      TSoundRoutines.S_StartSound(nil, actor.state.misc1)
     else
-      S_StartSound(actor, actor.state.misc1);
+      TSoundRoutines.S_StartSound(actor, actor.state.misc1);
     exit;
   end;
 
@@ -4911,7 +4911,7 @@ begin
   end;
 
   if sndidx > 0 then
-    S_StartSound(actor, sndidx);
+    TSoundRoutines.S_StartSound(actor, sndidx);
 end;
 
 //==============================================================================
@@ -4958,7 +4958,7 @@ begin
     end;
     sndidx := N_Random mod sidxs.Count;
     if sidxs[sndidx] > 0 then
-      S_StartSound(actor, sidxs[sndidx]);
+      TSoundRoutines.S_StartSound(actor, sidxs[sndidx]);
   finally
     sidxs.Free;
   end;
@@ -7198,7 +7198,7 @@ end;
 //==============================================================================
 class procedure TCommonSoundActions.A_StopSound(actor: Pmobj_t);
 begin
-  S_StopSound(actor);
+  TSoundRoutines.S_StopSound(actor);
 end;
 
 //==============================================================================
@@ -8274,7 +8274,7 @@ begin
     if TMonsterBaseActions.P_CheckMeleeRange(actor) then
     begin
       if actor.state.misc2 > 0 then
-        S_StartSound(actor, actor.state.misc2);
+        TSoundRoutines.S_StartSound(actor, actor.state.misc2);
       P_DamageMobj(actor.target, actor, actor, actor.state.misc1);
     end;
   end;
@@ -8478,7 +8478,7 @@ begin
       actor.state.params.IntVal[1] := sndidx;
     end;
     if sndidx > 0 then
-      S_StartSound(actor, sndidx);
+      TSoundRoutines.S_StartSound(actor, sndidx);
     damage := actor.state.params.IntVal[0];
     P_DamageMobj(actor.target, actor, actor, damage);
   end
@@ -8492,7 +8492,7 @@ begin
       actor.state.params.IntVal[2] := sndidx;
     end;
     if sndidx > 0 then
-      S_StartSound(actor, sndidx);
+      TSoundRoutines.S_StartSound(actor, sndidx);
   end;
 end;
 
@@ -8527,7 +8527,7 @@ begin
       actor.state.params.IntVal[3] := sndidx;
     end;
     if sndidx > 0 then
-      S_StartSound(actor, sndidx);
+      TSoundRoutines.S_StartSound(actor, sndidx);
     damage := actor.state.params.IntVal[2];
     P_DamageMobj(actor.target, actor, actor, damage);
   end
@@ -8722,13 +8722,13 @@ begin
   end;
 
   {$IFDEF DOOM_OR_STRIFE}
-  S_StartSound(thing, Ord(sfx_slop));
+  TSoundRoutines.S_StartSound(thing, Ord(sfx_slop));
   {$ENDIF}
   {$IFDEF HERETIC}
-  S_StartSound(thing, Ord(sfx_respawn));
+  TSoundRoutines.S_StartSound(thing, Ord(sfx_respawn));
   {$ENDIF}
   {$IFDEF HEXEN}
-  S_StartSound(thing, Ord(SFX_RESPAWN));
+  TSoundRoutines.S_StartSound(thing, Ord(SFX_RESPAWN));
   {$ENDIF}
 
   P_SetMobjState(thing, statenum_t(info.raisestate));
@@ -8912,7 +8912,7 @@ begin
   begin
     damage := (P_Random mod 8 + 1) * meleedamage;
     if meleesound > 0 then
-      S_StartSound(actor, meleesound);
+      TSoundRoutines.S_StartSound(actor, meleesound);
     P_DamageMobj(actor.target, actor, actor, damage);
   end
   else if domissile and (missiletype <> 0) then
@@ -10652,7 +10652,7 @@ begin
   damagemod := actor.state.params.IntVal[4];
 
   A_FaceTarget(actor);
-  S_StartSound(actor, actor.info.attacksound);
+  TSoundRoutines.S_StartSound(actor, actor.info.attacksound);
 
   aimslope := P_AimLineAttack(actor, actor.angle, MISSILERANGE);
 
@@ -10716,7 +10716,7 @@ begin
     exit;
 
   if hitsound > 0 then
-    S_StartSound(actor, hitsound);
+    TSoundRoutines.S_StartSound(actor, hitsound);
 
   damage := (N_Random mod damagemod + 1) * damagebase;
   P_DamageMobj(actor.target, actor, actor, damage);
@@ -10868,7 +10868,7 @@ begin
 
           P_SetMobjState(actor, statenum_t(healstate));
           if healsound > 0 then
-            S_StartSound(healcorpsehit, healsound);
+            TSoundRoutines.S_StartSound(healcorpsehit, healsound);
           info := healcorpsehit.info;
 
           P_SetMobjState(healcorpsehit, statenum_t(info.raisestate));
@@ -12171,7 +12171,7 @@ begin
   end;
 
   if hitsound > 0 then
-    S_StartSound(player.mo, hitsound);
+    TSoundRoutines.S_StartSound(player.mo, hitsound);
 
   // turn to face target
   player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
@@ -12208,9 +12208,9 @@ begin
   begin
     fullsound := psp.state.params.IntVal[0] <> 0;
     if fullsound then
-      S_StartSound(nil, sndid)
+      TSoundRoutines.S_StartSound(nil, sndid)
     else
-      S_StartSound(player.mo, sndid);
+      TSoundRoutines.S_StartSound(player.mo, sndid);
   end;
 end;
 

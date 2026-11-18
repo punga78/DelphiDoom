@@ -725,7 +725,7 @@ begin
       if TMapCheck.Thing.info.ripsound <> 0 then
         A_RipSound1(TMapCheck.Thing)
       else
-        S_StartSound(TMapCheck.Thing, Ord(sfx_ripslop));
+        TSoundRoutines.S_StartSound(TMapCheck.Thing, Ord(sfx_ripslop));
 
       damage := ((P_Random and 3) + 2) * TMapCheck.Thing.damage;
       P_DamageMobj(thing, TMapCheck.Thing, TMapCheck.Thing.target, damage);

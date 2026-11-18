@@ -1057,7 +1057,7 @@ begin
           if (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0') > 35 then
             plyr._message := STSTR_NOMUS
           else
-            S_ChangeMusic(musnum, true);
+            TSoundRoutines.S_ChangeMusic(musnum, true);
         end
         else
         begin
@@ -1066,7 +1066,7 @@ begin
           if (musnum > 0) and (buf[2] <> '0') and
              ( ((musnum < 28) and (gamemode <> shareware)) or
                ((musnum < 10) and (gamemode = shareware))) then
-            S_ChangeMusic(musnum, true)
+            TSoundRoutines.S_ChangeMusic(musnum, true)
           else
             plyr._message := STSTR_NOMUS;
         end;

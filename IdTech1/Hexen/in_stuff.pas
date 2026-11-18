@@ -180,7 +180,7 @@ begin
         if msgSize >= MAX_INTRMSN_MESSAGE_SIZE then
           I_Error('IN_InitStats(): Cluster message too long (%s)', [msgLumpName]);
         HubCount := msgSize * TEXTSPEED + TEXTWAIT;
-        S_ChangeMusic(Ord(mus_hub), true);
+        TSoundRoutines.S_ChangeMusic(Ord(mus_hub), true);
       end;
     end;
   end
@@ -221,7 +221,7 @@ begin
     begin // don't do the slaughter stuff if everyone is equal
       slaughterboy := 0;
     end;
-    S_ChangeMusic(Ord(mus_hub), true);
+    TSoundRoutines.S_ChangeMusic(Ord(mus_hub), true);
   end;
 end;
 
@@ -574,7 +574,7 @@ begin
   if (intertime >= TALLY_EFFECT_TICKS) and not showTotals then
   begin
     showTotals := true;
-    S_StartSound(nil, Ord(SFX_PLATFORM_STOP));
+    TSoundRoutines.S_StartSound(nil, Ord(SFX_PLATFORM_STOP));
   end;
   y := FixedInt(yPos);
   for i := 0 to MAXPLAYERS - 1 do
