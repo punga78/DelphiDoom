@@ -2449,7 +2449,7 @@ begin
     exit;
   end;
 
-  if P_SplashImmune(thing, TMapBlast.Spot) then
+  if TCommonFriendActions.P_SplashImmune(thing, TMapBlast.Spot) then
   begin
     result := true;
     exit;
@@ -2655,7 +2655,7 @@ begin
     exit;
   end;
 
-  if P_SplashImmune(thing, TMapBlast.Spot) then
+  if TCommonFriendActions.P_SplashImmune(thing, TMapBlast.Spot) then
   begin
     result := true;
     exit;

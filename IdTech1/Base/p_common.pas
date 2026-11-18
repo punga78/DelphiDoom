@@ -120,27 +120,6 @@ procedure P_ResolveMBF21Flags(const m: Pmobjinfo_t);
 
 //==============================================================================
 //
-// P_InfightingImmune
-//
-//==============================================================================
-function P_InfightingImmune(target, source: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_ProjectileImmune
-//
-//==============================================================================
-function P_ProjectileImmune(target, source: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_SplashImmune
-//
-//==============================================================================
-function P_SplashImmune(target, spot: Pmobj_t): boolean;
-
-//==============================================================================
-//
 // A_AddFlags
 //
 //==============================================================================
@@ -187,28 +166,6 @@ procedure A_RefireTo(player: Pplayer_t; psp: Ppspdef_t);
 //
 //==============================================================================
 procedure A_GunFlashTo(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-// A_SetProjectileGroup
-//
-// Non MBF21 codeptrs for manupulating MBF21 features
-//
-//==============================================================================
-procedure A_SetProjectileGroup(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetInfightingGroup
-//
-//==============================================================================
-procedure A_SetInfightingGroup(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetSplashGroup
-//
-//==============================================================================
-procedure A_SetSplashGroup(actor: Pmobj_t);
 
 const
   FLOATBOBSIZE = 64;
@@ -311,13 +268,6 @@ const
   AMF_TARGETEMITTER = 1;
   AMF_TARGETNONPLAYER = 2;
   AMF_EMITFROMTARGET = 4;
-
-//==============================================================================
-//
-// PlayerToId
-//
-//==============================================================================
-function PlayerToId(const p: Pplayer_t): integer;
 
 //==============================================================================
 //
@@ -2454,6 +2404,64 @@ type
     //
     //==============================================================================
     class procedure P_BulletSlope(mo: Pmobj_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonFriendActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_InfightingImmune
+    //
+    //==============================================================================
+    class function P_InfightingImmune(target, source: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_ProjectileImmune
+    //
+    //==============================================================================
+    class function P_ProjectileImmune(target, source: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_SplashImmune
+    //
+    //==============================================================================
+    class function P_SplashImmune(target, spot: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    // A_SetProjectileGroup
+    //
+    // Non MBF21 codeptrs for manupulating MBF21 features
+    //
+    //==============================================================================
+    class procedure A_SetProjectileGroup(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetInfightingGroup
+    //
+    //==============================================================================
+    class procedure A_SetInfightingGroup(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetSplashGroup
+    //
+    //==============================================================================
+    class procedure A_SetSplashGroup(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // PlayerToId
+    //
+    //==============================================================================
+    class function PlayerToId(const p: Pplayer_t): integer; static;
   end;
 
 
@@ -8237,7 +8245,7 @@ end;
 // PlayerToId
 //
 //==============================================================================
-function PlayerToId(const p: Pplayer_t): integer;
+class function TCommonFriendActions.PlayerToId(const p: Pplayer_t): integer;
 var
   i: integer;
 begin
@@ -8271,7 +8279,7 @@ begin
   // [crispy] first, try to apply to pspr states
   // JVAL: Check if obj is a player_t
   player := obj;
-  id := PlayerToId(player);
+  id := TCommonFriendActions.PlayerToId(player);
   if (psp <> nil) and (id >= 0) then
   begin
     if N_Random < psp.state.misc2 then
@@ -10328,7 +10336,7 @@ end;
 // mbf21: dehacked infighting groups
 //
 //==============================================================================
-function P_InfightingImmune(target, source: Pmobj_t): boolean;
+class function TCommonFriendActions.P_InfightingImmune(target, source: Pmobj_t): boolean;
 begin
   result :=  // not default behaviour, and same group
     (target.infighting_group <> IG_DEFAULT) and
@@ -10341,7 +10349,7 @@ end;
 // mbf21: dehacked projectile groups
 //
 //==============================================================================
-function P_ProjectileImmune(target, source: Pmobj_t): boolean;
+class function TCommonFriendActions.P_ProjectileImmune(target, source: Pmobj_t): boolean;
 begin
   result :=
     ( // PG_GROUPLESS means no immunity, even to own species
@@ -10366,7 +10374,7 @@ end;
 // mbf21: dehacked splash groups
 //
 //==============================================================================
-function P_SplashImmune(target, spot: Pmobj_t): boolean;
+class function TCommonFriendActions.P_SplashImmune(target, spot: Pmobj_t): boolean;
 begin
   result := // not default behaviour and same group
     (target.splash_group <> SG_DEFAULT) and
@@ -12449,7 +12457,7 @@ end;
 // A_SetProjectileGroup(group: string);
 //
 //==============================================================================
-procedure A_SetProjectileGroup(actor: Pmobj_t);
+class procedure TCommonFriendActions.A_SetProjectileGroup(actor: Pmobj_t);
 var
   group: integer;
 begin
@@ -12466,7 +12474,7 @@ end;
 // A_SetInfightingGroup(group: string);
 //
 //==============================================================================
-procedure A_SetInfightingGroup(actor: Pmobj_t);
+class procedure TCommonFriendActions.A_SetInfightingGroup(actor: Pmobj_t);
 var
   group: integer;
 begin
@@ -12483,7 +12491,7 @@ end;
 // A_SetSplashGroup(group: string);
 //
 //==============================================================================
-procedure A_SetSplashGroup(actor: Pmobj_t);
+class procedure TCommonFriendActions.A_SetSplashGroup(actor: Pmobj_t);
 var
   group: integer;
 begin
@@ -12506,7 +12514,7 @@ var
   state: Pstate_t;
   p: Pplayer_t;
 begin
-  if PlayerToId(player) >= 0 then
+  if TCommonFriendActions.PlayerToId(player) >= 0 then
   begin
     p := player;
     state := psp.state;

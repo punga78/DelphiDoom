@@ -2251,7 +2251,7 @@ begin
     // Target actor is not intent on another actor,
     // so make him chase after source
     if G_PlayingEngineVersion >= VERSION207 then
-      ignore := P_BothFriends(target, source) or P_InfightingImmune(target, source)
+      ignore := P_BothFriends(target, source) or TCommonFriendActions.P_InfightingImmune(target, source)
     else
       ignore := false;
 

@@ -994,9 +994,9 @@ begin
   DEH_AddAction(@A_CheckAmmo, 'A_CheckAmmo(state: integer; minammo: integer);', [0, 0]);
   DEH_AddAction(@A_RefireTo, 'A_RefireTo(state: integer; skipammo: integer);', [0, 0]);
   DEH_AddAction(@A_GunFlashTo, 'A_GunFlashTo(state: integer; noplayerstatechange: integer);', [0, 0]);
-  DEH_AddAction(@A_SetProjectileGroup, 'A_SetProjectileGroup(group: string);');
-  DEH_AddAction(@A_SetInfightingGroup, 'A_SetInfightingGroup(group: string);');
-  DEH_AddAction(@A_SetSplashGroup, 'A_SetSplashGroup(group: string);');
+  DEH_AddAction(@TCommonFriendActions.A_SetProjectileGroup, 'A_SetProjectileGroup(group: string);');
+  DEH_AddAction(@TCommonFriendActions.A_SetInfightingGroup, 'A_SetInfightingGroup(group: string);');
+  DEH_AddAction(@TCommonFriendActions.A_SetSplashGroup, 'A_SetSplashGroup(group: string);');
   DEH_AddAction(@A_Delayfire, 'A_Delayfire(tics: integer = TICRATE);');
   DEH_AddAction(@TCommonAppearanceActions.A_SetTranslation, 'A_SetTranslation(trans: string);');
   DEH_AddAction(@TCommonAppearanceActions.A_SetBloodColor, 'A_SetBloodColor(color: string);');

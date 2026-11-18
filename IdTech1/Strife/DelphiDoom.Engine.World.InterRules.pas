@@ -1443,7 +1443,7 @@ begin
       // if not intent on another player,
       // chase after this one
       if G_PlayingEngineVersion >= VERSION207 then
-        ignore := P_BothFriends(target, source) or P_InfightingImmune(target, source)
+        ignore := P_BothFriends(target, source) or TCommonFriendActions.P_InfightingImmune(target, source)
       else
         ignore := false;
 

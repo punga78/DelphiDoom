@@ -746,7 +746,7 @@ begin
     else
     begin
       if (TMapCheck.Thing.target <> nil) and
-        (P_ProjectileImmune(thing, TMapCheck.Thing.target) or
+        (TCommonFriendActions.P_ProjectileImmune(thing, TMapCheck.Thing.target) or
          (Info_GetInheritance(TMapCheck.Thing.target.info) = Info_GetInheritance(thing.info))) then
       begin
         // Don't hit same species as originator.
