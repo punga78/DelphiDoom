@@ -2126,7 +2126,7 @@ begin
   printf('R_InitRippleEffects'#13#10);
   TRendererRipple.R_InitRippleEffects;
   printf('R_InitInterpolations'#13#10);
-  R_InitInterpolations;
+  TRendererInterpolation.R_InitInterpolations;
   printf('R_InitPointToAngle'#13#10);
   R_InitPointToAngle;
   printf('R_InitTables'#13#10);
@@ -2221,7 +2221,7 @@ begin
   R_ShutDown32Cache;
 {$ENDIF}
   printf(#13#10 + 'R_ShutDownInterpolation');
-  R_ResetInterpolationBuffer;
+  TRendererInterpolation.R_ResetInterpolationBuffer;
 {$IFNDEF OPENGL}
   printf(#13#10 + 'R_FreeTransparency8Tables');
   R_FreeTransparency8Tables;
@@ -2920,7 +2920,7 @@ end;
 //==============================================================================
 procedure R_Ticker;
 begin
-  R_InterpolateTicker;
+  TRendererInterpolation.R_InterpolateTicker;
 end;
 
 end.

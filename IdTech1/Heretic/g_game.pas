@@ -2645,7 +2645,7 @@ begin
   levelinf.musname := stringtochar8('');
   levelinf.skyflat := stringtochar8('');
 
-  R_ResetInterpolationBuffer;
+  TRendererInterpolation.R_ResetInterpolationBuffer;
 
   M_ClearRandom;
   PS_NewWorld;

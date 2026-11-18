@@ -443,7 +443,7 @@ begin
   gld_PreprocessLevel; // JVAL OPENGL
 {$ENDIF}
 
-  R_SetInterpolateSkipTicks(2);
+  TRendererInterpolation.R_SetInterpolateSkipTicks(2);
 
   FRules.AfterLevel;
 end;

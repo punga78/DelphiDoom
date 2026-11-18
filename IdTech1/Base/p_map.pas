@@ -516,7 +516,7 @@ begin
   P_SetThingPosition(thing);
 
   if thing.player = viewplayer then
-    R_SetInterpolateSkipTicks(1);
+    TRendererInterpolation.R_SetInterpolateSkipTicks(1);
 
   TMapGameRules.MarkJustAppeared(thing);
   thing.intrplcnt := 0;
