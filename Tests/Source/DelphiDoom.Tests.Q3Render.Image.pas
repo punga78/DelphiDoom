@@ -335,7 +335,7 @@ begin
     Assert.AreEqual(1, LLog.Warnings.Count);
     Assert.IsTrue(ContainsText(LLog.Warnings[0], 'top-down'));
     // the same image as without the bit
-    Assert.AreEqual(8, Length(LImage.Pixels));
+    Assert.AreEqual<Integer>(8, Length(LImage.Pixels));
   finally
     LReader.Free;
   end;
@@ -520,7 +520,7 @@ begin
   Assert.AreEqual(0, LCatalog.Find('none.tga'));
   Assert.AreEqual(0, LCatalog.Find('none.tga'));
   Assert.AreEqual(0, LCatalog.Find('bad.tga'));
-  Assert.AreEqual(2, Length(LCatalog.MissingNames));
+  Assert.AreEqual<Integer>(2, Length(LCatalog.MissingNames));
   Assert.AreEqual(0, LCatalog.LoadedCount);
   // none.tga: tga and jpg once; bad.tga: the tga that raises
   Assert.AreEqual(3, LFiles.Reads.Count);
@@ -541,9 +541,9 @@ begin
   LKept.Find('a.tga');
   LDropped.Find('a.tga');
   LKept.GetImage(1, LImage);
-  Assert.AreEqual(60, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(60, Length(LImage.Pixels));
   LDropped.GetImage(1, LImage);
-  Assert.AreEqual(0, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(0, Length(LImage.Pixels));
   Assert.AreEqual(5, LImage.Height);
 end;
 

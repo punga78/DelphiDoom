@@ -71,9 +71,9 @@ begin
   LWorld := LoadSample(LFiles, LKeep, LSystem, 0, LSurfaces);
   Assert.IsNotNull(LWorld);
   Assert.AreEqual(LSurfaces, LWorld.SurfaceCount);
-  Assert.AreEqual(1, Length(LWorld.GetFaces), 'the quad');
-  Assert.AreEqual(1, Length(LWorld.GetTriangleSurfaces), 'the soup');
-  Assert.AreEqual(1, Length(LWorld.GetFlares), 'the flare');
+  Assert.AreEqual<Integer>(1, Length(LWorld.GetFaces), 'the quad');
+  Assert.AreEqual<Integer>(1, Length(LWorld.GetTriangleSurfaces), 'the soup');
+  Assert.AreEqual<Integer>(1, Length(LWorld.GetFlares), 'the flare');
   // every other surface is a patch; the one with SURF_NODRAW has no grid
   Assert.AreEqual(LSurfaces - 3 - 1, LWorld.PatchCount);
   Assert.AreEqual(0, LWorld.RefusedCount);
@@ -134,8 +134,8 @@ begin
   LWorld := LSystem.WorldLoader.Load('maps/room.bsp');
   Assert.IsNotNull(LWorld);
   Assert.AreEqual(1, LWorld.RefusedCount);
-  Assert.AreEqual(0, Length(LWorld.GetFaces));
-  Assert.AreEqual(1, Length(LWorld.GetTriangleSurfaces), 'the others are loaded');
+  Assert.AreEqual<Integer>(0, Length(LWorld.GetFaces));
+  Assert.AreEqual<Integer>(1, Length(LWorld.GetTriangleSurfaces), 'the others are loaded');
 end;
 
 procedure TTestQ3WorldLoader.DovrebbeDireCheUnPuntoVedeSeStesso;
@@ -195,7 +195,7 @@ begin
   Assert.AreEqual(AnsiString(LWorld.GetBsp.ShaderName(0)), LWorld.ShaderNames[0]);
   // every lightmap is an RGBA image of 128 x 128
   if Length(LWorld.GetLightmaps) > 0 then
-    Assert.AreEqual(65536, Length(LWorld.GetLightmaps[0]));
+    Assert.AreEqual<Integer>(65536, Length(LWorld.GetLightmaps[0]));
 end;
 
 initialization

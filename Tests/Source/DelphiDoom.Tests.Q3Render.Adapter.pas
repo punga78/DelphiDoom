@@ -98,7 +98,7 @@ begin
   Assert.AreEqual(LPlain.RegisterModel('models/none.md3'), LRig.Adapter.RegisterModel('models/none.md3'));
   Assert.AreEqual(LPlain.RegisterModel('models/w.md3'), LRig.Adapter.RegisterModel('models/w.md3'));
   Assert.AreEqual(LPlain.RegisterSkin('x'), LRig.Adapter.RegisterSkin('x'));
-  Assert.AreEqual(3, Length(LRig.Recorder.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER)), 'gfx/a twice');
+  Assert.AreEqual<Integer>(3, Length(LRig.Recorder.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER)), 'gfx/a twice');
   Assert.AreEqual(8, LRig.Recorder.CallCount('RegisterShader') + LRig.Recorder.CallCount('RegisterShaderNoMip'));
 end;
 
@@ -109,7 +109,7 @@ begin
   LRig := MakeRig;
   LRig.Adapter.RegisterShader('gfx/x');
   LRig.Adapter.RegisterShaderNoMip('gfx/y');
-  Assert.AreEqual(2, Length(LRig.System.Shaders.DefectiveNames), 'both were asked of the shader table (no image: defective)');
+  Assert.AreEqual<Integer>(2, Length(LRig.System.Shaders.DefectiveNames), 'both were asked of the shader table (no image: defective)');
   LRig.Adapter.RegisterModel('models/w.md3');
   Assert.AreEqual(1, LRig.System.Models.LoadedCount);
 end;
@@ -234,7 +234,7 @@ begin
   LRig.Adapter.RegisterFont(LMemoryIntf, 'f', 16, 1000);
   LRig.Adapter.RemapShader('a', 'b', '');
   Assert.AreEqual(0, LRig.Adapter.MarkFragments(LMemoryIntf, 0, 0, 0, 0, 0, 0, 0));
-  Assert.AreEqual(11332, Length(LRig.Adapter.GlConfig));
+  Assert.AreEqual<Integer>(11332, Length(LRig.Adapter.GlConfig));
   Assert.AreEqual(1, LRig.Recorder.CallCount('RenderScene'));
   Assert.AreEqual(1, LRig.Recorder.CallCount('DrawStretchPic'));
   Assert.AreEqual(1, LRig.Recorder.CallCount('AddPolyToScene'));

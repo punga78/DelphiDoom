@@ -99,7 +99,7 @@ begin
   Assert.AreEqual(0, LSystem.Shaders.DefinedCount);
   // and without the image it is the default shader
   Assert.AreEqual(0, LSystem.Shaders.Register('textures/not_there'));
-  Assert.AreEqual(1, Length(LSystem.Shaders.DefectiveNames));
+  Assert.AreEqual<Integer>(1, Length(LSystem.Shaders.DefectiveNames));
 end;
 
 procedure TTestQ3ShaderRegistry.DovrebbeDareLoStessoNumeroSenzaMaiuscoleEsenzaEstensione;
@@ -128,8 +128,8 @@ begin
   // ParseStage cannot find the image: the shader is the default one, and RE_RegisterShader answers 0
   Assert.AreEqual(0, LSystem.Shaders.Register('textures/test/missing'));
   Assert.AreEqual(0, LSystem.Shaders.Register('textures/test/missing'));
-  Assert.AreEqual(1, Length(LSystem.Shaders.DefectiveNames));
-  Assert.AreEqual(1, Length(LSystem.Images.MissingNames));
+  Assert.AreEqual<Integer>(1, Length(LSystem.Shaders.DefectiveNames));
+  Assert.AreEqual<Integer>(1, Length(LSystem.Images.MissingNames));
   Assert.AreEqual(0, LSystem.Shaders.RegisteredCount);
   // the next good one is still the number 1
   Assert.AreEqual(1, LSystem.Shaders.Register('textures/test/two'));
@@ -162,7 +162,7 @@ begin
   // one of the six sides is there, the others are missing: not an error for a sky (the C uses the default image)
   Assert.IsTrue(LSystem.Images.LoadedCount >= 1);
   Assert.IsTrue(Length(LSystem.Images.MissingNames) >= 1);
-  Assert.AreEqual(0, Length(LSystem.Shaders.DefectiveNames));
+  Assert.AreEqual<Integer>(0, Length(LSystem.Shaders.DefectiveNames));
 end;
 
 procedure TTestQ3ShaderRegistry.DovrebbeDareZeroPerUnNomeVuotoOTroppoLungo;

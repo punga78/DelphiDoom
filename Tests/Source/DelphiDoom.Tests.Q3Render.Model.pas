@@ -148,7 +148,7 @@ begin
   Assert.AreEqual(0, LRig.System.Models.Register('models/none.md3'));
   Assert.AreEqual(LReads, LRig.Files.Reads.Count, 'the disk is not scanned again');
   Assert.AreEqual(0, LRig.System.Models.Register('models/bad.md3'));
-  Assert.AreEqual(2, Length(LRig.System.Models.MissingNames));
+  Assert.AreEqual<Integer>(2, Length(LRig.System.Models.MissingNames));
   Assert.AreEqual(0, LRig.System.Models.Register(''));
 end;
 
