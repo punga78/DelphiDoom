@@ -2224,7 +2224,7 @@ begin
       continue;
 
     if sector.special and SECRET_MASK <> 0 then //jff 3/15/98 count extended
-      P_World.Totals.CountSecret;                         // secret sectors too
+      TTickRoutines.P_World.Totals.CountSecret;                         // secret sectors too
 
     case sector.special and 31 of
      1:
@@ -2262,7 +2262,7 @@ begin
       begin
         // SECRET SECTOR
         if sector.special < 32 then //jff 3/14/98 bits don't count unless not
-          P_World.Totals.CountSecret;         // a generalized sector type
+          TTickRoutines.P_World.Totals.CountSecret;         // a generalized sector type
       end;
 
     10:
@@ -2325,10 +2325,10 @@ begin
   end;
 
   //  Init other misc stuff
-  P_World.ActiveCeilings.Clear;
-  P_World.UdmfCeilings.Clear;
-  P_World.ActivePlats.Clear;
-  P_World.UdmfPlats.Clear;
+  TTickRoutines.P_World.ActiveCeilings.Clear;
+  TTickRoutines.P_World.UdmfCeilings.Clear;
+  TTickRoutines.P_World.ActivePlats.Clear;
+  TTickRoutines.P_World.UdmfPlats.Clear;
 
   for i := 0 to MAXBUTTONS - 1 do
     ZeroMemory(@buttonlist[i], SizeOf(button_t));

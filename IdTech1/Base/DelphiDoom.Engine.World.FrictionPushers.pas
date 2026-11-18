@@ -198,7 +198,7 @@ begin
   f.friction := friction;
   f.movefactor := movefactor;
   f.affectee := affectee;
-  P_AddThinker(@f.thinker);
+  TTickRoutines.P_AddThinker(@f.thinker);
 end;
 
 //==============================================================================
@@ -541,7 +541,7 @@ begin
     p.y := p.source.y;
   end;
   p.affectee := affectee;
-  P_AddThinker(@p.thinker);
+  TTickRoutines.P_AddThinker(@p.thinker);
 end;
 
 //==============================================================================

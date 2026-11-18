@@ -229,7 +229,7 @@ begin
     if floor.textureChange <> 0 then
       floor.sector.floorpic := floor.sector.floorpic - floor.textureChange;
     P_TagFinished(floor.sector.tag);
-    P_RemoveThinker(@floor.thinker);
+    TTickRoutines.P_RemoveThinker(@floor.thinker);
   end;
 
 end;
@@ -276,7 +276,7 @@ begin
     result := true;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
     memset(floor, 0, sizeof(floormove_t));
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.specialdata := floor;
     floor.thinker._function.acp1 := @TH_MoveFloor;
     floor._type := floortype;
@@ -588,7 +588,7 @@ begin
   height := height + StepDelta;
   floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
   memset(floor, 0, SizeOf(floormove_t));
-  P_AddThinker(@floor.thinker);
+  TTickRoutines.P_AddThinker(@floor.thinker);
   sec.specialdata := floor;
   floor.thinker._function.acp1 := @TH_MoveFloor;
   floor._type := FLEV_RAISEBUILDSTEP;
@@ -746,7 +746,7 @@ begin
     S_StopSound(@pillar.sector.soundorg);
     {$ENDIF}
     P_TagFinished(pillar.sector.tag);
-    P_RemoveThinker(@pillar.thinker);
+    TTickRoutines.P_RemoveThinker(@pillar.thinker);
   end;
 end;
 
@@ -788,7 +788,7 @@ begin
 
     pillar := Z_Malloc(SizeOf(pillar_t), PU_LEVSPEC, nil);
     sec.specialdata := pillar;
-    P_AddThinker(@pillar.thinker);
+    TTickRoutines.P_AddThinker(@pillar.thinker);
     pillar.thinker._function.acp1 := @TH_BuildPillar;
     pillar.sector := sec;
     if args[2] = 0 then
@@ -852,7 +852,7 @@ begin
     result := true;
     pillar := Z_Malloc(SizeOf(pillar_t), PU_LEVSPEC, nil);
     sec.specialdata := pillar;
-    P_AddThinker(@pillar.thinker);
+    TTickRoutines.P_AddThinker(@pillar.thinker);
     pillar.thinker._function.acp1 := @TH_BuildPillar;
     pillar.sector := sec;
     if args[2] = 0 then
@@ -925,7 +925,7 @@ begin
     {$ENDIF}
     floor.sector.specialdata := nil;
     P_TagFinished(floor.sector.tag);
-    P_RemoveThinker(@floor.thinker);
+    TTickRoutines.P_RemoveThinker(@floor.thinker);
     think := think.next;
     result := true;
   end;
@@ -972,7 +972,7 @@ begin
   begin // Remove
     waggle.sector.specialdata := nil;
     P_TagFinished(waggle.sector.tag);
-    P_RemoveThinker(@waggle.thinker);
+    TTickRoutines.P_RemoveThinker(@waggle.thinker);
   end;
 end;
 
@@ -1021,7 +1021,7 @@ begin
       waggle.ticker := -1;
 
     waggle.state := WGLSTATE_EXPAND;
-    P_AddThinker(@waggle.thinker);
+    TTickRoutines.P_AddThinker(@waggle.thinker);
   end;
 end;
 

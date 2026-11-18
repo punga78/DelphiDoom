@@ -428,7 +428,7 @@ manual_floor:
     // new floor thinker
     result := 1;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.floordata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
     floor.crush := Crsh <> 0;
@@ -625,7 +625,7 @@ manual_ceiling:
     // new ceiling thinker
     result := 1;
     ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVSPEC, nil);
-    P_AddThinker (@ceiling.thinker);
+    TTickRoutines.P_AddThinker (@ceiling.thinker);
     sec.ceilingdata := ceiling; //jff 2/22/98
     ceiling.thinker._function.acp1 := @T_MoveCeiling;
     ceiling.crush := Crsh <> 0;
@@ -825,7 +825,7 @@ manual_lift:
     // Setup the plat thinker
     result := 1;
     plat := Z_Malloc(SizeOf(plat_t), PU_LEVSPEC, nil);
-    P_AddThinker(@plat.thinker);
+    TTickRoutines.P_AddThinker(@plat.thinker);
 
     plat.sector := sec;
     plat.sector.floordata := plat;
@@ -976,7 +976,7 @@ manual_stair:
     // new floor thinker
     result := 1;
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
-    P_AddThinker(@floor.thinker);
+    TTickRoutines.P_AddThinker(@floor.thinker);
     sec.floordata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
     if Dirn <> 0 then
@@ -1059,7 +1059,7 @@ manual_stair:
         secnum := newsecnum;
         floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
 
-        P_AddThinker(@floor.thinker);
+        TTickRoutines.P_AddThinker(@floor.thinker);
 
         sec.floordata := floor;
         floor.thinker._function.acp1 := @T_MoveFloor;
@@ -1151,7 +1151,7 @@ manual_crusher:
     // new ceiling thinker
     result := 1;
     ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVSPEC, nil);
-    P_AddThinker (@ceiling.thinker);
+    TTickRoutines.P_AddThinker (@ceiling.thinker);
     sec.ceilingdata := ceiling; //jff 2/22/98
     ceiling.thinker._function.acp1 := @T_MoveCeiling;
     ceiling.crush := true;
@@ -1248,7 +1248,7 @@ manual_locked:
     // new door thinker
     result := 1;
     door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
-    P_AddThinker (@door.thinker);
+    TTickRoutines.P_AddThinker (@door.thinker);
     sec.ceilingdata := door; //jff 2/22/98
     door.thinker._function.acp1 := @T_VerticalDoor;
     door.sector := sec;
@@ -1367,7 +1367,7 @@ manual_door:
     // new door thinker
     result := 1;
     door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
-    P_AddThinker(@door.thinker);
+    TTickRoutines.P_AddThinker(@door.thinker);
     sec.ceilingdata := door; //jff 2/22/98
 
     door.thinker._function.acp1 := @T_VerticalDoor;

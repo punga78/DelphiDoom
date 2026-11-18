@@ -155,7 +155,7 @@ begin
     // Find lowest & highest floors around sector
     result := 1;
     plat := Z_Malloc(SizeOf(plat_t), PU_LEVSPEC, nil);
-    P_AddThinker(@plat.thinker);
+    TTickRoutines.P_AddThinker(@plat.thinker);
 
     plat._type := _type;
     plat.sector := sec;
@@ -187,9 +187,9 @@ var
   i: integer;
   plt: Pplat_t;
 begin
-  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+  for i := 0 to TTickRoutines.P_World.ActivePlats.Capacity - 1 do
   begin
-    plt := Pplat_t(P_World.ActivePlats[i]);
+    plt := Pplat_t(TTickRoutines.P_World.ActivePlats[i]);
     if (plt <> nil) and
       (plt.tag = tag) and
       (plt.status = in_stasis) then
@@ -214,9 +214,9 @@ var
   state: TPlatState;
 begin
   result := 0;
-  for i := 0 to P_World.ActivePlats.Capacity - 1 do
+  for i := 0 to TTickRoutines.P_World.ActivePlats.Capacity - 1 do
   begin
-    plt := Pplat_t(P_World.ActivePlats[i]);
+    plt := Pplat_t(TTickRoutines.P_World.ActivePlats[i]);
     if (plt <> nil) and
       (plt.status <> in_stasis) and
       (plt.tag = line.tag) then
@@ -240,10 +240,10 @@ procedure P_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.ActivePlats.Capacity - 1 do
-    if Pplat_t(P_World.ActivePlats[i]) = nil then
+  for i := 0 to TTickRoutines.P_World.ActivePlats.Capacity - 1 do
+    if Pplat_t(TTickRoutines.P_World.ActivePlats[i]) = nil then
     begin
-      P_World.ActivePlats.Add(plat);
+      TTickRoutines.P_World.ActivePlats.Add(plat);
       exit;
     end;
 
@@ -259,12 +259,12 @@ procedure P_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.ActivePlats.Capacity - 1 do
-    if plat = Pplat_t(P_World.ActivePlats[i]) then
+  for i := 0 to TTickRoutines.P_World.ActivePlats.Capacity - 1 do
+    if plat = Pplat_t(TTickRoutines.P_World.ActivePlats[i]) then
     begin
-      TSpecGameRules.PlatDetach(Pplat_t(P_World.ActivePlats[i]).sector);
-      P_RemoveThinker(@Pplat_t(P_World.ActivePlats[i]).thinker);
-      P_World.ActivePlats.Release(i);
+      TSpecGameRules.PlatDetach(Pplat_t(TTickRoutines.P_World.ActivePlats[i]).sector);
+      TTickRoutines.P_RemoveThinker(@Pplat_t(TTickRoutines.P_World.ActivePlats[i]).thinker);
+      TTickRoutines.P_World.ActivePlats.Release(i);
       exit;
     end;
 

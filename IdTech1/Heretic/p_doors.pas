@@ -106,7 +106,7 @@ begin
   if DoorTickClassic(door) then
   begin
     door.sector.specialdata := nil;
-    P_RemoveThinker(@door.thinker); // unlink and free
+    TTickRoutines.P_RemoveThinker(@door.thinker); // unlink and free
   end;
 end;
 
@@ -140,7 +140,7 @@ begin
     // new door thinker
     result := 1;
     door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
-    P_AddThinker(@door.thinker);
+    TTickRoutines.P_AddThinker(@door.thinker);
     sec.specialdata := door;
 
     door.thinker._function.acp1 := @T_VerticalDoor;
@@ -230,7 +230,7 @@ begin
 
   // new door thinker
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
-  P_AddThinker(@door.thinker);
+  TTickRoutines.P_AddThinker(@door.thinker);
   sec.specialdata := door;
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
@@ -252,7 +252,7 @@ var
 begin
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@door.thinker);
+  TTickRoutines.P_AddThinker(@door.thinker);
 
   sec.specialdata := door;
   sec.special := 0;
@@ -274,7 +274,7 @@ var
 begin
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@door.thinker);
+  TTickRoutines.P_AddThinker(@door.thinker);
 
   sec.specialdata := door;
   sec.special := 0;

@@ -312,7 +312,7 @@ begin
       S_StopSound(@poly.startSpot);
       {$ENDIF}
       P_PolyobjFinished(poly.tag);
-      P_RemoveThinker(@pe.thinker);
+      TTickRoutines.P_RemoveThinker(@pe.thinker);
     end;
     if pe.dist < absSpeed then
     begin
@@ -351,7 +351,7 @@ begin
     I_Error('EV_RotatePoly(): Invalid polyobj num: %d', [polyNum]);
 
   pe := Z_Malloc(SizeOf(polyevent_t), PU_LEVSPEC, nil);
-  P_AddThinker(@pe.thinker);
+  TTickRoutines.P_AddThinker(@pe.thinker);
   pe.thinker._function.acp1 := @TH_RotatePoly;
   pe.polyobj := polyNum;
   if args[2] <> 0 then
@@ -379,7 +379,7 @@ begin
       break;
     end;
     pe := Z_Malloc(SizeOf(polyevent_t), PU_LEVSPEC, nil);
-    P_AddThinker(@pe.thinker);
+    TTickRoutines.P_AddThinker(@pe.thinker);
     pe.thinker._function.acp1 := @TH_RotatePoly;
     poly.specialdata := pe;
     pe.polyobj := mirror;
@@ -446,7 +446,7 @@ begin
       S_StopSound(@poly.startSpot);
       {$ENDIF}
       P_PolyobjFinished(poly.tag);
-      P_RemoveThinker(@pe.thinker);
+      TTickRoutines.P_RemoveThinker(@pe.thinker);
     end;
     if pe.dist < absSpeed then
     begin
@@ -487,7 +487,7 @@ begin
   else
     I_Error('EV_MovePoly(): Invalid polyobj num: %d', [polyNum]);
   pe := Z_Malloc(SizeOf(polyevent_t), PU_LEVSPEC, nil);
-  P_AddThinker(@pe.thinker);
+  TTickRoutines.P_AddThinker(@pe.thinker);
   pe.thinker._function.acp1 := @TH_MovePoly;
   pe.polyobj := polyNum;
   if timesEight then
@@ -516,7 +516,7 @@ begin
       break;
     end;
     pe := Z_Malloc(SizeOf(polyevent_t), PU_LEVSPEC, nil);
-    P_AddThinker(@pe.thinker);
+    TTickRoutines.P_AddThinker(@pe.thinker);
     pe.thinker._function.acp1 := @TH_MovePoly;
     pe.polyobj := mirror;
     poly.specialdata := pe;
@@ -593,7 +593,7 @@ begin
               if poly.specialdata = pd then
                 poly.specialdata := nil;
               P_PolyobjFinished(poly.tag);
-              P_RemoveThinker(@pd.thinker);
+              TTickRoutines.P_RemoveThinker(@pd.thinker);
             end;
           end;
         end
@@ -649,7 +649,7 @@ begin
               if poly.specialdata = pd then
                 poly.specialdata := nil;
               P_PolyobjFinished(poly.tag);
-              P_RemoveThinker(@pd.thinker);
+              TTickRoutines.P_RemoveThinker(@pd.thinker);
             end;
           end;
         end
@@ -704,7 +704,7 @@ begin
 
   pd := Z_Malloc(SizeOf(polydoor_t), PU_LEVSPEC, nil);
   memset(pd, 0, SizeOf(polydoor_t));
-  P_AddThinker(@pd.thinker);
+  TTickRoutines.P_AddThinker(@pd.thinker);
   pd.thinker._function.acp1 := @TH_PolyDoor;
   pd._type := _type;
   pd.polyobj := polyNum;
@@ -754,7 +754,7 @@ begin
     end;
     pd := Z_Malloc(SizeOf(polydoor_t), PU_LEVSPEC, nil);
     memset(pd, 0, SizeOf(polydoor_t));
-    P_AddThinker(@pd.thinker);
+    TTickRoutines.P_AddThinker(@pd.thinker);
     pd.thinker._function.acp1 := @TH_PolyDoor;
     pd.polyobj := mirror;
     pd._type := _type;

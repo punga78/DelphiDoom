@@ -164,7 +164,7 @@ begin
   if DoorTickClassic(door) then
   begin
     door.sector.ceilingdata := nil;
-    P_RemoveThinker(@door.thinker); // unlink and free
+    TTickRoutines.P_RemoveThinker(@door.thinker); // unlink and free
   end;
 end;
 
@@ -487,7 +487,7 @@ begin
     // new door thinker
     result := 1;
     door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
-    P_AddThinker(@door.thinker);
+    TTickRoutines.P_AddThinker(@door.thinker);
     sec.ceilingdata := door;
 
     door.thinker._function.acp1 := @T_VerticalDoor;
@@ -800,7 +800,7 @@ begin
 
   // new door thinker
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
-  P_AddThinker(@door.thinker);
+  TTickRoutines.P_AddThinker(@door.thinker);
   sec.ceilingdata := door;
   door.thinker._function.acp1 := @T_VerticalDoor;
   door.sector := sec;
@@ -825,7 +825,7 @@ var
 begin
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@door.thinker);
+  TTickRoutines.P_AddThinker(@door.thinker);
 
   sec.ceilingdata := door;
   sec.special := 0;
@@ -848,7 +848,7 @@ var
 begin
   door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
 
-  P_AddThinker(@door.thinker);
+  TTickRoutines.P_AddThinker(@door.thinker);
 
   sec.ceilingdata := door;
   sec.special := 0;
@@ -1087,7 +1087,7 @@ begin
             if door._type = sdt_openOnly then
             begin
               door.frontsector.ceilingdata := nil;
-              P_RemoveThinker(@door.thinker);
+              TTickRoutines.P_RemoveThinker(@door.thinker);
               exit;
             end;
 
@@ -1169,7 +1169,7 @@ begin
             // IF DOOR IS DONE CLOSING...
             T_MovePlane(sec, 128 * FRACUNIT, sec.floorheight, false, 1, -1);
             door.frontsector.ceilingdata := nil;
-            P_RemoveThinker(@door.thinker);
+            TTickRoutines.P_RemoveThinker(@door.thinker);
             exit;
           end
           else
@@ -1279,7 +1279,7 @@ begin
   if door = nil then
   begin
     door := Z_Malloc(SizeOf(slidedoor_t), PU_LEVSPEC, nil);
-    P_AddThinker(@door.thinker);
+    TTickRoutines.P_AddThinker(@door.thinker);
 
     sec.ceilingdata := door;
 

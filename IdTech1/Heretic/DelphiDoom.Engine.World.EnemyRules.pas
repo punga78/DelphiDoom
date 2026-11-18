@@ -3091,7 +3091,7 @@ end;
 //==============================================================================
 class procedure THereticMonsterActions.A_AddPlayerCorpse(actor: Pmobj_t);
 begin
-  P_World.AddEnemyCorpse(actor);
+  TTickRoutines.P_World.AddEnemyCorpse(actor);
 end;
 
 //==============================================================================

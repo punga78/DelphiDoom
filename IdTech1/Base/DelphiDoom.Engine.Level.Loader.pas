@@ -228,7 +228,7 @@ begin
   R_SetupLevel;
 
   Trace('P_InitThinkers');
-  P_InitThinkers;
+  TTickRoutines.P_InitThinkers;
   Trace('P_InitIntercepts');
   P_InitIntercepts;
 
@@ -380,7 +380,7 @@ end;
 
 procedure TLevelLoader.SpawnThings(AMapLump: Integer);
 begin
-  P_World.ClearCorpses;
+  TTickRoutines.P_World.ClearCorpses;
   po_NumPolyobjs := 0;
   deathmatch_p := 0;
   FRules.BeforeThings;
@@ -403,7 +403,7 @@ begin
   SpawnDeathmatchPlayers;
 
   // clear special respawning que
-  P_World.ItemRespawn.Clear;
+  TTickRoutines.P_World.ItemRespawn.Clear;
 end;
 
 procedure TLevelLoader.FinishLevel;

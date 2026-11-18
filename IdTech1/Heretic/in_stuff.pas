@@ -326,12 +326,12 @@ begin
     begin
       if TGameSession.PlayerInGame[i] then
       begin
-        if P_World.Totals.Kills <> 0 then
-          killPercent[i] := TGameSession.Players[i].killcount * 100 div P_World.Totals.Kills;
-        if P_World.Totals.Items <> 0 then
-          bonusPercent[i] := TGameSession.Players[i].itemcount* 100 div P_World.Totals.Items;
-        if P_World.Totals.Secrets <> 0 then
-          secretPercent[i] := TGameSession.Players[i].secretcount * 100 div P_World.Totals.Secrets;
+        if TTickRoutines.P_World.Totals.Kills <> 0 then
+          killPercent[i] := TGameSession.Players[i].killcount * 100 div TTickRoutines.P_World.Totals.Kills;
+        if TTickRoutines.P_World.Totals.Items <> 0 then
+          bonusPercent[i] := TGameSession.Players[i].itemcount* 100 div TTickRoutines.P_World.Totals.Items;
+        if TTickRoutines.P_World.Totals.Secrets <> 0 then
+          secretPercent[i] := TGameSession.Players[i].secretcount * 100 div TTickRoutines.P_World.Totals.Secrets;
       end;
     end;
   end
@@ -861,7 +861,7 @@ begin
   end;
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].killcount, 200, 65, 3);
   V_DrawPatch(237, 65, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
-  IN_DrawNumber(P_World.Totals.Kills, 248, 65, 3);
+  IN_DrawNumber(TTickRoutines.P_World.Totals.Kills, 248, 65, 3);
 
   if intertime < 60 then
     exit;
@@ -874,7 +874,7 @@ begin
 
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].itemcount, 200, 90, 3);
   V_DrawPatch(237, 90, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
-  IN_DrawNumber(P_World.Totals.Items, 248, 90, 3);
+  IN_DrawNumber(TTickRoutines.P_World.Totals.Items, 248, 90, 3);
 
   if intertime < 90 then
     exit;
@@ -886,7 +886,7 @@ begin
   end;
   IN_DrawNumber(TGameSession.Players[TGameSession.ConsolePlayer].secretcount, 200, 115, 3);
   V_DrawPatch(237, 115, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
-  IN_DrawNumber(P_World.Totals.Secrets, 248, 115, 3);
+  IN_DrawNumber(TTickRoutines.P_World.Totals.Secrets, 248, 115, 3);
 
   if intertime < 150 then
     exit;

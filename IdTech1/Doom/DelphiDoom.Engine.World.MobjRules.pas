@@ -833,7 +833,7 @@ end;
 class procedure TMobjGameRules.CountItem(mo: Pmobj_t);
 begin
   if mo.flags and MF_COUNTITEM <> 0 then
-    P_World.Totals.CountItem;
+    TTickRoutines.P_World.Totals.CountItem;
 end;
 //
 // GAME SPAWN FUNCTIONS
@@ -1089,7 +1089,7 @@ begin
      (mobj._type <> Ord(MT_INV)) and
      (mobj._type <> Ord(MT_INS)) then
   begin
-    P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
+    TTickRoutines.P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
   end;
 end;
 
@@ -1421,7 +1421,7 @@ begin
 
     TSpecRoutines.P_MobjInSpecialSector(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed
         result := false;
         exit;

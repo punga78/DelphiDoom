@@ -1767,7 +1767,7 @@ begin
   case TGameSession.GameState of
     GS_LEVEL:
       begin
-        P_Ticker;
+        TTickRoutines.P_Ticker;
         TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
         HU_Ticker;
@@ -2123,9 +2123,9 @@ begin
     TGameSession.WmInfo.partime := TICRATE * pars[TGameSession.GameEpisode][TGameSession.GameMap];
   TGameSession.WmInfo.nextmapinfo := G_LookupMapinfo(TGameSession.WmInfo.nextep + 1, TGameSession.WmInfo.next + 1);
 
-  TGameSession.WmInfo.maxkills := P_World.Totals.Kills;
-  TGameSession.WmInfo.maxitems := P_World.Totals.Items;
-  TGameSession.WmInfo.maxsecret := P_World.Totals.Secrets;
+  TGameSession.WmInfo.maxkills := TTickRoutines.P_World.Totals.Kills;
+  TGameSession.WmInfo.maxitems := TTickRoutines.P_World.Totals.Items;
+  TGameSession.WmInfo.maxsecret := TTickRoutines.P_World.Totals.Secrets;
   TGameSession.WmInfo.maxfrags := 0;
 
   TGameSession.WmInfo.pnum := TGameSession.ConsolePlayer;
@@ -2328,7 +2328,7 @@ begin
   G_InitNew(TGameSession.GameSkill, TGameSession.GameEpisode, TGameSession.GameMap);
 
   // get the times
-  P_World.Time.LevelTime^ := TSaveGameHeader.ReadLevelTime(System.PByte(save_p));
+  TTickRoutines.P_World.Time.LevelTime^ := TSaveGameHeader.ReadLevelTime(System.PByte(save_p));
   save_p := PByteArray(NativeInt(save_p) + 3);
 
   // dearchive all the modifications
@@ -2410,7 +2410,7 @@ begin
     TGameSession.GameMap, True, TGameSession.PlayerInGame);
   save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, True));
 
-  TSaveGameHeader.WriteLevelTime(System.PByte(save_p), P_World.Time.LevelTime^);
+  TSaveGameHeader.WriteLevelTime(System.PByte(save_p), TTickRoutines.P_World.Time.LevelTime^);
   save_p := PByteArray(NativeInt(save_p) + 3);
 
   len := NativeInt(save_p) - NativeInt(savebuffer);

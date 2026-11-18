@@ -213,7 +213,7 @@ end;
 procedure TPlayerRespawnHost.FlushCorpse(const APlayer: Integer);
 begin
   if not FNeedsCompatibilityMode then
-    P_World.AddPlayerCorpse(TGameSession.Players[APlayer].mo);
+    TTickRoutines.P_World.AddPlayerCorpse(TGameSession.Players[APlayer].mo);
 end;
 
 procedure TPlayerRespawnHost.SpawnFog(const AX, AY, AHeight, AFineAngle: Integer);

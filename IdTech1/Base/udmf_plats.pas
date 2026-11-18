@@ -133,7 +133,7 @@ begin
     //
     result := true;
     plat := Z_Malloc(SizeOf(plat_t), PU_LEVSPEC, nil);
-    P_AddThinker(@plat.thinker);
+    TTickRoutines.P_AddThinker(@plat.thinker);
 
     plat._type := _type;
     plat.sector := sec;
@@ -158,15 +158,15 @@ procedure EVH_StopPlat(line: Pline_t; args: PByteArray);
 var
   i: integer;
 begin
-  for i := 0 to P_World.UdmfPlats.Capacity - 1 do
+  for i := 0 to TTickRoutines.P_World.UdmfPlats.Capacity - 1 do
   begin
-    Pplat_t(P_World.UdmfPlats[i]).tag := args[0]; // JVAL SOS
+    Pplat_t(TTickRoutines.P_World.UdmfPlats[i]).tag := args[0]; // JVAL SOS
     if args[0] <> 0 then
     begin
-      Pplat_t(P_World.UdmfPlats[i]).sector.specialdata := nil;
-      P_TagFinished(Pplat_t(P_World.UdmfPlats[i]).sector.tag);
-      P_RemoveThinker(@Pplat_t(P_World.UdmfPlats[i]).thinker);
-      P_World.UdmfPlats.Release(i);
+      Pplat_t(TTickRoutines.P_World.UdmfPlats[i]).sector.specialdata := nil;
+      P_TagFinished(Pplat_t(TTickRoutines.P_World.UdmfPlats[i]).sector.tag);
+      TTickRoutines.P_RemoveThinker(@Pplat_t(TTickRoutines.P_World.UdmfPlats[i]).thinker);
+      TTickRoutines.P_World.UdmfPlats.Release(i);
 
       exit;
     end;
@@ -183,10 +183,10 @@ procedure PH_AddActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.UdmfPlats.Capacity - 1 do
-    if Pplat_t(P_World.UdmfPlats[i]) = nil then
+  for i := 0 to TTickRoutines.P_World.UdmfPlats.Capacity - 1 do
+    if Pplat_t(TTickRoutines.P_World.UdmfPlats[i]) = nil then
     begin
-      P_World.UdmfPlats.Add(plat);
+      TTickRoutines.P_World.UdmfPlats.Add(plat);
       exit;
     end;
   I_Error('PH_AddActivePlat(): no more plats!');
@@ -201,13 +201,13 @@ procedure PH_RemoveActivePlat(plat: Pplat_t);
 var
   i: integer;
 begin
-  for i := 0 to P_World.UdmfPlats.Capacity - 1 do
-    if plat = Pplat_t(P_World.UdmfPlats[i]) then
+  for i := 0 to TTickRoutines.P_World.UdmfPlats.Capacity - 1 do
+    if plat = Pplat_t(TTickRoutines.P_World.UdmfPlats[i]) then
     begin
-      Pplat_t(P_World.UdmfPlats[i]).sector.specialdata := nil;
+      Pplat_t(TTickRoutines.P_World.UdmfPlats[i]).sector.specialdata := nil;
       P_TagFinished(plat.sector.tag);
-      P_RemoveThinker(@Pplat_t(P_World.UdmfPlats[i]).thinker);
-      P_World.UdmfPlats.Release(i);
+      TTickRoutines.P_RemoveThinker(@Pplat_t(TTickRoutines.P_World.UdmfPlats[i]).thinker);
+      TTickRoutines.P_World.UdmfPlats.Release(i);
       exit;
     end;
   I_Error('PH_RemoveActivePlat(): can''t find plat!');

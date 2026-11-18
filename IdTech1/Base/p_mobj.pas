@@ -819,7 +819,7 @@ begin
   begin
     P_XYMovement(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       exit; // mobj was removed
 
     TMobjGameRules.AfterXYMovement(mobj);
@@ -1042,7 +1042,7 @@ begin
 
   mobj.thinker._function.acp1 := @P_MobjThinker;
 
-  P_AddThinker(@mobj.thinker);
+  TTickRoutines.P_AddThinker(@mobj.thinker);
 
   mobj.prevx := mobj.x;
   mobj.prevy := mobj.y;
@@ -1087,7 +1087,7 @@ begin
   P_RemoveMobjCustomParams(mobj.customparams);
 
   // free block
-  P_RemoveThinker(Pthinker_t(mobj));
+  TTickRoutines.P_RemoveThinker(Pthinker_t(mobj));
 end;
 
 //==============================================================================
@@ -1110,7 +1110,7 @@ begin
   if TGameSession.DeathMatch <> 2 then
     exit; //
 
-  queue := P_World.ItemRespawn;
+  queue := TTickRoutines.P_World.ItemRespawn;
 
   // nothing left to respawn?
   if queue.IsEmpty then

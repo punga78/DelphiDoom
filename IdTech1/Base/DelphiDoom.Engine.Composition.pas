@@ -1063,7 +1063,7 @@ begin
 {$ELSE}
   V_ConfigureConsole(Result);
 {$ENDIF}
-  P_ConfigureTickerConsole(Result);
+  TTickRoutines.P_ConfigureTickerConsole(Result);
   P_ConfigureConsole(Result);
 end;
 
@@ -1416,7 +1416,7 @@ end;
 // the time of the level where the engine keeps it and the random of the game
 procedure ComposeWorld(const ARandom: IGameRandom);
 begin
-  P_ConfigureWorld(TEngineWorld.Create(@TTickState.ThinkerCap, P_WorldTime, ARandom));
+  TTickRoutines.P_ConfigureWorld(TEngineWorld.Create(@TTickState.ThinkerCap, TTickRoutines.P_WorldTime, ARandom));
 end;
 
 procedure ComposeSerializer;

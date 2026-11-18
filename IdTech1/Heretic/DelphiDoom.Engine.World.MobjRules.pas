@@ -935,7 +935,7 @@ end;
 class procedure TMobjGameRules.CountItem(mo: Pmobj_t);
 begin
   if mo.flags and MF_COUNTITEM <> 0 then
-    P_World.Totals.CountItem;
+    TTickRoutines.P_World.Totals.CountItem;
 end;
 //==============================================================================
 //
@@ -1393,7 +1393,7 @@ begin
   if ((mobj.flags and MF_SPECIAL) <> 0) and
      ((mobj.flags and MF_DROPPED) = 0) then
   begin
-    P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
+    TTickRoutines.P_World.ItemRespawn.Add(mobj.spawnpoint, TTickState.LevelTime);
   end;
 end;
 
@@ -1746,7 +1746,7 @@ begin
     else
       P_ZMovement(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed
         result := false;
         exit;

@@ -1252,7 +1252,7 @@ begin
   if ((mobj.flags and MF_SPECIAL) <> 0) and
      ((mobj.flags and MF_DROPPED) = 0) then
   begin
-    queue := P_World.ItemRespawn;
+    queue := TTickRoutines.P_World.ItemRespawn;
     newest := queue.Reserve(mobj.spawnpoint, TTickState.LevelTime + 30 * TICRATE);  // [STRIFE]
 
     // [STRIFE] haleyjd 20130915
@@ -1558,7 +1558,7 @@ begin
   begin
     P_ZMovement(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed
         result := false;
         exit;

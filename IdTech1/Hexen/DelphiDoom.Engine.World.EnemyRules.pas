@@ -2776,7 +2776,7 @@ end;
 //==============================================================================
 class procedure THexenMonsterActions.A_AddPlayerCorpse(actor: Pmobj_t);
 begin
-  P_World.AddEnemyCorpse(actor);
+  TTickRoutines.P_World.AddEnemyCorpse(actor);
 end;
 
 //==============================================================================

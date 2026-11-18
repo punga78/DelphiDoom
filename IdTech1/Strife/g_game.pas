@@ -1690,7 +1690,7 @@ begin
   case TGameSession.GameState of
     GS_LEVEL:
       begin
-        P_Ticker;
+        TTickRoutines.P_Ticker;
         TStatusBarRoutines.ST_Ticker;
         AM_Ticker;
         HU_Ticker;
@@ -2201,7 +2201,7 @@ begin
   else
     G_DoLoadLevel();
 
-  P_World.Time.LevelTime^ := savedleveltime;
+  TTickRoutines.P_World.Time.LevelTime^ := savedleveltime;
 
   // dearchive all the modifications
   P_UnArchivePlayers(userload);
@@ -2323,7 +2323,7 @@ begin
     TGameSession.GameMap, False, TGameSession.PlayerInGame);
   save_p := PByteArray(NativeInt(save_p) + TSaveGameSessionBlock.BlockSize(MAXPLAYERS, False));
 
-  TSaveGameHeader.WriteLevelTime(System.PByte(save_p), P_World.Time.LevelTime^);
+  TSaveGameHeader.WriteLevelTime(System.PByte(save_p), TTickRoutines.P_World.Time.LevelTime^);
   save_p := PByteArray(NativeInt(save_p) + 3);
 
   len := NativeInt(save_p) - NativeInt(savebuffer);

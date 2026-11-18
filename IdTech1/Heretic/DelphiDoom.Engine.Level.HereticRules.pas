@@ -140,7 +140,7 @@ procedure THereticLevelRules.ResetStatistics;
 var
   LPlayer: Integer;
 begin
-  P_World.Totals.Clear;
+  TTickRoutines.P_World.Totals.Clear;
 
   TGameSession.WmInfo.maxfrags := 0;
   TGameSession.WmInfo.partime := 180;

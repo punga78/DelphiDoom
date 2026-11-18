@@ -171,7 +171,7 @@ begin
   LScript := FZone.Allocate(SizeOf(acs_t), ZONE_TAG_LEVSPEC, nil);
   memset(LScript, 0, SizeOf(acs_t));
   LScript.thinker._function.acp1 := @TH_InterpretACS;
-  P_AddThinker(@LScript.thinker);
+  TTickRoutines.P_AddThinker(@LScript.thinker);
   Result := PAcsScript(System.PByte(LScript) + SizeOf(thinker_t));
 end;
 
@@ -180,7 +180,7 @@ var
   LScript: Pacs_t;
 begin
   LScript := Pacs_t(System.PByte(AScript) - SizeOf(thinker_t));
-  P_RemoveThinker(@LScript.thinker);
+  TTickRoutines.P_RemoveThinker(@LScript.thinker);
 end;
 
 procedure TEngineAcsHost.ExecuteLineSpecial(ASpecial: Integer;

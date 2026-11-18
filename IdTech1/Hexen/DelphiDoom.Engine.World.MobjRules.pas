@@ -2859,7 +2859,7 @@ begin
     else
       P_ZMovement(mobj);
 
-    if P_ThinkerIsRemoved(@mobj.thinker) then
+    if TTickRoutines.P_ThinkerIsRemoved(@mobj.thinker) then
       begin // mobj was removed
         result := false;
         exit;

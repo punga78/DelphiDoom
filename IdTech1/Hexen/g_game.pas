@@ -2188,7 +2188,7 @@ begin
   case TGameSession.GameState of
     GS_LEVEL:
       begin
-        P_Ticker;
+        TTickRoutines.P_Ticker;
         TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
         HU_Ticker;

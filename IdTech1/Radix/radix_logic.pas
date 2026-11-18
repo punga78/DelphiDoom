@@ -510,7 +510,7 @@ begin
   end;
 
   logic := Z_Malloc(SizeOf(radixlevellogic_t), PU_LEVSPEC, nil);
-  P_AddThinker(@logic.thinker);
+  TTickRoutines.P_AddThinker(@logic.thinker);
   logic.thinker._function.acp1 := @T_RadixLevelLogic;
 end;
 

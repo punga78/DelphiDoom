@@ -557,7 +557,7 @@ end;
 procedure RX_HudDrawKills(const x1, x2, y: integer);
 begin
   M_WriteSmallText(x1, y, IntToStrZfill(3, GetIntegerInRange(hud_player.killcount, 0, 999)), SCN_HUD);
-  M_WriteSmallText(x2, y, IntToStrZfill(3, GetIntegerInRange(P_World.Totals.Kills, 0, 999)), SCN_HUD);
+  M_WriteSmallText(x2, y, IntToStrZfill(3, GetIntegerInRange(TTickRoutines.P_World.Totals.Kills, 0, 999)), SCN_HUD);
 end;
 
 //==============================================================================

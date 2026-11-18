@@ -465,17 +465,17 @@ end;
 
 procedure TOldListScenario.DoClear;
 begin
-  P_InitThinkers;
+  TTickRoutines.P_InitThinkers;
 end;
 
 procedure TOldListScenario.DoAdd(ANode: PTestNode);
 begin
-  P_AddThinker(@ANode.Mobj.thinker);
+  TTickRoutines.P_AddThinker(@ANode.Mobj.thinker);
 end;
 
 procedure TOldListScenario.DoRemove(ANode: PTestNode);
 begin
-  P_RemoveThinker(@ANode.Mobj.thinker);
+  TTickRoutines.P_RemoveThinker(@ANode.Mobj.thinker);
 end;
 
 procedure TOldListScenario.DoRun(AFrozen: Boolean);
@@ -486,7 +486,7 @@ end;
 
 function TOldListScenario.DoIsRemoved(ANode: PTestNode): Boolean;
 begin
-  Result := P_ThinkerIsRemoved(@ANode.Mobj.thinker);
+  Result := TTickRoutines.P_ThinkerIsRemoved(@ANode.Mobj.thinker);
 end;
 
 function TOldListScenario.HeadNode: Pthinker_t;
