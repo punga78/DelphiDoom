@@ -629,9 +629,9 @@ begin
       if dodepthbuffer then // JVAL: 3d Floors
       begin
         if renderflags and VSF_TRANSPARENCY <> 0 then
-          R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
         else
-          R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
       end
       else
         colfunc;
@@ -691,7 +691,7 @@ begin
     //  or R_DrawColumnAverage
     //  or R_DrawTranslatedColumn
     if depthbufferactive then                   // JVAL: 3d Floors
-      R_DrawColumnWithDepthBufferCheckWrite(colfunc) // JVAL: 3d Floors
+      TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(colfunc) // JVAL: 3d Floors
     else
       colfunc;
 
@@ -961,9 +961,9 @@ begin
       if dodepthbuffer then // JVAL: 3d Floors
       begin
         if renderflags and VSF_TRANSPARENCY <> 0 then
-          R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
         else
-          R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
       end
       else
         R_FillSpriteInfo_MT(TRendererSprite.R_SpriteAddMTInfo);
@@ -1353,7 +1353,7 @@ begin
         if frac < 256 * FRACUNIT then
           if dc_yl <= dc_yh then
             if depthbufferactive then                             // JVAL: 3d Floors
-              R_DrawColumnWithDepthBufferCheckOnly(lightcolfunc)  // JVAL: 3d Floors
+              TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckOnly(lightcolfunc)  // JVAL: 3d Floors
             else
               lightcolfunc;
 
@@ -2927,7 +2927,7 @@ begin
       TRendererSegs.R_RenderMaskedSegRange(pds, pds.x1, pds.x2);
   end;
 
-  R_StopDepthBuffer;  // JVAL: 3d Floors
+  TRendererDepthBuffer.R_StopDepthBuffer;  // JVAL: 3d Floors
 end;
 
 //==============================================================================

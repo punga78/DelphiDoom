@@ -137,7 +137,7 @@ end;
 function V_DoSetDisplayMode(const newwidth, newheight: integer): boolean;
 begin
   MT_WaitTasks;            // Wait for running tasks to stop
-  R_ShutDownDepthBuffer;   // Shut down depthbuffer
+  TRendererDepthBuffer.R_ShutDownDepthBuffer;   // Shut down depthbuffer
   TRendererPlane.R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
   TRendererSlopes.R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
   TRenderer3dFloors.R_ClearVisPlanes3d;      // Clear arrays
@@ -160,7 +160,7 @@ begin
   AM_Start;                // Start the automap
   V_Console.AdjustScreenSize;      // Notify console for screen resolution change
   setsizeneeded := true;   // Set-up new SCREENWIDTH & SCREENHEIGHT
-  R_InitDepthBuffer;       // Initialize the depth-buffer
+  TRendererDepthBuffer.R_InitDepthBuffer;       // Initialize the depth-buffer
   R_InitFake3D;            // Initialize fake 3d
   {$IFNDEF STRIFE}
   R_InitFuzzTable;         // Re-calculate fuzz tabble offsets

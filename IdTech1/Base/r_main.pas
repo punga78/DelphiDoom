@@ -2162,7 +2162,7 @@ begin
   printf('R_InitFlatsCache32'#13#10);
   R_InitFlatsCache32;
   printf('R_InitDepthBuffer'#13#10); // JVAL: 3d Floors
-  R_InitDepthBuffer;
+  TRendererDepthBuffer.R_InitDepthBuffer;
   printf('R_InitZBuffer'#13#10); // JVAL: version 205
   R_InitZBuffer;
   printf('R_InitDynamicLights'#13#10);
@@ -2252,7 +2252,7 @@ begin
   printf(#13#10 + 'R_VoxelsDone');
   TRendererVoxels.R_VoxelsDone;
   printf(#13#10 + 'R_ShutDownDepthBuffer'); // JVAL: 3d Floors
-  R_ShutDownDepthBuffer;
+  TRendererDepthBuffer.R_ShutDownDepthBuffer;
   printf(#13#10 + 'R_ShutDownZBuffer'); // JVAL: version 205
   R_ShutDownZBuffer;
   printf(#13#10 + 'R_DynamicLightsDone');

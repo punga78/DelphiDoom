@@ -1422,7 +1422,7 @@ begin
                 dc_color := col.dc_color;
                 if depthbufferactive then
                 begin
-                  if depth >= R_DepthBufferAt(left, top) then
+                  if depth >= TRendererDepthBuffer.R_DepthBufferAt(left, top) then
                     putpixelfunc(left, top);
                 end
                 else
@@ -1677,9 +1677,9 @@ begin
             if depthbufferactive then
             begin
               if renderflags and VSF_TRANSPARENCY <> 0 then
-                R_DrawBatchColumnWithDepthBufferCheckOnly(batchcolfunc, scaley0)
+                TRendererDepthBuffer.R_DrawBatchColumnWithDepthBufferCheckOnly(batchcolfunc, scaley0)
               else
-                R_DrawBatchColumnWithDepthBufferCheckWrite(batchcolfunc, scaley0)
+                TRendererDepthBuffer.R_DrawBatchColumnWithDepthBufferCheckWrite(batchcolfunc, scaley0)
             end
             else
               batchcolfunc;
@@ -1725,9 +1725,9 @@ begin
               if depthbufferactive then
               begin
                 if renderflags and VSF_TRANSPARENCY <> 0 then
-                  R_DrawBatchColumnWithDepthBufferCheckOnly(batchcolfunc, scaley0)
+                  TRendererDepthBuffer.R_DrawBatchColumnWithDepthBufferCheckOnly(batchcolfunc, scaley0)
                 else
-                  R_DrawBatchColumnWithDepthBufferCheckWrite(batchcolfunc, scaley0)
+                  TRendererDepthBuffer.R_DrawBatchColumnWithDepthBufferCheckWrite(batchcolfunc, scaley0)
               end
               else
                 batchcolfunc;
@@ -1755,9 +1755,9 @@ begin
             if depthbufferactive then
             begin
               if renderflags and VSF_TRANSPARENCY <> 0 then
-                R_DrawBatchColumnWithDepthBufferCheckOnly(batchcolfunc, scaley0)
+                TRendererDepthBuffer.R_DrawBatchColumnWithDepthBufferCheckOnly(batchcolfunc, scaley0)
               else
-                R_DrawBatchColumnWithDepthBufferCheckWrite(batchcolfunc, scaley0)
+                TRendererDepthBuffer.R_DrawBatchColumnWithDepthBufferCheckWrite(batchcolfunc, scaley0)
             end
             else
               batchcolfunc;

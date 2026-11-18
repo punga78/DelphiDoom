@@ -474,7 +474,7 @@ begin
           dc_source := R_GetColumn(texnum, texturecolumn);
         end;
         if depthbufferactive then
-          R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
         else
           wallcolfunc;
 
@@ -752,7 +752,7 @@ begin
       begin
         dc_fog := ds.midsiderange.fog[0]; // JVAL: Mars fog sectors
         if depthbufferactive then
-          R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
         else
           wallcolfunc;
 
@@ -793,7 +793,7 @@ begin
         dc_texturemid := texturemid[1];
         dc_fog := ds.midsiderange.fog[1]; // JVAL: Mars fog sectors
         if depthbufferactive then
-          R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
         else
           wallcolfunc;
 
@@ -968,7 +968,7 @@ begin
           dc_source := R_GetColumn(texnum, texturecolumn);
         end;
         if depthbufferactive then
-          R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
         else
           wallcolfunc;
 
@@ -1151,7 +1151,7 @@ begin
       begin
         dc_fog := ds.midsiderange.fog[0]; // JVAL: Mars fog sectors
         if depthbufferactive then
-          R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
         else
           wallcolfunc;
 
@@ -1181,7 +1181,7 @@ begin
         dc_texturemid := texturemid[1];
         dc_fog := ds.midsiderange.fog[1]; // JVAL: Mars fog sectors
         if depthbufferactive then
-          R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(wallcolfunc)
         else
           wallcolfunc;
 
@@ -1704,7 +1704,7 @@ begin
   if lastvisplane3d = 0 then
     exit;
 
-  R_StartDepthBuffer;
+  TRendererDepthBuffer.R_StartDepthBuffer;
   for i := lastvisplane3d - 1 downto 0 do
   begin
     pl := visplanes3d[i].vis;
@@ -1726,14 +1726,14 @@ begin
   if lastvisplane3d = 0 then
     exit;
 
-  R_StartDepthBuffer;
+  TRendererDepthBuffer.R_StartDepthBuffer;
   for i := lastvisplane3d - 1 downto 0 do
   begin
     pl := visplanes3d[i].vis;
     if pl.renderflags and SRF_DONOTDRAW = 0 then
       TRendererPlane.R_DoDrawPlane(pl);
   end;
-  R_FlashSpansToDepthBufferMT;
+  TRendererDepthBuffer.R_FlashSpansToDepthBufferMT;
 end;
 
 end.
