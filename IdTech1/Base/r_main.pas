@@ -2258,7 +2258,7 @@ begin
   printf(#13#10 + 'R_DynamicLightsDone');
   if main_dynlights <> nil then
     main_dynlights.Clear;
-  R_FreeDynamicLightItems;
+  TRendererDynLights.R_FreeDynamicLightItems;
 {$ENDIF}
 {$IFDEF OPENGL}
   printf(#13#10 + 'R_ShutDownOpenGL');

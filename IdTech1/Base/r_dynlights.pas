@@ -79,14 +79,23 @@ const
 var
   gldefs_as_lightdef: boolean = true;
 
-//==============================================================================
-//
-// R_FreeDynamicLightItems
-//
-// Frees the buffer of the lights to sort (dlbuffer), at the end of the renderer
-//
-//==============================================================================
-procedure R_FreeDynamicLightItems;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererDynLights = class sealed
+  public
+    //==============================================================================
+    //
+    // R_FreeDynamicLightItems
+    //
+    // Frees the buffer of the lights to sort (dlbuffer), at the end of the renderer
+    //
+    //==============================================================================
+    class procedure R_FreeDynamicLightItems; static;
+  end;
+
 
 implementation
 
@@ -95,7 +104,7 @@ implementation
 // R_FreeDynamicLightItems
 //
 //==============================================================================
-procedure R_FreeDynamicLightItems;
+class procedure TRendererDynLights.R_FreeDynamicLightItems;
 begin
   memfree(pointer(dlbuffer), realdlitems * SizeOf(dlsortitem_t));
   numdlitems := 0;
