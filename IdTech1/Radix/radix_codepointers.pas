@@ -600,7 +600,7 @@ end;
 procedure A_SpawnChildEx(actor: Pmobj_t);
 begin
   if P_GetMobjCustomParamValue(actor, S_PARAM_NOSPAWNCHILDREN) = 0 then
-    A_SpawnItemEx(actor);
+    TCommonSpawnActions.A_SpawnItemEx(actor);
 end;
 
 //==============================================================================

@@ -45,41 +45,6 @@ const
 
 //==============================================================================
 //
-// A_CustomMissile
-//
-//==============================================================================
-procedure A_CustomMissile(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomMissile
-//
-//==============================================================================
-procedure A_RandomMissile(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpawnItem
-//
-//==============================================================================
-procedure A_SpawnItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SpawnItemEx
-//
-//==============================================================================
-procedure A_SpawnItemEx(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SeekerMissile
-//
-//==============================================================================
-procedure A_SeekerMissile(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_CStaffMissileSlither
 //
 //==============================================================================
@@ -119,13 +84,6 @@ procedure A_DropItem(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_Detonate(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Spawn
-//
-//==============================================================================
-procedure A_Spawn(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -218,20 +176,6 @@ function P_SplashImmune(target, spot: Pmobj_t): boolean;
 
 //==============================================================================
 //
-// A_SpawnObject
-//
-//==============================================================================
-procedure A_SpawnObject(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_MonsterProjectile
-//
-//==============================================================================
-procedure A_MonsterProjectile(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_MonsterBulletAttack
 //
 //==============================================================================
@@ -246,14 +190,6 @@ procedure A_MonsterMeleeAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
-// P_SeekerMissileEx
-//
-//==============================================================================
-function P_SeekerMissileEx(actor: Pmobj_t; var tracer: Pmobj_t; const thresh, turnMax: angle_t;
-  const centerseek: boolean): boolean;
-
-//==============================================================================
-//
 // A_AddFlags
 //
 //==============================================================================
@@ -265,13 +201,6 @@ procedure A_AddFlags(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_RemoveFlags(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_WeaponProjectile
-//
-//==============================================================================
-procedure A_WeaponProjectile(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -2438,6 +2367,85 @@ type
     //
     //==============================================================================
     class procedure A_HealChase(actor: Pmobj_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonSpawnActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_CustomMissile
+    //
+    //==============================================================================
+    class procedure A_CustomMissile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomMissile
+    //
+    //==============================================================================
+    class procedure A_RandomMissile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpawnItem
+    //
+    //==============================================================================
+    class procedure A_SpawnItem(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpawnItemEx
+    //
+    //==============================================================================
+    class procedure A_SpawnItemEx(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SeekerMissile
+    //
+    //==============================================================================
+    class procedure A_SeekerMissile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Spawn
+    //
+    //==============================================================================
+    class procedure A_Spawn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SpawnObject
+    //
+    //==============================================================================
+    class procedure A_SpawnObject(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MonsterProjectile
+    //
+    //==============================================================================
+    class procedure A_MonsterProjectile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_SeekerMissileEx
+    //
+    //==============================================================================
+    class function P_SeekerMissileEx(actor: Pmobj_t; var tracer: Pmobj_t; const thresh, turnMax: angle_t;
+      const centerseek: boolean): boolean; static;
+
+    //==============================================================================
+    //
+    // A_WeaponProjectile
+    //
+    //==============================================================================
+    class procedure A_WeaponProjectile(player: Pplayer_t; psp: Ppspdef_t); static;
   end;
 
 
@@ -4952,12 +4960,24 @@ begin
   end;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonSpawnActionsLocal = class sealed
+  public
+    class procedure P_CustomMissile(const actor: Pmobj_t; const missiletype: integer;
+      const spawnheight: fixed_t; const spawnoffs: fixed_t; const angle: angle_t;
+      const aimmode: integer; const pitch: angle_t); static;
+  end;
+
 //==============================================================================
 //
 // P_CustomMissile
 //
 //==============================================================================
-procedure P_CustomMissile(const actor: Pmobj_t; const missiletype: integer;
+class procedure TCommonSpawnActionsLocal.P_CustomMissile(const actor: Pmobj_t; const missiletype: integer;
   const spawnheight: fixed_t; const spawnoffs: fixed_t; const angle: angle_t;
   const aimmode: integer; const pitch: angle_t);
 var
@@ -5063,7 +5083,7 @@ end;
 // A_CustomMissile(type, height, offset, angle, aimmode, pitch)
 //
 //==============================================================================
-procedure A_CustomMissile(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_CustomMissile(actor: Pmobj_t);
 var
   mobj_no: integer;
   spawnheight: fixed_t;
@@ -5094,7 +5114,7 @@ begin
   aimmode := actor.state.params.IntVal[4] and 3;
   pitch := ANG1 * actor.state.params.IntVal[5];
 
-  P_CustomMissile(actor, mobj_no, spawnheight, spawnoffs, angle, aimmode, pitch);
+  TCommonSpawnActionsLocal.P_CustomMissile(actor, mobj_no, spawnheight, spawnoffs, angle, aimmode, pitch);
 end;
 
 //==============================================================================
@@ -5104,7 +5124,7 @@ end;
 // A_RandomMissile(type1, type2, type3, ...)
 //
 //==============================================================================
-procedure A_RandomMissile(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_RandomMissile(actor: Pmobj_t);
 var
   ridx: integer;
   mobj_no: integer;
@@ -5190,7 +5210,7 @@ end;
 // A_SpawnItem(type, distance, zheight, angle)
 //
 //==============================================================================
-procedure A_SpawnItem(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_SpawnItem(actor: Pmobj_t);
 var
   mobj_no: integer;
   distance: fixed_t;
@@ -5413,7 +5433,7 @@ end;
 // chance -> parm9
 //
 //==============================================================================
-procedure A_SpawnItemEx(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_SpawnItemEx(actor: Pmobj_t);
 var
   mobj_no: integer;
   x, y: fixed_t;
@@ -5519,7 +5539,7 @@ end;
 // A_SeekerMissile(threshold: angle; turnMax: angle)
 //
 //==============================================================================
-procedure A_SeekerMissile(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_SeekerMissile(actor: Pmobj_t);
 begin
   if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
@@ -8150,7 +8170,7 @@ end;
 // A small set of highly-sought-after code pointers
 //
 //==============================================================================
-procedure A_Spawn(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_Spawn(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -8827,7 +8847,7 @@ begin
     P_DamageMobj(actor.target, actor, actor, damage);
   end
   else if domissile and (missiletype <> 0) then
-    P_CustomMissile(actor, missiletype, missileheight, 0, 0, 0, 0);
+    TCommonSpawnActionsLocal.P_CustomMissile(actor, missiletype, missileheight, 0, 0, 0, 0);
 end;
 
 //==============================================================================
@@ -10434,7 +10454,7 @@ end;
 //   args[7]: Z velocity (fixed point)
 //
 //==============================================================================
-procedure A_SpawnObject(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_SpawnObject(actor: Pmobj_t);
 var
   typ, ofs_x, ofs_y, ofs_z, vel_x, vel_y, vel_z: integer;
   angle: Int64;
@@ -10487,7 +10507,7 @@ end;
 //   args[4]: Z spawn offset, relative to actor's default projectile fire height
 //
 //==============================================================================
-procedure A_MonsterProjectile(actor: Pmobj_t);
+class procedure TCommonSpawnActions.A_MonsterProjectile(actor: Pmobj_t);
 var
   typ, pitch, spawnofs_xy, spawnofs_z: integer;
   angle: Int64;
@@ -10851,7 +10871,7 @@ end;
 // P_SeekerMissileEx
 //
 //==============================================================================
-function P_SeekerMissileEx(actor: Pmobj_t; var tracer: Pmobj_t; const thresh, turnMax: angle_t;
+class function TCommonSpawnActions.P_SeekerMissileEx(actor: Pmobj_t; var tracer: Pmobj_t; const thresh, turnMax: angle_t;
   const centerseek: boolean): boolean;
 var
   dir: integer;
@@ -10932,7 +10952,7 @@ begin
   threshold := FixedToAngle(actor.state.params.MBF21FixedVal[0]);
   maxturnangle := FixedToAngle(actor.state.params.MBF21FixedVal[1]);
 
-  P_SeekerMissileEx(actor, actor.tracer, threshold, maxturnangle, true);
+  TCommonSpawnActions.P_SeekerMissileEx(actor, actor.tracer, threshold, maxturnangle, true);
 end;
 
 //==============================================================================
@@ -11922,7 +11942,7 @@ end;
 //   args[4]: Z spawn offset, relative to player's default projectile fire height
 //
 //==============================================================================
-procedure A_WeaponProjectile(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonSpawnActions.A_WeaponProjectile(player: Pplayer_t; psp: Ppspdef_t);
 var
   typ, angle, pitch, spawnofs_xy, spawnofs_z: integer;
   mo: Pmobj_t;
