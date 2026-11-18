@@ -2220,17 +2220,17 @@ begin
 {$IFNDEF OPENGL}
   C_AddCmd('fake3d, usefake3d', @TRendererMainLocal.R_CmdUseFake3D);
 {$ENDIF}
-  C_AddCmd('lowestres, lowestresolution', @R_CmdLowestRes);
-  C_AddCmd('lowres, lowresolution', @R_CmdLowRes);
-  C_AddCmd('mediumres, mediumresolution', @R_CmdMediumRes);
-  C_AddCmd('normalres, normalresolution', @R_CmdNormalRes);
-  C_AddCmd('hires, hiresolution', @R_CmdHiRes);
-  C_AddCmd('ultrares, ultraresolution', @R_CmdUltraRes);
-  C_AddCmd('detaillevel, displayresolution', @R_CmdDetailLevel);
-  C_AddCmd('fullscreen', @R_CmdFullScreen);
-  C_AddCmd('extremeflatfiltering', @R_CmdExtremeflatfiltering);
-  C_AddCmd('32bittexturepaletteeffects, use32bittexturepaletteeffects', @R_Cmd32bittexturepaletteeffects);
-  C_AddCmd('useexternaltextures', @R_CmdUseExternalTextures);
+  C_AddCmd('lowestres, lowestresolution', @TRendererHires.R_CmdLowestRes);
+  C_AddCmd('lowres, lowresolution', @TRendererHires.R_CmdLowRes);
+  C_AddCmd('mediumres, mediumresolution', @TRendererHires.R_CmdMediumRes);
+  C_AddCmd('normalres, normalresolution', @TRendererHires.R_CmdNormalRes);
+  C_AddCmd('hires, hiresolution', @TRendererHires.R_CmdHiRes);
+  C_AddCmd('ultrares, ultraresolution', @TRendererHires.R_CmdUltraRes);
+  C_AddCmd('detaillevel, displayresolution', @TRendererHires.R_CmdDetailLevel);
+  C_AddCmd('fullscreen', @TRendererHires.R_CmdFullScreen);
+  C_AddCmd('extremeflatfiltering', @TRendererHires.R_CmdExtremeflatfiltering);
+  C_AddCmd('32bittexturepaletteeffects, use32bittexturepaletteeffects', @TRendererHires.R_Cmd32bittexturepaletteeffects);
+  C_AddCmd('useexternaltextures', @TRendererHires.R_CmdUseExternalTextures);
 {$IF DEFINED(HEXEN)}
   C_AddCmd('useclassicfuzzeffect', @TRendererMainLocal.R_CmdUseClassicFuzzEffect);
 {$ELSEIF DEFINED(STRIFE)}
@@ -2772,7 +2772,7 @@ class procedure TRendererMainLocal.R_DoRenderPlayerView32_MultiThread(player: Pp
 begin
   R_Fake3DPrepare(player);
   R_SetupFrame(player);
-  R_CalcHiResTables_MultiThread;
+  TRendererHires.R_CalcHiResTables_MultiThread;
 
   // Clear buffers.
   TRendererBsp.R_ClearClipSegs;
@@ -2857,7 +2857,7 @@ begin
 
 {$IFNDEF OPENGL}
   R_Calc8bitTables;
-  R_CalcHiResTables_SingleThread;
+  TRendererHires.R_CalcHiResTables_SingleThread;
 {$ENDIF}
 
   // Clear buffers.

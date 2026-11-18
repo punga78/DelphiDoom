@@ -1220,7 +1220,7 @@ begin
     {$IFDEF OPENGL}
     gld_SetPalette(palette);
     {$ELSE}
-    R_SetPalette(palette);
+    TRendererHires.R_SetPalette(palette);
     {$ENDIF}
     p := W_CacheLumpNum(lu_palette, PU_STATIC);
     pal := PByteArray(NativeInt(p) + palette * 768);

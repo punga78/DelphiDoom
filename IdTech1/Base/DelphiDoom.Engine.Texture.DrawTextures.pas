@@ -194,7 +194,7 @@ begin
       if not R_BatchColorAdd32_MMX(@LSource[0], LColor, LWidth) then
       begin
         for LColumn := 0 to LWidth - 1 do
-          LSource[LColumn] := R_ColorAdd(LSource[LColumn], LColor);
+          LSource[LColumn] := TRendererHires.R_ColorAdd(LSource[LColumn], LColor);
       end;
     end;
 

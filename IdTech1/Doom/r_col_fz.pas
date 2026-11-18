@@ -191,7 +191,7 @@ begin
     //  a pixel that is either one column
     //  left or right of the current one.
     // Add index from colormap to index.
-    destl[0] := R_ColorLight(destl[sfuzzoffset[fuzzpos]], $C000);
+    destl[0] := TRendererHires.R_ColorLight(destl[sfuzzoffset[fuzzpos]], $C000);
 
     // Clamp table lookup index.
     inc(fuzzpos);

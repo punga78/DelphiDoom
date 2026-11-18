@@ -440,7 +440,7 @@ begin
         cfrac2 := dc_texturemod shl (FRACBITS - DC_HIRESBITS);
         for i := 0 to columnsize - 1 do
         begin
-          plw^ := R_ColorAverage(plw^, plw2^, cfrac2);
+          plw^ := TRendererHires.R_ColorAverage(plw^, plw2^, cfrac2);
           inc(plw);
           inc(plw2);
         end;

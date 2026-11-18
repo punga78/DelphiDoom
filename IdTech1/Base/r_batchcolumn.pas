@@ -1421,7 +1421,7 @@ begin
     cnt := num_batch_columns;
     while cnt > 0 do
     begin
-      destl[0] := R_ColorLight(destl[sfuzzoffset[fuzzpos]], $C000);
+      destl[0] := TRendererHires.R_ColorLight(destl[sfuzzoffset[fuzzpos]], $C000);
       destl := @destl[1];
     // Clamp table lookup index.
       inc(fuzzpos);

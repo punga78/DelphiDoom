@@ -70,111 +70,6 @@ const
 
 //==============================================================================
 //
-// R_CmdLowestRes
-//
-//==============================================================================
-procedure R_CmdLowestRes(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdLowRes
-//
-//==============================================================================
-procedure R_CmdLowRes(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdMediumRes
-//
-//==============================================================================
-procedure R_CmdMediumRes(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdNormalRes
-//
-//==============================================================================
-procedure R_CmdNormalRes(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdHiRes
-//
-//==============================================================================
-procedure R_CmdHiRes(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdUltraRes
-//
-//==============================================================================
-procedure R_CmdUltraRes(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdDetailLevel
-//
-//==============================================================================
-procedure R_CmdDetailLevel(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdExtremeflatfiltering
-//
-//==============================================================================
-procedure R_CmdExtremeflatfiltering(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdFullScreen
-//
-//==============================================================================
-procedure R_CmdFullScreen(const parm1: string = '');
-
-//==============================================================================
-//
-// R_Cmd32bittexturepaletteeffects
-//
-//==============================================================================
-procedure R_Cmd32bittexturepaletteeffects(const parm1: string = '');
-
-//==============================================================================
-//
-// R_CmdUseExternalTextures
-//
-//==============================================================================
-procedure R_CmdUseExternalTextures(const parm1: string = '');
-
-//==============================================================================
-//
-// R_ColorAdd
-//
-//==============================================================================
-function R_ColorAdd(const c1, c2: LongWord): LongWord; register;
-
-//==============================================================================
-//
-// R_ColorSubtract
-//
-//==============================================================================
-function R_ColorSubtract(const c1, c2: LongWord): LongWord; register;
-
-//==============================================================================
-//
-// R_ColorAverage
-//
-//==============================================================================
-function R_ColorAverage(const c1, c2: LongWord; const factor: fixed_t): LongWord; register;
-
-//==============================================================================
-//
-// R_ColorMean
-//
-//==============================================================================
-function R_ColorMean(const c1, c2: LongWord): LongWord; register;
-
-//==============================================================================
-//
 // R_ColorLightAverage
 //
 //==============================================================================
@@ -187,37 +82,9 @@ function R_ColorMean(const c1, c2: LongWord): LongWord; register;
 
 //==============================================================================
 //
-// R_ColorMidAverage
-//
-//==============================================================================
-function R_ColorMidAverage(const c1, c2: LongWord): LongWord;
-
-//==============================================================================
-//
-// R_ColorLight
-//
-//==============================================================================
-function R_ColorLight(const c: LongWord; const lfactor: fixed_t): LongWord;
-
-//==============================================================================
-//
-// R_ColorBoost
-//
-//==============================================================================
-function R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord;
-
-//==============================================================================
-//
 // R_InverseLight
 //
 //==============================================================================
-
-//==============================================================================
-//
-// R_FuzzLight
-//
-//==============================================================================
-function R_FuzzLight(const c: LongWord): LongWord;
 
 //==============================================================================
 //
@@ -227,19 +94,6 @@ function R_FuzzLight(const c: LongWord): LongWord;
 
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_CalcHiResTables_SingleThread
-//
-//==============================================================================
-procedure R_CalcHiResTables_SingleThread;
-
-//==============================================================================
-//
-// R_CalcHiResTables_MultiThread
-//
-//==============================================================================
-procedure R_CalcHiResTables_MultiThread;
 {$ENDIF}
 
 const
@@ -256,25 +110,161 @@ var
   hirestable: hirestable_t;
   recalctables32needed: boolean = true;
 
-//==============================================================================
-//
-// R_InitHiRes
-//
-//==============================================================================
-procedure R_InitHiRes;
-
-//==============================================================================
-//
-// R_SetPalette
-//
-//==============================================================================
-procedure R_SetPalette(palette: integer);
-
 var
   pal_color: LongWord;
 {$IFNDEF OPENGL}
   cur_pal_index: integer;
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererHires = class sealed
+  public
+    //==============================================================================
+    //
+    // R_CmdLowestRes
+    //
+    //==============================================================================
+    class procedure R_CmdLowestRes(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdLowRes
+    //
+    //==============================================================================
+    class procedure R_CmdLowRes(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdMediumRes
+    //
+    //==============================================================================
+    class procedure R_CmdMediumRes(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdNormalRes
+    //
+    //==============================================================================
+    class procedure R_CmdNormalRes(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdHiRes
+    //
+    //==============================================================================
+    class procedure R_CmdHiRes(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdUltraRes
+    //
+    //==============================================================================
+    class procedure R_CmdUltraRes(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdDetailLevel
+    //
+    //==============================================================================
+    class procedure R_CmdDetailLevel(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdExtremeflatfiltering
+    //
+    //==============================================================================
+    class procedure R_CmdExtremeflatfiltering(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdFullScreen
+    //
+    //==============================================================================
+    class procedure R_CmdFullScreen(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_Cmd32bittexturepaletteeffects
+    //
+    //==============================================================================
+    class procedure R_Cmd32bittexturepaletteeffects(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_CmdUseExternalTextures
+    //
+    //==============================================================================
+    class procedure R_CmdUseExternalTextures(const parm1: string = ''); static;
+    //==============================================================================
+    //
+    // R_ColorAdd
+    //
+    //==============================================================================
+    class function R_ColorAdd(const c1, c2: LongWord): LongWord; register; static;
+    //==============================================================================
+    //
+    // R_ColorSubtract
+    //
+    //==============================================================================
+    class function R_ColorSubtract(const c1, c2: LongWord): LongWord; register; static;
+    //==============================================================================
+    //
+    // R_ColorAverage
+    //
+    //==============================================================================
+    class function R_ColorAverage(const c1, c2: LongWord; const factor: fixed_t): LongWord; register; static;
+    //==============================================================================
+    //
+    // R_ColorMean
+    //
+    //==============================================================================
+    class function R_ColorMean(const c1, c2: LongWord): LongWord; register; static;
+    //==============================================================================
+    //
+    // R_ColorMidAverage
+    //
+    //==============================================================================
+    class function R_ColorMidAverage(const c1, c2: LongWord): LongWord; static;
+    //==============================================================================
+    //
+    // R_ColorLight
+    //
+    //==============================================================================
+    class function R_ColorLight(const c: LongWord; const lfactor: fixed_t): LongWord; static;
+    //==============================================================================
+    //
+    // R_ColorBoost
+    //
+    //==============================================================================
+    class function R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord; static;
+    //==============================================================================
+    //
+    // R_FuzzLight
+    //
+    //==============================================================================
+    class function R_FuzzLight(const c: LongWord): LongWord; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_CalcHiResTables_SingleThread
+    //
+    //==============================================================================
+    class procedure R_CalcHiResTables_SingleThread; static;
+    //==============================================================================
+    //
+    // R_CalcHiResTables_MultiThread
+    //
+    //==============================================================================
+    class procedure R_CalcHiResTables_MultiThread; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_InitHiRes
+    //
+    //==============================================================================
+    class procedure R_InitHiRes; static;
+    //==============================================================================
+    //
+    // R_SetPalette
+    //
+    //==============================================================================
+    class procedure R_SetPalette(palette: integer); static;
+  end;
+
 
 implementation
 
@@ -303,6 +293,23 @@ uses
 {$ENDIF}
   r_lights;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererHiresLocal = class sealed
+  public
+{$IFNDEF OPENGL}
+    class function R_CalcHiResTables_thr1x8(foo: pointer): integer; stdcall; static;
+    class function R_CalcHiResTables_thr2x8(foo: pointer): integer; stdcall; static;
+    class function R_CalcHiResTables_thr1x4(foo: pointer): integer; stdcall; static;
+    class function R_CalcHiResTables_thr2x4(foo: pointer): integer; stdcall; static;
+    class function R_CalcHiResTables_thr3x4(foo: pointer): integer; stdcall; static;
+    class function R_CalcHiResTables_thr4x4(foo: pointer): integer; stdcall; static;
+{$ENDIF}
+  end;
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Commands
@@ -310,7 +317,7 @@ uses
 // R_CmdLowestRes
 //
 //==============================================================================
-procedure R_CmdLowestRes(const parm1: string = '');
+class procedure TRendererHires.R_CmdLowestRes(const parm1: string = '');
 var
   newres: boolean;
 begin
@@ -337,7 +344,7 @@ end;
 // R_CmdLowRes
 //
 //==============================================================================
-procedure R_CmdLowRes(const parm1: string = '');
+class procedure TRendererHires.R_CmdLowRes(const parm1: string = '');
 var
   newres: boolean;
 begin
@@ -364,7 +371,7 @@ end;
 // R_CmdMediumRes
 //
 //==============================================================================
-procedure R_CmdMediumRes(const parm1: string = '');
+class procedure TRendererHires.R_CmdMediumRes(const parm1: string = '');
 var
   newres: boolean;
 begin
@@ -391,7 +398,7 @@ end;
 // R_CmdNormalRes
 //
 //==============================================================================
-procedure R_CmdNormalRes(const parm1: string = '');
+class procedure TRendererHires.R_CmdNormalRes(const parm1: string = '');
 var
   newres: boolean;
 begin
@@ -418,7 +425,7 @@ end;
 // R_CmdHiRes
 //
 //==============================================================================
-procedure R_CmdHiRes(const parm1: string = '');
+class procedure TRendererHires.R_CmdHiRes(const parm1: string = '');
 var
   newres: boolean;
 begin
@@ -445,7 +452,7 @@ end;
 // R_CmdUltraRes
 //
 //==============================================================================
-procedure R_CmdUltraRes(const parm1: string = '');
+class procedure TRendererHires.R_CmdUltraRes(const parm1: string = '');
 var
   newres: boolean;
 begin
@@ -476,7 +483,7 @@ end;
 // R_CmdDetailLevel
 //
 //==============================================================================
-procedure R_CmdDetailLevel(const parm1: string = '');
+class procedure TRendererHires.R_CmdDetailLevel(const parm1: string = '');
 var
   i, newdetail: integer;
   s_det: string;
@@ -512,7 +519,7 @@ end;
 // R_CmdFullScreen
 //
 //==============================================================================
-procedure R_CmdFullScreen(const parm1: string = '');
+class procedure TRendererHires.R_CmdFullScreen(const parm1: string = '');
 {$IFDEF OPENGL}
 var
   newfullscreen: boolean;
@@ -558,7 +565,7 @@ begin
 
   if newfullscreen <> fullscreen then
     I_ChangeFullScreen(newfullscreen);
-  R_CmdFullScreen;
+  TRendererHires.R_CmdFullScreen;
 end;
 {$ENDIF}
 
@@ -567,7 +574,7 @@ end;
 // R_CmdExtremeflatfiltering
 //
 //==============================================================================
-procedure R_CmdExtremeflatfiltering(const parm1: string = '');
+class procedure TRendererHires.R_CmdExtremeflatfiltering(const parm1: string = '');
 var
   newflatfiltering: boolean;
   parm: string;
@@ -601,7 +608,7 @@ end;
 // R_Cmd32bittexturepaletteeffects
 //
 //==============================================================================
-procedure R_Cmd32bittexturepaletteeffects(const parm1: string = '');
+class procedure TRendererHires.R_Cmd32bittexturepaletteeffects(const parm1: string = '');
 var
   new_32bittexturepaletteeffects: boolean;
 begin
@@ -628,7 +635,7 @@ end;
 // R_CmdUseExternalTextures
 //
 //==============================================================================
-procedure R_CmdUseExternalTextures(const parm1: string = '');
+class procedure TRendererHires.R_CmdUseExternalTextures(const parm1: string = '');
 var
   new_useexternaltextures: boolean;
 begin
@@ -658,7 +665,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 //
 //==============================================================================
-function R_ColorAdd(const c1, c2: LongWord): LongWord; register;
+class function TRendererHires.R_ColorAdd(const c1, c2: LongWord): LongWord; register;
 var
   r1, g1, b1: byte;
   r2, g2, b2: byte;
@@ -688,7 +695,7 @@ end;
 // R_ColorSubtract
 //
 //==============================================================================
-function R_ColorSubtract(const c1, c2: LongWord): LongWord; register;
+class function TRendererHires.R_ColorSubtract(const c1, c2: LongWord): LongWord; register;
 var
   r1, g1, b1: byte;
   r2, g2, b2: byte;
@@ -721,7 +728,7 @@ end;
 // R_ColorMean
 //
 //==============================================================================
-function R_ColorMean(const c1, c2: LongWord): LongWord; register;
+class function TRendererHires.R_ColorMean(const c1, c2: LongWord): LongWord; register;
 var
   r1, g1, b1: byte;
   r2, g2, b2: byte;
@@ -749,7 +756,7 @@ end;
 // If factor = FRACUNIT returns c2.
 //
 //==============================================================================
-function R_ColorAverage(const c1, c2: LongWord; const factor: fixed_t): LongWord;
+class function TRendererHires.R_ColorAverage(const c1, c2: LongWord; const factor: fixed_t): LongWord;
 var
   r1, g1, b1: byte;
   r2, g2, b2: byte;
@@ -775,7 +782,7 @@ end;
 // R_ColorMidAverage
 //
 //==============================================================================
-function R_ColorMidAverage(const c1, c2: LongWord): LongWord;
+class function TRendererHires.R_ColorMidAverage(const c1, c2: LongWord): LongWord;
 var
   r1, g1, b1: byte;
   r2, g2, b2: byte;
@@ -802,7 +809,7 @@ end;
 // If lfactor is equal to FRACUNIT - 1 returns the input color c.
 //
 //==============================================================================
-function R_ColorLight(const c: LongWord; const lfactor: fixed_t): LongWord;
+class function TRendererHires.R_ColorLight(const c: LongWord; const lfactor: fixed_t): LongWord;
 var
   r1, g1, b1: byte;
   r, g, b: LongWord;
@@ -822,7 +829,7 @@ end;
 // Same as R_ColorLight but clip r, g, b values to allow lfactor greater than FRACUNIT
 //
 //==============================================================================
-function R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord;
+class function TRendererHires.R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord;
 var
   r1, g1, b1: byte;
   r, g, b: LongWord;
@@ -847,7 +854,7 @@ end;
 // R_FuzzLight
 //
 //==============================================================================
-function R_FuzzLight(const c: LongWord): LongWord;
+class function TRendererHires.R_FuzzLight(const c: LongWord): LongWord;
 var
   r1, g1, b1: byte;
   r, g, b: LongWord;
@@ -868,7 +875,7 @@ end;
 // R_CalcHiResTables_SingleThread
 //
 //==============================================================================
-procedure R_CalcHiResTables_SingleThread;
+class procedure TRendererHires.R_CalcHiResTables_SingleThread;
 var
   i, j, k: integer;
   vpli, vplj: PLongWord;
@@ -1086,7 +1093,7 @@ end;
 // R_CalcHiResTables_thr1x8
 //
 //==============================================================================
-function R_CalcHiResTables_thr1x8(foo: pointer): integer; stdcall;
+class function TRendererHiresLocal.R_CalcHiResTables_thr1x8(foo: pointer): integer; stdcall;
 var
   i, j: integer;
   vpli: PLongWord;
@@ -1192,7 +1199,7 @@ end;
 // R_CalcHiResTables_thr2x8
 //
 //==============================================================================
-function R_CalcHiResTables_thr2x8(foo: pointer): integer; stdcall;
+class function TRendererHiresLocal.R_CalcHiResTables_thr2x8(foo: pointer): integer; stdcall;
 var
   i, j, k: integer;
   vpli, vplj: PLongWord;
@@ -1309,7 +1316,7 @@ end;
 // R_CalcHiResTables_thr1x4
 //
 //==============================================================================
-function R_CalcHiResTables_thr1x4(foo: pointer): integer; stdcall;
+class function TRendererHiresLocal.R_CalcHiResTables_thr1x4(foo: pointer): integer; stdcall;
 var
   a: integer;
 begin
@@ -1324,7 +1331,7 @@ end;
 // R_CalcHiResTables_thr2x4
 //
 //==============================================================================
-function R_CalcHiResTables_thr2x4(foo: pointer): integer; stdcall;
+class function TRendererHiresLocal.R_CalcHiResTables_thr2x4(foo: pointer): integer; stdcall;
 var
   a: integer;
 begin
@@ -1340,7 +1347,7 @@ end;
 // R_CalcHiResTables_thr3x4
 //
 //==============================================================================
-function R_CalcHiResTables_thr3x4(foo: pointer): integer; stdcall;
+class function TRendererHiresLocal.R_CalcHiResTables_thr3x4(foo: pointer): integer; stdcall;
 var
   a: integer;
 begin
@@ -1356,7 +1363,7 @@ end;
 // R_CalcHiResTables_thr4x4
 //
 //==============================================================================
-function R_CalcHiResTables_thr4x4(foo: pointer): integer; stdcall;
+class function TRendererHiresLocal.R_CalcHiResTables_thr4x4(foo: pointer): integer; stdcall;
 var
   a: integer;
 begin
@@ -1372,7 +1379,7 @@ end;
 // R_CalcHiResTables_MultiThread
 //
 //==============================================================================
-procedure R_CalcHiResTables_MultiThread;
+class procedure TRendererHires.R_CalcHiResTables_MultiThread;
 var
   k: integer;
   A: array[1..DC_HIRESFACTOR - 1] of integer;
@@ -1388,22 +1395,22 @@ begin
     for k := 1 to DC_HIRESFACTOR - 1 do
       A[k] := k;
     MT_Execute8(
-      @R_CalcHiResTables_thr1x8, nil,
-      @R_CalcHiResTables_thr2x8, @A[1],
-      @R_CalcHiResTables_thr2x8, @A[2],
-      @R_CalcHiResTables_thr2x8, @A[3],
-      @R_CalcHiResTables_thr2x8, @A[4],
-      @R_CalcHiResTables_thr2x8, @A[5],
-      @R_CalcHiResTables_thr2x8, @A[6],
-      @R_CalcHiResTables_thr2x8, @A[7]
+      @TRendererHiresLocal.R_CalcHiResTables_thr1x8, nil,
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[1],
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[2],
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[3],
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[4],
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[5],
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[6],
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x8, @A[7]
     );
   end
   else
     MT_Execute4(
-      @R_CalcHiResTables_thr1x4, nil,
-      @R_CalcHiResTables_thr2x4, nil,
-      @R_CalcHiResTables_thr3x4, nil,
-      @R_CalcHiResTables_thr4x4, nil
+      @TRendererHiresLocal.R_CalcHiResTables_thr1x4, nil,
+      @TRendererHiresLocal.R_CalcHiResTables_thr2x4, nil,
+      @TRendererHiresLocal.R_CalcHiResTables_thr3x4, nil,
+      @TRendererHiresLocal.R_CalcHiResTables_thr4x4, nil
     );
 
   recalctables32needed := false;
@@ -1415,7 +1422,7 @@ end;
 // R_InitHiRes
 //
 //==============================================================================
-procedure R_InitHiRes;
+class procedure TRendererHires.R_InitHiRes;
 begin
   R_InitLightBoost;
 {$IFNDEF OPENGL}
@@ -1428,7 +1435,7 @@ end;
 // R_SetPalette
 //
 //==============================================================================
-procedure R_SetPalette(palette: integer);
+class procedure TRendererHires.R_SetPalette(palette: integer);
 var
   r_extra_red: LongWord;
   r_extra_green: LongWord;

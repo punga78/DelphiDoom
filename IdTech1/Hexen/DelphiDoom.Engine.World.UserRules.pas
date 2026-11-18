@@ -323,7 +323,7 @@ begin
       I_SetPalette(palette);
       V_SetPalette(palette);
       Z_ChangeTag(palette, PU_CACHE);
-      R_SetPalette(0);
+      TRendererHires.R_SetPalette(0);
 
       inv_ptr := 0;
       curpos := 0;

@@ -1321,7 +1321,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(STARTSCOURGEPAL);
+    TRendererHires.R_SetPalette(STARTSCOURGEPAL);
   end;
 end;
 
@@ -1338,7 +1338,7 @@ begin
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     pl := STARTSCOURGEPAL + (NativeInt(psp.state) - NativeInt(@states[Ord(S_MSTAFFATK_2)])) div SizeOf(state_t);
-    R_SetPalette(pl);
+    TRendererHires.R_SetPalette(pl);
     if pl = STARTSCOURGEPAL + 3 then
     begin // reset back to original playpal
       pl := 0;
@@ -1348,7 +1348,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(pl);
+    TRendererHires.R_SetPalette(pl);
   end;
 end;
 
@@ -1981,7 +1981,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(STARTHOLYPAL);
+    TRendererHires.R_SetPalette(STARTHOLYPAL);
   end;
   S_StartSound(player.mo, Ord(SFX_CHOLY_FIRE));
 end;
@@ -2008,7 +2008,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(pl);
+    TRendererHires.R_SetPalette(pl);
   end;
 end;
 

@@ -1575,7 +1575,7 @@ begin
     {$IFDEF OPENGL}
     gld_SetPalette(palette);
     {$ELSE}
-    R_SetPalette(palette);
+    TRendererHires.R_SetPalette(palette);
     {$ENDIF}
     pal := V_ReadPalette(PU_STATIC);
     I_SetPalette(@pal[palette * 768]);

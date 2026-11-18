@@ -1416,7 +1416,7 @@ begin
         src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         for col := 0 to destw - 1 do
         begin
-          dest^ := R_ColorAverage(videopal[src[LongWord(fracx) shr FRACBITS]], dest^, addfactor);
+          dest^ := TRendererHires.R_ColorAverage(videopal[src[LongWord(fracx) shr FRACBITS]], dest^, addfactor);
           {$IFDEF OPENGL}
           pb := PByte(NativeInt(dest) + 3);
           pb^ := bfactor;

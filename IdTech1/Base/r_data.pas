@@ -1737,9 +1737,9 @@ begin
   TRendererMain.R_SetRenderingFunctions;
   TRendererMain.R_SetPalette64;
   if usemultithread then
-    R_CalcHiResTables_MultiThread
+    TRendererHires.R_CalcHiResTables_MultiThread
   else
-    R_CalcHiResTables_SingleThread;
+    TRendererHires.R_CalcHiResTables_SingleThread;
   {$ENDIF}
 {$ENDIF}
 end;
@@ -1754,7 +1754,7 @@ end;
 //==============================================================================
 procedure R_InitData;
 begin
-  R_InitHiRes;
+  TRendererHires.R_InitHiRes;
 {$IFDEF STRIFE}
   if D_UseOldTexture1 then
     R_InitTexturesOld

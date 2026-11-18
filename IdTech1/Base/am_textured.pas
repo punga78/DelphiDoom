@@ -203,7 +203,7 @@ begin
       exit;
   end;
   pl := @fb32[yy * f_w + xx];
-  pl^ := R_ColorMean(pl^, amcolormap[cc]);
+  pl^ := TRendererHires.R_ColorMean(pl^, amcolormap[cc]);
 end;
 {$ENDIF}
 

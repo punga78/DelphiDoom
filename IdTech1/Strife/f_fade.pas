@@ -161,7 +161,7 @@ var
   i: integer;
 begin
   for i := p.start to p.finish do
-    screen32[i] := R_ColorAverage(fade_scr_end[i], fade_scr_start[i], fade);
+    screen32[i] := TRendererHires.R_ColorAverage(fade_scr_end[i], fade_scr_start[i], fade);
   result := 0;
 end;
 {$ENDIF}
@@ -192,7 +192,7 @@ begin
   {$IFDEF OPENGL}
   for i := 0 to SCREENWIDTH - 1 do
     for j := 0 to SCREENHEIGHT - 1 do
-      w_screen32[j * WIPESCREENWIDTH  + i] := R_ColorAverage(fade_scr_end[j * SCREENWIDTH + i], fade_scr_start[j * SCREENWIDTH + i], fade) or $FF000000;
+      w_screen32[j * WIPESCREENWIDTH  + i] := TRendererHires.R_ColorAverage(fade_scr_end[j * SCREENWIDTH + i], fade_scr_start[j * SCREENWIDTH + i], fade) or $FF000000;
   {$ELSE}
   if usemultithread then
   begin
@@ -213,7 +213,7 @@ begin
   end
   else
     for i := 0 to SCREENWIDTH * SCREENHEIGHT - 1 do
-      screen32[i] := R_ColorAverage(fade_scr_end[i], fade_scr_start[i], fade);
+      screen32[i] := TRendererHires.R_ColorAverage(fade_scr_end[i], fade_scr_start[i], fade);
   {$ENDIF}
   if fade > 0 then
     result := 0;
