@@ -1172,7 +1172,7 @@ begin
     @floorlightlevel, @ceilinglightlevel, false);   // killough 4/11/98
 {$ENDIF}
 {$IFNDEF OPENGL}
-  R_3dVisplaneFromSubsector(sub, @floorlightlevel);
+  TRenderer3dFloors.R_3dVisplaneFromSubsector(sub, @floorlightlevel);
   TRendererSlopes.R_VisSlopesFromSubsector(sub);  // JVAL: Slopes
 {$ENDIF}
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}

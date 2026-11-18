@@ -43,27 +43,6 @@ var
   hasExtraFloors: Boolean = False;
   viewsubsector: Psubsector_t;
 
-//==============================================================================
-//
-// R_RenderThickSideRange
-//
-//==============================================================================
-procedure R_RenderThickSideRange(const ds: Pdrawseg_t; const x1, x2: integer);
-
-//==============================================================================
-//
-// R_StoreThickSideRange
-//
-//==============================================================================
-procedure R_StoreThickSideRange(const ds: Pdrawseg_t; const frontsector, backsector: Psector_t);
-
-//==============================================================================
-//
-// R_3dVisplaneFromSubsector
-//
-//==============================================================================
-procedure R_3dVisplaneFromSubsector(const ssector: Psubsector_t; const floorlightlevel: Psmallint);
-
 var
   spritelights2: PBytePArray;
   walllights2: PBytePArray;
@@ -83,26 +62,51 @@ var
   seglooplightlevel1, seglooplightlevel2: integer;
   segloopcolormap1, segloopcolormap2: PByteArray;
 
-//==============================================================================
-//
-// R_DrawFFloors
-//
-//==============================================================================
-procedure R_DrawFFloors;  // JVAL: 3d Floors
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRenderer3dFloors = class sealed
+  public
+    //==============================================================================
+    //
+    // R_RenderThickSideRange
+    //
+    //==============================================================================
+    class procedure R_RenderThickSideRange(const ds: Pdrawseg_t; const x1, x2: integer); static;
+    //==============================================================================
+    //
+    // R_StoreThickSideRange
+    //
+    //==============================================================================
+    class procedure R_StoreThickSideRange(const ds: Pdrawseg_t; const frontsector, backsector: Psector_t); static;
+    //==============================================================================
+    //
+    // R_3dVisplaneFromSubsector
+    //
+    //==============================================================================
+    class procedure R_3dVisplaneFromSubsector(const ssector: Psubsector_t; const floorlightlevel: Psmallint); static;
+    //==============================================================================
+    //
+    // R_DrawFFloors
+    //
+    //==============================================================================
+    class procedure R_DrawFFloors; static;
+    //==============================================================================
+    //
+    // R_DrawFFloorsMultiThread
+    //
+    //==============================================================================
+    class procedure R_DrawFFloorsMultiThread; static;
+    //==============================================================================
+    //
+    // R_ClearVisPlanes3d
+    //
+    //==============================================================================
+    class procedure R_ClearVisPlanes3d; static;
+  end;
 
-//==============================================================================
-//
-// R_DrawFFloorsMultiThread
-//
-//==============================================================================
-procedure R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
-
-//==============================================================================
-//
-// R_ClearVisPlanes3d
-//
-//==============================================================================
-procedure R_ClearVisPlanes3d;
 
 implementation
 
@@ -130,12 +134,35 @@ uses
   tables,
   z_zone;
 
+type
+  ffpoint_t = record
+    x, y: integer;
+  end;
+  Pffpoint_t = ^ffpoint_t;
+  ffpoint_tArray = array[0..MAXSUBSECTORPOINTS - 1] of ffpoint_t;
+  ffPpoint_tArray = ^ffpoint_tArray;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRenderer3dFloorsLocal = class sealed
+  public
+    class procedure R_DoRenderThickSideRange1_DBL(const ds: Pdrawseg_t; const x1, x2: integer); static;
+    class procedure R_DoRenderThickSideRange2_DBL(const ds: Pdrawseg_t; const x1, x2: integer); static;
+    class procedure R_DoRenderThickSideRange1(const ds: Pdrawseg_t; const x1, x2: integer); static;
+    class procedure R_DoRenderThickSideRange2(const ds: Pdrawseg_t; const x1, x2: integer); static;
+    class function R_NewVisPlane3d: Pvisplane3d_t; static;
+  end;
+
 //==============================================================================
 //
 // R_StoreThickSideRange
 //
 //==============================================================================
-procedure R_StoreThickSideRange(const ds: Pdrawseg_t; const frontsector, backsector: Psector_t);
+class procedure TRenderer3dFloors.R_StoreThickSideRange(const ds: Pdrawseg_t; const frontsector, backsector: Psector_t);
 var
   hicut, lowcut: fixed_t; // JVAL: 3d Floors
   backmidsec, frontmidsec: Psector_t; // JVAL: 3d Floors
@@ -251,7 +278,7 @@ end;
 // R_RenderThickSideRange
 //
 //==============================================================================
-procedure R_DoRenderThickSideRange1_DBL(const ds: Pdrawseg_t; const x1, x2: integer);
+class procedure TRenderer3dFloorsLocal.R_DoRenderThickSideRange1_DBL(const ds: Pdrawseg_t; const x1, x2: integer);
 var
   index: integer;
   lightnum: integer;
@@ -480,7 +507,7 @@ end;
 // R_DoRenderThickSideRange2_DBL
 //
 //==============================================================================
-procedure R_DoRenderThickSideRange2_DBL(const ds: Pdrawseg_t; const x1, x2: integer);
+class procedure TRenderer3dFloorsLocal.R_DoRenderThickSideRange2_DBL(const ds: Pdrawseg_t; const x1, x2: integer);
 var
   index: integer;
   lightnum: array[0..1] of integer;
@@ -809,7 +836,7 @@ end;
 // R_DoRenderThickSideRange1
 //
 //==============================================================================
-procedure R_DoRenderThickSideRange1(const ds: Pdrawseg_t; const x1, x2: integer);
+class procedure TRenderer3dFloorsLocal.R_DoRenderThickSideRange1(const ds: Pdrawseg_t; const x1, x2: integer);
 var
   index: integer;
   lightnum: integer;
@@ -962,7 +989,7 @@ end;
 // R_DoRenderThickSideRange2
 //
 //==============================================================================
-procedure R_DoRenderThickSideRange2(const ds: Pdrawseg_t; const x1, x2: integer);
+class procedure TRenderer3dFloorsLocal.R_DoRenderThickSideRange2(const ds: Pdrawseg_t; const x1, x2: integer);
 var
   index: integer;
   lightnum: array[0..1] of integer;
@@ -1177,7 +1204,7 @@ end;
 // R_RenderThickSideRange
 //
 //==============================================================================
-procedure R_RenderThickSideRange(const ds: Pdrawseg_t; const x1, x2: integer);
+class procedure TRenderer3dFloors.R_RenderThickSideRange(const ds: Pdrawseg_t; const x1, x2: integer);
 begin
   if ds.midsec = nil then
     exit;
@@ -1185,26 +1212,18 @@ begin
   if ds.midsiderange.count = 1 then
   begin
     if ds.use_double then
-      R_DoRenderThickSideRange1_DBL(ds, x1, x2)
+      TRenderer3dFloorsLocal.R_DoRenderThickSideRange1_DBL(ds, x1, x2)
     else
-      R_DoRenderThickSideRange1(ds, x1, x2)
+      TRenderer3dFloorsLocal.R_DoRenderThickSideRange1(ds, x1, x2)
   end
   else if ds.midsiderange.count = 2 then
   begin
     if ds.use_double then
-      R_DoRenderThickSideRange2_DBL(ds, x1, x2)
+      TRenderer3dFloorsLocal.R_DoRenderThickSideRange2_DBL(ds, x1, x2)
     else
-      R_DoRenderThickSideRange2(ds, x1, x2);
+      TRenderer3dFloorsLocal.R_DoRenderThickSideRange2(ds, x1, x2);
   end;
 end;
-
-type
-  ffpoint_t = record
-    x, y: integer;
-  end;
-  Pffpoint_t = ^ffpoint_t;
-  ffpoint_tArray = array[0..MAXSUBSECTORPOINTS - 1] of ffpoint_t;
-  ffPpoint_tArray = ^ffpoint_tArray;
 
 var
   ffpoints: ffpoint_tArray;
@@ -1214,7 +1233,7 @@ var
 // R_ClearVisPlanes3d
 //
 //==============================================================================
-procedure R_ClearVisPlanes3d;
+class procedure TRenderer3dFloors.R_ClearVisPlanes3d;
 var
   i: integer;
 begin
@@ -1234,7 +1253,7 @@ end;
 // R_NewVisPlane3d
 //
 //==============================================================================
-function R_NewVisPlane3d: Pvisplane3d_t;
+class function TRenderer3dFloorsLocal.R_NewVisPlane3d: Pvisplane3d_t;
 begin
   if lastvisplane3d = MAXVISPLANES3D then // JVAL: Do not overflow and crash
   begin
@@ -1267,7 +1286,7 @@ end;
 // R_3dVisplaneFromSubsector
 //
 //==============================================================================
-procedure R_3dVisplaneFromSubsector(const ssector: Psubsector_t; const floorlightlevel: Psmallint);
+class procedure TRenderer3dFloors.R_3dVisplaneFromSubsector(const ssector: Psubsector_t; const floorlightlevel: Psmallint);
 var
   i, j: integer;
   seg: Pseg_t;
@@ -1412,7 +1431,7 @@ begin
     exit;
   end;
 
-  plane := R_NewVisPlane3d;
+  plane := TRenderer3dFloorsLocal.R_NewVisPlane3d;
   if plane = nil then
   begin
     SetLength(solutionI[0], 0);
@@ -1677,7 +1696,7 @@ end;
 // R_DrawFFloors
 //
 //==============================================================================
-procedure R_DrawFFloors;  // JVAL: 3d Floors
+class procedure TRenderer3dFloors.R_DrawFFloors;  // JVAL: 3d Floors
 var
   i: integer;
   pl: Pvisplane_t;
@@ -1699,7 +1718,7 @@ end;
 // R_DrawFFloorsMultiThread
 //
 //==============================================================================
-procedure R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
+class procedure TRenderer3dFloors.R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
 var
   i: integer;
   pl: Pvisplane_t;

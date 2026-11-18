@@ -913,7 +913,7 @@ begin
     rw_bottomtexturemid := FixedMod(rw_bottomtexturemid, texturecolumnheightfrac[bottomtexture]);
 
     // JVAL: 3d Floors
-    R_StoreThickSideRange(pds, frontsector, backsector);
+    TRenderer3dFloors.R_StoreThickSideRange(pds, frontsector, backsector);
 
     // allocate space for masked texture tables
     if sidedef.midtexture <> 0 then
@@ -1637,7 +1637,7 @@ begin
     rw_bottomtexturemid := FixedMod(rw_bottomtexturemid, texturecolumnheightfrac[bottomtexture]);
 
     // JVAL: 3d Floors
-    R_StoreThickSideRange(pds, frontsector, backsector);
+    TRenderer3dFloors.R_StoreThickSideRange(pds, frontsector, backsector);
 
     // allocate space for masked texture tables
     if sidedef.midtexture <> 0 then

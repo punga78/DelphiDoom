@@ -1836,7 +1836,7 @@ begin
 
       // masked mid texture?
       if ds.thicksidecol <> nil then        // JVAL: 3d Floors
-        R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
+        TRenderer3dFloors.R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
       if ds.maskedtexturecol <> nil then
         TRendererSegs.R_RenderMaskedSegRange(ds, r1, r2);
       // seg is behind sprite

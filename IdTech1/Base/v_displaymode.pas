@@ -140,7 +140,7 @@ begin
   R_ShutDownDepthBuffer;   // Shut down depthbuffer
   TRendererPlane.R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
   TRendererSlopes.R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
-  R_ClearVisPlanes3d;      // Clear arrays
+  TRenderer3dFloors.R_ClearVisPlanes3d;      // Clear arrays
   R_ShutDownFake3D;        // Clear fake 3d planes
   R_Clear32Cache;          // JVAL: unneeded ?
   AM_Stop;                 // Stop the automap

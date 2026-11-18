@@ -1460,7 +1460,7 @@ begin
     rw_bottomtexturemid := rw_bottomtexturemid + sidedef.rowoffset + sidedef.bottomrowoffset;
 
     // JVAL: 3d Floors
-    R_StoreThickSideRange(pds, frontsector, backsector);
+    TRenderer3dFloors.R_StoreThickSideRange(pds, frontsector, backsector);
 
     if sf1 < sf2 then
       sf1 := sf2;

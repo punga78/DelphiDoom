@@ -2692,7 +2692,7 @@ begin
 
   TRendererWall8.R_WaitWallsCache8;
 
-  R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
+  TRenderer3dFloors.R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2772,7 +2772,7 @@ begin
 
   TRendererWall32.R_WaitWallsCache32;
 
-  R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
+  TRenderer3dFloors.R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2863,7 +2863,7 @@ begin
   // Check for new console commands.
   R_NetGame.Update;
 
-  R_DrawFFloors;  // JVAL: 3d Floors
+  TRenderer3dFloors.R_DrawFFloors;  // JVAL: 3d Floors
 
   R_DrawMasked_SingleThread;
 
