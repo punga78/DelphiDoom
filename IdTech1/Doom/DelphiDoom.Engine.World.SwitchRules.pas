@@ -934,7 +934,7 @@ begin
             begin
               // Teleport
               // 174 S1  EV_Teleport(side,thing)
-              if EV_Teleport(line, side, thing) <> 0 then
+              if TTeleportRoutines.EV_Teleport(line, side, thing) <> 0 then
                 P_ChangeSwitchTexture(line, false);
             end;
 
@@ -1185,7 +1185,7 @@ begin
             begin
               // Teleport
               // 195 SR  EV_Teleport(side,thing)
-              if EV_Teleport(line, side, thing) <> 0 then
+              if TTeleportRoutines.EV_Teleport(line, side, thing) <> 0 then
                 P_ChangeSwitchTexture(line, true);
             end;
 

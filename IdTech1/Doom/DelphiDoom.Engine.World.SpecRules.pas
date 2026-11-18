@@ -990,7 +990,7 @@ begin
     39:
       begin
         // TELEPORT!
-        if (EV_Teleport(line, side, thing ) <> 0) or oldcompatibility then
+        if (TTeleportRoutines.EV_Teleport(line, side, thing ) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1122,7 +1122,7 @@ begin
         // TELEPORT MonsterONLY
         if thing.player = nil then
         begin
-          if (EV_Teleport(line, side, thing) <> 0) or oldcompatibility then
+          if (TTeleportRoutines.EV_Teleport(line, side, thing) <> 0) or oldcompatibility then
             line.special := 0;
         end;
       end;
@@ -1285,7 +1285,7 @@ begin
     97:
       begin
         // TELEPORT!
-        EV_Teleport(line, side, thing);
+        TTeleportRoutines.EV_Teleport(line, side, thing);
       end;
 
     98:
@@ -1322,7 +1322,7 @@ begin
       begin
         // TELEPORT MonsterONLY.
         if thing.player = nil then
-          EV_Teleport(line, side, thing);
+          TTeleportRoutines.EV_Teleport(line, side, thing);
       end;
 
    128:

@@ -45,13 +45,21 @@ uses
   p_mobj_h,
   r_defs;
 
-//==============================================================================
-// EV_Teleport
-//
-// TELEPORTATION
-//
-//==============================================================================
-function EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t; flags: integer): integer;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TTeleportRoutines = class sealed
+  public
+    //==============================================================================
+    // EV_Teleport
+    //
+    // TELEPORTATION
+    //
+    //==============================================================================
+    class function EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t; flags: integer): integer; static;
+  end;
 
 implementation
 
@@ -91,7 +99,7 @@ uses
 // z-set was replaced with one in P_TeleportMove.
 //
 //==============================================================================
-function EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t; flags: integer): integer;
+class function TTeleportRoutines.EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t; flags: integer): integer;
 var
   i: integer;
   tag: integer;

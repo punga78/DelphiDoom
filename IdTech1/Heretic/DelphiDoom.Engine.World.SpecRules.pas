@@ -584,7 +584,7 @@ begin
     39:
       begin
         // TELEPORT!
-        EV_Teleport(line, side, thing);
+        TTeleportRoutines.EV_Teleport(line, side, thing);
         line.special := 0;
       end;
 
@@ -815,7 +815,7 @@ begin
     97:
       begin
         // TELEPORT!
-        EV_Teleport(line, side, thing);
+        TTeleportRoutines.EV_Teleport(line, side, thing);
       end;
 
     98:

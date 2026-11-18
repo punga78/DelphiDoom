@@ -854,7 +854,7 @@ begin
     39:
       begin
         // TELEPORT! - [STRIFE] Verified unmodified (except for 0 flags param)
-        EV_Teleport(line, side, thing, TF_NORMAL);
+        TTeleportRoutines.EV_Teleport(line, side, thing, TF_NORMAL);
         line.special := 0;
       end;
 
@@ -988,7 +988,7 @@ begin
         //    (except for 0 flags parameter)
         if thing.player = nil then
         begin
-          EV_Teleport(line, side, thing, TF_NORMAL);
+          TTeleportRoutines.EV_Teleport(line, side, thing, TF_NORMAL);
           line.special := 0;
         end;
       end;
@@ -1351,7 +1351,7 @@ begin
     97:
       begin
         // TELEPORT! - [STRIFE] Verified unmodified (except for 0 flags param)
-        EV_Teleport(line, side, thing, TF_NORMAL);
+        TTeleportRoutines.EV_Teleport(line, side, thing, TF_NORMAL);
       end;
 
     98:
@@ -1389,7 +1389,7 @@ begin
       begin
         // TELEPORT MonsterONLY. - [STRIFE] Verified unmodified (except for 0 flags param)
         if thing.player = nil then
-            EV_Teleport(line, side, thing, TF_NORMAL);
+            TTeleportRoutines.EV_Teleport(line, side, thing, TF_NORMAL);
       end;
 
     128:
@@ -1501,13 +1501,13 @@ begin
     185:
       begin
         // haleyjd 09/21/10: [STRIFE] Silent Teleport (used for Converter)
-        EV_Teleport(line, side, thing, TF_FULLSILENCE);
+        TTeleportRoutines.EV_Teleport(line, side, thing, TF_FULLSILENCE);
       end;
 
     195:
       begin
         // haleyjd 09/21/10: [STRIFE] Silent Teleport and Change Zombie
-        EV_Teleport(line, side, thing, TF_FULLSILENCE);
+        TTeleportRoutines.EV_Teleport(line, side, thing, TF_FULLSILENCE);
         P_SetMobjState(thing, S_AGRD_00); // 419
       end;
 
@@ -1521,7 +1521,7 @@ begin
     231:
       begin
         // haleyjd 09/21/10: [STRIFE] WR Teleport (Silent at Source)
-        EV_Teleport(line, side, thing, TF_SRCSILENCE);
+        TTeleportRoutines.EV_Teleport(line, side, thing, TF_SRCSILENCE);
       end;
 
         // haleyjd 09/21/10: Moved one-time-use lines up above with the others.

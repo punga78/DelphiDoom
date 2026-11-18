@@ -41,20 +41,28 @@ uses
   p_mobj_h,
   r_defs;
 
-//==============================================================================
-// EV_Teleport
-//
-// TELEPORTATION
-//
-//==============================================================================
-function EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t): boolean;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TTeleportRoutines = class sealed
+  public
+    //==============================================================================
+    // EV_Teleport
+    //
+    // TELEPORTATION
+    //
+    //==============================================================================
+    class function EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t): boolean; static;
 
-//==============================================================================
-//
-// P_Teleport
-//
-//==============================================================================
-function P_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; destfogdz: fixed_t = 0): boolean;
+    //==============================================================================
+    //
+    // P_Teleport
+    //
+    //==============================================================================
+    class function P_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; destfogdz: fixed_t = 0): boolean; static;
+  end;
 
 implementation
 
@@ -80,7 +88,7 @@ uses
 // EV_Teleport
 //
 //==============================================================================
-function EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t): boolean;
+class function TTeleportRoutines.EV_Teleport(line: Pline_t; side: integer; thing: Pmobj_t): boolean;
 var
   i: integer;
   tag: integer;
@@ -170,7 +178,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-function P_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; destfogdz: fixed_t = 0): boolean;
+class function TTeleportRoutines.P_Teleport(thing: Pmobj_t; x, y: fixed_t; angle: angle_t; destfogdz: fixed_t = 0): boolean;
 var
   oldx: fixed_t;
   oldy: fixed_t;
