@@ -712,7 +712,7 @@ begin
     newMobj.momz := vspeed;
     newMobj.flags := newMobj.flags or MF_DROPPED; // Don't respawn
     if gravity then
-      A_LowGravity(newMobj);
+      TExtraRoutines.A_LowGravity(newMobj);
     if P_CheckMissileSpawn(newMobj) then
       result := true;
   end;

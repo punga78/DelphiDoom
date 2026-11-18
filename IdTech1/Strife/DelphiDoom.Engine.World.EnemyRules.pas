@@ -835,7 +835,7 @@ begin
   // actor is on ground, it can be walked over
   // villsa [STRIFE] remove nogravity/shadow flags as well
   actor.flags := actor.flags and not MF_SHADOW;
-  A_Gravity(actor);
+  TExtraRoutines.A_Gravity(actor);
 end;
 
 //
@@ -1956,7 +1956,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_StalkerDrop(actor: Pmobj_t);
 begin
-  A_NoGravity(actor);
+  TExtraRoutines.A_NoGravity(actor);
 end;
 
 //==============================================================================
@@ -2268,7 +2268,7 @@ begin
 
   actor.momz := (actor.target.z - actor.z) div dist;
   actor.reactiontime := 60;
-  A_NoGravity(actor);
+  TExtraRoutines.A_NoGravity(actor);
 end;
 
 // A_InqFly
@@ -2289,7 +2289,7 @@ begin
     // Come in for a landing.
     P_SetMobjState(actor, statenum_t(actor.info.seestate));
     actor.reactiontime := 0;
-    A_Gravity(actor);
+    TExtraRoutines.A_Gravity(actor);
   end;
 end;
 
@@ -4037,7 +4037,7 @@ end;
 //==============================================================================
 class procedure TStrifeMonsterActions.A_FlameDeath(actor: Pmobj_t);
 begin
-  A_NoGravity(actor);
+  TExtraRoutines.A_NoGravity(actor);
   actor.momz := (P_Random and 3) * FRACUNIT;
 end;
 

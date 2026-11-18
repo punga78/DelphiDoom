@@ -1768,7 +1768,7 @@ begin
 
   if (actor._type = Ord(MT_CENTAUR)) or
      (actor._type = Ord(MT_CENTAURLEADER)) then
-    A_SetInvulnerable(actor);
+    TExtraRoutines.A_SetInvulnerable(actor);
 end;
 
 //==============================================================================
@@ -1782,7 +1782,7 @@ begin
 
   if (actor._type = Ord(MT_CENTAUR)) or
      (actor._type = Ord(MT_CENTAURLEADER)) then
-    A_UnSetInvulnerable(actor);
+    TExtraRoutines.A_UnSetInvulnerable(actor);
 end;
 
 //==============================================================================
@@ -3324,7 +3324,7 @@ begin
   A_FaceTarget(actor);
   if TMonsterBaseActions.P_CheckMeleeRange(actor) and (P_Random < 32) then
   begin
-    A_UnSetInvulnerable(actor);
+    TExtraRoutines.A_UnSetInvulnerable(actor);
     P_SetMobjState(actor, statenum_t(actor.info.meleestate));
   end;
 end;
@@ -5263,7 +5263,7 @@ end;
 class procedure THexenMonsterActions.A_SorcBallPop(actor: Pmobj_t);
 begin
   TSoundRoutines.S_StartSound(nil, Ord(SFX_SORCERER_BALLPOP));
-  A_LowGravity(actor);
+  TExtraRoutines.A_LowGravity(actor);
   actor.momx := ((P_Random mod 10) - 5) * FRACUNIT;
   actor.momy := ((P_Random mod 10) - 5) * FRACUNIT;
   actor.momz := (2 + (P_Random mod 3)) * FRACUNIT;
