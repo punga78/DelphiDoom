@@ -552,9 +552,9 @@ begin
   // The level defines a new name but no texture for the name.
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelname <> '') and (wbs.lastmapinfo.levelpic = '') then
   begin
-    M_WriteText(160 - M_StringWidth(wbs.lastmapinfo.levelname), y, wbs.lastmapinfo.levelname);
+    TMenuRoutines.M_WriteText(160 - TMenuRoutines.M_StringWidth(wbs.lastmapinfo.levelname), y, wbs.lastmapinfo.levelname);
 
-    y := y + (5 * M_StringHeight(wbs.lastmapinfo.levelname) div 4);
+    y := y + (5 * TMenuRoutines.M_StringHeight(wbs.lastmapinfo.levelname) div 4);
   end
   else if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelpic <> '') then
   begin
@@ -598,7 +598,7 @@ begin
   begin
     y := y + (5 * entering.height) div 4;
 
-    M_WriteText(160 - M_StringWidth(wbs.nextmapinfo.levelname), y, wbs.nextmapinfo.levelname);
+    TMenuRoutines.M_WriteText(160 - TMenuRoutines.M_StringWidth(wbs.nextmapinfo.levelname), y, wbs.nextmapinfo.levelname);
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
   begin

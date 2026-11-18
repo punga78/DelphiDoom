@@ -659,7 +659,7 @@ begin
     ev := @events[eventtail];
     if D_Console.Respond(ev) then
       // console ate the event
-    else if M_Responder(ev) then
+    else if TMenuRoutines.M_Responder(ev) then
       // menu ate the event
     else
       G_Responder(ev);
@@ -934,7 +934,7 @@ begin
       TStatusBarRoutines.SB_Drawer;
 
     // Menus go directly to the screen
-    M_Drawer; // Menu is drawn even on top of everything
+    TMenuRoutines.M_Drawer; // Menu is drawn even on top of everything
 
     // Console goes directly to the screen
     D_Console.Draw;   // Console is drawn even on top of menus
@@ -957,7 +957,7 @@ begin
     if redrawsbar then
       TStatusBarRoutines.SB_Drawer;
 
-    M_Drawer;
+    TMenuRoutines.M_Drawer;
     D_Console.Draw;
     diskbusyend := -1;
   end
@@ -969,7 +969,7 @@ begin
     if redrawsbar then
       TStatusBarRoutines.SB_Drawer;
 
-    M_Drawer;
+    TMenuRoutines.M_Drawer;
     D_Console.Draw;
   end;
 
@@ -998,7 +998,7 @@ begin
     until tics <> 0;
     wipestart := nowtime;
     done := wipe_Ticker(tics);
-    M_Drawer;         // Menu is drawn even on top of wipes
+    TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     D_Console.Draw;         // Console draw on top of wipes and menus
     D_FinishUpdate;   // page flip or blit buffer
     HU_DoFPSStuff;
@@ -2399,7 +2399,7 @@ begin
     autoexecfile := DEFAUTOEXEC;
 
   printf('M_InitMenus: Initializing menus.'#13#10);
-  M_InitMenus;
+  TMenuRoutines.M_InitMenus;
 
   SUC_Progress(58);
 
@@ -2473,7 +2473,7 @@ begin
   SUC_Progress(67);
 
   printf('M_Init: Init miscellaneous info.'#13#10);
-  M_Init;
+  TMenuRoutines.M_Init;
 
   SUC_Progress(68);
 
@@ -2580,11 +2580,11 @@ begin
     inc(p);
     kparm := strupper(myargv[p]);
     if (kparm = '0') or (kparm = 'ARROWS') then
-      M_SetKeyboardMode(0)
+      TMenuRoutines.M_SetKeyboardMode(0)
     else if (kparm = '1') or (kparm = 'WASD') then
-      M_SetKeyboardMode(1)
+      TMenuRoutines.M_SetKeyboardMode(1)
     else if (kparm = '2') or (kparm = 'ESDF') then
-      M_SetKeyboardMode(2);
+      TMenuRoutines.M_SetKeyboardMode(2);
   end;
 
   SUC_Progress(98);
@@ -2646,7 +2646,7 @@ var
   i: integer;
 begin
   printf('M_ShutDownMenus: Shut down menus.'#13#10);
-  M_ShutDownMenus;
+  TMenuRoutines.M_ShutDownMenus;
   printf('C_ShutDown: Shut down console.'#13#10);
   if main_console <> nil then
     main_console.Shutdown;

@@ -773,7 +773,7 @@ begin
   // The level defines a new name but no texture for the name.
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelname <> '') and (wbs.lastmapinfo.levelpic = '') then
   begin
-    x := 160 - M_StringWidth2(wbs.lastmapinfo.levelname) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(wbs.lastmapinfo.levelname) div 2;
     IN_DrTextB(wbs.lastmapinfo.levelname, x, 3);
 
     y := 25;
@@ -789,13 +789,13 @@ begin
   else
   begin
     leveltitle := P_GetMapTitle(wbs.epsd + 1, wbs.last + 1);
-    x := 160 - M_StringWidth2(leveltitle) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(leveltitle) div 2;
     IN_DrTextB(leveltitle, x, 3);
     y := 25;
   end;
 
-  x := 160 - M_StringWidth('FINISHED') div 2;
-  M_WriteText(x, y, 'FINISHED');
+  x := 160 - TMenuRoutines.M_StringWidth('FINISHED') div 2;
+  TMenuRoutines.M_WriteText(x, y, 'FINISHED');
 end;
 
 //==============================================================================
@@ -809,13 +809,13 @@ var
   lpic: Ppatch_t;
   leveltitle: string;
 begin
-  x := 160 - M_StringWidth('NOW ENTERING:') div 2;
-  M_WriteText(x, y, 'NOW ENTERING:');
+  x := 160 - TMenuRoutines.M_StringWidth('NOW ENTERING:') div 2;
+  TMenuRoutines.M_WriteText(x, y, 'NOW ENTERING:');
 
   // The level defines a new name but no texture for the name.
   if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelname <> '') and (wbs.nextmapinfo.levelpic = '') then
   begin
-    x := 160 - M_StringWidth2(wbs.nextmapinfo.levelname) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(wbs.nextmapinfo.levelname) div 2;
     IN_DrTextB(wbs.nextmapinfo.levelname, x, y + 10);
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
@@ -827,7 +827,7 @@ begin
   else
   begin
     leveltitle := P_GetMapTitle(wbs.nextep + 1, wbs.next + 1);
-    x := 160 - M_StringWidth2(leveltitle) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(leveltitle) div 2;
     IN_DrTextB(leveltitle, x, y + 10);
   end;
 end;
@@ -988,9 +988,9 @@ begin
   ypos := 55;
 
   IN_DrTextB('TOTAL', 265, 30);
-  M_WriteText(140, 8, 'VICTIMS');
+  TMenuRoutines.M_WriteText(140, 8, 'VICTIMS');
   for i := 0 to 6 do
-    M_WriteText(10, 80 + 9 * i, KillersText[i]);
+    TMenuRoutines.M_WriteText(10, 80 + 9 * i, KillersText[i]);
   if intertime < 20 then
   begin
     for i := 0 to MAXPLAYERS - 1 do

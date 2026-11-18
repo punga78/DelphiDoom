@@ -285,7 +285,7 @@ begin
   cx := 20;
   cy := 20;
 
-  ch := M_DialogDimMsg(cx, cy, W_TextLumpName('T1TEXT'), false);
+  ch := TMenuRoutines.M_DialogDimMsg(cx, cy, W_TextLumpName('T1TEXT'), false);
   len := Length(ch);
 
   count := (finalecount - 10) div TEXTSPEED;

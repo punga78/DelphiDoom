@@ -593,7 +593,7 @@ begin
       end),
     TEngineDisplaySettingsResolution.Create);
 {$ENDIF}
-  M_ConfigureDisplayModes(LCatalog);
+  TMenuRoutines.M_ConfigureDisplayModes(LCatalog);
   D_ConfigureNotifications(TVideoFactory.CreateDeferredNotifications(TEngineDisplayModeApplier.Create));
 end;
 
@@ -1228,7 +1228,7 @@ begin
     ASaveFileNames);
   D_ConfigureScreenshot(LScreenshot);
   G_ConfigureScreenshot(LScreenshot);
-  M_ConfigureScreenshot(LScreenshot);
+  TMenuRoutines.M_ConfigureScreenshot(LScreenshot);
 end;
 
 procedure ComposeTexture(const ALog: ILog; const APakFiles: IPakFileSystem;
@@ -1276,7 +1276,7 @@ begin
 {$ENDIF}
 {$IFDEF STRIFE}
   P_ConfigureFiles(LFiles);
-  M_ConfigureFiles(LFiles);
+  TMenuRoutines.M_ConfigureFiles(LFiles);
 {$ENDIF}
   PS_ConfigureVariables(TEngineScriptVariablesFiles.Create(LFiles),
     TEngineScriptVariablesFailure.Create);

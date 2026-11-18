@@ -98,7 +98,7 @@ function G_DeferedPlayDemo(const name: string): boolean;
 //==============================================================================
 procedure G_CmdPlayDemo(const name: string);
 
-{ Can be called by the startup code or M_Responder, }
+{ Can be called by the startup code or TMenuRoutines.M_Responder, }
 { calls P_SetupLevel or W_EnterWorld. }
 
 //==============================================================================
@@ -115,7 +115,7 @@ procedure G_LoadGame(const name: string);
 //==============================================================================
 procedure G_DoLoadGame;
 
-{ Called by M_Responder. }
+{ Called by TMenuRoutines.M_Responder. }
 
 //==============================================================================
 //
@@ -1516,7 +1516,7 @@ begin
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
        ((ev._type = ev_joystick) and (ev.data1 <> 0)) then
     begin
-      M_StartControlPanel;
+      TMenuRoutines.M_StartControlPanel;
       result := true;
       exit;
     end;

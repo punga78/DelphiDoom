@@ -519,7 +519,7 @@ begin
     wipestart := nowtime;
     done := {$IFDEF STRIFE}TFadeRoutines.fade_Ticker{$ELSE}wipe_Ticker{$ENDIF}(tics);
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
-    M_Drawer;         // Menu is drawn even on top of wipes
+    TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     GL_Console.Draw;         // Console draw on top of wipes and menus
     gl_frameender.FinishWipe;
     HU_DoFPSStuff;

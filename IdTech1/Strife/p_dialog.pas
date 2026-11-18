@@ -1843,7 +1843,7 @@ begin
 
   dialogtalker.angle := dialogtalkerangle;
   dialogplayer.st_update := true;
-  M_ClearMenus;
+  TMenuRoutines.M_ClearMenus;
 
   if (nextdialog >= 0) or (TGameSession.GameAction = ga_victory) then // Macil hack
     menuindialog := false
@@ -1907,12 +1907,12 @@ begin
     end;
 
     // draw character name
-    M_WriteText(12, 18, dialogname);
+    TMenuRoutines.M_WriteText(12, 18, dialogname);
     y := 28;
 
     // show text (optional for dialogs with voices)
     if dialogshowtext or (currentdialog.voice[0] = #0) then
-      y := M_WriteText(20, 28, dialogtext).y;
+      y := TMenuRoutines.M_WriteText(20, 28, dialogtext).y;
 
     height := 20 * dialogmenu.numitems;
 
@@ -1921,7 +1921,7 @@ begin
       finaly := 199 - height; // height it will bump down to if necessary.
 
     // draw divider
-    M_WriteText(42, finaly - 6, DEH_GetString('______________________________'));
+    TMenuRoutines.M_WriteText(42, finaly - 6, DEH_GetString('______________________________'));
 
     dialogmenu.y := finaly + 6;
     y := 0;
@@ -1935,12 +1935,12 @@ begin
       if currentdialog.choices[i].needamounts[0] > 0 then
         choicetext := choicetext + ' for ' + itoa(currentdialog.choices[i].needamounts[0]);
 
-      M_WriteText(dialogmenu.x, dialogmenu.y + 3 + y, choicetext);
+      TMenuRoutines.M_WriteText(dialogmenu.x, dialogmenu.y + 3 + y, choicetext);
       y := y + 19;
     end;
 
     // draw the final item for dismissing the dialog
-    M_WriteText(dialogmenu.x, dialogmenu.y + 3 + y, dialoglastmsgbuffer);
+    TMenuRoutines.M_WriteText(dialogmenu.x, dialogmenu.y + 3 + y, dialoglastmsgbuffer);
   end;
   V_CopyRectTransparent(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);
 end;
@@ -2049,7 +2049,7 @@ begin
 
   stmp := PascalText(PAnsiChar(@currentdialog.txt), SizeOf(currentdialog.txt));
   stmp := P_DialogGetMsg(stmp);
-  dialogtext := M_DialogDimMsg(20, 28, stmp, false);
+  dialogtext := TMenuRoutines.M_DialogDimMsg(20, 28, stmp, false);
 
   // get states
   dialogtalkerstates := P_DialogGetStates(mobjtype_t(TMapAim.LineTarget._type));
@@ -2085,7 +2085,7 @@ begin
   rnd := M_Random mod 3;
 
   // setup dialog menu
-  M_StartControlPanel;
+  TMenuRoutines.M_StartControlPanel;
   menupause := false;
   menuindialog := true;
   menupausetime := TGameSession.GameTic + 17;

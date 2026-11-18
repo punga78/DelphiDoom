@@ -128,7 +128,7 @@ begin
   // the screens fade into one another (the engine of Doom melts them)
   wipe_ConfigureCustom(RX_WipeFade);
   // the look of the menus of Rad-X, the name of the pilot, the top ten, the gameplay options
-  M_ConfigureExtension(RX_MenuExtension);
+  TMenuRoutines.M_ConfigureExtension(RX_MenuExtension);
   // the fields of Rad-X of the Thing blocks of DEHACKED (GAMEDEF has them) go to the same table
   AThingFields.Attach(ComposeRadixActorProperties(ALog) as IDehackedExtraThingFields);
   // the keys of the afterburner and of the plasma bomb

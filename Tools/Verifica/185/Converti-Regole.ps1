@@ -93,8 +93,21 @@ if ($ImplOnly) {
   $firstHeader = -1
   $inConverted = $false
   $j = $implementation
+  $condStack = New-Object System.Collections.Generic.List[string]
+  $prevCtx = ''
+  $prevCount = 0
   while ($j -lt $lines.Count) {
     $l = $lines[$j]
+    # le direttive di compilazione a colonna 0 fuori dalle routine: la dichiarazione nella classe ha la stessa condizione
+    if (-not $inConverted) {
+      if ($l -match '^\{\$(IFDEF|IFNDEF)\s+(\w+)\s*\}') { $condStack.Add('{$' + $Matches[1] + ' ' + $Matches[2] + '}') }
+      elseif ($l -match '^\{\$ELSE\s*\}') {
+        $top = $condStack[$condStack.Count - 1]
+        if ($top -match 'IFNDEF') { $condStack[$condStack.Count - 1] = $top -replace 'IFNDEF', 'IFDEF' } else { $condStack[$condStack.Count - 1] = $top -replace 'IFDEF', 'IFNDEF' }
+      }
+      elseif ($l -match '^\{\$ENDIF\s*\}') { $condStack.RemoveAt($condStack.Count - 1) }
+      elseif ($l -match '^\{\$(IF|ELSEIF)\b') { throw ('direttiva non gestita alla riga ' + ($j + 1) + ': ' + $l) }
+    }
     # una dichiarazione `forward;` non serve a una classe (i metodi si vedono tra loro): sparisce
     if (-not $inConverted -and $l -match '^(procedure|function)\s+\w+.*;\s*forward;') { $j++; continue }
     # la classe va prima della PRIMA routine dell'implementazione (anche una gia' metodo di un'altra classe)
@@ -119,10 +132,16 @@ if ($ImplOnly) {
         $k++
         $decl.Add($lines[$k])
       }
+      $ctx = ($condStack -join '|')
+      if ($ctx -ne $prevCtx) {
+        for ($q = 0; $q -lt $prevCount; $q++) { $classBody.Add('{$ENDIF}') }
+        foreach ($c in $condStack) { $classBody.Add($c) }
+        $prevCtx = $ctx; $prevCount = $condStack.Count
+      }
       foreach ($d in $decl) { $classBody.Add('    ' + ($d -replace '^(procedure|function)\s+', 'class $1 ')) }
       $classBody[$classBody.Count - 1] = ($classBody[$classBody.Count - 1] -replace ';\s*(//.*)?$', '; static;')
       # `overload;` si dichiara nella classe, non nell'intestazione dell'implementazione (E1030)
-      $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';')
+      $impl.Add((($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';'))
       for ($m = $j + 1; $m -le $k; $m++) { $impl.Add($lines[$m]) }
       $j = $k + 1
       continue
@@ -137,6 +156,7 @@ if ($ImplOnly) {
     $impl.Add((Convert-CodeLine $l))
     $j++
   }
+  for ($q = 0; $q -lt $prevCount; $q++) { $classBody.Add('{$ENDIF}') }
   $classText = New-Object System.Collections.Generic.List[string]
   $classText.Add('type')
   $classText.Add('  /// <summary>')
@@ -226,7 +246,7 @@ for ($j = $implementation; $j -lt $lines.Count; $j++) {
   $l = $lines[$j]
   if (-not $inConverted -and $l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
     $inConverted = $true
-    $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';')
+    $impl.Add((($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';'))
     # intestazione su piu' righe: il resto non cambia
     continue
   }

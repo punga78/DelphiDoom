@@ -82,7 +82,7 @@ procedure G_DeferedInitNewUntranslated(skill: skill_t; map: integer);
 //==============================================================================
 procedure G_CmdNewGame(const parm1, parm2: string);
 
-{ Can be called by the startup code or M_Responder, }
+{ Can be called by the startup code or TMenuRoutines.M_Responder, }
 { calls P_SetupLevel or W_EnterWorld. }
 
 //==============================================================================
@@ -99,7 +99,7 @@ procedure G_LoadGame(slot: integer);
 //==============================================================================
 procedure G_DoLoadGame;
 
-{ Called by M_Responder. }
+{ Called by TMenuRoutines.M_Responder. }
 
 //==============================================================================
 //
@@ -1298,7 +1298,7 @@ begin
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
        ((ev._type = ev_joystick) and (ev.data1 <> 0)) then
     begin
-      M_StartControlPanel;
+      TMenuRoutines.M_StartControlPanel;
       result := true;
       exit;
     end;
@@ -2078,12 +2078,12 @@ begin
         G_DoNewGame;
       ga_loadgame:
         begin
-          M_DrawLoadIcon;
+          TMenuRoutines.M_DrawLoadIcon;
           G_DoLoadGame;
         end;
       ga_savegame:
         begin
-          M_DrawSaveIcon;
+          TMenuRoutines.M_DrawSaveIcon;
           G_DoSaveGame;
         end;
       ga_singlereborn:

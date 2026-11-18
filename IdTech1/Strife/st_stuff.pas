@@ -774,7 +774,7 @@ begin
       begin
         st_displaypopup := false;
         if st_dosizedisplay then
-          M_SizeDisplay(1);
+          TMenuRoutines.M_SizeDisplay(1);
         st_dosizedisplay := false;
       end;
     end;
@@ -882,7 +882,7 @@ begin
         st_displaypopup := true;
         if viewheight = SCREENHEIGHT then
         begin
-          M_SizeDisplay(0);
+          TMenuRoutines.M_SizeDisplay(0);
           st_dosizedisplay := true;
         end;
       end;
@@ -1155,7 +1155,7 @@ begin
       st_keypage := -1;
 
       if st_dosizedisplay then
-        M_SizeDisplay(1);  // mondo hack?
+        TMenuRoutines.M_SizeDisplay(1);  // mondo hack?
 
       st_dosizedisplay := false;
     end;
@@ -1715,7 +1715,7 @@ begin
     {$ENDIF}
       V_DrawPatchTransparent(0, 56, SCN_FG, invpbak2, true);
     V_DrawPatch(0, 56, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, invpop2, {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
-    mission_objective := M_DialogDimMsg(24, 74, mission_objective, true);
+    mission_objective := TMenuRoutines.M_DialogDimMsg(24, 74, mission_objective, true);
     HUlib_drawYellowText(24, 74, mission_objective, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
     TStatusBarLocalRoutines.ST_drawTime(210, 64, TTickState.LevelTime div TICRATE);
   end

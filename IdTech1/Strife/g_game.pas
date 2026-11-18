@@ -99,7 +99,7 @@ function G_DeferedPlayDemo(const name: string): boolean;
 //==============================================================================
 procedure G_CmdPlayDemo(const name: string);
 
-{ Can be called by the startup code or M_Responder, }
+{ Can be called by the startup code or TMenuRoutines.M_Responder, }
 { calls P_SetupLevel or W_EnterWorld. }
 
 //==============================================================================
@@ -1445,7 +1445,7 @@ begin
       if devparm and (ev.data1 = Ord('g')) then
         D_PageTicker  // [STRIFE]: wat? o_O
       else
-        M_StartControlPanel;
+        TMenuRoutines.M_StartControlPanel;
       result := true;
       exit;
     end;

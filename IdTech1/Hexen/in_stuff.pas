@@ -493,7 +493,7 @@ begin
   end
   else
     buff := 'XX';
-  M_WriteText(x - M_StringWidth(buff) div 2, y, buff);
+  TMenuRoutines.M_WriteText(x - TMenuRoutines.M_StringWidth(buff) div 2, y, buff);
 end;
 
 //==============================================================================
@@ -514,7 +514,7 @@ begin
   end
   else
     buff := 'XX';
-  M_WriteTextYellow(x - M_StringWidth(buff) div 2, y, buff);
+  TMenuRoutines.M_WriteTextYellow(x - TMenuRoutines.M_StringWidth(buff) div 2, y, buff);
 end;
 
 //
@@ -597,14 +597,14 @@ begin
       end
       else
       begin
-        temp := M_StringWidth('--') div 2;
+        temp := TMenuRoutines.M_StringWidth('--') div 2;
         if bold then
         begin
-          M_WriteTextYellow(x - temp, y, '--');
+          TMenuRoutines.M_WriteTextYellow(x - temp, y, '--');
         end
         else
         begin
-          M_WriteText(x - temp, y, '--');
+          TMenuRoutines.M_WriteText(x - temp, y, '--');
         end;
       end;
       xPos := xPos + xDelta
