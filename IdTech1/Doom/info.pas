@@ -25257,7 +25257,7 @@ begin
   states[Ord(S_BSKUL_PAIN2)].action.acp1 := @TDoomMonsterActions.A_Pain; // S_BSKUL_PAIN2
   states[Ord(S_BSKUL_DIE5)].action.acp1 := @TMonsterBaseActions.A_Scream; // S_BSKUL_DIE5
   states[Ord(S_BSKUL_DIE7)].action.acp1 := @TDoomMonsterActions.A_Fall; // S_BSKUL_DIE7
-  states[Ord(S_BSKUL_DIE8)].action.acp1 := @A_Stop; // S_BSKUL_DIE8
+  states[Ord(S_BSKUL_DIE8)].action.acp1 := @TCommonMovementActions.A_Stop; // S_BSKUL_DIE8
   states[Ord(S_MUSHROOM)].action.acp1 := @A_Mushroom; // S_MUSHROOM
 
   Info_InitExportCommands;

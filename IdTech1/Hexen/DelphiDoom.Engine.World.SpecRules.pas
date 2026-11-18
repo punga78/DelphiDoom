@@ -652,7 +652,7 @@ begin
       begin
         if side = 0 then // Only thrust on side 0
         begin
-          P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
+          TCommonMovementActions.P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
           result := true;
         end;
       end;

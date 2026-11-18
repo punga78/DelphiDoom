@@ -769,10 +769,10 @@ begin
   DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound2, 'A_RandomCustomSound2()'); // 236
   DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound3, 'A_RandomCustomSound3()'); // 237
   DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound, 'A_RandomCustomSound()'); // 238
-  DEH_AddAction(@A_Wander, 'A_Wander()'); // 239
+  DEH_AddAction(@TCommonMovementActions.A_Wander, 'A_Wander()'); // 239
   DEH_AddAction(@TCommonSoundActions.A_Playsound, 'A_Playsound(sound: string)'); // 240
   DEH_AddAction(@TCommonSoundActions.A_RandomSound, 'A_RandomSound(sound1: string, [sound2: string], ...)'); // 241
-  DEH_AddAction(@A_Stop, 'A_Stop()'); // 242
+  DEH_AddAction(@TCommonMovementActions.A_Stop, 'A_Stop()'); // 242
   DEH_AddAction(@TCommonJumpActions.A_Jump, 'A_Jump(propability: random_t, offset1: integer, [offset2: integer], ...)'); // 243
   DEH_AddAction(@A_CustomMissile, 'A_CustomMissile(missiletype: string, [height: integer], [offset: integer], [angle: integer], [aimmode: integer], [pitch: integer])'); // 244
   DEH_AddAction(@A_NoGravity, 'A_NoGravity()'); // 245
@@ -787,13 +787,13 @@ begin
   DEH_AddAction(@TCommonAppearanceActions.A_FadeOut, 'A_FadeOut(fade: float)'); // 254
   DEH_AddAction(@TCommonAppearanceActions.A_FadeIn, 'A_FadeIn(fade: float)'); // 255
   DEH_AddAction(@A_MissileAttack, 'A_MissileAttack([missiletype: string])'); // 256
-  DEH_AddAction(@A_AdjustSideSpot, 'A_AdjustSideSpot(sideoffset: float)'); // 257
+  DEH_AddAction(@TCommonMovementActions.A_AdjustSideSpot, 'A_AdjustSideSpot(sideoffset: float)'); // 257
   DEH_AddAction(@A_Countdown, 'A_Countdown()'); // 258
   DEH_AddAction(@THexenMonsterActions.A_FastChase, 'A_FastChase()'); // 259
   DEH_AddAction(@A_LowGravity, 'A_LowGravity()'); // 260
-  DEH_AddAction(@A_ThrustZ, 'A_ThrustZ(momz: float, ang: angle)'); // 261
-  DEH_AddAction(@A_ThrustXY, 'A_ThrustXY(mom: float, ang: angle)'); // 262
-  DEH_AddAction(@A_Turn, 'A_Turn(value: angle)'); // 263
+  DEH_AddAction(@TCommonMovementActions.A_ThrustZ, 'A_ThrustZ(momz: float, ang: angle)'); // 261
+  DEH_AddAction(@TCommonMovementActions.A_ThrustXY, 'A_ThrustXY(mom: float, ang: angle)'); // 262
+  DEH_AddAction(@TCommonMovementActions.A_Turn, 'A_Turn(value: angle)'); // 263
   DEH_AddAction(@TCommonJumpActions.A_JumpIfCloser, 'A_JumpIfCloser(distancetotarget: float, offset: integer)'); // 264
   DEH_AddAction(@TCommonJumpActions.A_JumpIfHealthLower, 'A_JumpIfHealthLower(health: integer, offset: integer)'); // 265
   DEH_AddAction(@A_ScreamAndUnblock, 'A_ScreamAndUnblock()'); // 266
@@ -846,8 +846,8 @@ begin
   DEH_AddAction(@A_RunScript, 'A_RunScript(script1: string, [script2: string], ...)'); // 313
   DEH_AddAction(@TCommonAppearanceActions.A_GhostOn, 'A_GhostOn()'); // 314
   DEH_AddAction(@TCommonAppearanceActions.A_GhostOff, 'A_GhostOff()'); // 315
-  DEH_AddAction(@A_Turn5, 'A_Turn5()'); // 316
-  DEH_AddAction(@A_Turn10, 'A_Turn10()'); // 317
+  DEH_AddAction(@TCommonMovementActions.A_Turn5, 'A_Turn5()'); // 316
+  DEH_AddAction(@TCommonMovementActions.A_Turn10, 'A_Turn10()'); // 317
   DEH_AddAction(@TCommonStateBitActions.A_Blocking, 'A_Blocking()'); // 318
   DEH_AddAction(@TCommonStateBitActions.A_DoNotRunScripts, 'A_DoNotRunScripts()'); // 319
   DEH_AddAction(@TCommonStateBitActions.A_DoRunScripts, 'A_DoRunScripts()'); // 320
@@ -900,7 +900,7 @@ begin
   DEH_AddAction(@TCommonCustomParamActions.A_SetWorldFloat, 'A_SetWorldFloat(wvar: string; value: float)'); // 367
   DEH_AddAction(@TCommonJumpActions.A_RandomGoto, 'A_RandomGoto(state1: state_t; [state2: state_t],...)'); // 368
   DEH_AddAction(@A_ResetHealth, 'A_ResetHealth()'); // 369
-  DEH_AddAction(@A_Recoil, 'A_Recoil(xymom: float)'); // 370
+  DEH_AddAction(@TCommonMovementActions.A_Recoil, 'A_Recoil(xymom: float)'); // 370
   DEH_AddAction(@TCommonStateBitActions.A_SetSolid, 'A_SetSolid()'); // 371
   DEH_AddAction(@TCommonStateBitActions.A_UnSetSolid, 'A_UnSetSolid()'); // 372
   DEH_AddAction(@TCommonStateBitActions.A_SetFloat, 'A_SetFloat()'); // 373
@@ -908,8 +908,8 @@ begin
   DEH_AddAction(@A_SetHealth, 'A_SetHealth(h: integer)'); // 375
   DEH_AddAction(@A_ResetTargetHealth, 'A_ResetTargetHealth()'); // 376
   DEH_AddAction(@A_SetTargetHealth, 'A_SetTargetHealth(h: integer)'); // 377
-  DEH_AddAction(@A_ScaleVelocity, 'A_ScaleVelocity(scale: float)'); // 378
-  DEH_AddAction(@A_ChangeVelocity, 'A_ChangeVelocity(velx: float, vely: float, velz: float, flags: float)'); // 379
+  DEH_AddAction(@TCommonMovementActions.A_ScaleVelocity, 'A_ScaleVelocity(scale: float)'); // 378
+  DEH_AddAction(@TCommonMovementActions.A_ChangeVelocity, 'A_ChangeVelocity(velx: float, vely: float, velz: float, flags: float)'); // 379
   DEH_AddAction(@TCommonJumpActions.A_JumpIf, 'A_JumpIf(propability: boolean, offset1: integer, [offset2: integer], ...)'); // 380
   DEH_AddAction(@A_MusicChanger, 'A_MusicChanger()'); // 381
   DEH_AddAction(@TCommonStateBitActions.A_SetPushFactor, 'A_SetPushFactor(f: float)'); // 382
@@ -922,7 +922,7 @@ begin
   DEH_AddAction(@TCommonStateBitActions.A_SetWallBounce, 'A_SetWallBounce()'); // 389
   DEH_AddAction(@TCommonStateBitActions.A_UnSetWallBounce, 'A_UnSetWallBounce()'); // 390
   DEH_AddAction(@TCommonAppearanceActions.A_GlowLight, 'A_GlowLight(color: string)'); // 391
-  DEH_AddAction(@A_TraceNearestPlayer, 'A_TraceNearestPlayer(pct: integer, [maxturn: angle_t])'); // 392
+  DEH_AddAction(@TCommonMovementActions.A_TraceNearestPlayer, 'A_TraceNearestPlayer(pct: integer, [maxturn: angle_t])'); // 392
   DEH_AddAction(@A_ChangeFlag, 'A_ChangeFlag(flag: string, onoff: boolean)'); // 393
   DEH_AddAction(@A_CheckCeiling, 'A_CheckCeiling(offset: integer)'); // 394
   DEH_AddAction(@TCommonSoundActions.A_StopSound, 'A_StopSound()'); // 395
@@ -939,7 +939,7 @@ begin
   DEH_AddAction(@A_SetArg, 'A_SetArg(arg: integer, value: integer)'); // 406
   DEH_AddAction(@A_SetSpecial, 'A_SetSpecial(special: integer, [arg1, arg2, arg3, arg4, arg5: integer])'); // 407
   DEH_AddAction(@A_CheckFlag, 'A_CheckFlag(flag: string, offset: integer, [aaprt: AAPTR])'); // 408
-  DEH_AddAction(@A_SetAngle, 'A_SetAngle(angle: integer, [flags: integer], [aaprt: AAPTR])'); // 409
+  DEH_AddAction(@TCommonMovementActions.A_SetAngle, 'A_SetAngle(angle: integer, [flags: integer], [aaprt: AAPTR])'); // 409
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserVar, 'A_SetUserVar(varname: string, value: integer)'); // 410
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserArray, 'A_SetUserArray(varname: string, index: integer, value: integer)'); // 411
   DEH_AddAction(@A_SetTics, 'A_SetTics(tics: integer)'); // 412
@@ -955,7 +955,7 @@ begin
   DEH_AddAction(@TCommonStateBitActions.A_SetFloatBobPhase, 'A_SetFloatBobPhase(bob: integer)'); // 422
   DEH_AddAction(@A_Detonate, 'A_Detonate()'); // 423
   DEH_AddAction(@A_Spawn, 'A_Spawn()'); // 424
-  DEH_AddAction(@A_Face, 'A_Face()'); // 425
+  DEH_AddAction(@TCommonMovementActions.A_Face, 'A_Face()'); // 425
   DEH_AddAction(@A_Scratch, 'A_Scratch()'); // 426
   DEH_AddAction(@TCommonJumpActions.A_RandomJump, 'A_RandomJump()'); // 427
   DEH_AddAction(@TCommonAppearanceActions.A_FlipSprite, 'A_FlipSprite()'); // 428
@@ -979,8 +979,8 @@ begin
   DEH_AddAction(@A_SetMasterArg, 'A_SetMasterArg(arg: integer; value: integer)'); // 446
   DEH_AddAction(@A_SetTargetArg, 'A_SetTargetArg(arg: integer; value: integer)'); // 447
   DEH_AddAction(@A_SetTracerArg, 'A_SetTracerArg(arg: integer; value: integer)'); // 448
-  DEH_AddAction(@A_Tracer2, 'A_Tracer()'); // 449
-  DEH_AddAction(@A_Tracer2, 'A_Tracer2()'); // 450
+  DEH_AddAction(@TCommonMovementActions.A_Tracer2, 'A_Tracer()'); // 449
+  DEH_AddAction(@TCommonMovementActions.A_Tracer2, 'A_Tracer2()'); // 450
   DEH_AddAction(@A_MonsterRefire, 'A_MonsterRefire(prob: integer, offset: state_t)'); // 451
   DEH_AddAction(@A_RearrangePointers, 'A_RearrangePointers(ptr_target: integer, ptr_master: integer, ptr_tracer: integer, flags: integer)'); // 452
   DEH_AddAction(@A_TransferPointer, 'A_TransferPointer(ptr_source: integer, ptr_recipient: integer, ptr_sourcefield: integer, [ptr_recipientfield: integer], [flags: integer])'); // 453
@@ -990,10 +990,10 @@ begin
   DEH_AddAction(@A_RemoveSiblings, 'A_RemoveSiblings([flags: integer])'); // 457
   DEH_AddAction(@A_KillChildren, 'A_KillChildren()'); // 458
   DEH_AddAction(@A_KillSiblings, 'A_KillSiblings()'); // 459
-  DEH_AddAction(@A_Weave, 'A_Weave(xyspeed: integer = 2, zspeed: integer = 2, xydist: float = 2.0, zdist: float = 1.0)'); // 460
-  DEH_AddAction(@A_SetWeaveIndexXY, 'A_SetWeaveIndexXY(weavexy: integer)'); // 461
-  DEH_AddAction(@A_SetWeaveIndexZ, 'A_SetWeaveIndexZ(weavez: integer)'); // 462
-  DEH_AddAction(@A_SetWeaveIndexes, 'A_SetWeaveIndexes(weavexy: integer, weavez: integer)'); // 463
+  DEH_AddAction(@TCommonMovementActions.A_Weave, 'A_Weave(xyspeed: integer = 2, zspeed: integer = 2, xydist: float = 2.0, zdist: float = 1.0)'); // 460
+  DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexXY, 'A_SetWeaveIndexXY(weavexy: integer)'); // 461
+  DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexZ, 'A_SetWeaveIndexZ(weavez: integer)'); // 462
+  DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexes, 'A_SetWeaveIndexes(weavexy: integer, weavez: integer)'); // 463
   DEH_AddAction(@TCommonStateBitActions.A_SetHeight, 'A_SetHeight(newheight: float)'); // 464
   DEH_AddAction(@A_OverlayClear, 'A_OverlayClear()'); // 465
   DEH_AddAction(@A_OverlayDrawPatch, 'A_OverlayDrawPatch(ticks: Integer; patchname: string; x, y: Integer ;)'); // 466
@@ -1018,7 +1018,7 @@ begin
   DEH_AddAction(@A_MeleeSound1, 'A_MeleeSound()'); // 485
   DEH_AddAction(@A_DeathSound1, 'A_DeathSound()'); // 486
   DEH_AddAction(@A_ActiveSound1, 'A_ActiveSound()'); // 487
-  DEH_AddAction(@A_MatchTargetZ, 'A_MatchTargetZ(zspeed: integer; threshold: integer; maxmomz: integer)'); // 488
+  DEH_AddAction(@TCommonMovementActions.A_MatchTargetZ, 'A_MatchTargetZ(zspeed: integer; threshold: integer; maxmomz: integer)'); // 488
   DEH_AddAction(@TCommonStateBitActions.A_SetInteractive, 'A_SetInteractive()'); // 489
   DEH_AddAction(@TCommonStateBitActions.A_UnSetInteractive, 'A_UnSetInteractive()'); // 490
   DEH_AddAction(@A_SimpleDialog, 'A_SimpleDialog(dialog1: string; [dialog2...])'); // 491

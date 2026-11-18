@@ -59,13 +59,6 @@ procedure A_ConsoleCommand(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_Stop
-//
-//==============================================================================
-procedure A_Stop(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_CustomMissile
 //
 //==============================================================================
@@ -115,59 +108,10 @@ procedure A_MissileAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_AdjustSideSpot
-//
-//==============================================================================
-procedure A_AdjustSideSpot(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustZ
-//
-//==============================================================================
-procedure A_ThrustZ(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ThrustXY
-//
-//==============================================================================
-procedure A_ThrustXY(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Turn
-//
-//==============================================================================
-procedure A_Turn(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_ScreamAndUnblock
 //
 //==============================================================================
 procedure A_ScreamAndUnblock(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Wander
-//
-//==============================================================================
-procedure A_Wander(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Turn5
-//
-//==============================================================================
-procedure A_Turn5(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Turn10
-//
-//==============================================================================
-procedure A_Turn10(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -238,34 +182,6 @@ procedure A_ResetTargetHealth(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_SetTargetHealth(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Recoil
-//
-//==============================================================================
-procedure A_Recoil(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ScaleVelocity
-//
-//==============================================================================
-procedure A_ScaleVelocity(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ChangeVelocity
-//
-//==============================================================================
-procedure A_ChangeVelocity(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TraceNearestPlayer
-//
-//==============================================================================
-procedure A_TraceNearestPlayer(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -357,13 +273,6 @@ procedure A_SetSpecial(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_CheckFlag(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetAngle
-//
-//==============================================================================
-procedure A_SetAngle(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -472,13 +381,6 @@ procedure A_Spawn(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_Face
-//
-//==============================================================================
-procedure A_Face(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_Scratch
 //
 //==============================================================================
@@ -545,13 +447,6 @@ procedure A_BasicAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_Tracer2
-//
-//==============================================================================
-procedure A_Tracer2(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_MonsterRefire
 //
 //==============================================================================
@@ -615,34 +510,6 @@ procedure A_KillSiblings(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_Weave
-//
-//==============================================================================
-procedure A_Weave(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWeaveIndexXY
-//
-//==============================================================================
-procedure A_SetWeaveIndexXY(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWeaveIndexZ
-//
-//==============================================================================
-procedure A_SetWeaveIndexZ(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWeaveIndexes
-//
-//==============================================================================
-procedure A_SetWeaveIndexes(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_PlayerHurtExplode
 //
 //==============================================================================
@@ -664,24 +531,10 @@ procedure A_UnSetPushable(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_MatchTargetZ
-//
-//==============================================================================
-procedure A_MatchTargetZ(actor: Pmobj_t);
-
-//==============================================================================
-//
 // P_CheckCustomMeleeRange
 //
 //==============================================================================
 function P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean;
-
-//==============================================================================
-//
-// P_FaceMobj
-//
-//==============================================================================
-function P_FaceMobj(source: Pmobj_t; target: Pmobj_t; var delta: angle_t): integer;
 
 //==============================================================================
 //
@@ -1049,13 +902,6 @@ function P_RaiseActor(const thing, raiser: Pmobj_t): boolean;
 
 //==============================================================================
 //
-// P_FloatSpeed
-//
-//==============================================================================
-function P_FloatSpeed(const actor: Pmobj_t): fixed_t;
-
-//==============================================================================
-//
 // P_NoiseAlertEx
 //
 //==============================================================================
@@ -1112,13 +958,6 @@ procedure P_BulletSlope(mo: Pmobj_t);
 //
 //==============================================================================
 procedure A_Delayfire(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_ThrustMobj
-//
-//==============================================================================
-procedure P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t);
 
 //==============================================================================
 //
@@ -2405,6 +2244,175 @@ type
     //
     //==============================================================================
     class procedure A_WeaponJump(player: Pplayer_t; psp: Ppspdef_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonMovementActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_Stop
+    //
+    //==============================================================================
+    class procedure A_Stop(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AdjustSideSpot
+    //
+    //==============================================================================
+    class procedure A_AdjustSideSpot(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustZ
+    //
+    //==============================================================================
+    class procedure A_ThrustZ(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ThrustXY
+    //
+    //==============================================================================
+    class procedure A_ThrustXY(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Turn
+    //
+    //==============================================================================
+    class procedure A_Turn(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Wander
+    //
+    //==============================================================================
+    class procedure A_Wander(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Turn5
+    //
+    //==============================================================================
+    class procedure A_Turn5(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Turn10
+    //
+    //==============================================================================
+    class procedure A_Turn10(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Recoil
+    //
+    //==============================================================================
+    class procedure A_Recoil(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ScaleVelocity
+    //
+    //==============================================================================
+    class procedure A_ScaleVelocity(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ChangeVelocity
+    //
+    //==============================================================================
+    class procedure A_ChangeVelocity(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TraceNearestPlayer
+    //
+    //==============================================================================
+    class procedure A_TraceNearestPlayer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetAngle
+    //
+    //==============================================================================
+    class procedure A_SetAngle(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Face
+    //
+    //==============================================================================
+    class procedure A_Face(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Tracer2
+    //
+    //==============================================================================
+    class procedure A_Tracer2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Weave
+    //
+    //==============================================================================
+    class procedure A_Weave(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWeaveIndexXY
+    //
+    //==============================================================================
+    class procedure A_SetWeaveIndexXY(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWeaveIndexZ
+    //
+    //==============================================================================
+    class procedure A_SetWeaveIndexZ(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWeaveIndexes
+    //
+    //==============================================================================
+    class procedure A_SetWeaveIndexes(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MatchTargetZ
+    //
+    //==============================================================================
+    class procedure A_MatchTargetZ(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_FaceMobj
+    //
+    //==============================================================================
+    class function P_FaceMobj(source: Pmobj_t; target: Pmobj_t; var delta: angle_t): integer; static;
+
+    //==============================================================================
+    //
+    // P_FloatSpeed
+    //
+    //==============================================================================
+    class function P_FloatSpeed(const actor: Pmobj_t): fixed_t; static;
+
+    //==============================================================================
+    //
+    // P_ThrustMobj
+    //
+    //==============================================================================
+    class procedure P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t); static;
   end;
 
 
@@ -4875,7 +4883,7 @@ end;
 // Set all momentum to zero
 //
 //==============================================================================
-procedure A_Stop(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Stop(actor: Pmobj_t);
 begin
   actor.momx := 0;
   actor.momy := 0;
@@ -5790,7 +5798,7 @@ end;
 // A_AdjustSideSpot(sideoffset: float)
 //
 //==============================================================================
-procedure A_AdjustSideSpot(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_AdjustSideSpot(actor: Pmobj_t);
 var
   offs: fixed_t;
   ang: angle_t;
@@ -5817,7 +5825,7 @@ end;
 // Changes z momentum
 //
 //==============================================================================
-procedure A_ThrustZ(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_ThrustZ(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -5832,7 +5840,7 @@ end;
 // Changes x, y momentum
 //
 //==============================================================================
-procedure A_ThrustXY(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_ThrustXY(actor: Pmobj_t);
 var
   ang: angle_t;
   thrust: fixed_t;
@@ -5856,7 +5864,7 @@ end;
 // Changes the actor's angle
 //
 //==============================================================================
-procedure A_Turn(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Turn(actor: Pmobj_t);
 var
   ang: angle_t;
 begin
@@ -5983,12 +5991,22 @@ const
     DI_NORTHWEST, DI_NORTHEAST, DI_SOUTHWEST, DI_SOUTHEAST
   );
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonMovementActionsLocal = class sealed
+  public
+    class procedure P_RandomChaseDir(actor: Pmobj_t); static;
+  end;
+
 //==============================================================================
 //
 // P_RandomChaseDir
 //
 //==============================================================================
-procedure P_RandomChaseDir(actor: Pmobj_t);
+class procedure TCommonMovementActionsLocal.P_RandomChaseDir(actor: Pmobj_t);
 var
   turndir, tdir: integer;
   olddir: integer;
@@ -6040,7 +6058,7 @@ end;
 // A_Wander
 //
 //==============================================================================
-procedure A_Wander(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Wander(actor: Pmobj_t);
 var
   delta: integer;
 begin
@@ -6063,7 +6081,7 @@ begin
   dec(actor.movecount);
   if (actor.movecount < 0) or P_Move(actor) then
   begin
-    P_RandomChaseDir(actor);
+    TCommonMovementActionsLocal.P_RandomChaseDir(actor);
     actor.movecount := actor.movecount + 5;
   end;
 end;
@@ -6093,7 +6111,7 @@ end;
 // A_Turn5
 //
 //==============================================================================
-procedure A_Turn5(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Turn5(actor: Pmobj_t);
 var
   ang: angle_t;
 begin
@@ -6106,7 +6124,7 @@ end;
 // A_Turn10
 //
 //==============================================================================
-procedure A_Turn10(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Turn10(actor: Pmobj_t);
 var
   ang: angle_t;
 begin
@@ -6470,7 +6488,7 @@ end;
 // A_Recoil
 //
 //==============================================================================
-procedure A_Recoil(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Recoil(actor: Pmobj_t);
 var
   xymom: fixed_t;
   angle: angle_t;
@@ -6531,7 +6549,7 @@ end;
 // zDoom compatibility
 //
 //==============================================================================
-procedure A_ScaleVelocity(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_ScaleVelocity(actor: Pmobj_t);
 var
   scale: fixed_t;
 begin
@@ -6551,7 +6569,7 @@ end;
 // zDoom compatibility
 //
 //==============================================================================
-procedure A_ChangeVelocity(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_ChangeVelocity(actor: Pmobj_t);
 var
   vx, vy, vz: fixed_t;
   vx1, vy1: fixed_t;
@@ -6791,7 +6809,7 @@ const
 // pct -> propability
 //
 //==============================================================================
-procedure A_TraceNearestPlayer(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_TraceNearestPlayer(actor: Pmobj_t);
 var
   pct: integer;
   exact: angle_t;
@@ -7689,7 +7707,7 @@ end;
 // A_SetAngle(angle: integer: [flags: integer]; [aaprt: AAPTR]);
 //
 //==============================================================================
-procedure A_SetAngle(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_SetAngle(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   ang: angle_t;
@@ -8111,7 +8129,7 @@ end;
 // A_Face
 //
 //==============================================================================
-procedure A_Face(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Face(actor: Pmobj_t);
 begin
   actor.angle := actor.angle + actor.state.misc1 * ANG1;
 end;
@@ -8818,7 +8836,7 @@ end;
 // P_FloatSpeed
 //
 //==============================================================================
-function P_FloatSpeed(const actor: Pmobj_t): fixed_t;
+class function TCommonMovementActions.P_FloatSpeed(const actor: Pmobj_t): fixed_t;
 begin
   if actor.info.floatspeed > 0 then
   begin
@@ -8838,7 +8856,7 @@ const
 // A_Tracer2
 //
 //==============================================================================
-procedure A_Tracer2(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Tracer2(actor: Pmobj_t);
 var
   exact: angle_t;
   dist: fixed_t;
@@ -9324,7 +9342,7 @@ end;
 // A_Weave(xyspeed: integer, zspeed: integer, xydist: float, zdist: float)
 //
 //==============================================================================
-procedure A_Weave(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_Weave(actor: Pmobj_t);
 var
   xyspeed: integer;
   zspeed: integer;
@@ -9387,7 +9405,7 @@ end;
 // A_SetWeaveIndexXY(weavexy: integer)
 //
 //==============================================================================
-procedure A_SetWeaveIndexXY(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_SetWeaveIndexXY(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -9400,7 +9418,7 @@ end;
 // A_SetWeaveIndexZ(weavez: integer)
 //
 //==============================================================================
-procedure A_SetWeaveIndexZ(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_SetWeaveIndexZ(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -9413,7 +9431,7 @@ end;
 // A_SetWeaveIndexes(weavexy: integer, weavez: integer)
 //
 //==============================================================================
-procedure A_SetWeaveIndexes(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_SetWeaveIndexes(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -9542,7 +9560,7 @@ end;
 //  A_MatchTargetZ(const zspeed, threshold, [maxmomz])
 //
 //==============================================================================
-procedure A_MatchTargetZ(actor: Pmobj_t);
+class procedure TCommonMovementActions.A_MatchTargetZ(actor: Pmobj_t);
 var
   speed: fixed_t;
   threshold: fixed_t;
@@ -9897,7 +9915,7 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-function P_FaceMobj(source: Pmobj_t; target: Pmobj_t; var delta: angle_t): integer;
+class function TCommonMovementActions.P_FaceMobj(source: Pmobj_t; target: Pmobj_t; var delta: angle_t): integer;
 var
   diff: angle_t;
   angle1: angle_t;
@@ -10810,7 +10828,7 @@ begin
     exit;
   end;
 
-  dir := P_FaceMobj(actor, target, delta);
+  dir := TCommonMovementActions.P_FaceMobj(actor, target, delta);
   if delta > thresh then
   begin
     delta := delta shr 1;
@@ -12458,7 +12476,7 @@ end;
 // Beware! This is inlined everywhere in the asm
 //
 //==============================================================================
-procedure P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t);
+class procedure TCommonMovementActions.P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t);
 var
   an: angle_t;
 begin

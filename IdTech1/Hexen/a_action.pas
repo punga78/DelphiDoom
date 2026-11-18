@@ -599,7 +599,7 @@ begin
     mo := P_SpawnMobj(LX, LY, LZ, LType);
     if mo <> nil then
     begin
-      P_ThrustMobj(mo, actor.angle, _SHL(P_Random, 9) + 3 * FRACUNIT);
+      TCommonMovementActions.P_ThrustMobj(mo, actor.angle, _SHL(P_Random, 9) + 3 * FRACUNIT);
       mo.target := actor;
       mo.special1 := 0;
     end;
@@ -633,12 +633,12 @@ begin
   if P_Random > 64 then
   begin
     if (actor.momx = 0) and (actor.momy = 0) then
-      P_ThrustMobj(actor, actor.target.angle, _SHL(P_Random, 9) + FRACUNIT);
+      TCommonMovementActions.P_ThrustMobj(actor, actor.target.angle, _SHL(P_Random, 9) + FRACUNIT);
     exit;
   end;
   P_SetMobjState(actor, S_LEAF1_8);
   actor.momz := _SHL(P_Random, 9) + FRACUNIT;
-  P_ThrustMobj(actor, actor.target.angle, _SHL(P_Random, 9) + 2 * FRACUNIT);
+  TCommonMovementActions.P_ThrustMobj(actor, actor.target.angle, _SHL(P_Random, 9) + 2 * FRACUNIT);
   actor.flags := actor.flags or MF_MISSILE;
 end;
 
@@ -1166,7 +1166,7 @@ begin
         // Thrust player around
         rnd := P_Random;
         an := victim.angle + ANG1 * rnd;
-        P_ThrustMobj(victim, an, _SHL(richters, FRACBITS - 1));
+        TCommonMovementActions.P_ThrustMobj(victim, an, _SHL(richters, FRACBITS - 1));
       end;
     end;
   end

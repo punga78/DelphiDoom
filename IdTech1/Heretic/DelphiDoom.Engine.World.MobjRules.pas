@@ -438,9 +438,9 @@ begin
       delta := (mo.target.z + _SHR1(mo.height)) - mo.z; // JVAL is it right ???
 
       if (delta < 0) and (dist < -(delta * 3)) then
-        mo.z := mo.z - P_FloatSpeed(mo)
+        mo.z := mo.z - TCommonMovementActions.P_FloatSpeed(mo)
       else if (delta > 0) and (dist < (delta * 3)) then
-        mo.z := mo.z + P_FloatSpeed(mo);
+        mo.z := mo.z + TCommonMovementActions.P_FloatSpeed(mo);
     end;
   end;
 
@@ -1528,13 +1528,13 @@ begin
   begin
     case special of
       40, 41, 42: // Wind_East
-        P_ThrustMobj(mo, 0, windTab[special - 40]);
+        TCommonMovementActions.P_ThrustMobj(mo, 0, windTab[special - 40]);
       43, 44, 45: // Wind_North
-        P_ThrustMobj(mo, ANG90, windTab[special - 43]);
+        TCommonMovementActions.P_ThrustMobj(mo, ANG90, windTab[special - 43]);
       46, 47, 48: // Wind_South
-        P_ThrustMobj(mo, ANG270, windTab[special - 46]);
+        TCommonMovementActions.P_ThrustMobj(mo, ANG270, windTab[special - 46]);
       49, 50, 51: // Wind_West
-        P_ThrustMobj(mo, ANG180, windTab[special - 49]);
+        TCommonMovementActions.P_ThrustMobj(mo, ANG180, windTab[special - 49]);
     end;
   end;
   result := special;

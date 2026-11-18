@@ -856,7 +856,7 @@ begin
         if P_Random < 24 then
         begin
           actor.target := nil;
-          A_Wander(actor);
+          TCommonMovementActions.A_Wander(actor);
           result := true;
           exit;
         end;

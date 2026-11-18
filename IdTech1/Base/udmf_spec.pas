@@ -553,7 +553,7 @@ begin
         // Thrust player around
         rnd := P_Random;
         an := pmo.angle + ANG1 * rnd;
-        P_ThrustMobj(pmo, an, intensity div 2);
+        TCommonMovementActions.P_ThrustMobj(pmo, an, intensity div 2);
       end;
     end;
 end;
@@ -1001,7 +1001,7 @@ begin
       result := false;
       if side = 0 then // Only thrust on side 0
       begin
-        P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
+        TCommonMovementActions.P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
         result := true;
       end;
     end);

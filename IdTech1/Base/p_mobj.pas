@@ -637,7 +637,7 @@ begin
   // JVAL: 20220222 - Wind thrust
   if TMobjGameRules.HasWindThrust(mo) then
     if oldsector.windthrust <> 0 then
-      P_ThrustMobj(mo, oldsector.windangle, oldsector.windthrust);
+      TCommonMovementActions.P_ThrustMobj(mo, oldsector.windangle, oldsector.windthrust);
 
   wasonslope := oldsector.renderflags and SRF_SLOPED <> 0;
 
@@ -1337,7 +1337,7 @@ begin
     exit;
   end;
 
-  dir := P_FaceMobj(actor, target, delta);
+  dir := TCommonMovementActions.P_FaceMobj(actor, target, delta);
   if delta > thresh then
   begin
     delta := delta shr 1;

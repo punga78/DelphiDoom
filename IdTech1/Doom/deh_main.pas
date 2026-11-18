@@ -614,7 +614,7 @@ begin
   DEH_AddAction(@A_AnnihilatorAttack, 'A_AnnihilatorAttack()'); // 87
   DEH_AddAction(@TCommonSoundActions.A_Playsound, 'A_Playsound(sound: string)'); // 88
   DEH_AddAction(@TCommonSoundActions.A_RandomSound, 'A_RandomSound(sound1: string, [sound2: string], ...)'); // 89
-  DEH_AddAction(@A_Stop, 'A_Stop()'); // 90
+  DEH_AddAction(@TCommonMovementActions.A_Stop, 'A_Stop()'); // 90
   DEH_AddAction(@TCommonJumpActions.A_Jump, 'A_Jump(propability: random_t, offset1: integer, [offset2: integer], ...)'); // 91
   DEH_AddAction(@A_CustomMissile, 'A_CustomMissile(missiletype: string, [height: integer], [offset: integer], [angle: integer], [aimmode: integer], [pitch: integer])'); // 92
   DEH_AddAction(@A_NoGravity, 'A_NoGravity()'); // 93
@@ -630,13 +630,13 @@ begin
   DEH_AddAction(@TCommonAppearanceActions.A_FadeOut, 'A_FadeOut(fade: float)'); // 103
   DEH_AddAction(@TCommonAppearanceActions.A_FadeIn, 'A_FadeIn(fade: float)'); // 104
   DEH_AddAction(@A_MissileAttack, 'A_MissileAttack([missiletype: string])'); // 105
-  DEH_AddAction(@A_AdjustSideSpot, 'A_AdjustSideSpot(sideoffset: float)'); // 106
+  DEH_AddAction(@TCommonMovementActions.A_AdjustSideSpot, 'A_AdjustSideSpot(sideoffset: float)'); // 106
   DEH_AddAction(@A_Countdown, 'A_Countdown()'); // 107
   DEH_AddAction(@A_FastChase, 'A_FastChase()'); // 108
   DEH_AddAction(@A_LowGravity, 'A_LowGravity()'); // 109
-  DEH_AddAction(@A_ThrustZ, 'A_ThrustZ(momz: float)'); // 110
-  DEH_AddAction(@A_ThrustXY, 'A_ThrustXY(mom: float, ang: angle)'); // 111
-  DEH_AddAction(@A_Turn, 'A_Turn(value: angle)'); // 112
+  DEH_AddAction(@TCommonMovementActions.A_ThrustZ, 'A_ThrustZ(momz: float)'); // 110
+  DEH_AddAction(@TCommonMovementActions.A_ThrustXY, 'A_ThrustXY(mom: float, ang: angle)'); // 111
+  DEH_AddAction(@TCommonMovementActions.A_Turn, 'A_Turn(value: angle)'); // 112
   DEH_AddAction(@TCommonJumpActions.A_JumpIfCloser, 'A_JumpIfCloser(distancetotarget: float, offset: integer)'); // 113
   DEH_AddAction(@TCommonJumpActions.A_JumpIfHealthLower, 'A_JumpIfHealthLower(health: integer, offset: integer)'); // 114
   DEH_AddAction(@A_ScreamAndUnblock, 'A_ScreamAndUnblock()'); // 115
@@ -651,7 +651,7 @@ begin
   DEH_AddAction(@A_ComboAttack, 'A_ComboAttack()'); // 124
   DEH_AddAction(@A_BulletAttack, 'A_BulletAttack([numbullets: integer])'); // 125
   DEH_AddAction(@A_MediumGravity, 'A_MediumGravity()'); // 126
-  DEH_AddAction(@A_Wander, 'A_Wander()'); // 127
+  DEH_AddAction(@TCommonMovementActions.A_Wander, 'A_Wander()'); // 127
   DEH_AddAction(@TCommonAppearanceActions.A_FadeOut10, 'A_FadeOut10()'); // 128
   DEH_AddAction(@TCommonAppearanceActions.A_FadeOut20, 'A_FadeOut20()'); // 129
   DEH_AddAction(@TCommonAppearanceActions.A_FadeOut30, 'A_FadeOut30()'); // 130
@@ -663,8 +663,8 @@ begin
   DEH_AddAction(@A_HideThing, 'A_HideThing()'); // 136
   DEH_AddAction(@A_UnHideThing, 'A_UnHideThing()'); // 137
   DEH_AddAction(@A_SpawnDebris, 'A_SpawnDebris(debristype: string, [count: integer = 1], [horz_mom: integer], [vert_mom: integer])'); // 138
-  DEH_AddAction(@A_Turn5, 'A_Turn5()'); // 139
-  DEH_AddAction(@A_Turn10, 'A_Turn10()'); // 140
+  DEH_AddAction(@TCommonMovementActions.A_Turn5, 'A_Turn5()'); // 139
+  DEH_AddAction(@TCommonMovementActions.A_Turn10, 'A_Turn10()'); // 140
   DEH_AddAction(@A_SpawnSmokeUp, 'A_SpawnSmokeUp()'); // 141
   DEH_AddAction(@A_SpawnSmokeDown, 'A_SpawnSmokeDown()'); // 142
   DEH_AddAction(@A_SpawnSmokeHorz, 'A_SpawnSmokeHorz(height: integer)'); // 143
@@ -761,7 +761,7 @@ begin
   DEH_AddAction(@TCommonCustomParamActions.A_SetWorldFloat, 'A_SetWorldFloat(wvar: string, value: float)'); // 234
   DEH_AddAction(@TCommonJumpActions.A_RandomGoto, 'A_RandomGoto(state1: state_t; [state2: state_t],...)'); // 235
   DEH_AddAction(@A_ResetHealth, 'A_ResetHealth()'); // 236
-  DEH_AddAction(@A_Recoil, 'A_Recoil(xymom: float)'); // 237
+  DEH_AddAction(@TCommonMovementActions.A_Recoil, 'A_Recoil(xymom: float)'); // 237
   DEH_AddAction(@TCommonStateBitActions.A_SetSolid, 'A_SetSolid()'); // 238
   DEH_AddAction(@TCommonStateBitActions.A_UnSetSolid, 'A_UnSetSolid()'); // 239
   DEH_AddAction(@TCommonStateBitActions.A_SetFloat, 'A_SetFloat()'); // 240
@@ -769,8 +769,8 @@ begin
   DEH_AddAction(@A_SetHealth, 'A_SetHealth(h: integer)'); // 242
   DEH_AddAction(@A_ResetTargetHealth, 'A_ResetTargetHealth()'); // 243
   DEH_AddAction(@A_SetTargetHealth, 'A_SetTargetHealth(h: integer)'); // 244
-  DEH_AddAction(@A_ScaleVelocity, 'A_ScaleVelocity(scale: float)'); // 245
-  DEH_AddAction(@A_ChangeVelocity, 'A_ChangeVelocity(velx: float, vely: float, velz: float, flags: float)'); // 246
+  DEH_AddAction(@TCommonMovementActions.A_ScaleVelocity, 'A_ScaleVelocity(scale: float)'); // 245
+  DEH_AddAction(@TCommonMovementActions.A_ChangeVelocity, 'A_ChangeVelocity(velx: float, vely: float, velz: float, flags: float)'); // 246
   DEH_AddAction(@TCommonJumpActions.A_JumpIf, 'A_JumpIf(propability: boolean, offset1: integer, [offset2: integer], ...)'); // 247
   DEH_AddAction(@A_MusicChanger, 'A_MusicChanger()'); // 248
   DEH_AddAction(@TCommonStateBitActions.A_SetPushFactor, 'A_SetPushFactor(f: float)'); // 249
@@ -783,7 +783,7 @@ begin
   DEH_AddAction(@TCommonStateBitActions.A_SetWallBounce, 'A_SetWallBounce()'); // 256
   DEH_AddAction(@TCommonStateBitActions.A_UnSetWallBounce, 'A_UnSetWallBounce()'); // 257
   DEH_AddAction(@TCommonAppearanceActions.A_GlowLight, 'A_GlowLight(color: string)'); // 258
-  DEH_AddAction(@A_TraceNearestPlayer, 'A_TraceNearestPlayer(pct: integer, [maxturn: angle_t])'); // 259
+  DEH_AddAction(@TCommonMovementActions.A_TraceNearestPlayer, 'A_TraceNearestPlayer(pct: integer, [maxturn: angle_t])'); // 259
   DEH_AddAction(@A_ChangeFlag, 'A_ChangeFlag(flag: string, onoff: boolean)'); // 260
   DEH_AddAction(@A_CheckFloor, 'A_CheckFloor(offset: integer)'); // 261
   DEH_AddAction(@A_CheckCeiling, 'A_CheckCeiling(offset: integer)'); // 262
@@ -801,7 +801,7 @@ begin
   DEH_AddAction(@A_SetArg, 'A_SetArg(arg: integer, value: integer)'); // 274
   DEH_AddAction(@A_SetSpecial, 'A_SetSpecial(special: integer, [arg1, arg2, arg3, arg4, arg5: integer])'); // 275
   DEH_AddAction(@A_CheckFlag, 'A_CheckFlag(flag: string, offset: integer, [aaprt: AAPTR])'); // 276
-  DEH_AddAction(@A_SetAngle, 'A_SetAngle(angle: integer, [flags: integer], [aaprt: AAPTR])'); // 277
+  DEH_AddAction(@TCommonMovementActions.A_SetAngle, 'A_SetAngle(angle: integer, [flags: integer], [aaprt: AAPTR])'); // 277
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserVar, 'A_SetUserVar(varname: string, value: integer)'); // 278
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserArray, 'A_SetUserArray(varname: string, index: integer, value: integer)'); // 279
   DEH_AddAction(@A_SetTics, 'A_SetTics(tics: integer)'); // 280
@@ -820,7 +820,7 @@ begin
   DEH_AddAction(@A_BetaSkullAttack, 'A_BetaSkullAttack()'); // 293
   DEH_AddAction(@A_FireOldBFG, 'A_FireOldBFG()'); // 294
   DEH_AddAction(@A_Spawn, 'A_Spawn()'); // 295
-  DEH_AddAction(@A_Face, 'A_Face()'); // 296
+  DEH_AddAction(@TCommonMovementActions.A_Face, 'A_Face()'); // 296
   DEH_AddAction(@A_Scratch, 'A_Scratch()'); // 297
   DEH_AddAction(@TCommonJumpActions.A_RandomJump, 'A_RandomJump()'); // 298
   DEH_AddAction(@A_LineEffect, 'A_LineEffect()'); // 299
@@ -845,7 +845,7 @@ begin
   DEH_AddAction(@A_SetMasterArg, 'A_SetMasterArg(arg: integer; value: integer)'); // 318
   DEH_AddAction(@A_SetTargetArg, 'A_SetTargetArg(arg: integer; value: integer)'); // 319
   DEH_AddAction(@A_SetTracerArg, 'A_SetTracerArg(arg: integer; value: integer)'); // 320
-  DEH_AddAction(@A_Tracer2, 'A_Tracer2()'); // 321
+  DEH_AddAction(@TCommonMovementActions.A_Tracer2, 'A_Tracer2()'); // 321
   DEH_AddAction(@A_SinglePainAttack, 'A_SinglePainAttack([classname: string])'); // 322
   DEH_AddAction(@A_DualPainAttack, 'A_DualPainAttack([classname: string])'); // 323
   DEH_AddAction(@A_MonsterRefire, 'A_MonsterRefire(prob: integer, offset: state_t)'); // 324
@@ -858,10 +858,10 @@ begin
   DEH_AddAction(@A_RemoveSiblings, 'A_RemoveSiblings([flags: integer])'); // 331
   DEH_AddAction(@A_KillChildren, 'A_KillChildren()'); // 332
   DEH_AddAction(@A_KillSiblings, 'A_KillSiblings()'); // 333
-  DEH_AddAction(@A_Weave, 'A_Weave(xyspeed: integer = 2, zspeed: integer = 2, xydist: float = 2.0, zdist: float = 1.0)'); // 334
-  DEH_AddAction(@A_SetWeaveIndexXY, 'A_SetWeaveIndexXY(weavexy: integer)'); // 335
-  DEH_AddAction(@A_SetWeaveIndexZ, 'A_SetWeaveIndexZ(weavez: integer)'); // 336
-  DEH_AddAction(@A_SetWeaveIndexes, 'A_SetWeaveIndexes(weavexy: integer, weavez: integer)'); // 337
+  DEH_AddAction(@TCommonMovementActions.A_Weave, 'A_Weave(xyspeed: integer = 2, zspeed: integer = 2, xydist: float = 2.0, zdist: float = 1.0)'); // 334
+  DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexXY, 'A_SetWeaveIndexXY(weavexy: integer)'); // 335
+  DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexZ, 'A_SetWeaveIndexZ(weavez: integer)'); // 336
+  DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexes, 'A_SetWeaveIndexes(weavexy: integer, weavez: integer)'); // 337
   DEH_AddAction(@TCommonStateBitActions.A_SetHeight, 'A_SetHeight(newheight: float)'); // 338
   DEH_AddAction(@A_OverlayClear, 'A_OverlayClear()'); // 339
   DEH_AddAction(@A_OverlayDrawPatch, 'A_OverlayDrawPatch(ticks: Integer; patchname: string; x, y: Integer ;)'); // 340
@@ -886,7 +886,7 @@ begin
   DEH_AddAction(@A_MeleeSound1, 'A_MeleeSound()'); // 359
   DEH_AddAction(@A_DeathSound1, 'A_DeathSound()'); // 360
   DEH_AddAction(@A_ActiveSound1, 'A_ActiveSound()'); // 361
-  DEH_AddAction(@A_MatchTargetZ, 'A_MatchTargetZ(zspeed: integer; threshold: integer; maxmomz: integer)'); // 362
+  DEH_AddAction(@TCommonMovementActions.A_MatchTargetZ, 'A_MatchTargetZ(zspeed: integer; threshold: integer; maxmomz: integer)'); // 362
   DEH_AddAction(@A_SimpleDialog, 'A_SimpleDialog(dialog1: string; [dialog2...])'); // 363
   DEH_AddAction(@TDoomMonsterActions.A_TurretChase, 'A_TurretChase()'); // 364
   DEH_AddAction(@TCommonCustomParamActions.A_SetMasterCustomParam, 'A_SetMasterCustomParam(param: string, value: integer)');
