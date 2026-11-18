@@ -41,6 +41,7 @@ type
     FObjectByTarget: TDictionary<TObject, TD3Class>;
     FTargetByObject: TDictionary<TObject, TDoomScriptEventTarget>;
     FTargetByNumber: TDictionary<Integer, TDoomScriptEventTarget>;
+    FRootBound: Boolean;
     function MakeHandler(const AHandler: TD3EventHandler): TDoomScriptEventHandler;
     function EnsureScriptClass(const AType: TD3TypeInfo): TDoomScriptClassInfo;
   protected
@@ -159,7 +160,20 @@ var
 begin
   Result := FMachine.Classes.GetClass(AType.Name);
   if Assigned(Result) then
+  begin
+    // the machine has the root class already (idClass), empty: the game's idClass brings the events of every object
+    // (<immediateremove>, remove), which the entities inherit
+    if (not Assigned(AType.Super)) and (not FRootBound) then
+    begin
+      FRootBound := True;
+      for LIndex := 0 to AType.EventBindingCount - 1 do
+      begin
+        LBinding := AType.EventBindingAt(LIndex);
+        Result.AddEvent(LBinding.Event, MakeHandler(LBinding.Handler));
+      end;
+    end;
     Exit;
+  end;
   LSuperName := '';
   if Assigned(AType.Super) then
   begin

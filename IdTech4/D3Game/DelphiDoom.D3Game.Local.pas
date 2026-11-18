@@ -196,6 +196,8 @@ type
     function GetScriptThreads: ID3ScriptThreads;
     /// <summary>gamestate = GAMESTATE_ACTIVE: entities spawned from now on find their targets at once</summary>
     procedure EndStartup;
+    /// <summary>gamestate = GAMESTATE_STARTUP</summary>
+    procedure BeginStartup;
     /// <summary>gameLocal.random.SetSeed (the game starts a map with seed 0)</summary>
     procedure SetRandomSeed(const ASeed: Integer);
     { ID3EntityWorld }
@@ -365,6 +367,11 @@ end;
 function TD3GameLocal.CRandomFloat: Single;
 begin
   Result := FRandom.CRandomFloat;
+end;
+
+procedure TD3GameLocal.BeginStartup;
+begin
+  FStartup := True;
 end;
 
 procedure TD3GameLocal.EndStartup;

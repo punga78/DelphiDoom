@@ -52,6 +52,8 @@ type
     class procedure SpawnClass(const AInstance: TD3Class); static;
     class procedure DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents); static;
     property Wait: Single read FWait;
+    property Delay: Single read FDelay;
+    property RandomDelay: Single read FRandomDelay;
     property Random: Single read FRandom;
     property NextTriggerTime: Integer read FNextTriggerTime;
     property TriggerFirst: Boolean read FTriggerFirst;

@@ -68,6 +68,8 @@ type
     Returned: TStringList;
     MoveDone: TStringList;
     Current: Integer;
+    /// <summary>Every call is also written here in the format of the C++ harness (may be nil)</summary>
+    Sink: TProc<string>;
     constructor Create;
     destructor Destroy; override;
     procedure ReturnFloat(const AValue: Single);
@@ -85,6 +87,7 @@ type
   TD3RecorderEntity = class(TD3Entity)
   public
     Log: TStringList;
+    Sink: TProc<string>;
     procedure Damage(const ADamageDefName: AnsiString; const AScale: Single); override;
   end;
 
@@ -294,16 +297,22 @@ end;
 procedure TD3FakeThreads.ReturnFloat(const AValue: Single);
 begin
   Returned.Add('f ' + FloatToStr(AValue, TFormatSettings.Invariant));
+  if Assigned(Sink) then
+    Sink('RETURN f ' + IntToHex(PCardinal(@AValue)^, 8));
 end;
 
 procedure TD3FakeThreads.ReturnInteger(const AValue: Integer);
 begin
   Returned.Add('d ' + IntToStr(AValue));
+  if Assigned(Sink) then
+    Sink('RETURN d ' + IntToStr(AValue));
 end;
 
 procedure TD3FakeThreads.ReturnString(const AText: AnsiString);
 begin
   Returned.Add('s ' + string(AText));
+  if Assigned(Sink) then
+    Sink('RETURN s ' + string(AText));
 end;
 
 procedure TD3FakeThreads.ReturnEntity(const AEntityNumber: Integer);
@@ -319,6 +328,8 @@ end;
 procedure TD3FakeThreads.ObjectMoveDone(const AThreadNum, AEntityNumber: Integer);
 begin
   MoveDone.Add(Format('%d %d', [AThreadNum, AEntityNumber]));
+  if Assigned(Sink) then
+    Sink(Format('CALL idThread.ObjectMoveDone %d %d', [AThreadNum, AEntityNumber]));
 end;
 
 { TD3WorldRig }
@@ -328,6 +339,7 @@ var
   LServices: TD3GameServices;
 begin
   inherited Create;
+  LServices := Default(TD3GameServices);
   FWorld := TD3GameFakeWorld.Create;
   FWorld.Quiet := True;
   FEvents := TDoomScriptEventRegistry.Create;
@@ -358,6 +370,11 @@ begin
   FWorld.Trace.Clear;
   // MapPopulate would end the startup of the map: the entities of a test are spawned into a running game
   FGame.EndStartup;
+  FThreads.Sink :=
+    procedure(AText: string)
+    begin
+      FWorld.Line(AText);
+    end;
 end;
 
 destructor TD3WorldRig.Destroy;
@@ -376,21 +393,32 @@ end;
 procedure TD3RecorderEntity.Damage(const ADamageDefName: AnsiString; const AScale: Single);
 begin
   Log.Add('DAMAGE ' + string(GetName) + ' ' + string(ADamageDefName));
+  if Assigned(Sink) then
+    Sink(Log[Log.Count - 1]);
 end;
 
 procedure TD3WorldRig.DeclareRecorder;
 var
   LGame: TD3GameLocal;
   LLog: TStringList;
+  LWorld: TD3GameFakeWorld;
+  LSink: TProc<string>;
   LType: TD3TypeInfo;
 begin
   LGame := FGame;
   LLog := FLog;
+  LWorld := FWorld;
+  LSink :=
+    procedure(AText: string)
+    begin
+      LWorld.Line(AText);
+    end;
   LType := FClasses.Declare('idRecorder', 'idEntity',
     function: TD3Class
     begin
       Result := TD3RecorderEntity.Create(LGame, LGame);
       TD3RecorderEntity(Result).Log := LLog;
+      TD3RecorderEntity(Result).Sink := LSink;
     end, TD3Entity.SpawnClass);
   LType.AddEvent(FEntityEvents.Activate,
     procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
@@ -404,6 +432,7 @@ begin
       else
         LName := '(none)';
       LLog.Add('ACTIVATE ' + string(TD3Entity(ATarget).GetName) + ' by ' + LName + ' t=' + IntToStr(LGame.Time));
+      LWorld.Line(LLog[LLog.Count - 1]);
     end);
 end;
 

@@ -47,6 +47,7 @@ uses
   DelphiDoom.Tests.DoomScript.Fakes in 'Source\DelphiDoom.Tests.DoomScript.Fakes.pas',
   DelphiDoom.Tests.DoomScript.Rig in 'Source\DelphiDoom.Tests.DoomScript.Rig.pas',
   DelphiDoom.Tests.D3Host.Proof in 'Source\DelphiDoom.Tests.D3Host.Proof.pas',
+  DelphiDoom.Tests.D3Host.WorldProof in 'Source\DelphiDoom.Tests.D3Host.WorldProof.pas',
   DelphiDoom.Tests.D3Host.HostParity in 'Source\DelphiDoom.Tests.D3Host.HostParity.pas',
   DelphiDoom.Tests.D3Host.Classes in 'Source\DelphiDoom.Tests.D3Host.Classes.pas';
 

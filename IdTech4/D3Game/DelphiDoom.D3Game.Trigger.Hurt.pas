@@ -42,6 +42,7 @@ type
     class procedure DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents); static;
     property IsOn: Boolean read FOn;
     property NextTime: Integer read FNextTime;
+    property Delay: Single read FDelay;
   end;
 
 implementation

@@ -40,6 +40,7 @@ type
     class procedure SpawnClass(const AInstance: TD3Class); static;
     class procedure DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents); static;
     property Goal: Integer read FGoal;
+    property Delay: Single read FDelay;
     property Count: Integer read FCount;
   end;
 

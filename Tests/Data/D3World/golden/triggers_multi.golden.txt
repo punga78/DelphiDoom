@@ -1,0 +1,185 @@
+CMD def info_recorder spawnclass idRecorder
+CMD def func_door spawnclass idDoor
+CMD def func_mover spawnclass idMover
+CMD def trigger_multi spawnclass idTrigger_Multi
+CMD def trigger_once spawnclass idTrigger_Multi wait -1
+CMD def trigger_relay spawnclass idTrigger_Multi wait 0 noTouch 1
+CMD def trigger_timer spawnclass idTrigger_Timer
+CMD def trigger_count spawnclass idTrigger_Count
+CMD def trigger_hurt spawnclass idTrigger_Hurt
+CMD def trigger_fade spawnclass idTrigger_Fade
+CMD def worldspawn spawnclass idWorldspawn
+CMD func openSesame
+CMD spawn classname info_recorder name r1
+CALL program.SetEntity r1 32
+RET 1 ent=32
+CMD spawn classname info_recorder name r2
+CALL program.SetEntity r2 33
+RET 1 ent=33
+CMD spawn classname trigger_multi name m1 target r1 target1 r2 wait 0.5 random 0.2
+CALL program.SetEntity m1 34
+RET 1 ent=34
+CMD dump 34
+ENT 34 name=m1 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=2
+MULTI wait=3F000000 random=3E4CCCCD delay=00000000 random_delay=00000000 next=0 triggerFirst=0
+CMD event 34 activate -1
+ACTIVATE r1 by (none) t=0
+ACTIVATE r2 by (none) t=0
+PROCESSED 1
+CMD event 34 activate 32
+PROCESSED 1
+CMD dump 34
+ENT 34 name=m1 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=2
+MULTI wait=3F000000 random=3E4CCCCD delay=00000000 random_delay=00000000 next=300 triggerFirst=0
+CMD frame 40
+FRAME t=16 toDeactivate=0
+FRAME t=32 toDeactivate=0
+FRAME t=48 toDeactivate=0
+FRAME t=64 toDeactivate=0
+FRAME t=80 toDeactivate=0
+FRAME t=96 toDeactivate=0
+FRAME t=112 toDeactivate=0
+FRAME t=128 toDeactivate=0
+FRAME t=144 toDeactivate=0
+FRAME t=160 toDeactivate=0
+FRAME t=176 toDeactivate=0
+FRAME t=192 toDeactivate=0
+FRAME t=208 toDeactivate=0
+FRAME t=224 toDeactivate=0
+FRAME t=240 toDeactivate=0
+FRAME t=256 toDeactivate=0
+FRAME t=272 toDeactivate=0
+FRAME t=288 toDeactivate=0
+FRAME t=304 toDeactivate=0
+FRAME t=320 toDeactivate=0
+FRAME t=336 toDeactivate=0
+FRAME t=352 toDeactivate=0
+FRAME t=368 toDeactivate=0
+FRAME t=384 toDeactivate=0
+FRAME t=400 toDeactivate=0
+FRAME t=416 toDeactivate=0
+FRAME t=432 toDeactivate=0
+FRAME t=448 toDeactivate=0
+FRAME t=464 toDeactivate=0
+FRAME t=480 toDeactivate=0
+FRAME t=496 toDeactivate=0
+FRAME t=512 toDeactivate=0
+FRAME t=528 toDeactivate=0
+FRAME t=544 toDeactivate=0
+FRAME t=560 toDeactivate=0
+FRAME t=576 toDeactivate=0
+FRAME t=592 toDeactivate=0
+FRAME t=608 toDeactivate=0
+FRAME t=624 toDeactivate=0
+FRAME t=640 toDeactivate=0
+CMD event 34 activate 33
+ACTIVATE r1 by r2 t=640
+ACTIVATE r2 by r2 t=640
+PROCESSED 1
+CMD event 34 activate 33
+PROCESSED 1
+CMD frame 3
+FRAME t=656 toDeactivate=0
+FRAME t=672 toDeactivate=0
+FRAME t=688 toDeactivate=0
+CMD queue
+QUEUE 
+CMD spawn classname trigger_multi name m2 target r2 delay 0.1 random_delay 0.05 wait 0.3
+CALL program.SetEntity m2 35
+RET 1 ent=35
+CMD event 35 activate 32
+PROCESSED 1
+CMD dump 35
+ENT 35 name=m2 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+MULTI wait=3E99999A random=00000000 delay=3DCCCCCD random_delay=3D4CCCCD next=742 triggerFirst=0
+CMD queue
+QUEUE  <triggerAction>@788
+CMD frame 10
+FRAME t=704 toDeactivate=0
+FRAME t=720 toDeactivate=0
+FRAME t=736 toDeactivate=0
+FRAME t=752 toDeactivate=0
+FRAME t=768 toDeactivate=0
+FRAME t=784 toDeactivate=0
+ACTIVATE r2 by r1 t=800
+FRAME t=800 toDeactivate=0
+FRAME t=816 toDeactivate=0
+FRAME t=832 toDeactivate=0
+FRAME t=848 toDeactivate=0
+CMD queue
+QUEUE 
+CMD dump 35
+ENT 35 name=m2 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+MULTI wait=3E99999A random=00000000 delay=3DCCCCCD random_delay=3D4CCCCD next=1100 triggerFirst=0
+CMD spawn classname trigger_multi name m3 target r1 triggerFirst 1 wait 0
+CALL program.SetEntity m3 36
+RET 1 ent=36
+CMD event 36 activate -1
+PROCESSED 1
+CMD event 36 activate -1
+ACTIVATE r1 by (none) t=848
+PROCESSED 1
+CMD dump 36
+ENT 36 name=m3 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+MULTI wait=00000000 random=00000000 delay=00000000 random_delay=00000000 next=848 triggerFirst=0
+CMD spawn classname trigger_multi name m4 target r1 call openSesame
+CALL program.SetEntity m4 37
+RET 1 ent=37
+CMD event 37 activate -1
+ACTIVATE r1 by (none) t=848
+CALL idThread openSesame
+CALL idThread.DelayedStart 0
+PROCESSED 1
+CMD spawn classname trigger_multi name m5 call nothing origin 1\\x202\\x203
+CALL program.SetEntity m5 38
+WARNING trigger 'm5' at (1 2 3) calls unknown function 'nothing'
+RET 1 ent=38
+CMD spawn classname trigger_multi name m6 random 3 wait 1 delay 1 random_delay 2
+CALL program.SetEntity m6 39
+WARNING idTrigger_Multi 'm6' at (0 0 0) has random >= wait
+WARNING idTrigger_Multi 'm6' at (0 0 0) has random_delay >= delay
+RET 1 ent=39
+CMD dump 39
+ENT 39 name=m6 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=0
+MULTI wait=3F800000 random=00000000 delay=3F800000 random_delay=00000000 next=0 triggerFirst=0
+CMD spawn classname trigger_multi name m7 target r1 wait 0 anyTouch 1
+CALL program.SetEntity m7 40
+RET 1 ent=40
+CMD touch 40 32
+ACTIVATE r1 by r1 t=848
+PROCESSED 1
+CMD spawn classname trigger_multi name m8 target r1 wait 0
+CALL program.SetEntity m8 41
+RET 1 ent=41
+CMD touch 41 32
+PROCESSED 1
+CMD spawn classname trigger_relay name rl1 target r1 target1 r2
+CALL program.SetEntity rl1 42
+RET 1 ent=42
+CMD event 42 activate 32
+ACTIVATE r1 by r1 t=848
+ACTIVATE r2 by r1 t=848
+PROCESSED 1
+CMD dump 42
+ENT 42 name=rl1 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=2
+MULTI wait=00000000 random=00000000 delay=00000000 random_delay=00000000 next=848 triggerFirst=0
+CMD frame 1
+FRAME t=864 toDeactivate=0
+CMD spawn classname trigger_once name o1 target r1
+CALL program.SetEntity o1 43
+RET 1 ent=43
+CMD event 43 activate -1
+ACTIVATE r1 by (none) t=864
+PROCESSED 1
+CMD dump 43
+ENT 43 name=o1 class=idTrigger_Multi think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+MULTI wait=BF800000 random=00000000 delay=00000000 random_delay=00000000 next=865 triggerFirst=0
+CMD queue
+QUEUE  <immediateremove>@864
+CMD frame 2
+FRAME t=880 toDeactivate=0
+FRAME t=896 toDeactivate=0
+CMD find o1
+FOUND -1
+CMD event 43 activate -1
+NOTFOUND

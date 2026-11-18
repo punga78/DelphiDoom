@@ -31,8 +31,8 @@ type
   /// <summary>moveStage_t</summary>
   TD3MoveStage = (mvAcceleration, mvLinear, mvDeceleration, mvFinished);
 
-  /// <summary>moverCommand_t (the movement ones)</summary>
-  TD3MoverCommand = (mcNone, mcMoving);
+  /// <summary>moverCommand_t (only mcNone and mcMoving are used: no rotation and no spline here)</summary>
+  TD3MoverCommand = (mcNone, mcRotating, mcMoving, mcSpline);
 
   /// <summary>The movement in progress (<c>idMover::move</c>): the stage and the times of the next ones</summary>
   TD3MoveState = record
@@ -84,6 +84,10 @@ type
     property Move: TD3MoveState read FMove;
     property DestPosition: TIdVec3 read FDestPosition;
     property MoveTime: Integer read FMoveTime;
+    property MoveSpeed: Single read FMoveSpeed;
+    property AccelTime: Integer read FAccelTime;
+    property DecelTime: Integer read FDecelTime;
+    property LastCommand: TD3MoverCommand read FLastCommand;
     property MoveThread: Integer read FMoveThread;
     property PhysicsObj: TD3PhysicsParametric read FPhysicsObj;
   end;

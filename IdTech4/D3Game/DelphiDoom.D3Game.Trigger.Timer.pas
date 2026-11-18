@@ -47,6 +47,8 @@ type
     procedure Disable; override;
     property IsOn: Boolean read FOn;
     property Random: Single read FRandom;
+    property Wait: Single read FWait;
+    property Delay: Single read FDelay;
   end;
 
 implementation

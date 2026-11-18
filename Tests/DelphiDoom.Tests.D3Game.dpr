@@ -33,7 +33,9 @@ uses
   DelphiDoom.Tests.D3Game.Units in 'Source\DelphiDoom.Tests.D3Game.Units.pas',
   DelphiDoom.Tests.D3Game.WorldRig in 'Source\DelphiDoom.Tests.D3Game.WorldRig.pas',
   DelphiDoom.Tests.D3Game.Triggers in 'Source\DelphiDoom.Tests.D3Game.Triggers.pas',
-  DelphiDoom.Tests.D3Game.Movers in 'Source\DelphiDoom.Tests.D3Game.Movers.pas';
+  DelphiDoom.Tests.D3Game.Movers in 'Source\DelphiDoom.Tests.D3Game.Movers.pas',
+  DelphiDoom.Tests.D3Game.WorldScenario in 'Source\DelphiDoom.Tests.D3Game.WorldScenario.pas',
+  DelphiDoom.Tests.D3Game.WorldParity in 'Source\DelphiDoom.Tests.D3Game.WorldParity.pas';
 
 var
   Runner: ITestRunner;
