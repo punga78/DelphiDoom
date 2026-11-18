@@ -130,103 +130,112 @@ type
   end;
   Pst_binicon_t = ^st_binicon_t;
 
-//==============================================================================
-// STlib_init
-//
-// Widget creation, access, and update routines
-//
-// Initializes widget library.
-// More precisely, initialize STMINUS,
-//  everything else is done somewhere else.
-//
-//==============================================================================
-procedure STlib_init;
-
-//==============================================================================
-// STlib_initNum
-//
-// Number widget routines
-//
-//==============================================================================
-procedure STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
-  num: PInteger; _on: PBoolean; width: integer);
-
-//==============================================================================
-//
-// STlib_updateNum
-//
-//==============================================================================
-procedure STlib_updateNum(n: Pst_number_t; transparent: boolean);
-
-//==============================================================================
-// STlib_initPercent
-//
-// Percent widget routines
-//
-//==============================================================================
-procedure STlib_initPercent(p: Pst_percent_t; x, y: integer; pl: Ppatch_tPArray;
-  num: PInteger; _on: PBoolean; percent: Ppatch_t);
-
-//==============================================================================
-//
-// STlib_updatePercent
-//
-//==============================================================================
-procedure STlib_updatePercent(per: Pst_percent_t; refresh: boolean; transparent: boolean);
-
-//==============================================================================
-// STlib_initMultIcon
-//
-// Multiple Icon widget routines
-//
-//==============================================================================
-procedure STlib_initMultIcon(i: Pst_multicon_t; x, y: integer; il: Ppatch_tPArray;
-  inum: PInteger; _on: PBoolean);
-
-//==============================================================================
-//
-// STlib_updateMultIcon
-//
-//==============================================================================
-procedure STlib_updateMultIcon(mi: Pst_multicon_t; refresh: boolean);
-
-//==============================================================================
-// STlib_initBinIcon
-//
-// Binary Icon widget routines
-//
-//==============================================================================
-procedure STlib_initBinIcon(b: Pst_binicon_t; x, y: integer; i: Ppatch_t;
-  val: PBoolean; _on: PBoolean);
-
-//==============================================================================
-//
-// STlib_updateBinIcon
-//
-//==============================================================================
-procedure STlib_updateBinIcon(bi: Pst_binicon_t; refresh: boolean);
-
-//==============================================================================
-//
-// ST_DrawPatch
-//  Draws status bar patches, depending on 426x200 or 320x200 statusbar width
-//
-//==============================================================================
-procedure ST_DrawPatch(const x, y: Integer; const p: Ppatch_t); overload;
-
-//==============================================================================
-//
-// ST_DrawPatch
-//  Draws status bar patches, depending on 426x200 or 320x200 statusbar width
-//
-//==============================================================================
-procedure ST_DrawPatch(const x, y: Integer; const lump: integer); overload;
-
 var
   largeammo: integer = 1994; // means "n/a"
 
 var
   wide_stbar: integer = 320;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusLibRoutines = class sealed
+  public
+    //==============================================================================
+    // STlib_init
+    //
+    // Widget creation, access, and update routines
+    //
+    // Initializes widget library.
+    // More precisely, initialize STMINUS,
+    //  everything else is done somewhere else.
+    //
+    //==============================================================================
+    class procedure STlib_init; static;
+
+    //==============================================================================
+    // STlib_initNum
+    //
+    // Number widget routines
+    //
+    //==============================================================================
+    class procedure STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
+      num: PInteger; _on: PBoolean; width: integer); static;
+
+    //==============================================================================
+    //
+    // STlib_updateNum
+    //
+    //==============================================================================
+    class procedure STlib_updateNum(n: Pst_number_t; transparent: boolean); static;
+
+    //==============================================================================
+    // STlib_initPercent
+    //
+    // Percent widget routines
+    //
+    //==============================================================================
+    class procedure STlib_initPercent(p: Pst_percent_t; x, y: integer; pl: Ppatch_tPArray;
+      num: PInteger; _on: PBoolean; percent: Ppatch_t); static;
+
+    //==============================================================================
+    //
+    // STlib_updatePercent
+    //
+    //==============================================================================
+    class procedure STlib_updatePercent(per: Pst_percent_t; refresh: boolean; transparent: boolean); static;
+
+    //==============================================================================
+    // STlib_initMultIcon
+    //
+    // Multiple Icon widget routines
+    //
+    //==============================================================================
+    class procedure STlib_initMultIcon(i: Pst_multicon_t; x, y: integer; il: Ppatch_tPArray;
+      inum: PInteger; _on: PBoolean); static;
+
+    //==============================================================================
+    //
+    // STlib_updateMultIcon
+    //
+    //==============================================================================
+    class procedure STlib_updateMultIcon(mi: Pst_multicon_t; refresh: boolean); static;
+
+    //==============================================================================
+    // STlib_initBinIcon
+    //
+    // Binary Icon widget routines
+    //
+    //==============================================================================
+    class procedure STlib_initBinIcon(b: Pst_binicon_t; x, y: integer; i: Ppatch_t;
+      val: PBoolean; _on: PBoolean); static;
+
+    //==============================================================================
+    //
+    // STlib_updateBinIcon
+    //
+    //==============================================================================
+    class procedure STlib_updateBinIcon(bi: Pst_binicon_t; refresh: boolean); static;
+
+    //==============================================================================
+    //
+    // ST_DrawPatch
+    //  Draws status bar patches, depending on 426x200 or 320x200 statusbar width
+    //
+    //==============================================================================
+    class procedure ST_DrawPatch(const x, y: Integer; const p: Ppatch_t); overload; static;
+
+    //==============================================================================
+    //
+    // ST_DrawPatch
+    //  Draws status bar patches, depending on 426x200 or 320x200 statusbar width
+    //
+    //==============================================================================
+    class procedure ST_DrawPatch(const x, y: Integer; const lump: integer); overload; static;
+  end;
+
 
 implementation
 
@@ -246,12 +255,22 @@ uses
 var
   sttminus: Ppatch_t;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusLibLocalRoutines = class sealed
+  public
+    class procedure STlib_drawNum(n: Pst_number_t; transparent: boolean); static;
+  end;
+
 //==============================================================================
 //
 // STlib_init
 //
 //==============================================================================
-procedure STlib_init;
+class procedure TStatusLibRoutines.STlib_init;
 var
   lump: integer;
 begin
@@ -276,7 +295,7 @@ end;
 // ?
 //
 //==============================================================================
-procedure STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
+class procedure TStatusLibRoutines.STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
   num: PInteger; _on: PBoolean; width: integer);
 begin
   n.x := x;
@@ -296,7 +315,7 @@ end;
 // Note: worth the trouble?
 //
 //==============================================================================
-procedure STlib_drawNum(n: Pst_number_t; transparent: boolean);
+class procedure TStatusLibLocalRoutines.STlib_drawNum(n: Pst_number_t; transparent: boolean);
 var
   numdigits: integer;
   num: integer;
@@ -344,37 +363,37 @@ begin
 
   // in the special case of 0, you draw 0
   if num = 0 then
-    ST_DrawPatch(x - w, n.y - ST_Y, n.p[0]);
+    TStatusLibRoutines.ST_DrawPatch(x - w, n.y - ST_Y, n.p[0]);
 
   // draw the new number
   while (num <> 0) and (numdigits <> 0) do
   begin
     x := x - w;
-    ST_DrawPatch(x, n.y - ST_Y, n.p[num mod 10]);
+    TStatusLibRoutines.ST_DrawPatch(x, n.y - ST_Y, n.p[num mod 10]);
     num := num div 10;
     dec(numdigits);
   end;
 
   // draw a minus sign if necessary
   if neg then
-    ST_DrawPatch(x - 8, n.y - ST_Y, sttminus);
+    TStatusLibRoutines.ST_DrawPatch(x - 8, n.y - ST_Y, sttminus);
 end;
 
 //==============================================================================
 // STlib_updateNum
 //
 //==============================================================================
-procedure STlib_updateNum(n: Pst_number_t; transparent: boolean);
+class procedure TStatusLibRoutines.STlib_updateNum(n: Pst_number_t; transparent: boolean);
 begin
   if n._on^ then
-    STlib_drawNum(n, transparent);
+    TStatusLibLocalRoutines.STlib_drawNum(n, transparent);
 end;
 
 //==============================================================================
 // STlib_initPercent
 //
 //==============================================================================
-procedure STlib_initPercent(p: Pst_percent_t; x, y: integer; pl: Ppatch_tPArray;
+class procedure TStatusLibRoutines.STlib_initPercent(p: Pst_percent_t; x, y: integer; pl: Ppatch_tPArray;
   num: PInteger; _on: PBoolean; percent: Ppatch_t);
 begin
   STlib_initNum(@p.n, x, y, pl, num, _on, 3);
@@ -386,7 +405,7 @@ end;
 // STlib_updatePercent
 //
 //==============================================================================
-procedure STlib_updatePercent(per: Pst_percent_t; refresh: boolean;transparent: boolean);
+class procedure TStatusLibRoutines.STlib_updatePercent(per: Pst_percent_t; refresh: boolean;transparent: boolean);
 begin
   if refresh and per.n._on^ then
     ST_DrawPatch(per.n.x, per.n.y - ST_Y, per.p);
@@ -399,7 +418,7 @@ end;
 // STlib_initMultIcon
 //
 //==============================================================================
-procedure STlib_initMultIcon(i: Pst_multicon_t; x, y: integer; il: Ppatch_tPArray;
+class procedure TStatusLibRoutines.STlib_initMultIcon(i: Pst_multicon_t; x, y: integer; il: Ppatch_tPArray;
   inum: PInteger; _on: PBoolean);
 begin
   i.x := x;
@@ -415,7 +434,7 @@ end;
 // STlib_updateMultIcon
 //
 //==============================================================================
-procedure STlib_updateMultIcon(mi: Pst_multicon_t; refresh: boolean);
+class procedure TStatusLibRoutines.STlib_updateMultIcon(mi: Pst_multicon_t; refresh: boolean);
 var
   y: integer;
 begin
@@ -439,7 +458,7 @@ end;
 // STlib_initBinIcon
 //
 //==============================================================================
-procedure STlib_initBinIcon(b: Pst_binicon_t; x, y: integer; i: Ppatch_t;
+class procedure TStatusLibRoutines.STlib_initBinIcon(b: Pst_binicon_t; x, y: integer; i: Ppatch_t;
   val: PBoolean; _on: PBoolean);
 begin
   b.x := x;
@@ -455,7 +474,7 @@ end;
 // STlib_updateBinIcon
 //
 //==============================================================================
-procedure STlib_updateBinIcon(bi: Pst_binicon_t; refresh: boolean);
+class procedure TStatusLibRoutines.STlib_updateBinIcon(bi: Pst_binicon_t; refresh: boolean);
 var
   y: integer;
 begin
@@ -479,7 +498,7 @@ end;
 //  Draws status bar patches, depending on 426x200 or 320x200 statusbar width
 //
 //==============================================================================
-procedure ST_DrawPatch(const x, y: Integer; const p: Ppatch_t);
+class procedure TStatusLibRoutines.ST_DrawPatch(const x, y: Integer; const p: Ppatch_t);
 var
   x1: integer;
 begin
@@ -507,7 +526,7 @@ end;
 //  Draws status bar patches, depending on 426x200 or 320x200 statusbar width
 //
 //==============================================================================
-procedure ST_DrawPatch(const x, y: Integer; const lump: integer); overload;
+class procedure TStatusLibRoutines.ST_DrawPatch(const x, y: Integer; const lump: integer);
 var
   p: Ppatch_t;
 begin

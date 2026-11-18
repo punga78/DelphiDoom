@@ -1763,7 +1763,7 @@ begin
   else
   begin
     TGameSession.GameState := GS_INTERMISSION;
-    IN_Start;
+    TIntermissionRoutines.IN_Start;
   end;
 end;
 
@@ -2195,7 +2195,7 @@ begin
       end;
     GS_INTERMISSION:
       begin
-        IN_Ticker;
+        TIntermissionRoutines.IN_Ticker;
       end;
     GS_FINALE:
       begin

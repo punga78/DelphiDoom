@@ -122,36 +122,45 @@ type
     data: integer; // user data
   end;
 
-//==============================================================================
-// STlib_init
-//
-// Widget creation, access, and update routines
-//
-// Initializes widget library.
-// More precisely, initialize STMINUS,
-//  everything else is done somewhere else.
-//
-//==============================================================================
-procedure STlib_init;
-
-//==============================================================================
-// STlib_initNum
-//
-// Number widget routines
-//
-//==============================================================================
-procedure STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
-  num: PInteger; width: integer);
-
-//==============================================================================
-//
-// STlib_drawNumPositive
-//
-//==============================================================================
-procedure STlib_drawNumPositive(n: Pst_number_t; screen: integer; transparent: boolean);
-
 var
   largeammo: integer = 1994; // means "n/a"
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusLibRoutines = class sealed
+  public
+    //==============================================================================
+    // STlib_init
+    //
+    // Widget creation, access, and update routines
+    //
+    // Initializes widget library.
+    // More precisely, initialize STMINUS,
+    //  everything else is done somewhere else.
+    //
+    //==============================================================================
+    class procedure STlib_init; static;
+
+    //==============================================================================
+    // STlib_initNum
+    //
+    // Number widget routines
+    //
+    //==============================================================================
+    class procedure STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
+      num: PInteger; width: integer); static;
+
+    //==============================================================================
+    //
+    // STlib_drawNumPositive
+    //
+    //==============================================================================
+    class procedure STlib_drawNumPositive(n: Pst_number_t; screen: integer; transparent: boolean); static;
+  end;
+
 
 implementation
 
@@ -168,12 +177,22 @@ uses
 var
   sttminus: Ppatch_t;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusLibLocalRoutines = class sealed
+  public
+    class procedure STlib_drawNum(n: Pst_number_t; screen: integer; transparent: boolean); static;
+  end;
+
 //==============================================================================
 //
 // STlib_init
 //
 //==============================================================================
-procedure STlib_init;
+class procedure TStatusLibRoutines.STlib_init;
 begin
   sttminus := W_CacheLumpName('STCFN045', PU_STATIC);
 end;
@@ -184,7 +203,7 @@ end;
 // ?
 //
 //==============================================================================
-procedure STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
+class procedure TStatusLibRoutines.STlib_initNum(n: Pst_number_t; x, y: integer; pl: Ppatch_tPArray;
   num: PInteger; width: integer);
 begin
   n.x := x;
@@ -203,7 +222,7 @@ end;
 // Note: worth the trouble?
 //
 //==============================================================================
-procedure STlib_drawNum(n: Pst_number_t; screen: integer; transparent: boolean);
+class procedure TStatusLibLocalRoutines.STlib_drawNum(n: Pst_number_t; screen: integer; transparent: boolean);
 var
   numdigits: integer;
   num: integer;
@@ -259,19 +278,19 @@ end;
 // STlib_drawNumPositive
 //
 //==============================================================================
-procedure STlib_drawNumPositive(n: Pst_number_t; screen: integer; transparent: boolean);
+class procedure TStatusLibRoutines.STlib_drawNumPositive(n: Pst_number_t; screen: integer; transparent: boolean);
 var
   zero: st_number_t;
   n1: integer;
 begin
   if n.num^ >= 0 then
-    STlib_drawNum(n, screen, transparent)
+    TStatusLibLocalRoutines.STlib_drawNum(n, screen, transparent)
   else
   begin
     zero := n^;
     n1 := 0;
     zero.num := @n1;
-    STlib_drawNum(@zero, screen, transparent);
+    TStatusLibLocalRoutines.STlib_drawNum(@zero, screen, transparent);
   end;
 end;
 

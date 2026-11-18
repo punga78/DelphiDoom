@@ -922,7 +922,7 @@ begin
   if Ord(TGameSession.GameState) <> wipegamestate then
   begin
     wipe := true;
-    fade_StartScreen;
+    TFadeRoutines.fade_StartScreen;
   end
   else
     wipe := false;
@@ -1106,7 +1106,7 @@ begin
   end;
 
   // wipe update
-  fade_EndScreen;
+  TFadeRoutines.fade_EndScreen;
 
   wipedisplay := true;
   wipestart := I_GetTime - 1;
@@ -1119,7 +1119,7 @@ begin
       tics := nowtime - wipestart;
     until tics >= 1; // // haleyjd 08/23/2010: [STRIFE] Changed from == 0 to < 3 // JVAL: changed to 1
     wipestart := nowtime;
-    done := fade_Ticker(tics);
+    done := TFadeRoutines.fade_Ticker(tics);
     M_Drawer;         // Menu is drawn even on top of wipes
     D_Console.Draw;         // Console draw on top of wipes and menus
     D_FinishUpdate;   // page flip or blit buffer
@@ -1400,7 +1400,7 @@ begin
       end;
     8: // demo
       begin
-        M_ClearTmp;
+        TSaveSlotRoutines.M_ClearTmp;
         pagetic := 9 * TICRATE;
         G_DeferedPlayDemo('1');
       end;
@@ -2762,13 +2762,13 @@ begin
 
   // haleyjd 20110210: Create Strife hub save folders
   printf('M_CreateSaveDirs: Creating game save directories.'#13#10);
-  M_CreateSaveDirs(M_SaveFileName(''));
+  TSaveSlotRoutines.M_CreateSaveDirs(M_SaveFileName(''));
 
   SUC_Progress(86);
 
-  savepathtemp := M_SafeFilePath(M_SaveFileName(''), 'strfsav8.ssg');
+  savepathtemp := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), 'strfsav8.ssg');
   printf('M_ClearTmp: Clear temporary save directory.'#13#10);
-  M_ClearTmp;
+  TSaveSlotRoutines.M_ClearTmp;
 
   SUC_Progress(87);
 
@@ -2873,8 +2873,8 @@ begin
     // A saved game of Strife is a folder for every slot: the same steps as M_LoadSelect of the menu
     // (the old G_LoadGame of a file name left loadpath empty and a new game started instead)
     G_WriteSaveName(Ord(myargv[p + 1][1]) - Ord('0'), '');
-    M_ToCurr;
-    filename := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(Ord(myargv[p + 1][1]) - Ord('0'), ''));
+    TSaveSlotRoutines.M_ToCurr;
+    filename := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), TSaveSlotRoutines.M_MakeStrifeSaveDir(Ord(myargv[p + 1][1]) - Ord('0'), ''));
     G_ReadCurrent(filename);
   end;
 

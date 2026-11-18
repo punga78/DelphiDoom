@@ -43,27 +43,6 @@ interface
 uses
   d_delphi;
 
-//==============================================================================
-//
-// fade_StartScreen
-//
-//==============================================================================
-procedure fade_StartScreen;
-
-//==============================================================================
-//
-// fade_EndScreen
-//
-//==============================================================================
-procedure fade_EndScreen;
-
-//==============================================================================
-//
-// fade_Ticker
-//
-//==============================================================================
-function fade_Ticker(ticks: integer): boolean;
-
 {$IFDEF OPENGL}
 var
   WIPESCREENWIDTH: integer;
@@ -72,13 +51,22 @@ var
 var
   w_screen32: PLongWordArray = nil;
 
-//==============================================================================
-//
-// fade_ClearMemory
-//
-//==============================================================================
-procedure fade_ClearMemory;
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11b): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFadeRoutines = class sealed
+  public
+    class procedure fade_StartScreen; static;
+    class procedure fade_EndScreen; static;
+    class function fade_Ticker(ticks: integer): boolean; static;
+{$IFDEF OPENGL}
+    class procedure fade_ClearMemory; static;
+{$ENDIF}
+  end;
 
 implementation
 
@@ -104,6 +92,22 @@ var
 var
   fade: fixed_t = 0;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods (issue #185, wave 11b)
+  /// </summary>
+  TFadeLocalRoutines = class sealed
+  public
+{$IFDEF OPENGL}
+    class function fade_glsize(const value: integer): integer; static;
+{$ELSE}
+    class function fade_doFade_thr(p: mt_range_p): integer; static; stdcall;
+{$ENDIF}
+    class procedure fade_initFade; static;
+    class function fade_doFade(ticks: integer): integer; static;
+    class procedure fade_exitFade; static;
+  end;
+
 {$IFDEF OPENGL}
 
 //==============================================================================
@@ -111,7 +115,7 @@ var
 // fade_glsize
 //
 //==============================================================================
-function fade_glsize(const value: integer): integer;
+class function TFadeLocalRoutines.fade_glsize(const value: integer): integer;
 begin
   result := 1;
   while result < value do
@@ -124,7 +128,7 @@ end;
 // fade_initFade
 //
 //==============================================================================
-procedure fade_initFade;
+class procedure TFadeLocalRoutines.fade_initFade;
 {$IFDEF OPENGL}
 var
   i, r: integer;
@@ -152,7 +156,7 @@ end;
 // fade_doFade_thr
 //
 //==============================================================================
-function fade_doFade_thr(p: mt_range_p): integer; stdcall;
+class function TFadeLocalRoutines.fade_doFade_thr(p: mt_range_p): integer;
 var
   i: integer;
 begin
@@ -167,7 +171,7 @@ end;
 // fade_doFade
 //
 //==============================================================================
-function fade_doFade(ticks: integer): integer;
+class function TFadeLocalRoutines.fade_doFade(ticks: integer): integer;
 var
   i: integer;
 {$IFDEF OPENGL}
@@ -220,7 +224,7 @@ end;
 // fade_exitFade
 //
 //==============================================================================
-procedure fade_exitFade;
+class procedure TFadeLocalRoutines.fade_exitFade;
 begin
   memfree(pointer(fade_scr_start), SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
   memfree(pointer(fade_scr_end), SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
@@ -233,7 +237,7 @@ end;
 // fade_ClearMemory
 //
 //==============================================================================
-procedure fade_ClearMemory;
+class procedure TFadeRoutines.fade_ClearMemory;
 begin
   if w_screen32 <> nil then
     memfree(pointer(w_screen32), WIPESCREENWIDTH * WIPESCREENHEIGHT * SizeOf(LongWord));
@@ -245,7 +249,7 @@ end;
 // fade_StartScreen
 //
 //==============================================================================
-procedure fade_StartScreen;
+class procedure TFadeRoutines.fade_StartScreen;
 begin
   fade_scr_start := malloc(SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
   I_ReadScreen32(fade_scr_start);
@@ -259,7 +263,7 @@ end;
 // fade_EndScreen
 //
 //==============================================================================
-procedure fade_EndScreen;
+class procedure TFadeRoutines.fade_EndScreen;
 begin
   fade_scr_end := malloc(SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
   I_ReadScreen32(fade_scr_end);
@@ -277,21 +281,21 @@ var
 // fade_Ticker
 //
 //==============================================================================
-function fade_Ticker(ticks: integer): boolean;
+class function TFadeRoutines.fade_Ticker(ticks: integer): boolean;
 begin
   // initial stuff
   if not fading then
   begin
     fading := true;
-    fade_initFade;
+    TFadeLocalRoutines.fade_initFade;
   end;
 
   // do a piece of fade
-  if fade_doFade(ticks) <> 0 then
+  if TFadeLocalRoutines.fade_doFade(ticks) <> 0 then
   begin
     // final stuff
     fading := false;
-    fade_exitFade;
+    TFadeLocalRoutines.fade_exitFade;
   end;
 
   result := not fading;

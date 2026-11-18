@@ -943,7 +943,7 @@ begin
         end;
       end;
     GS_INTERMISSION:
-      WI_Drawer;
+      TIntermissionRoutines.WI_Drawer;
     GS_FINALE:
       TFinaleRoutines.F_Drawer;
     GS_DEMOSCREEN:

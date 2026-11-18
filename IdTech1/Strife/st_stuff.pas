@@ -1644,8 +1644,8 @@ begin
   if st_statusbarmode = stdo_full then
   begin
     V_DrawPatch(0, 160, SCN_ST, invtop, false);
-    STlib_drawNumPositive(@w_health, SCN_ST, false);
-    STlib_drawNumPositive(@w_ready, SCN_ST, false);
+    TStatusLibRoutines.STlib_drawNumPositive(@w_health, SCN_ST, false);
+    TStatusLibRoutines.STlib_drawNumPositive(@w_ready, SCN_ST, false);
     {$IFNDEF OPENGL}
     V_CopyRectTransparent(0, 160, SCN_ST, 320, 9, 0, 160, SCN_FG, true);
     {$ENDIF}
@@ -1723,8 +1723,8 @@ begin
       // haleyjd 20110213: draw ammo
       for i := 0 to Ord(NUMAMMO) - 1 do
       begin
-        STlib_drawNumPositive(@w_ammo[i], SCN_ST, false);
-        STlib_drawNumPositive(@w_maxammo[i], SCN_ST, false);
+        TStatusLibRoutines.STlib_drawNumPositive(@w_ammo[i], SCN_ST, false);
+        TStatusLibRoutines.STlib_drawNumPositive(@w_maxammo[i], SCN_ST, false);
       end;
 
       ST_drawNumFontY2(261, 84,  SCN_ST, plyr.accuracy);
@@ -1819,7 +1819,7 @@ begin
   st_statusbarmode := stdo_full;
   st_palette := -1;
 
-  STlib_init;
+  TStatusLibRoutines.STlib_init;
 end;
 
 //==============================================================================
@@ -1832,7 +1832,7 @@ var
   i: integer;
 begin
   // ready weapon ammo
-  STlib_initNum(@w_ready,
+  TStatusLibRoutines.STlib_initNum(@w_ready,
                 ST_AMMOX,
                 ST_AMMOY,
                 @invfontg,
@@ -1843,7 +1843,7 @@ begin
   w_ready.data := Ord(plyr.readyweapon);
 
   // health percentage
-  STlib_initNum(@w_health,
+  TStatusLibRoutines.STlib_initNum(@w_health,
                 ST_HEALTHX,
                 ST_HEALTHY,
                 @invfontg,
@@ -1853,10 +1853,10 @@ begin
   // haleyjd 20110213: Ammo Widgets!!!
   for i := 0 to Ord(NUMAMMO) - 1 do
   begin
-    STlib_initNum(@w_ammo[i], ST_POPUPAMMOX, st_yforammo[i],
+    TStatusLibRoutines.STlib_initNum(@w_ammo[i], ST_POPUPAMMOX, st_yforammo[i],
                   @invfonty, @plyr.ammo[i], st_wforammo[i]);
 
-    STlib_initNum(@w_maxammo[i], ST_POPUPMAXAMMOX, st_yforammo[i],
+    TStatusLibRoutines.STlib_initNum(@w_maxammo[i], ST_POPUPMAXAMMOX, st_yforammo[i],
                   @invfonty, @plyr.maxammo[i], st_wforammo[i]);
   end;
 end;

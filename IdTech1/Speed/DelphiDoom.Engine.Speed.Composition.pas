@@ -52,7 +52,7 @@ begin
   // the steps "save" and "load" of a script of commands
   TEngineParityPilotCommand.ConfigureSaveGames(SH_ScriptSaveGame, SH_ScriptLoadGame);
   // the result of the race and the tables of the records in the place of the intermission of Doom
-  WI_ConfigureReplacement(SH_Intermission_Start, SH_Intermission_Ticker, SH_Intermission_Drawer);
+  TIntermissionRoutines.WI_ConfigureReplacement(SH_Intermission_Start, SH_Intermission_Ticker, SH_Intermission_Drawer);
 end;
 
 end.

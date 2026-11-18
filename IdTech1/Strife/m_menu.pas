@@ -1885,7 +1885,7 @@ begin
   for i := 0 to Ord(load_end) - 1 do
   begin
     ZeroMemory(@savegameshots[i], SizeOf(menuscreenbuffer_t));
-    fname := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(i, '\name'));
+    fname := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), TSaveSlotRoutines.M_MakeStrifeSaveDir(i, '\name'));
     LoadMenu[i].status := 0;
     if fexists(fname) then
     begin
@@ -1900,7 +1900,7 @@ begin
             savegamestrings[i] := savegamestrings[i] + Chr(buf[j]);
         LoadMenu[i].status := 1;
 
-        fname := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(i, '\sshot'));
+        fname := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), TSaveSlotRoutines.M_MakeStrifeSaveDir(i, '\sshot'));
         if fexists(fname) then
         begin
           Z_Free(buf);
@@ -2015,10 +2015,10 @@ var
   name: string;
 begin
   G_WriteSaveName(choice, savegamestrings[choice]);
-  M_ToCurr();
+  TSaveSlotRoutines.M_ToCurr();
 
   // use safe & portable filepath concatenation for Choco
-  name := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(choice, ''));
+  name := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), TSaveSlotRoutines.M_MakeStrifeSaveDir(choice, ''));
 
   G_ReadCurrent(name);
   quickSaveSlot := choice;
@@ -2084,8 +2084,8 @@ begin
     G_WriteSaveName(slot, savegamestrings[slot]);
     M_ClearMenus;
     quickSaveSlot := slot;
-    M_ClearSlot;
-    M_FromCurr;
+    TSaveSlotRoutines.M_ClearSlot;
+    TSaveSlotRoutines.M_FromCurr;
   end
   else
     M_StartMessage(DEH_GetString(QSAVESPOT), nil, false);

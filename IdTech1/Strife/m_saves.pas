@@ -53,110 +53,119 @@ var
 var
   character_name: string; // Name of "character" for saveslot
 
-//==============================================================================
-//
-// M_SafeFilePath
-//
-//==============================================================================
-function M_SafeFilePath(basepath, newcomponent: string): string;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSaveSlotRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // M_SafeFilePath
+    //
+    //==============================================================================
+    class function M_SafeFilePath(basepath, newcomponent: string): string; static;
 
-//==============================================================================
-//
-// M_MakeStrifeSaveDir
-//
-//==============================================================================
-function M_MakeStrifeSaveDir(const slotnum: integer; const extra: string): string;
+    //==============================================================================
+    //
+    // M_MakeStrifeSaveDir
+    //
+    //==============================================================================
+    class function M_MakeStrifeSaveDir(const slotnum: integer; const extra: string): string; static;
 
-//==============================================================================
-//
-// M_ToCurr
-//
-//==============================================================================
-procedure M_ToCurr;
+    //==============================================================================
+    //
+    // M_ToCurr
+    //
+    //==============================================================================
+    class procedure M_ToCurr; static;
 
-//==============================================================================
-//
-// M_FromCurr
-//
-//==============================================================================
-procedure M_FromCurr;
+    //==============================================================================
+    //
+    // M_FromCurr
+    //
+    //==============================================================================
+    class procedure M_FromCurr; static;
 
-//==============================================================================
-//
-// M_ClearSlot
-//
-//==============================================================================
-procedure M_ClearSlot;
+    //==============================================================================
+    //
+    // M_ClearSlot
+    //
+    //==============================================================================
+    class procedure M_ClearSlot; static;
 
-//==============================================================================
-//
-// M_ClearTmp
-//
-//==============================================================================
-procedure M_ClearTmp;
+    //==============================================================================
+    //
+    // M_ClearTmp
+    //
+    //==============================================================================
+    class procedure M_ClearTmp; static;
 
-//==============================================================================
-//
-// M_SaveMoveHereToMap
-//
-//==============================================================================
-procedure M_SaveMoveHereToMap;
+    //==============================================================================
+    //
+    // M_SaveMoveHereToMap
+    //
+    //==============================================================================
+    class procedure M_SaveMoveHereToMap; static;
 
-//==============================================================================
-//
-// M_ReadMisObj
-//
-//==============================================================================
-procedure M_ReadMisObj;
+    //==============================================================================
+    //
+    // M_ReadMisObj
+    //
+    //==============================================================================
+    class procedure M_ReadMisObj; static;
 
-//==============================================================================
-//
-// M_ReadWorldVars
-//
-//==============================================================================
-procedure M_ReadWorldVars;
+    //==============================================================================
+    //
+    // M_ReadWorldVars
+    //
+    //==============================================================================
+    class procedure M_ReadWorldVars; static;
 
-//==============================================================================
-//
-// M_SaveMoveMapToHere
-//
-//==============================================================================
-procedure M_SaveMoveMapToHere;
+    //==============================================================================
+    //
+    // M_SaveMoveMapToHere
+    //
+    //==============================================================================
+    class procedure M_SaveMoveMapToHere; static;
 
-//==============================================================================
-//
-// M_SaveMisObj
-//
-//==============================================================================
-procedure M_SaveMisObj(const path: string);
+    //==============================================================================
+    //
+    // M_SaveMisObj
+    //
+    //==============================================================================
+    class procedure M_SaveMisObj(const path: string); static;
 
-//==============================================================================
-//
-// M_SaveWorldVars
-//
-//==============================================================================
-procedure M_SaveWorldVars(const path: string);
+    //==============================================================================
+    //
+    // M_SaveWorldVars
+    //
+    //==============================================================================
+    class procedure M_SaveWorldVars(const path: string); static;
 
-//==============================================================================
-//
-// M_SaveSaveScreenShot
-//
-//==============================================================================
-procedure M_SaveSaveScreenShot(const path: string);
+    //==============================================================================
+    //
+    // M_SaveSaveScreenShot
+    //
+    //==============================================================================
+    class procedure M_SaveSaveScreenShot(const path: string); static;
 
-//==============================================================================
-//
-// M_CreateSaveDirs
-//
-//==============================================================================
-procedure M_CreateSaveDirs(const savedir: string);
+    //==============================================================================
+    //
+    // M_CreateSaveDirs
+    //
+    //==============================================================================
+    class procedure M_CreateSaveDirs(const savedir: string); static;
 
-//==============================================================================
-//
-// M_ClearSlotNum
-//
-//==============================================================================
-procedure M_ClearSlotNum(const num: integer);
+    //==============================================================================
+    //
+    // M_ClearSlotNum
+    //
+    //==============================================================================
+    class procedure M_ClearSlotNum(const num: integer); static;
+  end;
+
 
 implementation
 
@@ -168,12 +177,22 @@ uses
   m_argv,
   g_game;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSaveSlotLocalRoutines = class sealed
+  public
+    class function M_NormalizeSlashes(const str: string): string; static;
+  end;
+
 //==============================================================================
 //
 // M_ClearSlotNum
 //
 //==============================================================================
-procedure M_ClearSlotNum(const num: integer);
+class procedure TSaveSlotRoutines.M_ClearSlotNum(const num: integer);
 var
   files: TDSTringList;
   filepath: string;
@@ -208,7 +227,7 @@ end;
 // Clear the temporary save directory
 //
 //==============================================================================
-procedure M_ClearTmp;
+class procedure TSaveSlotRoutines.M_ClearTmp;
 var
   files: TDSTringList;
   filepath: string;
@@ -241,7 +260,7 @@ end;
 // Clear a single save slot folder
 //
 //==============================================================================
-procedure M_ClearSlot;
+class procedure TSaveSlotRoutines.M_ClearSlot;
 var
   files: TDSTringList;
   filepath: string;
@@ -274,7 +293,7 @@ end;
 // Copying files from savepathtemp to savepath
 //
 //==============================================================================
-procedure M_FromCurr;
+class procedure TSaveSlotRoutines.M_FromCurr;
 var
   files: TDSTringList;
   srcfilename: string;
@@ -306,7 +325,7 @@ end;
 // Copying files from savepath to savepathtemp
 //
 //==============================================================================
-procedure M_ToCurr;
+class procedure TSaveSlotRoutines.M_ToCurr;
 var
   files: TDSTringList;
   srcfilename: string;
@@ -338,7 +357,7 @@ end;
 // Moves a map to the "HERE" save.
 //
 //==============================================================================
-procedure M_SaveMoveMapToHere;
+class procedure TSaveSlotRoutines.M_SaveMoveMapToHere;
 var
  mapsave: string;
  heresave: string;
@@ -357,7 +376,7 @@ end;
 // Moves the "HERE" save to a map.
 //
 //==============================================================================
-procedure M_SaveMoveHereToMap;
+class procedure TSaveSlotRoutines.M_SaveMoveHereToMap;
 var
  mapsave: string;
  heresave: string;
@@ -376,7 +395,7 @@ end;
 // Writes the mission objective into the MIS_OBJ file.
 //
 //==============================================================================
-procedure M_SaveMisObj(const path: string);
+class procedure TSaveSlotRoutines.M_SaveMisObj(const path: string);
 var
  destpath: string;
  l: TDStringList;
@@ -394,7 +413,7 @@ end;
 // M_SaveWorldVars
 //
 //==============================================================================
-procedure M_SaveWorldVars(const path: string);
+class procedure TSaveSlotRoutines.M_SaveWorldVars(const path: string);
 begin
   P_ArchiveWorldVariables(M_SafeFilePath(path, 'world_vars'));
 end;
@@ -404,7 +423,7 @@ end;
 // M_SaveSaveScreenShot
 //
 //==============================================================================
-procedure M_SaveSaveScreenShot(const path: string);
+class procedure TSaveSlotRoutines.M_SaveSaveScreenShot(const path: string);
 begin
   P_ArchiveScreenShot(M_SafeFilePath(path, 'sshot'));
 end;
@@ -416,7 +435,7 @@ end;
 // Reads the mission objective from the MIS_OBJ file.
 //
 //==============================================================================
-procedure M_ReadMisObj;
+class procedure TSaveSlotRoutines.M_ReadMisObj;
 var
   srcpath: string;
   l: TDStringList;
@@ -436,7 +455,7 @@ end;
 // M_ReadWorldVars
 //
 //==============================================================================
-procedure M_ReadWorldVars;
+class procedure TSaveSlotRoutines.M_ReadWorldVars;
 begin
   P_UnarchiveWorldVariables(M_SafeFilePath(savepathtemp, 'world_vars'));
 end;
@@ -455,7 +474,7 @@ end;
 // BOOM.
 //
 //==============================================================================
-function M_NormalizeSlashes(const str: string): string;
+class function TSaveSlotLocalRoutines.M_NormalizeSlashes(const str: string): string;
 var
   i: integer;
   lastsl: boolean;
@@ -490,7 +509,7 @@ end;
 // M_SafeFilePath
 //
 //==============================================================================
-function M_SafeFilePath(basepath, newcomponent: string): string;
+class function TSaveSlotRoutines.M_SafeFilePath(basepath, newcomponent: string): string;
 begin
   if basepath = '' then
     basepath := '.';
@@ -498,7 +517,7 @@ begin
   // Always throw in a slash. M_NormalizeSlashes will remove it in the case
   // that either basepath or newcomponent includes a redundant slash at the
   // end or beginning respectively.
-  result := M_NormalizeSlashes(basepath + '\' + newcomponent);
+  result := TSaveSlotLocalRoutines.M_NormalizeSlashes(basepath + '\' + newcomponent);
 end;
 
 //==============================================================================
@@ -508,7 +527,7 @@ end;
 // haleyjd 20110211: Convenience routine
 //
 //==============================================================================
-function M_MakeStrifeSaveDir(const slotnum: integer; const extra: string): string;
+class function TSaveSlotRoutines.M_MakeStrifeSaveDir(const slotnum: integer; const extra: string): string;
 begin
   sprintf(result, 'strfsav%d.ssg%s', [slotnum, extra]);
 end;
@@ -523,7 +542,7 @@ end;
 // the full set of folders under the configured savegamedir.
 //
 //==============================================================================
-procedure M_CreateSaveDirs(const savedir: string);
+class procedure TSaveSlotRoutines.M_CreateSaveDirs(const savedir: string);
 var
   i: integer;
   compositedir: string;

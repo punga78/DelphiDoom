@@ -449,7 +449,7 @@ begin
       {$ENDIF}
       begin
         wipe := true;
-        {$IFDEF STRIFE}fade_StartScreen{$ELSE}wipe_StartScreen{$ENDIF};
+        {$IFDEF STRIFE}TFadeRoutines.fade_StartScreen{$ELSE}wipe_StartScreen{$ENDIF};
         wipegamestate := Ord(TGameSession.GameState);
       end;
   end;
@@ -500,7 +500,7 @@ begin
 
   // wipe update
   {$IFDEF STRIFE}
-  fade_EndScreen;
+  TFadeRoutines.fade_EndScreen;
   {$ELSE}
   wipe_EndScreen;
   {$ENDIF}
@@ -517,7 +517,7 @@ begin
       I_WaitVBL(1);
     until tics <> 0;
     wipestart := nowtime;
-    done := {$IFDEF STRIFE}fade_Ticker{$ELSE}wipe_Ticker{$ENDIF}(tics);
+    done := {$IFDEF STRIFE}TFadeRoutines.fade_Ticker{$ELSE}wipe_Ticker{$ENDIF}(tics);
     MT_ZeroMemory(screen32, V_GetScreenWidth(SCN_FG) * V_GetScreenHeight(SCN_FG) * 4);
     M_Drawer;         // Menu is drawn even on top of wipes
     GL_Console.Draw;         // Console draw on top of wipes and menus
@@ -525,7 +525,7 @@ begin
     HU_DoFPSStuff;
   until done;
   {$IFDEF STRIFE}
-  fade_ClearMemory;
+  TFadeRoutines.fade_ClearMemory;
   {$ELSE}
   wipe_ClearMemory;
   {$ENDIF}

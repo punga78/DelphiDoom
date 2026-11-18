@@ -122,7 +122,7 @@ begin
   // the cockpit of the craft in the place of the status bar of Doom
   ST_ConfigureReplacement(RX_HudDrawer);
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
-  WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
+  TIntermissionRoutines.WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
   // the end of an episode: the text of RADIX.DAT over the flight among the stars
   TFinaleRoutines.F_ConfigureReplacement(RX_Finale_Start, RX_Finale_Ticker, RX_Finale_Drawer);
   // the screens fade into one another (the engine of Doom melts them)

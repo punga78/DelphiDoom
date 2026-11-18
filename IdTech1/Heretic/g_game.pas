@@ -1774,7 +1774,7 @@ begin
       end;
     GS_INTERMISSION:
       begin
-        IN_Ticker;
+        TIntermissionRoutines.IN_Ticker;
       end;
     GS_FINALE:
       begin
@@ -2147,7 +2147,7 @@ begin
   if statcopy <> nil then
     memcpy(statcopy, @TGameSession.WmInfo, SizeOf(TGameSession.WmInfo));
 
-  IN_Start(@TGameSession.WmInfo);
+  TIntermissionRoutines.IN_Start(@TGameSession.WmInfo);
 end;
 
 //==============================================================================

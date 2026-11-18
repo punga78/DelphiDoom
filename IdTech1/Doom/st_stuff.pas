@@ -888,7 +888,7 @@ begin
         V_DrawPatch(ST_X2, 0, SCN_ST, sbar2, false);
     end;
     if TGameSession.NetGame then
-      ST_DrawPatch(ST_FX, 0, faceback);
+      TStatusLibRoutines.ST_DrawPatch(ST_FX, 0, faceback);
   end;
 end;
 
@@ -1530,28 +1530,28 @@ begin
   // used by w_frags widget
   st_fragson := (TGameSession.DeathMatch <> 0) and st_statusbaron;
 
-  STlib_updateNum(@w_ready, refresh);
+  TStatusLibRoutines.STlib_updateNum(@w_ready, refresh);
 
   for i := 0 to 3 do
   begin
-    STlib_updateNum(@w_ammo[i], refresh);
-    STlib_updateNum(@w_maxammo[i], refresh);
+    TStatusLibRoutines.STlib_updateNum(@w_ammo[i], refresh);
+    TStatusLibRoutines.STlib_updateNum(@w_maxammo[i], refresh);
   end;
 
-  STlib_updatePercent(@w_health, refresh, false);
-  STlib_updatePercent(@w_armor, refresh, false);
+  TStatusLibRoutines.STlib_updatePercent(@w_health, refresh, false);
+  TStatusLibRoutines.STlib_updatePercent(@w_armor, refresh, false);
 
-  STlib_updateBinIcon(@w_armsbg, refresh);
+  TStatusLibRoutines.STlib_updateBinIcon(@w_armsbg, refresh);
 
   for i := 0 to 5 do
-    STlib_updateMultIcon(@w_arms[i], refresh);
+    TStatusLibRoutines.STlib_updateMultIcon(@w_arms[i], refresh);
 
-  STlib_updateMultIcon(@w_faces, refresh);
+  TStatusLibRoutines.STlib_updateMultIcon(@w_faces, refresh);
 
   for i := 0 to 2 do
-    STlib_updateMultIcon(@w_keyboxes[i], refresh);
+    TStatusLibRoutines.STlib_updateMultIcon(@w_keyboxes[i], refresh);
 
-  STlib_updateNum(@w_frags, refresh);
+  TStatusLibRoutines.STlib_updateNum(@w_frags, refresh);
 end;
 
 //==============================================================================
@@ -1591,15 +1591,15 @@ procedure ST_DrawWidgetsSmall;
 var
   ammo: integer;
 begin
-  STlib_updatePercent(@w_health2, true, true);
+  TStatusLibRoutines.STlib_updatePercent(@w_health2, true, true);
   ammo := Ord(weaponinfo[Ord(plyr.readyweapon)].ammo);
   if ammo <> Ord(am_noammo) then
   begin
-    STlib_updateNum(@w_ammo2[ammo], true);
+    TStatusLibRoutines.STlib_updateNum(@w_ammo2[ammo], true);
     if sammo[ammo] >= 0 then
-      ST_DrawPatch(ST_MWX, ST_MWY, sammo[ammo]);
+      TStatusLibRoutines.ST_DrawPatch(ST_MWX, ST_MWY, sammo[ammo]);
   end;
-  ST_DrawPatch(ST_MX, ST_MY, smedikit);
+  TStatusLibRoutines.ST_DrawPatch(ST_MX, ST_MY, smedikit);
 end;
 
 //==============================================================================
@@ -1864,7 +1864,7 @@ begin
   for i := 0 to 2 do
     keyboxes[i] := -1;
 
-  STlib_init;
+  TStatusLibRoutines.STlib_init;
 end;
 
 //==============================================================================
@@ -1878,7 +1878,7 @@ var
   pnt: PInteger;
 begin
   // ready weapon ammo
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_ready,
     ST_AMMOX,
     ST_AMMOY,
@@ -1891,7 +1891,7 @@ begin
   w_ready.data := Ord(plyr.readyweapon);
 
   // health percentages
-  STlib_initPercent(
+  TStatusLibRoutines.STlib_initPercent(
     @w_health,
     ST_HEALTHX,
     ST_HEALTHY,
@@ -1899,7 +1899,7 @@ begin
     @plyr.health,
     @st_statusbaron,
     tallpercent);
-  STlib_initPercent(
+  TStatusLibRoutines.STlib_initPercent(
     @w_health2,
     ST_MHEALTHX,
     ST_MHEALTHY,
@@ -1909,7 +1909,7 @@ begin
     tallpercent);
 
   // arms background
-  STlib_initBinIcon(
+  TStatusLibRoutines.STlib_initBinIcon(
     @w_armsbg,
     ST_ARMSBGX,
     ST_ARMSBGY,
@@ -1924,7 +1924,7 @@ begin
       pnt := @st_shotgun
     else
       pnt := @plyr.weaponowned[i + 1];
-    STlib_initMultIcon(
+    TStatusLibRoutines.STlib_initMultIcon(
       @w_arms[i],
       ST_ARMSX + (i mod 3) * ST_ARMSXSPACE,
       ST_ARMSY + (i div 3) * ST_ARMSYSPACE,
@@ -1935,7 +1935,7 @@ begin
   end;
 
   // frags sum
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_frags,
     ST_FRAGSX,
     ST_FRAGSY,
@@ -1945,7 +1945,7 @@ begin
     ST_FRAGSWIDTH);
 
   // faces
-  STlib_initMultIcon(
+  TStatusLibRoutines.STlib_initMultIcon(
     @w_faces,
     ST_FACESX,
     ST_FACESY,
@@ -1954,7 +1954,7 @@ begin
     @st_statusbaron);
 
   // armor percentage - should be colored later
-  STlib_initPercent(
+  TStatusLibRoutines.STlib_initPercent(
     @w_armor,
     ST_ARMORX,
     ST_ARMORY,
@@ -1964,7 +1964,7 @@ begin
     tallpercent);
 
   // keyboxes 0-2
-  STlib_initMultIcon(
+  TStatusLibRoutines.STlib_initMultIcon(
     @w_keyboxes[0],
     ST_KEY0X,
     ST_KEY0Y,
@@ -1972,7 +1972,7 @@ begin
     @keyboxes[0],
     @st_statusbaron);
 
-  STlib_initMultIcon(
+  TStatusLibRoutines.STlib_initMultIcon(
     @w_keyboxes[1],
     ST_KEY1X,
     ST_KEY1Y,
@@ -1980,7 +1980,7 @@ begin
     @keyboxes[1],
     @st_statusbaron);
 
-  STlib_initMultIcon(
+  TStatusLibRoutines.STlib_initMultIcon(
     @w_keyboxes[2],
     ST_KEY2X,
     ST_KEY2Y,
@@ -1989,7 +1989,7 @@ begin
     @st_statusbaron);
 
   // ammo count (all four kinds)
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_ammo[0],
     ST_AMMO0X,
     ST_AMMO0Y,
@@ -1998,7 +1998,7 @@ begin
     @st_statusbaron,
     ST_AMMO0WIDTH);
 
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_ammo[1],
     ST_AMMO1X,
     ST_AMMO1Y,
@@ -2007,7 +2007,7 @@ begin
     @st_statusbaron,
     ST_AMMO1WIDTH);
 
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_ammo[2],
     ST_AMMO2X,
     ST_AMMO2Y,
@@ -2016,7 +2016,7 @@ begin
     @st_statusbaron,
     ST_AMMO2WIDTH);
 
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_ammo[3],
     ST_AMMO3X,
     ST_AMMO3Y,
@@ -2027,7 +2027,7 @@ begin
 
   // ammo count for small display
   for i := 0 to 3 do
-    STlib_initNum(
+    TStatusLibRoutines.STlib_initNum(
       @w_ammo2[i],
       ST_MAMMOX,
       ST_MAMMOY,
@@ -2037,7 +2037,7 @@ begin
       ST_MAMMOWIDTH);
 
   // max ammo count (all four kinds)
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_maxammo[0],
     ST_MAXAMMO0X,
     ST_MAXAMMO0Y,
@@ -2046,7 +2046,7 @@ begin
     @st_statusbaron,
     ST_MAXAMMO0WIDTH);
 
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_maxammo[1],
     ST_MAXAMMO1X,
     ST_MAXAMMO1Y,
@@ -2055,7 +2055,7 @@ begin
     @st_statusbaron,
     ST_MAXAMMO1WIDTH);
 
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_maxammo[2],
     ST_MAXAMMO2X,
     ST_MAXAMMO2Y,
@@ -2064,7 +2064,7 @@ begin
     @st_statusbaron,
     ST_MAXAMMO2WIDTH);
 
-  STlib_initNum(
+  TStatusLibRoutines.STlib_initNum(
     @w_maxammo[3],
     ST_MAXAMMO3X,
     ST_MAXAMMO3Y,
