@@ -2636,7 +2636,7 @@ var
 procedure R_MaskedStuffMT;
 begin
   R_SortVisSprites;
-  R_SetUpDrawSegLists;
+  TRendererSegs2.R_SetUpDrawSegLists;
   R_PrepareMasked;
 end;
 
@@ -2856,7 +2856,7 @@ begin
   gld_EndDrawScene;
 
 {$ELSE}
-  R_SetUpDrawSegLists;
+  TRendererSegs2.R_SetUpDrawSegLists;
 
   R_DrawPlanes;
 
@@ -2894,7 +2894,7 @@ begin
 {$IFNDEF OPENGL}
   MT_WaitTask(task_clearplanes);
   zbufferactive := r_uselightmaps;
-  R_SetDrawSegFunctions;  // version 205
+  TRendererSegs2.R_SetDrawSegFunctions;  // version 205
   if usemultithread then
   begin
     if videomode = vm8bit then

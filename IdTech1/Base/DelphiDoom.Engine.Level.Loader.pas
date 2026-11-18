@@ -339,9 +339,9 @@ begin
 
 {$IFNDEF OPENGL}
   Trace('R_CalcSectors');
-  R_CalcSectors; // JVAL 20200105 - Check the map boundaries
+  TRendererSegs2.R_CalcSectors; // JVAL 20200105 - Check the map boundaries
   Trace('R_PrecalcSegs');
-  R_PrecalcSegs; // https://www.doomworld.com/forum/topic/70288-dynamic-wiggletall-sector-fix-for-fixed-point-software-renderer/?do=findComment&comment=1340433
+  TRendererSegs2.R_PrecalcSegs; // https://www.doomworld.com/forum/topic/70288-dynamic-wiggletall-sector-fix-for-fixed-point-software-renderer/?do=findComment&comment=1340433
 {$ENDIF}
 
   Trace('P_SlopesSetup');

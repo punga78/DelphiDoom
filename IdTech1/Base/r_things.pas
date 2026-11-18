@@ -2215,7 +2215,7 @@ begin
     sx2 := spr.x2;
   end;
 
-  R_GetDrawsegsForRange(sx1, sx2, cache.fdrawsegs, cache.fds_p);
+  TRendererSegs2.R_GetDrawsegsForRange(sx1, sx2, cache.fdrawsegs, cache.fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale
@@ -2447,7 +2447,7 @@ begin
     fds_p := cache.fds_p;
   end
   else
-    R_GetDrawsegsForVissprite(spr, fdrawsegs, fds_p);
+    TRendererSegs2.R_GetDrawsegsForVissprite(spr, fdrawsegs, fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale
@@ -2675,7 +2675,7 @@ begin
     fds_p := cache.fds_p;
   end
   else
-    R_GetDrawsegsForRange(x1, x2, fdrawsegs, fds_p);
+    TRendererSegs2.R_GetDrawsegsForRange(x1, x2, fdrawsegs, fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale

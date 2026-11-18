@@ -1010,7 +1010,7 @@ begin
   // calculate rw_distance for scale calculation
   rw_normalangle := curline.angle + ANG90;
 
-  rw_distance := R_DistToSeg(curline);
+  rw_distance := TRendererSegs2.R_DistToSeg(curline);
 
   rw_x := start;
   pds.x1 := rw_x;
@@ -1049,7 +1049,7 @@ begin
 
   TRendererSegs.R_WiggleFix(frontsector);
 
-  rw_offset := R_CalcSegOffset(curline);
+  rw_offset := TRendererSegs2.R_CalcSegOffset(curline);
 
   if LongWord(rw_normalangle - rw_angle1) < ANG180 then
     rw_offset := -rw_offset;

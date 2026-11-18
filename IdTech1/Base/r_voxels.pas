@@ -1796,7 +1796,7 @@ begin
     fds_p := cache.fds_p;
   end
   else
-    R_GetDrawsegsForRange(vis.vx1, vis.vx2, fdrawsegs, fds_p);
+    TRendererSegs2.R_GetDrawsegsForRange(vis.vx1, vis.vx2, fdrawsegs, fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale

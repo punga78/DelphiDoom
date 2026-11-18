@@ -1217,7 +1217,7 @@ begin
     TRendererFactory.CreateSpriteTableBuilder(LDirectory,
       TEngineRendererSpriteHeaders.Create));
 {$IFNDEF OPENGL}
-  R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
+  TRendererSegs2.R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
 {$ENDIF}
 end;
 
