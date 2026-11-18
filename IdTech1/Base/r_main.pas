@@ -2653,8 +2653,8 @@ begin
   MT_ExecutePendingTask(task_8bitlights);
 
   // Clear buffers.
-  R_ClearClipSegs;
-  R_ClearDrawSegs;
+  TRendererBsp.R_ClearClipSegs;
+  TRendererBsp.R_ClearDrawSegs;
   R_ClearPlanes;
   R_Wait3DLookup;
   R_Fake3DAdjustPlanes(player);
@@ -2669,7 +2669,7 @@ begin
   TRendererWall8.R_ClearWallsCache8;
 
   // The head node is the last node output.
-  R_RenderBSPNode(numnodes - 1);
+  TRendererBsp.R_RenderBSPNode(numnodes - 1);
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2733,8 +2733,8 @@ begin
   R_CalcHiResTables_MultiThread;
 
   // Clear buffers.
-  R_ClearClipSegs;
-  R_ClearDrawSegs;
+  TRendererBsp.R_ClearClipSegs;
+  TRendererBsp.R_ClearDrawSegs;
   R_ClearPlanes;
   R_Wait3DLookup;
   R_Fake3DAdjustPlanes(player);
@@ -2749,7 +2749,7 @@ begin
   TRendererWall32.R_ClearWallsCache32;
 
   // The head node is the last node output.
-  R_RenderBSPNode(numnodes - 1);
+  TRendererBsp.R_RenderBSPNode(numnodes - 1);
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2820,8 +2820,8 @@ begin
 
   // Clear buffers.
 {$IFNDEF OPENGL}
-  R_ClearClipSegs;
-  R_ClearDrawSegs;
+  TRendererBsp.R_ClearClipSegs;
+  TRendererBsp.R_ClearDrawSegs;
 {$ENDIF}
   R_ClearPlanes;
 {$IFNDEF OPENGL}
@@ -2841,7 +2841,7 @@ begin
 {$ENDIF}
 
   // The head node is the last node output.
-  R_RenderBSPNode(numnodes - 1);
+  TRendererBsp.R_RenderBSPNode(numnodes - 1);
 
   R_ProjectAdditionalThings;
 

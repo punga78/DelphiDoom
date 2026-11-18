@@ -408,7 +408,7 @@ begin
   end;
 
   lightnum := _SHR(
-        {$IFDEF DOOM_OR_STRIFE}R_FakeFlat(frontsector, @tempsec, nil, nil, False).lightlevel
+        {$IFDEF DOOM_OR_STRIFE}TRendererBsp.R_FakeFlat(frontsector, @tempsec, nil, nil, False).lightlevel
         {$ELSE}frontsector.lightlevel
         {$ENDIF},
         LIGHTSEGSHIFT) + extralight;

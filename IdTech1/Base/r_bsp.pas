@@ -41,22 +41,8 @@ uses
   r_defs;
 
 {$IFNDEF OPENGL}
-//==============================================================================
-// R_ClearClipSegs
-//
-// BSP?
-//
-//==============================================================================
-procedure R_ClearClipSegs;
 
 {$ENDIF}
-
-//==============================================================================
-//
-// R_ClearDrawSegs
-//
-//==============================================================================
-procedure R_ClearDrawSegs;
 
 //==============================================================================
 //
@@ -64,21 +50,10 @@ procedure R_ClearDrawSegs;
 //
 //==============================================================================
 {$IF DEFINED(HERETIC)}
-procedure R_RenderBSPNode(bspnum: integer);
 
 {$ELSEIF DEFINED(HEXEN)}
-procedure R_RenderBSPNode(const bspnum: integer);
 
 {$ELSE}
-procedure R_RenderBSPNode(bspnum: integer);
-
-//==============================================================================
-//
-// R_FakeFlat
-//
-//==============================================================================
-function R_FakeFlat(sec: Psector_t; tempsec: Psector_t;
-  floorlightlevel, ceilinglightlevel: PSmallInt; back: boolean): Psector_t;
 
 {$ENDIF}
 type
@@ -105,6 +80,46 @@ var
 //==============================================================================
 
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererBsp = class sealed
+  public
+{$IFNDEF OPENGL}
+    //==============================================================================
+    // R_ClearClipSegs
+    //
+    // BSP?
+    //
+    //==============================================================================
+    class procedure R_ClearClipSegs; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_ClearDrawSegs
+    //
+    //==============================================================================
+    class procedure R_ClearDrawSegs; static;
+{$IF DEFINED(HERETIC)}
+    class procedure R_RenderBSPNode(bspnum: integer); static;
+{$ELSEIF DEFINED(HEXEN)}
+    class procedure R_RenderBSPNode(const bspnum: integer); static;
+{$ELSE}
+    class procedure R_RenderBSPNode(bspnum: integer); static;
+    //==============================================================================
+    //
+    // R_FakeFlat
+    //
+    //==============================================================================
+    class function R_FakeFlat(sec: Psector_t; tempsec: Psector_t;
+      floorlightlevel, ceilinglightlevel: PSmallInt; back: boolean): Psector_t; static;
+{$ENDIF}
+  end;
+
+
 implementation
 
 uses
@@ -136,6 +151,65 @@ uses
   r_plane,
   r_things,
   r_sky;
+type
+  cliprange_t = record
+    first: integer;
+    last: integer;
+  end;
+  Pcliprange_t = ^cliprange_t;
+
+
+const
+  MAXSEGS = MAXWIDTH div 2 + 1;
+
+
+const
+  checkcoord: array[0..11, 0..3] of integer = (
+    (3, 0, 2, 1),
+    (3, 0, 2, 0),
+    (3, 1, 2, 0),
+    (0, 0, 0, 0),
+    (2, 0, 2, 1),
+    (0, 0, 0, 0),
+    (3, 1, 3, 0),
+    (0, 0, 0, 0),
+    (2, 0, 3, 1),
+    (2, 1, 3, 1),
+    (2, 1, 3, 0),
+    (0, 0, 0, 0)
+  );
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererBspLocal = class sealed
+  public
+{$IFNDEF OPENGL}
+    class procedure R_ClipSolidWallSegment(first, last: integer); static;
+    class procedure R_ClipPassWallSegment(first, last: integer); static;
+{$ENDIF}
+{$IFDEF OPENGL}
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    class function R_CheckClip(seg: Pseg_t): boolean; static;
+{$ELSE}
+    class function R_CheckClip(seg: Pseg_t; frontsector, backsector: Psector_t): boolean; static;
+{$ENDIF}
+{$ELSE}
+    class function R_DoorClosed: boolean; static;
+    class procedure R_RecalcLineIgnorePassFlag(const l: Pline_t; const bsec, fsec: Psector_t); static;
+{$ENDIF}
+    class procedure R_AddLine(line: Pseg_t); static;
+    class function R_CheckBBox(bspcoordA: Pfixed_tArray; const side: integer): boolean; static;
+{$IFDEF DOOM}
+    class function R_SectorFloorFlat(const sec: Psector_t): integer; static;
+    class function R_SectorCeilingFlat(const sec: Psector_t): integer; static;
+{$ENDIF}
+    class procedure R_Subsector(const num: integer); static;
+  end;
+
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
 //==============================================================================
@@ -153,7 +227,7 @@ uses
 // killough 4/11/98, 4/13/98: fix bugs, add 'back' parameter
 //
 //==============================================================================
-function R_FakeFlat(sec: Psector_t; tempsec: Psector_t;
+class function TRendererBsp.R_FakeFlat(sec: Psector_t; tempsec: Psector_t;
   floorlightlevel, ceilinglightlevel: PSmallInt; back: boolean): Psector_t;
 var
   ss: Psector_t;
@@ -315,7 +389,7 @@ end;
 // R_ClearDrawSegs
 //
 //==============================================================================
-procedure R_ClearDrawSegs;
+class procedure TRendererBsp.R_ClearDrawSegs;
 begin
   ds_p := 0;
 end;
@@ -325,13 +399,6 @@ end;
 // Clips the given range of columns
 // and includes it in the new clip list.
 //
-type
-  cliprange_t = record
-    first: integer;
-    last: integer;
-  end;
-  Pcliprange_t = ^cliprange_t;
-
 // 1/11/98: Lee Killough
 //
 // This fixes many strange venetian blinds crashes, which occurred when a scan
@@ -348,9 +415,6 @@ type
 // have anything to do with visplanes, but it had everything to do with these
 // clip posts.
 
-const
-  MAXSEGS = MAXWIDTH div 2 + 1;
-
 {$IFNDEF OPENGL}
 var
 // newend is one past the last valid seg
@@ -366,7 +430,7 @@ var
 //  that entirely block the view.
 //
 //==============================================================================
-procedure R_ClipSolidWallSegment(first, last: integer);
+class procedure TRendererBspLocal.R_ClipSolidWallSegment(first, last: integer);
 var
   next: Pcliprange_t;
   start: Pcliprange_t;
@@ -467,7 +531,7 @@ end;
 //  e.g. LineDefs with upper and lower texture.
 //
 //==============================================================================
-procedure R_ClipPassWallSegment(first, last: integer);
+class procedure TRendererBspLocal.R_ClipPassWallSegment(first, last: integer);
 var
   start: Pcliprange_t;
   tmp: Pcliprange_t;
@@ -516,7 +580,7 @@ end;
 // R_ClearClipSegs
 //
 //==============================================================================
-procedure R_ClearClipSegs;
+class procedure TRendererBsp.R_ClearClipSegs;
 begin
   newend := @solidsegs[0];
   newend.first := -$7fffffff;
@@ -552,19 +616,19 @@ var
 //
 //==============================================================================
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-function R_CheckClip(seg: Pseg_t): boolean;
+class function TRendererBspLocal.R_CheckClip(seg: Pseg_t): boolean;
 var
   frontsector, backsector: Psector_t;
 {$ELSE}
-function R_CheckClip(seg: Pseg_t; frontsector, backsector: Psector_t): boolean;
+class function TRendererBspLocal.R_CheckClip(seg: Pseg_t; frontsector, backsector: Psector_t): boolean;
 {$ENDIF}
 begin
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   backsector := seg.backsector;
   frontsector := seg.frontsector;
 {$ELSE}
-  backsector := R_FakeFlat(backsector, @tempsec_back, nil, nil, true);
-  frontsector := R_FakeFlat(frontsector, @tempsec_front, nil, nil, false);
+  backsector := TRendererBsp.R_FakeFlat(backsector, @tempsec_back, nil, nil, true);
+  frontsector := TRendererBsp.R_FakeFlat(frontsector, @tempsec_front, nil, nil, false);
 {$ENDIF}
 
   // check for closed sectors!
@@ -639,7 +703,7 @@ end;
 // of front-back closure (e.g. front floor is taller than back ceiling).
 //
 //==============================================================================
-function R_DoorClosed: boolean;
+class function TRendererBspLocal.R_DoorClosed: boolean;
 begin
   result :=
 
@@ -663,7 +727,7 @@ end;
 // R_RecalcLineIgnorePassFlag
 //
 //==============================================================================
-procedure R_RecalcLineIgnorePassFlag(const l: Pline_t; const bsec, fsec: Psector_t);
+class procedure TRendererBspLocal.R_RecalcLineIgnorePassFlag(const l: Pline_t; const bsec, fsec: Psector_t);
 begin
   l.rendervalidcount := TTickState.LevelTime;
   if (bsec.ceilingpic = fsec.ceilingpic) and
@@ -701,7 +765,7 @@ end;
 // and adds any visible pieces to the line list.
 //
 //==============================================================================
-procedure R_AddLine(line: Pseg_t);
+class procedure TRendererBspLocal.R_AddLine(line: Pseg_t);
 var
 {$IFNDEF OPENGL}
   x1: integer;
@@ -822,7 +886,7 @@ begin
   end;
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
-  backsector := R_FakeFlat(backsector, @btempsec, nil, nil, true);
+  backsector := TRendererBsp.R_FakeFlat(backsector, @btempsec, nil, nil, true);
 {$ENDIF}
 
   doorclosed := false;       // killough 4/16/98
@@ -884,28 +948,12 @@ end;
 // Returns true
 //  if some part of the bbox might be visible.
 //
-const
-  checkcoord: array[0..11, 0..3] of integer = (
-    (3, 0, 2, 1),
-    (3, 0, 2, 0),
-    (3, 1, 2, 0),
-    (0, 0, 0, 0),
-    (2, 0, 2, 1),
-    (0, 0, 0, 0),
-    (3, 1, 3, 0),
-    (0, 0, 0, 0),
-    (2, 0, 3, 1),
-    (2, 1, 3, 1),
-    (2, 1, 3, 0),
-    (0, 0, 0, 0)
-  );
-
 //==============================================================================
 //
 // R_CheckBBox
 //
 //==============================================================================
-function R_CheckBBox(bspcoordA: Pfixed_tArray; const side: integer): boolean;
+class function TRendererBspLocal.R_CheckBBox(bspcoordA: Pfixed_tArray; const side: integer): boolean;
 var
   bspcoord: Pfixed_tArray;
   boxx: integer;
@@ -1053,7 +1101,7 @@ end;
 // R_SectorFloorFlat
 //
 //==============================================================================
-function R_SectorFloorFlat(const sec: Psector_t): integer;
+class function TRendererBspLocal.R_SectorFloorFlat(const sec: Psector_t): integer;
 begin
   result := sec.floorpic;
   if result = skyflatnum then
@@ -1066,7 +1114,7 @@ end;
 // R_SectorCeilingFlat
 //
 //==============================================================================
-function R_SectorCeilingFlat(const sec: Psector_t): integer;
+class function TRendererBspLocal.R_SectorCeilingFlat(const sec: Psector_t): integer;
 begin
   result := sec.ceilingpic;
   if result = skyflatnum then
@@ -1083,7 +1131,7 @@ end;
 // Draw one or more line segments.
 //
 //==============================================================================
-procedure R_Subsector(const num: integer);
+class procedure TRendererBspLocal.R_Subsector(const num: integer);
 var
   count: integer;
   line: Pseg_t;
@@ -1120,7 +1168,7 @@ begin
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   floorlightlevel := frontsector.lightlevel;
 {$ELSE}
-  frontsector := R_FakeFlat(frontsector, @ftempsec,
+  frontsector := TRendererBsp.R_FakeFlat(frontsector, @ftempsec,
     @floorlightlevel, @ceilinglightlevel, false);   // killough 4/11/98
 {$ENDIF}
 {$IFNDEF OPENGL}
@@ -1535,9 +1583,9 @@ end;
 //
 //==============================================================================
 {$IFDEF HEXEN}
-procedure R_RenderBSPNode(const bspnum: integer);
+class procedure TRendererBsp.R_RenderBSPNode(const bspnum: integer);
 {$ELSE}
-procedure R_RenderBSPNode(bspnum: integer);
+class procedure TRendererBsp.R_RenderBSPNode(bspnum: integer);
 {$ENDIF}
 var
   bsp: Pnode_t;
@@ -1554,9 +1602,9 @@ begin
   begin
 {$IFDEF HEXEN}
     if bspnum = -1 then
-      R_Subsector(0)
+      TRendererBspLocal.R_Subsector(0)
     else
-      R_Subsector(bspnum and not NF_SUBSECTOR_V5);
+      TRendererBspLocal.R_Subsector(bspnum and not NF_SUBSECTOR_V5);
     exit;
   end;
 {$ELSE}
@@ -1586,7 +1634,7 @@ begin
 
     // Possibly divide back space.
 {$IFDEF HEXEN}
-    if R_CheckBBox(Pfixed_tArray(@(bsp.bbox)), 0) then
+    if TRendererBspLocal.R_CheckBBox(Pfixed_tArray(@(bsp.bbox)), 0) then
       R_RenderBSPNode(bsp.children[0]);
   end
   else
@@ -1597,20 +1645,20 @@ begin
 
 {$IFDEF HEXEN}
     // Possibly divide back space.
-    if R_CheckBBox(Pfixed_tArray(@(bsp.bbox)), 1) then
+    if TRendererBspLocal.R_CheckBBox(Pfixed_tArray(@(bsp.bbox)), 1) then
       R_RenderBSPNode(bsp.children[1]);
   end
 {$ELSE}
     side := side xor 1;
-    if not R_CheckBBox(Pfixed_tArray(@bsp.bbox), side) then
+    if not TRendererBspLocal.R_CheckBBox(Pfixed_tArray(@bsp.bbox), side) then
       exit;
 
     bspnum := bsp.children[side];
   end;
   if bspnum = -1 then
-    R_Subsector(0)
+    TRendererBspLocal.R_Subsector(0)
   else
-    R_Subsector(bspnum and not NF_SUBSECTOR_V5);
+    TRendererBspLocal.R_Subsector(bspnum and not NF_SUBSECTOR_V5);
 {$ENDIF}
 end;
 
