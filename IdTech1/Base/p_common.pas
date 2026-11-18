@@ -141,13 +141,6 @@ procedure A_CheckAmmo(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
-// A_RefireTo
-//
-//==============================================================================
-procedure A_RefireTo(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
 // A_GunFlashTo
 //
 //==============================================================================
@@ -292,13 +285,6 @@ const
 
 var
   bulletslope: fixed_t;
-
-//==============================================================================
-//
-// A_Delayfire
-//
-//==============================================================================
-procedure A_Delayfire(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -2470,6 +2456,28 @@ type
     //
     //==============================================================================
     class procedure A_RemoveFlags(actor: Pmobj_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonWeaponActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_RefireTo
+    //
+    //==============================================================================
+    class procedure A_RefireTo(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_Delayfire
+    //
+    //==============================================================================
+    class procedure A_Delayfire(player: Pplayer_t; psp: Ppspdef_t); static;
   end;
 
 
@@ -12196,12 +12204,22 @@ begin
   P_NoiseAlert(player.mo, player.mo);
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonWeaponActionsLocal = class sealed
+  public
+    class procedure P_SetPspritePtr(player: Pplayer_t; psp: Ppspdef_t; stnum: statenum_t); static;
+  end;
+
 //==============================================================================
 //
 // P_SetPspritePtr
 //
 //==============================================================================
-procedure P_SetPspritePtr(player: Pplayer_t; psp: Ppspdef_t; stnum: statenum_t);
+class procedure TCommonWeaponActionsLocal.P_SetPspritePtr(player: Pplayer_t; psp: Ppspdef_t; stnum: statenum_t);
 var
   position: integer;
 begin
@@ -12227,7 +12245,7 @@ begin
     exit;
 
   if N_Random < psp.state.params.IntVal[1] then
-    P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
+    TCommonWeaponActionsLocal.P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
 end;
 
 //==============================================================================
@@ -12394,12 +12412,12 @@ begin
   for i := i1 to i2 do
     if player.mana[i] < amount then
     begin
-      P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
+      TCommonWeaponActionsLocal.P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
       break;
     end;
   {$ELSE}
   if player.ammo[typ] < amount then
-    P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
+    TCommonWeaponActionsLocal.P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
   {$ENDIF}
 end;
 
@@ -12411,7 +12429,7 @@ end;
 //   args[1]: If nonzero, skip the ammo check
 //
 //==============================================================================
-procedure A_RefireTo(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonWeaponActions.A_RefireTo(player: Pplayer_t; psp: Ppspdef_t);
 begin
   if psp = nil then
     exit;
@@ -12422,7 +12440,7 @@ begin
   if ((psp.state.params.IntVal[1] <> 0) or TWeaponBaseActions.P_CheckAmmo(player)) and
     (player.cmd.buttons and BT_ATTACK <> 0) and
     ((player.pendingweapon = wp_nochange) and (player.health > 0)) then
-    P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
+    TCommonWeaponActionsLocal.P_SetPspritePtr(player, psp, statenum_t(psp.state.params.IntVal[0]));
 end;
 
 //==============================================================================
@@ -12516,7 +12534,7 @@ end;
 // A_Delayfire(tics: integer)
 //
 //==============================================================================
-procedure A_Delayfire(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonWeaponActions.A_Delayfire(player: Pplayer_t; psp: Ppspdef_t);
 var
   tics: integer;
   state: Pstate_t;
