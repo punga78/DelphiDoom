@@ -1,4 +1,4 @@
-# IdTech4\Q3Host — note per Claude
+﻿# IdTech4\Q3Host — note per Claude
 
 Issue #254 (Quake III: dalle librerie a un eseguibile), fase 2a. Descrizione e tabella C -> Pascal: [README.md](README.md); piano e censimento: `docs\QUAKE3_CENSIMENTO.md`. Qui il metodo.
 
@@ -80,3 +80,7 @@ Unit nuove (una classe per unit): `Server.Intf` (`IQ3ServerOutput`: i messaggi d
 - **Trappole trovate**: (1) `TQ3ServerSnapshots` ha ora la fase `Zombie` tra `Free` e `Connected` (come `clientState_t`): i confronti `>= Primed` valgono ancora; (2) un servizio che e' un oggetto con conteggio (`TQ3ClientKeys`, `TQ3RecordingRenderer`, `TQ3LanServers`) passato come interfaccia a un host viene **liberato** quando l'host va: chi riavvia cgame (nuova mappa) tiene un riferimento di interfaccia a vita; (3) il server ricrea l'host (e la botlib) a ogni mappa nuova ma non nel `map_restart`; (4) un `say` mandato prima del primo usercmd e' ignorato dal gioco (`ClientBegin` non e' ancora stato chiamato): e' il C; (5) un `userinfo` senza `cl_guid` e' rifiutato da OpenArena ("Invalid GUID").
 - **Come si rifa il golden della rete**: `sh Tools/Verifica/254/build-crypt.sh <cartella> > Tests/Data/Q3Host/netcrypt.golden.txt` (gcc di w64devkit). I golden `reach-loop.golden.txt` e `reach-net.golden.txt` non sono del C (un server e un client Delphi insieme): sono di regressione, si rifanno con `DELPHIDOOM_Q3_REACH_LOOP_OUT` e `DELPHIDOOM_Q3_REACH_NET_OUT` e si guardano a mano. `Tests.Q3Host` ci mette circa 90 secondi (12 `.qvm`, 4 cicli completi per prova).
 - **Cosa non e' stato fatto**: `TRAP_MATRIXMULTIPLY`, `TRAP_ANGLEVECTORS`, `TRAP_PERPENDICULARVECTOR` (nessun `.qvm` le chiama); la coda di console dei bot unita a quella dei client; i ping; il socket vero. Il resto per un eseguibile (renderer, suono, finestra, input, menu, composition root): `docs\QUAKE3_CENSIMENTO.md` par. 8.
+
+## Renderer (fase 5, R0)
+
+Il renderer senza OpenGL e' in IdTech4\Q3Render (TQ3HostRendererAdapter decora TQ3RecordingRenderer senza cambiarne le risposte: i 210 test di questa libreria sono invariati). Vedi docs\Q3RENDER_CENSIMENTO.md.

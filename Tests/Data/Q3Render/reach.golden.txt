@@ -1,0 +1,12 @@
+baseoa/cgame served=1293 finished | recorder shaders=235 models=87
+baseoa/cgame asked by the module: asked shaders=235 loaded=142 defective=93 | asked models=87 loaded=73 missing=14
+baseoa/cgame tables (with the shaders of the md3 surfaces): shaders=229 defined=210 implicit=19 defective=98 | images=244 missing=98 | models=73 missing=14 | world: surfaces=902 faces=882 triangles=10 flares=10 patches=0 refused=0 fogs=1 lightmaps=14 submodels=9 clusters=422 lightgrid=22800 bytes
+baseoa/ui served=2210 finished | recorder shaders=243
+baseoa/ui (cumulative with cgame) asked by the modules: asked shaders=243 loaded=150 defective=93 | asked models=88 loaded=74 missing=14
+baseoa/ui (cumulative) tables: shaders=240 defined=215 implicit=25 defective=98 | images=255 missing=98 | models=74 missing=14 | world: surfaces=902 faces=882 triangles=10 flares=10 patches=0 refused=0 fogs=1 lightmaps=14 submodels=9 clusters=422 lightgrid=22800 bytes
+missionpack/cgame served=2900 finished | recorder shaders=246 models=96
+missionpack/cgame asked by the module: asked shaders=246 loaded=149 defective=97 | asked models=96 loaded=82 missing=14
+missionpack/cgame tables (with the shaders of the md3 surfaces): shaders=238 defined=192 implicit=46 defective=107 | images=260 missing=107 | models=82 missing=14 | world: surfaces=902 faces=882 triangles=10 flares=10 patches=0 refused=0 fogs=1 lightmaps=14 submodels=9 clusters=422 lightgrid=22800 bytes
+missionpack/ui served=33476 finished | recorder shaders=422
+missionpack/ui (cumulative with cgame) asked by the modules: asked shaders=422 loaded=223 defective=199 | asked models=96 loaded=82 missing=14
+missionpack/ui (cumulative) tables: shaders=310 defined=193 implicit=117 defective=209 | images=332 missing=209 | models=82 missing=14 | world: surfaces=902 faces=882 triangles=10 flares=10 patches=0 refused=0 fogs=1 lightmaps=14 submodels=9 clusters=422 lightgrid=22800 bytes

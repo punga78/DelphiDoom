@@ -1,4 +1,4 @@
-# Issue #219: manifesto degli strati. Letto da Tools\Verifica\219\Controlla-Strati.ps1.
+﻿# Issue #219: manifesto degli strati. Letto da Tools\Verifica\219\Controlla-Strati.ps1.
 # Versione leggibile e motivata: docs\STRATI.md. Solo caratteri ASCII.
 #
 # Regola: uno STRATO puo' usare solo strati uguali o piu' bassi (Livello); un MODULO puo' usare
@@ -133,6 +133,7 @@
     'IdTech4\Aas' = 'IdTech4'
     'IdTech4\Qvm' = 'IdTech4'
     'IdTech4\Q3Host' = 'IdTech4'
+    'IdTech4\Q3Render' = 'IdTech4'
     'IdTech4\D3Host' = 'IdTech4'
     'IdTech4\D3Game' = 'IdTech4'
     'IdTech4\Pmove' = 'IdTech4'
