@@ -848,7 +848,7 @@ begin
     if TTickState.LevelTime > actor.playerfollowtime then
       if actor.flags2_ex and MF2_EX_FRIEND <> 0 then
       begin
-        if P_FollowPlayer(actor, P_NearestPlayer(actor)) then
+        if P_FollowPlayer(actor, TCommonSearchActions.P_NearestPlayer(actor)) then
         begin
           result := true;
           exit;

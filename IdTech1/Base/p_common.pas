@@ -150,13 +150,6 @@ function P_ActorTarget(const actor: Pmobj_t): Pmobj_t;
 
 //==============================================================================
 //
-// A_GlobalEarthQuake
-//
-//==============================================================================
-procedure A_GlobalEarthQuake(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_ResetHealth
 //
 //==============================================================================
@@ -189,41 +182,6 @@ procedure A_SetTargetHealth(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_ChangeFlag(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckFloor
-//
-//==============================================================================
-procedure A_CheckFloor(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckCeiling
-//
-//==============================================================================
-procedure A_CheckCeiling(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckSight
-//
-//==============================================================================
-procedure A_CheckSight(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckSightOrRange
-//
-//==============================================================================
-procedure A_CheckSightOrRange(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckRange
-//
-//==============================================================================
-procedure A_CheckRange(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -447,13 +405,6 @@ procedure A_BasicAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_MonsterRefire
-//
-//==============================================================================
-procedure A_MonsterRefire(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_RearrangePointers
 //
 //==============================================================================
@@ -465,20 +416,6 @@ procedure A_RearrangePointers(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_TransferPointer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_AlertMonsters
-//
-//==============================================================================
-procedure A_AlertMonsters(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_LocalEarthQuake
-//
-//==============================================================================
-procedure A_LocalEarthQuake(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -535,20 +472,6 @@ procedure A_UnSetPushable(actor: Pmobj_t);
 //
 //==============================================================================
 function P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean;
-
-//==============================================================================
-//
-// P_CheckFov
-//
-//==============================================================================
-function P_CheckFov(t1, t2: Pmobj_t; ffov: angle_t): boolean;
-
-//==============================================================================
-//
-// P_RoughTargetSearch
-//
-//==============================================================================
-function P_RoughTargetSearch(mo: Pmobj_t; ffov: angle_t; distance: integer): Pmobj_t;
 
 //==============================================================================
 // P_ResolveMBF21Flags
@@ -623,13 +546,6 @@ procedure A_RadiusDamage(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_NoiseAlert
-//
-//==============================================================================
-procedure A_NoiseAlert(actor: Pmobj_t);
-
-//==============================================================================
-//
 // P_HealCorpse
 //
 //==============================================================================
@@ -649,27 +565,6 @@ procedure A_HealChase(actor: Pmobj_t);
 //==============================================================================
 function P_SeekerMissileEx(actor: Pmobj_t; var tracer: Pmobj_t; const thresh, turnMax: angle_t;
   const centerseek: boolean): boolean;
-
-//==============================================================================
-//
-// A_SeekTracer
-//
-//==============================================================================
-procedure A_SeekTracer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FindTracer
-//
-//==============================================================================
-procedure A_FindTracer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ClearTracer
-//
-//==============================================================================
-procedure A_ClearTracer(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -705,13 +600,6 @@ procedure A_WeaponBulletAttack(player: Pplayer_t; psp: Ppspdef_t);
 //
 //==============================================================================
 procedure A_WeaponMeleeAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_WeaponAlert
-//
-//==============================================================================
-procedure A_WeaponAlert(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -899,27 +787,6 @@ procedure P_CopyFriendliness(const originator, mo: Pmobj_t);
 //
 //==============================================================================
 function P_RaiseActor(const thing, raiser: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_NoiseAlertEx
-//
-//==============================================================================
-procedure P_NoiseAlertEx(target: Pmobj_t; emmiter: Pmobj_t; const maxdist: fixed_t);
-
-//==============================================================================
-//
-// P_LocalEarthQuake
-//
-//==============================================================================
-procedure P_LocalEarthQuake(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t);
-
-//==============================================================================
-//
-// P_NearestPlayer
-//
-//==============================================================================
-function P_NearestPlayer(const mo: Pmobj_t): Pplayer_t;
 
 //==============================================================================
 //
@@ -2413,6 +2280,147 @@ type
     //
     //==============================================================================
     class procedure P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonSearchActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_GlobalEarthQuake
+    //
+    //==============================================================================
+    class procedure A_GlobalEarthQuake(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckFloor
+    //
+    //==============================================================================
+    class procedure A_CheckFloor(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckCeiling
+    //
+    //==============================================================================
+    class procedure A_CheckCeiling(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckSight
+    //
+    //==============================================================================
+    class procedure A_CheckSight(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckSightOrRange
+    //
+    //==============================================================================
+    class procedure A_CheckSightOrRange(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckRange
+    //
+    //==============================================================================
+    class procedure A_CheckRange(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_MonsterRefire
+    //
+    //==============================================================================
+    class procedure A_MonsterRefire(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AlertMonsters
+    //
+    //==============================================================================
+    class procedure A_AlertMonsters(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LocalEarthQuake
+    //
+    //==============================================================================
+    class procedure A_LocalEarthQuake(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckFov
+    //
+    //==============================================================================
+    class function P_CheckFov(t1, t2: Pmobj_t; ffov: angle_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_RoughTargetSearch
+    //
+    //==============================================================================
+    class function P_RoughTargetSearch(mo: Pmobj_t; ffov: angle_t; distance: integer): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // A_NoiseAlert
+    //
+    //==============================================================================
+    class procedure A_NoiseAlert(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SeekTracer
+    //
+    //==============================================================================
+    class procedure A_SeekTracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_FindTracer
+    //
+    //==============================================================================
+    class procedure A_FindTracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ClearTracer
+    //
+    //==============================================================================
+    class procedure A_ClearTracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_WeaponAlert
+    //
+    //==============================================================================
+    class procedure A_WeaponAlert(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_NoiseAlertEx
+    //
+    //==============================================================================
+    class procedure P_NoiseAlertEx(target: Pmobj_t; emmiter: Pmobj_t; const maxdist: fixed_t); static;
+
+    //==============================================================================
+    //
+    // P_LocalEarthQuake
+    //
+    //==============================================================================
+    class procedure P_LocalEarthQuake(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t); static;
+
+    //==============================================================================
+    //
+    // P_NearestPlayer
+    //
+    //==============================================================================
+    class function P_NearestPlayer(const mo: Pmobj_t): Pplayer_t; static;
   end;
 
 
@@ -6278,7 +6286,7 @@ end;
 // A_GlobalEarthQuake (tics: integer);
 //
 //==============================================================================
-procedure A_GlobalEarthQuake(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_GlobalEarthQuake(actor: Pmobj_t);
 var
   qtics: integer;
   i: integer;
@@ -7024,7 +7032,7 @@ end;
 // A_CheckFloor
 //
 //==============================================================================
-procedure A_CheckFloor(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_CheckFloor(actor: Pmobj_t);
 var
   offset: integer;
 begin
@@ -7049,7 +7057,7 @@ end;
 // A_CheckCeiling
 //
 //==============================================================================
-procedure A_CheckCeiling(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_CheckCeiling(actor: Pmobj_t);
 var
   offset: integer;
 begin
@@ -7213,7 +7221,7 @@ end;
 // Jumps to offset if no player can see this actor
 //
 //==============================================================================
-procedure A_CheckSight(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_CheckSight(actor: Pmobj_t);
 var
   i: integer;
   offset: integer;
@@ -7238,7 +7246,7 @@ end;
 // Jumps to offset if no player can see this actor or out of player range
 //
 //==============================================================================
-procedure A_CheckSightOrRange(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_CheckSightOrRange(actor: Pmobj_t);
 var
   i: integer;
   offset: integer;
@@ -7288,7 +7296,7 @@ end;
 // Jumps to offset if out of player range
 //
 //==============================================================================
-procedure A_CheckRange(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_CheckRange(actor: Pmobj_t);
 var
   i: integer;
   offset: integer;
@@ -8918,7 +8926,7 @@ end;
 // A_MonsterRefire(prob: integer, offset: state_t)
 //
 //==============================================================================
-procedure A_MonsterRefire(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_MonsterRefire(actor: Pmobj_t);
 var
   prob: integer;
   offset: integer;
@@ -9061,12 +9069,23 @@ end;
 var
   soundtargetex: Pmobj_t;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonSearchActionsLocal = class sealed
+  public
+    class procedure P_RecursiveSoundEx(sec: Psector_t; soundblocks: integer; maxdist: fixed_t); static;
+    class function RoughBlockCheck(mo: Pmobj_t; index: integer; ffov: angle_t): Pmobj_t; static;
+  end;
+
 //==============================================================================
 //
 // P_RecursiveSoundEx
 //
 //==============================================================================
-procedure P_RecursiveSoundEx(sec: Psector_t; soundblocks: integer; maxdist: fixed_t);
+class procedure TCommonSearchActionsLocal.P_RecursiveSoundEx(sec: Psector_t; soundblocks: integer; maxdist: fixed_t);
 var
   i: integer;
   check: Pline_t;
@@ -9119,11 +9138,11 @@ end;
 // P_NoiseAlertEx
 //
 //==============================================================================
-procedure P_NoiseAlertEx(target: Pmobj_t; emmiter: Pmobj_t; const maxdist: fixed_t);
+class procedure TCommonSearchActions.P_NoiseAlertEx(target: Pmobj_t; emmiter: Pmobj_t; const maxdist: fixed_t);
 begin
   soundtargetex := target;
   inc(validcount);
-  P_RecursiveSoundEx(Psubsector_t(emmiter.subsector).sector, 0, maxdist);
+  TCommonSearchActionsLocal.P_RecursiveSoundEx(Psubsector_t(emmiter.subsector).sector, 0, maxdist);
 end;
 
 //==============================================================================
@@ -9131,7 +9150,7 @@ end;
 // A_AlertMonsters(maxdist: integer, flags: integer)
 //
 //==============================================================================
-procedure A_AlertMonsters(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_AlertMonsters(actor: Pmobj_t);
 var
   target, emitter: Pmobj_t;
   maxdist: fixed_t;
@@ -9171,7 +9190,7 @@ end;
 // P_LocalEarthQuake
 //
 //==============================================================================
-procedure P_LocalEarthQuake(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t);
+class procedure TCommonSearchActions.P_LocalEarthQuake(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxdist: fixed_t);
 var
   i: integer;
   dist: fixed_t;
@@ -9200,7 +9219,7 @@ end;
 // A_LocalEarthQuake(tics: integer; [intensity: float = 1.0]; [maxdist: float = MAXINT]);
 //
 //==============================================================================
-procedure A_LocalEarthQuake(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_LocalEarthQuake(actor: Pmobj_t);
 var
   tics: integer;
   intensity: integer;
@@ -9657,7 +9676,7 @@ end;
 // P_NearestPlayer
 //
 //==============================================================================
-function P_NearestPlayer(const mo: Pmobj_t): Pplayer_t;
+class function TCommonSearchActions.P_NearestPlayer(const mo: Pmobj_t): Pplayer_t;
 var
   i: integer;
   nearest: fixed_t;
@@ -9963,7 +9982,7 @@ end;
 // Adapted from Eternity, so big thanks to Quasar
 //
 //==============================================================================
-function P_CheckFov(t1, t2: Pmobj_t; ffov: angle_t): boolean;
+class function TCommonSearchActions.P_CheckFov(t1, t2: Pmobj_t; ffov: angle_t): boolean;
 var
   angle, minang, maxang: angle_t;
 begin
@@ -9983,7 +10002,7 @@ end;
 // [XA] adapted from Hexen -- used by P_RoughTargetSearch
 //
 //==============================================================================
-function RoughBlockCheck(mo: Pmobj_t; index: integer; ffov: angle_t): Pmobj_t;
+class function TCommonSearchActionsLocal.RoughBlockCheck(mo: Pmobj_t; index: integer; ffov: angle_t): Pmobj_t;
 var
   mobj: Pmobj_t;
   link: Pblocklinkitem_t;
@@ -10009,7 +10028,7 @@ begin
         continue;
 
     // skip actors outside of specified FOV
-    if (ffov > 0) and not P_CheckFov(mo, mobj, ffov) then
+    if (ffov > 0) and not TCommonSearchActions.P_CheckFov(mo, mobj, ffov) then
       continue;
 
     // skip actors not in line of sight
@@ -10033,7 +10052,7 @@ end;
 //    distance is in MAPBLOCKUNITS
 //
 //==============================================================================
-function P_RoughTargetSearch(mo: Pmobj_t; ffov: angle_t; distance: integer): Pmobj_t;
+class function TCommonSearchActions.P_RoughTargetSearch(mo: Pmobj_t; ffov: angle_t; distance: integer): Pmobj_t;
 var
   blockX: integer;
   blockY: integer;
@@ -10058,7 +10077,7 @@ begin
 
   if (startX >= 0) and (startX < bmapwidth) and (startY >= 0) and (startY < bmapheight) then
   begin
-    result := RoughBlockCheck(mo, startY * bmapwidth + startX, ffov);
+    result := TCommonSearchActionsLocal.RoughBlockCheck(mo, startY * bmapwidth + startX, ffov);
     if result <> nil then
     begin // found a target right away
       exit;
@@ -10103,7 +10122,7 @@ begin
     // Trace the first block section (along the top)
     while blockIndex <= firstStop do
     begin
-      result := RoughBlockCheck(mo, blockIndex, ffov);
+      result := TCommonSearchActionsLocal.RoughBlockCheck(mo, blockIndex, ffov);
       if result <> nil then
       begin
         exit;
@@ -10115,7 +10134,7 @@ begin
     dec(blockIndex);
     while blockIndex <= secondStop do
     begin
-      result := RoughBlockCheck(mo, blockIndex, ffov);
+      result := TCommonSearchActionsLocal.RoughBlockCheck(mo, blockIndex, ffov);
       if result <> nil then
       begin
         exit;
@@ -10127,7 +10146,7 @@ begin
     blockIndex := blockIndex - bmapwidth;
     while blockIndex >= thirdStop do
     begin
-      result := RoughBlockCheck(mo, blockIndex, ffov);
+      result := TCommonSearchActionsLocal.RoughBlockCheck(mo, blockIndex, ffov);
       if result <> nil then
       begin
         exit;
@@ -10139,7 +10158,7 @@ begin
     inc(blockindex);
     while blockIndex > finalStop do
     begin
-      result := RoughBlockCheck(mo, blockIndex, ffov);
+      result := TCommonSearchActionsLocal.RoughBlockCheck(mo, blockIndex, ffov);
       if result <> nil then
       begin
         exit;
@@ -10609,7 +10628,7 @@ end;
 // Alerts nearby monsters (via sound) to the calling actor's target's presence.
 //
 //==============================================================================
-procedure A_NoiseAlert(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_NoiseAlert(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -10873,7 +10892,7 @@ end;
 //   args[1]: maximum turn angle (degrees, in fixed point)
 //
 //==============================================================================
-procedure A_SeekTracer(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_SeekTracer(actor: Pmobj_t);
 var
   threshold, maxturnangle: angle_t;
 begin
@@ -10894,7 +10913,7 @@ end;
 //   args[1]: distance to search (map blocks, i.e. 128 units)
 //
 //==============================================================================
-procedure A_FindTracer(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_FindTracer(actor: Pmobj_t);
 var
   ffov: angle_t;
   dist: integer;
@@ -10917,7 +10936,7 @@ end;
 // Clear current tracer (seek target).
 //
 //==============================================================================
-procedure A_ClearTracer(actor: Pmobj_t);
+class procedure TCommonSearchActions.A_ClearTracer(actor: Pmobj_t);
 begin
   actor.tracer := nil;
 end;
@@ -10975,7 +10994,7 @@ begin
   ffov := FixedToAngle(actor.state.params.MBF21FixedVal[1]);
 
   // Check FOV first since it's faster
-  if (ffov > 0) and not P_CheckFov(actor, actor.target, ffov) then
+  if (ffov > 0) and not TCommonSearchActions.P_CheckFov(actor, actor.target, ffov) then
     exit;
 
   if P_CheckSight(actor, actor.target) then
@@ -11049,7 +11068,7 @@ begin
   ffov := FixedToAngle(actor.state.params.MBF21FixedVal[1]);
 
   // Check FOV first since it's faster
-  if (ffov > 0) and not P_CheckFov(actor, actor.tracer, ffov) then
+  if (ffov > 0) and not TCommonSearchActions.P_CheckFov(actor, actor.tracer, ffov) then
     exit;
 
   if P_CheckSight(actor, actor.tracer) then
@@ -12082,7 +12101,7 @@ end;
 // Alerts monsters to the player's presence. Handy when combined with WPF_SILENT.
 //
 //==============================================================================
-procedure A_WeaponAlert(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonSearchActions.A_WeaponAlert(player: Pplayer_t; psp: Ppspdef_t);
 begin
   if psp = nil then
     exit;
