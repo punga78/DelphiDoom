@@ -471,9 +471,6 @@ type
     class function D_EndoomScreen: IEngineEndoomScreen; static;
     class procedure D_FinishUpdate; static;
     class procedure D_RenderPlayerView(player: Pplayer_t); static;
-{$IFDEF OPENGL}
-    class procedure D_DisplayHU; static;
-{$ENDIF}
     class procedure D_DoomLoop; static;
 {$IFDEF OPENGL}
     class function D_GlbspRunner: IEngineGlbspRunner; static;
@@ -921,7 +918,7 @@ class procedure TMainRoutines.D_Display;
 // D_DisplayHU
 //
 //==============================================================================
-class procedure TMainLocalRoutines.D_DisplayHU;
+procedure D_DisplayHU;
 {$ENDIF}
 var
   y: integer;
@@ -1196,7 +1193,7 @@ begin
   if TGameSession.GameState = GS_LEVEL then
     if amstate = am_overlay then
       AM_Drawer;
-  TMainLocalRoutines.D_DisplayHU;
+  D_DisplayHU;
   TMainLocalRoutines.D_FinishUpdate; // page flip or blit buffer
 end;
 {$ENDIF}
