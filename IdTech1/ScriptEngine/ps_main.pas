@@ -688,7 +688,7 @@ begin
   if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS <> 0 then
     Exit;
 
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     Exit;
 
   for i := 0 to actor.state.params.Count - 1 do

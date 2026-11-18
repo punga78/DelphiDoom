@@ -299,7 +299,7 @@ var
   slope: fixed_t;
   rnd: byte;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   if actor.target = nil then
@@ -530,7 +530,7 @@ var
   msg: string;
   i: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   p := actor.player;

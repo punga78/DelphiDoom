@@ -515,7 +515,7 @@ begin
     st := @states[Ord(state)];
 
     mobj.state := st;
-    mobj.tics := P_TicsFromState(st);
+    mobj.tics := TCommonStateParamActions.P_TicsFromState(st);
     mobj.sprite := st.sprite;
     mobj.frame := st.frame;
 
@@ -577,7 +577,7 @@ begin
   begin
     st := @states[Ord(state)];
     mobj.state := st;
-    mobj.tics := P_TicsFromState(st);
+    mobj.tics := TCommonStateParamActions.P_TicsFromState(st);
     mobj.sprite := st.sprite;
     mobj.frame := st.frame;
     result := true;
@@ -948,7 +948,7 @@ begin
   st := @states[info.spawnstate];
 
   mobj.state := st;
-  mobj.tics := P_TicsFromState(st);
+  mobj.tics := TCommonStateParamActions.P_TicsFromState(st);
   mobj.sprite := st.sprite;
   mobj.frame := st.frame;
   TMobjGameRules.InitStateMemory(mobj, st);

@@ -291,7 +291,7 @@ var
   dx, dy: fixed_t;
   snd: string;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   dx := actor.state.params.FixedVal[0];
@@ -318,7 +318,7 @@ var
   dx, dy: fixed_t;
   snd: string;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   dx := actor.state.params.FixedVal[0];
@@ -458,7 +458,7 @@ var
   targ: Pmobj_t;
   st: integer;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   z1 := actor.state.params.FixedVal[0];
@@ -503,7 +503,7 @@ var
   maxmomxy: fixed_t;
   dx, dy, dz: fixed_t;
 begin
-  if not P_CheckStateParams(actor, 4, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 4, CSP_AT_LEAST) then
     exit;
 
   targ := actor.target;
@@ -633,7 +633,7 @@ end;
 //==============================================================================
 procedure A_LimitBounceControl(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   P_SetMobjCustomParam(actor, S_PARAM_BOUNCECNT, actor.state.params.IntVal[0]);
@@ -648,7 +648,7 @@ end;
 //==============================================================================
 procedure A_WallBounceFactor(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   P_SetMobjCustomParam(actor, S_PARAM_WALLBOUNCEFACTOR, actor.state.params.FixedVal[0]);
@@ -675,7 +675,7 @@ var
   dist: fixed_t;
   propability: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   if actor.target = nil then
@@ -705,7 +705,7 @@ var
   i: integer;
   nearest, distance: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   mindist := actor.state.params.FixedVal[0];
@@ -782,7 +782,7 @@ var
   x1, x2, y1, y2: integer;
   pmo: Pmobj_t;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   dist := (actor.state.params.FixedVal[0] div 2) + 1;

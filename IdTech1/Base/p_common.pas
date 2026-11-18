@@ -45,20 +45,6 @@ const
 
 //==============================================================================
 //
-// P_CheckStateParams
-//
-//==============================================================================
-function P_CheckStateParams(actor: Pmobj_t; const numparms: integer = -1; const flags: LongWord = 0): boolean;
-
-//==============================================================================
-//
-// A_ConsoleCommand
-//
-//==============================================================================
-procedure A_ConsoleCommand(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_CustomMissile
 //
 //==============================================================================
@@ -115,41 +101,6 @@ procedure A_ScreamAndUnblock(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetDropItem
-//
-//==============================================================================
-procedure A_SetDropItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetDefaultDropItem
-//
-//==============================================================================
-procedure A_SetDefaultDropItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TargetDropItem
-//
-//==============================================================================
-procedure A_TargetDropItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DefaultTargetDropItem
-//
-//==============================================================================
-procedure A_DefaultTargetDropItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_ActorTarget
-//
-//==============================================================================
-function P_ActorTarget(const actor: Pmobj_t): Pmobj_t;
-
-//==============================================================================
-//
 // A_ResetHealth
 //
 //==============================================================================
@@ -185,59 +136,10 @@ procedure A_ChangeFlag(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_CountdownArg
-//
-//==============================================================================
-procedure A_CountdownArg(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetArg
-//
-//==============================================================================
-procedure A_SetArg(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMasterArg
-//
-//==============================================================================
-procedure A_SetMasterArg(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTargetArg
-//
-//==============================================================================
-procedure A_SetTargetArg(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTracerArg
-//
-//==============================================================================
-procedure A_SetTracerArg(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetSpecial
-//
-//==============================================================================
-procedure A_SetSpecial(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_CheckFlag
 //
 //==============================================================================
 procedure A_CheckFlag(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTics
-//
-//==============================================================================
-procedure A_SetTics(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -346,12 +248,6 @@ procedure A_Scratch(actor: Pmobj_t);
 
 {$IFNDEF HEXEN}
 
-//==============================================================================
-//
-// A_LineEffect
-//
-//==============================================================================
-procedure A_LineEffect(actor: Pmobj_t);
 {$ENDIF}
 
 //==============================================================================
@@ -402,20 +298,6 @@ procedure A_HealThing(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_BasicAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RearrangePointers
-//
-//==============================================================================
-procedure A_RearrangePointers(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_TransferPointer
-//
-//==============================================================================
-procedure A_TransferPointer(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -480,13 +362,6 @@ function P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean;
 //
 //==============================================================================
 procedure P_ResolveMBF21Flags(const m: Pmobjinfo_t);
-
-//==============================================================================
-//
-// P_CheckStateArgs
-//
-//==============================================================================
-function P_CheckStateArgs(state: Pstate_t): boolean;
 
 //==============================================================================
 //
@@ -752,20 +627,6 @@ const
   AMF_TARGETEMITTER = 1;
   AMF_TARGETNONPLAYER = 2;
   AMF_EMITFROMTARGET = 4;
-
-//==============================================================================
-//
-// P_TicsFromState
-//
-//==============================================================================
-function P_TicsFromState(const st: Pstate_t): integer;
-
-//==============================================================================
-//
-// P_SetMobjRelativeState
-//
-//==============================================================================
-procedure P_SetMobjRelativeState(const mo: Pmobj_t; const offset: integer);
 
 //==============================================================================
 //
@@ -2423,6 +2284,154 @@ type
     class function P_NearestPlayer(const mo: Pmobj_t): Pplayer_t; static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonStateParamActions = class sealed
+  public
+    //==============================================================================
+    //
+    // P_CheckStateParams
+    //
+    //==============================================================================
+    class function P_CheckStateParams(actor: Pmobj_t; const numparms: integer = -1; const flags: LongWord = 0): boolean; static;
+
+    //==============================================================================
+    //
+    // A_ConsoleCommand
+    //
+    //==============================================================================
+    class procedure A_ConsoleCommand(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetDropItem
+    //
+    //==============================================================================
+    class procedure A_SetDropItem(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetDefaultDropItem
+    //
+    //==============================================================================
+    class procedure A_SetDefaultDropItem(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TargetDropItem
+    //
+    //==============================================================================
+    class procedure A_TargetDropItem(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DefaultTargetDropItem
+    //
+    //==============================================================================
+    class procedure A_DefaultTargetDropItem(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_ActorTarget
+    //
+    //==============================================================================
+    class function P_ActorTarget(const actor: Pmobj_t): Pmobj_t; static;
+
+    //==============================================================================
+    //
+    // A_CountdownArg
+    //
+    //==============================================================================
+    class procedure A_CountdownArg(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetArg
+    //
+    //==============================================================================
+    class procedure A_SetArg(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMasterArg
+    //
+    //==============================================================================
+    class procedure A_SetMasterArg(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTargetArg
+    //
+    //==============================================================================
+    class procedure A_SetTargetArg(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTracerArg
+    //
+    //==============================================================================
+    class procedure A_SetTracerArg(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetSpecial
+    //
+    //==============================================================================
+    class procedure A_SetSpecial(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTics
+    //
+    //==============================================================================
+    class procedure A_SetTics(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_LineEffect
+    //
+    //==============================================================================
+    class procedure A_LineEffect(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RearrangePointers
+    //
+    //==============================================================================
+    class procedure A_RearrangePointers(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_TransferPointer
+    //
+    //==============================================================================
+    class procedure A_TransferPointer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckStateArgs
+    //
+    //==============================================================================
+    class function P_CheckStateArgs(state: Pstate_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_TicsFromState
+    //
+    //==============================================================================
+    class function P_TicsFromState(const st: Pstate_t): integer; static;
+
+    //==============================================================================
+    //
+    // P_SetMobjRelativeState
+    //
+    //==============================================================================
+    class procedure P_SetMobjRelativeState(const mo: Pmobj_t; const offset: integer); static;
+  end;
+
 
 implementation
 
@@ -2570,7 +2579,7 @@ end;
 // P_CheckStateParams
 //
 //==============================================================================
-function P_CheckStateParams(actor: Pmobj_t; const numparms: integer = -1; const flags: LongWord = 0): boolean;
+class function TCommonStateParamActions.P_CheckStateParams(actor: Pmobj_t; const numparms: integer = -1; const flags: LongWord = 0): boolean;
 begin
   if numparms = 0 then
   begin
@@ -2646,7 +2655,7 @@ var
   propability: integer;
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   propability := actor.state.params.IntVal[0];  // JVAL simple integer values are precalculated
@@ -2678,7 +2687,7 @@ var
   target: Pmobj_t;
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.player = nil then
@@ -2720,7 +2729,7 @@ class procedure TCommonJumpActions.A_GoToIfHealthLower(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.health < actor.state.params.IntVal[0] then
@@ -2742,7 +2751,7 @@ end;
 // A_ConsoleCommand
 //
 //==============================================================================
-procedure A_ConsoleCommand(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_ConsoleCommand(actor: Pmobj_t);
 var
   cmd: string;
   i: integer;
@@ -2804,7 +2813,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetCustomParam(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   P_SetMobjCustomParam(actor, actor.state.params.StrVal[0], actor.state.params.IntVal[1]);
@@ -2820,7 +2829,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   sparm := actor.state.params.StrVal[0];
@@ -2841,7 +2850,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   sparm := actor.state.params.StrVal[0];
@@ -2859,7 +2868,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetTargetCustomParam(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.target = nil then
@@ -2878,7 +2887,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.target = nil then
@@ -2902,7 +2911,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.target = nil then
@@ -2923,7 +2932,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetMasterCustomParam(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.master = nil then
@@ -2942,7 +2951,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.master = nil then
@@ -2966,7 +2975,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.master = nil then
@@ -2987,7 +2996,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetTracerCustomParam(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.tracer = nil then
@@ -3006,7 +3015,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.tracer = nil then
@@ -3030,7 +3039,7 @@ var
   parm: Pmobjcustomparam_t;
   sparm: string;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.tracer = nil then
@@ -3058,7 +3067,7 @@ var
   N: TDNumberList;
   i: integer;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   boolret := actor.state.params.BoolVal[0];
@@ -3091,7 +3100,7 @@ class procedure TCommonJumpActions.A_JumpIfCustomParam(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3113,7 +3122,7 @@ class procedure TCommonJumpActions.A_JumpIfCustomParamLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3135,7 +3144,7 @@ class procedure TCommonJumpActions.A_JumpIfCustomParamGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -3160,7 +3169,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.target, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3185,7 +3194,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.target, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3210,7 +3219,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.target, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -3235,7 +3244,7 @@ begin
   if actor.master = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.master, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3260,7 +3269,7 @@ begin
   if actor.master = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.master, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3285,7 +3294,7 @@ begin
   if actor.master = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.master, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -3310,7 +3319,7 @@ begin
   if actor.tracer = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.tracer, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3335,7 +3344,7 @@ begin
   if actor.tracer = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.tracer, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3360,7 +3369,7 @@ begin
   if actor.tracer = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.tracer, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -3383,7 +3392,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.StrVal[actor.state.params.StrVal[0]] = actor.state.params.StrVal[1] then
@@ -3403,7 +3412,7 @@ class procedure TCommonJumpActions.A_JumpIfMapStringLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.StrVal[actor.state.params.StrVal[0]] < actor.state.params.StrVal[1] then
@@ -3423,7 +3432,7 @@ class procedure TCommonJumpActions.A_JumpIfMapStringGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.StrVal[actor.state.params.StrVal[0]] > actor.state.params.StrVal[1] then
@@ -3443,7 +3452,7 @@ class procedure TCommonJumpActions.A_JumpIfMapIntegerEqual(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.IntVal[actor.state.params.StrVal[0]] = actor.state.params.IntVal[1] then
@@ -3463,7 +3472,7 @@ class procedure TCommonJumpActions.A_JumpIfMapIntegerLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.IntVal[actor.state.params.StrVal[0]] < actor.state.params.IntVal[1] then
@@ -3483,7 +3492,7 @@ class procedure TCommonJumpActions.A_JumpIfMapIntegerGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.IntVal[actor.state.params.StrVal[0]] > actor.state.params.IntVal[1] then
@@ -3503,7 +3512,7 @@ class procedure TCommonJumpActions.A_JumpIfMapFloatEqual(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.FloatVal[actor.state.params.StrVal[0]] = actor.state.params.FloatVal[1] then
@@ -3523,7 +3532,7 @@ class procedure TCommonJumpActions.A_JumpIfMapFloatLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.FloatVal[actor.state.params.StrVal[0]] < actor.state.params.FloatVal[1] then
@@ -3543,7 +3552,7 @@ class procedure TCommonJumpActions.A_JumpIfMapFloatGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.FloatVal[actor.state.params.StrVal[0]] > actor.state.params.FloatVal[1] then
@@ -3563,7 +3572,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldStringEqual(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.StrVal[actor.state.params.StrVal[0]] = actor.state.params.StrVal[1] then
@@ -3583,7 +3592,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldStringLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.StrVal[actor.state.params.StrVal[0]] < actor.state.params.StrVal[1] then
@@ -3603,7 +3612,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldStringGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.StrVal[actor.state.params.StrVal[0]] > actor.state.params.StrVal[1] then
@@ -3623,7 +3632,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldIntegerEqual(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.IntVal[actor.state.params.StrVal[0]] = actor.state.params.IntVal[1] then
@@ -3643,7 +3652,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldIntegerLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.IntVal[actor.state.params.StrVal[0]] < actor.state.params.IntVal[1] then
@@ -3663,7 +3672,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldIntegerGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.IntVal[actor.state.params.StrVal[0]] > actor.state.params.IntVal[1] then
@@ -3683,7 +3692,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldFloatEqual(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.FloatVal[actor.state.params.StrVal[0]] = actor.state.params.FloatVal[1] then
@@ -3703,7 +3712,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldFloatLess(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.FloatVal[actor.state.params.StrVal[0]] < actor.state.params.FloatVal[1] then
@@ -3723,7 +3732,7 @@ class procedure TCommonJumpActions.A_JumpIfWorldFloatGreater(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.FloatVal[actor.state.params.StrVal[0]] > actor.state.params.FloatVal[1] then
@@ -3745,7 +3754,7 @@ class procedure TCommonJumpActions.A_GoToIfCustomParam(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3773,7 +3782,7 @@ class procedure TCommonJumpActions.A_GoToIfCustomParamLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3801,7 +3810,7 @@ class procedure TCommonJumpActions.A_GoToIfCustomParamGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -3832,7 +3841,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.target, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3863,7 +3872,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.target, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3894,7 +3903,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.target, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -3925,7 +3934,7 @@ begin
   if actor.master = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.master, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -3956,7 +3965,7 @@ begin
   if actor.master = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.master, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -3987,7 +3996,7 @@ begin
   if actor.master = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.master, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -4018,7 +4027,7 @@ begin
   if actor.tracer = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.tracer, actor.state.params.StrVal[0]) = actor.state.params.IntVal[1] then
@@ -4049,7 +4058,7 @@ begin
   if actor.tracer = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.tracer, actor.state.params.StrVal[0]) < actor.state.params.IntVal[1] then
@@ -4080,7 +4089,7 @@ begin
   if actor.tracer = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if P_GetMobjCustomParamValue(actor.tracer, actor.state.params.StrVal[0]) > actor.state.params.IntVal[1] then
@@ -4108,7 +4117,7 @@ class procedure TCommonJumpActions.A_GoToIfMapStringEqual(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.StrVal[actor.state.params.StrVal[0]] = actor.state.params.StrVal[1] then
@@ -4136,7 +4145,7 @@ class procedure TCommonJumpActions.A_GoToIfMapStringLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.StrVal[actor.state.params.StrVal[0]] < actor.state.params.StrVal[1] then
@@ -4164,7 +4173,7 @@ class procedure TCommonJumpActions.A_GoToIfMapStringGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.StrVal[actor.state.params.StrVal[0]] > actor.state.params.StrVal[1] then
@@ -4190,7 +4199,7 @@ class procedure TCommonJumpActions.A_GoToIfMapIntegerEqual(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.IntVal[actor.state.params.StrVal[0]] = actor.state.params.IntVal[1] then
@@ -4216,7 +4225,7 @@ class procedure TCommonJumpActions.A_GoToIfMapIntegerLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.IntVal[actor.state.params.StrVal[0]] < actor.state.params.IntVal[1] then
@@ -4242,7 +4251,7 @@ class procedure TCommonJumpActions.A_GoToIfMapIntegerGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.IntVal[actor.state.params.StrVal[0]] > actor.state.params.IntVal[1] then
@@ -4268,7 +4277,7 @@ class procedure TCommonJumpActions.A_GoToIfMapFloatEqual(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.FloatVal[actor.state.params.StrVal[0]] = actor.state.params.FloatVal[1] then
@@ -4294,7 +4303,7 @@ class procedure TCommonJumpActions.A_GoToIfMapFloatLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.FloatVal[actor.state.params.StrVal[0]] < actor.state.params.FloatVal[1] then
@@ -4320,7 +4329,7 @@ class procedure TCommonJumpActions.A_GoToIfMapFloatGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if mapvars.FloatVal[actor.state.params.StrVal[0]] > actor.state.params.FloatVal[1] then
@@ -4348,7 +4357,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldStringEqual(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.StrVal[actor.state.params.StrVal[0]] = actor.state.params.StrVal[1] then
@@ -4376,7 +4385,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldStringLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.StrVal[actor.state.params.StrVal[0]] < actor.state.params.StrVal[1] then
@@ -4404,7 +4413,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldStringGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.StrVal[actor.state.params.StrVal[0]] > actor.state.params.StrVal[1] then
@@ -4430,7 +4439,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldIntegerEqual(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.IntVal[actor.state.params.StrVal[0]] = actor.state.params.IntVal[1] then
@@ -4456,7 +4465,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldIntegerLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.IntVal[actor.state.params.StrVal[0]] < actor.state.params.IntVal[1] then
@@ -4482,7 +4491,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldIntegerGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.IntVal[actor.state.params.StrVal[0]] > actor.state.params.IntVal[1] then
@@ -4508,7 +4517,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldFloatEqual(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.FloatVal[actor.state.params.StrVal[0]] = actor.state.params.FloatVal[1] then
@@ -4534,7 +4543,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldFloatLess(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.FloatVal[actor.state.params.StrVal[0]] < actor.state.params.FloatVal[1] then
@@ -4560,7 +4569,7 @@ class procedure TCommonJumpActions.A_GoToIfWorldFloatGreater(actor: Pmobj_t);
 var
   newstate: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   if Worldvars.FloatVal[actor.state.params.StrVal[0]] > actor.state.params.FloatVal[1] then
@@ -4819,7 +4828,7 @@ begin
     exit;
   end;
 
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if actor.state.params.IsComputed[0] then
@@ -4857,7 +4866,7 @@ var
   sndidx: integer;
   i: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   if actor.state.params.Count = 0 then // Should never happen
@@ -4912,7 +4921,7 @@ var
   N: TDNumberList;
   i: integer;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   propability := actor.state.params.IntVal[0];  // JVAL simple integer values are precalculated
@@ -5055,7 +5064,7 @@ var
   aimmode: integer;
   pitch: angle_t;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   if actor.state.params.IsComputed[0] then
@@ -5101,7 +5110,7 @@ var
   missilespeed: fixed_t;
   owner: Pmobj_t;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   // Random index
@@ -5181,7 +5190,7 @@ var
   mo: Pmobj_t;
   ang: angle_t;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   if actor.state.params.IsComputed[0] then
@@ -5408,7 +5417,7 @@ var
   flags: integer;
   chance: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   chance := actor.state.params.IntVal[9];
@@ -5504,7 +5513,7 @@ end;
 //==============================================================================
 procedure A_SeekerMissile(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   P_SeekerMissile(actor, actor.state.params.IntVal[0] * ANG1, actor.state.params.IntVal[1] * ANG1);
@@ -5541,7 +5550,7 @@ class procedure TCommonAppearanceActions.A_SetTranslucent(actor: Pmobj_t);
 var
   newstyle: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   actor.alpha := actor.state.params.FixedVal[0];
@@ -5812,7 +5821,7 @@ var
   ang: angle_t;
   x, y: fixed_t;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   offs := actor.state.params.Fixedval[0];
@@ -5835,7 +5844,7 @@ end;
 //==============================================================================
 class procedure TCommonMovementActions.A_ThrustZ(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.momz := actor.momz + actor.state.params.FixedVal[0];
@@ -5853,7 +5862,7 @@ var
   ang: angle_t;
   thrust: fixed_t;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   thrust := actor.state.params.FixedVal[0];
@@ -5883,7 +5892,7 @@ begin
     exit;
   end;
 
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   ang := round(actor.state.params.FloatVal[0] * ANG1);
@@ -5903,7 +5912,7 @@ var
   target: Pmobj_t;
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.player = nil then
@@ -5939,7 +5948,7 @@ class procedure TCommonJumpActions.A_JumpIfHealthLower(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   if actor.health < actor.state.params.IntVal[0] then
@@ -6177,7 +6186,7 @@ end;
 // A_SetDropItem
 //
 //==============================================================================
-procedure A_SetDropItem(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetDropItem(actor: Pmobj_t);
 var
   mobj_no: integer;
 begin
@@ -6206,7 +6215,7 @@ end;
 // A_SetDefaultDropItem
 //
 //==============================================================================
-procedure A_SetDefaultDropItem(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetDefaultDropItem(actor: Pmobj_t);
 begin
   actor.dropitem := 0;
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_CUSTOMDROPITEM;
@@ -6217,7 +6226,7 @@ end;
 // A_TargetDropItem
 //
 //==============================================================================
-procedure A_TargetDropItem(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_TargetDropItem(actor: Pmobj_t);
 var
   mobj_no: integer;
 begin
@@ -6249,7 +6258,7 @@ end;
 // A_DefaultTargetDropItem
 //
 //==============================================================================
-procedure A_DefaultTargetDropItem(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_DefaultTargetDropItem(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -6263,7 +6272,7 @@ end;
 // P_ActorTarget
 //
 //==============================================================================
-function P_ActorTarget(const actor: Pmobj_t): Pmobj_t;
+class function TCommonStateParamActions.P_ActorTarget(const actor: Pmobj_t): Pmobj_t;
 begin
   if actor = nil then
   begin
@@ -6291,7 +6300,7 @@ var
   qtics: integer;
   i: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   qtics := actor.state.params.IntVal[0] * FRACUNIT;
@@ -6311,7 +6320,7 @@ var
   s: string;
   i: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   s := '';
@@ -6333,7 +6342,7 @@ var
   s: string;
   i: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   s := '';
@@ -6352,7 +6361,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetMapInt(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   PS_SetMapInt(actor.state.params.StrVal[0], actor.state.params.IntVal[1]);
@@ -6363,7 +6372,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetWorldInt(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   PS_SetWorldInt(actor.state.params.StrVal[0], actor.state.params.IntVal[1]);
@@ -6374,7 +6383,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetMapFloat(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   PS_SetMapFloat(actor.state.params.StrVal[0], actor.state.params.FloatVal[1]);
@@ -6385,7 +6394,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetWorldFloat(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   PS_SetWorldFloat(actor.state.params.StrVal[0], actor.state.params.FloatVal[1]);
@@ -6401,7 +6410,7 @@ var
   newstate: integer;
   idx: integer;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   idx := N_Random mod actor.state.params.Count;
@@ -6458,7 +6467,7 @@ end;
 //==============================================================================
 procedure A_SetHealth(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   P_SetHealth(actor, actor.state.params.IntVal[0]);
@@ -6485,7 +6494,7 @@ begin
   if actor.target = nil then
     exit;
 
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   P_SetHealth(actor.target, actor.state.params.IntVal[0]);
@@ -6501,7 +6510,7 @@ var
   xymom: fixed_t;
   angle: angle_t;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   xymom := actor.state.params.FixedVal[0];
@@ -6561,7 +6570,7 @@ class procedure TCommonMovementActions.A_ScaleVelocity(actor: Pmobj_t);
 var
   scale: fixed_t;
 begin
-  if not P_CheckStateParams(actor) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor) then
     exit;
 
   scale := actor.state.params.FixedVal[0];
@@ -6588,7 +6597,7 @@ var
   sc: TScriptScanner;
   i: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   vx := actor.state.params.FixedVal[0];
@@ -6643,7 +6652,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetPushFactor(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.pushfactor := actor.state.params.FixedVal[0];
@@ -6656,7 +6665,7 @@ end;
 //==============================================================================
 class procedure TCommonAppearanceActions.A_SetScale(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.scale := actor.state.params.FixedVal[0];
@@ -6669,7 +6678,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetGravity(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.gravity := actor.state.params.FixedVal[0];
@@ -6751,7 +6760,7 @@ const
 var
   scolor: string;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   if not actor.state.params.IsComputed[0] then
@@ -6786,7 +6795,7 @@ end;
 // P_TicsFromState
 //
 //==============================================================================
-function P_TicsFromState(const st: Pstate_t): integer;
+class function TCommonStateParamActions.P_TicsFromState(const st: Pstate_t): integer;
 begin
   if st.flags_ex and MF_EX_STATE_RANDOM_SELECT <> 0 then
   begin
@@ -6829,7 +6838,7 @@ var
   mindist: integer;
   maxturn: angle_t;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   pct := actor.state.params.IntVal[0];
@@ -6914,7 +6923,7 @@ var
   flg: LongWord;
   idx: integer;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   sflag := strupper(actor.state.params.StrVal[0]);
@@ -7061,7 +7070,7 @@ class procedure TCommonSearchActions.A_CheckCeiling(actor: Pmobj_t);
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if actor.z >= actor.ceilingz then
@@ -7091,7 +7100,7 @@ class procedure TCommonJumpActions.A_JumpIfTargetOutsideMeleeRange(actor: Pmobj_
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if not TMonsterBaseActions.P_CheckMeleeRange(actor) then
@@ -7111,7 +7120,7 @@ class procedure TCommonJumpActions.A_JumpIfTargetInsideMeleeRange(actor: Pmobj_t
 var
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if TMonsterBaseActions.P_CheckMeleeRange(actor) then
@@ -7138,7 +7147,7 @@ begin
     exit;
   end;
 
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   // No tracer - no jump
@@ -7161,7 +7170,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetMass(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.mass := actor.state.params.IntVal[0];
@@ -7174,7 +7183,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetTargetMass(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if actor.target = nil then
@@ -7190,7 +7199,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetTracerMass(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if actor.tracer = nil then
@@ -7206,7 +7215,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetMasterMass(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   if actor.master = nil then
@@ -7226,7 +7235,7 @@ var
   i: integer;
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   for i := 0 to MAXPLAYERS - 1 do
@@ -7255,7 +7264,7 @@ var
   twodi: boolean;
   dx, dy, dz: fixed64_t;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   distance := actor.state.params.FixedVal[0];
@@ -7305,7 +7314,7 @@ var
   twodi: boolean;
   dx, dy, dz: fixed64_t;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   distance := actor.state.params.FixedVal[0];
@@ -7339,7 +7348,7 @@ end;
 // A_CountdownArg(arg: integer; offset: integer);
 //
 //==============================================================================
-procedure A_CountdownArg(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_CountdownArg(actor: Pmobj_t);
 var
   arg: integer;
   sarg: string;
@@ -7406,7 +7415,7 @@ end;
 // A_SetArg(arg: integer; value: integer)
 //
 //==============================================================================
-procedure A_SetArg(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetArg(actor: Pmobj_t);
 var
   arg: integer;
   sarg: string;
@@ -7441,7 +7450,7 @@ end;
 // A_SetMasterArg(arg: integer; value: integer)
 //
 //==============================================================================
-procedure A_SetMasterArg(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetMasterArg(actor: Pmobj_t);
 var
   arg: integer;
   sarg: string;
@@ -7478,7 +7487,7 @@ end;
 // A_SetTargetArg(arg: integer; value: integer)
 //
 //==============================================================================
-procedure A_SetTargetArg(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetTargetArg(actor: Pmobj_t);
 var
   arg: integer;
   sarg: string;
@@ -7515,7 +7524,7 @@ end;
 // A_SetTracerArg(arg: integer; value: integer)
 //
 //==============================================================================
-procedure A_SetTracerArg(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetTracerArg(actor: Pmobj_t);
 var
   arg: integer;
   sarg: string;
@@ -7552,7 +7561,7 @@ end;
 // A_SetSpecial(special: integer; [arg1, arg2, arg3, arg4, arg5: integer]);
 //
 //==============================================================================
-procedure A_SetSpecial(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetSpecial(actor: Pmobj_t);
 var
   cnt: integer;
 begin
@@ -7596,7 +7605,7 @@ var
   offset: integer;
   mo: Pmobj_t;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   sflag := strupper(actor.state.params.StrVal[0]);
@@ -7721,7 +7730,7 @@ var
   ang: angle_t;
   flags: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   mo := COPY_AAPTR(actor, actor.state.params.IntVal[2]);
@@ -7747,7 +7756,7 @@ end;
 //==============================================================================
 class procedure TCommonCustomParamActions.A_SetUserVar(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   P_SetMobjCustomParam(actor, actor.state.params.StrVal[0], actor.state.params.IntVal[1]);
@@ -7767,7 +7776,7 @@ class procedure TCommonCustomParamActions.A_SetUserArray(actor: Pmobj_t);
 var
   arr: string;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   sprintf(arr, '%s[%d]', [actor.state.params.StrVal[0], actor.state.params.IntVal[1]]);
@@ -7779,7 +7788,7 @@ end;
 // A_SetTics(tics: integer)
 //
 //==============================================================================
-procedure A_SetTics(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_SetTics(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -7798,7 +7807,7 @@ var
   mo: Pmobj_t;
   propability: integer;
 begin
-  if not P_CheckStateParams(actor, 3) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3) then
     exit;
 
   propability := actor.state.params.IntVal[0];
@@ -7855,7 +7864,7 @@ procedure A_DamageSelf(actor: Pmobj_t);
 var
   damage: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   damage := actor.state.params.IntVal[0];
@@ -7872,7 +7881,7 @@ procedure A_DamageTarget(actor: Pmobj_t);
 var
   damage: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   if actor.target = nil then
@@ -7892,7 +7901,7 @@ procedure A_DamageTracer(actor: Pmobj_t);
 var
   damage: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   if actor.tracer = nil then
@@ -7911,7 +7920,7 @@ procedure A_DamageMaster(actor: Pmobj_t);
 var
   damage: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   if actor.master = nil then
@@ -8059,7 +8068,7 @@ class procedure TCommonStateBitActions.A_SetFloatBobPhase(actor: Pmobj_t);
 var
   bob: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   bob := actor.state.params.IntVal[0];
@@ -8083,7 +8092,7 @@ end;
 // P_SetMobjRelativeState
 //
 //==============================================================================
-procedure P_SetMobjRelativeState(const mo: Pmobj_t; const offset: integer);
+class procedure TCommonStateParamActions.P_SetMobjRelativeState(const mo: Pmobj_t; const offset: integer);
 var
   cur: integer;
 begin
@@ -8225,7 +8234,7 @@ end;
 // A_LineEffect
 //
 //==============================================================================
-procedure A_LineEffect(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_LineEffect(actor: Pmobj_t);
 var
   player: player_t;
   oldplayer: Pplayer_t;
@@ -8270,7 +8279,7 @@ class procedure TCommonAppearanceActions.A_RandomFlipSprite(actor: Pmobj_t);
 var
   chance: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   chance := actor.state.params.IntVal[0];
@@ -8297,7 +8306,7 @@ class procedure TCommonAppearanceActions.A_RandomNoFlipSprite(actor: Pmobj_t);
 var
   chance: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   chance := actor.state.params.IntVal[0];
@@ -8342,7 +8351,7 @@ var
   damage: integer;
   sndidx: integer;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   if actor.target = nil then
@@ -8391,7 +8400,7 @@ var
   x, y, z: fixed_t;
   missile: Pmobj_t;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   if actor.target = nil then
@@ -8444,7 +8453,7 @@ end;
 //==============================================================================
 class procedure TCommonAppearanceActions.A_SetRenderStyle(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   actor.renderstyle := R_GetRenderstyleForName(actor.state.params.StrVal[0]);
@@ -8464,7 +8473,7 @@ var
   amount: fixed_t;
   flags: integer;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   targ := actor.state.params.FixedVal[0];
@@ -8509,7 +8518,7 @@ var
   oldradius, oldheight: fixed_t;
   testpos: boolean;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   newradius := actor.state.params.IntVal[0];
@@ -8740,7 +8749,7 @@ var
   mx: integer;
   p: Pplayer_t;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   ammount := actor.state.params.IntVal[0];
@@ -8812,7 +8821,7 @@ var
   MissileType: integer;
   MissileHeight: fixed_t;
 begin
-  if not P_CheckStateParams(actor, 4) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 4) then
     exit;
 
   MeleeDamage := actor.state.params.IntVal[0];
@@ -8931,7 +8940,7 @@ var
   prob: integer;
   offset: integer;
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   A_FaceTarget(actor);
@@ -8953,7 +8962,7 @@ end;
 // A_RearrangePointers(ptr_target: integer, ptr_master: integer, ptr_tracer: integer, flags: integer)
 //
 //==============================================================================
-procedure A_RearrangePointers(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_RearrangePointers(actor: Pmobj_t);
 var
   gettarget: Pmobj_t;
   getmaster: Pmobj_t;
@@ -9030,7 +9039,7 @@ end;
 // A_TransferPointer(ptr_source: integer, ptr_recipient: integer, ptr_sourcefield: integer, [ptr_recipientfield: integer], [flags: integer])
 //
 //==============================================================================
-procedure A_TransferPointer(actor: Pmobj_t);
+class procedure TCommonStateParamActions.A_TransferPointer(actor: Pmobj_t);
 var
   source, recipient: Pmobj_t;
   ptr_source: integer;
@@ -9156,7 +9165,7 @@ var
   maxdist: fixed_t;
   flags: integer;
 begin
-  if not P_CheckStateParams(actor, 3, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 3, CSP_AT_LEAST) then
     exit;
 
   target := nil;
@@ -9225,7 +9234,7 @@ var
   intensity: integer;
   maxdist: fixed_t;
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   tics := actor.state.params.FixedVal[0];
@@ -9426,7 +9435,7 @@ end;
 //==============================================================================
 class procedure TCommonMovementActions.A_SetWeaveIndexXY(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.WeaveIndexXY := actor.state.params.IntVal[0] and FLOATBOBMASK;
@@ -9439,7 +9448,7 @@ end;
 //==============================================================================
 class procedure TCommonMovementActions.A_SetWeaveIndexZ(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.WeaveIndexZ := actor.state.params.IntVal[0] and FLOATBOBMASK;
@@ -9452,7 +9461,7 @@ end;
 //==============================================================================
 class procedure TCommonMovementActions.A_SetWeaveIndexes(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 2) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2) then
     exit;
 
   actor.WeaveIndexXY := actor.state.params.IntVal[0] and FLOATBOBMASK;
@@ -9466,7 +9475,7 @@ end;
 //==============================================================================
 class procedure TCommonAppearanceActions.A_SetSpriteDX(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.spriteDX := actor.state.params.FixedVal[0];
@@ -9479,7 +9488,7 @@ end;
 //==============================================================================
 class procedure TCommonAppearanceActions.A_SetSpriteDY(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.spriteDY := actor.state.params.FixedVal[0];
@@ -9492,7 +9501,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetHeight(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.height := actor.state.params.FixedVal[0];
@@ -9505,7 +9514,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetFriction(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   actor.friction := actor.state.params.FixedVal[0];
@@ -9521,7 +9530,7 @@ var
   damage: integer;
   radius: fixed_t;
 begin
-  if not P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 2, CSP_AT_LEAST) then
     exit;
 
   damage := actor.state.params.IntVal[0];
@@ -9539,7 +9548,7 @@ end;
 //==============================================================================
 class procedure TCommonStateBitActions.A_SetPainChance(actor: Pmobj_t);
 begin
-  if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
 
   actor.painchance := actor.state.params.IntVal[0];
@@ -10308,7 +10317,7 @@ end;
 // JVAL: Check arguments for MBF21 codeprs
 //
 //==============================================================================
-function P_CheckStateArgs(state: Pstate_t): boolean;
+class function TCommonStateParamActions.P_CheckStateArgs(state: Pstate_t): boolean;
 var
   deh_action: TActionEntry;
   deh_argcount: integer;
@@ -10412,7 +10421,7 @@ var
   fan, dx, dy: integer;
   mo: Pmobj_t;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   typ := actor.state.params.IntVal[0] - 1;
@@ -10464,7 +10473,7 @@ var
   mo: Pmobj_t;
   an: angle_t;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.target = nil then
@@ -10520,7 +10529,7 @@ var
   hspread, vspread, numbullets, damagebase, damagemod: integer;
   aimslope, i, damage, angle, slope: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.target = nil then
@@ -10562,7 +10571,7 @@ var
   damagebase, damagemod, hitsound, range: integer;
   damage: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.target = nil then
@@ -10613,7 +10622,7 @@ end;
 //==============================================================================
 procedure A_RadiusDamage(actor: Pmobj_t);
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.target = nil then
@@ -10793,7 +10802,7 @@ procedure A_HealChase(actor: Pmobj_t);
 var
   state, sound: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if not actor.state.params.IsComputed[0] then
@@ -10896,7 +10905,7 @@ class procedure TCommonSearchActions.A_SeekTracer(actor: Pmobj_t);
 var
   threshold, maxturnangle: angle_t;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   threshold := FixedToAngle(actor.state.params.MBF21FixedVal[0]);
@@ -10918,7 +10927,7 @@ var
   ffov: angle_t;
   dist: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.tracer <> nil then
@@ -10953,7 +10962,7 @@ class procedure TCommonJumpActions.A_JumpIfHealthBelow(actor: Pmobj_t);
 var
   newstate, health: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   health := actor.state.params.IntVal[1];
@@ -10985,7 +10994,7 @@ var
   newstate: integer;
   ffov: angle_t;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.target = nil then
@@ -11024,7 +11033,7 @@ var
   newstate: integer;
   distance: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.target = nil then
@@ -11059,7 +11068,7 @@ var
   newstate: integer;
   ffov: angle_t;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.tracer = nil then
@@ -11099,7 +11108,7 @@ var
   newstate: integer;
   distance: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   if actor.tracer = nil then
@@ -11819,7 +11828,7 @@ var
   newstate: integer;
   bits, mbf21bits: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   bits := actor.state.params.IntVal[1];
@@ -11851,7 +11860,7 @@ procedure A_AddFlags(actor: Pmobj_t);
 var
   bits, mbf21bits: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   bits := actor.state.params.IntVal[0];
@@ -11872,7 +11881,7 @@ procedure A_RemoveFlags(actor: Pmobj_t);
 var
   bits, mbf21bits: integer;
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   bits := actor.state.params.IntVal[0];
@@ -11901,7 +11910,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   if psp.state.params.IntVal[0] = 0 then
@@ -11959,7 +11968,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   hspread := psp.state.params.MBF21FixedVal[0];
@@ -12000,7 +12009,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   damagebase := psp.state.params.IntVal[0];
@@ -12074,7 +12083,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   if psp.state.params.IsComputed[0] then
@@ -12136,7 +12145,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   if N_Random < psp.state.params.IntVal[1] then
@@ -12162,7 +12171,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   // don't do dumb things, kids
@@ -12252,7 +12261,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   {$IFDEF DOOM_OR_STRIFE}
@@ -12329,7 +12338,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   if ((psp.state.params.IntVal[1] <> 0) or TWeaponBaseActions.P_CheckAmmo(player)) and
@@ -12353,7 +12362,7 @@ begin
   if psp = nil then
     exit;
 
-  if not P_CheckStateArgs(psp.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(psp.state) then
     exit;
 
   if psp.state.params.IntVal[1] <> 0 then
@@ -12382,7 +12391,7 @@ procedure A_SetProjectileGroup(actor: Pmobj_t);
 var
   group: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   group := Info_ProjectileGroupToInt(actor.state.params.StrVal[0]);
@@ -12399,7 +12408,7 @@ procedure A_SetInfightingGroup(actor: Pmobj_t);
 var
   group: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   group := Info_InfightingGroupToInt(actor.state.params.StrVal[0]);
@@ -12416,7 +12425,7 @@ procedure A_SetSplashGroup(actor: Pmobj_t);
 var
   group: integer;
 begin
-  if not P_CheckStateParams(actor, 1) then
+  if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
   group := Info_SplashGroupToInt(actor.state.params.StrVal[0]);
@@ -12466,7 +12475,7 @@ end;
 //==============================================================================
 class procedure TCommonAppearanceActions.A_SetTranslation(actor: Pmobj_t);
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   actor.translationname := actor.state.params.StrVal[0];
@@ -12480,7 +12489,7 @@ end;
 //==============================================================================
 class procedure TCommonAppearanceActions.A_SetBloodColor(actor: Pmobj_t);
 begin
-  if not P_CheckStateArgs(actor.state) then
+  if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
   actor.bloodcolor := TTranslationBlood.IdForName(actor.state.params.StrVal[0]);

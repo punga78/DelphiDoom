@@ -884,9 +884,9 @@ begin
   if th.flags3_ex and MF3_EX_BLOODIGNOREDAMAGE = 0 then
   begin
     if (damage <= 12) and (damage >= 9) then
-      P_SetMobjRelativeState(th, 1)
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 1)
     else if damage < 9 then
-      P_SetMobjRelativeState(th, 2);
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 2);
   end;
 end;
 
@@ -911,9 +911,9 @@ begin
   if th.flags3_ex and MF3_EX_BLOODIGNOREDAMAGE = 0 then
   begin
     if (damage <= 12) and (damage >= 9) then
-      P_SetMobjRelativeState(th, 1)
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 1)
     else if damage < 9 then
-      P_SetMobjRelativeState(th, 2);
+      TCommonStateParamActions.P_SetMobjRelativeState(th, 2);
   end;
 end;
 
