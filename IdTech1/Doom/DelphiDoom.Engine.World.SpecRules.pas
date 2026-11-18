@@ -856,21 +856,21 @@ begin
      2:
       begin
         // Open Door
-        if (EV_DoDoor(line, open) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, open) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
      3:
       begin
         // Close Door
-        if (EV_DoDoor(line, close) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, close) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
      4:
       begin
         // Raise Door
-        if (EV_DoDoor(line, normal) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, normal) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -919,7 +919,7 @@ begin
     16:
       begin
         // Close Door 30
-        if (EV_DoDoor(line, close30ThenOpen) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, close30ThenOpen) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1072,14 +1072,14 @@ begin
    108:
       begin
         // Blazing Door Raise (faster than TURBO!)
-        if (EV_DoDoor(line, blazeRaise) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, blazeRaise) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
    109:
       begin
         // Blazing Door Open (faster than TURBO!)
-        if (EV_DoDoor(line, blazeOpen) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, blazeOpen) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1093,7 +1093,7 @@ begin
    110:
       begin
         // Blazing Door Close (faster than TURBO!)
-        if (EV_DoDoor(line, blazeClose) <> 0) or oldcompatibility then
+        if (TDoorRoutines.EV_DoDoor(line, blazeClose) <> 0) or oldcompatibility then
           line.special := 0;
       end;
 
@@ -1163,13 +1163,13 @@ begin
     75:
       begin
         // Close Door
-        EV_DoDoor(line, close);
+        TDoorRoutines.EV_DoDoor(line, close);
       end;
 
     76:
       begin
         // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, close30ThenOpen);
       end;
 
     77:
@@ -1217,7 +1217,7 @@ begin
     86:
       begin
         // Open Door
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
       end;
 
     87:
@@ -1241,7 +1241,7 @@ begin
     90:
       begin
         // Raise Door
-        EV_DoDoor(line, normal);
+        TDoorRoutines.EV_DoDoor(line, normal);
       end;
 
     91:
@@ -1297,19 +1297,19 @@ begin
    105:
       begin
         // Blazing Door Raise (faster than TURBO!)
-        EV_DoDoor(line, blazeRaise);
+        TDoorRoutines.EV_DoDoor(line, blazeRaise);
       end;
 
    106:
       begin
         // Blazing Door Open (faster than TURBO!)
-        EV_DoDoor(line, blazeOpen);
+        TDoorRoutines.EV_DoDoor(line, blazeOpen);
       end;
 
    107:
       begin
         // Blazing Door Close (faster than TURBO!)
-        EV_DoDoor(line, blazeClose);
+        TDoorRoutines.EV_DoDoor(line, blazeClose);
       end;
 
    120:
@@ -1838,7 +1838,7 @@ begin
     46:
       begin
         // OPEN DOOR
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
         TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
@@ -2268,7 +2268,7 @@ begin
     10:
       begin
         // DOOR CLOSE IN 30 SECONDS
-        P_SpawnDoorCloseIn30(sector);
+        TDoorRoutines.P_SpawnDoorCloseIn30(sector);
       end;
 
     12:
@@ -2286,7 +2286,7 @@ begin
     14:
       begin
         // DOOR RAISE IN 5 MINUTES
-        P_SpawnDoorRaiseIn5Mins(sector, i);
+        TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sector, i);
       end;
 
     17:

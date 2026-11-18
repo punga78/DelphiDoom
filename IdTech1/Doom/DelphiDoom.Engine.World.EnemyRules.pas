@@ -832,7 +832,7 @@ begin
   end;
 
   junk.tag := 666;
-  EV_DoDoor(@junk, open);
+  TDoorRoutines.EV_DoDoor(@junk, open);
 end;
 
 //==============================================================================
@@ -2397,7 +2397,7 @@ begin
           if TGameSession.GameMap = 6 then
           begin
             junk.tag := 666;
-            EV_DoDoor(@junk, blazeOpen);
+            TDoorRoutines.EV_DoDoor(@junk, blazeOpen);
             exit;
           end
           else if TGameSession.GameMap = 8 then

@@ -1625,13 +1625,13 @@ begin
           MT_TOKEN_DOOR1: // Door special 1
             begin
               junk.tag := 222;
-              EV_DoDoor(@junk, vld_open);
+              TDoorRoutines.EV_DoDoor(@junk, vld_open);
             end;
 
           MT_TOKEN_PRISON_PASS: // Door special 1 - Prison pass
             begin
               junk.tag := 223;
-              EV_DoDoor(@junk, vld_open);
+              TDoorRoutines.EV_DoDoor(@junk, vld_open);
               if TGameSession.GameMap = 2 then // If on Tarnhill, give Prison pass object
                   P_GiveInventoryItem(player, sprnum, _type);
             end;
@@ -1639,13 +1639,13 @@ begin
           MT_TOKEN_SHOPCLOSE: // Door special 3 - "Shop close" - unused?
             begin
               junk.tag := 222;
-              EV_DoDoor(@junk, vld_close);
+              TDoorRoutines.EV_DoDoor(@junk, vld_close);
             end;
 
           MT_TOKEN_DOOR3: // Door special 4 (or 3? :P )
             begin
               junk.tag := 224;
-              EV_DoDoor(@junk, vld_close);
+              TDoorRoutines.EV_DoDoor(@junk, vld_close);
             end;
 
           MT_TOKEN_STAMINA: // Stamina upgrade

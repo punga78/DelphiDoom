@@ -681,7 +681,7 @@ begin
 
         if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
         begin
-          EV_DoDoor(line, vld_open);
+          TDoorRoutines.EV_DoDoor(line, vld_open);
           line.special := 0;
         end;
       end;
@@ -690,7 +690,7 @@ begin
     2:
       begin
         // Open Door - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_open);
+        TDoorRoutines.EV_DoDoor(line, vld_open);
         line.special := 0;
       end;
 
@@ -702,7 +702,7 @@ begin
 
         if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
         begin
-          EV_DoDoor(line, vld_close);
+          TDoorRoutines.EV_DoDoor(line, vld_close);
           line.special := 0;
         end;
       end;
@@ -711,14 +711,14 @@ begin
     3:
       begin
         // Close Door - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_close);
+        TDoorRoutines.EV_DoDoor(line, vld_close);
         line.special := 0;
       end;
 
     4:
       begin
         // Raise Door - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_normal);
+        TDoorRoutines.EV_DoDoor(line, vld_normal);
         line.special := 0;
       end;
 
@@ -767,7 +767,7 @@ begin
     16:
       begin
         // Close Door 30 - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, vld_close30ThenOpen);
         line.special := 0;
       end;
 
@@ -924,14 +924,14 @@ begin
     108:
       begin
         // Blazing Door Raise (faster than TURBO!) - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_blazeRaise);
+        TDoorRoutines.EV_DoDoor(line, vld_blazeRaise);
         line.special := 0;
       end;
 
     109:
       begin
         // Blazing Door Open (faster than TURBO!) - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_blazeOpen);
+        TDoorRoutines.EV_DoDoor(line, vld_blazeOpen);
         line.special := 0;
       end;
 
@@ -947,7 +947,7 @@ begin
         // haleyjd 09/21/10: [STRIFE] Blazing Door Close if Has Sigil B
         if Pplayer_t(thing.player).sigiltype > 0 then
         begin
-          EV_DoDoor(line, vld_blazeClose);
+          TDoorRoutines.EV_DoDoor(line, vld_blazeClose);
           line.special := 0;
         end;
       end;
@@ -956,7 +956,7 @@ begin
     110:
       begin
         // Blazing Door Close (faster than TURBO!) - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_blazeClose);
+        TDoorRoutines.EV_DoDoor(line, vld_blazeClose);
         line.special := 0;
       end;
 
@@ -1010,14 +1010,14 @@ begin
     174:
       begin
         // villsa [STRIFE] Split Open
-        EV_DoDoor(line, vld_splitOpen);
+        TDoorRoutines.EV_DoDoor(line, vld_splitOpen);
         line.special := 0;
       end;
 
     183:
       begin
         // villsa [STRIFE] Split Raise Nearest
-        EV_DoDoor(line, vld_splitRaiseNearest);
+        TDoorRoutines.EV_DoDoor(line, vld_splitRaiseNearest);
         line.special := 0;
       end;
 
@@ -1054,7 +1054,7 @@ begin
         if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
         begin
           // Do it!
-          EV_ClearForceFields(line);
+          TDoorRoutines.EV_ClearForceFields(line);
           line.special := 0;
         end;
       end;
@@ -1065,7 +1065,7 @@ begin
         // Destroyed)
         if Pplayer_t(thing.player).questflags and QF_QUEST16 <> 0 then
         begin
-          EV_DoDoor(line, vld_open);
+          TDoorRoutines.EV_DoDoor(line, vld_open);
           line.special := 0;
         end;
       end;
@@ -1085,7 +1085,7 @@ begin
         // haleyjd 09/21/10: [STRIFE] W1 Open Door if Sigil Owned
         if Pplayer_t(thing.player).weaponowned[Ord(wp_sigil)] then
         begin
-          EV_DoDoor(line, vld_open);
+          TDoorRoutines.EV_DoDoor(line, vld_open);
           line.special := 0;
         end;
       end;
@@ -1217,13 +1217,13 @@ begin
     75:
       begin
         // Close Door - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_close);
+        TDoorRoutines.EV_DoDoor(line, vld_close);
       end;
 
     76:
       begin
         // Close Door 30 - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, vld_close30ThenOpen);
       end;
 
     77:
@@ -1271,7 +1271,7 @@ begin
     86:
       begin
         // Open Door - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_open);
+        TDoorRoutines.EV_DoDoor(line, vld_open);
       end;
 
     87:
@@ -1299,13 +1299,13 @@ begin
         flag := (sidedef.rowoffset div FRACUNIT) - 1; // note is fixed_t.
 
         if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
-          EV_DoDoor(line, vld_normal);
+          TDoorRoutines.EV_DoDoor(line, vld_normal);
       end;
 
     90:
       begin
         // Raise Door - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_normal);
+        TDoorRoutines.EV_DoDoor(line, vld_normal);
       end;
 
     91:
@@ -1363,19 +1363,19 @@ begin
     105:
       begin
         // Blazing Door Raise (faster than TURBO!) - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_blazeRaise);
+        TDoorRoutines.EV_DoDoor(line, vld_blazeRaise);
       end;
 
     106:
       begin
         // Blazing Door Open (faster than TURBO!) - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_blazeOpen);
+        TDoorRoutines.EV_DoDoor(line, vld_blazeOpen);
       end;
 
     107:
       begin
         // Blazing Door Close (faster than TURBO!) - [STRIFE] Verified unmodified.
-        EV_DoDoor(line, vld_blazeClose);
+        TDoorRoutines.EV_DoDoor(line, vld_blazeClose);
       end;
 
     120:
@@ -2025,7 +2025,7 @@ begin
     46:
       begin
         // OPEN DOOR
-        EV_DoDoor(line, vld_open);
+        TDoorRoutines.EV_DoDoor(line, vld_open);
         TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
@@ -2411,7 +2411,7 @@ begin
     10:
       begin
         // DOOR CLOSE IN 30 SECONDS
-        P_SpawnDoorCloseIn30(sector);
+        TDoorRoutines.P_SpawnDoorCloseIn30(sector);
       end;
 
     12:
@@ -2429,7 +2429,7 @@ begin
     14:
       begin
         // DOOR RAISE IN 5 MINUTES
-        P_SpawnDoorRaiseIn5Mins(sector, i);
+        TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sector, i);
       end;
 
     17:
@@ -2586,7 +2586,7 @@ begin
     end;
 
   // villsa [STRIFE]
-  P_InitSlidingDoorFrames;
+  TDoorRoutines.P_InitSlidingDoorFrames;
 end;
 
 // killough 3/7/98 -- end generalized scroll effects

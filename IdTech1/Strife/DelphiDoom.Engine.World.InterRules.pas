@@ -1110,7 +1110,7 @@ begin
         Ord(MT_COUPLING):
           begin
             junk.tag := 225;
-            EV_DoDoor(@junk, vld_close);
+            TDoorRoutines.EV_DoDoor(@junk, vld_close);
 
             junk.tag := 44;
             EV_DoFloor(@junk, lowerFloor);
@@ -1133,7 +1133,7 @@ begin
     Ord(MT_TOKEN_SHOPCLOSE):
       begin
         junk.tag := 222;
-        EV_DoDoor(@junk, vld_close);
+        TDoorRoutines.EV_DoDoor(@junk, vld_close);
         P_NoiseAlert(TGameSession.Players[0].mo, TGameSession.Players[0].mo);
 
         if TGameSession.DeathMatch <> 0 then
@@ -1148,14 +1148,14 @@ begin
     Ord(MT_TOKEN_PRISON_PASS):
       begin
         junk.tag := 223;
-        EV_DoDoor(@junk, vld_open);
+        TDoorRoutines.EV_DoDoor(@junk, vld_open);
         exit;
       end;
 
     Ord(MT_TOKEN_DOOR3):
       begin
         junk.tag := 224;
-        EV_DoDoor(@junk, vld_open);
+        TDoorRoutines.EV_DoDoor(@junk, vld_open);
         exit;
       end;
 

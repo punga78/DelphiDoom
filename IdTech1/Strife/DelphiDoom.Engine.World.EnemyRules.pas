@@ -2919,7 +2919,7 @@ var
   junk: line_t;
 begin
   junk.tag := 999;
-  EV_DoDoor(@junk, vld_blazeClose);
+  TDoorRoutines.EV_DoDoor(@junk, vld_blazeClose);
 
   if actor.target <> nil then
     if actor.target.player <> nil then
@@ -2940,7 +2940,7 @@ var
   junk: line_t;
 begin
   junk.tag := 999;
-  EV_DoDoor(@junk, vld_shopClose);
+  TDoorRoutines.EV_DoDoor(@junk, vld_shopClose);
 
   if actor.target <> nil then
     if actor.target.player <> nil then
@@ -3694,7 +3694,7 @@ begin
           P_GiveVoiceObjective('VOC87', 'LOG87', 0);
         end;
         junk.tag := 222;         // Open the exit door again;
-        EV_DoDoor(@junk, vld_open); // Note this is NOT the Loremaster door...
+        TDoorRoutines.EV_DoDoor(@junk, vld_open); // Note this is NOT the Loremaster door...
       end;
 
     Ord(MT_SPECTRE_D):

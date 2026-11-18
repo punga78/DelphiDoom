@@ -822,7 +822,7 @@ begin
     225,           // haleyjd [STRIFE] DR Catacomb Key
     232:           // villsa  [STRIFE] DR Oracle Pass
       begin
-        EV_VerticalDoor(line, thing);
+        TDoorRoutines.EV_VerticalDoor(line, thing);
       end;
 
     // haleyjd: For the sake of our sanity, I have reordered all the line
@@ -897,14 +897,14 @@ begin
     29:
       begin
         // Raise Door - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_normal) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_normal) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     40:
       begin
         // villsa [STRIFE] Split Open Door
-        if EV_DoDoor(line, vld_splitOpen) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_splitOpen) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end; // haleyjd
 
@@ -918,7 +918,7 @@ begin
     42:
       begin
         // Close Door - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_close) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_close) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -946,7 +946,7 @@ begin
     50:
       begin
         // Close Door - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_close) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_close) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -974,7 +974,7 @@ begin
     61:
       begin
         // Open Door - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_open) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -988,7 +988,7 @@ begin
     63:
       begin
         // Raise Door - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_normal) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_normal) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1065,49 +1065,49 @@ begin
     103:
       begin
         // Open Door - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_open) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     111:
       begin
         // Blazing Door Raise (faster than TURBO!) - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_blazeRaise) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_blazeRaise) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     112:
       begin
         // Blazing Door Open (faster than TURBO!) - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_blazeOpen) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_blazeOpen) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     113:
       begin
         // Blazing Door Close (faster than TURBO!) - [STRIFE] Verified unmodified
-        if EV_DoDoor (line, vld_blazeClose) <> 0 then
+        if TDoorRoutines.EV_DoDoor (line, vld_blazeClose) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     114:
       begin
         // Blazing Door Raise (faster than TURBO!) - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_blazeRaise) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_blazeRaise) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     115:
       begin
         // Blazing Door Open (faster than TURBO!) - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_blazeOpen) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_blazeOpen) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     116:
       begin
         // Blazing Door Close (faster than TURBO!) - [STRIFE] Verified unmodified
-        if EV_DoDoor(line, vld_blazeClose) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_blazeClose) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1150,7 +1150,7 @@ begin
     135, // [STRIFE] TODO - which key is it?
     137: // [STRIFE] TODO - which key is it?
       begin
-        if EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -1158,7 +1158,7 @@ begin
     134, // [STRIFE] TODO: which key is it?
     136: // [STRIFE] TODO: which key is it?
       begin
-        if EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1186,7 +1186,7 @@ begin
     144:
       begin
         // villsa [STRIFE] manual sliding door
-        EV_SlidingDoor(line, thing);
+        TDoorRoutines.EV_SlidingDoor(line, thing);
       end;
 
     146:
@@ -1199,7 +1199,7 @@ begin
     147:
       begin
         // haleyjd 09/24/10: [STRIFE] S1 Clear Force Fields
-        if EV_ClearForceFields(line) <> 0 then
+        if TDoorRoutines.EV_ClearForceFields(line) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -1214,7 +1214,7 @@ begin
     152, // [STRIFE] TODO: which key is it?
     153: // [STRIFE] TODO: which key is it?
       begin
-        if EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1245,21 +1245,21 @@ begin
     164, // villsa [STRIFE] BlzOpenDoor Gold key
     167: // [STRIFE] TODO: which key is it?
       begin
-        if EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     168: // [STRIFE] TODO: which key is it?
       begin
         // haleyjd 09/25/10: [STRIFE] SR Blaze Open Door ???? Key
-        if EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
     171: // [STRIFE] TODO: which key is it?
       begin
         // haleyjd 09/25/10: [STRIFE] S1 Open Door ???? Key
-        if EV_DoLockedDoor(line, vld_open, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_open, thing) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -1270,7 +1270,7 @@ begin
     192, // [STRIFE] TODO: which key is it?
     223: // [STRIFE] TODO: which key is it?
       begin
-        if EV_DoLockedDoor(line, vld_normal, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_normal, thing) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1299,14 +1299,14 @@ begin
     189: // [STRIFE] TODO: which key is it???
       begin
         // haleyjd 09/25/10: [STRIFE] S1 Split Open Door ???? Key
-        if EV_DoLockedDoor(line, vld_splitOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, vld_splitOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
     194:
       begin
         // villsa [STRIFE] S1 Free Prisoners
-        if EV_DoDoor(line, vld_open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_open) <> 0 then
         begin
           P_ChangeSwitchTexture(line, false);
           TStrifeMonsterActions.P_FreePrisoners;
@@ -1326,7 +1326,7 @@ begin
     207:
       begin
         // villsa [STRIFE] SR Remote Sliding Door
-        if EV_RemoteSlidingDoor(line, thing) <> 0 then
+        if TDoorRoutines.EV_RemoteSlidingDoor(line, thing) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end; // haleyjd
 
@@ -1401,7 +1401,7 @@ begin
         // villsa [STRIFE] SR Sigil Sliding Door
         if Pplayer_t(thing.player).sigiltype = 4 then
         begin
-          if EV_RemoteSlidingDoor(line, thing) <> 0 then
+          if TDoorRoutines.EV_RemoteSlidingDoor(line, thing) <> 0 then
             P_ChangeSwitchTexture(line, true);
         end;
       end; // haleyjd
@@ -1409,7 +1409,7 @@ begin
     233:
       begin
         // villsa [STRIFE] objective given after revealing the computer
-        if EV_DoDoor(line, vld_splitOpen) = 0 then
+        if TDoorRoutines.EV_DoDoor(line, vld_splitOpen) = 0 then
         begin
           result := true;
           exit;
@@ -1433,7 +1433,7 @@ begin
           Pplayer_t(thing.player)._message := TDehMainRoutines.DEH_GetString('That doesn''t seem to work!');
           TSoundRoutines.S_StartSound(thing, Ord(sfx_oof));  // JVAL: added sound
         end
-        else if EV_DoDoor(line, vld_normal) <> 0 then
+        else if TDoorRoutines.EV_DoDoor(line, vld_normal) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1441,7 +1441,7 @@ begin
       begin
         // haleyjd 09/25/10: [STRIFE] S1 Split Open Door if Have Sigil 4
         if Pplayer_t(thing.player).sigiltype = 4 then
-          if EV_DoDoor(line, vld_splitOpen) <> 0 then
+          if TDoorRoutines.EV_DoDoor(line, vld_splitOpen) <> 0 then
             P_ChangeSwitchTexture(line, false);
       end;
 
@@ -1598,7 +1598,7 @@ begin
             begin
               // Close Door, Open in 30 secs
               // 175 S1  EV_DoDoor(close30ThenOpen)
-              if EV_DoDoor(line, vld_close30ThenOpen) <> 0 then
+              if TDoorRoutines.EV_DoDoor(line, vld_close30ThenOpen) <> 0 then
                 P_ChangeSwitchTexture(line, false);
             end;
 
@@ -1849,7 +1849,7 @@ begin
             begin
               // Close Door, Open in 30 secs
               // 196 SR  EV_DoDoor(close30ThenOpen)
-              if EV_DoDoor(line, vld_close30ThenOpen) <> 0 then
+              if TDoorRoutines.EV_DoDoor(line, vld_close30ThenOpen) <> 0 then
                 P_ChangeSwitchTexture(line, true);
             end;
 

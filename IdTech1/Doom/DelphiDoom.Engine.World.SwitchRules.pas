@@ -443,7 +443,7 @@ begin
 
    117, // Blazing door raise
    118: // Blazing door open
-      EV_VerticalDoor(line, thing);
+      TDoorRoutines.EV_VerticalDoor(line, thing);
 
   //UNUSED - Door Slide Open&Close
   // case 124:
@@ -515,7 +515,7 @@ begin
     29:
       begin
         // Raise Door
-        if EV_DoDoor(line, normal) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, normal) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -543,7 +543,7 @@ begin
     50:
       begin
         // Close Door
-        if EV_DoDoor(line, close) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, close) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -578,28 +578,28 @@ begin
    103:
       begin
         // Open Door
-        if EV_DoDoor(line, open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, open) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
    111:
       begin
         // Blazing Door Raise (faster than TURBO!)
-        if EV_DoDoor(line, blazeRaise) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, blazeRaise) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
    112:
       begin
         // Blazing Door Open (faster than TURBO!)
-        if EV_DoDoor(line, blazeOpen) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, blazeOpen) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
    113:
       begin
         // Blazing Door Close (faster than TURBO!)
-        if EV_DoDoor(line, blazeClose) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, blazeClose) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -628,7 +628,7 @@ begin
    135, // BlzOpenDoor RED
    137: // BlzOpenDoor YELLOW
       begin
-        if EV_DoLockedDoor(line, blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -643,7 +643,7 @@ begin
     42:
       begin
         // Close Door
-        if EV_DoDoor(line, close) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, close) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -671,7 +671,7 @@ begin
     61:
       begin
         // Open Door
-        if EV_DoDoor(line, open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, open) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -685,7 +685,7 @@ begin
     63:
       begin
         // Raise Door
-        if EV_DoDoor(line, normal) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, normal) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -741,21 +741,21 @@ begin
    114:
       begin
         // Blazing Door Raise (faster than TURBO!)
-        if EV_DoDoor(line, blazeRaise) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, blazeRaise) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
    115:
       begin
         // Blazing Door Open (faster than TURBO!)
-        if EV_DoDoor(line, blazeOpen) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, blazeOpen) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
    116:
       begin
         // Blazing Door Close (faster than TURBO!)
-        if EV_DoDoor(line, blazeClose) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, blazeClose) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -777,7 +777,7 @@ begin
    134, // BlzOpenDoor RED
    136: // BlzOpenDoor YELLOW
       begin
-        if EV_DoLockedDoor(line, blazeOpen, thing) <> 0 then
+        if TDoorRoutines.EV_DoLockedDoor(line, blazeOpen, thing) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -942,7 +942,7 @@ begin
             begin
               // Close Door, Open in 30 secs
               // 175 S1  EV_DoDoor(close30ThenOpen)
-              if EV_DoDoor(line, close30ThenOpen) <> 0 then
+              if TDoorRoutines.EV_DoDoor(line, close30ThenOpen) <> 0 then
                 P_ChangeSwitchTexture(line, false);
             end;
 
@@ -1193,7 +1193,7 @@ begin
             begin
               // Close Door, Open in 30 secs
               // 196 SR  EV_DoDoor(close30ThenOpen)
-              if EV_DoDoor(line, close30ThenOpen) <> 0 then
+              if TDoorRoutines.EV_DoDoor(line, close30ThenOpen) <> 0 then
                 P_ChangeSwitchTexture(line, true);
             end;
 

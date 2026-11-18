@@ -277,7 +277,7 @@ begin
     33, // Red locked door open
     34: // Yellow locked door open
 
-      EV_VerticalDoor(line, thing);
+      TDoorRoutines.EV_VerticalDoor(line, thing);
 
   //UNUSED - Door Slide Open&Close
   // case 124:
@@ -355,7 +355,7 @@ begin
     29:
       begin
         // Raise Door
-        if EV_DoDoor(line, normal) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, normal) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -383,7 +383,7 @@ begin
     50:
       begin
         // Close Door
-        if EV_DoDoor(line, close) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, close) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -418,7 +418,7 @@ begin
    103:
       begin
         // Open Door
-        if EV_DoDoor(line, open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, open) <> 0 then
           P_ChangeSwitchTexture(line, false);
       end;
 
@@ -426,7 +426,7 @@ begin
     42:
       begin
         // Close Door
-        if EV_DoDoor(line, close) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, close) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -454,7 +454,7 @@ begin
     61:
       begin
         // Open Door
-        if EV_DoDoor(line, open) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, open) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 
@@ -468,7 +468,7 @@ begin
     63:
       begin
         // Raise Door
-        if EV_DoDoor(line, normal) <> 0 then
+        if TDoorRoutines.EV_DoDoor(line, normal) <> 0 then
           P_ChangeSwitchTexture(line, true);
       end;
 

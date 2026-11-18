@@ -443,21 +443,21 @@ begin
      2:
       begin
         // Open Door
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
         line.special := 0;
       end;
 
      3:
       begin
         // Close Door
-        EV_DoDoor(line, close);
+        TDoorRoutines.EV_DoDoor(line, close);
         line.special := 0;
       end;
 
      4:
       begin
         // Raise Door
-        EV_DoDoor(line, normal);
+        TDoorRoutines.EV_DoDoor(line, normal);
         line.special := 0;
       end;
 
@@ -513,7 +513,7 @@ begin
     16:
       begin
         // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, close30ThenOpen);
         line.special := 0;
       end;
 
@@ -687,13 +687,13 @@ begin
     75:
       begin
         // Close Door
-        EV_DoDoor(line, close);
+        TDoorRoutines.EV_DoDoor(line, close);
       end;
 
     76:
       begin
         // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        TDoorRoutines.EV_DoDoor(line, close30ThenOpen);
       end;
 
     77:
@@ -741,7 +741,7 @@ begin
     86:
       begin
         // Open Door
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
       end;
 
     87:
@@ -765,13 +765,13 @@ begin
     90:
       begin
         // Raise Door
-        EV_DoDoor(line, normal);
+        TDoorRoutines.EV_DoDoor(line, normal);
       end;
 
    100:
       begin
         // Retrigger_Raise_Door_Turbo
-        EV_DoDoor(line, normal, VDOORSPEED * 3);
+        TDoorRoutines.EV_DoDoor(line, normal, VDOORSPEED * 3);
       end;
 
     91:
@@ -854,7 +854,7 @@ begin
     46:
       begin
         // OPEN DOOR
-        EV_DoDoor(line, open);
+        TDoorRoutines.EV_DoDoor(line, open);
         TSwitchRoutines.P_ChangeSwitchTexture(line, true);
       end;
 
@@ -1267,7 +1267,7 @@ begin
     10:
       begin
         // DOOR CLOSE IN 30 SECONDS
-        P_SpawnDoorCloseIn30(sector);
+        TDoorRoutines.P_SpawnDoorCloseIn30(sector);
       end;
 
     12:
@@ -1285,7 +1285,7 @@ begin
     14:
       begin
         // DOOR RAISE IN 5 MINUTES
-        P_SpawnDoorRaiseIn5Mins(sector, i);
+        TDoorRoutines.P_SpawnDoorRaiseIn5Mins(sector, i);
       end;
 
     17:

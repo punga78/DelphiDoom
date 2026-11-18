@@ -1250,7 +1250,7 @@ manual_locked:
     door := Z_Malloc(SizeOf(vldoor_t), PU_LEVSPEC, nil);
     TTickRoutines.P_AddThinker (@door.thinker);
     sec.ceilingdata := door; //jff 2/22/98
-    door.thinker._function.acp1 := @T_VerticalDoor;
+    door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
     door.sector := sec;
     door.topwait := VDOORWAIT;
     door.line := line;
@@ -1370,7 +1370,7 @@ manual_door:
     TTickRoutines.P_AddThinker(@door.thinker);
     sec.ceilingdata := door; //jff 2/22/98
 
-    door.thinker._function.acp1 := @T_VerticalDoor;
+    door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
     door.sector := sec;
     // setup delay for door remaining open/closed
     case Dely of

@@ -1459,7 +1459,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_VerticalDoor then
+    if @th._function.acp1 = @TDoorRoutines.T_VerticalDoor then
     begin
       save_p[0] := Ord(tc_door);
       save_p := @save_p[1];
@@ -1730,7 +1730,7 @@ begin
           P_GetRecord(pointer(save_p), TypeInfo(vldoor_t), door);
           door.sector := @sectors[NativeInt(door.sector)];
           door.sector.specialdata := door;
-          @door.thinker._function.acp1 := @T_VerticalDoor;
+          @door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
           TTickRoutines.P_AddThinker(@door.thinker);
         end;
 

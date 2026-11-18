@@ -1497,7 +1497,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_VerticalDoor then
+    if @th._function.acp1 = @TDoorRoutines.T_VerticalDoor then
     begin
       save_p[0] := Ord(tc_door);
       save_p := @save_p[1];
@@ -1511,7 +1511,7 @@ begin
       continue;
     end;
 
-    if @th._function.acp1 = @T_SlidingDoor then
+    if @th._function.acp1 = @TDoorRoutines.T_SlidingDoor then
     begin
       save_p[0] := Ord(tc_slidingdoor);
       save_p := @save_p[1];
@@ -1837,7 +1837,7 @@ begin
           else
             door.line := @lines[NativeInt(door.line)];
 
-          @door.thinker._function.acp1 := @T_VerticalDoor;
+          @door.thinker._function.acp1 := @TDoorRoutines.T_VerticalDoor;
           TTickRoutines.P_AddThinker(@door.thinker);
         end;
 
@@ -1858,7 +1858,7 @@ begin
             sdoor.line2 := @lines[NativeInt(sdoor.line2)];
 
           // it was T_VerticalDoor: a sliding door read from a saved game ran as a vertical one
-          @sdoor.thinker._function.acp1 := @T_SlidingDoor;
+          @sdoor.thinker._function.acp1 := @TDoorRoutines.T_SlidingDoor;
           TTickRoutines.P_AddThinker(@sdoor.thinker);
         end;
 
