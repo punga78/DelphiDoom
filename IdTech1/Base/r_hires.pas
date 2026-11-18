@@ -590,7 +590,7 @@ begin
   begin
     extremeflatfiltering := newflatfiltering;
     {$IFNDEF OPENGL}
-    R_ResetDS32Cache;
+    TRendererCacheFlats.R_ResetDS32Cache;
     {$ENDIF}
   end;
   R_CmdExtremeflatfiltering;

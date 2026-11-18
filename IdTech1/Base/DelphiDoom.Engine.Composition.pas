@@ -1174,7 +1174,7 @@ begin
   wipe_Configure(TImagingFactory.CreateMeltWipe(TEngineImagingRandom.Create(ARandom)));
 {$ENDIF}
 {$IFNDEF OPENGL}
-  R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
+  TRendererCacheFlats.R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
 {$ENDIF}
   V_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
   R_ConfigureComposite(TImagingFactory.CreateColumnPainter, TImagingFactory.CreateColumnRebuilder);
@@ -1258,7 +1258,7 @@ begin
 {$IFDEF OPENGL}
   gld_ConfigureTextureFiles(LFiles);
 {$ELSE}
-  R_ConfigureFlatTextures(LFiles);
+  TRendererCacheFlats.R_ConfigureFlatTextures(LFiles);
   TRendererCacheWalls.R_ConfigureWallTextures(LFiles);
 {$ENDIF}
 end;

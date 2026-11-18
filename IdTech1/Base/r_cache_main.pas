@@ -81,7 +81,7 @@ uses
 procedure R_Reset32Cache;
 begin
   TRendererCacheWalls.R_ResetDC32Cache;
-  R_ResetDS32Cache;
+  TRendererCacheFlats.R_ResetDS32Cache;
 end;
 
 //==============================================================================
@@ -92,7 +92,7 @@ end;
 procedure R_Clear32Cache;
 begin
   TRendererCacheWalls.R_ClearDC32Cache;
-  R_ClearDS32Cache;
+  TRendererCacheFlats.R_ClearDS32Cache;
 end;
 
 //==============================================================================
@@ -103,7 +103,7 @@ end;
 procedure R_ShutDown32Cache;
 begin
   TRendererCacheWalls.R_ShutDownDC32Cache;
-  R_ShutDownDS32Cache;
+  TRendererCacheFlats.R_ShutDownDS32Cache;
 end;
 
 //==============================================================================
@@ -167,7 +167,7 @@ end;
 procedure R_Init32Cache;
 begin
   TRendererCacheWalls.R_InitDC32Cache;
-  R_InitDS32Cache;
+  TRendererCacheFlats.R_InitDS32Cache;
   C_AddCmd('cachehit', @R_CmdCacheHit);
   C_AddCmd('resetcachehit', @R_CmdResetCacheHit);
 end;

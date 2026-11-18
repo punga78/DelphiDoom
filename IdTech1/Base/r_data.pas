@@ -778,11 +778,11 @@ begin
   begin
     lump := R_GetLumpForFlat(flat);
     ds_source := W_CacheLumpNum(lump, PU_STATIC);
-    ds_scale := R_FlatScaleFromSize(flat, W_LumpLength(lump));
+    ds_scale := TRendererCacheFlats.R_FlatScaleFromSize(flat, W_LumpLength(lump));
     ds_size := flats[flats[flat].translation].size;
   end
   else
-    R_ReadDS32Cache(flat);
+    TRendererCacheFlats.R_ReadDS32Cache(flat);
 end;
 {$ENDIF}
 
@@ -2189,7 +2189,7 @@ begin
       W_CacheLumpNum(lump, PU_CACHE);
 {$ELSE}
       flat := W_CacheLumpNum(lump, PU_STATIC);
-      R_ReadDS32Cache(i);
+      TRendererCacheFlats.R_ReadDS32Cache(i);
       Z_ChangeTag(flat, PU_CACHE);
 {$ENDIF}
       flatmemory := flatmemory + W_LumpLength(lump);
