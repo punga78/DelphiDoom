@@ -80,34 +80,6 @@ procedure A_ConsoleCommand(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetFrightened
-//
-//==============================================================================
-procedure A_SetFrightened(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetFrightened
-//
-//==============================================================================
-procedure A_UnSetFrightened(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetNoDamage
-//
-//==============================================================================
-procedure A_SetNoDamage(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetNoDamage
-//
-//==============================================================================
-procedure A_UnSetNoDamage(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_SetCustomParam
 //
 //==============================================================================
@@ -920,20 +892,6 @@ procedure A_ScreamAndUnblock(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_Missile
-//
-//==============================================================================
-procedure A_Missile(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_NoMissile
-//
-//==============================================================================
-procedure A_NoMissile(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_Wander
 //
 //==============================================================================
@@ -966,27 +924,6 @@ procedure A_Turn5(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_Turn10(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Blocking
-//
-//==============================================================================
-procedure A_Blocking(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DoNotRunScripts
-//
-//==============================================================================
-procedure A_DoNotRunScripts(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DoRunScripts
-//
-//==============================================================================
-procedure A_DoRunScripts(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1116,34 +1053,6 @@ procedure A_Recoil(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetSolid
-//
-//==============================================================================
-procedure A_SetSolid(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetSolid
-//
-//==============================================================================
-procedure A_UnSetSolid(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetFloat
-//
-//==============================================================================
-procedure A_SetFloat(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetFloat
-//
-//==============================================================================
-procedure A_UnSetFloat(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_ScaleVelocity
 //
 //==============================================================================
@@ -1158,66 +1067,10 @@ procedure A_ChangeVelocity(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetPushFactor
-//
-//==============================================================================
-procedure A_SetPushFactor(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_SetScale
 //
 //==============================================================================
 procedure A_SetScale(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetGravity
-//
-//==============================================================================
-procedure A_SetGravity(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetFloorBounce
-//
-//==============================================================================
-procedure A_SetFloorBounce(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetFloorBounce
-//
-//==============================================================================
-procedure A_UnSetFloorBounce(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetCeilingBounce
-//
-//==============================================================================
-procedure A_SetCeilingBounce(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetCeilingBounce
-//
-//==============================================================================
-procedure A_UnSetCeilingBounce(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWallBounce
-//
-//==============================================================================
-procedure A_SetWallBounce(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetWallBounce
-//
-//==============================================================================
-procedure A_UnSetWallBounce(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1281,34 +1134,6 @@ procedure A_JumpIfTargetInsideMeleeRange(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_JumpIfTracerCloser(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMass
-//
-//==============================================================================
-procedure A_SetMass(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTargetMass
-//
-//==============================================================================
-procedure A_SetTargetMass(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTracerMass
-//
-//==============================================================================
-procedure A_SetTracerMass(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMasterMass
-//
-//==============================================================================
-procedure A_SetMasterMass(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1494,13 +1319,6 @@ procedure A_Remove(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetFloatBobPhase
-//
-//==============================================================================
-procedure A_SetFloatBobPhase(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_Detonate
 //
 //==============================================================================
@@ -1606,13 +1424,6 @@ procedure A_SetRenderStyle(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_FadeTo(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetSize
-//
-//==============================================================================
-procedure A_SetSize(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1763,31 +1574,10 @@ procedure A_SetSpriteDY(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetHeight
-//
-//==============================================================================
-procedure A_SetHeight(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetFriction
-//
-//==============================================================================
-procedure A_SetFriction(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_PlayerHurtExplode
 //
 //==============================================================================
 procedure A_PlayerHurtExplode(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetPainChance
-//
-//==============================================================================
-procedure A_SetPainChance(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1809,34 +1599,6 @@ procedure A_UnSetPushable(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_MatchTargetZ(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetInteractive
-//
-//==============================================================================
-procedure A_SetInteractive(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetInteractive
-//
-//==============================================================================
-procedure A_UnSetInteractive(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMonsterInfight
-//
-//==============================================================================
-procedure A_SetMonsterInfight(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetMonsterInfight
-//
-//==============================================================================
-procedure A_UnSetMonsterInfight(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -2367,6 +2129,253 @@ procedure P_ThrustMobj(actor: Pmobj_t; angle: angle_t; force: fixed_t);
 //==============================================================================
 procedure P_ConfigureConsole(const AConsole: IEngineConsole);
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonStateBitActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_SetFrightened
+    //
+    //==============================================================================
+    class procedure A_SetFrightened(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetFrightened
+    //
+    //==============================================================================
+    class procedure A_UnSetFrightened(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetNoDamage
+    //
+    //==============================================================================
+    class procedure A_SetNoDamage(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetNoDamage
+    //
+    //==============================================================================
+    class procedure A_UnSetNoDamage(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Missile
+    //
+    //==============================================================================
+    class procedure A_Missile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_NoMissile
+    //
+    //==============================================================================
+    class procedure A_NoMissile(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Blocking
+    //
+    //==============================================================================
+    class procedure A_Blocking(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DoNotRunScripts
+    //
+    //==============================================================================
+    class procedure A_DoNotRunScripts(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DoRunScripts
+    //
+    //==============================================================================
+    class procedure A_DoRunScripts(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetSolid
+    //
+    //==============================================================================
+    class procedure A_SetSolid(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetSolid
+    //
+    //==============================================================================
+    class procedure A_UnSetSolid(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetFloat
+    //
+    //==============================================================================
+    class procedure A_SetFloat(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetFloat
+    //
+    //==============================================================================
+    class procedure A_UnSetFloat(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetPushFactor
+    //
+    //==============================================================================
+    class procedure A_SetPushFactor(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetGravity
+    //
+    //==============================================================================
+    class procedure A_SetGravity(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetFloorBounce
+    //
+    //==============================================================================
+    class procedure A_SetFloorBounce(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetFloorBounce
+    //
+    //==============================================================================
+    class procedure A_UnSetFloorBounce(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetCeilingBounce
+    //
+    //==============================================================================
+    class procedure A_SetCeilingBounce(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetCeilingBounce
+    //
+    //==============================================================================
+    class procedure A_UnSetCeilingBounce(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWallBounce
+    //
+    //==============================================================================
+    class procedure A_SetWallBounce(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetWallBounce
+    //
+    //==============================================================================
+    class procedure A_UnSetWallBounce(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMass
+    //
+    //==============================================================================
+    class procedure A_SetMass(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTargetMass
+    //
+    //==============================================================================
+    class procedure A_SetTargetMass(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTracerMass
+    //
+    //==============================================================================
+    class procedure A_SetTracerMass(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMasterMass
+    //
+    //==============================================================================
+    class procedure A_SetMasterMass(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetFloatBobPhase
+    //
+    //==============================================================================
+    class procedure A_SetFloatBobPhase(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetSize
+    //
+    //==============================================================================
+    class procedure A_SetSize(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetHeight
+    //
+    //==============================================================================
+    class procedure A_SetHeight(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetFriction
+    //
+    //==============================================================================
+    class procedure A_SetFriction(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetPainChance
+    //
+    //==============================================================================
+    class procedure A_SetPainChance(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetInteractive
+    //
+    //==============================================================================
+    class procedure A_SetInteractive(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetInteractive
+    //
+    //==============================================================================
+    class procedure A_UnSetInteractive(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMonsterInfight
+    //
+    //==============================================================================
+    class procedure A_SetMonsterInfight(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetMonsterInfight
+    //
+    //==============================================================================
+    class procedure A_UnSetMonsterInfight(actor: Pmobj_t); static;
+  end;
+
+
 implementation
 
 uses
@@ -2705,7 +2714,7 @@ end;
 // A_SetFrightened
 //
 //==============================================================================
-procedure A_SetFrightened(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetFrightened(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex or MF2_EX_FRIGHTENED;
 end;
@@ -2715,7 +2724,7 @@ end;
 // A_UnSetFrightened
 //
 //==============================================================================
-procedure A_UnSetFrightened(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetFrightened(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_FRIGHTENED;
 end;
@@ -2725,7 +2734,7 @@ end;
 // A_SetNoDamage
 //
 //==============================================================================
-procedure A_SetNoDamage(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetNoDamage(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex or MF2_EX_NODAMAGE;
 end;
@@ -2735,7 +2744,7 @@ end;
 // A_UnSetNoDamage
 //
 //==============================================================================
-procedure A_UnSetNoDamage(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetNoDamage(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_NODAMAGE;
 end;
@@ -5898,7 +5907,7 @@ end;
 // A_Missile
 //
 //==============================================================================
-procedure A_Missile(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_Missile(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_MISSILE;
 end;
@@ -5908,7 +5917,7 @@ end;
 // A_NoMissile
 //
 //==============================================================================
-procedure A_NoMissile(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_NoMissile(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_MISSILE;
 end;
@@ -6069,7 +6078,7 @@ end;
 // Set blocking flag
 //
 //==============================================================================
-procedure A_Blocking(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_Blocking(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_SOLID;
 end;
@@ -6079,7 +6088,7 @@ end;
 // A_DoNotRunScripts
 //
 //==============================================================================
-procedure A_DoNotRunScripts(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_DoNotRunScripts(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex or MF2_EX_DONTRUNSCRIPTS;
 end;
@@ -6089,7 +6098,7 @@ end;
 // A_DoRunScripts
 //
 //==============================================================================
-procedure A_DoRunScripts(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_DoRunScripts(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_DONTRUNSCRIPTS;
 end;
@@ -6438,7 +6447,7 @@ end;
 // A_SetSolid
 //
 //==============================================================================
-procedure A_SetSolid(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetSolid(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_SOLID;
 end;
@@ -6448,7 +6457,7 @@ end;
 // A_UnSetSolid
 //
 //==============================================================================
-procedure A_UnSetSolid(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetSolid(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_SOLID;
 end;
@@ -6458,7 +6467,7 @@ end;
 // A_SetFloat
 //
 //==============================================================================
-procedure A_SetFloat(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetFloat(actor: Pmobj_t);
 begin
   actor.flags := actor.flags or MF_FLOAT;
 end;
@@ -6468,7 +6477,7 @@ end;
 // A_UnSetFloat
 //
 //==============================================================================
-procedure A_UnSetFloat(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetFloat(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not (MF_FLOAT or MF_INFLOAT);
 end;
@@ -6563,7 +6572,7 @@ end;
 // A_SetPushFactor
 //
 //==============================================================================
-procedure A_SetPushFactor(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetPushFactor(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -6589,7 +6598,7 @@ end;
 // A_SetGravity
 //
 //==============================================================================
-procedure A_SetGravity(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetGravity(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -6602,7 +6611,7 @@ end;
 // A_SetFloorBounce
 //
 //==============================================================================
-procedure A_SetFloorBounce(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetFloorBounce(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex or MF3_EX_FLOORBOUNCE;
 end;
@@ -6612,7 +6621,7 @@ end;
 // A_UnSetFloorBounce
 //
 //==============================================================================
-procedure A_UnSetFloorBounce(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetFloorBounce(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex and not MF3_EX_FLOORBOUNCE;
 end;
@@ -6622,7 +6631,7 @@ end;
 // A_SetCeilingBounce
 //
 //==============================================================================
-procedure A_SetCeilingBounce(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetCeilingBounce(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex or MF3_EX_CEILINGBOUNCE;
 end;
@@ -6632,7 +6641,7 @@ end;
 // A_UnSetCeilingBounce
 //
 //==============================================================================
-procedure A_UnSetCeilingBounce(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetCeilingBounce(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex and not MF3_EX_CEILINGBOUNCE;
 end;
@@ -6642,7 +6651,7 @@ end;
 // A_SetWallBounce
 //
 //==============================================================================
-procedure A_SetWallBounce(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetWallBounce(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex or MF3_EX_WALLBOUNCE;
 end;
@@ -6652,7 +6661,7 @@ end;
 // A_UnSetWallBounce
 //
 //==============================================================================
-procedure A_UnSetWallBounce(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetWallBounce(actor: Pmobj_t);
 begin
   actor.flags3_ex := actor.flags3_ex and not MF3_EX_WALLBOUNCE;
 end;
@@ -7081,7 +7090,7 @@ end;
 // A_SetMass(mass: integer)
 //
 //==============================================================================
-procedure A_SetMass(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetMass(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -7094,7 +7103,7 @@ end;
 // A_SetTargetMass(mass: integer)
 //
 //==============================================================================
-procedure A_SetTargetMass(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetTargetMass(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -7110,7 +7119,7 @@ end;
 // A_SetTracerMass(mass: integer)
 //
 //==============================================================================
-procedure A_SetTracerMass(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetTracerMass(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -7126,7 +7135,7 @@ end;
 // A_SetMasterMass(mass: integer)
 //
 //==============================================================================
-procedure A_SetMasterMass(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetMasterMass(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -7977,7 +7986,7 @@ end;
 // A_SetFloatBobPhase(bob: integer)
 //
 //==============================================================================
-procedure A_SetFloatBobPhase(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetFloatBobPhase(actor: Pmobj_t);
 var
   bob: integer;
 begin
@@ -8425,7 +8434,7 @@ end;
 // A_SetSize(newradius: integer, newheight: integer, testpos: boolean)
 //
 //==============================================================================
-procedure A_SetSize(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetSize(actor: Pmobj_t);
 var
   newradius, newheight: fixed_t;
   oldradius, oldheight: fixed_t;
@@ -9401,7 +9410,7 @@ end;
 // A_SetHeight(newheight: float)
 //
 //==============================================================================
-procedure A_SetHeight(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetHeight(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -9414,7 +9423,7 @@ end;
 // A_SetFriction(newfriction: float)
 //
 //==============================================================================
-procedure A_SetFriction(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetFriction(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1) then
     exit;
@@ -9448,7 +9457,7 @@ end;
 //  A_SetPainChance(value: integer);
 //
 //==============================================================================
-procedure A_SetPainChance(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetPainChance(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 1, CSP_AT_LEAST) then
     exit;
@@ -9567,7 +9576,7 @@ end;
 // A_SetInteractive
 //
 //==============================================================================
-procedure A_SetInteractive(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetInteractive(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex or MF2_EX_INTERACTIVE;
 end;
@@ -9577,7 +9586,7 @@ end;
 // A_UnSetInteractive
 //
 //==============================================================================
-procedure A_UnSetInteractive(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetInteractive(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_INTERACTIVE;
 end;
@@ -9766,7 +9775,7 @@ end;
 // A_SetMonsterInfight
 //
 //==============================================================================
-procedure A_SetMonsterInfight(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_SetMonsterInfight(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex or MF2_EX_DONTINFIGHTMONSTERS;
 end;
@@ -9776,7 +9785,7 @@ end;
 // A_UnSetMonsterInfight
 //
 //==============================================================================
-procedure A_UnSetMonsterInfight(actor: Pmobj_t);
+class procedure TCommonStateBitActions.A_UnSetMonsterInfight(actor: Pmobj_t);
 begin
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_DONTINFIGHTMONSTERS;
 end;
