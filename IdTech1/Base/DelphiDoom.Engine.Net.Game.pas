@@ -228,7 +228,7 @@ begin
     SUC_StartingNetwork('sending network start info...');
 
   LInfo := Default(TNetSetupInfo);
-  LInfo.EngineVersion := D_EngineVersion;
+  LInfo.EngineVersion := TMainRoutines.D_EngineVersion;
   LInfo.Skill := Ord(startskill);
   LInfo.Deathmatch := TGameSession.DeathMatch;
   LInfo.NoMonsters := TGameSession.NoMonsters;
@@ -407,7 +407,7 @@ begin
           if R_Interpolate then
           begin
             didinterpolations := true;
-            D_Display;
+            TMainRoutines.D_Display;
             firstinterpolation := false;
           end;
         end
@@ -417,7 +417,7 @@ begin
           if R_Interpolate then
           begin
             didinterpolations := true;
-            D_Display;
+            TMainRoutines.D_Display;
             firstinterpolation := false;
           end;
         end;
@@ -440,7 +440,7 @@ begin
       begin
         FPlanner.VerifyCanRunTic;
         if advancedemo then
-          D_DoAdvanceDemo;
+          TMainRoutines.D_DoAdvanceDemo;
         R_Ticker;
         FEndScreenTick;
         M_Ticker;
@@ -464,7 +464,7 @@ begin
     if not didinterpolations or (Ord(TGameSession.GameState) <> wipegamestate) then
     begin
       firstinterpolation := true;
-      D_Display;
+      TMainRoutines.D_Display;
     end;
   except
     on E: ENetException do
@@ -478,7 +478,7 @@ begin
   try
     FSync.BuildSingleTic;
     if advancedemo then
-      D_DoAdvanceDemo;
+      TMainRoutines.D_DoAdvanceDemo;
     R_Ticker;
     FEndScreenTick;
     M_Ticker;
@@ -487,7 +487,7 @@ begin
     Inc(TGameSession.GameTic);
     FSync.EndSingleTic;
     firstinterpolation := true;
-    D_Display;
+    TMainRoutines.D_Display;
   except
     on E: ENetException do
       Fail(E);

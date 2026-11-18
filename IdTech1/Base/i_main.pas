@@ -179,7 +179,7 @@ begin
   else
     exStyle := 0;
 
-  caption := D_Version + ' - ' + D_VersionBuilt;
+  caption := TMainRoutines.D_Version + ' - ' + TMainRoutines.D_VersionBuilt;
 
   hMainWnd := CreateWindowEx(
     exStyle,
@@ -195,7 +195,7 @@ begin
   SetWindowLong(hMainWnd, GWL_STYLE, 0);
 
   SetCursor(0);
-  D_DoomMain;
+  TMainRoutines.D_DoomMain;
 end;
 
 end.

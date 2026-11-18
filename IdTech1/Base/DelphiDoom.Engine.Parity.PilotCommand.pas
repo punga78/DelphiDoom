@@ -96,9 +96,9 @@ begin
   FillChar(LEvent, SizeOf(LEvent), 0);
   LEvent._type := ev_keydown;
   LEvent.data1 := AKey;
-  D_PostEvent(@LEvent);
+  TMainRoutines.D_PostEvent(@LEvent);
   LEvent._type := ev_keyup;
-  D_PostEvent(@LEvent);
+  TMainRoutines.D_PostEvent(@LEvent);
 end;
 
 class procedure TEngineParityPilotCommand.FindEnemy(APlayer: Pmobj_t; ARange: Integer; var AView: TParityPilotView);

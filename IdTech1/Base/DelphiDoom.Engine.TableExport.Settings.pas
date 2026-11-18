@@ -73,7 +73,7 @@ end;
 
 function TEngineExportSettings.CreatedWith: string;
 begin
-  Result := Format('%s, %s', [D_Version, D_VersionBuilt]);
+  Result := Format('%s, %s', [TMainRoutines.D_Version, TMainRoutines.D_VersionBuilt]);
 end;
 
 function TEngineExportSettings.CommandLine: string;

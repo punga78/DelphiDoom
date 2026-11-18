@@ -3710,7 +3710,7 @@ begin
 
   currentMenu.lastOn := itemOn;
   M_ClearMenus;
-  D_StartTitle;
+  TMainRoutines.D_StartTitle;
 end;
 
 //==============================================================================

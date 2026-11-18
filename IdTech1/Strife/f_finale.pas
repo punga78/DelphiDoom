@@ -303,7 +303,7 @@ begin
   end;
 
   if finalecount > 700 then
-    D_StartTitle;
+    TMainRoutines.D_StartTitle;
 end;
 
 var

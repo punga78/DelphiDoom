@@ -237,7 +237,7 @@ begin
   else
   begin
     printf('SH_Intermission_Next: back to the title'#13#10);
-    D_StartTitle;
+    TMainRoutines.D_StartTitle;
   end;
 end;
 

@@ -229,7 +229,7 @@ begin
     Z_Free(demoBuffer);
     G_FinishedDemoPlayback;
     TGameSession.ResetForNewGame;
-    D_AdvanceDemo;
+    TMainRoutines.D_AdvanceDemo;
     result := true;
     exit;
   end;
