@@ -294,7 +294,7 @@ begin
 
     if LWads <> nil then
       for LIndex := 0 to LWads.Count - 1 do
-        W_AddPendingWADfromPAK(LWads.Strings[LIndex]);
+        TWadRoutines.W_AddPendingWADfromPAK(LWads.Strings[LIndex]);
   finally
     LWads.Free;
   end;

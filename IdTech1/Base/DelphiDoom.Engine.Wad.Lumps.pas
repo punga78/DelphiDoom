@@ -44,57 +44,57 @@ uses
 
 function TEngineLumps.Count: Integer;
 begin
-  Result := W_NumLumps;
+  Result := TWadRoutines.W_NumLumps;
 end;
 
 function TEngineLumps.CheckNumForName(const AName: string; AFlags: LongWord): Integer;
 begin
-  Result := W_CheckNumForName(AName, AFlags);
+  Result := TWadRoutines.W_CheckNumForName(AName, AFlags);
 end;
 
 function TEngineLumps.GetNumForName(const AName: string; AFlags: LongWord): Integer;
 begin
-  Result := W_GetNumForName(AName, AFlags);
+  Result := TWadRoutines.W_GetNumForName(AName, AFlags);
 end;
 
 function TEngineLumps.NameOf(ALump: Integer): string;
 begin
-  Result := char8tostring(W_GetNameForNum(ALump));
+  Result := TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(ALump));
 end;
 
 function TEngineLumps.LengthOf(ALump: Integer): Integer;
 begin
-  Result := W_LumpLength(ALump);
+  Result := TWadRoutines.W_LumpLength(ALump);
 end;
 
 function TEngineLumps.Crc32Of(ALump: Integer): string;
 begin
-  Result := W_LumpCRC32(ALump);
+  Result := TWadRoutines.W_LumpCRC32(ALump);
 end;
 
 function TEngineLumps.TextOf(ALump: Integer): string;
 begin
-  Result := W_TextLumpNum(ALump);
+  Result := TWadRoutines.W_TextLumpNum(ALump);
 end;
 
 procedure TEngineLumps.Read(ALump: Integer; ADestination: Pointer);
 begin
-  W_ReadLump(ALump, ADestination);
+  TWadRoutines.W_ReadLump(ALump, ADestination);
 end;
 
 function TEngineLumps.Cache(ALump: Integer; ATag: Integer): Pointer;
 begin
-  Result := W_CacheLumpNum(ALump, ATag);
+  Result := TWadRoutines.W_CacheLumpNum(ALump, ATag);
 end;
 
 procedure TEngineLumps.RuntimeLoadFile(const AFileName: string);
 begin
-  W_RuntimeLoad(AFileName, F_ORIGIN_WAD);
+  TWadRoutines.W_RuntimeLoad(AFileName, F_ORIGIN_WAD);
 end;
 
 procedure TEngineLumps.Reload;
 begin
-  W_Reload;
+  TWadRoutines.W_Reload;
 end;
 
 end.

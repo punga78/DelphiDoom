@@ -35,25 +35,25 @@ uses
 
 function TEngineRendererLumpDirectory.LumpCount: Integer;
 begin
-  Result := W_NumLumps;
+  Result := TWadRoutines.W_NumLumps;
 end;
 
 function TEngineRendererLumpDirectory.LumpName(ALump: Integer): TRendererLumpName;
 var
   LName: char8_t;
 begin
-  LName := W_GetNameForNum(ALump);
+  LName := TWadRoutines.W_GetNameForNum(ALump);
   Move(LName, Result, SizeOf(Result));
 end;
 
 function TEngineRendererLumpDirectory.FirstLumpNamed(const AName: string): Integer;
 begin
-  Result := W_CheckFirstNumForName(AName);
+  Result := TWadRoutines.W_CheckFirstNumForName(AName);
 end;
 
 function TEngineRendererLumpDirectory.LastLumpNamed(const AName: string): Integer;
 begin
-  Result := W_CheckNumForName(AName);
+  Result := TWadRoutines.W_CheckNumForName(AName);
 end;
 
 end.

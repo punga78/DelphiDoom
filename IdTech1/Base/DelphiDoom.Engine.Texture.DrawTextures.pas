@@ -104,7 +104,7 @@ var
   LLump: Integer;
   LIndex: Integer;
 begin
-  LLump := W_GetNumForName(AName);
+  LLump := TWadRoutines.W_GetNumForName(AName);
   for LIndex := 0 to High(FTextures) do
     if FTextures[LIndex].Lump = LLump then
     begin
@@ -146,7 +146,7 @@ begin
 
   if FTextures[AIndex].Texture = nil then
   begin
-    LTexture := FFiles.LoadTexture(W_GetNameForNum(FTextures[AIndex].Lump));
+    LTexture := FFiles.LoadTexture(TWadRoutines.W_GetNameForNum(FTextures[AIndex].Lump));
     if LTexture = nil then
     begin
       FTextures[AIndex].Failed := True;

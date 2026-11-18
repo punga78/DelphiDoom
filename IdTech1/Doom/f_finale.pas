@@ -822,7 +822,7 @@ begin
   lump := sprframe.lump[0];
   flip := sprframe.flip[0];
 
-  patch := W_CacheLumpNum(lump + firstspritelump, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpNum(lump + firstspritelump, PU_STATIC);
   if flip then
     V_DrawPatchFlipped(160, 170, SCN_TMP, patch)
   else
@@ -902,8 +902,8 @@ var
   name: string;
   stage: integer;
 begin
-  p1 := W_CacheLumpName('PFUB2', PU_LEVEL);
-  p2 := W_CacheLumpName('PFUB1', PU_LEVEL);
+  p1 := TWadRoutines.W_CacheLumpName('PFUB2', PU_LEVEL);
+  p2 := TWadRoutines.W_CacheLumpName('PFUB1', PU_LEVEL);
 
   scrolled := 320 - (finalecount - 230) div 2;
   if scrolled > p1.width then

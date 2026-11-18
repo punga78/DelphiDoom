@@ -335,12 +335,12 @@ begin
 // JVAL
 // Check for 'ANIMATED' lump
   animdefs := nil;
-  lump := W_CheckNumForName('ANIMATED');
+  lump := TWadRoutines.W_CheckNumForName('ANIMATED');
   if lump >= 0 then
   begin
-    len := W_LumpLength(lump);
+    len := TWadRoutines.W_LumpLength(lump);
     len := len div SizeOf(wad_animdef_t);
-    wadanims := W_CacheLumpNum(lump, PU_STATIC);
+    wadanims := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
     animdefs := Z_Malloc((len + 1) * SizeOf(animdef_t), PU_STATIC, nil);
     anims := Z_Malloc((len + 1) * SizeOf(anim_t), PU_STATIC, nil);
     ianimdef := @animdefs[0];
@@ -389,7 +389,7 @@ begin
     end
     else
     begin
-      if W_CheckNumForName(ianimdef.startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(ianimdef.startname) = -1 then
       begin
         inc(ianimdef);
         continue;
@@ -2188,7 +2188,7 @@ var
   s, sec: integer;
   ang: angle_t;
 begin
-  if W_CheckNumForName('texture2') < 0 then
+  if TWadRoutines.W_CheckNumForName('texture2') < 0 then
     TGameSession.GameEpisode := 1; // ???
 
   // See if -TIMER needs to be used.

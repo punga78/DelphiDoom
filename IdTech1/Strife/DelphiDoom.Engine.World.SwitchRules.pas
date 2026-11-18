@@ -248,11 +248,11 @@ begin
     episode := 1;
 
   // JVAL: Check for 'SWITCHES' lump (BOOM compatibility)
-  lump := W_CheckNumForName('SWITCHES');
+  lump := TWadRoutines.W_CheckNumForName('SWITCHES');
   if lump >= 0 then
   begin
-    wad_switchlist := W_CacheLumpNum(lump, PU_STATIC);
-    len := W_LumpLength(lump);
+    wad_switchlist := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+    len := TWadRoutines.W_LumpLength(lump);
     len := len div SizeOf(wad_switchlist_t);
     alphSwitchList := Z_Malloc((len + 1) * SizeOf(switchlist_t), PU_STATIC, nil);
     for i := 0 to len - 1 do

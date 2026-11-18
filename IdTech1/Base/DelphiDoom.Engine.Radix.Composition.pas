@@ -106,7 +106,7 @@ begin
         AEdition := reV10Shareware;
       Result := LoadDataResource(Format(END_SCREEN_RESOURCE, [Ord(AEdition)]));
     end);
-  W_ConfigureConverter(LConverter);
+  TWadRoutines.W_ConfigureConverter(LConverter);
   RX_ConfigureVersion(LConverter as IEngineRadixEdition);
 
   LAliases := TEngineRadixLumpAliases.Create(ALumps,
@@ -114,7 +114,7 @@ begin
     begin
       Result := TRadixFactory.CreateLumpAliases;
     end);
-  W_ConfigureAliases(LAliases);
+  TWadRoutines.W_ConfigureAliases(LAliases);
 
   RX_ConfigureMapInfo(TRadixFactory.CreateMapInfoReader);
   RX_ConfigureLevelLogic(TRadixFactory.CreateLevelLumpReader);

@@ -600,10 +600,10 @@ begin
 
   sprintf(namebuf, 'ds%s', [sfxinfo.name]);
   if Length(namebuf) <= 8 then
-    result := W_CheckNumForName(namebuf);
+    result := TWadRoutines.W_CheckNumForName(namebuf);
 
   if result = -1 then // JVAL, search without the ds prefix
-    result := W_CheckNumForName(sfxinfo.name);
+    result := TWadRoutines.W_CheckNumForName(sfxinfo.name);
 end;
 
 //==============================================================================
@@ -703,7 +703,7 @@ function S_TryLoadExternalMusic(music: Pmusicinfo_t): boolean;
 var
   clip: IExternalMusicClip;
 begin
-  clip := S_ExternalMusicCache.Find(char8tostring(W_GetNameForNum(music.lumpnum)));
+  clip := S_ExternalMusicCache.Find(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(music.lumpnum)));
   if clip = nil then
   begin
     result := false;
@@ -1360,7 +1360,7 @@ begin
   if (id < 0) or (id > numsfx) then
     exit;
 
-  if W_CheckNumForName(S_sfx[id].name) < 0 then
+  if TWadRoutines.W_CheckNumForName(S_sfx[id].name) < 0 then
     exit;
 
   S_sfx[id].priority := 2;
@@ -1640,26 +1640,26 @@ begin
 {$ENDIF}
   begin
 {$IF DEFINED(HERETIC)}
-    namebuf := stringtochar8('MUS_' + music.name);
-    music.lumpnum := W_CheckNumForName(namebuf);
+    namebuf := TWadRoutines.stringtochar8('MUS_' + music.name);
+    music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
 {$ELSEIF DEFINED(HEXEN)}
     if Length(music.name) <= 4 then
     begin
-      namebuf := stringtochar8('MUS_' + music.name);
-      music.lumpnum := W_CheckNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8('MUS_' + music.name);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
     end;
 {$ELSE}
-    namebuf := stringtochar8('d_' + music.name);
-    music.lumpnum := W_CheckNumForName(namebuf);
+    namebuf := TWadRoutines.stringtochar8('d_' + music.name);
+    music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
 {$ENDIF}
     if music.lumpnum <= 0 then
     begin
 {$IF DEFINED(HERETIC)}
-      namebuf := stringtochar8(music.name);
-      music.lumpnum := W_GetNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8(music.name);
+      music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
 {$ELSEIF DEFINED(HEXEN)}
-      namebuf := stringtochar8(music.name);
-      music.lumpnum := W_CheckNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8(music.name);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
     end;
     if music.lumpnum <= 0 then
     begin
@@ -1669,23 +1669,23 @@ begin
       music.lumpnum := S_music[Ord(mus_map01)].lumpnum;
       if music.lumpnum <= 0 then
       begin
-        namebuf :=  stringtochar8(music.name);
-        music.lumpnum := W_GetNumForName(namebuf);
+        namebuf :=  TWadRoutines.stringtochar8(music.name);
+        music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
       end;
 {$ELSE}
-      namebuf := stringtochar8('d_' + music.alias);
-      music.lumpnum := W_CheckNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8('d_' + music.alias);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
       if music.lumpnum <= 0 then
       begin
-        namebuf := stringtochar8(music.name);
-        music.lumpnum := W_CheckNumForName(namebuf);
+        namebuf := TWadRoutines.stringtochar8(music.name);
+        music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
       end;
     end;
 
     if music.lumpnum <= 0 then
     begin
-      namebuf := stringtochar8(music.alias);
-      music.lumpnum := W_GetNumForName(namebuf);
+      namebuf := TWadRoutines.stringtochar8(music.alias);
+      music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
 {$ENDIF}
     end;
   end;
@@ -1729,15 +1729,15 @@ begin
     mp3header.ID := MP3MAGIC;
     mp3header.Stream := music.mp3stream;
     music.data := mp3header;
-    music.handle := S_RegisterSong(music.data, W_LumpLength(music.lumpnum));
+    music.handle := S_RegisterSong(music.data, TWadRoutines.W_LumpLength(music.lumpnum));
   end
   else
   begin
     if not S_TryLoadExternalMusic(music) then
     begin
       // load & register it
-      music.data := W_CacheLumpNum(music.lumpnum, PU_MUSIC);
-      music.handle := S_RegisterSong(music.data, W_LumpLength(music.lumpnum));
+      music.data := TWadRoutines.W_CacheLumpNum(music.lumpnum, PU_MUSIC);
+      music.handle := S_RegisterSong(music.data, TWadRoutines.W_LumpLength(music.lumpnum));
     end;
   end;
 
@@ -2077,8 +2077,8 @@ begin
       S_sfx[i].lumpnum := S_GetSfxLumpNum(@S_sfx[i]);
       if S_sfx[i].lumpnum >= 0 then
       begin
-        W_CacheLumpNum(S_sfx[i].lumpnum, PU_SOUND);
-        sndmem := sndmem + W_LumpLength(S_sfx[i].lumpnum);
+        TWadRoutines.W_CacheLumpNum(S_sfx[i].lumpnum, PU_SOUND);
+        sndmem := sndmem + TWadRoutines.W_LumpLength(S_sfx[i].lumpnum);
       end;
     end;
   printf('%6d KB memory usage for sound cache'#13#10, [sndmem div 1024]);

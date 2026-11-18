@@ -16,9 +16,14 @@ var
   /// <summary>The text of that lump</summary>
   ShimGlGammaText: string = '';
 
-function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer;
-function W_TextLumpNum(const lump: integer): string;
-function W_GetNumForName(const name: string): integer;
+type
+  /// <summary>The routines of w_wad that the scene tests use, as static methods like the real unit (issue #185)</summary>
+  TWadRoutines = class sealed
+  public
+    class function W_CheckNumForName(const name: string; const flags: LongWord = $0): integer; static;
+    class function W_TextLumpNum(const lump: integer): string; static;
+    class function W_GetNumForName(const name: string): integer; static;
+  end;
 
 implementation
 
@@ -26,7 +31,7 @@ uses
   System.SysUtils,
   d_delphi;
 
-function W_CheckNumForName(const name: string; const flags: LongWord): integer;
+class function TWadRoutines.W_CheckNumForName(const name: string; const flags: LongWord): integer;
 begin
   ShimEvent('W_CheckNumForName ' + name);
   if name = 'GLGAMMA' then
@@ -35,13 +40,13 @@ begin
     Result := -1;
 end;
 
-function W_GetNumForName(const name: string): integer;
+class function TWadRoutines.W_GetNumForName(const name: string): integer;
 begin
   ShimEvent('W_GetNumForName ' + name);
   Result := 100 + Length(name);
 end;
 
-function W_TextLumpNum(const lump: integer): string;
+class function TWadRoutines.W_TextLumpNum(const lump: integer): string;
 begin
   ShimEvent('W_TextLumpNum ' + IntToStr(lump));
   Result := ShimGlGammaText;

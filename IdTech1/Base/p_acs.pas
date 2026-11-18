@@ -303,7 +303,7 @@ begin
   if acs_compiler = nil then
     I_Error('P_CompileACSScript(): the ACS compiler was not configured');
 
-  src := W_TextLumpNum(lump);
+  src := TWadRoutines.W_TextLumpNum(lump);
   SetLength(source, Length(src));
   for i := 1 to Length(src) do
     source[i - 1] := Byte(Ord(src[i]));
@@ -333,15 +333,15 @@ var
 begin
   ActionCodeBase := nil;
 
-  if lump >= W_NumLumps then
+  if lump >= TWadRoutines.W_NumLumps then
   begin
     ACS_Machine.Unload;
     exit;
   end;
 
-  size := W_LumpLength(lump);
+  size := TWadRoutines.W_LumpLength(lump);
   needscompile := size < SizeOf(integer);
-  header := W_CacheLumpNum(lump, PU_LEVEL);
+  header := TWadRoutines.W_CacheLumpNum(lump, PU_LEVEL);
   if not needscompile then
     needscompile := header^ <> ACS_MAGIC;
 

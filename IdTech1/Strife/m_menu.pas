@@ -907,7 +907,7 @@ begin
   cy := y;
 
   oldtranslation := v_translation;
-  v_translation := W_CacheLumpName('TRN_MENU', PU_STATIC);
+  v_translation := TWadRoutines.W_CacheLumpName('TRN_MENU', PU_STATIC);
   while true do
   begin
     if ch > len then
@@ -2444,7 +2444,7 @@ end;
 class procedure TMenuLocalRoutines.M_DrawReadThisExt;
 begin
   inhelpscreens := true;
-  V_PageDrawer(char8tostring(W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
+  V_PageDrawer(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
 end;
 
 //==============================================================================
@@ -5039,7 +5039,7 @@ begin
       exit;
   end;
 
-  src := W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
+  src := TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
   dest := 0;
 
   for y := 0 to 200 - 1 do
@@ -5441,7 +5441,7 @@ begin
   extrahelpscreens := TDNumberList.Create;
   for i := 1 to 99 do
   begin
-    lump := W_CheckNumForName('HELP' + IntToStrzFill(2, i));
+    lump := TWadRoutines.W_CheckNumForName('HELP' + IntToStrzFill(2, i));
     if lump >= 0 then
       extrahelpscreens.Add(lump);
   end;

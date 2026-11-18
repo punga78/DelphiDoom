@@ -397,15 +397,15 @@ begin
 
   if finalecount < 70 then
   begin
-    p1 := W_CacheLumpName('FINAL1', PU_STATIC);
+    p1 := TWadRoutines.W_CacheLumpName('FINAL1', PU_STATIC);
     memcpy(screens[SCN_TMP], p1, 320 * 200);
     Z_ChangeTag(p1, PU_CACHE);
     nextscroll := finalecount;
   end
   else if yval < 64000 then
   begin
-    p1 := W_CacheLumpName('FINAL1', PU_STATIC);
-    p2 := W_CacheLumpName('FINAL2', PU_STATIC);
+    p1 := TWadRoutines.W_CacheLumpName('FINAL1', PU_STATIC);
+    p2 := TWadRoutines.W_CacheLumpName('FINAL2', PU_STATIC);
     memcpy(screens[SCN_TMP], @p2[320 * 200 - yval], yval);
     memcpy(@screens[SCN_TMP][yval], p1, 320 * 200 - yval);
     Z_ChangeTag(p1, PU_CACHE);
@@ -415,7 +415,7 @@ begin
   end
   else  //else, we'll just sit here and wait, for now
   begin
-    p2 := W_CacheLumpName('FINAL2', PU_STATIC);
+    p2 := TWadRoutines.W_CacheLumpName('FINAL2', PU_STATIC);
     memcpy(screens[SCN_TMP], p2, 320 * 200);
     Z_ChangeTag(p2, PU_CACHE);
   end;
@@ -440,8 +440,8 @@ var
 begin
   if underwaterpic = -2 then
   begin
-    underwaterpic := W_CheckNumForName('E2END');
-    underwaterpal := W_CheckNumForName('E2PAL');
+    underwaterpic := TWadRoutines.W_CheckNumForName('E2END');
+    underwaterpal := TWadRoutines.W_CheckNumForName('E2PAL');
     if (underwaterpic = -1) or (underwaterpal = -1) then
     begin
       underwaterpic := -1;
@@ -455,8 +455,8 @@ begin
   end
   else
   begin
-    memcpy(@screens[SCN_TMP][0], W_CacheLumpNum(underwaterpic, PU_CACHE), 320 * 200);
-    pal := W_CacheLumpNum(underwaterpal, PU_STATIC);
+    memcpy(@screens[SCN_TMP][0], TWadRoutines.W_CacheLumpNum(underwaterpic, PU_CACHE), 320 * 200);
+    pal := TWadRoutines.W_CacheLumpNum(underwaterpal, PU_STATIC);
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(pal, PU_CACHE);

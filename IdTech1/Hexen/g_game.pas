@@ -1953,7 +1953,7 @@ begin
   end;
 
   map := atoi(parm1, -1);
-  if W_CheckNumForName(P_GetMapName(map)) < 0 then
+  if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) < 0 then
   begin
     mapname := strupper(parm1);
 
@@ -1964,7 +1964,7 @@ begin
             map := atoi(mapname[4] + mapname[5], -1);
   end;
 
-  if W_CheckNumForName(P_GetMapName(map)) > -1 then
+  if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
     TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
     G_DeferedInitNewUntranslated(TGameSession.GameSkill, map);
@@ -1999,8 +1999,8 @@ begin
   TNewGameLimits.Hexen(map);
 
   levelinf := P_GetLevelInfo(P_GetMapName(map));
-  levelinf.musname := stringtochar8('');
-  levelinf.skyflat := stringtochar8('');
+  levelinf.musname := TWadRoutines.stringtochar8('');
+  levelinf.skyflat := TWadRoutines.stringtochar8('');
 
   TRendererInterpolation.R_ResetInterpolationBuffer;
 

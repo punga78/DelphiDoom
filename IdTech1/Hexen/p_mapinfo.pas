@@ -281,10 +281,10 @@ begin
   info.doubleSky := false;
   info.lightning := false;
   info.nojump := false;
-  info.fadetable := W_GetNumForName(DEFAULT_FADE_TABLE);
+  info.fadetable := TWadRoutines.W_GetNumForName(DEFAULT_FADE_TABLE);
   info.name := UNKNOWN_MAP_NAME;
 
-  sc := TScriptScanner.Create(TScannerText.RemoveLineQuotes(W_TextLumpName(MAPINFO_SCRIPT_NAME)), TEngineScannerLog.Create);
+  sc := TScriptScanner.Create(TScannerText.RemoveLineQuotes(TWadRoutines.W_TextLumpName(MAPINFO_SCRIPT_NAME)), TEngineScannerLog.Create);
   while sc.GetString do
   begin
     if not sc.Compare('MAP') then
@@ -373,7 +373,7 @@ begin
         MCMD_FADETABLE:
           begin
             sc.MustGetString;
-            info.fadetable := W_GetNumForName(sc.AsString);
+            info.fadetable := TWadRoutines.W_GetNumForName(sc.AsString);
           end;
         MCMD_CD_STARTTRACK,
         MCMD_CD_END1TRACK,

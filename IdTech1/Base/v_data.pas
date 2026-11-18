@@ -188,8 +188,8 @@ const
 function V_ReadPalette(tag: integer): PByteArray;
 begin
   if playpalnum < 0 then
-    playpalnum := W_GetNumForName(PLAYPAL);
-  result := W_CacheLumpNum(playpalnum, tag);
+    playpalnum := TWadRoutines.W_GetNumForName(PLAYPAL);
+  result := TWadRoutines.W_CacheLumpNum(playpalnum, tag);
 end;
 
 end.

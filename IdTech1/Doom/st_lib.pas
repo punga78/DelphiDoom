@@ -274,19 +274,19 @@ class procedure TStatusLibRoutines.STlib_init;
 var
   lump: integer;
 begin
-  lump := W_CheckNumForName('STTMINUS');
+  lump := TWadRoutines.W_CheckNumForName('STTMINUS');
   if lump = -1 then
     oldversion := true;
 
   if oldsharewareversion or oldversion then
 {$IFDEF RADIX}
     // the minus of the small font of Radix (FNTAnnn stands for STCFNnnn)
-    sttminus := W_CacheLumpName('FNTA045', PU_STATIC)
+    sttminus := TWadRoutines.W_CacheLumpName('FNTA045', PU_STATIC)
 {$ELSE}
-    sttminus := W_CacheLumpName('STCFN046', PU_STATIC)
+    sttminus := TWadRoutines.W_CacheLumpName('STCFN046', PU_STATIC)
 {$ENDIF}
   else
-    sttminus := W_CacheLumpNum(lump, PU_STATIC);
+    sttminus := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
 end;
 
 //==============================================================================
@@ -530,7 +530,7 @@ class procedure TStatusLibRoutines.ST_DrawPatch(const x, y: Integer; const lump:
 var
   p: Ppatch_t;
 begin
-  p := W_CacheLumpNum(lump, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   ST_DrawPatch(x, y, p);
   Z_ChangeTag(p, PU_CACHE);
 end;

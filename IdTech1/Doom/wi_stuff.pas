@@ -558,7 +558,7 @@ begin
   end
   else if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelpic <> '') then
   begin
-    lpic := W_CacheLumpName(wbs.lastmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(wbs.lastmapinfo.levelpic, PU_CACHE);
 
     WI_DrawPatch((320 - lpic.width) div 2, y, lpic);
 
@@ -602,7 +602,7 @@ begin
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
   begin
-    lpic := W_CacheLumpName(wbs.nextmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(wbs.nextmapinfo.levelpic, PU_CACHE);
 
     y := y + (5 * lpic.height) div 4;
 
@@ -1849,7 +1849,7 @@ begin
     if wbs.epsd = 3 then
       wibackground := 'INTERPIC';
 
-  ptc := W_CacheLumpName(wibackground, PU_STATIC);
+  ptc := TWadRoutines.W_CacheLumpName(wibackground, PU_STATIC);
   wide_inter := ptc.width;
   Z_ChangeTag(ptc, PU_CACHE);
 
@@ -1863,7 +1863,7 @@ begin
     for i := 0 to NUMCMAPS - 1 do
     begin
       name := 'CWILV' + IntToStrZfill(2, i); // JVAL: was sprintf(name, 'CWILV%2.2d', i);
-      lnames[i] := W_CacheLumpName(name, PU_STATIC);
+      lnames[i] := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
     end;
   end
   else
@@ -1875,17 +1875,17 @@ begin
     for i := 0 to NUMMAPS - 1 do
     begin
       sprintf(name, 'WILV%d%d', [wbs.epsd, i]);
-      lnames[i] := W_CacheLumpName(name, PU_STATIC);
+      lnames[i] := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
     end;
 
     // you are here
-    yah[0] := W_CacheLumpName('WIURH0', PU_STATIC);
+    yah[0] := TWadRoutines.W_CacheLumpName('WIURH0', PU_STATIC);
 
     // you are here (alt.)
-    yah[1] := W_CacheLumpName('WIURH1', PU_STATIC);
+    yah[1] := TWadRoutines.W_CacheLumpName('WIURH1', PU_STATIC);
 
     // splat
-    splat := W_CacheLumpName('WISPLAT', PU_STATIC);
+    splat := TWadRoutines.W_CacheLumpName('WISPLAT', PU_STATIC);
 
     if wbs.epsd < 3 then
     begin
@@ -1899,7 +1899,7 @@ begin
           begin
             // animations
             sprintf(name, 'WIA%d%.2d%.2d', [wbs.epsd, j, i]); // JVAL ????
-            a.p[i] := W_CacheLumpName(name, PU_STATIC);
+            a.p[i] := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
           end
           else
           begin
@@ -1913,86 +1913,86 @@ begin
 
   // More hacks on minus sign.
   if oldsharewareversion or oldversion then
-    wiminus := W_CacheLumpName('STCFN046', PU_STATIC)
+    wiminus := TWadRoutines.W_CacheLumpName('STCFN046', PU_STATIC)
   else
-    wiminus := W_CacheLumpName('WIMINUS', PU_STATIC);
+    wiminus := TWadRoutines.W_CacheLumpName('WIMINUS', PU_STATIC);
 
   for i := 0 to 9 do
   begin
     // numbers 0-9
     sprintf(name, 'WINUM%d', [i]);
-    num[i] := W_CacheLumpName(name, PU_STATIC);
+    num[i] := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
   end;
 
   // percent sign
-  percent := W_CacheLumpName('WIPCNT', PU_STATIC);
+  percent := TWadRoutines.W_CacheLumpName('WIPCNT', PU_STATIC);
 
   // "finished"
-  finished := W_CacheLumpName('WIF', PU_STATIC);
+  finished := TWadRoutines.W_CacheLumpName('WIF', PU_STATIC);
 
   // "entering"
-  entering := W_CacheLumpName('WIENTER', PU_STATIC);
+  entering := TWadRoutines.W_CacheLumpName('WIENTER', PU_STATIC);
 
   // "kills"
-  kills := W_CacheLumpName('WIOSTK', PU_STATIC);
+  kills := TWadRoutines.W_CacheLumpName('WIOSTK', PU_STATIC);
 
   // "scrt"
-  secret := W_CacheLumpName('WIOSTS', PU_STATIC);
+  secret := TWadRoutines.W_CacheLumpName('WIOSTS', PU_STATIC);
 
   // "secret"
-  sp_secret := W_CacheLumpName('WISCRT2', PU_STATIC);
+  sp_secret := TWadRoutines.W_CacheLumpName('WISCRT2', PU_STATIC);
 
   // Yuck.
   if language = french then
   begin
     // "items"
     if TGameSession.NetGame and (TGameSession.DeathMatch = 0) then
-      items := W_CacheLumpName('WIOBJ', PU_STATIC)
+      items := TWadRoutines.W_CacheLumpName('WIOBJ', PU_STATIC)
     else
-      items := W_CacheLumpName('WIOSTI', PU_STATIC);
+      items := TWadRoutines.W_CacheLumpName('WIOSTI', PU_STATIC);
   end
   else
-    items := W_CacheLumpName('WIOSTI', PU_STATIC);
+    items := TWadRoutines.W_CacheLumpName('WIOSTI', PU_STATIC);
 
   // "frgs"
-  frags := W_CacheLumpName('WIFRGS', PU_STATIC);
+  frags := TWadRoutines.W_CacheLumpName('WIFRGS', PU_STATIC);
 
   // ":"
-  colon := W_CacheLumpName('WICOLON', PU_STATIC);
+  colon := TWadRoutines.W_CacheLumpName('WICOLON', PU_STATIC);
 
   // "time"
-  time := W_CacheLumpName('WITIME', PU_STATIC);
+  time := TWadRoutines.W_CacheLumpName('WITIME', PU_STATIC);
 
   // "sucks"
-  sucks := W_CacheLumpName('WISUCKS', PU_STATIC);
+  sucks := TWadRoutines.W_CacheLumpName('WISUCKS', PU_STATIC);
 
   // "par"
-  par := W_CacheLumpName('WIPAR', PU_STATIC);
+  par := TWadRoutines.W_CacheLumpName('WIPAR', PU_STATIC);
 
   // "killers" (vertical)
-  killers := W_CacheLumpName('WIKILRS', PU_STATIC);
+  killers := TWadRoutines.W_CacheLumpName('WIKILRS', PU_STATIC);
 
   // "victims" (horiz)
-  victims := W_CacheLumpName('WIVCTMS', PU_STATIC);
+  victims := TWadRoutines.W_CacheLumpName('WIVCTMS', PU_STATIC);
 
   // "total"
-  total := W_CacheLumpName('WIMSTT', PU_STATIC);
+  total := TWadRoutines.W_CacheLumpName('WIMSTT', PU_STATIC);
 
   // your face
-  star := W_CacheLumpName('STFST01', PU_STATIC);
+  star := TWadRoutines.W_CacheLumpName('STFST01', PU_STATIC);
 
   // dead face
-  bstar := W_CacheLumpName('STFDEAD0', PU_STATIC);
+  bstar := TWadRoutines.W_CacheLumpName('STFDEAD0', PU_STATIC);
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
     // "1,2,3,4"
     sprintf(name, 'STPB%d', [i]);
-    p[i] := W_CacheLumpName(name, PU_STATIC);
+    p[i] := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
 
     // "1,2,3,4"
     sprintf(name, 'WIBP%d', [i + 1]);
-    bp[i] := W_CacheLumpName(name, PU_STATIC);
+    bp[i] := TWadRoutines.W_CacheLumpName(name, PU_STATIC);
   end;
 
   wi_loaded := true;

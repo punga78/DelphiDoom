@@ -197,7 +197,7 @@ end;
 
 procedure THexenLevelRules.AfterSpecials;
 begin
-  R_ChangeColormap(W_GetNameForNum(P_GetMapFadeTable(TGameSession.GameMap)));
+  R_ChangeColormap(TWadRoutines.W_GetNameForNum(P_GetMapFadeTable(TGameSession.GameMap)));
 end;
 
 procedure THexenLevelRules.AfterLevel;

@@ -355,7 +355,7 @@ function gld_AddNewGLPatchTexture(lump: integer): PGLTexture;
 var
   numlumps: integer;
 begin
-  numlumps := W_NumLumps;
+  numlumps := TWadRoutines.W_NumLumps;
   if (lump < 0) or (lump >= numlumps) then
   begin
     result := nil;
@@ -545,7 +545,7 @@ begin
   for i := 0 to textures[gltexture.index].patchcount - 1 do
   begin
     texpatch := @textures[gltexture.index].patches[i];
-    patch := W_CacheLumpNum(texpatch.patch, PU_STATIC);
+    patch := TWadRoutines.W_CacheLumpNum(texpatch.patch, PU_STATIC);
     TGlTextureTransparency.MarkPatch(System.PByte(buffer), gltexture.realtexwidth, gltexture.realtexheight,
       System.PByte(patch), texpatch.originx, texpatch.originy);
     Z_ChangeTag(patch, PU_CACHE);
@@ -980,7 +980,7 @@ begin
   if (gltexture.index = skytexture) and (textures[skytexture].patchcount = 1) then
     if (textures[skytexture].patches[0].originx <> 0) or (textures[skytexture].patches[0].originy <> 0) then
     begin
-      patch := W_CacheLumpNum(textures[skytexture].patches[0].patch, PU_STATIC);
+      patch := TWadRoutines.W_CacheLumpNum(textures[skytexture].patches[0].patch, PU_STATIC);
       gld_AddPatchToTexture_Untranslated(gltexture, buffer, patch, 0, 0,
                                          not (gltexture.mipmap and use_mipmapping) and gl_paletted_texture);
       Z_ChangeTag(patch, PU_CACHE);
@@ -991,7 +991,7 @@ begin
     for i := 0 to textures[gltexture.index].patchcount - 1 do
     begin
       texpatch := @textures[gltexture.index].patches[i];
-      patch := W_CacheLumpNum(texpatch.patch, PU_STATIC);
+      patch := TWadRoutines.W_CacheLumpNum(texpatch.patch, PU_STATIC);
       gld_AddPatchToTexture_Untranslated(gltexture, buffer, patch, texpatch.originx, texpatch.originy, {13,}
                                          not (gltexture.mipmap and use_mipmapping) and gl_paletted_texture);
       Z_ChangeTag(patch, PU_CACHE);
@@ -1133,7 +1133,7 @@ begin
 
   if cm = Ord(CR_DEFAULT) then
   begin
-    if gld_LoadHiresTexture(gltexture, _fix_sprite_name(string(W_GetNameForNum(gltexture.index))), -1) then
+    if gld_LoadHiresTexture(gltexture, _fix_sprite_name(string(TWadRoutines.W_GetNameForNum(gltexture.index))), -1) then
       exit;
     trans := nil;
   end
@@ -1192,7 +1192,7 @@ begin
     result.textype := GLDT_BROKEN;
     result.index := lump;
     result.mipmap := mipmap;
-    lumplen := W_LumpLength(lump);
+    lumplen := TWadRoutines.W_LumpLength(lump);
     // JVAL
     // Use 8192 to preserve Heretic and Hexen scrolling flats :)
     if lumplen <= 8192 then
@@ -1293,10 +1293,10 @@ begin
     end;
   end;
 
-  if gld_LoadHiresTexture(gltexture, string(W_GetNameForNum(gltexture.index)), ripple) then
+  if gld_LoadHiresTexture(gltexture, string(TWadRoutines.W_GetNameForNum(gltexture.index)), ripple) then
     exit;
 
-  flat := W_CacheLumpNum(gltexture.index, PU_STATIC);
+  flat := TWadRoutines.W_CacheLumpNum(gltexture.index, PU_STATIC);
   buffer := malloc(gltexture.buffer_size);
   if (not (gltexture.mipmap and use_mipmapping)) and gl_paletted_texture then
     memset(buffer, transparent_pal_index, gltexture.buffer_size)
@@ -1386,7 +1386,7 @@ var
 begin
   if gld_GLPatchTextures = nil then
     exit;
-  numlumps := W_NumLumps;
+  numlumps := TWadRoutines.W_NumLumps;
   for i := 0 to numlumps - 1 do
   begin
     if gld_GLPatchTextures[i] <> nil then
@@ -1426,7 +1426,7 @@ begin
 
   if gld_GLPatchTextures <> nil then
   begin
-    numlumps := W_NumLumps;
+    numlumps := TWadRoutines.W_NumLumps;
     for i := 0 to numlumps - 1 do
     begin
       if gld_GLPatchTextures[i] <> nil then

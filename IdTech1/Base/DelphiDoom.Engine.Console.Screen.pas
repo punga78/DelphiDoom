@@ -768,7 +768,7 @@ begin
   V_CopyRawDataToScreen(SCN_TMP, 'TITLE');
 {$ENDIF}
 {$IFDEF STRIFE}
-  V_DrawPatchFullScreenTMP320x200(char8tostring(W_GetNameForNum(D_Help0Lump)));
+  V_DrawPatchFullScreenTMP320x200(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(D_Help0Lump)));
 {$ENDIF}
 
   // A little bit darker background...
@@ -820,7 +820,7 @@ begin
       LY := V_GetScreenHeight(SCN_CON) - (FHeight - LLinesLeft + 1) * FONT_HEIGHT;
       if IsDivideLine(FText[LLine]) then
       begin
-        LPatch := W_CacheLumpName({$IFDEF DOOM_OR_STRIFE}'brdr_t'{$ELSE}'BORDB'{$ENDIF}, PU_STATIC);
+        LPatch := TWadRoutines.W_CacheLumpName({$IFDEF DOOM_OR_STRIFE}'brdr_t'{$ELSE}'BORDB'{$ENDIF}, PU_STATIC);
         if LLength > FWidth then
           LLength := FWidth;
         for LIndex := 1 to LLength do

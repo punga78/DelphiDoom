@@ -563,21 +563,21 @@ begin
   begin
 {$IF DEFINED(HERETIC)}
     buffer := 'FONTA' + IntToStrZfill(2, i);
-    hu_font[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font[i - 1] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
   end;
 
   for i := 1 to HU_FONTSIZE - 1 do
   begin
     buffer := 'FONTB' + IntToStrZfill(2, i);
-    hu_font2[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font2[i - 1] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
   end;
 
   for i := 1 to HU_CFONTSIZE do
   begin
     buffer := 'FONTC' + IntToStrZfill(2, i);
-    lump := W_CheckNumForName(buffer);
+    lump := TWadRoutines.W_CheckNumForName(buffer);
     if lump >= 0 then
-      hu_font3[i - 1] := W_CacheLumpNum(lump, PU_STATIC)
+      hu_font3[i - 1] := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC)
     else if i < Ord(HU_FONTSIZE) then
       hu_font3[i - 1] := hu_font[i - 1]
     else if i = 59 then
@@ -593,31 +593,31 @@ begin
   for i := 1 to HU_FONTSIZE4 do
   begin
     buffer := 'STCFN' + IntToStrZfill(3, i + 32);
-    hu_font4[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font4[i - 1] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
 {$ELSEIF DEFINED(HEXEN)}
     buffer := 'FONTA' + IntToStrZfill(2, i);
-    hu_font[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font[i - 1] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
   end;
 
   // Yellow bold fonts
   for i := 1 to HU_FONTSIZE - 1 do
   begin
     buffer := 'FONTAY' + IntToStrZfill(2, i);
-    hu_fonty[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_fonty[i - 1] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
   end;
 
   for i := 1 to HU_FONTSIZE - 1 do
   begin
     buffer := 'FONTB' + IntToStrZfill(2, i);
-    hu_font2[i - 1] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font2[i - 1] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
   end;
 
   for i := 1 to HU_CFONTSIZE do
   begin
     buffer := 'FONTC' + IntToStrZfill(2, i);
-    lump := W_CheckNumForName(buffer);
+    lump := TWadRoutines.W_CheckNumForName(buffer);
     if lump >= 0 then
-      hu_font3[i - 1] := W_CacheLumpNum(lump, PU_STATIC)
+      hu_font3[i - 1] := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC)
     else if i < Ord(HU_FONTSIZE) then
       hu_font3[i - 1] := hu_font[i - 1]
     else if i = 59 then
@@ -631,27 +631,27 @@ begin
 {$ELSEIF DEFINED(STRIFE)}
     buffer := 'STCFN' + IntToStrZfill(3, j);
     inc(j);
-    hu_font[i] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font[i] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
     // haleyjd 09/18/10: load yfont as well; and yes, this is exactly
     // how Rogue did it :P
     buffer[3] := 'B';
-    yfont[i] := W_CacheLumpName(buffer, PU_STATIC);
+    yfont[i] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
 {$ELSEIF DEFINED(RADIX)}
     // the small font of RADIX.DAT; a character it does not have is the empty sprite
     buffer := 'FNTA';
-    hu_font[i] := W_CacheLumpNum(RX_FontLumpNum(buffer, j), PU_STATIC);
+    hu_font[i] := TWadRoutines.W_CacheLumpNum(RX_FontLumpNum(buffer, j), PU_STATIC);
     inc(j);
 {$ELSE}
     buffer := 'STCFN' + IntToStrZfill(3, j);
     inc(j);
-    hu_font[i] := W_CacheLumpName(buffer, PU_STATIC);
+    hu_font[i] := TWadRoutines.W_CacheLumpName(buffer, PU_STATIC);
 {$ENDIF}
   end;
 {$IFDEF STRIFE}
 
   for c := 'A' to 'Z' do
-    m_font3[c] := W_CacheLumpName('FONT3_' + c, PU_STATIC);
-  m_font3[Chr(Ord('Z') + 1)] := W_CacheLumpName('FONT3_!', PU_STATIC);
+    m_font3[c] := TWadRoutines.W_CacheLumpName('FONT3_' + c, PU_STATIC);
+  m_font3[Chr(Ord('Z') + 1)] := TWadRoutines.W_CacheLumpName('FONT3_!', PU_STATIC);
 {$ENDIF}
 {$IFDEF RADIX}
 

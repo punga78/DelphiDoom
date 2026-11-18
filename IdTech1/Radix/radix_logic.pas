@@ -225,9 +225,9 @@ begin
   lump := RX_RadixLump(lumpnum, lumpname);
   if lump < 0 then
     exit;
-  SetLength(result, W_LumpLength(lump));
+  SetLength(result, TWadRoutines.W_LumpLength(lump));
   if Length(result) > 0 then
-    W_ReadLump(lump, @result[0]);
+    TWadRoutines.W_ReadLump(lump, @result[0]);
 end;
 
 //==============================================================================
@@ -326,13 +326,13 @@ begin
     exit;
 
   result := -1;
-  lump := W_CheckNumForName(TRadixActionRules.SoundLumpName(radix_snd));
+  lump := TWadRoutines.W_CheckNumForName(TRadixActionRules.SoundLumpName(radix_snd));
   if lump >= 0 then
   begin
-    SetLength(wave, W_LumpLength(lump));
+    SetLength(wave, TWadRoutines.W_LumpLength(lump));
     if Length(wave) > 0 then
     begin
-      W_ReadLump(lump, @wave[0]);
+      TWadRoutines.W_ReadLump(lump, @wave[0]);
       result := TRadixActionRules.WaveDurationTics(wave);
     end;
   end;

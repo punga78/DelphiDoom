@@ -1059,7 +1059,7 @@ begin
 
           map := (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0');
 
-          if W_CheckNumForName(P_GetMapName(map)) > -1 then
+          if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
           begin
             plyr._message := STSTR_CLEV;
             G_RiftExitLevel(map, 0, plyr.mo.angle);
@@ -1222,7 +1222,7 @@ begin
     {$ELSE}
     TRendererHires.R_SetPalette(palette);
     {$ENDIF}
-    p := W_CacheLumpNum(lu_palette, PU_STATIC);
+    p := TWadRoutines.W_CacheLumpNum(lu_palette, PU_STATIC);
     pal := PByteArray(NativeInt(p) + palette * 768);
     {$IFDEF OPENGL}
     I_SetPalette(pal);
@@ -1382,11 +1382,11 @@ begin
 
       iconname := 'I_' + Info_GetSpriteNameForNum(Ord(plyr.inventory[i].sprite));
 
-      lumpnum := W_CheckNumForName(iconname);
+      lumpnum := TWadRoutines.W_CheckNumForName(iconname);
       if lumpnum = -1 then
-        patch := W_CacheLumpName('STCFN063', PU_STATIC)
+        patch := TWadRoutines.W_CacheLumpName('STCFN063', PU_STATIC)
       else
-        patch := W_CacheLumpNum(lumpnum, PU_STATIC);
+        patch := TWadRoutines.W_CacheLumpNum(lumpnum, PU_STATIC);
       V_DrawPatch(icon_x, 182, SCN_ST, patch, false);
       Z_ChangeTag(patch, PU_CACHE);
       ST_drawNumFontY(num_x, 191, SCN_ST, plyr.inventory[i].amount);
@@ -1803,10 +1803,10 @@ begin
   for i := 0 to 9 do
   begin
     sprintf(namebuf, 'INVFONG%d', [i]);
-    invfontg[i] := W_CacheLumpName(namebuf, PU_STATIC);
+    invfontg[i] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
 
     sprintf(namebuf, 'INVFONY%d', [i]);
-    invfonty[i] := W_CacheLumpName(namebuf, PU_STATIC);
+    invfonty[i] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
   end;
 
   // haleyjd 20100919: load Sigil patches
@@ -1814,29 +1814,29 @@ begin
     for i := 0 to 4 do
     begin
       sprintf(namebuf, 'I_SGL%d', [i + 1]);
-      invsigil[i] := W_CacheLumpName(namebuf, PU_STATIC);
+      invsigil[i] := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
     end;
 
   // load ammo patches
   for i := 0 to Ord(NUMAMMO) - 1 do
-    invammo[i] := W_CacheLumpName(invammonames[i], PU_STATIC);
+    invammo[i] := TWadRoutines.W_CacheLumpName(invammonames[i], PU_STATIC);
 
-  invarmor[0] := W_CacheLumpName('I_ARM2', PU_STATIC);
-  invarmor[1] := W_CacheLumpName('I_ARM1', PU_STATIC);
+  invarmor[0] := TWadRoutines.W_CacheLumpName('I_ARM2', PU_STATIC);
+  invarmor[1] := TWadRoutines.W_CacheLumpName('I_ARM1', PU_STATIC);
 
   if TGameSession.NetGame then
   begin
     sprintf(namebuf, 'STBACK0%d', [TGameSession.ConsolePlayer + 1]);
-    stback := W_CacheLumpName(namebuf, PU_STATIC);
+    stback := TWadRoutines.W_CacheLumpName(namebuf, PU_STATIC);
   end;
 
-  invback := W_CacheLumpName('INVBACK', PU_STATIC);
-  invtop := W_CacheLumpName('INVTOP', PU_STATIC);
-  invpop := W_CacheLumpName('INVPOP', PU_STATIC);
-  invpop2 := W_CacheLumpName('INVPOP2', PU_STATIC);
-  invpbak := W_CacheLumpName('INVPBAK', PU_STATIC);
-  invpbak2 := W_CacheLumpName('INVPBAK2', PU_STATIC);
-  invcursor := W_CacheLumpName('INVCURS', PU_STATIC)
+  invback := TWadRoutines.W_CacheLumpName('INVBACK', PU_STATIC);
+  invtop := TWadRoutines.W_CacheLumpName('INVTOP', PU_STATIC);
+  invpop := TWadRoutines.W_CacheLumpName('INVPOP', PU_STATIC);
+  invpop2 := TWadRoutines.W_CacheLumpName('INVPOP2', PU_STATIC);
+  invpbak := TWadRoutines.W_CacheLumpName('INVPBAK', PU_STATIC);
+  invpbak2 := TWadRoutines.W_CacheLumpName('INVPBAK2', PU_STATIC);
+  invcursor := TWadRoutines.W_CacheLumpName('INVCURS', PU_STATIC)
 end;
 
 //==============================================================================
@@ -1846,7 +1846,7 @@ end;
 //==============================================================================
 class procedure TStatusBarLocalRoutines.ST_loadData;
 begin
-  lu_palette := W_GetNumForName(PLAYPAL);
+  lu_palette := TWadRoutines.W_GetNumForName(PLAYPAL);
   ST_LoadGraphics;
 end;
 
@@ -1920,7 +1920,7 @@ begin
   if st_stopped then
     exit;
 
-  pal := W_CacheLumpNum(lu_palette, PU_STATIC);
+  pal := TWadRoutines.W_CacheLumpNum(lu_palette, PU_STATIC);
   {$IFDEF OPENGL}
   I_SetPalette(pal);
   V_SetPalette(pal);

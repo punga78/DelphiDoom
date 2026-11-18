@@ -335,9 +335,9 @@ var
 {$ENDIF}
 begin
 // Retrive voxeldef lumps
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = VOXELDEFLUMPNAME then
-      SC_ParseVoxelDefinition(W_TextLumpNum(i));
+  for i := 0 to TWadRoutines.W_NumLumps - 1 do
+    if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = VOXELDEFLUMPNAME then
+      SC_ParseVoxelDefinition(TWadRoutines.W_TextLumpNum(i));
 
   PAK_StringIterator(VOXELDEFLUMPNAME, SC_ParseVoxelDefinition);
   PAK_StringIterator(VOXELDEFLUMPNAME + '.txt', SC_ParseVoxelDefinition);

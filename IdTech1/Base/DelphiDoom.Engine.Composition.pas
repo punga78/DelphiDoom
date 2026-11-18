@@ -725,7 +725,7 @@ begin
       TEngineMusicTable.Create,
       function(const AName: string): Integer
       begin
-        Result := W_CheckNumForName(AName);
+        Result := TWadRoutines.W_CheckNumForName(AName);
       end,
       ALog));
 end;
@@ -1862,7 +1862,7 @@ begin
   ComposeLevelGeometry;
 {$ENDIF}
 
-  W_Configure(LWadServices);
+  TWadRoutines.W_Configure(LWadServices);
 {$IFDEF RADIX}
   ComposeRadix(LLog, LLumps, LThingFields, LRandom);
 {$ENDIF}

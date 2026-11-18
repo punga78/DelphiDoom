@@ -114,20 +114,20 @@ begin
   // Determine number of lumps:
   //  total lump length / vertex record length.
   if glnodesver = 1 then
-    numglverts := W_LumpLength(gllump) div SizeOf(GLVertex1_t)
+    numglverts := TWadRoutines.W_LumpLength(gllump) div SizeOf(GLVertex1_t)
   else if glnodesver >= 2 then
-    numglverts := (W_LumpLength(gllump) - 4) div SizeOf(GLVertex2_t)
+    numglverts := (TWadRoutines.W_LumpLength(gllump) - 4) div SizeOf(GLVertex2_t)
   else
     numglverts := 0;
 
-  firstglvert := W_LumpLength(lump) div SizeOf(mapvertex_t);
+  firstglvert := TWadRoutines.W_LumpLength(lump) div SizeOf(mapvertex_t);
   numvertexes := firstglvert + numglverts;
 
   // Allocate zone memory for buffer.
   vertexes := Z_Malloc(numvertexes * SizeOf(vertex_t), PU_LEVEL, nil);
 
   // Load data into cache.
-  data := W_CacheLumpNum(lump, PU_STATIC);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
 
   ml := Pmapvertex_t(data);
 
@@ -255,14 +255,14 @@ var
 begin
   // JVAL glbsp V5
   if glnodesver = 3 then
-    numsegs := (W_LumpLength(lump) - 4) div SizeOf(GLSeg3_t)
+    numsegs := (TWadRoutines.W_LumpLength(lump) - 4) div SizeOf(GLSeg3_t)
   else if glnodesver > 3 then
-    numsegs := W_LumpLength(lump) div SizeOf(GLSeg3_t)
+    numsegs := TWadRoutines.W_LumpLength(lump) div SizeOf(GLSeg3_t)
   else
-    numsegs := W_LumpLength(lump) div SizeOf(GLSeg1_t);
+    numsegs := TWadRoutines.W_LumpLength(lump) div SizeOf(GLSeg1_t);
   segs := Z_Malloc(numsegs * SizeOf(seg_t), PU_LEVEL, nil);
   ZeroMemory(segs, numsegs * SizeOf(seg_t));
-  data := W_CacheLumpNum(lump, PU_STATIC);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
 
   if glnodesver < 3 then
   begin
@@ -394,11 +394,11 @@ var
   ss: Psubsector_t;
 begin
   if glnodesver = 3 then
-    numsubsectors := (W_LumpLength(lump) - 4) div SizeOf(GLSubSector3_t)
+    numsubsectors := (TWadRoutines.W_LumpLength(lump) - 4) div SizeOf(GLSubSector3_t)
   else
-    numsubsectors := W_LumpLength(lump) div SizeOf(GLSubSector3_t);
+    numsubsectors := TWadRoutines.W_LumpLength(lump) div SizeOf(GLSubSector3_t);
   subsectors := Z_Malloc(numsubsectors * SizeOf(subsector_t), PU_LEVEL, nil);
-  data := W_CacheLumpNum(lump, PU_STATIC);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
 
   if glnodesver = 3 then
     ms := PGLSubSector3_t(NativeInt(data) + 4)
@@ -431,9 +431,9 @@ var
   mn: PGLNode4_t;
   no: Pnode_t;
 begin
-  numnodes := W_LumpLength(lump) div SizeOf(GLNode4_t);
+  numnodes := TWadRoutines.W_LumpLength(lump) div SizeOf(GLNode4_t);
   nodes := Z_Malloc(numnodes * SizeOf(node_t), PU_LEVEL, nil);
-  data := W_CacheLumpNum(lump, PU_STATIC);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
 
   mn := PGLNode4_t(data);
   no := @nodes[0];

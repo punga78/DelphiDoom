@@ -1077,7 +1077,7 @@ begin
   cy := y;
 
   oldtrans := v_translation;
-  v_translation := W_CacheLumpName('TRN_MENU', PU_STATIC);
+  v_translation := TWadRoutines.W_CacheLumpName('TRN_MENU', PU_STATIC);
   while true do
   begin
     if ch > len then
@@ -2366,7 +2366,7 @@ end;
 class procedure TMenuLocalRoutines.M_DrawReadThisExt;
 begin
   inhelpscreens := true;
-  V_PageDrawer(char8tostring(W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
+  V_PageDrawer(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(extrahelpscreens.Numbers[extrahelpscreens_idx])));
 end;
 
 //==============================================================================
@@ -3069,8 +3069,8 @@ begin
   V_DrawPatch(88, 0, SCN_TMP, 'M_HTIC', false);
 
   frame := (TGameSession.GameTic div 5) mod 7;
-  V_DrawPatch(37, 80, SCN_TMP, W_CacheLumpNum(MauloBaseLump + (frame + 2) mod 7, PU_CACHE), false);
-  V_DrawPatch(278, 80, SCN_TMP, W_CacheLumpNum(MauloBaseLump + frame, PU_CACHE), false);
+  V_DrawPatch(37, 80, SCN_TMP, TWadRoutines.W_CacheLumpNum(MauloBaseLump + (frame + 2) mod 7, PU_CACHE), false);
+  V_DrawPatch(278, 80, SCN_TMP, TWadRoutines.W_CacheLumpNum(MauloBaseLump + frame, PU_CACHE), false);
 end;
 
 //==============================================================================
@@ -3153,7 +3153,7 @@ begin
     end;
   end;
   V_DrawPatch(174,  8, SCN_TMP, boxLumpName[opt], false);
-  V_DrawPatch(198, 20, SCN_TMP, W_CacheLumpNum(W_GetNumForName(walkLumpName[opt]) + ((TGameSession.GameTic div 8) and 3), PU_CACHE), false);
+  V_DrawPatch(198, 20, SCN_TMP, TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName(walkLumpName[opt]) + ((TGameSession.GameTic div 8) and 3), PU_CACHE), false);
 end;
 
 //==============================================================================
@@ -4955,7 +4955,7 @@ begin
       exit;
   end;
 
-  src := W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
+  src := TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(iflat), PU_STATIC);
   dest := 0;
 
   for y := 0 to 200 - 1 do
@@ -5364,9 +5364,9 @@ var
   i: integer;
   lump: integer;
 begin
-  FontABaseLump := W_GetNumForName('FONTA_S') + 1;
-  FontBBaseLump := W_GetNumForName('FONTB_S') + 1;
-  MauloBaseLump := W_GetNumForName('FBULA0');
+  FontABaseLump := TWadRoutines.W_GetNumForName('FONTA_S') + 1;
+  FontBBaseLump := TWadRoutines.W_GetNumForName('FONTB_S') + 1;
+  MauloBaseLump := TWadRoutines.W_GetNumForName('FBULA0');
 
   currentMenu := @MainDef;
   menuactive := false;
@@ -5386,7 +5386,7 @@ begin
   extrahelpscreens := TDNumberList.Create;
   for i := 1 to 99 do
   begin
-    lump := W_CheckNumForName('HELP' + IntToStrzFill(2, i));
+    lump := TWadRoutines.W_CheckNumForName('HELP' + IntToStrzFill(2, i));
     if lump >= 0 then
       extrahelpscreens.Add(lump);
   end;

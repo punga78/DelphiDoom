@@ -216,7 +216,7 @@ begin
   members := TSfxRandomGroup.Members(sfxname,
     function(const AName: string): Integer
     begin
-      Result := W_CheckNumForName(AName);
+      Result := TWadRoutines.W_CheckNumForName(AName);
     end);
   for i := 0 to Length(members) - 1 do
   begin

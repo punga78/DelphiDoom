@@ -1196,17 +1196,17 @@ begin
       if (SCREENWIDTH = 1920) and (SCREENHEIGHT = 1080) then
       begin
         if fullhdpatch = -2 then
-          fullhdpatch := W_CheckNumForName('FULLHD');
+          fullhdpatch := TWadRoutines.W_CheckNumForName('FULLHD');
         if fullhdpatch > 0 then
         begin
-          pt := W_CacheLumpNum(fullhdpatch, PU_STATIC);
+          pt := TWadRoutines.W_CacheLumpNum(fullhdpatch, PU_STATIC);
           V_DrawPatch(120, 1020, SCN_FG, pt, false);
           Z_ChangeTag(pt, PU_CACHE);
         end;
       end;
   {$ENDIF}
   if demosequence = 1 then
-    V_DrawPatch(4, 160, SCN_FG, W_CacheLumpName('ADVISOR', PU_CACHE), true);
+    V_DrawPatch(4, 160, SCN_FG, TWadRoutines.W_CacheLumpName('ADVISOR', PU_CACHE), true);
 end;
 
 //==============================================================================
@@ -1961,10 +1961,10 @@ var
 begin
   numwadmaps := 0;
   for i := 0 to 9 do
-    if W_CheckNumForName('MAP0' + itoa(i)) <> -1 then
+    if TWadRoutines.W_CheckNumForName('MAP0' + itoa(i)) <> -1 then
       inc(numwadmaps);
   for i := 10 to 99 do
-    if W_CheckNumForName('MAP' + itoa(i)) <> -1 then
+    if TWadRoutines.W_CheckNumForName('MAP' + itoa(i)) <> -1 then
       inc(numwadmaps);
 
   if gamemode = indetermined then
@@ -2315,7 +2315,7 @@ begin
   end;
 
   printf('W_Init: Init WADfiles.'#13#10);
-  if W_InitMultipleFiles(wadfiles) = 0 then
+  if TWadRoutines.W_InitMultipleFiles(wadfiles) = 0 then
   begin
     // JVAL
     //  If none wadfile has found as far,
@@ -2336,7 +2336,7 @@ begin
         D_AddFile(filename);
       end
     end;
-    if W_InitMultipleFiles(wadfiles) = 0 then
+    if TWadRoutines.W_InitMultipleFiles(wadfiles) = 0 then
       I_Error('W_InitMultipleFiles(): no files found');
   end;
 
@@ -2366,10 +2366,10 @@ begin
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin
-    lump := W_CheckNumForName('GAMEDEF');
+    lump := TWadRoutines.W_CheckNumForName('GAMEDEF');
     if lump >= 0 then
     begin
-      if strupper(W_LumpCRC32(lump)) <> '39AB9D20' then
+      if strupper(TWadRoutines.W_LumpCRC32(lump)) <> '39AB9D20' then
         DEH_ParseLumpNum(lump);
     end
     else
@@ -2735,7 +2735,7 @@ begin
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);
-  W_ShutDown;
+  TWadRoutines.W_ShutDown;
   printf('V_ShutDown: Shut down screens.'#13#10);
   V_ShutDown;
   printf('MT_ShutDown: Shut down multithreading utilities.'#13#10);

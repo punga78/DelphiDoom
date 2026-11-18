@@ -80,13 +80,13 @@ var
   LBytes: TArray<Byte>;
 begin
   // JVAL: Check for 'SWITCHES' lump (BOOM compatibility)
-  LLump := W_CheckNumForName(SWITCHES_LUMP_NAME);
+  LLump := TWadRoutines.W_CheckNumForName(SWITCHES_LUMP_NAME);
   if LLump < 0 then
     Exit(FDefaultTable);
 
-  SetLength(LBytes, W_LumpLength(LLump));
+  SetLength(LBytes, TWadRoutines.W_LumpLength(LLump));
   if Length(LBytes) > 0 then
-    W_ReadLump(LLump, @LBytes[0]);
+    TWadRoutines.W_ReadLump(LLump, @LBytes[0]);
   Result := FReader.Read(LBytes);
 end;
 

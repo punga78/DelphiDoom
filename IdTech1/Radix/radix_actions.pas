@@ -144,7 +144,7 @@ var
   name: string;
 begin
   name := RX_FLAT_PREFIX + IntToStrZfill(4, bitmap + 1);
-  if W_CheckNumForName(name) < 0 then
+  if TWadRoutines.W_CheckNumForName(name) < 0 then
     result := -1
   else
     result := R_FlatNumForName(name);
@@ -581,7 +581,7 @@ begin
 
   if parms.initialize_flag <> ACTION_INITIALIZED then
   begin
-    parms.new_switch_bitmap_top1 := stringtochar8(RX_WALL_PREFIX + IntToStrZfill(4, parms.switch_bitmap + 1));
+    parms.new_switch_bitmap_top1 := TWadRoutines.stringtochar8(RX_WALL_PREFIX + IntToStrZfill(4, parms.switch_bitmap + 1));
     parms.new_switch_bitmap_bot1 := parms.new_switch_bitmap_top1;
     parms.new_switch_bitmap_mid1 := parms.new_switch_bitmap_top1;
     parms.new_switch_bitmap_top2 := parms.new_switch_bitmap_top1;
@@ -590,12 +590,12 @@ begin
     parms.initialize_flag := ACTION_INITIALIZED;
   end;
 
-  texid_top1 := R_SafeTextureNumForName(char8tostring(parms.new_switch_bitmap_top1));
-  texid_mid1 := R_SafeTextureNumForName(char8tostring(parms.new_switch_bitmap_mid1));
-  texid_bot1 := R_SafeTextureNumForName(char8tostring(parms.new_switch_bitmap_bot1));
-  texid_top2 := R_SafeTextureNumForName(char8tostring(parms.new_switch_bitmap_top2));
-  texid_mid2 := R_SafeTextureNumForName(char8tostring(parms.new_switch_bitmap_mid2));
-  texid_bot2 := R_SafeTextureNumForName(char8tostring(parms.new_switch_bitmap_bot2));
+  texid_top1 := R_SafeTextureNumForName(TWadRoutines.char8tostring(parms.new_switch_bitmap_top1));
+  texid_mid1 := R_SafeTextureNumForName(TWadRoutines.char8tostring(parms.new_switch_bitmap_mid1));
+  texid_bot1 := R_SafeTextureNumForName(TWadRoutines.char8tostring(parms.new_switch_bitmap_bot1));
+  texid_top2 := R_SafeTextureNumForName(TWadRoutines.char8tostring(parms.new_switch_bitmap_top2));
+  texid_mid2 := R_SafeTextureNumForName(TWadRoutines.char8tostring(parms.new_switch_bitmap_mid2));
+  texid_bot2 := R_SafeTextureNumForName(TWadRoutines.char8tostring(parms.new_switch_bitmap_bot2));
 
   if s1 <> nil then
   begin
@@ -605,9 +605,9 @@ begin
   end
   else
   begin
-    parms.new_switch_bitmap_top1 := stringtochar8('-');
-    parms.new_switch_bitmap_bot1 := stringtochar8('-');
-    parms.new_switch_bitmap_mid1 := stringtochar8('-');
+    parms.new_switch_bitmap_top1 := TWadRoutines.stringtochar8('-');
+    parms.new_switch_bitmap_bot1 := TWadRoutines.stringtochar8('-');
+    parms.new_switch_bitmap_mid1 := TWadRoutines.stringtochar8('-');
   end;
 
   if s2 <> nil then
@@ -618,9 +618,9 @@ begin
   end
   else
   begin
-    parms.new_switch_bitmap_top2 := stringtochar8('-');
-    parms.new_switch_bitmap_bot2 := stringtochar8('-');
-    parms.new_switch_bitmap_mid2 := stringtochar8('-');
+    parms.new_switch_bitmap_top2 := TWadRoutines.stringtochar8('-');
+    parms.new_switch_bitmap_bot2 := TWadRoutines.stringtochar8('-');
+    parms.new_switch_bitmap_mid2 := TWadRoutines.stringtochar8('-');
   end;
 
   if parms.do_floor = 0 then  // Ceiling or mid

@@ -147,7 +147,7 @@ end;
 //==============================================================================
 function SH_ChampionshipGoesOn: boolean;
 begin
-  Result := SH_IsChampionship and (W_CheckNumForName(Format('E%dM%d', [in_score.Episode, in_score.Map + 1])) >= 0);
+  Result := SH_IsChampionship and (TWadRoutines.W_CheckNumForName(Format('E%dM%d', [in_score.Episode, in_score.Map + 1])) >= 0);
 end;
 
 //==============================================================================
@@ -165,17 +165,17 @@ var
 begin
   mapname := Format('E%dM%d', [episode, map]);
   Result := mapname;
-  lump := W_CheckNumForName(mapname);
+  lump := TWadRoutines.W_CheckNumForName(mapname);
   if lump < 0 then
     exit;
   for i := lump + 1 to lump + MAP_LUMP_SPAN - 1 do
-    if i < W_NumLumps then
-      if SameText(char8tostring(W_GetNameForNum(i)), MAPDATA_LUMP) then
+    if i < TWadRoutines.W_NumLumps then
+      if SameText(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)), MAPDATA_LUMP) then
       begin
-        SetLength(text, W_LumpLength(i));
+        SetLength(text, TWadRoutines.W_LumpLength(i));
         if Length(text) > 0 then
         begin
-          data := W_CacheLumpNum(i, PU_STATIC);
+          data := TWadRoutines.W_CacheLumpNum(i, PU_STATIC);
           Move(data^, text[1], Length(text));
           Z_Free(data);
           Result := TSpeedMapInfoReader.Parse(string(text)).Name;

@@ -637,11 +637,11 @@ begin
   race_events := race_events_object;
 
   ground := TRacingFactory.CreateGround(race_random);
-  lump := W_CheckNumForName(Format(GROUND_LUMP_FORMAT, [TGameSession.GameMap - 1]));
+  lump := TWadRoutines.W_CheckNumForName(Format(GROUND_LUMP_FORMAT, [TGameSession.GameMap - 1]));
   if lump >= 0 then
   begin
-    race_ground_map := System.PByte(W_CacheLumpNum(lump, PU_LEVEL));
-    ground.SetMap(race_ground_map, W_LumpLength(lump));
+    race_ground_map := System.PByte(TWadRoutines.W_CacheLumpNum(lump, PU_LEVEL));
+    ground.SetMap(race_ground_map, TWadRoutines.W_LumpLength(lump));
   end
   else
     race_log.Warning('Speed Haste: the level has no map of the ground: the cars drive on asphalt'#13#10);

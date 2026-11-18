@@ -112,9 +112,9 @@ begin
   for f := 0 to FONT_COUNT - 1 do
     for c := FIRST_CHAR to LAST_CHAR do
     begin
-      lump := W_CheckNumForName(Format('SFNT%s%.3d', [FONT_LETTERS[f + 1], c]));
+      lump := TWadRoutines.W_CheckNumForName(Format('SFNT%s%.3d', [FONT_LETTERS[f + 1], c]));
       if lump >= 0 then
-        glyphs[f, c] := W_CacheLumpNum(lump, PU_STATIC)
+        glyphs[f, c] := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC)
       else
         glyphs[f, c] := nil;
     end;

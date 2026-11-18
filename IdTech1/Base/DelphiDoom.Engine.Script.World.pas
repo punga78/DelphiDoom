@@ -97,7 +97,7 @@ uses
 function FlatNameFromId(const AId: Integer): string;
 begin
   if (AId >= 0) and (AId < numflats) then
-    Result := char8tostring(flats[AId].name)
+    Result := TWadRoutines.char8tostring(flats[AId].name)
   else
     Result := '';
 end;
@@ -109,7 +109,7 @@ begin
     Result := ''
   else
   begin
-    Result := char8tostring(R_NameForSideTexture(AId));
+    Result := TWadRoutines.char8tostring(R_NameForSideTexture(AId));
     if Result = '-' then
       Result := '';
   end;

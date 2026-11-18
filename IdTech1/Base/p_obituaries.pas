@@ -108,10 +108,10 @@ begin
   begin
     lst := TDStringList.Create;
     try
-      lump := W_CheckNumForName('OBITUARY');
+      lump := TWadRoutines.W_CheckNumForName('OBITUARY');
       if lump >= 0 then
       begin
-        lst.Text := strupper(W_TextLumpNum(lump));
+        lst.Text := strupper(TWadRoutines.W_TextLumpNum(lump));
         check := strtrim(strupper(Copy(messagefmt, 2, Length(messagefmt) - 1)));
         for i := 0 to lst.Count - 1 do
         begin

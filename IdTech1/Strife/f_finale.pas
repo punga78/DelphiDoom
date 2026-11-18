@@ -285,7 +285,7 @@ begin
   cx := 20;
   cy := 20;
 
-  ch := TMenuRoutines.M_DialogDimMsg(cx, cy, W_TextLumpName('T1TEXT'), false);
+  ch := TMenuRoutines.M_DialogDimMsg(cx, cy, TWadRoutines.W_TextLumpName('T1TEXT'), false);
   len := Length(ch);
 
   count := (finalecount - 10) div TEXTSPEED;
@@ -349,7 +349,7 @@ begin
   amstate := am_inactive;
   wipegamestate := -1;
 
-  slideshow_panel := char8tostring(W_GetNameForNum(D_Panel0Lump));
+  slideshow_panel := TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(D_Panel0Lump));
 
   case TGameSession.GameMap of
     3:  // Macil's exposition on the Programmer
@@ -638,7 +638,7 @@ begin
   finalecount := 0;
   if gameversion <> exe_strife_1_31 then // See above. This was removed in 1.31.
   begin
-    patch := W_CacheLumpNum(D_Panel0Lump, PU_STATIC);
+    patch := TWadRoutines.W_CacheLumpNum(D_Panel0Lump, PU_STATIC);
     V_DrawPatchFullScreenTMP320x200(patch);
     Z_ChangeTag(patch, PU_CACHE);
   end;
@@ -938,7 +938,7 @@ begin
   lump := sprframe.lump[0];
   flip := sprframe.flip[0];
 
-  patch := W_CacheLumpNum(lump + firstspritelump, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpNum(lump + firstspritelump, PU_STATIC);
   if flip then
     V_DrawPatchFlipped(160, 170, SCN_TMP, patch)
   else
@@ -1018,8 +1018,8 @@ var
   name: string;
   stage: integer;
 begin
-  p1 := W_CacheLumpName(TDehMainRoutines.DEH_GetString('credit'), PU_LEVEL);
-  p2 := W_CacheLumpName(TDehMainRoutines.DEH_GetString('vellogo'), PU_LEVEL);
+  p1 := TWadRoutines.W_CacheLumpName(TDehMainRoutines.DEH_GetString('credit'), PU_LEVEL);
+  p2 := TWadRoutines.W_CacheLumpName(TDehMainRoutines.DEH_GetString('vellogo'), PU_LEVEL);
 
   scrolled := 320 - (finalecount - 230) div 2;
   if scrolled > 320 then
@@ -1094,7 +1094,7 @@ begin
     F_STAGE_TEXT:
       begin
         // Draw slideshow panel
-        patch := W_CacheLumpName(slideshow_panel, PU_STATIC);
+        patch := TWadRoutines.W_CacheLumpName(slideshow_panel, PU_STATIC);
         V_DrawPatchFullScreenTMP320x200(patch);
         Z_ChangeTag(patch, PU_CACHE);
         V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);
@@ -1105,7 +1105,7 @@ begin
         if TGameSession.GameMap <= 29 then
         begin
           // draw credits
-          patch := W_CacheLumpName(TDehMainRoutines.DEH_GetString('CREDIT'), PU_STATIC);
+          patch := TWadRoutines.W_CacheLumpName(TDehMainRoutines.DEH_GetString('CREDIT'), PU_STATIC);
           V_DrawPatchFullScreenTMP320x200(patch);
           Z_ChangeTag(patch, PU_CACHE);
           V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);

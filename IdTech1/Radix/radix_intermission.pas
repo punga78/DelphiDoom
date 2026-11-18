@@ -191,7 +191,7 @@ begin
     exit;
 
   sprintf(backscreen, 'DebriefScreen%d', [TGameSession.GameEpisode]);
-  if W_CheckNumForName(backscreen) >= 0 then
+  if TWadRoutines.W_CheckNumForName(backscreen) >= 0 then
     V_DrawPatchFullScreenTMP320x200(backscreen);
 
   M_WriteSmallTextCenter(30, 'MISSION ' + itoa(in_struct.last + 1) + ' COMPLETED', SCN_TMP);

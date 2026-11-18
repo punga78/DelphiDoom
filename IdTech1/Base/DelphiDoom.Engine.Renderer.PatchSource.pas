@@ -88,13 +88,13 @@ var
 begin
 {$IFDEF DOOM}
   // Doom marks the patches of the WAD: what is not a patch or a sprite is not read
-  if (ALump < 0) or (W_LumpFlags(ALump) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
+  if (ALump < 0) or (TWadRoutines.W_LumpFlags(ALump) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
   begin
     Result := nil;
     Exit;
   end;
 {$ENDIF}
-  LPatch := W_CacheLumpNum(ALump, PU_STATIC);
+  LPatch := TWadRoutines.W_CacheLumpNum(ALump, PU_STATIC);
   Result := TEngineRendererPatch.Create(LPatch);
 end;
 

@@ -123,7 +123,7 @@ begin
   s_names := TPk3SoundNames.Create(
     function(const AName: string): Integer
     begin
-      Result := W_CheckNumForName(AName);
+      Result := TWadRoutines.W_CheckNumForName(AName);
     end);
 
   PAK_FileNameIterator(@S_AddFileName);
@@ -151,7 +151,7 @@ begin
 
     wad.Free;
 
-    W_RuntimeLoad(wadfilename, F_ORIGIN_WAD);
+    TWadRoutines.W_RuntimeLoad(wadfilename, F_ORIGIN_WAD);
 
     s_tempfiles.Declare(wadfilename);
   end;

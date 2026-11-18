@@ -55,7 +55,7 @@ end;
 
 function TEngineRendererPk3Catalog.HasLump(const AName: string): Boolean;
 begin
-  Result := W_CheckNumForName(AName) >= 0;
+  Result := TWadRoutines.W_CheckNumForName(AName) >= 0;
 end;
 
 function TEngineRendererPk3Catalog.TextureNumber(const AName: string): Integer;

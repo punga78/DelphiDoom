@@ -297,7 +297,7 @@ begin
   for i := 0 to SS_MAX_SCRIPTS - 1 do
     SequenceData[i] := nil;
 
-  sc := TScriptScanner.Create(W_TextLumpName(SS_SCRIPT_NAME), TEngineScannerLog.Create);
+  sc := TScriptScanner.Create(TWadRoutines.W_TextLumpName(SS_SCRIPT_NAME), TEngineScannerLog.Create);
   while sc.GetString do
   begin
     if sc.AsString[1] = ':' then

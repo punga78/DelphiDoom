@@ -89,10 +89,10 @@ var
   LRate, LSamples: Integer;
 begin
   Result := DEFAULT_SOUND_TICS;
-  LLump := W_CheckNumForName(ALump);
-  if (LLump < 0) or (W_LumpLength(LLump) < 8) then
+  LLump := TWadRoutines.W_CheckNumForName(ALump);
+  if (LLump < 0) or (TWadRoutines.W_LumpLength(LLump) < 8) then
     Exit;
-  LHeader := W_CacheLumpNum(LLump, PU_STATIC);
+  LHeader := TWadRoutines.W_CacheLumpNum(LLump, PU_STATIC);
   LRate := LHeader[2] or (LHeader[3] shl 8);
   LSamples := LHeader[4] or (LHeader[5] shl 8) or (LHeader[6] shl 16) or (LHeader[7] shl 24);
   Z_ChangeTag(LHeader, PU_CACHE);

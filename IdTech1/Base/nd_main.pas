@@ -362,9 +362,9 @@ begin
   if (count = 0) or (ver = 0) then
     exit;
 
-  SetLength(bytes, W_LumpLength(lump));
+  SetLength(bytes, TWadRoutines.W_LumpLength(lump));
   if Length(bytes) > 0 then
-    W_ReadLump(lump, @bytes[0]);
+    TWadRoutines.W_ReadLump(lump, @bytes[0]);
   glverts := TNodesGlParser.ParseVertexes(bytes, ver);
   if count > Length(glverts) then
     count := Length(glverts);

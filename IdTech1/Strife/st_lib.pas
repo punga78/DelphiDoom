@@ -194,7 +194,7 @@ type
 //==============================================================================
 class procedure TStatusLibRoutines.STlib_init;
 begin
-  sttminus := W_CacheLumpName('STCFN045', PU_STATIC);
+  sttminus := TWadRoutines.W_CacheLumpName('STCFN045', PU_STATIC);
 end;
 
 //==============================================================================

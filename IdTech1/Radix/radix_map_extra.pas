@@ -188,9 +188,9 @@ end;
 function RX_RadixLump(const lumpnum: integer; const lumpname: string): integer;
 begin
   result := -1;
-  if (lumpnum < 0) or (lumpnum >= W_NumLumps) then
+  if (lumpnum < 0) or (lumpnum >= TWadRoutines.W_NumLumps) then
     exit;
-  if strupper(char8tostring(W_GetNameForNum(lumpnum))) = strupper(lumpname) then
+  if strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(lumpnum))) = strupper(lumpname) then
     result := lumpnum;
 end;
 
@@ -260,7 +260,7 @@ begin
     exit;
 
   try
-    info := radix_mapinforeader.Read(W_TextLumpNum(lumpnum));
+    info := radix_mapinforeader.Read(TWadRoutines.W_TextLumpNum(lumpnum));
   except
     on e: ERadixException do
     begin

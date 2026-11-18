@@ -571,14 +571,14 @@ begin
     begin
 {$IFDEF DOOM}
       // the same patches that R_GenerateLookup counted: it ignores what is not a patch
-      if (patch.patch < 0) or (W_LumpFlags(patch.patch) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
+      if (patch.patch < 0) or (TWadRoutines.W_LumpFlags(patch.patch) and (TYPE_PATCH or TYPE_SPRITE) = 0) then
       begin
         inc(patch);
         Continue;
       end;
 {$ENDIF}
-      realpatch := W_CacheLumpNum(patch.patch, PU_STATIC);
-      lumpsize := W_LumpLength(patch.patch);
+      realpatch := TWadRoutines.W_CacheLumpNum(patch.patch, PU_STATIC);
+      lumpsize := TWadRoutines.W_LumpLength(patch.patch);
       SetLength(patchbytes, lumpsize);
       if lumpsize > 0 then
         memcpy(@patchbytes[0], realpatch, lumpsize);
@@ -612,7 +612,7 @@ begin
           composite_rebuilder.Rebuild(composite, colofs[i] - 3, marks, i * theight, theight);
   except
     on E: EImagingException do
-      I_Error('R_GenerateComposite(): %s (texture %s, %dx%d, %d patches)', [E.Message, char8tostring(texture.name), twidth, theight, texture.patchcount]);
+      I_Error('R_GenerateComposite(): %s (texture %s, %dx%d, %d patches)', [E.Message, TWadRoutines.char8tostring(texture.name), twidth, theight, texture.patchcount]);
   end;
 
   if Length(composite) > 0 then
@@ -670,7 +670,7 @@ begin
 
   // The placement of the patches on the texture
   info.Number := texnum;
-  info.Name := char8tostring(texture.name);
+  info.Name := TWadRoutines.char8tostring(texture.name);
   info.Width := texture.width;
   info.Height := texture.height;
   SetLength(info.Patches, texture.patchcount);
@@ -752,7 +752,7 @@ begin
 
   if lump > 0 then
   begin
-    result := R_GetFixedColumn(PByteArray(NativeInt(W_CacheLumpNum(lump, PU_LEVEL)) + ofs), tex, col, false);
+    result := R_GetFixedColumn(PByteArray(NativeInt(TWadRoutines.W_CacheLumpNum(lump, PU_LEVEL)) + ofs), tex, col, false);
     exit;
   end;
 
@@ -777,8 +777,8 @@ begin
   if videomode = vm8bit then
   begin
     lump := R_GetLumpForFlat(flat);
-    ds_source := W_CacheLumpNum(lump, PU_STATIC);
-    ds_scale := TRendererCacheFlats.R_FlatScaleFromSize(flat, W_LumpLength(lump));
+    ds_source := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+    ds_scale := TRendererCacheFlats.R_FlatScaleFromSize(flat, TWadRoutines.W_LumpLength(lump));
     ds_size := flats[flats[flat].translation].size;
   end
   else
@@ -861,7 +861,7 @@ begin
   {$ENDIF}
   // Load the patch names from pnames.lmp.
   ZeroMemory(@name, SizeOf(char8_t));
-  names := W_CacheLumpName('PNAMES', PU_STATIC);
+  names := TWadRoutines.W_CacheLumpName('PNAMES', PU_STATIC);
   nummappatches := PInteger(names)^;
   name_p := PByteArray(NativeInt(names) + 4);
 
@@ -885,12 +885,12 @@ begin
       name[j] := #0;
       inc(j);
     end;
-    pname := strtrim(char8tostring(name));
-    patchlookup[i] := W_CheckNumForName(pname, TYPE_PATCH or TYPE_SPRITE);
+    pname := strtrim(TWadRoutines.char8tostring(name));
+    patchlookup[i] := TWadRoutines.W_CheckNumForName(pname, TYPE_PATCH or TYPE_SPRITE);
     if patchlookup[i] = -1 then
     begin
       I_DevWarning('R_InitTextures(): Can not find patch "%s" inside patch or sprite markers, retrying...'#13#10, [pname]);
-      patchlookup[i] := W_CheckNumForName(pname);
+      patchlookup[i] := TWadRoutines.W_CheckNumForName(pname);
       if patchlookup[i] = -1 then
       // JVAL: Display warning only if not teaser
         if teaser = 0 then
@@ -903,18 +903,18 @@ begin
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
   // JVAL: TEXTURE3 for more textures
-  maptex1 := W_CacheLumpName('TEXTURE1', PU_STATIC);
+  maptex1 := TWadRoutines.W_CacheLumpName('TEXTURE1', PU_STATIC);
   maptex := maptex1;
   numtextures1 := maptex[0];
-  maxoff := W_LumpLength(W_GetNumForName('TEXTURE1'));
+  maxoff := TWadRoutines.W_LumpLength(TWadRoutines.W_GetNumForName('TEXTURE1'));
   directory := PintegerArray(NativeInt(maptex) + SizeOf(integer));
 
-  t2lump := W_CheckNumForName('TEXTURE2');
+  t2lump := TWadRoutines.W_CheckNumForName('TEXTURE2');
   if t2lump <> -1 then
   begin
-    maptex2 := W_CacheLumpNum(t2lump, PU_STATIC);
+    maptex2 := TWadRoutines.W_CacheLumpNum(t2lump, PU_STATIC);
     numtextures2 := maptex2[0];
-    maxoff2 := W_LumpLength(t2lump);
+    maxoff2 := TWadRoutines.W_LumpLength(t2lump);
   end
   else
   begin
@@ -923,12 +923,12 @@ begin
     maxoff2 := 0;
   end;
 
-  t3lump := W_CheckNumForName('TEXTURE3');
+  t3lump := TWadRoutines.W_CheckNumForName('TEXTURE3');
   if t3lump <> -1 then
   begin
-    maptex3 := W_CacheLumpNum(t3lump, PU_STATIC);
+    maptex3 := TWadRoutines.W_CacheLumpNum(t3lump, PU_STATIC);
     numtextures3 := maptex3[0];
-    maxoff3 := W_LumpLength(t3lump);
+    maxoff3 := TWadRoutines.W_LumpLength(t3lump);
   end
   else
   begin
@@ -1007,7 +1007,7 @@ begin
       patch.originy := mpatch2.originy;
       patch.patch := patchlookup[mpatch2.patch];
       if patch.patch = -1 then
-        I_Error('R_InitTextures(): Missing patch in texture %s', [char8tostring(texture.name)]);
+        I_Error('R_InitTextures(): Missing patch in texture %s', [TWadRoutines.char8tostring(texture.name)]);
       inc(mpatch2);
       inc(patch);
     end;
@@ -1036,7 +1036,7 @@ begin
   if R_InitPK3Textures then
   begin
     // Load the map textures directly from PK3
-    maptex0 := W_CacheLumpName('TEXTURE0', PU_STATIC);
+    maptex0 := TWadRoutines.W_CacheLumpName('TEXTURE0', PU_STATIC);
     maptex := maptex0;
     numtextures0 := maptex[0];
 
@@ -1083,7 +1083,7 @@ begin
 
       patch.originx := mpatch.originx;
       patch.originy := mpatch.originy;
-      patch.patch := W_CheckNumForName(char8tostring(texture.name), TYPE_PATCH);
+      patch.patch := TWadRoutines.W_CheckNumForName(TWadRoutines.char8tostring(texture.name), TYPE_PATCH);
 
       texturecolumnlump[i] := malloc(texture.width * SizeOf(texturecolumnlump[0][0]));
       texturecolumnofs[i] := malloc(texture.width * SizeOf(texturecolumnofs[0][0]));
@@ -1197,11 +1197,11 @@ begin
   for i := 0 to numpatchnames - 1 do
   begin
     pname := texdefs.PatchNames[i];
-    patchlookup[i] := W_CheckNumForName(pname, TYPE_PATCH or TYPE_SPRITE);
+    patchlookup[i] := TWadRoutines.W_CheckNumForName(pname, TYPE_PATCH or TYPE_SPRITE);
     if patchlookup[i] = -1 then
     begin
       I_DevWarning('R_InitTextures(): Can not find patch "%s" inside patch or sprite markers, retrying...'#13#10, [pname]);
-      patchlookup[i] := W_CheckNumForName(pname);
+      patchlookup[i] := TWadRoutines.W_CheckNumForName(pname);
       if patchlookup[i] = -1 then
 {$IFDEF STRIFE}
       // JVAL: Display warning only if not teaser
@@ -1210,7 +1210,7 @@ begin
 {$ELSE}
       begin
         I_Warning('R_InitTextures(): Can not find patch "%s"'#13#10, [pname]);
-        patchlookup[i] := W_CheckNumForName('NULLA0');
+        patchlookup[i] := TWadRoutines.W_CheckNumForName('NULLA0');
       end;
 {$ENDIF}
     end;
@@ -1251,7 +1251,7 @@ begin
       patch.originy := texdef.Patches[j].OriginY;
       patch.patch := patchlookup[texdef.Patches[j].PatchIndex];
       if patch.patch = -1 then
-        I_Error('R_InitTextures(): Missing patch in texture %s', [char8tostring(texture.name)]);
+        I_Error('R_InitTextures(): Missing patch in texture %s', [TWadRoutines.char8tostring(texture.name)]);
       inc(patch);
     end;
 
@@ -1296,7 +1296,7 @@ begin
       patch := @texture.patches[0];
       patch.originx := texdef.Patches[0].OriginX;
       patch.originy := texdef.Patches[0].OriginY;
-      patch.patch := W_CheckNumForName(char8tostring(texture.name), TYPE_PATCH);
+      patch.patch := TWadRoutines.W_CheckNumForName(TWadRoutines.char8tostring(texture.name), TYPE_PATCH);
 
       _SetTextureTables(i, texture.width, texture.height);
     end;
@@ -1427,9 +1427,9 @@ begin
     I_Error('R_ParseFlatInfoLumps(): FLATINFO is not configured (ComposeEngine was not called)');
 
   fl_text := '';
-  for i := 0 to W_NumLumps - 1 do
-    if char8tostring(W_GetNameForNum(i)) = FLATINFOLUMPNAME then
-      R_RetrieveFlatInfo(W_TextLumpNum(i));
+  for i := 0 to TWadRoutines.W_NumLumps - 1 do
+    if TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(i)) = FLATINFOLUMPNAME then
+      R_RetrieveFlatInfo(TWadRoutines.W_TextLumpNum(i));
 
   for text in flatinfo_pakfiles.Texts(FLATINFOLUMPNAME) do
     R_RetrieveFlatInfo(text);
@@ -1475,9 +1475,9 @@ begin
   for i := 0 to numflats - 1 do
   begin
     flat := malloc(SizeOf(flat_t));
-    flat.name := W_GetNameForNum(firstflat + i);
+    flat.name := TWadRoutines.W_GetNameForNum(firstflat + i);
     flat.translation := i;
-    flat.lump := W_GetNumForName(flat.name);
+    flat.lump := TWadRoutines.W_GetNumForName(flat.name);
     {$IFNDEF OPENGL}
     flat.flat32 := nil;
     {$ENDIF}
@@ -1662,15 +1662,15 @@ begin
   // Load in the light tables,
   //  256 byte align tables.
 {$IFDEF HEXEN}
-  fogmaplump := W_GetNumForName('FOGMAP');
+  fogmaplump := TWadRoutines.W_GetNumForName('FOGMAP');
 {$ENDIF}
-  lump := W_GetNumForName('COLORMAP');
+  lump := TWadRoutines.W_GetNumForName('COLORMAP');
 {$IFDEF HEXEN}
   colormaplump := lump;
 {$ENDIF}
-  length := W_LumpLength(lump);
+  length := TWadRoutines.W_LumpLength(lump);
   SetLength(colormapbytes, length);
-  W_ReadLump(lump, @colormapbytes[0]);
+  TWadRoutines.W_ReadLump(lump, @colormapbytes[0]);
   // where the colormap is 0 the color is the nearest to black
   colormapbytes := colormap_preparer.ReplaceZeros(colormapbytes, aprox_black);
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
@@ -1691,18 +1691,18 @@ begin
 
   // JVAL: Mars fog sectors
 {$IFDEF HEXEN}
-  length := W_LumpLength(fogmaplump);
+  length := TWadRoutines.W_LumpLength(fogmaplump);
 {$ELSE}
-  lump := W_GetNumForName('FOGMAP');
-  length := W_LumpLength(lump);
+  lump := TWadRoutines.W_GetNumForName('FOGMAP');
+  length := TWadRoutines.W_LumpLength(lump);
 {$ENDIF}
   fog_colormaps := Z_Malloc(length, PU_STATIC, nil);
   fog_colormaps32 := Z_Malloc(length * SizeOf(LongWord), PU_STATIC, nil);
   SetLength(fogbytes, length);
 {$IFDEF HEXEN}
-  W_ReadLump(fogmaplump, @fogbytes[0]);
+  TWadRoutines.W_ReadLump(fogmaplump, @fogbytes[0]);
 {$ELSE}
-  W_ReadLump(lump, @fogbytes[0]);
+  TWadRoutines.W_ReadLump(lump, @fogbytes[0]);
 {$ENDIF}
   fogdata := colormap_preparer.PrepareFog(fogbytes, colormapbytes, aprox_black, colors);
   memcpy(fog_colormaps, @fogdata.Indexes[0], length);
@@ -1725,11 +1725,11 @@ var
 begin
   // Load in the light tables,
   //  256 byte align tables.
-  lump := W_GetNumForName(lumpname);
+  lump := TWadRoutines.W_GetNumForName(lumpname);
   LevelUseFog := lump = fogmaplump;
-  length := W_LumpLength(lump);
+  length := TWadRoutines.W_LumpLength(lump);
   SetLength(bytes, length);
-  W_ReadLump(lump, @bytes[0]);
+  TWadRoutines.W_ReadLump(lump, @bytes[0]);
   bytes := colormap_preparer.ReplaceZeros(bytes, aprox_black);
   memcpy(colormaps, @bytes[0], length);
   v_translation := colormaps;
@@ -1785,18 +1785,18 @@ var
   s: string;
 begin
 {$IFDEF STRIFE}
-  i := W_CheckNumForName(name, TYPE_FLOOR);
+  i := TWadRoutines.W_CheckNumForName(name, TYPE_FLOOR);
 {$ELSE}
-  i := W_CheckNumForName2(name, firstflat, lastflat);
+  i := TWadRoutines.W_CheckNumForName2(name, firstflat, lastflat);
 {$ENDIF}
   if i > -1 then
     result := i - firstflat
   else
   begin
-    i := W_CheckNumForName(name);
+    i := TWadRoutines.W_CheckNumForName(name);
     if i = -1 then  // JVAL: VERSION 204
     begin
-      i := W_CheckNumForName('-NO-FLAT');
+      i := TWadRoutines.W_CheckNumForName('-NO-FLAT');
       if i = -1 then
         I_Error('R_FlatNumForName(): %s not found!', [name]);
     end;
@@ -1825,7 +1825,7 @@ begin
     inc(numflats);
 
     flats[result] := malloc(SizeOf(flat_t));
-    flats[result].name := W_GetNameForNum(i);
+    flats[result].name := TWadRoutines.W_GetNameForNum(i);
     flats[result].translation := result;
     flats[result].lump := i;
     {$IFNDEF OPENGL}
@@ -1847,12 +1847,12 @@ var
   i: integer;
   s: string;
 begin
-  i := W_CheckNumForName2(name, firstflat, lastflat);
+  i := TWadRoutines.W_CheckNumForName2(name, firstflat, lastflat);
   if i > -1 then
     result := i - firstflat
   else
   begin
-    i := W_CheckNumForName(name);
+    i := TWadRoutines.W_CheckNumForName(name);
     if i = -1 then
     begin
       result := -1;
@@ -1883,7 +1883,7 @@ begin
     inc(numflats);
 
     flats[result] := malloc(SizeOf(flat_t));
-    flats[result].name := W_GetNameForNum(i);
+    flats[result].name := TWadRoutines.W_GetNameForNum(i);
     flats[result].translation := result;
     flats[result].lump := i;
     {$IFNDEF OPENGL}
@@ -1907,7 +1907,7 @@ begin
     result := lump - firstflat
   else
   begin
-    if (lump < 0) or (lump >= W_NumLumps) then
+    if (lump < 0) or (lump >= TWadRoutines.W_NumLumps) then
       I_Error('R_NewFlatNumForLump(): Invalid lump = %d', [lump]);
 
     // JVAL: Found a flat outside F_START, F_END
@@ -1916,7 +1916,7 @@ begin
     inc(numflats);
 
     flats[result] := malloc(SizeOf(flat_t));
-    flats[result].name := W_GetNameForNum(lump);
+    flats[result].name := TWadRoutines.W_GetNameForNum(lump);
     flats[result].translation := result;
     flats[result].lump := lump;
     {$IFNDEF OPENGL}
@@ -1957,7 +1957,7 @@ begin
   end;
 
   s := strupper(name);
-  check.s := stringtochar8(s);
+  check.s := TWadRoutines.stringtochar8(s);
   result := R_NameHash.IndexOf(s);
   if result >= 0 then
     if result < numtextures then
@@ -2003,7 +2003,7 @@ begin
   end;
 
   s := strupper(name);
-  check.s := stringtochar8(s);
+  check.s := TWadRoutines.stringtochar8(s);
   result := R_NameHash.IndexOf(s);
   if result >= 0 then
     if result < numtextures then
@@ -2071,7 +2071,7 @@ begin
   // the games that have custom colormaps on the sides (the profile says which)
   if sn < -numcustomcolormaps then
     exit;
-  Result := stringtochar8(customcolormaps[- sn - 1].name);
+  Result := TWadRoutines.stringtochar8(customcolormaps[- sn - 1].name);
 {$ENDIF}
 end;
 
@@ -2186,13 +2186,13 @@ begin
     begin
       lump := R_GetLumpForFlat(i);
 {$IFDEF OPENGL}
-      W_CacheLumpNum(lump, PU_CACHE);
+      TWadRoutines.W_CacheLumpNum(lump, PU_CACHE);
 {$ELSE}
-      flat := W_CacheLumpNum(lump, PU_STATIC);
+      flat := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
       TRendererCacheFlats.R_ReadDS32Cache(i);
       Z_ChangeTag(flat, PU_CACHE);
 {$ENDIF}
-      flatmemory := flatmemory + W_LumpLength(lump);
+      flatmemory := flatmemory + TWadRoutines.W_LumpLength(lump);
     end;
   end;
 
@@ -2218,8 +2218,8 @@ begin
     for j := 0 to texture.patchcount - 1 do
     begin
       lump := texture.patches[j].patch;
-      texturememory := texturememory + W_LumpLength(lump);
-      W_CacheLumpNum(lump, PU_CACHE);
+      texturememory := texturememory + TWadRoutines.W_LumpLength(lump);
+      TWadRoutines.W_CacheLumpNum(lump, PU_CACHE);
     end;
 {$IFNDEF OPENGL}
     TRendererCacheWalls.R_Precache32bittexture(i);
@@ -2243,8 +2243,8 @@ begin
         for k := 0 to 7 do
         begin
           lump := firstspritelump + sf.lump[k];
-          spritememory := spritememory + W_LumpLength(lump);
-          W_CacheLumpNum(lump, PU_CACHE);
+          spritememory := spritememory + TWadRoutines.W_LumpLength(lump);
+          TWadRoutines.W_CacheLumpNum(lump, PU_CACHE);
         end;
       end;
     end;

@@ -167,7 +167,7 @@ begin
       begin
         S_ChangeMusic(musnumber, true);
         levelinfo := P_GetLevelInfo(levelname);
-        levelinfo.musname := stringtochar8(strupper(S_music[musnumber].name));
+        levelinfo.musname := TWadRoutines.stringtochar8(strupper(S_music[musnumber].name));
       end;
     end;
   end;

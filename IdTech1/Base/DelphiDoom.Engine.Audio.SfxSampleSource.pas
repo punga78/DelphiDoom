@@ -184,19 +184,19 @@ begin
     LName := 'ds' + LSfx.name;
     LLump := -1;
     if Length(LName) <= 8 then
-      LLump := W_CheckNumForName(LName);
+      LLump := TWadRoutines.W_CheckNumForName(LName);
 
     if LLump = -1 then // JVAL Search without the DS prefix
-      LLump := W_CheckNumForName(LSfx.name);
+      LLump := TWadRoutines.W_CheckNumForName(LSfx.name);
 
     if LLump = -1 then
-      LSfx.lumpnum := W_GetNumForName('dspistol')
+      LSfx.lumpnum := TWadRoutines.W_GetNumForName('dspistol')
     else
       LSfx.lumpnum := LLump;
   end;
 
-  LSfx.data := W_CacheLumpNum(LSfx.lumpnum, PU_SOUND);
-  LLength := W_LumpLength(LSfx.lumpnum);
+  LSfx.data := TWadRoutines.W_CacheLumpNum(LSfx.lumpnum, PU_SOUND);
+  LLength := TWadRoutines.W_LumpLength(LSfx.lumpnum);
 {$IFNDEF DLL}
   if (LLength >= SizeOf(Cardinal)) and ((PCardinal(LSfx.data)^ = CS_fLac) or
     (PCardinal(LSfx.data)^ = CS_OggS) or (PCardinal(LSfx.data)^ = CS_CVoc)) then

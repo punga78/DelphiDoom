@@ -477,9 +477,9 @@ begin
   pdot := CharPos('.', dmname);
   if ((Length(dmname) <= 8) and (pdot = 0)) or ((pdot < 9) and (pdot <> 0)) then
   begin
-    ExtractFileBase8(dmname, defdemoname8);
-    defdemoname := char8tostring(defdemoname8);
-    if W_CheckNumForName(defdemoname) >= 0 then
+    TWadRoutines.ExtractFileBase8(dmname, defdemoname8);
+    defdemoname := TWadRoutines.char8tostring(defdemoname8);
+    if TWadRoutines.W_CheckNumForName(defdemoname) >= 0 then
     begin
       externaldemo := false;
       TGameSession.GameAction := ga_playdemo;
@@ -546,9 +546,9 @@ begin
     len := G_Files.ReadFile(defdemoname, pointer(demobuffer))
   else
   begin
-    lump := W_GetNumForName(defdemoname);
-    demobuffer := W_CacheLumpNum(lump, PU_STATIC);
-    len := W_LumpLength(lump);
+    lump := TWadRoutines.W_GetNumForName(defdemoname);
+    demobuffer := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+    len := TWadRoutines.W_LumpLength(lump);
   end;
 
   demo_p := demobuffer;

@@ -401,7 +401,7 @@ begin
       continue;
 
     texture := textures[sides[line.sidenum[0]].toptexture];
-    name := char8tostring(texture.name);
+    name := TWadRoutines.char8tostring(texture.name);
 
     if not Pos1('DOR', name) then
       continue;

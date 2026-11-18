@@ -108,11 +108,11 @@ function SH_HudPatch(const name: string): Ppatch_t;
 var
   lump: integer;
 begin
-  lump := W_CheckNumForName(name);
+  lump := TWadRoutines.W_CheckNumForName(name);
   if lump < 0 then
     Result := nil
   else
-    Result := W_CacheLumpNum(lump, PU_STATIC);
+    Result := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
 end;
 
 //==============================================================================
@@ -127,7 +127,7 @@ var
   i, best, dist, r, g, b: integer;
 begin
   Result := 0;
-  pal := W_CacheLumpName('PLAYPAL', PU_STATIC);
+  pal := TWadRoutines.W_CacheLumpName('PLAYPAL', PU_STATIC);
   best := MAXINT;
   r := rgb and $FF;
   g := (rgb shr 8) and $FF;

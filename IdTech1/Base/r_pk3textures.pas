@@ -447,8 +447,8 @@ begin
     if t_ok and f_ok then
     begin
       if t_names.Count > 0 then
-        W_RuntimeLoad(wad1filename, F_ORIGIN_WAD);
-      W_RuntimeLoad(wad2filename, F_ORIGIN_WAD);
+        TWadRoutines.W_RuntimeLoad(wad1filename, F_ORIGIN_WAD);
+      TWadRoutines.W_RuntimeLoad(wad2filename, F_ORIGIN_WAD);
       // the caller reads TEXTURE0 only if there is a texture WAD
       Result := t_names.Count > 0;
     end
@@ -488,7 +488,7 @@ begin
             // Save PNAMES0 entry
             // i indexes f_names (t_names is a subset of it): t_names.Strings[i] was
             // the wrong name, or out of range
-            c8 := stringtochar8(f_names.Strings[i]);
+            c8 := TWadRoutines.stringtochar8(f_names.Strings[i]);
             mp.Write(c8, 8);
 
             // Save TEXTURE0 entry
@@ -529,7 +529,7 @@ begin
 
         wad1.SaveToFile(wad1filename);
 
-        W_RuntimeLoad(wad1filename, F_ORIGIN_WAD);
+        TWadRoutines.W_RuntimeLoad(wad1filename, F_ORIGIN_WAD);
         Result := True;
       end
       else
@@ -542,7 +542,7 @@ begin
       begin
         wad2.SaveToFile(wad2filename);
 
-        W_RuntimeLoad(wad2filename, F_ORIGIN_WAD);
+        TWadRoutines.W_RuntimeLoad(wad2filename, F_ORIGIN_WAD);
       end;
 
       wad1.Free;

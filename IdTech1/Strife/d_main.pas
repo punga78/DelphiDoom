@@ -1319,10 +1319,10 @@ begin
       if (SCREENWIDTH = 1920) and (SCREENHEIGHT = 1080) then
       begin
         if fullhdpatch = -2 then
-          fullhdpatch := W_CheckNumForName('FULLHD');
+          fullhdpatch := TWadRoutines.W_CheckNumForName('FULLHD');
         if fullhdpatch > 0 then
         begin
-          pt := W_CacheLumpNum(fullhdpatch, PU_STATIC);
+          pt := TWadRoutines.W_CacheLumpNum(fullhdpatch, PU_STATIC);
           V_DrawPatch(120, 1020, SCN_FG, pt, false);
           Z_ChangeTag(pt, PU_CACHE);
         end;
@@ -1397,7 +1397,7 @@ begin
       begin
         pagetic := 10;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := char8tostring(W_GetNameForNum(D_Panel0Lump));
+        pagename := TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(D_Panel0Lump));
         S_StartSound(nil, Ord(sfx_rb2act));
         wipegamestate := -1;
       end;
@@ -2173,14 +2173,14 @@ begin
 
   if gamemode = indetermined then
   begin
-    if W_CheckNumForName('map01') <> -1 then
+    if TWadRoutines.W_CheckNumForName('map01') <> -1 then
     begin
       gamemode := registered;
       isdemoversion := false;
       isregistered := true;
       SUC_SetGameMode('Registered Strife');
     end
-    else if W_CheckNumForName('map34') <> -1 then
+    else if TWadRoutines.W_CheckNumForName('map34') <> -1 then
     begin
       gamemode := shareware;
       isdemoversion := true;
@@ -2544,7 +2544,7 @@ begin
   end;
 
   printf('W_Init: Init WADfiles.'#13#10);
-  if (W_InitMultipleFiles(wadfiles) = 0) or (W_CheckNumForName('playpal') = -1) then
+  if (TWadRoutines.W_InitMultipleFiles(wadfiles) = 0) or (TWadRoutines.W_CheckNumForName('playpal') = -1) then
   begin
     // JVAL
     //  If none wadfile has found as far,
@@ -2556,11 +2556,11 @@ begin
       I_Warning('Loading unspecified wad file: %s'#13#10, [filename]);
       D_AddFile(filename);
     end;
-    if W_InitMultipleFiles(wadfiles) = 0 then
+    if TWadRoutines.W_InitMultipleFiles(wadfiles) = 0 then
       I_Error('W_InitMultipleFiles(): no files found');
   end;
 
-  if (W_CheckNumForName('map10') <> -1) and (W_CheckNumForName('map11') <> -1) then
+  if (TWadRoutines.W_CheckNumForName('map10') <> -1) and (TWadRoutines.W_CheckNumForName('map11') <> -1) then
   begin
     isregistered := true;
     isdemoversion := false;
@@ -2597,10 +2597,10 @@ begin
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin
-    lump := W_CheckNumForName('GAMEDEF');
+    lump := TWadRoutines.W_CheckNumForName('GAMEDEF');
     if lump >= 0 then
     begin
-      if strupper(W_LumpCRC32(lump)) <> '562E0D0D' then
+      if strupper(TWadRoutines.W_LumpCRC32(lump)) <> '562E0D0D' then
         DEH_ParseLumpNum(lump);
     end
     else
@@ -2735,7 +2735,7 @@ begin
       s_error := #13#10 + 'D_DoomMain(): This is not the registered version.';
       for maps := 1 to 34 do
       begin
-        if W_CheckNumForName('map' + decide(maps < 10, '0', '') + itoa(maps)) < 0 then
+        if TWadRoutines.W_CheckNumForName('map' + decide(maps < 10, '0', '') + itoa(maps)) < 0 then
           if not err_shown then
           begin
             I_DevError(s_error);
@@ -2996,7 +2996,7 @@ begin
   printf('Z_ShutDown: Shut down zone memory allocation daemon.'#13#10);
   Z_ShutDown;
   printf('W_ShutDown: Shut down WAD file system.'#13#10);
-  W_ShutDown;
+  TWadRoutines.W_ShutDown;
   printf('V_ShutDown: Shut down screens.'#13#10);
   V_ShutDown;
   printf('MT_ShutDown: Shut down multithreading utilities.'#13#10);

@@ -873,46 +873,46 @@ begin
   cheat_rambo.sequence := get_cheatseq_string(cheat_rambo_seq);
   cheat_rambo.p := get_cheatseq_string(0);
 
-  PatchLTFACE := W_CacheLumpName('LTFACE', PU_STATIC);
-  PatchRTFACE := W_CacheLumpName('RTFACE', PU_STATIC);
-  PatchBARBACK := W_CacheLumpName('BARBACK', PU_STATIC);
-  PatchINVBAR := W_CacheLumpName('INVBAR', PU_STATIC);
-  PatchCHAIN := W_CacheLumpName('CHAIN', PU_STATIC);
+  PatchLTFACE := TWadRoutines.W_CacheLumpName('LTFACE', PU_STATIC);
+  PatchRTFACE := TWadRoutines.W_CacheLumpName('RTFACE', PU_STATIC);
+  PatchBARBACK := TWadRoutines.W_CacheLumpName('BARBACK', PU_STATIC);
+  PatchINVBAR := TWadRoutines.W_CacheLumpName('INVBAR', PU_STATIC);
+  PatchCHAIN := TWadRoutines.W_CacheLumpName('CHAIN', PU_STATIC);
   if TGameSession.DeathMatch <> 0 then
-    PatchSTATBAR := W_CacheLumpName('STATBAR', PU_STATIC)
+    PatchSTATBAR := TWadRoutines.W_CacheLumpName('STATBAR', PU_STATIC)
   else
-    PatchSTATBAR := W_CacheLumpName('LIFEBAR', PU_STATIC);
+    PatchSTATBAR := TWadRoutines.W_CacheLumpName('LIFEBAR', PU_STATIC);
   if not TGameSession.NetGame then // single player game uses red life gem
-    PatchLIFEGEM := W_CacheLumpName('LIFEGEM2', PU_STATIC)
+    PatchLIFEGEM := TWadRoutines.W_CacheLumpName('LIFEGEM2', PU_STATIC)
   else
-    PatchLIFEGEM := W_CacheLumpNum(W_GetNumForName('LIFEGEM0') + TGameSession.ConsolePlayer, PU_STATIC);
+    PatchLIFEGEM := TWadRoutines.W_CacheLumpNum(TWadRoutines.W_GetNumForName('LIFEGEM0') + TGameSession.ConsolePlayer, PU_STATIC);
 
-  PatchLTFCTOP := W_CacheLumpName('LTFCTOP', PU_STATIC);
-  PatchRTFCTOP := W_CacheLumpName('RTFCTOP', PU_STATIC);
-  PatchSELECTBOX := W_CacheLumpName('SELECTBO', PU_STATIC);
-  PatchINVLFGEM1 := W_CacheLumpName('INVGEML1', PU_STATIC);
-  PatchINVLFGEM2 := W_CacheLumpName('INVGEML2', PU_STATIC);
-  PatchINVRTGEM1 := W_CacheLumpName('INVGEMR1', PU_STATIC);
-  PatchINVRTGEM2 := W_CacheLumpName('INVGEMR2', PU_STATIC);
-  PatchBLACKSQ := W_CacheLumpName('BLACKSQ', PU_STATIC);
-  PatchARMCLEAR := W_CacheLumpName('ARMCLEAR', PU_STATIC);
-  PatchCHAINBACK := W_CacheLumpName('CHAINBAC', PU_STATIC);
+  PatchLTFCTOP := TWadRoutines.W_CacheLumpName('LTFCTOP', PU_STATIC);
+  PatchRTFCTOP := TWadRoutines.W_CacheLumpName('RTFCTOP', PU_STATIC);
+  PatchSELECTBOX := TWadRoutines.W_CacheLumpName('SELECTBO', PU_STATIC);
+  PatchINVLFGEM1 := TWadRoutines.W_CacheLumpName('INVGEML1', PU_STATIC);
+  PatchINVLFGEM2 := TWadRoutines.W_CacheLumpName('INVGEML2', PU_STATIC);
+  PatchINVRTGEM1 := TWadRoutines.W_CacheLumpName('INVGEMR1', PU_STATIC);
+  PatchINVRTGEM2 := TWadRoutines.W_CacheLumpName('INVGEMR2', PU_STATIC);
+  PatchBLACKSQ := TWadRoutines.W_CacheLumpName('BLACKSQ', PU_STATIC);
+  PatchARMCLEAR := TWadRoutines.W_CacheLumpName('ARMCLEAR', PU_STATIC);
+  PatchCHAINBACK := TWadRoutines.W_CacheLumpName('CHAINBAC', PU_STATIC);
 
-  startLump := W_GetNumForName('IN0');
+  startLump := TWadRoutines.W_GetNumForName('IN0');
   for i := 0 to 9 do
-    PatchINumbers[i] := W_CacheLumpNum(startLump + i, PU_STATIC);
+    PatchINumbers[i] := TWadRoutines.W_CacheLumpNum(startLump + i, PU_STATIC);
 
-  PatchNEGATIVE := W_CacheLumpName('NEGNUM', PU_STATIC);
-  FontBNumBase := W_GetNumForName('FONTB16');
+  PatchNEGATIVE := TWadRoutines.W_CacheLumpName('NEGNUM', PU_STATIC);
+  FontBNumBase := TWadRoutines.W_GetNumForName('FONTB16');
 
-  startLump := W_GetNumForName('SMALLIN0');
+  startLump := TWadRoutines.W_GetNumForName('SMALLIN0');
   for i := 0 to 9 do
-    PatchSmNumbers[i] := W_CacheLumpNum(startLump + i, PU_STATIC);
+    PatchSmNumbers[i] := TWadRoutines.W_CacheLumpNum(startLump + i, PU_STATIC);
 
-  playpalette := W_GetNumForName('PLAYPAL');
-  spinbooklump := W_GetNumForName('SPINBK0');
-  spinflylump := W_GetNumForName('SPFLY0');
-  useartibase := W_GetNumForName('USEARTIA');
+  playpalette := TWadRoutines.W_GetNumForName('PLAYPAL');
+  spinbooklump := TWadRoutines.W_GetNumForName('SPINBK0');
+  spinflylump := TWadRoutines.W_GetNumForName('SPFLY0');
+  useartibase := TWadRoutines.W_GetNumForName('USEARTIA');
 
   C_AddCmd('god, quicken', @TStatusBarLocalRoutines.SB_CmdGod);
   C_AddCmd('iddqd', @TStatusBarLocalRoutines.SB_CmdIddqd);
@@ -999,7 +999,7 @@ var
   toffs: integer;
   patch: Ppatch_t;
 begin
-  patch := W_CacheLumpName(patchname, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName(patchname, PU_STATIC);
 
   toffs := y + patch.topoffset;
   if toffs < sb_topoffset then
@@ -1077,19 +1077,19 @@ begin
     val := 0;
   if val > 99 then
   begin
-    patch := W_CacheLumpNum(FontBNumBase + val div 100, PU_CACHE);
+    patch := TWadRoutines.W_CacheLumpNum(FontBNumBase + val div 100, PU_CACHE);
     SB_DrawPatch(xpos + 6 - patch.width div 2, y, patch); // V_DrawShadowedPatch
     val := val mod 100;
   end;
   xpos := xpos + 12;
   if (val > 9) or (oldval > 99) then
   begin
-    patch := W_CacheLumpNum(FontBNumBase + val div 10, PU_CACHE);
+    patch := TWadRoutines.W_CacheLumpNum(FontBNumBase + val div 10, PU_CACHE);
     SB_DrawPatch(xpos + 6 - patch.width div 2, y, patch); // V_DrawShadowedPatch
     val := val mod 10;
   end;
   xpos := xpos + 12;
-  patch := W_CacheLumpNum(FontBNumBase + val, PU_CACHE);
+  patch := TWadRoutines.W_CacheLumpNum(FontBNumBase + val, PU_CACHE);
   SB_DrawPatch(xpos + 6 - patch.width div 2, y, patch); // V_DrawShadowedPatch
 end;
 
@@ -1440,7 +1440,7 @@ begin
   if ArtifactFlash <> 0 then
   begin
     SB_DrawPatch(180, 161, PatchBLACKSQ);
-    SB_DrawPatch(182, 161, W_CacheLumpNum(useartibase + ArtifactFlash - 1, PU_CACHE));
+    SB_DrawPatch(182, 161, TWadRoutines.W_CacheLumpNum(useartibase + ArtifactFlash - 1, PU_CACHE));
     dec(ArtifactFlash);
   end
   else
@@ -1652,10 +1652,10 @@ begin
         if CPlayer.mo.flags2 and MF2_FLY <> 0 then
         begin
           if hitCenterFrame and (frame <> 15) and (frame <> 0) then
-            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + 15, PU_CACHE))
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, TWadRoutines.W_CacheLumpNum(spinflylump + 15, PU_CACHE))
           else
           begin
-            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + frame, PU_CACHE));
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, TWadRoutines.W_CacheLumpNum(spinflylump + frame, PU_CACHE));
             hitCenterFrame := false;
           end;
         end
@@ -1663,12 +1663,12 @@ begin
         begin
           if not hitCenterFrame and (frame <> 15) and (frame <> 0) then
           begin
-            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + frame, PU_CACHE));
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, TWadRoutines.W_CacheLumpNum(spinflylump + frame, PU_CACHE));
             hitCenterFrame := false;
           end
           else
           begin
-            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + 15, PU_CACHE));
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, TWadRoutines.W_CacheLumpNum(spinflylump + 15, PU_CACHE));
             hitCenterFrame := true;
           end;
         end;
@@ -1682,7 +1682,7 @@ begin
       if (CPlayer.powers[Ord(pw_weaponlevel2)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_weaponlevel2)] and 16 = 0) then
       begin
         frame := (TTickState.LevelTime div 3) and 15;
-        TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
+        TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, TWadRoutines.W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
       end;
     end;
   end;
@@ -1842,7 +1842,7 @@ begin
       // If this is present the remaining checks should be skipped.
       entry := G_LookupMapinfo(epsd, map);
       if entry <> nil then
-        if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
+        if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
         begin
           CPlayer._message := STSTR_CLEV;
           G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
@@ -1861,7 +1861,7 @@ begin
         exit;
 
       // So be it.
-      if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
+      if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
       begin
         CPlayer._message := STSTR_CLEV;
         G_DeferedInitNew(TGameSession.GameSkill, epsd, map);

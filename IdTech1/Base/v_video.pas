@@ -2248,8 +2248,8 @@ var
   lump: integer;
   lmpdata: PByteArray;
 begin
-  lump := W_GetNumForName(lumpname);
-  len := W_LumpLength(lump);
+  lump := TWadRoutines.W_GetNumForName(lumpname);
+  len := TWadRoutines.W_LumpLength(lump);
   if len <> 320 * 200 then
   begin
     {$IFDEF HEXEN}
@@ -2261,7 +2261,7 @@ begin
     {$ENDIF}
   end;
 
-  lmpdata := W_CacheLumpNum(lump, PU_STATIC);
+  lmpdata := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   memcpy(@screens[scrn][0], lmpdata, len);
   Z_ChangeTag(lmpdata, PU_CACHE);
 
@@ -2434,7 +2434,7 @@ procedure V_DrawPatch(x, y: integer; scrn: integer; const patchname: string; pre
 var
   patch: Ppatch_t;
 begin
-  patch := W_CacheLumpName(patchname, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpName(patchname, PU_STATIC);
   V_DrawPatch(x, y, scrn, patch, preserve);
   Z_ChangeTag(patch, PU_CACHE);
 end;
@@ -2448,7 +2448,7 @@ procedure V_DrawPatch(x, y: integer; scrn: integer; const lump: integer; preserv
 var
   patch: Ppatch_t;
 begin
-  patch := W_CacheLumpNum(lump, PU_STATIC);
+  patch := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   V_DrawPatch(x, y, scrn, patch, preserve);
   Z_ChangeTag(patch, PU_CACHE);
 end;
@@ -2906,7 +2906,7 @@ procedure V_DrawPatchFullScreenTMP320x200(const pname: string); overload;
 var
   p: Ppatch_t;
 begin
-  p := W_CacheLumpName(pname, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpName(pname, PU_STATIC);
   V_DrawPatchFullScreenTMP320x200(p);
   Z_ChangeTag(p, PU_CACHE);
 end;
@@ -2920,7 +2920,7 @@ procedure V_DrawPatchFullScreenTMP320x200(const lump: integer); overload;
 var
   p: Ppatch_t;
 begin
-  p := W_CacheLumpNum(lump, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   V_DrawPatchFullScreenTMP320x200(p);
   Z_ChangeTag(p, PU_CACHE);
 end;
@@ -2967,7 +2967,7 @@ procedure V_DrawPatchFullScreenTMP426x200(const pname: string); overload;
 var
   p: Ppatch_t;
 begin
-  p := W_CacheLumpName(pname, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpName(pname, PU_STATIC);
   V_DrawPatchFullScreenTMP426x200(p);
   Z_ChangeTag(p, PU_CACHE);
 end;
@@ -2981,7 +2981,7 @@ procedure V_DrawPatchFullScreenTMP426x200(const lump: integer); overload;
 var
   p: Ppatch_t;
 begin
-  p := W_CacheLumpNum(lump, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   V_DrawPatchFullScreenTMP426x200(p);
   Z_ChangeTag(p, PU_CACHE);
 end;
@@ -3006,7 +3006,7 @@ begin
       V_FullScreenStretch;
       exit;
     end;
-  p := W_CacheLumpName(pagename, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpName(pagename, PU_STATIC);
   bigpatch := TVideoPageLayout.IsOversized(p.width, p.height);
   if bigpatch then
   begin
@@ -3067,12 +3067,12 @@ begin
     V_FullScreenStretch;
     exit;
   end;
-  lump := W_GetNumForName(pagename);
-  len := W_LumpLength(lump);
+  lump := TWadRoutines.W_GetNumForName(pagename);
+  len := TWadRoutines.W_LumpLength(lump);
   if len <> 320 * 200 then
     I_DevError('V_PageDrawer(): Lump "%s" has invalid size: %d (does not have 320x200 size).'#13#10, [pagename, len]);
 
-  lmpdata := W_CacheLumpNum(lump, PU_STATIC);
+  lmpdata := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
   memcpy(screens[SCN_TMP], lmpdata, len);
   Z_ChangeTag(lmpdata, PU_CACHE);
 
@@ -3158,7 +3158,7 @@ begin
     exit;
   end;
 
-  p := W_CacheLumpNum(lu_palette, PU_STATIC);
+  p := TWadRoutines.W_CacheLumpNum(lu_palette, PU_STATIC);
   palette := PByteArray(NativeInt(p) + st_palette * 768);
 
   TScreenPalette.ConvertThroughColormap(System.PByte(palette), System.PByte(customcolormap.colormap),
@@ -3322,11 +3322,11 @@ var
   patchbytes: TArray<Byte>;
 begin
   result := false;
-  lump := W_CheckNumForName(lumpname);
+  lump := TWadRoutines.W_CheckNumForName(lumpname);
   if lump >= 0 then
   begin
-    sz := W_LumpLength(lump);
-    flat := W_CacheLumpNum(R_GetLumpForFlat(R_FlatNumForName(lumpname)), PU_STATIC);
+    sz := TWadRoutines.W_LumpLength(lump);
+    flat := TWadRoutines.W_CacheLumpNum(R_GetLumpForFlat(R_FlatNumForName(lumpname)), PU_STATIC);
     isflat := V_ShrinkFlatTo64x64(flat, sz, @src);
     Z_ChangeTag(flat, PU_CACHE);
     if isflat then
@@ -3338,7 +3338,7 @@ begin
     end
     else
     begin
-      p := W_CacheLumpNum(lump, PU_STATIC);
+      p := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
       // the inspector of Framework\Texture reads a copy of the lump (the old T_IsValidPatchImage)
       SetLength(patchbytes, sz);
       if sz > 0 then

@@ -1875,8 +1875,8 @@ begin
   polyobjs := Z_Malloc(po_NumPolyobjs * SizeOf(polyobj_t), PU_LEVEL, nil);
   memset(polyobjs, 0, po_NumPolyobjs * SizeOf(polyobj_t));
 
-  data := W_CacheLumpNum(lump, PU_STATIC);
-  numthings := W_LumpLength(lump) div SizeOf(mapthing_t);
+  data := TWadRoutines.W_CacheLumpNum(lump, PU_STATIC);
+  numthings := TWadRoutines.W_LumpLength(lump) div SizeOf(mapthing_t);
   mt := Pmapthing_t(data);
   polyIndex := 0; // index polyobj number
   // Find the startSpot points, and spawn each polyobj
