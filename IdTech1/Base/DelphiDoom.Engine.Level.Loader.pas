@@ -360,7 +360,7 @@ begin
   P_CalcSubSectorsBridge;
 
   Trace('R_PrecalcPointInSubSector');
-  R_PrecalcPointInSubSector;
+  TRendererSubsectors.R_PrecalcPointInSubSector;
 end;
 
 procedure TLevelLoader.SpawnDeathmatchPlayers;

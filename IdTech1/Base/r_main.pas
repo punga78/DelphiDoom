@@ -2306,7 +2306,7 @@ end;
 //==============================================================================
 function R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t;
 begin
-  result := R_PointInSubsectorPrecalc(x, y);
+  result := TRendererSubsectors.R_PointInSubsectorPrecalc(x, y);
   if result = nil then
     result := R_PointInSubSectorClassic(x, y);
 end;

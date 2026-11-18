@@ -1208,7 +1208,7 @@ begin
     TEngineRendererPatchSource.Create, ALog));
   R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
     TEngineRendererSpriteSource.Create, ALog));
-  R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
+  TRendererSubsectors.R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);
   R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
   R_ConfigureViewTables(TRendererFactory.CreateViewTables);
