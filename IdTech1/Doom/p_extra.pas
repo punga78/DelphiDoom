@@ -913,7 +913,7 @@ begin
       target := actor^;
       target.x := target.x + i * FRACUNIT;   // Aim in many directions from source
       target.y := target.y + j * FRACUNIT;
-      target.z := target.z + P_AproxDistance(i, j) * misc1; // Aim fairly high
+      target.z := target.z + TMapUtilRoutines.P_AproxDistance(i, j) * misc1; // Aim fairly high
       mo := P_SpawnMissile(actor, @target, Ord(MT_FATSHOT));    // Launch fireball
       mo.momx := FixedMul(mo.momx, misc2);
       mo.momy := FixedMul(mo.momy, misc2); // Slow down a bit
@@ -1085,7 +1085,7 @@ begin
   if actor.health <= 0 then
     exit;
 
-  if P_AproxDistance(actor.x - Pplayer_t(actor.player).lastsoundstepx,
+  if TMapUtilRoutines.P_AproxDistance(actor.x - Pplayer_t(actor.player).lastsoundstepx,
                      actor.y - Pplayer_t(actor.player).lastsoundstepy) < 128 * FRACUNIT then
     exit;
 

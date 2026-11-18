@@ -230,7 +230,7 @@ begin
   Trace('P_InitThinkers');
   TTickRoutines.P_InitThinkers;
   Trace('P_InitIntercepts');
-  P_InitIntercepts;
+  TMapUtilRoutines.P_InitIntercepts;
 
   // if working with a devlopment map, reload it
   Trace('W_Reload');

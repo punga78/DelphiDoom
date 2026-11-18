@@ -1014,7 +1014,7 @@ begin
 
   for bx := xl to xh do
     for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_CheckThing) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_CheckThing) then
       begin
         TMapCheck.Thing.z := z;
         result := false;

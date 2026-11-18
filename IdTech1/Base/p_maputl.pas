@@ -43,105 +43,7 @@ uses
   m_fixed,
   r_defs;
 
-//==============================================================================
-//
-// P_AproxDistance
-//
-//==============================================================================
-function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;
-
-//==============================================================================
-//
-// P_PointOnLineSide
-//
-//==============================================================================
-function P_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): integer;
-
-//==============================================================================
-//
-// P_BoxOnLineSide
-//
-//==============================================================================
-function P_BoxOnLineSide(tmbox: Pfixed_tArray; ld: Pline_t): integer;
-
-//==============================================================================
-//
-// P_InterceptVector
-//
-//==============================================================================
-function P_InterceptVector(v2: Pdivline_t; v1: Pdivline_t): fixed_t;
-
-//==============================================================================
-//
-// P_LineOpening
-//
-//==============================================================================
-procedure P_LineOpening(linedef: Pline_t; check3dfloor: boolean);
-
-//==============================================================================
-//
-// P_LineOpeningTM
-//
-//==============================================================================
-procedure P_LineOpeningTM(linedef: Pline_t; check3dfloor: boolean); // JVAL: Slopes
-
-//==============================================================================
-//
-// P_UnsetThingPosition
-//
-//==============================================================================
-procedure P_UnsetThingPosition(thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_SetThingPosition
-//
-//==============================================================================
-procedure P_SetThingPosition(thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_BlockLinesIterator
-//
-//==============================================================================
-function P_BlockLinesIterator(x, y: integer; func: ltraverser_t): boolean;
-
-//==============================================================================
-//
-// P_BlockThingsIterator
-//
-//==============================================================================
-function P_BlockThingsIterator(x, y: integer; func: ttraverser_t): boolean;
-
-//==============================================================================
-//
-// P_PathTraverse
-//
-//==============================================================================
-function P_PathTraverse(x1, y1, x2, y2: fixed_t; flags: integer;
-  trav: traverser_t): boolean;
-
 {$IFDEF HEXEN}
-//==============================================================================
-//
-// P_PointOnDivlineSide
-//
-//==============================================================================
-function P_PointOnDivlineSide(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
-
-//==============================================================================
-//
-// P_MakeDivline
-//
-//==============================================================================
-procedure P_MakeDivline(li: Pline_t; dl: Pdivline_t);
-
-//==============================================================================
-//
-// P_RoughMonsterSearch
-//
-//==============================================================================
-function P_RoughMonsterSearch(mo: Pmobj_t; distance: integer): Pmobj_t;
 
 {$ENDIF}
 var
@@ -154,18 +56,7 @@ var
 
 //==============================================================================
 //
-// P_InitIntercepts
-//
-//==============================================================================
-procedure P_InitIntercepts;
-
-//==============================================================================
-//
 {$IFDEF HEXEN}
-// P_GrowIntercepts
-//
-//==============================================================================
-procedure P_GrowIntercepts;
 
 var
   intercepts: Pintercept_tArray;
@@ -174,10 +65,119 @@ var
 //==============================================================================
 //
 {$ENDIF}
-// P_LineTrace
-//
-//==============================================================================
-procedure P_LineTrace(const fromx, fromy, fromz: fixed_t; const tox, toy, toz: fixed_t; out newx, newy, newz: fixed_t);
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapUtilRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_AproxDistance
+    //
+    //==============================================================================
+    class function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t; static;
+    //==============================================================================
+    //
+    // P_PointOnLineSide
+    //
+    //==============================================================================
+    class function P_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): integer; static;
+    //==============================================================================
+    //
+    // P_BoxOnLineSide
+    //
+    //==============================================================================
+    class function P_BoxOnLineSide(tmbox: Pfixed_tArray; ld: Pline_t): integer; static;
+    //==============================================================================
+    //
+    // P_InterceptVector
+    //
+    //==============================================================================
+    class function P_InterceptVector(v2: Pdivline_t; v1: Pdivline_t): fixed_t; static;
+    //==============================================================================
+    //
+    // P_LineOpening
+    //
+    //==============================================================================
+    class procedure P_LineOpening(linedef: Pline_t; check3dfloor: boolean); static;
+    //==============================================================================
+    //
+    // P_LineOpeningTM
+    //
+    //==============================================================================
+    class procedure P_LineOpeningTM(linedef: Pline_t; check3dfloor: boolean); static;
+    //==============================================================================
+    //
+    // P_UnsetThingPosition
+    //
+    //==============================================================================
+    class procedure P_UnsetThingPosition(thing: Pmobj_t); static;
+    //==============================================================================
+    //
+    // P_SetThingPosition
+    //
+    //==============================================================================
+    class procedure P_SetThingPosition(thing: Pmobj_t); static;
+    //==============================================================================
+    //
+    // P_BlockLinesIterator
+    //
+    //==============================================================================
+    class function P_BlockLinesIterator(x, y: integer; func: ltraverser_t): boolean; static;
+    //==============================================================================
+    //
+    // P_BlockThingsIterator
+    //
+    //==============================================================================
+    class function P_BlockThingsIterator(x, y: integer; func: ttraverser_t): boolean; static;
+    //==============================================================================
+    //
+    // P_PathTraverse
+    //
+    //==============================================================================
+    class function P_PathTraverse(x1, y1, x2, y2: fixed_t; flags: integer;
+      trav: traverser_t): boolean; static;
+{$IFDEF HEXEN}
+    //==============================================================================
+    //
+    // P_PointOnDivlineSide
+    //
+    //==============================================================================
+    class function P_PointOnDivlineSide(x: fixed_t; y: fixed_t; line: Pdivline_t): integer; static;
+    //==============================================================================
+    //
+    // P_MakeDivline
+    //
+    //==============================================================================
+    class procedure P_MakeDivline(li: Pline_t; dl: Pdivline_t); static;
+    //==============================================================================
+    //
+    // P_RoughMonsterSearch
+    //
+    //==============================================================================
+    class function P_RoughMonsterSearch(mo: Pmobj_t; distance: integer): Pmobj_t; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // P_InitIntercepts
+    //
+    //==============================================================================
+    class procedure P_InitIntercepts; static;
+{$IFDEF HEXEN}
+    // P_GrowIntercepts
+    //
+    //==============================================================================
+    class procedure P_GrowIntercepts; static;
+{$ENDIF}
+    // P_LineTrace
+    //
+    //==============================================================================
+    class procedure P_LineTrace(const fromx, fromy, fromz: fixed_t; const tox, toy, toz: fixed_t; out newx, newy, newz: fixed_t); static;
+  end;
+
 
 implementation
 
@@ -213,6 +213,30 @@ uses
 {$ENDIF}
   z_zone;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TMapUtilLocalRoutines = class sealed
+  public
+    class function P_AproxDistance32(dx: fixed_t; dy: fixed_t): fixed_t; static;
+    class function P_AproxDistance64(dx: fixed_t; dy: fixed_t): fixed_t; static;
+    class function P_PointOnDivlineSide32(x: fixed_t; y: fixed_t; line: Pdivline_t): integer; static;
+    class function P_PointOnDivlineSide64(x: fixed_t; y: fixed_t; line: Pdivline_t): integer; static;
+    class function PIT_AddLineIntercepts(ld: Pline_t): boolean; static;
+    class function PIT_AddThingIntercepts(thing: Pmobj_t): boolean; static;
+    class function P_TraverseIntercepts(func: traverser_t; maxfrac: fixed_t): boolean; static;
+    class function P_PathTraverse32(x1, y1, x2, y2: fixed_t; flags: integer;
+      trav: traverser_t): boolean; static;
+    class function P_PathTraverse64(x1, y1, x2, y2: fixed_t; flags: integer;
+      trav: traverser_t): boolean; static;
+    class function PIT_LineTrace(ld: Pline_t): boolean; static;
+{$IFDEF HEXEN}
+    class function P_RoughBlockCheck(mo: Pmobj_t; index: integer): Pmobj_t; static;
+{$ENDIF}
+  end;
+
 //==============================================================================
 // P_AproxDistance32
 //
@@ -220,7 +244,7 @@ uses
 // Gives an estimation of distance (not exact)
 //
 //==============================================================================
-function P_AproxDistance32(dx: fixed_t; dy: fixed_t): fixed_t;
+class function TMapUtilLocalRoutines.P_AproxDistance32(dx: fixed_t; dy: fixed_t): fixed_t;
 begin
   dx := abs(dx);
   dy := abs(dy);
@@ -235,7 +259,7 @@ end;
 // P_AproxDistance64
 //
 //==============================================================================
-function P_AproxDistance64(dx: fixed_t; dy: fixed_t): fixed_t;
+class function TMapUtilLocalRoutines.P_AproxDistance64(dx: fixed_t; dy: fixed_t): fixed_t;
 var
   dx64, dy64: int64;
   dist: int64;
@@ -257,12 +281,12 @@ end;
 // P_AproxDistance
 //
 //==============================================================================
-function P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;
+class function TMapUtilRoutines.P_AproxDistance(dx: fixed_t; dy: fixed_t): fixed_t;
 begin
   if largemap then
-    result := P_AproxDistance64(dx, dy)
+    result := TMapUtilLocalRoutines.P_AproxDistance64(dx, dy)
   else
-    result := P_AproxDistance32(dx, dy);
+    result := TMapUtilLocalRoutines.P_AproxDistance32(dx, dy);
 end;
 
 //==============================================================================
@@ -271,7 +295,7 @@ end;
 // Returns 0 or 1
 //
 //==============================================================================
-function P_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): integer;
+class function TMapUtilRoutines.P_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): integer;
 var
   dx: fixed_t;
   dy: fixed_t;
@@ -315,7 +339,7 @@ end;
 // Returns side 0 or 1, -1 if box crosses the line.
 //
 //==============================================================================
-function P_BoxOnLineSide(tmbox: Pfixed_tArray; ld: Pline_t): integer;
+class function TMapUtilRoutines.P_BoxOnLineSide(tmbox: Pfixed_tArray; ld: Pline_t): integer;
 var
   p1: integer;
   p2: integer;
@@ -371,7 +395,7 @@ end;
 // Returns 0 or 1.
 //
 //==============================================================================
-function P_PointOnDivlineSide32(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
+class function TMapUtilLocalRoutines.P_PointOnDivlineSide32(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
 var
   dx: fixed_t;
   dy: fixed_t;
@@ -442,7 +466,7 @@ end;
 // P_PointOnDivlineSide64
 //
 //==============================================================================
-function P_PointOnDivlineSide64(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
+class function TMapUtilLocalRoutines.P_PointOnDivlineSide64(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
 var
   dx64: int64;
   dy64: int64;
@@ -504,12 +528,12 @@ end;
 // P_PointOnDivlineSide
 //
 //==============================================================================
-function P_PointOnDivlineSide(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
+class function TMapUtilRoutines.P_PointOnDivlineSide(x: fixed_t; y: fixed_t; line: Pdivline_t): integer;
 begin
   if largemap then
-    result := P_PointOnDivlineSide64(x, y, line)
+    result := TMapUtilLocalRoutines.P_PointOnDivlineSide64(x, y, line)
   else
-    result := P_PointOnDivlineSide32(x, y, line);
+    result := TMapUtilLocalRoutines.P_PointOnDivlineSide32(x, y, line);
 end;
 
 //==============================================================================
@@ -517,7 +541,7 @@ end;
 // P_MakeDivline
 //
 //==============================================================================
-procedure P_MakeDivline(li: Pline_t; dl: Pdivline_t);
+class procedure TMapUtilRoutines.P_MakeDivline(li: Pline_t; dl: Pdivline_t);
 begin
   dl.x := li.v1.x;
   dl.y := li.v1.y;
@@ -534,7 +558,7 @@ end;
 // and addlines traversers.
 //
 //==============================================================================
-function P_InterceptVector(v2: Pdivline_t; v1: Pdivline_t): fixed_t;
+class function TMapUtilRoutines.P_InterceptVector(v2: Pdivline_t; v1: Pdivline_t): fixed_t;
 var
   num: fixed_t;
   den: fixed_t;
@@ -560,7 +584,7 @@ end;
 // OPTIMIZE: keep this precalculated
 //
 //==============================================================================
-procedure P_LineOpening(linedef: Pline_t; check3dfloor: boolean);
+class procedure TMapUtilRoutines.P_LineOpening(linedef: Pline_t; check3dfloor: boolean);
 var
   front: Psector_t;
   back: Psector_t;
@@ -649,7 +673,7 @@ end;
 // JVAL: Slopes
 //
 //==============================================================================
-procedure P_LineOpeningTM(linedef: Pline_t; check3dfloor: boolean);
+class procedure TMapUtilRoutines.P_LineOpeningTM(linedef: Pline_t; check3dfloor: boolean);
 var
   front: Psector_t;
   back: Psector_t;
@@ -781,7 +805,7 @@ end;
 // these structures need to be updated.
 //
 //==============================================================================
-procedure P_UnsetThingPosition(thing: Pmobj_t);
+class procedure TMapUtilRoutines.P_UnsetThingPosition(thing: Pmobj_t);
 var
   link: Pblocklinkitem_t;
 {$IFDEF DOOM}
@@ -884,7 +908,7 @@ end;
 // Sets thing->subsector properly
 //
 //==============================================================================
-procedure P_SetThingPosition(thing: Pmobj_t);
+class procedure TMapUtilRoutines.P_SetThingPosition(thing: Pmobj_t);
 var
   ss: Psubsector_t;
   sec: Psector_t;
@@ -1021,7 +1045,7 @@ end;
 {$ENDIF}
 //
 //==============================================================================
-function P_BlockLinesIterator(x, y: integer; func: ltraverser_t): boolean;
+class function TMapUtilRoutines.P_BlockLinesIterator(x, y: integer; func: ltraverser_t): boolean;
 var
   offset: PInteger;
   ld: Pline_t;
@@ -1098,7 +1122,7 @@ end;
 // P_BlockThingsIterator
 //
 //==============================================================================
-function P_BlockThingsIterator(x, y: integer; func: ttraverser_t): boolean;
+class function TMapUtilRoutines.P_BlockThingsIterator(x, y: integer; func: ttraverser_t): boolean;
 var
   i: integer;
   link: Pblocklinkitem_t;
@@ -1170,7 +1194,7 @@ var
 // P_InitIntercepts
 //
 //==============================================================================
-procedure P_InitIntercepts;
+class procedure TMapUtilRoutines.P_InitIntercepts;
 begin
   intercepts := Z_Malloc(MAXINTERCEPTS * SizeOf(intercept_t), PU_LEVEL, nil);
   numintercepts := MAXINTERCEPTS;
@@ -1181,7 +1205,7 @@ end;
 // P_GrowIntercepts
 //
 //==============================================================================
-procedure P_GrowIntercepts;
+class procedure TMapUtilRoutines.P_GrowIntercepts;
 begin
   if intercept_p >= numintercepts then
   begin
@@ -1202,7 +1226,7 @@ end;
 // Returns true if earlyout and a solid line hit.
 //
 //==============================================================================
-function PIT_AddLineIntercepts(ld: Pline_t): boolean;
+class function TMapUtilLocalRoutines.PIT_AddLineIntercepts(ld: Pline_t): boolean;
 var
   s1: integer;
   s2: integer;
@@ -1214,13 +1238,13 @@ begin
   if (trace.dx > FRACUNIT * 16) or (trace.dy > FRACUNIT * 16) or
      (trace.dx < -FRACUNIT * 16) or (trace.dy < -FRACUNIT * 16) then
   begin
-    s1 := P_PointOnDivlineSide(ld.v1.x, ld.v1.y, @trace);
-    s2 := P_PointOnDivlineSide(ld.v2.x, ld.v2.y, @trace);
+    s1 := TMapUtilRoutines.P_PointOnDivlineSide(ld.v1.x, ld.v1.y, @trace);
+    s2 := TMapUtilRoutines.P_PointOnDivlineSide(ld.v2.x, ld.v2.y, @trace);
   end
   else
   begin
-    s1 := P_PointOnLineSide(trace.x, trace.y, ld);
-    s2 := P_PointOnLineSide(trace.x + trace.dx, trace.y + trace.dy, ld);
+    s1 := TMapUtilRoutines.P_PointOnLineSide(trace.x, trace.y, ld);
+    s2 := TMapUtilRoutines.P_PointOnLineSide(trace.x + trace.dx, trace.y + trace.dy, ld);
   end;
 
   if s1 = s2 then
@@ -1230,8 +1254,8 @@ begin
   end;
 
   // hit the line
-  P_MakeDivline(ld, @dl);
-  frac := P_InterceptVector(@trace, @dl);
+  TMapUtilRoutines.P_MakeDivline(ld, @dl);
+  frac := TMapUtilRoutines.P_InterceptVector(@trace, @dl);
 
   if frac < 0 then
   begin
@@ -1246,7 +1270,7 @@ begin
     exit;
   end;
 
-  P_GrowIntercepts;
+  TMapUtilRoutines.P_GrowIntercepts;
   pinrc := @intercepts[intercept_p];
   pinrc.frac := frac;
   pinrc.isaline := true;
@@ -1261,7 +1285,7 @@ end;
 // PIT_AddThingIntercepts
 //
 //==============================================================================
-function PIT_AddThingIntercepts(thing: Pmobj_t): boolean;
+class function TMapUtilLocalRoutines.PIT_AddThingIntercepts(thing: Pmobj_t): boolean;
 var
   x1: fixed_t;
   y1: fixed_t;
@@ -1294,8 +1318,8 @@ begin
     y2 := thing.y + r;
   end;
 
-  s1 := P_PointOnDivlineSide(x1, y1, @trace);
-  s2 := P_PointOnDivlineSide(x2, y2, @trace);
+  s1 := TMapUtilRoutines.P_PointOnDivlineSide(x1, y1, @trace);
+  s2 := TMapUtilRoutines.P_PointOnDivlineSide(x2, y2, @trace);
 
   if s1 = s2 then
   begin
@@ -1308,7 +1332,7 @@ begin
   dl.dx := x2 - x1;
   dl.dy := y2 - y1;
 
-  frac := P_InterceptVector(@trace, @dl);
+  frac := TMapUtilRoutines.P_InterceptVector(@trace, @dl);
 
   if frac < 0 then
   begin
@@ -1316,7 +1340,7 @@ begin
     exit;
   end;
 
-  P_GrowIntercepts;
+  TMapUtilRoutines.P_GrowIntercepts;
   pinrc := @intercepts[intercept_p];
   pinrc.frac := frac;
   pinrc.isaline := false;
@@ -1333,7 +1357,7 @@ end;
 // for all lines.
 //
 //==============================================================================
-function P_TraverseIntercepts(func: traverser_t; maxfrac: fixed_t): boolean;
+class function TMapUtilLocalRoutines.P_TraverseIntercepts(func: traverser_t; maxfrac: fixed_t): boolean;
 var
   i: integer;
   dist: fixed_t;
@@ -1382,7 +1406,7 @@ end;
 // for all lines.
 //
 //==============================================================================
-function P_PathTraverse32(x1, y1, x2, y2: fixed_t; flags: integer;
+class function TMapUtilLocalRoutines.P_PathTraverse32(x1, y1, x2, y2: fixed_t; flags: integer;
   trav: traverser_t): boolean;
 var
   xt1: fixed_t;
@@ -1478,7 +1502,7 @@ begin
   begin
     if flags and PT_ADDLINES <> 0 then
     begin
-      if not P_BlockLinesIterator(mapx, mapy, PIT_AddLineIntercepts) then
+      if not TMapUtilRoutines.P_BlockLinesIterator(mapx, mapy, PIT_AddLineIntercepts) then
       begin
         result := false; // early out
         exit;
@@ -1487,7 +1511,7 @@ begin
 
     if flags and PT_ADDTHINGS <> 0 then
     begin
-      if not P_BlockThingsIterator(mapx, mapy, PIT_AddThingIntercepts) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(mapx, mapy, PIT_AddThingIntercepts) then
       begin
         result := false;// early out
         exit;
@@ -1518,7 +1542,7 @@ end;
 // P_PathTraverse64
 //
 //==============================================================================
-function P_PathTraverse64(x1, y1, x2, y2: fixed_t; flags: integer;
+class function TMapUtilLocalRoutines.P_PathTraverse64(x1, y1, x2, y2: fixed_t; flags: integer;
   trav: traverser_t): boolean;
 var
   _x1, _x2, _y1, _y2: int64;
@@ -1625,7 +1649,7 @@ begin
   begin
     if flags and PT_ADDLINES <> 0 then
     begin
-      if not P_BlockLinesIterator(mapx, mapy, PIT_AddLineIntercepts) then
+      if not TMapUtilRoutines.P_BlockLinesIterator(mapx, mapy, PIT_AddLineIntercepts) then
       begin
         result := false; // early out
         exit;
@@ -1634,7 +1658,7 @@ begin
 
     if flags and PT_ADDTHINGS <> 0 then
     begin
-      if not P_BlockThingsIterator(mapx, mapy, PIT_AddThingIntercepts) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(mapx, mapy, PIT_AddThingIntercepts) then
       begin
         result := false;// early out
         exit;
@@ -1665,13 +1689,13 @@ end;
 // P_PathTraverse
 //
 //==============================================================================
-function P_PathTraverse(x1, y1, x2, y2: fixed_t; flags: integer;
+class function TMapUtilRoutines.P_PathTraverse(x1, y1, x2, y2: fixed_t; flags: integer;
   trav: traverser_t): boolean;
 begin
   if largemap or internalblockmapformat then
-    result := P_PathTraverse64(x1, y1, x2, y2, flags, trav)
+    result := TMapUtilLocalRoutines.P_PathTraverse64(x1, y1, x2, y2, flags, trav)
   else
-    result := P_PathTraverse32(x1, y1, x2, y2, flags, trav)
+    result := TMapUtilLocalRoutines.P_PathTraverse32(x1, y1, x2, y2, flags, trav)
 end;
 
 var
@@ -1685,7 +1709,7 @@ var
 // PIT_LineTrace
 //
 //==============================================================================
-function PIT_LineTrace(ld: Pline_t): boolean;
+class function TMapUtilLocalRoutines.PIT_LineTrace(ld: Pline_t): boolean;
 var
   A1, B1, C1: int64;
   A2, B2, C2: int64;
@@ -1708,7 +1732,7 @@ begin
     exit;
   end;
 
-  if P_BoxOnLineSide(@LTbbox, ld) <> -1 then
+  if TMapUtilRoutines.P_BoxOnLineSide(@LTbbox, ld) <> -1 then
   begin
     result := true;
     exit;
@@ -1745,7 +1769,7 @@ end;
 // P_LineTrace
 //
 //==============================================================================
-procedure P_LineTrace(const fromx, fromy, fromz: fixed_t; const tox, toy, toz: fixed_t; out newx, newy, newz: fixed_t);
+class procedure TMapUtilRoutines.P_LineTrace(const fromx, fromy, fromz: fixed_t; const tox, toy, toz: fixed_t; out newx, newy, newz: fixed_t);
 var
   xl: integer;
   xh: integer;
@@ -1776,7 +1800,7 @@ begin
   LTline := nil;
   for bx := xl to xh do
     for by := yl to yh do
-      P_BlockLinesIterator(bx, by, PIT_LineTrace);
+      P_BlockLinesIterator(bx, by, TMapUtilLocalRoutines.PIT_LineTrace);
 
   newx := LTtox;
   newy := LTtoy;
@@ -1800,7 +1824,7 @@ end;
 // P_RoughBlockCheck
 //
 //==============================================================================
-function P_RoughBlockCheck(mo: Pmobj_t; index: integer): Pmobj_t;
+class function TMapUtilLocalRoutines.P_RoughBlockCheck(mo: Pmobj_t; index: integer): Pmobj_t;
 var
   mobj: Pmobj_t;
   master: Pmobj_t;
@@ -1954,7 +1978,7 @@ end;
 //    distance is in MAPBLOCKUNITS
 //
 //==============================================================================
-function P_RoughMonsterSearch(mo: Pmobj_t; distance: integer): Pmobj_t;
+class function TMapUtilRoutines.P_RoughMonsterSearch(mo: Pmobj_t; distance: integer): Pmobj_t;
 var
   blockX: integer;
   blockY: integer;
@@ -1979,7 +2003,7 @@ begin
 
   if (startX >= 0) and (startX < bmapwidth) and (startY >= 0) and (startY < bmapheight) then
   begin
-    result := P_RoughBlockCheck(mo, startY * bmapwidth + startX);
+    result := TMapUtilLocalRoutines.P_RoughBlockCheck(mo, startY * bmapwidth + startX);
     if result <> nil then
     begin // found a target right away
       exit;
@@ -2024,7 +2048,7 @@ begin
     // Trace the first block section (along the top)
     while blockIndex <= firstStop do
     begin
-      result := P_RoughBlockCheck(mo, blockIndex);
+      result := TMapUtilLocalRoutines.P_RoughBlockCheck(mo, blockIndex);
       if result <> nil then
       begin
         exit;
@@ -2036,7 +2060,7 @@ begin
     dec(blockIndex);
     while blockIndex <= secondStop do
     begin
-      result := P_RoughBlockCheck(mo, blockIndex);
+      result := TMapUtilLocalRoutines.P_RoughBlockCheck(mo, blockIndex);
       if result <> nil then
       begin
         exit;
@@ -2048,7 +2072,7 @@ begin
     blockIndex := blockIndex - bmapwidth;
     while blockIndex >= thirdStop do
     begin
-      result := P_RoughBlockCheck(mo, blockIndex);
+      result := TMapUtilLocalRoutines.P_RoughBlockCheck(mo, blockIndex);
       if result <> nil then
       begin
         exit;
@@ -2060,7 +2084,7 @@ begin
     inc(blockindex);
     while blockIndex > finalStop do
     begin
-      result := P_RoughBlockCheck(mo, blockIndex);
+      result := TMapUtilLocalRoutines.P_RoughBlockCheck(mo, blockIndex);
       if result <> nil then
       begin
         exit;

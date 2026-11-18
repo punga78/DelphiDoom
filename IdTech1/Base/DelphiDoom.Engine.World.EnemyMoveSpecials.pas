@@ -65,7 +65,7 @@ begin
 
     if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
       if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-        PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), P_PointOnLineSide(actor.x, actor.y, ld));
+        PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), TMapUtilRoutines.P_PointOnLineSide(actor.x, actor.y, ld));
 
     // if the special is not a door
     // that can be opened,

@@ -419,7 +419,7 @@ begin
   for bx := xl to xh do
   begin
     for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_FindRadixPickup) then
+      if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_FindRadixPickup) then
         break;
     if pickupfound <> nil then
       break;

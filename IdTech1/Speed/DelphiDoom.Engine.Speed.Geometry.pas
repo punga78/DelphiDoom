@@ -40,7 +40,7 @@ end;
 
 function TEngineSpeedGeometry.ApproximateDistanceFromView(AX, AY: TFixed): TFixed;
 begin
-  Result := P_AproxDistance(viewx - AX, viewy - AY);
+  Result := TMapUtilRoutines.P_AproxDistance(viewx - AX, viewy - AY);
 end;
 
 end.

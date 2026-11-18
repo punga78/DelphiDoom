@@ -1659,7 +1659,7 @@ end;
 function PS_P_PointOnLineSide(x: Integer; y: Integer; line: integer): Integer;
 begin
   if (line >= 0) and (line < numlines) then
-    Result := P_PointOnLineSide(x, y, @lines[line])
+    Result := TMapUtilRoutines.P_PointOnLineSide(x, y, @lines[line])
   else
     Result := 0;
 end;

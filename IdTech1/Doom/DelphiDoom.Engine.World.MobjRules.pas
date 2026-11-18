@@ -392,7 +392,7 @@ begin
     if (mo.flags and MF_SKULLFLY = 0) and
        (mo.flags and MF_INFLOAT = 0) then
     begin
-      dist := P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
 
       delta := (mo.target.z + _SHR1(mo.height)) - mo.z;
 
@@ -1158,7 +1158,7 @@ end;
 
 class function TMobjGameRules.SeekerSpeed(actor: Pmobj_t): fixed_t;
 begin
-  result := P_AproxDistance(actor.momx, actor.momy);
+  result := TMapUtilRoutines.P_AproxDistance(actor.momx, actor.momy);
 end;
 
 class function TMobjGameRules.TerrainFloorPic(thing: Pmobj_t): integer;

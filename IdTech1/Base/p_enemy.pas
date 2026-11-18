@@ -189,7 +189,7 @@ begin
     if (check.sidenum[1] < 0) or (check.sidenum[0] < 0) then
       continue;
 
-    P_LineOpening(check, false);
+    TMapUtilRoutines.P_LineOpening(check, false);
 
     if openrange <= 0 then
       continue; // closed door
@@ -515,7 +515,7 @@ begin
   begin
     if G_PlayingEngineVersion >= VERSION207 then
     begin
-      dist := P_AproxDistance(deltax, deltay);
+      dist := TMapUtilRoutines.P_AproxDistance(deltax, deltay);
       if (actor.info.missilestate <> 0) and
          TEnemyGameRules.CanBackAway(actor) and
         (((target.info.missilestate = 0) and (dist < P_MeleeRange(target) * 2)) or

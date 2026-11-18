@@ -1097,7 +1097,7 @@ begin
           begin
             continue;
           end;
-          if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+          if TMapUtilRoutines.P_BoxOnLineSide(@tmbbox, ld) <> -1 then
           begin
             continue;
           end;

@@ -455,7 +455,7 @@ begin
   spawny := source.y + dy + stepy;
   spawnz := source.z + dz;
 
-  P_LineTrace(oldx, oldy, oldz, spawnx, spawny, spawnz, newx, newy, newz);
+  TMapUtilRoutines.P_LineTrace(oldx, oldy, oldz, spawnx, spawny, spawnz, newx, newy, newz);
 
   // JVAL: 20200502 - Limit z spawn height of missile
   if abs(oldz - newz) > TRadixWeaponRules.MAX_WEAPON_Z_OFFSET then
@@ -1008,7 +1008,7 @@ begin
   if thing.player <> nil then
     exit;
 
-  dist := P_AproxDistance(thing.x - pbplayer.mo.x, thing.y - pbplayer.mo.y);
+  dist := TMapUtilRoutines.P_AproxDistance(thing.x - pbplayer.mo.x, thing.y - pbplayer.mo.y);
 
   if dist >= TRadixWeaponRules.PLASMA_BOMB_RADIUS then
     exit; // out of range
@@ -1044,7 +1044,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, PIT_Plasmabomb);
+      TMapUtilRoutines.P_BlockThingsIterator(x, y, PIT_Plasmabomb);
 end;
 
 //==============================================================================

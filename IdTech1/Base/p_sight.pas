@@ -286,7 +286,7 @@ begin
 //
 // crosses a two sided line
 //
-  P_LineOpening(li, false);
+  TMapUtilRoutines.P_LineOpening(li, false);
 
   if openbottom >= opentop then // quick test for totally closed doors
 {$ELSE}
@@ -462,17 +462,17 @@ begin
           end;
 
           ld.validcount := validcount;
-          s1 := P_PointOnDivlineSide(ld.v1.x, ld.v1.y, @trace);
-          s2 := P_PointOnDivlineSide(ld.v2.x, ld.v2.y, @trace);
+          s1 := TMapUtilRoutines.P_PointOnDivlineSide(ld.v1.x, ld.v1.y, @trace);
+          s2 := TMapUtilRoutines.P_PointOnDivlineSide(ld.v2.x, ld.v2.y, @trace);
           if s1 = s2 then
           begin
             inc(segList);
             continue; // line isn't crossed
           end;
 
-          P_MakeDivline(ld, @dl);
-          s1 := P_PointOnDivlineSide(trace.x, trace.y, @dl);
-          s2 := P_PointOnDivlineSide(trace.x + trace.dx, trace.y + trace.dy, @dl);
+          TMapUtilRoutines.P_MakeDivline(ld, @dl);
+          s1 := TMapUtilRoutines.P_PointOnDivlineSide(trace.x, trace.y, @dl);
+          s2 := TMapUtilRoutines.P_PointOnDivlineSide(trace.x + trace.dx, trace.y + trace.dy, @dl);
           if s1 = s2 then
           begin
             inc(segList);
@@ -487,7 +487,7 @@ begin
           end;
 
         // store the line for later intersection testing
-          P_GrowIntercepts;
+          TMapUtilRoutines.P_GrowIntercepts;
           intercepts[intercept_p].d.line := ld;
           inc(intercept_p);
           inc(segList);
@@ -530,16 +530,16 @@ begin
 {$ENDIF}
 
 {$IFDEF HEXEN}
-    s1 := P_PointOnDivlineSide (ld.v1.x, ld.v1.y, @trace);
-    s2 := P_PointOnDivlineSide (ld.v2.x, ld.v2.y, @trace);
+    s1 := TMapUtilRoutines.P_PointOnDivlineSide (ld.v1.x, ld.v1.y, @trace);
+    s2 := TMapUtilRoutines.P_PointOnDivlineSide (ld.v2.x, ld.v2.y, @trace);
     if s1 = s2 then
     begin
       inc(list);
       continue; // line isn't crossed
     end;
-    P_MakeDivline(ld, @dl);
-    s1 := P_PointOnDivlineSide (trace.x, trace.y, @dl);
-    s2 := P_PointOnDivlineSide (trace.x + trace.dx, trace.y + trace.dy, @dl);
+    TMapUtilRoutines.P_MakeDivline(ld, @dl);
+    s1 := TMapUtilRoutines.P_PointOnDivlineSide (trace.x, trace.y, @dl);
+    s2 := TMapUtilRoutines.P_PointOnDivlineSide (trace.x + trace.dx, trace.y + trace.dy, @dl);
     if s1 = s2 then
     begin
       inc(list);
@@ -725,7 +725,7 @@ begin
       exit;
     end;
 {$ELSEIF DEFINED(HEXEN)}
-    P_GrowIntercepts;
+    TMapUtilRoutines.P_GrowIntercepts;
     // store the line for later intersection testing
     intercepts[intercept_p].d.line := ld;
     inc(intercept_p);
@@ -872,8 +872,8 @@ begin
   begin
 {$IFDEF HEXEN}
     scan := @intercepts[i];
-    P_MakeDivline(scan.d.line, @dl);
-    scan.frac := P_InterceptVector (@trace, @dl);
+    TMapUtilRoutines.P_MakeDivline(scan.d.line, @dl);
+    scan.frac := TMapUtilRoutines.P_InterceptVector (@trace, @dl);
 {$ELSE}
     if bspnum = -1 then
       result := P_CrossSubsector(0, los)

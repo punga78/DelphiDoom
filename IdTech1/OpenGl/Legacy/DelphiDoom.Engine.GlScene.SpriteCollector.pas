@@ -209,7 +209,7 @@ begin
   LSprite.models := AVisSprite.mo.state.models;
   LSprite.voxels := AVisSprite.mo.state.voxels;
   LSprite.mo := LMobj;
-  LSprite.aproxdist := P_AproxDistance(LMobj.x - viewx, LMobj.y - viewy);
+  LSprite.aproxdist := TMapUtilRoutines.P_AproxDistance(LMobj.x - viewx, LMobj.y - viewy);
 
   LSprite.x := -LMobj.x / MAP_SCALE;
   LSprite.y :=  (LMobj.z{$IFNDEF HERETIC} - LMobj.floorclip{$ENDIF}) / MAP_SCALE;

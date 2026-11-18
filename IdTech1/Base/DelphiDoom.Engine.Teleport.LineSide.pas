@@ -40,7 +40,7 @@ end;
 
 function TEngineTeleportLineSide.PointOnSide(AX, AY: Integer): Integer;
 begin
-  Result := P_PointOnLineSide(AX, AY, FLine);
+  Result := TMapUtilRoutines.P_PointOnLineSide(AX, AY, FLine);
 end;
 
 end.

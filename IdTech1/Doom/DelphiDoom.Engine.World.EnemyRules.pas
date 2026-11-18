@@ -589,7 +589,7 @@ begin
     exit;
   end;
 
-  dist := P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
 
   mrange := P_MeleeRange(actor) * factor;
 
@@ -670,7 +670,7 @@ begin
   end;
 
   // OPTIMIZE: get this from a global checksight
-  dist := P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) -
+  dist := TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) -
             64 * FRACUNIT;
 
   if actor.info.meleestate = 0 then
@@ -774,7 +774,7 @@ begin
       continue;   // dead
 
     if actor.info.maxtargetrange > 0 then
-      if P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
+      if TMapUtilRoutines.P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
         continue; // JVAL: 20210211 - Out of range
 
     if not P_CheckSight(actor, player.mo) then
@@ -786,7 +786,7 @@ begin
 
       if (an > ANG90) and (an < ANG270) then
       begin
-        dist := P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y);
+        dist := TMapUtilRoutines.P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y);
         // if real close, react anyway
         if dist > MELEERANGE then
           continue; // behind back
@@ -1051,7 +1051,7 @@ begin
       actor.fastchasetics := 0;
       actor.momx := 0;
       actor.momy := 0;
-      dist := P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y);
       if dist < 64 * 10 * FRACUNIT then
         if P_Random < 100 then
         begin
@@ -1528,7 +1528,7 @@ begin
   actor.momy := FixedMul(actor.info.speed, finesine[exact]);
 
   // change slope
-  dist := P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
 
   dist := dist div actor.info.speed;
 
@@ -1684,7 +1684,7 @@ begin
       // Call PIT_VileCheck to check
       // whether object is a corpse
       // that canbe raised.
-        if not P_BlockThingsIterator(bx, by, TMonsterLocalActions.PIT_VileCheck) then
+        if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, TMonsterLocalActions.PIT_VileCheck) then
         begin
         // got one!
           temp := actor.target;
@@ -1768,11 +1768,11 @@ begin
   an := dest.angle shr ANGLETOFINESHIFT;
   {$ENDIF}
 
-  P_UnsetThingPosition(actor);
+  TMapUtilRoutines.P_UnsetThingPosition(actor);
   actor.x := dest.x + FixedMul(24 * FRACUNIT, finecosine[an]);
   actor.y := dest.y + FixedMul(24 * FRACUNIT, finesine[an]);
   actor.z := dest.z;
-  P_SetThingPosition(actor);
+  TMapUtilRoutines.P_SetThingPosition(actor);
 end;
 
 //==============================================================================
@@ -2014,7 +2014,7 @@ begin
   {$ENDIF}
   actor.momx := FixedMul(SKULLSPEED, finecosine[an]);
   actor.momy := FixedMul(SKULLSPEED, finesine[an]);
-  dist := P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
   dist := dist div SKULLSPEED;
 
   if dist < 1 then

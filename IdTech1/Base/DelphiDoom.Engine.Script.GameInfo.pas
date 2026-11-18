@@ -94,8 +94,8 @@ begin
   for LPlayer := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[LPlayer] then
     begin
-      LDistance := P_AproxDistance(X - TGameSession.Players[LPlayer].mo.x, Y - TGameSession.Players[LPlayer].mo.y);
-      LDistance := P_AproxDistance(Z - TGameSession.Players[LPlayer].mo.z, LDistance); // 3d distance
+      LDistance := TMapUtilRoutines.P_AproxDistance(X - TGameSession.Players[LPlayer].mo.x, Y - TGameSession.Players[LPlayer].mo.y);
+      LDistance := TMapUtilRoutines.P_AproxDistance(Z - TGameSession.Players[LPlayer].mo.z, LDistance); // 3d distance
       if LDistance <= AMaxDistance then
       begin
         if TGameSession.Players[LPlayer].quaketics < ATics then

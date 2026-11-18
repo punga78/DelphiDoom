@@ -1153,7 +1153,7 @@ begin
         continue;
 
       victim := player.mo;
-      dist := _SHR(P_AproxDistance(actor.x - victim.x, actor.y - victim.y), FRACBITS + 6);
+      dist := _SHR(TMapUtilRoutines.P_AproxDistance(actor.x - victim.x, actor.y - victim.y), FRACBITS + 6);
       // Tested in tile units (64 pixels)
       if dist < actor.args[3] then    // In tremor radius
         localQuakeHappening[playnum] := richters;

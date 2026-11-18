@@ -714,7 +714,7 @@ begin
     Pplayer_t(mobj.player).mo := mobj;
   end;
   R_InitMobjTranslation(mobj);
-  P_SetThingPosition(mobj);
+  TMapUtilRoutines.P_SetThingPosition(mobj);
   mobj.info := @mobjinfo[mobj._type];
   mobj.floorz := T3dFloorRoutines.P_3dFloorHeight(mobj);
   mobj.ceilingz := T3dFloorRoutines.P_3dCeilingHeight(mobj);

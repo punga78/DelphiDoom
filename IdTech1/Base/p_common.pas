@@ -2775,7 +2775,7 @@ begin
     exit;
 
   dist := actor.state.params.FixedVal[0];
-  if P_AproxDistance(actor.x - target.x, actor.y - target.y) < dist then
+  if TMapUtilRoutines.P_AproxDistance(actor.x - target.x, actor.y - target.y) < dist then
   begin
     if not actor.state.params.IsComputed[1] then
     begin
@@ -6026,7 +6026,7 @@ begin
     exit;
 
   dist := actor.state.params.FixedVal[0];
-  if P_AproxDistance(actor.x - target.x, actor.y - target.y) < dist then
+  if TMapUtilRoutines.P_AproxDistance(actor.x - target.x, actor.y - target.y) < dist then
   begin
     offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[1]);
     if @states[offset] <> actor.state then
@@ -6963,7 +6963,7 @@ begin
       if TGameSession.Players[i].mo <> nil then
         if TGameSession.Players[i].mo.health >= 0 then
         begin
-          mindist := P_AproxDistance(TGameSession.Players[i].mo.x - actor.x, TGameSession.Players[i].mo.y - actor.y);
+          mindist := TMapUtilRoutines.P_AproxDistance(TGameSession.Players[i].mo.x - actor.x, TGameSession.Players[i].mo.y - actor.y);
           if mindist < nearest then
           begin
             nearest := mindist;
@@ -7007,7 +7007,7 @@ begin
   actor.momy := FixedMul(actor.info.speed, finesine[exact]);
 
   // change slope
-  dist := P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
 
   dist := dist div actor.info.speed;
 
@@ -7265,7 +7265,7 @@ begin
     exit;
 
   dist := actor.state.params.FixedVal[0];
-  if P_AproxDistance(actor.x - actor.tracer.x, actor.y - actor.tracer.y) < dist then
+  if TMapUtilRoutines.P_AproxDistance(actor.x - actor.tracer.x, actor.y - actor.tracer.y) < dist then
   begin
     offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[1]);
     if @states[offset] <> actor.state then
@@ -9022,7 +9022,7 @@ begin
   if actor.flags_ex and (MF_EX_FLOORHUGGER or MF_EX_CEILINGHUGGER) = 0 then
   begin
     // change slope
-    dist := P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(dest.x - actor.x, dest.y - actor.y);
 
     dist := dist div actor.info.speed;
 
@@ -9218,7 +9218,7 @@ begin
   sec.validcount := validcount;
   sec.soundtraversed := soundblocks + 1;
 
-  if P_AproxDistance(soundtargetex.x - sec.soundorg.x, soundtargetex.y - sec.soundorg.y) > maxdist then
+  if TMapUtilRoutines.P_AproxDistance(soundtargetex.x - sec.soundorg.x, soundtargetex.y - sec.soundorg.y) > maxdist then
     exit;
 
   sec.soundtarget := soundtargetex;
@@ -9232,7 +9232,7 @@ begin
     if (check.sidenum[1] < 0) or (check.sidenum[0] < 0) then
       continue;
 
-    P_LineOpening(check, false);
+    TMapUtilRoutines.P_LineOpening(check, false);
 
     if openrange <= 0 then
       continue; // closed door
@@ -9319,8 +9319,8 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
     begin
-      dist := P_AproxDistance(actor.x - TGameSession.Players[i].mo.x, actor.y - TGameSession.Players[i].mo.y);
-      dist := P_AproxDistance(actor.z - TGameSession.Players[i].mo.z, dist); // 3d distance
+      dist := TMapUtilRoutines.P_AproxDistance(actor.x - TGameSession.Players[i].mo.x, actor.y - TGameSession.Players[i].mo.y);
+      dist := TMapUtilRoutines.P_AproxDistance(actor.z - TGameSession.Players[i].mo.z, dist); // 3d distance
       if dist <= maxdist then
       begin
         if TGameSession.Players[i].quaketics < tics then
@@ -9809,7 +9809,7 @@ begin
       if (TGameSession.Players[i].mo <> nil) and (TGameSession.Players[i].mo <> mo) then
         if TGameSession.Players[i].mo.health >= 0 then
         begin
-          dist := P_AproxDistance(TGameSession.Players[i].mo.x - mo.x, TGameSession.Players[i].mo.y - mo.y);
+          dist := TMapUtilRoutines.P_AproxDistance(TGameSession.Players[i].mo.x - mo.x, TGameSession.Players[i].mo.y - mo.y);
           if dist < nearest then
           begin
             nearest := dist;
@@ -10013,7 +10013,7 @@ begin
     exit;
   end;
 
-  dist := P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
 
   if dist >= mrange then
   begin
@@ -10858,7 +10858,7 @@ begin
         // Call PIT_HealCheck to check
         // whether object is a corpse
         // that canbe raised.
-        if not P_BlockThingsIterator(bx, by, TCommonDamageActionsLocal.PIT_HealCheck) then
+        if not TMapUtilRoutines.P_BlockThingsIterator(bx, by, TCommonDamageActionsLocal.PIT_HealCheck) then
         begin
           // got one!
           temp := actor.target;
@@ -10952,7 +10952,7 @@ var
   h2: fixed_t;
 begin
   target := tracer;
-  speed := P_AproxDistance(actor.momx, actor.momy);
+  speed := TMapUtilRoutines.P_AproxDistance(actor.momx, actor.momy);
   if (target = nil) or (speed = 0) then
   begin
     result := false;
@@ -10990,7 +10990,7 @@ begin
      (target.z + target.height < actor.z) or
      centerseek then
   begin // Need to seek vertically
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     dist := dist div speed;
     if dist < 1 then
       dist := 1;
@@ -11151,7 +11151,7 @@ begin
 
   distance := actor.state.params.MBF21FixedVal[1];
 
-  if distance > P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) then
+  if distance > TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y) then
   begin
     if not actor.state.params.IsComputed[0] then
     begin
@@ -11226,7 +11226,7 @@ begin
 
   distance := actor.state.params.MBF21FixedVal[1];
 
-  if distance > P_AproxDistance(actor.x - actor.tracer.x, actor.y - actor.tracer.y) then
+  if distance > TMapUtilRoutines.P_AproxDistance(actor.x - actor.tracer.x, actor.y - actor.tracer.y) then
   begin
     if not actor.state.params.IsComputed[0] then
     begin

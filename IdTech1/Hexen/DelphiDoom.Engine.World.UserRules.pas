@@ -595,7 +595,7 @@ begin
     pmo := player.mo;
     if (player.powers[Ord(pw_speed)] > 0) and
        (TTickState.LevelTime and 1 = 0) and
-       (P_AproxDistance(pmo.momx, pmo.momy) > 12 * FRACUNIT) then
+       (TMapUtilRoutines.P_AproxDistance(pmo.momx, pmo.momy) > 12 * FRACUNIT) then
     begin
 
       speedMo := P_SpawnMobj(pmo.x, pmo.y, pmo.z, Ord(MT_PLAYER_SPEED));
@@ -1213,7 +1213,7 @@ begin
       continue;
     end;
 
-    dist := P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
+    dist := TMapUtilRoutines.P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
     if dist > BLAST_RADIUS_DIST then
     begin // Out of range
       think := think.next;
@@ -1267,7 +1267,7 @@ begin
       continue;
     end;
 
-    dist := P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
+    dist := TMapUtilRoutines.P_AproxDistance(pmo.x - mo.x, pmo.y - mo.y);
     if dist > HEAL_RADIUS_DIST then
     begin // Out of range
       think := think.next;

@@ -954,7 +954,7 @@ begin
   TMobjGameRules.InitStateMemory(mobj, st);
 
   // set subsector and/or block links
-  P_SetThingPosition(mobj);
+  TMapUtilRoutines.P_SetThingPosition(mobj);
 
   sec := Psubsector_t(mobj.subsector).sector;
 
@@ -1067,7 +1067,7 @@ begin
   TMobjGameRules.BeforeRemove(mobj);
 
   // unlink from sector and block lists
-  P_UnsetThingPosition(mobj);
+  TMapUtilRoutines.P_UnsetThingPosition(mobj);
 
   // Delete all nodes on the current sector_list               phares 3/16/98
 
@@ -1360,7 +1360,7 @@ begin
   if (actor.z + actor.height < target.z) or
      (target.z + target.height < actor.z) then
   begin // Need to seek vertically
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     if speed = 0 then
       dist := 1
     else

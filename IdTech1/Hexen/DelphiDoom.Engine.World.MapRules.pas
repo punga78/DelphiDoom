@@ -1313,7 +1313,7 @@ begin
   // stomp on any things contacted
   for bx := xl to xh do
     for by := yl to yh do
-      P_BlockThingsIterator(bx, by, TMapLocalRoutines.PIT_ThrustStompThing);
+      TMapUtilRoutines.P_BlockThingsIterator(bx, by, TMapLocalRoutines.PIT_ThrustStompThing);
 end;
 
 //
@@ -1341,7 +1341,7 @@ begin
   begin // Check line
     if intr.d.line.special <> USE_PUZZLE_ITEM_SPECIAL then
     begin
-      P_LineOpening(intr.d.line, true);
+      TMapUtilRoutines.P_LineOpening(intr.d.line, true);
       if openrange <= 0 then
       begin
         sound := Ord(SFX_NONE);
@@ -1365,7 +1365,7 @@ begin
       exit;
     end;
 
-    if P_PointOnLineSide(PuzzleItemUser.x, PuzzleItemUser.y, intr.d.line) = 1 then
+    if TMapUtilRoutines.P_PointOnLineSide(PuzzleItemUser.x, PuzzleItemUser.y, intr.d.line) = 1 then
     begin // Don't use back sides
       result := false;
       exit;
@@ -1424,7 +1424,7 @@ begin
   y1 := player.mo.y;
   x2 := x1 + USERANGEINT * finecosine[angle];
   y2 := y1 + USERANGEINT * finesine[angle];
-  P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES or PT_ADDTHINGS, TMapLocalRoutines.PTR_PuzzleItemTraverse);
+  TMapUtilRoutines.P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES or PT_ADDTHINGS, TMapLocalRoutines.PTR_PuzzleItemTraverse);
   result := PuzzleActivated;
 end;
 
@@ -1456,7 +1456,7 @@ begin
   li := intr.d.line;
   if li.flags and ML_TWOSIDED = 0 then
   begin
-    if P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
+    if TMapUtilRoutines.P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, li) <> 0 then
     begin
       result := true; // don't hit the back side
       exit;
@@ -1466,7 +1466,7 @@ begin
     exit;
   end;
 
-  P_LineOpening(li, true);  // set openrange, opentop, openbottom
+  TMapUtilRoutines.P_LineOpening(li, true);  // set openrange, opentop, openbottom
   if openrange < TMapSlide.Mobj.height then
   begin
     bounceblocking; // doesn't fit
@@ -1511,9 +1511,9 @@ begin
     leady := mo.y - mo.radius;
 
   TMapSlide.BestFrac := FRACUNIT + 1;
-  P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy, PT_ADDLINES, TMapLocalRoutines.PTR_BounceTraverse);
+  TMapUtilRoutines.P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy, PT_ADDLINES, TMapLocalRoutines.PTR_BounceTraverse);
 
-  side := P_PointOnLineSide(mo.x, mo.y, TMapSlide.BestLine);
+  side := TMapUtilRoutines.P_PointOnLineSide(mo.x, mo.y, TMapSlide.BestLine);
   lineangle := TRendererMain.R_PointToAngle2(0, 0, TMapSlide.BestLine.dx, TMapSlide.BestLine.dy);
   if side = 1 then
     lineangle := lineangle + ANG180;
@@ -1522,7 +1522,7 @@ begin
 
   deltaangle := deltaangle shr ANGLETOFINESHIFT;
 
-  movelen := P_AproxDistance(mo.momx, mo.momy);
+  movelen := TMapUtilRoutines.P_AproxDistance(mo.momx, mo.momy);
   movelen := FixedMul(movelen, 3 * FRACUNIT div 4); // friction
   if movelen < FRACUNIT then
     movelen := 2 * FRACUNIT;

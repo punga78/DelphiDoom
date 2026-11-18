@@ -409,7 +409,7 @@ begin
   radar_friendlist.count := 0;
   for bx := xl to xh do
     for by := yl to yh do
-      P_BlockThingsIterator(bx, by, PIT_AddRadarThing);
+      TMapUtilRoutines.P_BlockThingsIterator(bx, by, PIT_AddRadarThing);
 
   RX_HudPutPixel(x, y, hud_blue);
 

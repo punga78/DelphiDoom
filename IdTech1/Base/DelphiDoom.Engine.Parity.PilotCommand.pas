@@ -163,7 +163,7 @@ begin
       LView.Y := TGameSession.Players[TGameSession.ConsolePlayer].mo.y;
       LView.Z := TGameSession.Players[TGameSession.ConsolePlayer].mo.z;
       LView.Angle := TGameSession.Players[TGameSession.ConsolePlayer].mo.angle;
-      LView.Speed := P_AproxDistance(TGameSession.Players[TGameSession.ConsolePlayer].mo.momx, TGameSession.Players[TGameSession.ConsolePlayer].mo.momy);
+      LView.Speed := TMapUtilRoutines.P_AproxDistance(TGameSession.Players[TGameSession.ConsolePlayer].mo.momx, TGameSession.Players[TGameSession.ConsolePlayer].mo.momy);
     end;
     // only a script that fights asks for the enemies: the automatic pilot never searches the level
     if LView.Alive and (TGameSession.GameState = GS_LEVEL) and (APilot.EnemyRange > 0) then

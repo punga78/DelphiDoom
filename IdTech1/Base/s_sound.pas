@@ -1945,7 +1945,7 @@ begin
       c.name := channels[i].sfxinfo.name;
       c.mo := channels[i].origin;
       if c.mo <> nil then
-        c.distance := P_AproxDistance(c.mo.x - viewx, c.mo.y - viewy) div FRACUNIT
+        c.distance := TMapUtilRoutines.P_AproxDistance(c.mo.x - viewx, c.mo.y - viewy) div FRACUNIT
       else
         c.distance := 0;
       end
@@ -1984,7 +1984,7 @@ begin
       c.name := channels[i].sfxinfo.name;
       c.mo := channels[i].origin;
       if c.mo <> nil then
-        c.distance := P_AproxDistance(c.mo.x - viewx, c.mo.y - viewy) div FRACUNIT
+        c.distance := TMapUtilRoutines.P_AproxDistance(c.mo.x - viewx, c.mo.y - viewy) div FRACUNIT
       else
         c.distance := 0;
       end

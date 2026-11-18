@@ -1296,7 +1296,7 @@ begin
     exit;
   end;
 
-  dist := P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
 
   mrange := P_MeleeRange(actor) * factor;
 
@@ -1352,7 +1352,7 @@ begin
     exit;
   end;
 
-  dist := P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
+  dist := TMapUtilRoutines.P_AproxDistance(mo.x - actor.x, mo.y - actor.y);
 
   mrange := P_MeleeRange(actor);
 
@@ -1420,7 +1420,7 @@ begin
     exit;
   end;
 
-  dist := FixedInt(P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y)) - 64;
+  dist := FixedInt(TMapUtilRoutines.P_AproxDistance(actor.x - actor.target.x, actor.y - actor.target.y)) - 64;
 
   if actor.info.meleestate = 0 then // No melee attack, so fire more frequently
     dist := dist - 128;
@@ -1533,7 +1533,7 @@ begin
       continue;   // dead
 
     if actor.info.maxtargetrange > 0 then
-      if P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
+      if TMapUtilRoutines.P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
         continue; // JVAL: 20210211 - Out of range
 
     if not P_CheckSight(actor, player.mo) then
@@ -1545,7 +1545,7 @@ begin
 
       if (an > ANG90) and (an < ANG270) then
       begin
-        dist := P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y);
+        dist := TMapUtilRoutines.P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y);
         // if real close, react anyway
         if dist > MELEERANGE then
           continue; // behind back
@@ -1555,8 +1555,8 @@ begin
     if player.mo.flags and MF_SHADOW <> 0 then
       if actor.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
       begin // Player is invisible
-        if (P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y) > 2 * MELEERANGE) and
-           (P_AproxDistance(player.mo.momx, player.mo.momy) < 5 * FRACUNIT) then
+        if (TMapUtilRoutines.P_AproxDistance(player.mo.x - actor.x, player.mo.y - actor.y) > 2 * MELEERANGE) and
+           (TMapUtilRoutines.P_AproxDistance(player.mo.momx, player.mo.momy) < 5 * FRACUNIT) then
         begin // Player is sneaking - can't detect
           result := false;
           exit;
@@ -2019,7 +2019,7 @@ begin
         continue;
       if mo.health <= 0 then
         continue;
-      dist := P_AproxDistance(actor.x - mo.x, actor.y - mo.y);
+      dist := TMapUtilRoutines.P_AproxDistance(actor.x - mo.x, actor.y - mo.y);
       if dist > MINOTAUR_LOOK_DIST then
         continue;
       actor.target := mo;
@@ -2030,9 +2030,9 @@ begin
   if actor.target = nil then        // Near player monster search
   begin
     if (master <> nil) and (master.health > 0) and (master.player <> nil) then
-      mo := P_RoughMonsterSearch(master, 20)
+      mo := TMapUtilRoutines.P_RoughMonsterSearch(master, 20)
     else
-      mo := P_RoughMonsterSearch(actor, 20);
+      mo := TMapUtilRoutines.P_RoughMonsterSearch(actor, 20);
     actor.target := mo;
   end;
 
@@ -2056,7 +2056,7 @@ begin
         continue;
       end;
 
-      dist := P_AproxDistance(actor.x - mo.x, actor.y - mo.y);
+      dist := TMapUtilRoutines.P_AproxDistance(actor.x - mo.x, actor.y - mo.y);
       if dist > MINOTAUR_LOOK_DIST then
       begin
         think := think.next;
@@ -2222,7 +2222,7 @@ begin
   if target = nil then
     exit;
 
-  dist := P_AproxDistance(actor.x - target.x, actor.y - target.y);
+  dist := TMapUtilRoutines.P_AproxDistance(actor.x - target.x, actor.y - target.y);
   if (target.z + target.height > actor.z) and
      (target.z + target.height < actor.z + actor.height) and
      (dist < 16 * 64 * FRACUNIT) and
@@ -3559,7 +3559,7 @@ begin
   if (actor.z + actor.height < target.z) or
      (target.z + target.height < actor.z) then
   begin
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     dist := dist div actor.info.speed;
     if dist < 1 then
       dist := 1;
@@ -3567,7 +3567,7 @@ begin
   end
   else
   begin
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     dist := dist div actor.info.speed;
   end;
   if (target.flags and MF_SHOOTABLE <> 0) and (P_Random < 64) then
@@ -4372,7 +4372,7 @@ begin
     actor.special2 := 0;
     actor.momx := 0;
     actor.momy := 0;
-    dist := P_AproxDistance(actor.x - target.x, actor.y - target.y);
+    dist := TMapUtilRoutines.P_AproxDistance(actor.x - target.x, actor.y - target.y);
     if dist < FIREDEMON_ATTACK_RANGE then
     begin
       if P_Random < 30 then
@@ -5020,7 +5020,7 @@ begin
   if mo <> nil then
   begin
     mo.special2 := TICRATE * 5 div 2;    // 5 seconds  // JVAL 2.5 seconds ????
-    dist := P_AproxDistance(dest.x - mo.x, dest.y - mo.y);
+    dist := TMapUtilRoutines.P_AproxDistance(dest.x - mo.x, dest.y - mo.y);
     dist := dist div mo.info.speed;
     if dist < 1 then
       dist := 1;
@@ -5377,7 +5377,7 @@ begin
     actor.special2 := 0;
     actor.momx := 0;
     actor.momy := 0;
-    dist := P_AproxDistance(actor.x - target.x, actor.y - target.y);
+    dist := TMapUtilRoutines.P_AproxDistance(actor.x - target.x, actor.y - target.y);
     if dist < CLASS_BOSS_STRAFE_RANGE then
     begin
       if P_Random < 100 then
@@ -6103,7 +6103,7 @@ begin
       deltaZ := 15 * FRACUNIT
     else if deltaZ < -15 * FRACUNIT then
       deltaZ := -15 * FRACUNIT;
-    dist := P_AproxDistance(target.x - actor.x, target.y - actor.y);
+    dist := TMapUtilRoutines.P_AproxDistance(target.x - actor.x, target.y - actor.y);
     dist := dist div actor.info.speed;
     if dist < 1 then
       dist := 1;
@@ -6270,7 +6270,7 @@ begin
 
       if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
         if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-          PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), P_PointOnLineSide(actor.x, actor.y, ld));
+          PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), TMapUtilRoutines.P_PointOnLineSide(actor.x, actor.y, ld));
 
       // if the special isn't a door that can be opened, return false
       if P_ActivateLine(ld, actor, 0, SPAC_USE) then

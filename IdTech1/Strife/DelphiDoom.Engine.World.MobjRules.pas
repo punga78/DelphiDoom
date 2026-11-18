@@ -442,7 +442,7 @@ begin
     // float down towards target if too close
     if mo.flags and MF_INFLOAT = 0 then
     begin
-      dist := P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
+      dist := TMapUtilRoutines.P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
 
       delta := mo.target.z + (mo.height div 2) - mo.z;
 
@@ -1079,7 +1079,7 @@ begin
   result.momx := FixedMul(result.info.speed, finecosine[an]);
   result.momy := FixedMul(result.info.speed, finesine[an]);
 
-  dist := P_AproxDistance(target.x - source.x, target.y - source.y);
+  dist := TMapUtilRoutines.P_AproxDistance(target.x - source.x, target.y - source.y);
   if result.info.speed = 0 then
     dist := 1
   else
@@ -1336,7 +1336,7 @@ end;
 
 class function TMobjGameRules.SeekerSpeed(actor: Pmobj_t): fixed_t;
 begin
-  result := P_AproxDistance(actor.momx, actor.momy);
+  result := TMapUtilRoutines.P_AproxDistance(actor.momx, actor.momy);
 end;
 
 class function TMobjGameRules.TerrainFloorPic(thing: Pmobj_t): integer;
@@ -1438,7 +1438,7 @@ begin
     begin
       if blockingline.flags and ML_TRIGGERSCRIPTS <> 0 then
         if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-          PS_EventShootLine(mo, pDiff(blockingline, lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, blockingline));
+          PS_EventShootLine(mo, pDiff(blockingline, lines, SizeOf(line_t)), TMapUtilRoutines.P_PointOnLineSide(mo.x, mo.y, blockingline));
 
       if blockingline.special <> 0 then
         TSpecRoutines.P_ShootSpecialLine(mo, blockingline);
@@ -1448,7 +1448,7 @@ begin
     begin
       if TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1].flags and ML_TRIGGERSCRIPTS <> 0 then
         if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-          PS_EventShootLine(mo, pDiff(TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1], lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]));
+          PS_EventShootLine(mo, pDiff(TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1], lines, SizeOf(line_t)), TMapUtilRoutines.P_PointOnLineSide(mo.x, mo.y, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]));
 
       TSpecRoutines.P_ShootSpecialLine(mo, TMapCheck.SpecHit[TMapCheck.NumSpecHit - 1]);
     end;
