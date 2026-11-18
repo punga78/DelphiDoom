@@ -765,7 +765,7 @@ begin
   if plnum = TGameSession.ConsolePlayer then
   begin
     // wake up the status bar
-    ST_Start;
+    TStatusBarRoutines.ST_Start;
     // wake up the heads up text
     HU_Start;
 

@@ -120,7 +120,7 @@ begin
   RX_ConfigureLevelLogic(TRadixFactory.CreateLevelLumpReader);
 
   // the cockpit of the craft in the place of the status bar of Doom
-  ST_ConfigureReplacement(RX_HudDrawer);
+  TStatusBarRoutines.ST_ConfigureReplacement(RX_HudDrawer);
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
   TIntermissionRoutines.WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
   // the end of an episode: the text of RADIX.DAT over the flight among the stars

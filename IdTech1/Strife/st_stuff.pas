@@ -62,48 +62,6 @@ var
 // lump number for PLAYPAL
   lu_palette: integer;
 
-//==============================================================================
-// ST_Responder
-//
-// STATUS BAR
-//
-// Called by main loop.
-//
-//==============================================================================
-function ST_Responder(ev: Pevent_t): boolean;
-
-//==============================================================================
-// ST_Ticker
-//
-// Called by main loop.
-//
-//==============================================================================
-procedure ST_Ticker;
-
-//==============================================================================
-// ST_Drawer
-//
-// Called by main loop.
-//
-//==============================================================================
-procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
-
-//==============================================================================
-// ST_Start
-//
-// Called when the console player is spawned on each level.
-//
-//==============================================================================
-procedure ST_Start;
-
-//==============================================================================
-// ST_Init
-//
-// Called by startup code.
-//
-//==============================================================================
-procedure ST_Init;
-
 // States for status bar code.
 type
   st_stateenum_t = (
@@ -118,12 +76,63 @@ type
     GetChatState
   );
 
-//==============================================================================
-//
-// ST_DrawExternal
-//
-//==============================================================================
-function ST_DrawExternal: boolean;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusBarRoutines = class sealed
+  public
+    //==============================================================================
+    // ST_Responder
+    //
+    // STATUS BAR
+    //
+    // Called by main loop.
+    //
+    //==============================================================================
+    class function ST_Responder(ev: Pevent_t): boolean; static;
+
+    //==============================================================================
+    // ST_Ticker
+    //
+    // Called by main loop.
+    //
+    //==============================================================================
+    class procedure ST_Ticker; static;
+
+    //==============================================================================
+    // ST_Drawer
+    //
+    // Called by main loop.
+    //
+    //==============================================================================
+    class procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean); static;
+
+    //==============================================================================
+    // ST_Start
+    //
+    // Called when the console player is spawned on each level.
+    //
+    //==============================================================================
+    class procedure ST_Start; static;
+
+    //==============================================================================
+    // ST_Init
+    //
+    // Called by startup code.
+    //
+    //==============================================================================
+    class procedure ST_Init; static;
+
+    //==============================================================================
+    //
+    // ST_DrawExternal
+    //
+    //==============================================================================
+    class function ST_DrawExternal: boolean; static;
+  end;
+
 
 implementation
 
@@ -409,13 +418,48 @@ const
 var
   cheat_powerup: array[0..NUM_ST_PUMPUP - 1] of cheatseq_t;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusBarLocalRoutines = class sealed
+  public
+    class function ST_CmdCheckPlayerStatus: boolean; static;
+    class procedure ST_CmdGod; static;
+    class procedure ST_CmdMassacre; static;
+    class procedure ST_CmdLowGravity; static;
+    class procedure ST_CmdIDFA; static;
+    class procedure ST_CmdIDKFA; static;
+    class procedure ST_CmdIDKEYS; static;
+    class procedure ST_CmdIDDT; static;
+    class procedure ST_CmdIDNoClip; static;
+    class procedure ST_CmdIDMyPos; static;
+    class procedure ST_CmdIDMySubSector; static;
+    class procedure ST_FinishRefresh; static;
+    class procedure ST_doPaletteStuff; static;
+    class procedure ST_drawNumFontY(x, y: integer; scn: integer; num: integer); static;
+    class procedure ST_drawNumFontY2(x, y: integer; scn: integer; num: integer); static;
+    class procedure ST_drawLine(x, y: integer; len: integer; color: byte); static;
+    class procedure ST_doRefreshSmall; static;
+    class procedure ST_doRefresh; static;
+    class function ST_calcFrags(pnum: integer): integer; static;
+    class procedure ST_drawTime(x, y: integer; time: integer); static;
+    class function ST_drawKeysPopup: boolean; static;
+    class procedure ST_LoadGraphics; static;
+    class procedure ST_loadData; static;
+    class procedure ST_InitData; static;
+    class procedure ST_CreateWidgets; static;
+    class procedure ST_Stop; static;
+  end;
+
 //==============================================================================
 // ST_CmdCheckPlayerStatus
 //
 // Commands
 //
 //==============================================================================
-function ST_CmdCheckPlayerStatus: boolean;
+class function TStatusBarLocalRoutines.ST_CmdCheckPlayerStatus: boolean;
 begin
   if (plyr = nil) or (plyr.mo = nil) or (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
@@ -431,7 +475,7 @@ end;
 // ST_CmdGod
 //
 //==============================================================================
-procedure ST_CmdGod;
+class procedure TStatusBarLocalRoutines.ST_CmdGod;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -463,7 +507,7 @@ end;
 // ST_CmdMassacre
 //
 //==============================================================================
-procedure ST_CmdMassacre;
+class procedure TStatusBarLocalRoutines.ST_CmdMassacre;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -480,7 +524,7 @@ end;
 // ST_CmdLowGravity
 //
 //==============================================================================
-procedure ST_CmdLowGravity;
+class procedure TStatusBarLocalRoutines.ST_CmdLowGravity;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -497,7 +541,7 @@ end;
 // ST_CmdIDFA
 //
 //==============================================================================
-procedure ST_CmdIDFA;
+class procedure TStatusBarLocalRoutines.ST_CmdIDFA;
 var
   i: integer;
 begin
@@ -525,7 +569,7 @@ end;
 // ST_CmdIDKFA
 //
 //==============================================================================
-procedure ST_CmdIDKFA;
+class procedure TStatusBarLocalRoutines.ST_CmdIDKFA;
 var
   i: integer;
 begin
@@ -545,7 +589,7 @@ end;
 // ST_CmdIDKEYS
 //
 //==============================================================================
-procedure ST_CmdIDKEYS;
+class procedure TStatusBarLocalRoutines.ST_CmdIDKEYS;
 var
   i: integer;
 begin
@@ -563,7 +607,7 @@ end;
 // ST_CmdIDDT
 //
 //==============================================================================
-procedure ST_CmdIDDT;
+class procedure TStatusBarLocalRoutines.ST_CmdIDDT;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -576,7 +620,7 @@ end;
 // ST_CmdIDNoClip
 //
 //==============================================================================
-procedure ST_CmdIDNoClip;
+class procedure TStatusBarLocalRoutines.ST_CmdIDNoClip;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -600,7 +644,7 @@ end;
 // ST_CmdIDMyPos
 //
 //==============================================================================
-procedure ST_CmdIDMyPos;
+class procedure TStatusBarLocalRoutines.ST_CmdIDMyPos;
 var
   buf: string;
 begin
@@ -620,7 +664,7 @@ end;
 // ST_CmdIDMySubSector
 //
 //==============================================================================
-procedure ST_CmdIDMySubSector;
+class procedure TStatusBarLocalRoutines.ST_CmdIDMySubSector;
 var
   buf: string;
   ss: Psubsector_t;
@@ -641,7 +685,7 @@ end;
 // STATUS BAR CODE
 //
 //==============================================================================
-procedure ST_FinishRefresh;
+class procedure TStatusBarLocalRoutines.ST_FinishRefresh;
 begin
   V_CopyRect(ST_X, ST_Y, SCN_ST, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, SCN_FG, true);
 end;
@@ -653,7 +697,7 @@ end;
 //  intercept cheats.
 //
 //==============================================================================
-function ST_Responder(ev: Pevent_t): boolean;
+class function TStatusBarRoutines.ST_Responder(ev: Pevent_t): boolean;
 var
   i: integer;
   buf: string;
@@ -890,22 +934,22 @@ begin
       // 'omnipotent' cheat for toggleable god mode
       else if check_cheat(@cheat_god, Chr(ev.data1)) then
       begin
-        ST_CmdGod;
+        TStatusBarLocalRoutines.ST_CmdGod;
       end
       // [STRIFE]: "BOOMSTIX" cheat for all normal weapons
       else if check_cheat(@cheat_ammo, Chr(ev.data1)) then
       begin
-        ST_CmdIDFA;
+        TStatusBarLocalRoutines.ST_CmdIDFA;
       end
       // villsa [STRIFE]: "JIMMY" cheat for all keys
       else if check_cheat(@cheat_keys, Chr(ev.data1)) then
       begin
-        ST_CmdIDKEYS;
+        TStatusBarLocalRoutines.ST_CmdIDKEYS;
       end
       // Noclip cheat - "ELVIS" (hah-hah :P )
       else if check_cheat(@cheat_noclip, Chr(ev.data1)) then
       begin
-        ST_CmdIDNoClip;
+        TStatusBarLocalRoutines.ST_CmdIDNoClip;
       end
       else if check_cheat(@cheat_stealth, Chr(ev.data1)) then
       begin
@@ -919,7 +963,7 @@ begin
       // topo
       else if check_cheat(@cheat_amap, Chr(ev.data1)) then
       begin
-        ST_CmdIDDT;
+        TStatusBarLocalRoutines.ST_CmdIDDT;
       end
       // 'mus' cheat for changing music
       else if check_cheat(@cheat_mus, Chr(ev.data1)) then
@@ -1003,7 +1047,7 @@ begin
       // 'mypos' for player position
       else if check_cheat(@cheat_mypos, Chr(ev.data1)) then
       begin
-        ST_CmdIDMyPos;
+        TStatusBarLocalRoutines.ST_CmdIDMyPos;
       end
       // 'rift' change-level cheat
       else if check_cheat(@cheat_clev, Chr(ev.data1)) then
@@ -1085,7 +1129,7 @@ end;
 // ST_Ticker
 //
 //==============================================================================
-procedure ST_Ticker;
+class procedure TStatusBarRoutines.ST_Ticker;
 begin
   // must redirect the pointer if the ready weapon has changed.
   if weaponinfo[Ord(plyr.readyweapon)].ammo = am_noammo then
@@ -1123,7 +1167,7 @@ end;
 // ST_doPaletteStuff
 //
 //==============================================================================
-procedure ST_doPaletteStuff;
+class procedure TStatusBarLocalRoutines.ST_doPaletteStuff;
 var
   palette: integer;
   pal: PByteArray;
@@ -1198,7 +1242,7 @@ end;
 // Draws a small yellow number for inventory etc.
 //
 //==============================================================================
-procedure ST_drawNumFontY(x, y: integer; scn: integer; num: integer);
+class procedure TStatusBarLocalRoutines.ST_drawNumFontY(x, y: integer; scn: integer; num: integer);
 begin
   if num = 0 then
   begin
@@ -1222,7 +1266,7 @@ end;
 // As above, but turns negative numbers into zero.
 //
 //==============================================================================
-procedure ST_drawNumFontY2(x, y: integer; scn: integer; num: integer);
+class procedure TStatusBarLocalRoutines.ST_drawNumFontY2(x, y: integer; scn: integer; num: integer);
 begin
   if num < 0 then
     exit;
@@ -1249,7 +1293,7 @@ end;
 // Basic horizontal line drawing routine used for the health bars.
 //
 //==============================================================================
-procedure ST_drawLine(x, y: integer; len: integer; color: byte);
+class procedure TStatusBarLocalRoutines.ST_drawLine(x, y: integer; len: integer; color: byte);
 var
   i: integer;
 begin
@@ -1262,7 +1306,7 @@ end;
 // ST_doRefreshSmall
 //
 //==============================================================================
-procedure ST_doRefreshSmall;
+class procedure TStatusBarLocalRoutines.ST_doRefreshSmall;
 var
   ammo: ammotype_t;
 begin
@@ -1286,7 +1330,7 @@ end;
 // drawing down to this function.
 //
 //==============================================================================
-procedure ST_doRefresh;
+class procedure TStatusBarLocalRoutines.ST_doRefresh;
 var
   firstinventory, icon_x, num_x, i, numdrawn: integer;
   lumpnum: integer;
@@ -1417,7 +1461,7 @@ end;
 // ST_Drawer
 //
 //==============================================================================
-procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
+class procedure TStatusBarRoutines.ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
 begin
   if amstate = am_only then
     st_statusbarmode := stdo_full
@@ -1425,14 +1469,14 @@ begin
     st_statusbarmode := dopt;
 
   // Do red-/gold-shifts from damage/items
-  ST_doPaletteStuff;
+  TStatusBarLocalRoutines.ST_doPaletteStuff;
   if st_statusbarmode = stdo_no then
     exit;
 
   if st_statusbarmode = stdo_small then
-    ST_doRefreshSmall
+    TStatusBarLocalRoutines.ST_doRefreshSmall
   else
-    ST_doRefresh;
+    TStatusBarLocalRoutines.ST_doRefresh;
 end;
 
 //==============================================================================
@@ -1443,7 +1487,7 @@ end;
 // Calculate frags for display on the frags popup.
 //
 //==============================================================================
-function ST_calcFrags(pnum: integer): integer;
+class function TStatusBarLocalRoutines.ST_calcFrags(pnum: integer): integer;
 var
   i: integer;
 begin
@@ -1464,7 +1508,7 @@ end;
 // Draws game time on pop up screen
 //
 //==============================================================================
-procedure ST_drawTime(x, y: integer; time: integer);
+class procedure TStatusBarLocalRoutines.ST_drawTime(x, y: integer; time: integer);
 var
   hours: integer;
   minutes: integer;
@@ -1496,7 +1540,7 @@ const
 // This has taken the longest out of almost everything to get working properly.
 //
 //==============================================================================
-function ST_drawKeysPopup: boolean;
+class function TStatusBarLocalRoutines.ST_drawKeysPopup: boolean;
 var
   x, y, yt, key, keycount: integer;
   info: Pmobjinfo_t;
@@ -1636,7 +1680,7 @@ end;
 // * Draws external portions of the status bar such the top bar and popups.
 //
 //==============================================================================
-function ST_DrawExternal: boolean;
+class function TStatusBarRoutines.ST_DrawExternal: boolean;
 var
   i: integer;
   keys: integer;
@@ -1673,14 +1717,14 @@ begin
     V_DrawPatch(0, 56, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF}, invpop2, {$IFDEF OPENGL}false{$ELSE}true{$ENDIF});
     mission_objective := M_DialogDimMsg(24, 74, mission_objective, true);
     HUlib_drawYellowText(24, 74, mission_objective, {$IFDEF OPENGL}SCN_ST{$ELSE}SCN_FG{$ENDIF});
-    ST_drawTime(210, 64, TTickState.LevelTime div TICRATE);
+    TStatusBarLocalRoutines.ST_drawTime(210, 64, TTickState.LevelTime div TICRATE);
   end
   else
   begin
     // villsa [STRIFE] keys popup
     if st_showkeys or (st_popupdisplaytics <> 0) then
     begin
-      result := ST_drawKeysPopup;
+      result := TStatusBarLocalRoutines.ST_drawKeysPopup;
       exit;
     end;
 
@@ -1700,7 +1744,7 @@ begin
         if plyr.cards[i] then
           inc(keys);
 
-      ST_drawNumFontY2(261, 132, SCN_ST, keys);
+      TStatusBarLocalRoutines.ST_drawNumFontY2(261, 132, SCN_ST, keys);
 
       if plyr.weaponowned[Ord(wp_elecbow)] then
         V_DrawPatch(38, 86, SCN_ST, 'CBOWA0', false);
@@ -1727,8 +1771,8 @@ begin
         TStatusLibRoutines.STlib_drawNumPositive(@w_maxammo[i], SCN_ST, false);
       end;
 
-      ST_drawNumFontY2(261, 84,  SCN_ST, plyr.accuracy);
-      ST_drawNumFontY2(261, 108, SCN_ST, plyr.stamina);
+      TStatusBarLocalRoutines.ST_drawNumFontY2(261, 84,  SCN_ST, plyr.accuracy);
+      TStatusBarLocalRoutines.ST_drawNumFontY2(261, 108, SCN_ST, plyr.stamina);
 
       if plyr.powers[Ord(pw_communicator)] > 0 then
         V_DrawPatch(280, 130, SCN_ST, 'I_COMM', false);
@@ -1750,7 +1794,7 @@ end;
 // ST_LoadGraphics
 //
 //==============================================================================
-procedure ST_LoadGraphics;
+class procedure TStatusBarLocalRoutines.ST_LoadGraphics;
 var
   i: integer;
   namebuf: string;
@@ -1800,7 +1844,7 @@ end;
 // ST_loadData
 //
 //==============================================================================
-procedure ST_loadData;
+class procedure TStatusBarLocalRoutines.ST_loadData;
 begin
   lu_palette := W_GetNumForName(PLAYPAL);
   ST_LoadGraphics;
@@ -1811,7 +1855,7 @@ end;
 // ST_InitData
 //
 //==============================================================================
-procedure ST_InitData;
+class procedure TStatusBarLocalRoutines.ST_InitData;
 begin
   plyr := @TGameSession.Players[TGameSession.ConsolePlayer];
 
@@ -1827,7 +1871,7 @@ end;
 // ST_CreateWidgets
 //
 //==============================================================================
-procedure ST_CreateWidgets;
+class procedure TStatusBarLocalRoutines.ST_CreateWidgets;
 var
   i: integer;
 begin
@@ -1869,7 +1913,7 @@ var
 // ST_Stop
 //
 //==============================================================================
-procedure ST_Stop;
+class procedure TStatusBarLocalRoutines.ST_Stop;
 var
   pal: PByteArray;
 begin
@@ -1893,13 +1937,13 @@ end;
 // ST_Start
 //
 //==============================================================================
-procedure ST_Start;
+class procedure TStatusBarRoutines.ST_Start;
 begin
   if not st_stopped then
-    ST_Stop;
+    TStatusBarLocalRoutines.ST_Stop;
 
-  ST_InitData;
-  ST_CreateWidgets;
+  TStatusBarLocalRoutines.ST_InitData;
+  TStatusBarLocalRoutines.ST_CreateWidgets;
   st_stopped := false;
 end;
 
@@ -1908,7 +1952,7 @@ end;
 // ST_Init
 //
 //==============================================================================
-procedure ST_Init;
+class procedure TStatusBarRoutines.ST_Init;
 begin
 ////////////////////////////////////////////////////////////////////////////////
 // Now what?
@@ -1961,16 +2005,16 @@ begin
   st_stopped := true;
 ////////////////////////////////////////////////////////////////////////////////
 
-  ST_loadData;
-  C_AddCmd('god, iddqd, omnipotent', @ST_CmdGod);
-  C_AddCmd('massacre', @ST_CmdMassacre);
-  C_AddCmd('givefullammo, rambo, idfa, boomstix', @ST_CmdIDFA);
-  C_AddCmd('giveallkeys, idkeys', @ST_CmdIDKEYS);
-  C_AddCmd('lowgravity', @ST_CmdLowGravity);
-  C_AddCmd('topo, iddt', @ST_CmdIDDT);
-  C_AddCmd('idspispopd, idclip, elvis', @ST_CmdIDNoClip);
-  C_AddCmd('gps, idmypos', @ST_CmdIDMyPos);
-  C_AddCmd('idmysubsector, mysubsector', @ST_CmdIDMySubSector);
+  TStatusBarLocalRoutines.ST_loadData;
+  C_AddCmd('god, iddqd, omnipotent', @TStatusBarLocalRoutines.ST_CmdGod);
+  C_AddCmd('massacre', @TStatusBarLocalRoutines.ST_CmdMassacre);
+  C_AddCmd('givefullammo, rambo, idfa, boomstix', @TStatusBarLocalRoutines.ST_CmdIDFA);
+  C_AddCmd('giveallkeys, idkeys', @TStatusBarLocalRoutines.ST_CmdIDKEYS);
+  C_AddCmd('lowgravity', @TStatusBarLocalRoutines.ST_CmdLowGravity);
+  C_AddCmd('topo, iddt', @TStatusBarLocalRoutines.ST_CmdIDDT);
+  C_AddCmd('idspispopd, idclip, elvis', @TStatusBarLocalRoutines.ST_CmdIDNoClip);
+  C_AddCmd('gps, idmypos', @TStatusBarLocalRoutines.ST_CmdIDMyPos);
+  C_AddCmd('idmysubsector, mysubsector', @TStatusBarLocalRoutines.ST_CmdIDMySubSector);
 end;
 
 end.

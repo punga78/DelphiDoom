@@ -121,7 +121,8 @@ if ($ImplOnly) {
       }
       foreach ($d in $decl) { $classBody.Add('    ' + ($d -replace '^(procedure|function)\s+', 'class $1 ')) }
       $classBody[$classBody.Count - 1] = ($classBody[$classBody.Count - 1] -replace ';\s*(//.*)?$', '; static;')
-      $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)))
+      # `overload;` si dichiara nella classe, non nell'intestazione dell'implementazione (E1030)
+      $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';')
       for ($m = $j + 1; $m -le $k; $m++) { $impl.Add($lines[$m]) }
       $j = $k + 1
       continue
@@ -225,7 +226,7 @@ for ($j = $implementation; $j -lt $lines.Count; $j++) {
   $l = $lines[$j]
   if (-not $inConverted -and $l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
     $inConverted = $true
-    $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)))
+    $impl.Add(($l -replace '^(procedure|function)\s+(\w+)', ('class $1 {0}.$2' -f $Class)) -replace ';\s*overload;\s*$', ';')
     # intestazione su piu' righe: il resto non cambia
     continue
   }

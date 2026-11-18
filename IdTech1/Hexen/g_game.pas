@@ -1313,7 +1313,7 @@ begin
       result := true; // chat ate the event
       exit;
     end;
-    if SB_Responder(ev) then
+    if TStatusBarRoutines.SB_Responder(ev) then
     begin
       result := true; // status window ate it
       exit;
@@ -1792,7 +1792,7 @@ procedure G_DoSingleReborn;
 begin
   TGameSession.GameAction := ga_nothing;
   SV_LoadGame(SV_GetRebornSlot);
-  SB_SetClassData;
+  TStatusBarRoutines.SB_SetClassData;
 end;
 
 //
@@ -1830,7 +1830,7 @@ begin
   begin // Copy the base slot to the reborn slot
     SV_UpdateRebornSlot;
   end;
-  SB_SetClassData;
+  TStatusBarRoutines.SB_SetClassData;
   P_LevelInfoChangeMusic;
   borderneedsrefresh := true;
 end;
@@ -2189,7 +2189,7 @@ begin
     GS_LEVEL:
       begin
         P_Ticker;
-        SB_Ticker;
+        TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
         HU_Ticker;
       end;

@@ -937,9 +937,9 @@ begin
             redrawsbar := true; // just put away the help screen
           viewfullscreen := viewheight = SCREENHEIGHT;
           if viewfullscreen then
-            ST_Drawer(stdo_no, redrawsbar)
+            TStatusBarRoutines.ST_Drawer(stdo_no, redrawsbar)
           else
-            ST_Drawer(stdo_full, redrawsbar);
+            TStatusBarRoutines.ST_Drawer(stdo_full, redrawsbar);
         end;
       end;
     GS_INTERMISSION:
@@ -1002,11 +1002,11 @@ begin
         end;
       end
       else if R_FullStOn and (TGameSession.GameTic <> 0) then
-        ST_Drawer(stdo_small, redrawsbar);
+        TStatusBarRoutines.ST_Drawer(stdo_small, redrawsbar);
     end;
     // the display of a game without the status bar of Doom goes over view, automap and border
     if TGameSession.GameTic <> 0 then
-      ST_OverlayDrawer;
+      TStatusBarRoutines.ST_OverlayDrawer;
   end;
 
   menuactivestate := menuactive;
@@ -2964,7 +2964,7 @@ begin
   SUC_Progress(91);
 
   printf('ST_Init: Init status bar.'#13#10);
-  ST_Init;
+  TStatusBarRoutines.ST_Init;
 
   SUC_Progress(92);
 

@@ -931,7 +931,7 @@ begin
     OVR_Drawer;
 
     if redrawsbar then
-      SB_Drawer;
+      TStatusBarRoutines.SB_Drawer;
 
     // Menus go directly to the screen
     M_Drawer; // Menu is drawn even on top of everything
@@ -955,7 +955,7 @@ begin
     OVR_Drawer;
 
     if redrawsbar then
-      SB_Drawer;
+      TStatusBarRoutines.SB_Drawer;
 
     M_Drawer;
     D_Console.Draw;
@@ -967,7 +967,7 @@ begin
     OVR_Drawer;
 
     if redrawsbar then
-      SB_Drawer;
+      TStatusBarRoutines.SB_Drawer;
 
     M_Drawer;
     D_Console.Draw;
@@ -2534,7 +2534,7 @@ begin
   SUC_Progress(91);
 
   printf('SB_Init: Init status bar.'#13#10);
-  SB_Init;
+  TStatusBarRoutines.SB_Init;
 
   SUC_Progress(92);
 

@@ -1033,7 +1033,7 @@ begin
       p._class := Pclass_t((Ord(p._class) + 1) mod 3);
     end;
     PlayerClass[mthing._type - 1] := p._class;
-    SB_SetClassData;
+    TStatusBarRoutines.SB_SetClassData;
   end
   else
   begin

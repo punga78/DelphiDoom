@@ -62,70 +62,8 @@ var
 
   st_drawoptions: stdrawoptions_t;
 
-//==============================================================================
-// ST_Responder
-//
-// STATUS BAR
-//
-// Called by main loop.
-//
-//==============================================================================
-function ST_Responder(ev: Pevent_t): boolean;
-
-//==============================================================================
-// ST_Ticker
-//
-// Called by main loop.
-//
-//==============================================================================
-procedure ST_Ticker;
-
-//==============================================================================
-// ST_Drawer
-//
-// Called by main loop.
-//
-//==============================================================================
-procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
-
-//==============================================================================
-// ST_Start
-//
-// Called when the console player is spawned on each level.
-//
-//==============================================================================
-procedure ST_Start;
-
-//==============================================================================
-// ST_Init
-//
-// Called by startup code.
-//
-//==============================================================================
-procedure ST_Init;
-
 type
   st_replacement_t = procedure;
-
-//==============================================================================
-// ST_ConfigureReplacement
-//
-// A game on the engine of Doom that has its own display (Radix: the cockpit of
-// the craft) gives the procedure that draws it: the pictures and the widgets of
-// the status bar of Doom are not loaded and ST_OverlayDrawer calls the procedure
-// after the view. Cheats, palette effects and the rest stay. To call before
-// ST_Init; Doom does not call it.
-//
-//==============================================================================
-procedure ST_ConfigureReplacement(const drawer: st_replacement_t);
-
-//==============================================================================
-// ST_OverlayDrawer
-//
-// Called by the main loop after the view of a level has been drawn.
-//
-//==============================================================================
-procedure ST_OverlayDrawer;
 
 // States for status bar code.
 type
@@ -146,6 +84,77 @@ var
   p_idfaarmorclass: integer = 2;
   p_idkfaarmor: integer = 200;
   p_idkfaarmorclass: integer = 2;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusBarRoutines = class sealed
+  public
+    //==============================================================================
+    // ST_Responder
+    //
+    // STATUS BAR
+    //
+    // Called by main loop.
+    //
+    //==============================================================================
+    class function ST_Responder(ev: Pevent_t): boolean; static;
+
+    //==============================================================================
+    // ST_Ticker
+    //
+    // Called by main loop.
+    //
+    //==============================================================================
+    class procedure ST_Ticker; static;
+
+    //==============================================================================
+    // ST_Drawer
+    //
+    // Called by main loop.
+    //
+    //==============================================================================
+    class procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean); static;
+
+    //==============================================================================
+    // ST_Start
+    //
+    // Called when the console player is spawned on each level.
+    //
+    //==============================================================================
+    class procedure ST_Start; static;
+
+    //==============================================================================
+    // ST_Init
+    //
+    // Called by startup code.
+    //
+    //==============================================================================
+    class procedure ST_Init; static;
+
+    //==============================================================================
+    // ST_ConfigureReplacement
+    //
+    // A game on the engine of Doom that has its own display (Radix: the cockpit of
+    // the craft) gives the procedure that draws it: the pictures and the widgets of
+    // the status bar of Doom are not loaded and ST_OverlayDrawer calls the procedure
+    // after the view. Cheats, palette effects and the rest stay. To call before
+    // ST_Init; Doom does not call it.
+    //
+    //==============================================================================
+    class procedure ST_ConfigureReplacement(const drawer: st_replacement_t); static;
+
+    //==============================================================================
+    // ST_OverlayDrawer
+    //
+    // Called by the main loop after the view of a level has been drawn.
+    //
+    //==============================================================================
+    class procedure ST_OverlayDrawer; static;
+  end;
+
 
 implementation
 
@@ -643,13 +652,51 @@ var
   cheat_clev: cheatseq_t;
   cheat_mypos: cheatseq_t;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusBarLocalRoutines = class sealed
+  public
+    class function ST_CmdCheckPlayerStatus: boolean; static;
+    class procedure ST_CmdGod; static;
+    class procedure ST_CmdMassacre; static;
+    class procedure ST_CmdLowGravity; static;
+    class procedure ST_CmdIDFA; static;
+    class procedure ST_CmdIDKFA; static;
+    class procedure ST_CmdIDKEYS; static;
+    class procedure ST_CmdIDDT; static;
+    class procedure ST_CmdIDNoClip; static;
+    class procedure ST_CmdIDMyPos; static;
+    class procedure ST_RefreshBackground; static;
+    class procedure ST_FinishRefresh; static;
+    class function ST_calcPainOffset: integer; static;
+    class procedure ST_UpdateFaceWidget; static;
+    class procedure ST_UpdateWidgets; static;
+    class procedure ST_DoPaletteStuff; static;
+    class procedure ST_DrawWidgets(refresh: boolean); static;
+    class procedure ST_Refresh(refresh: boolean); static;
+    class procedure ST_RefreshBackgroundSmall; static;
+    class procedure ST_DrawWidgetsSmall; static;
+    class procedure ST_FinishRefreshSmall; static;
+    class procedure ST_RefreshSmall; static;
+    class procedure ST_DoRefresh; static;
+    class procedure ST_DiffDraw; static;
+    class procedure ST_LoadGraphics; static;
+    class procedure ST_LoadData; static;
+    class procedure ST_InitData; static;
+    class procedure ST_CreateWidgets; static;
+    class procedure ST_Stop; static;
+  end;
+
 //==============================================================================
 // ST_CmdCheckPlayerStatus
 //
 // Commands
 //
 //==============================================================================
-function ST_CmdCheckPlayerStatus: boolean;
+class function TStatusBarLocalRoutines.ST_CmdCheckPlayerStatus: boolean;
 begin
   if (plyr = nil) or (plyr.mo = nil) or (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
@@ -665,7 +712,7 @@ end;
 // ST_CmdGod
 //
 //==============================================================================
-procedure ST_CmdGod;
+class procedure TStatusBarLocalRoutines.ST_CmdGod;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -696,7 +743,7 @@ end;
 // ST_CmdMassacre
 //
 //==============================================================================
-procedure ST_CmdMassacre;
+class procedure TStatusBarLocalRoutines.ST_CmdMassacre;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -713,7 +760,7 @@ end;
 // ST_CmdLowGravity
 //
 //==============================================================================
-procedure ST_CmdLowGravity;
+class procedure TStatusBarLocalRoutines.ST_CmdLowGravity;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -730,7 +777,7 @@ end;
 // ST_CmdIDFA
 //
 //==============================================================================
-procedure ST_CmdIDFA;
+class procedure TStatusBarLocalRoutines.ST_CmdIDFA;
 var
   i: integer;
 begin
@@ -766,7 +813,7 @@ end;
 // ST_CmdIDKFA
 //
 //==============================================================================
-procedure ST_CmdIDKFA;
+class procedure TStatusBarLocalRoutines.ST_CmdIDKFA;
 var
   i: integer;
 begin
@@ -805,7 +852,7 @@ end;
 // ST_CmdIDKEYS
 //
 //==============================================================================
-procedure ST_CmdIDKEYS;
+class procedure TStatusBarLocalRoutines.ST_CmdIDKEYS;
 var
   i: integer;
 begin
@@ -823,7 +870,7 @@ end;
 // ST_CmdIDDT
 //
 //==============================================================================
-procedure ST_CmdIDDT;
+class procedure TStatusBarLocalRoutines.ST_CmdIDDT;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -836,7 +883,7 @@ end;
 // ST_CmdIDNoClip
 //
 //==============================================================================
-procedure ST_CmdIDNoClip;
+class procedure TStatusBarLocalRoutines.ST_CmdIDNoClip;
 begin
   if not ST_CmdCheckPlayerStatus then
     exit;
@@ -854,7 +901,7 @@ end;
 // ST_CmdIDMyPos
 //
 //==============================================================================
-procedure ST_CmdIDMyPos;
+class procedure TStatusBarLocalRoutines.ST_CmdIDMyPos;
 var
   buf: string;
 begin
@@ -875,7 +922,7 @@ end;
 // STATUS BAR CODE
 //
 //==============================================================================
-procedure ST_RefreshBackground;
+class procedure TStatusBarLocalRoutines.ST_RefreshBackground;
 begin
   if st_statusbaron then
   begin
@@ -897,7 +944,7 @@ end;
 // ST_FinishRefresh
 //
 //==============================================================================
-procedure ST_FinishRefresh;
+class procedure TStatusBarLocalRoutines.ST_FinishRefresh;
 begin
   if wide_stbar = 426 then
     V_CopyRect(ST_X, 0, SCN_ST426, ST_WIDTH426, ST_HEIGHT, ST_X, ST_Y, SCN_FG, true)
@@ -912,7 +959,7 @@ end;
 //  intercept cheats.
 //
 //==============================================================================
-function ST_Responder(ev: Pevent_t): boolean;
+class function TStatusBarRoutines.ST_Responder(ev: Pevent_t): boolean;
 var
   i: integer;
   buf: string;
@@ -976,26 +1023,26 @@ begin
       // 'dqd' cheat for toggleable god mode
       if check_cheat(@cheat_god, Chr(ev.data1)) then
       begin
-        ST_CmdGod;
+        TStatusBarLocalRoutines.ST_CmdGod;
       end
       // 'fa' cheat for killer fucking arsenal
       else if check_cheat(@cheat_ammonokey, Chr(ev.data1)) then
       begin
-        ST_CmdIDFA;
+        TStatusBarLocalRoutines.ST_CmdIDFA;
       end
       // JVAL: 'keys' cheat
       else if check_cheat(@cheat_keys, Chr(ev.data1)) then
       begin
-        ST_CmdIDKEYS;
+        TStatusBarLocalRoutines.ST_CmdIDKEYS;
       end
       // 'kfa' cheat for key full ammo
       else if check_cheat(@cheat_ammo, Chr(ev.data1)) then
       begin
-        ST_CmdIDKFA;
+        TStatusBarLocalRoutines.ST_CmdIDKFA;
       end
       else if check_cheat(@cheat_amap, Chr(ev.data1)) then
       begin
-        ST_CmdIDDT;
+        TStatusBarLocalRoutines.ST_CmdIDDT;
       end
       // 'mus' cheat for changing music
       else if check_cheat(@cheat_mus, Chr(ev.data1)) then
@@ -1029,7 +1076,7 @@ begin
       else if check_cheat(@cheat_noclip, Chr(ev.data1)) or
               check_cheat(@cheat_commercial_noclip, Chr(ev.data1)) then
       begin
-        ST_CmdIDNoClip;
+        TStatusBarLocalRoutines.ST_CmdIDNoClip;
       end;
       // 'behold?' power-up cheats
       for i := 0 to 5 do
@@ -1062,7 +1109,7 @@ begin
       // 'mypos' for player position
       else if check_cheat(@cheat_mypos, Chr(ev.data1)) then
       begin
-        ST_CmdIDMyPos;
+        TStatusBarLocalRoutines.ST_CmdIDMyPos;
       end;
     end;
 
@@ -1158,7 +1205,7 @@ var
 // ST_calcPainOffset
 //
 //==============================================================================
-function ST_calcPainOffset: integer;
+class function TStatusBarLocalRoutines.ST_calcPainOffset: integer;
 var
   health: integer;
 begin
@@ -1190,7 +1237,7 @@ var
 // ST_UpdateFaceWidget
 //
 //==============================================================================
-procedure ST_UpdateFaceWidget;
+class procedure TStatusBarLocalRoutines.ST_UpdateFaceWidget;
 var
   i: integer;
   to_right: boolean;
@@ -1366,7 +1413,7 @@ var
 // ST_UpdateWidgets
 //
 //==============================================================================
-procedure ST_UpdateWidgets;
+class procedure TStatusBarLocalRoutines.ST_UpdateWidgets;
 var
   i: integer;
 begin
@@ -1427,13 +1474,13 @@ end;
 // ST_Ticker
 //
 //==============================================================================
-procedure ST_Ticker;
+class procedure TStatusBarRoutines.ST_Ticker;
 begin
   inc(st_clock);
   st_randomnumber := M_Random;
 {$IFNDEF SPEED}
   if not Assigned(st_replacement) then
-    ST_UpdateWidgets;
+    TStatusBarLocalRoutines.ST_UpdateWidgets;
 {$ENDIF}
   if plyr <> nil then
     st_oldhealth := plyr.health;
@@ -1444,7 +1491,7 @@ end;
 // ST_DoPaletteStuff
 //
 //==============================================================================
-procedure ST_DoPaletteStuff;
+class procedure TStatusBarLocalRoutines.ST_DoPaletteStuff;
 var
   palette: integer;
   pal: PByteArray;
@@ -1520,7 +1567,7 @@ end;
 // ST_DrawWidgets
 //
 //==============================================================================
-procedure ST_DrawWidgets(refresh: boolean);
+class procedure TStatusBarLocalRoutines.ST_DrawWidgets(refresh: boolean);
 var
   i: integer;
 begin
@@ -1559,7 +1606,7 @@ end;
 // ST_Refresh
 //
 //==============================================================================
-procedure ST_Refresh(refresh: boolean);
+class procedure TStatusBarLocalRoutines.ST_Refresh(refresh: boolean);
 begin
   // draw status bar background to off-screen buff
   ST_RefreshBackground;
@@ -1574,7 +1621,7 @@ end;
 // ST_RefreshBackgroundSmall
 //
 //==============================================================================
-procedure ST_RefreshBackgroundSmall;
+class procedure TStatusBarLocalRoutines.ST_RefreshBackgroundSmall;
 begin
   if wide_stbar = 426 then
     R_VideoBlanc(SCN_ST426, 0, ST_WIDTH426 * ST_HEIGHT)
@@ -1587,7 +1634,7 @@ end;
 // ST_DrawWidgetsSmall
 //
 //==============================================================================
-procedure ST_DrawWidgetsSmall;
+class procedure TStatusBarLocalRoutines.ST_DrawWidgetsSmall;
 var
   ammo: integer;
 begin
@@ -1607,7 +1654,7 @@ end;
 // ST_FinishRefreshSmall
 //
 //==============================================================================
-procedure ST_FinishRefreshSmall;
+class procedure TStatusBarLocalRoutines.ST_FinishRefreshSmall;
 begin
   if wide_stbar = 426 then
     V_CopyRectTransparent(0, 0, SCN_ST426, ST_WIDTH426, ST_HEIGHT, 0, ST_Y, SCN_FG, true)
@@ -1620,7 +1667,7 @@ end;
 // ST_RefreshSmall
 //
 //==============================================================================
-procedure ST_RefreshSmall;
+class procedure TStatusBarLocalRoutines.ST_RefreshSmall;
 begin
   // draw status bar background to off-screen buff
   ST_RefreshBackgroundSmall;
@@ -1634,7 +1681,7 @@ end;
 // ST_DoRefresh
 //
 //==============================================================================
-procedure ST_DoRefresh;
+class procedure TStatusBarLocalRoutines.ST_DoRefresh;
 begin
   st_firsttime := false;
   ST_Refresh(true);
@@ -1645,7 +1692,7 @@ end;
 // ST_DiffDraw
 //
 //==============================================================================
-procedure ST_DiffDraw;
+class procedure TStatusBarLocalRoutines.ST_DiffDraw;
 begin
   // update all widgets
   ST_DrawWidgets(true);
@@ -1658,49 +1705,49 @@ end;
 // ST_Drawer
 //
 //==============================================================================
-procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
+class procedure TStatusBarRoutines.ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
 begin
   st_drawoptions := dopt;
   st_statusbaron := (dopt <> stdo_no) or (amstate = am_only);
 {$IFDEF SPEED}
   // Speed Haste has no status bar (the old fork emptied this unit; the race has its own HUD,
   // speed_hud, not ported yet): only the palette is kept
-  ST_DoPaletteStuff;
+  TStatusBarLocalRoutines.ST_DoPaletteStuff;
   exit;
 {$ENDIF}
   if Assigned(st_replacement) then
   begin
     // the display of the game is drawn over the view (ST_OverlayDrawer)
-    ST_DoPaletteStuff;
+    TStatusBarLocalRoutines.ST_DoPaletteStuff;
     exit;
   end;
   {$IFDEF OPENGL}
   if not st_statusbaron then
   begin
-    ST_DoPaletteStuff;
+    TStatusBarLocalRoutines.ST_DoPaletteStuff;
     exit;
   end;
   {$ENDIF}
   st_firsttime := st_firsttime or refresh;
 
   // Do red-/gold-shifts from damage/items
-  ST_DoPaletteStuff;
+  TStatusBarLocalRoutines.ST_DoPaletteStuff;
   if dopt <> stdo_small then
   begin
     if firstinterpolation or (menuactive and (shademenubackground >= 1)) then
     begin
-      ST_Refresh(st_firsttime);
+      TStatusBarLocalRoutines.ST_Refresh(st_firsttime);
       // If just after ST_Start(), refresh all
       if st_firsttime then
-        ST_DoRefresh
+        TStatusBarLocalRoutines.ST_DoRefresh
       // Otherwise, update as little as possible
       else
-        ST_DiffDraw;
+        TStatusBarLocalRoutines.ST_DiffDraw;
       V_StatusBarStretch;
     end;
   end
   else
-    ST_RefreshSmall;
+    TStatusBarLocalRoutines.ST_RefreshSmall;
 end;
 
 //==============================================================================
@@ -1708,7 +1755,7 @@ end;
 // ST_LoadGraphics
 //
 //==============================================================================
-procedure ST_LoadGraphics;
+class procedure TStatusBarLocalRoutines.ST_LoadGraphics;
 var
   i: integer;
   j: integer;
@@ -1822,7 +1869,7 @@ end;
 // ST_LoadData
 //
 //==============================================================================
-procedure ST_LoadData;
+class procedure TStatusBarLocalRoutines.ST_LoadData;
 begin
   lu_palette := W_GetNumForName(PLAYPAL);
 {$IFNDEF SPEED}
@@ -1837,7 +1884,7 @@ end;
 // ST_InitData
 //
 //==============================================================================
-procedure ST_InitData;
+class procedure TStatusBarLocalRoutines.ST_InitData;
 var
   i: integer;
 begin
@@ -1872,7 +1919,7 @@ end;
 // ST_CreateWidgets
 //
 //==============================================================================
-procedure ST_CreateWidgets;
+class procedure TStatusBarLocalRoutines.ST_CreateWidgets;
 var
   i: integer;
   pnt: PInteger;
@@ -2082,7 +2129,7 @@ var
 // ST_Stop
 //
 //==============================================================================
-procedure ST_Stop;
+class procedure TStatusBarLocalRoutines.ST_Stop;
 var
   pal: PByteArray;
 begin
@@ -2106,15 +2153,15 @@ end;
 // ST_Start
 //
 //==============================================================================
-procedure ST_Start;
+class procedure TStatusBarRoutines.ST_Start;
 begin
   if not st_stopped then
-    ST_Stop;
+    TStatusBarLocalRoutines.ST_Stop;
 
-  ST_InitData;
+  TStatusBarLocalRoutines.ST_InitData;
 {$IFNDEF SPEED}
   if not Assigned(st_replacement) then
-    ST_CreateWidgets;
+    TStatusBarLocalRoutines.ST_CreateWidgets;
 {$ENDIF}
   st_stopped := false;
 end;
@@ -2124,7 +2171,7 @@ end;
 // ST_ConfigureReplacement
 //
 //==============================================================================
-procedure ST_ConfigureReplacement(const drawer: st_replacement_t);
+class procedure TStatusBarRoutines.ST_ConfigureReplacement(const drawer: st_replacement_t);
 begin
   st_replacement := drawer;
 end;
@@ -2134,7 +2181,7 @@ end;
 // ST_OverlayDrawer
 //
 //==============================================================================
-procedure ST_OverlayDrawer;
+class procedure TStatusBarRoutines.ST_OverlayDrawer;
 begin
   if Assigned(st_replacement) then
     st_replacement;
@@ -2145,7 +2192,7 @@ end;
 // ST_Init
 //
 //==============================================================================
-procedure ST_Init;
+class procedure TStatusBarRoutines.ST_Init;
 begin
 ////////////////////////////////////////////////////////////////////////////////
   st_msgcounter := 0;
@@ -2203,16 +2250,16 @@ begin
   st_stopped := true;
 ////////////////////////////////////////////////////////////////////////////////
 
-  ST_LoadData;
-  C_AddCmd('god, iddqd', @ST_CmdGod);
-  C_AddCmd('massacre', @ST_CmdMassacre);
-  C_AddCmd('givefullammo, rambo, idfa', @ST_CmdIDFA);
-  C_AddCmd('giveallkeys, idkeys', @ST_CmdIDKEYS);
-  C_AddCmd('lowgravity', @ST_CmdLowGravity);
-  C_AddCmd('givefullammoandkeys, idkfa', @ST_CmdIDKFA);
-  C_AddCmd('iddt', @ST_CmdIDDT);
-  C_AddCmd('idspispopd, idclip', @ST_CmdIDNoClip);
-  C_AddCmd('idmypos', @ST_CmdIDMyPos);
+  TStatusBarLocalRoutines.ST_LoadData;
+  C_AddCmd('god, iddqd', @TStatusBarLocalRoutines.ST_CmdGod);
+  C_AddCmd('massacre', @TStatusBarLocalRoutines.ST_CmdMassacre);
+  C_AddCmd('givefullammo, rambo, idfa', @TStatusBarLocalRoutines.ST_CmdIDFA);
+  C_AddCmd('giveallkeys, idkeys', @TStatusBarLocalRoutines.ST_CmdIDKEYS);
+  C_AddCmd('lowgravity', @TStatusBarLocalRoutines.ST_CmdLowGravity);
+  C_AddCmd('givefullammoandkeys, idkfa', @TStatusBarLocalRoutines.ST_CmdIDKFA);
+  C_AddCmd('iddt', @TStatusBarLocalRoutines.ST_CmdIDDT);
+  C_AddCmd('idspispopd, idclip', @TStatusBarLocalRoutines.ST_CmdIDNoClip);
+  C_AddCmd('idmypos', @TStatusBarLocalRoutines.ST_CmdIDMyPos);
 end;
 
 end.

@@ -1004,7 +1004,7 @@ begin
   end;
 
   if redrawsbar then
-    SB_Drawer;
+    TStatusBarRoutines.SB_Drawer;
 
   if diskbusyend > nowtime then
   begin
@@ -2634,7 +2634,7 @@ begin
   SUC_Progress(91);
 
   printf('SB_Init: Init status bar.'#13#10);
-  SB_Init;
+  TStatusBarRoutines.SB_Init;
 
   SUC_Progress(92);
 

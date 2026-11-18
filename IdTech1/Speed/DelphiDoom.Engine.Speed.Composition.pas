@@ -42,7 +42,7 @@ procedure ComposeSpeed(const ALog: ILog);
 begin
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(ALog));
   // the gauge, the lap, the position and the time of the race in the place of the status bar of Doom
-  ST_ConfigureReplacement(SH_HudDrawer);
+  TStatusBarRoutines.ST_ConfigureReplacement(SH_HudDrawer);
   // the menu of the new race (course, car, laps, transmission, kind of game, skill)
   M_ConfigureExtension(SH_MenuExtension);
   // the gear keys in the ticcmd (the transmission is manual with -manual or speed_transmission 1)

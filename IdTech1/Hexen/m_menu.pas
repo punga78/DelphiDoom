@@ -3043,7 +3043,7 @@ begin
   defaultskill := choice;
   
   PlayerClass[TGameSession.ConsolePlayer] := MenuPClass;
-  SB_SetClassData;
+  TStatusBarRoutines.SB_SetClassData;
   G_DeferedInitNew(skill_t(choice), 1);
   M_ClearMenus;
 end;

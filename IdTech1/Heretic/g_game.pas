@@ -1489,7 +1489,7 @@ begin
       result := true; // chat ate the event
       exit;
     end;
-    if SB_Responder(ev) then
+    if TStatusBarRoutines.SB_Responder(ev) then
     begin
       result := true; // status window ate it
       exit;
@@ -1768,7 +1768,7 @@ begin
     GS_LEVEL:
       begin
         P_Ticker;
-        SB_Ticker;
+        TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
         HU_Ticker;
       end;

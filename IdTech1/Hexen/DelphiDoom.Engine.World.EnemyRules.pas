@@ -5501,7 +5501,7 @@ begin
     p.poisoncount := 0;
     p.bonuscount := 0;
     if p = @TGameSession.Players[TGameSession.ConsolePlayer] then
-      SB_PaletteFlash(false);
+      TStatusBarRoutines.SB_PaletteFlash(false);
   end
   else if (actor.flags and MF_COUNTKILL <> 0) and (actor.special <> 0) then
   begin // Initiate monster death actions
