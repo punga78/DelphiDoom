@@ -2365,7 +2365,7 @@ begin
 
   printf('DEH_Init: Initializing dehacked subsystem.'#13#10);
   SC_DefaultStatedefLump;
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin
@@ -2730,7 +2730,7 @@ begin
   printf('PS_ShutDown: Shut down pascal script compiler.'#13#10);
   PS_ShutDown;
   printf('DEH_ShutDown: Shut down dehacked subsystem.'#13#10);
-  DEH_ShutDown;
+  TDehMainRoutines.DEH_ShutDown;
   printf('Info_ShutDown: Shut down game definition.'#13#10);
   Info_ShutDown;
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);

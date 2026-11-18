@@ -1371,7 +1371,7 @@ begin
         menuactive := false;
         pagetic := 3 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := DEH_GetString('PANEL7');
+        pagename := TDehMainRoutines.DEH_GetString('PANEL7');
         S_StartMusic(Ord(mus_fast));
         if isdemoversion then
           demosequence := -3 // show Velocity logo
@@ -1383,7 +1383,7 @@ begin
       begin
         pagetic := 6 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := DEH_GetString('vellogo');
+        pagename := TDehMainRoutines.DEH_GetString('vellogo');
         demosequence := -5; // exit
         exit;
       end;
@@ -1391,7 +1391,7 @@ begin
       begin
         pagetic := 6 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := DEH_GetString('TITLEPIC');
+        pagename := TDehMainRoutines.DEH_GetString('TITLEPIC');
         S_StartMusic(Ord(mus_logo));
         demosequence := -1; // start intro cinematic
         exit;
@@ -1408,57 +1408,57 @@ begin
       begin
         pagetic := 4 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := DEH_GetString('RGELOGO');
+        pagename := TDehMainRoutines.DEH_GetString('RGELOGO');
         wipegamestate := -1;
       end;
     1:
       begin
         pagetic := 7 * TICRATE;               // The comet struck our planet without
         TGameSession.GameState := GS_DEMOSCREEN;           // warning.We lost our paradise in a
-        pagename := DEH_GetString('PANEL1');  // single, violent stroke.
-        S_StartVoice(DEH_GetString('pro1'));
+        pagename := TDehMainRoutines.DEH_GetString('PANEL1');  // single, violent stroke.
+        S_StartVoice(TDehMainRoutines.DEH_GetString('pro1'));
         S_StartMusic(Ord(mus_intro));
       end;
     2:
       begin
         pagetic := 9 * TICRATE;               // The impact released a virus which
         TGameSession.GameState := GS_DEMOSCREEN;           // swept through the land and killed
-        pagename := DEH_GetString('PANEL2');  // millions. They turned out to be
-        S_StartVoice(DEH_GetString('pro2'));  // the lucky ones...
+        pagename := TDehMainRoutines.DEH_GetString('PANEL2');  // millions. They turned out to be
+        S_StartVoice(TDehMainRoutines.DEH_GetString('pro2'));  // the lucky ones...
       end;
     3:
       begin
         pagetic := 12 * TICRATE;              // For those that did not die became
         TGameSession.GameState := GS_DEMOSCREEN;           // mutations of humanity. Some became
-        pagename := DEH_GetString('PANEL3');  // fanatics who heard the voice of a
-        S_StartVoice(DEH_GetString('pro3'));  // malignant God in their heads, and
+        pagename := TDehMainRoutines.DEH_GetString('PANEL3');  // fanatics who heard the voice of a
+        S_StartVoice(TDehMainRoutines.DEH_GetString('pro3'));  // malignant God in their heads, and
       end;                                    // called themselves the Order.
     4:
       begin
         pagetic := 11 * TICRATE;            // Those of us who were deaf to this
-        pagename := DEH_GetString('PANEL4');// voice suffer horribly and are
+        pagename := TDehMainRoutines.DEH_GetString('PANEL4');// voice suffer horribly and are
         TGameSession.GameState := GS_DEMOSCREEN;         // forced to serve these ruthless
-        S_StartVoice(DEH_GetString('pro4'));// psychotics, who wield weapons more
+        S_StartVoice(TDehMainRoutines.DEH_GetString('pro4'));// psychotics, who wield weapons more
       end;                                  // powerful than anything we can muster.
     5:
       begin
         pagetic := 10 * TICRATE;            // They destroy our women and children,
         TGameSession.GameState := GS_DEMOSCREEN;         // so that we must hide them underground,
-        pagename := DEH_GetString('PANEL5');// and live like animals in constant
-        S_StartVoice(DEH_GetString('pro5'));// fear for our lives.
+        pagename := TDehMainRoutines.DEH_GetString('PANEL5');// and live like animals in constant
+        S_StartVoice(TDehMainRoutines.DEH_GetString('pro5'));// fear for our lives.
       end;
     6:                                      // But there are whispers of discontent.
       begin
         pagetic := 16 * TICRATE;            // If we organize, can we defeat our
         TGameSession.GameState := GS_DEMOSCREEN;         // masters? Weapons are being stolen,
-        pagename := DEH_GetString('PANEL6');// soldiers are being trained. A
-        S_StartVoice(DEH_GetString('pro6'));// Movement is born! Born of lifelong
+        pagename := TDehMainRoutines.DEH_GetString('PANEL6');// soldiers are being trained. A
+        S_StartVoice(TDehMainRoutines.DEH_GetString('pro6'));// Movement is born! Born of lifelong
       end;                                  // STRIFE!
     7: // titlepic again - unused...
       begin
         pagetic := 9 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := DEH_GetString('TITLEPIC');
+        pagename := TDehMainRoutines.DEH_GetString('TITLEPIC');
         wipegamestate := -1;
       end;
     8: // demo
@@ -1471,14 +1471,14 @@ begin
       begin
         pagetic := 6 * TICRATE;
         TGameSession.GameState := GS_DEMOSCREEN;
-        pagename := DEH_GetString('vellogo');
+        pagename := TDehMainRoutines.DEH_GetString('vellogo');
         wipegamestate := -1;
       end;
     10: // credits
       begin
         TGameSession.GameState := GS_DEMOSCREEN;
         pagetic := 12 * TICRATE;
-        pagename := DEH_GetString('CREDIT');
+        pagename := TDehMainRoutines.DEH_GetString('CREDIT');
         wipegamestate := -1;
       end;
   end;
@@ -2596,7 +2596,7 @@ begin
 
   printf('DEH_Init: Initializing dehacked subsystem.'#13#10);
   SC_DefaultStatedefLump;
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin
@@ -2986,7 +2986,7 @@ begin
   printf('PS_ShutDown: Shut down pascal script compiler.'#13#10);
   PS_ShutDown;
   printf('DEH_ShutDown: Shut down dehacked subsystem.'#13#10);
-  DEH_ShutDown;
+  TDehMainRoutines.DEH_ShutDown;
   printf('Info_ShutDown: Shut down game definition.'#13#10);
   Info_ShutDown;
   printf('PAK_ShutDown: Shut down PAK/ZIP/PK3/PK4 file system.'#13#10);

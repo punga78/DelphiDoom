@@ -449,7 +449,7 @@ begin
       begin
         if player.powers[Ord(pw_allmap)] = 0 then
         begin
-          player._message := DEH_GetString('The scanner won''t work without a map!');
+          player._message := TDehMainRoutines.DEH_GetString('The scanner won''t work without a map!');
           result := false;
           exit;
         end;

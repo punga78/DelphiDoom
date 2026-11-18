@@ -43,20 +43,6 @@ uses
 // (DelphiDoom.Engine.Dehacked.Applier); here are the tables of the names that it
 // and the table export use
 
-//==============================================================================
-//
-// DEH_Init
-//
-//==============================================================================
-procedure DEH_Init;
-
-//==============================================================================
-//
-// DEH_ShutDown
-//
-//==============================================================================
-procedure DEH_ShutDown;
-
 type
   deh_string_t = record
     pstr: PString;
@@ -104,6 +90,29 @@ var
 var
   ismbf21: boolean = false; // MBF21
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDehMainRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // DEH_Init
+    //
+    //==============================================================================
+    class procedure DEH_Init; static;
+
+    //==============================================================================
+    //
+    // DEH_ShutDown
+    //
+    //==============================================================================
+    class procedure DEH_ShutDown; static;
+  end;
+
+
 implementation
 
 uses
@@ -140,12 +149,22 @@ uses
   sounddata,
   v_data;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TDehMainLocalRoutines = class sealed
+  public
+    class procedure DEH_AddString(deh_strings: Pdeh_strings_t; pstr: PString; const name: string); static;
+  end;
+
 //==============================================================================
 //
 // DEH_AddString
 //
 //==============================================================================
-procedure DEH_AddString(deh_strings: Pdeh_strings_t; pstr: PString; const name: string);
+class procedure TDehMainLocalRoutines.DEH_AddString(deh_strings: Pdeh_strings_t; pstr: PString; const name: string);
 begin
   if deh_strings.numstrings = deh_strings.realnumstrings then
   begin
@@ -172,7 +191,7 @@ var
 // Initializing DEH tokens
 //
 //==============================================================================
-procedure DEH_Init;
+class procedure TDehMainRoutines.DEH_Init;
 var
   i, j, k: integer;
 begin
@@ -989,205 +1008,205 @@ begin
   for i := 1 to 5 do
     for j := 1 to 9 do
     begin
-      DEH_AddString(@deh_strings, @mapnames[k], 'HUSTR_E' + itoa(i) + 'M' + itoa(j));
+      TDehMainLocalRoutines.DEH_AddString(@deh_strings, @mapnames[k], 'HUSTR_E' + itoa(i) + 'M' + itoa(j));
       inc(k);
     end;
 
-  DEH_AddString(@deh_strings, @pg_CREDIT, 'PAGE_CREDIT');
-  DEH_AddString(@deh_strings, @pg_TITLE, 'PAGE_TITLE');
-  DEH_AddString(@deh_strings, @pg_ORDER, 'PAGE_ORDER');
-  DEH_AddString(@deh_strings, @pg_HELP1, 'PAGE_HELP1');
-  DEH_AddString(@deh_strings, @pg_HELP2, 'PAGE_HELP2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_CREDIT, 'PAGE_CREDIT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_TITLE, 'PAGE_TITLE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_ORDER, 'PAGE_ORDER');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_HELP1, 'PAGE_HELP1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @pg_HELP2, 'PAGE_HELP2');
 
-  DEH_AddString(@deh_strings, @bgflatE1, 'BGFLATE1');
-  DEH_AddString(@deh_strings, @bgflatE2, 'BGFLATE2');
-  DEH_AddString(@deh_strings, @bgflatE3, 'BGFLATE3');
-  DEH_AddString(@deh_strings, @bgflatE4, 'BGFLATE4');
-  DEH_AddString(@deh_strings, @bgflatE5, 'BGFLATE5');
-  DEH_AddString(@deh_strings, @EndLumpName, 'END_TEXT_LUMP');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @bgflatE1, 'BGFLATE1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @bgflatE2, 'BGFLATE2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @bgflatE3, 'BGFLATE3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @bgflatE4, 'BGFLATE4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @bgflatE5, 'BGFLATE5');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @EndLumpName, 'END_TEXT_LUMP');
   for i := 0 to 9 do
   begin
-    DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + itoa(i));
-    DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + IntToStrZFill(2, i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + itoa(i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @chat_macros[i], 'HUSTR_CHATMACR' + IntToStrZFill(2, i));
   end;
 
-  DEH_AddString(@deh_strings, @QUITMSG, 'QUITMSG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QUITMSG, 'QUITMSG');
 
   for i := 0 to NUM_STARTUPMESSAGES - 1 do
   begin
-    DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + itoa(i));
-    DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + IntToStrZFill(2, i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + itoa(i));
+    TDehMainLocalRoutines.DEH_AddString(@deh_strings, @startmsg[i], 'STARTUP' + IntToStrZFill(2, i));
   end;
 
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF1, 'HUSTR_TALKTOSELF1');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF2, 'HUSTR_TALKTOSELF2');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF3, 'HUSTR_TALKTOSELF3');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF4, 'HUSTR_TALKTOSELF4');
-  DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF5, 'HUSTR_TALKTOSELF5');
-  DEH_AddString(@deh_strings, @HUSTR_MESSAGESENT, 'HUSTR_MESSAGESENT');
-  DEH_AddString(@deh_strings, @HUSTR_MSGU, 'HUSTR_MSGU');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF1, 'HUSTR_TALKTOSELF1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF2, 'HUSTR_TALKTOSELF2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF3, 'HUSTR_TALKTOSELF3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF4, 'HUSTR_TALKTOSELF4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_TALKTOSELF5, 'HUSTR_TALKTOSELF5');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_MESSAGESENT, 'HUSTR_MESSAGESENT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_MSGU, 'HUSTR_MSGU');
 
-  DEH_AddString(@deh_strings, @HUSTR_PLRGREEN, 'HUSTR_PLRGREEN');
-  DEH_AddString(@deh_strings, @HUSTR_PLRINDIGO, 'HUSTR_PLRINDIGO');
-  DEH_AddString(@deh_strings, @HUSTR_PLRBROWN, 'HUSTR_PLRBROWN');
-  DEH_AddString(@deh_strings, @HUSTR_PLRRED, 'HUSTR_PLRRED');
-  DEH_AddString(@deh_strings, @destination_keys[0], 'HUSTR_KEYGREEN');
-  DEH_AddString(@deh_strings, @destination_keys[1], 'HUSTR_KEYINDIGO');
-  DEH_AddString(@deh_strings, @destination_keys[2], 'HUSTR_KEYBROWN');
-  DEH_AddString(@deh_strings, @destination_keys[3], 'HUSTR_KEYRED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRGREEN, 'HUSTR_PLRGREEN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRINDIGO, 'HUSTR_PLRINDIGO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRBROWN, 'HUSTR_PLRBROWN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @HUSTR_PLRRED, 'HUSTR_PLRRED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[0], 'HUSTR_KEYGREEN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[1], 'HUSTR_KEYINDIGO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[2], 'HUSTR_KEYBROWN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @destination_keys[3], 'HUSTR_KEYRED');
 
-  DEH_AddString(@deh_strings, @AMSTR_FOLLOWON, 'AMSTR_FOLLOWON');
-  DEH_AddString(@deh_strings, @AMSTR_FOLLOWOFF, 'AMSTR_FOLLOWOFF');
-  DEH_AddString(@deh_strings, @AMSTR_GRIDON, 'AMSTR_GRIDON');
-  DEH_AddString(@deh_strings, @AMSTR_GRIDOFF, 'AMSTR_GRIDOFF');
-  DEH_AddString(@deh_strings, @AMSTR_ROTATEON, 'AMSTR_ROTATEON');
-  DEH_AddString(@deh_strings, @AMSTR_ROTATEOFF, 'AMSTR_ROTATEOFF');
-  DEH_AddString(@deh_strings, @AMSTR_MARKEDSPOT, 'AMSTR_MARKEDSPOT');
-  DEH_AddString(@deh_strings, @AMSTR_MARKSCLEARED, 'AMSTR_MARKSCLEARED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_FOLLOWON, 'AMSTR_FOLLOWON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_FOLLOWOFF, 'AMSTR_FOLLOWOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_GRIDON, 'AMSTR_GRIDON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_GRIDOFF, 'AMSTR_GRIDOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_ROTATEON, 'AMSTR_ROTATEON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_ROTATEOFF, 'AMSTR_ROTATEOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_MARKEDSPOT, 'AMSTR_MARKEDSPOT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @AMSTR_MARKSCLEARED, 'AMSTR_MARKSCLEARED');
 
-  DEH_AddString(@deh_strings, @STSTR_MUS, 'STSTR_MUS');
-  DEH_AddString(@deh_strings, @STSTR_NOMUS, 'STSTR_NOMUS');
-  DEH_AddString(@deh_strings, @STSTR_KFAADDED, 'STSTR_KFAADDED');
-  DEH_AddString(@deh_strings, @STSTR_FAADDED, 'STSTR_FAADDED');
-  DEH_AddString(@deh_strings, @STSTR_NCON, 'STSTR_NCON');
-  DEH_AddString(@deh_strings, @STSTR_NCOFF, 'STSTR_NCOFF');
-  DEH_AddString(@deh_strings, @STSTR_CHOPPERS, 'STSTR_CHOPPERS');
-  DEH_AddString(@deh_strings, @STSTR_CLEV, 'STSTR_CLEV');
-  DEH_AddString(@deh_strings, @STSTR_LGON, 'STSTR_LGON');
-  DEH_AddString(@deh_strings, @STSTR_LGOFF, 'STSTR_LGOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_MUS, 'STSTR_MUS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_NOMUS, 'STSTR_NOMUS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_KFAADDED, 'STSTR_KFAADDED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_FAADDED, 'STSTR_FAADDED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_NCON, 'STSTR_NCON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_NCOFF, 'STSTR_NCOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_CHOPPERS, 'STSTR_CHOPPERS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_CLEV, 'STSTR_CLEV');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_LGON, 'STSTR_LGON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @STSTR_LGOFF, 'STSTR_LGOFF');
 
-  DEH_AddString(@deh_strings, @E1TEXT, 'E1TEXT');
-  DEH_AddString(@deh_strings, @E2TEXT, 'E2TEXT');
-  DEH_AddString(@deh_strings, @E3TEXT, 'E3TEXT');
-  DEH_AddString(@deh_strings, @E4TEXT, 'E4TEXT');
-  DEH_AddString(@deh_strings, @E5TEXT, 'E5TEXT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @E1TEXT, 'E1TEXT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @E2TEXT, 'E2TEXT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @E3TEXT, 'E3TEXT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @E4TEXT, 'E4TEXT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @E5TEXT, 'E5TEXT');
 
-  DEH_AddString(@deh_strings, @TXT_GOTBLUEKEY, 'TXT_GOTBLUEKEY');
-  DEH_AddString(@deh_strings, @TXT_GOTYELLOWKEY, 'TXT_GOTYELLOWKEY');
-  DEH_AddString(@deh_strings, @TXT_GOTGREENKEY, 'TXT_GOTGREENKEY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_GOTBLUEKEY, 'TXT_GOTBLUEKEY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_GOTYELLOWKEY, 'TXT_GOTYELLOWKEY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_GOTGREENKEY, 'TXT_GOTGREENKEY');
 
 // Artifacts
 
-  DEH_AddString(@deh_strings, @TXT_ARTIHEALTH, 'TXT_ARTIHEALTH');
-  DEH_AddString(@deh_strings, @TXT_ARTIFLY, 'TXT_ARTIFLY');
-  DEH_AddString(@deh_strings, @TXT_ARTIINVULNERABILITY, 'TXT_ARTIINVULNERABILITY');
-  DEH_AddString(@deh_strings, @TXT_ARTITOMEOFPOWER, 'TXT_ARTITOMEOFPOWER');
-  DEH_AddString(@deh_strings, @TXT_ARTIINVISIBILITY, 'TXT_ARTIINVISIBILITY');
-  DEH_AddString(@deh_strings, @TXT_ARTIEGG, 'TXT_ARTIEGG');
-  DEH_AddString(@deh_strings, @TXT_ARTISUPERHEALTH, 'TXT_ARTISUPERHEALTH');
-  DEH_AddString(@deh_strings, @TXT_ARTITORCH, 'TXT_ARTITORCH');
-  DEH_AddString(@deh_strings, @TXT_ARTIFIREBOMB, 'TXT_ARTIFIREBOMB');
-  DEH_AddString(@deh_strings, @TXT_ARTITELEPORT, 'TXT_ARTITELEPORT');
-  DEH_AddString(@deh_strings, @TXT_ARTIALL, 'TXT_ARTIALL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIHEALTH, 'TXT_ARTIHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIFLY, 'TXT_ARTIFLY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIINVULNERABILITY, 'TXT_ARTIINVULNERABILITY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTITOMEOFPOWER, 'TXT_ARTITOMEOFPOWER');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIINVISIBILITY, 'TXT_ARTIINVISIBILITY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIEGG, 'TXT_ARTIEGG');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTISUPERHEALTH, 'TXT_ARTISUPERHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTITORCH, 'TXT_ARTITORCH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIFIREBOMB, 'TXT_ARTIFIREBOMB');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTITELEPORT, 'TXT_ARTITELEPORT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ARTIALL, 'TXT_ARTIALL');
 
 // Items
 
-  DEH_AddString(@deh_strings, @TXT_ITEMHEALTH, 'TXT_ITEMHEALTH');
-  DEH_AddString(@deh_strings, @TXT_ITEMBAGOFHOLDING, 'TXT_ITEMBAGOFHOLDING');
-  DEH_AddString(@deh_strings, @TXT_ITEMSHIELD1, 'TXT_ITEMSHIELD1');
-  DEH_AddString(@deh_strings, @TXT_ITEMSHIELD2, 'TXT_ITEMSHIELD2');
-  DEH_AddString(@deh_strings, @TXT_ITEMSUPERMAP, 'TXT_ITEMSUPERMAP');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMHEALTH, 'TXT_ITEMHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMBAGOFHOLDING, 'TXT_ITEMBAGOFHOLDING');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMSHIELD1, 'TXT_ITEMSHIELD1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMSHIELD2, 'TXT_ITEMSHIELD2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_ITEMSUPERMAP, 'TXT_ITEMSUPERMAP');
 
 // Ammo
 
-  DEH_AddString(@deh_strings, @TXT_AMMOGOLDWAND1, 'TXT_AMMOGOLDWAND1');
-  DEH_AddString(@deh_strings, @TXT_AMMOGOLDWAND2, 'TXT_AMMOGOLDWAND2');
-  DEH_AddString(@deh_strings, @TXT_AMMOMACE1, 'TXT_AMMOMACE1');
-  DEH_AddString(@deh_strings, @TXT_AMMOMACE2, 'TXT_AMMOMACE2');
-  DEH_AddString(@deh_strings, @TXT_AMMOCROSSBOW1, 'TXT_AMMOCROSSBOW1');
-  DEH_AddString(@deh_strings, @TXT_AMMOCROSSBOW2, 'TXT_AMMOCROSSBOW2');
-  DEH_AddString(@deh_strings, @TXT_AMMOBLASTER1, 'TXT_AMMOBLASTER1');
-  DEH_AddString(@deh_strings, @TXT_AMMOBLASTER2, 'TXT_AMMOBLASTER2');
-  DEH_AddString(@deh_strings, @TXT_AMMOSKULLROD1, 'TXT_AMMOSKULLROD1');
-  DEH_AddString(@deh_strings, @TXT_AMMOSKULLROD2, 'TXT_AMMOSKULLROD2');
-  DEH_AddString(@deh_strings, @TXT_AMMOPHOENIXROD1, 'TXT_AMMOPHOENIXROD1');
-  DEH_AddString(@deh_strings, @TXT_AMMOPHOENIXROD2, 'TXT_AMMOPHOENIXROD2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOGOLDWAND1, 'TXT_AMMOGOLDWAND1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOGOLDWAND2, 'TXT_AMMOGOLDWAND2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOMACE1, 'TXT_AMMOMACE1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOMACE2, 'TXT_AMMOMACE2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOCROSSBOW1, 'TXT_AMMOCROSSBOW1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOCROSSBOW2, 'TXT_AMMOCROSSBOW2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOBLASTER1, 'TXT_AMMOBLASTER1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOBLASTER2, 'TXT_AMMOBLASTER2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOSKULLROD1, 'TXT_AMMOSKULLROD1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOSKULLROD2, 'TXT_AMMOSKULLROD2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOPHOENIXROD1, 'TXT_AMMOPHOENIXROD1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_AMMOPHOENIXROD2, 'TXT_AMMOPHOENIXROD2');
 
 // Weapons
 
-  DEH_AddString(@deh_strings, @TXT_WPNMACE, 'TXT_WPNMACE');
-  DEH_AddString(@deh_strings, @TXT_WPNCROSSBOW, 'TXT_WPNCROSSBOW');
-  DEH_AddString(@deh_strings, @TXT_WPNBLASTER, 'TXT_WPNBLASTER');
-  DEH_AddString(@deh_strings, @TXT_WPNSKULLROD, 'TXT_WPNSKULLROD');
-  DEH_AddString(@deh_strings, @TXT_WPNPHOENIXROD, 'TXT_WPNPHOENIXROD');
-  DEH_AddString(@deh_strings, @TXT_WPNGAUNTLETS, 'TXT_WPNGAUNTLETS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WPNMACE, 'TXT_WPNMACE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WPNCROSSBOW, 'TXT_WPNCROSSBOW');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WPNBLASTER, 'TXT_WPNBLASTER');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WPNSKULLROD, 'TXT_WPNSKULLROD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WPNPHOENIXROD, 'TXT_WPNPHOENIXROD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_WPNGAUNTLETS, 'TXT_WPNGAUNTLETS');
 
-  DEH_AddString(@deh_strings, @TXT_CHEATGODON, 'TXT_CHEATGODON');
-  DEH_AddString(@deh_strings, @TXT_CHEATGODOFF, 'TXT_CHEATGODOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPON, 'TXT_CHEATNOCLIPON');
-  DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPOFF, 'TXT_CHEATNOCLIPOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATWEAPONS, 'TXT_CHEATWEAPONS');
-  DEH_AddString(@deh_strings, @TXT_CHEATKEYS, 'TXT_CHEATKEYS');
-  DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTON, 'TXT_CHEATFLIGHTON');
-  DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTOFF, 'TXT_CHEATFLIGHTOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATPOWERON, 'TXT_CHEATPOWERON');
-  DEH_AddString(@deh_strings, @TXT_CHEATPOWEROFF, 'TXT_CHEATPOWEROFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATHEALTH, 'TXT_CHEATHEALTH');
-  DEH_AddString(@deh_strings, @TXT_CHEATSOUNDON, 'TXT_CHEATSOUNDON');
-  DEH_AddString(@deh_strings, @TXT_CHEATSOUNDOFF, 'TXT_CHEATSOUNDOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATTICKERON, 'TXT_CHEATTICKERON');
-  DEH_AddString(@deh_strings, @TXT_CHEATTICKEROFF, 'TXT_CHEATTICKEROFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS1, 'TXT_CHEATARTIFACTS1');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS2, 'TXT_CHEATARTIFACTS2');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS3, 'TXT_CHEATARTIFACTS3');
-  DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTSFAIL, 'TXT_CHEATARTIFACTSFAIL');
-  DEH_AddString(@deh_strings, @TXT_CHEATWARP, 'TXT_CHEATWARP');
-  DEH_AddString(@deh_strings, @TXT_CHEATSCREENSHOT, 'TXT_CHEATSCREENSHOT');
-  DEH_AddString(@deh_strings, @TXT_CHEATCHICKENON, 'TXT_CHEATCHICKENON');
-  DEH_AddString(@deh_strings, @TXT_CHEATCHICKENOFF, 'TXT_CHEATCHICKENOFF');
-  DEH_AddString(@deh_strings, @TXT_CHEATMASSACRE, 'TXT_CHEATMASSACRE');
-  DEH_AddString(@deh_strings, @TXT_CHEATIDDQD, 'TXT_CHEATIDDQD');
-  DEH_AddString(@deh_strings, @TXT_CHEATIDKFA, 'TXT_CHEATIDKFA');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATGODON, 'TXT_CHEATGODON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATGODOFF, 'TXT_CHEATGODOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPON, 'TXT_CHEATNOCLIPON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATNOCLIPOFF, 'TXT_CHEATNOCLIPOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATWEAPONS, 'TXT_CHEATWEAPONS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATKEYS, 'TXT_CHEATKEYS');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTON, 'TXT_CHEATFLIGHTON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATFLIGHTOFF, 'TXT_CHEATFLIGHTOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATPOWERON, 'TXT_CHEATPOWERON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATPOWEROFF, 'TXT_CHEATPOWEROFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATHEALTH, 'TXT_CHEATHEALTH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATSOUNDON, 'TXT_CHEATSOUNDON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATSOUNDOFF, 'TXT_CHEATSOUNDOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATTICKERON, 'TXT_CHEATTICKERON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATTICKEROFF, 'TXT_CHEATTICKEROFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS1, 'TXT_CHEATARTIFACTS1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS2, 'TXT_CHEATARTIFACTS2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTS3, 'TXT_CHEATARTIFACTS3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATARTIFACTSFAIL, 'TXT_CHEATARTIFACTSFAIL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATWARP, 'TXT_CHEATWARP');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATSCREENSHOT, 'TXT_CHEATSCREENSHOT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATCHICKENON, 'TXT_CHEATCHICKENON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATCHICKENOFF, 'TXT_CHEATCHICKENOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATMASSACRE, 'TXT_CHEATMASSACRE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATIDDQD, 'TXT_CHEATIDDQD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @TXT_CHEATIDKFA, 'TXT_CHEATIDKFA');
 
-  DEH_AddString(@deh_strings, @MSG_MODIFIEDGAME, 'MSG_MODIFIEDGAME');
-  DEH_AddString(@deh_strings, @MSG_SHAREWARE, 'MSG_SHAREWARE');
-  DEH_AddString(@deh_strings, @MSG_COMMERCIAL, 'MSG_COMMERCIAL');
-  DEH_AddString(@deh_strings, @MSG_UNDETERMINED, 'MSG_UNDETERMINED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_MODIFIEDGAME, 'MSG_MODIFIEDGAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_SHAREWARE, 'MSG_SHAREWARE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_COMMERCIAL, 'MSG_COMMERCIAL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSG_UNDETERMINED, 'MSG_UNDETERMINED');
 
-  DEH_AddString(@deh_strings, @MSGSECRETSECTOR, 'MSGSECRETSECTOR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSGSECRETSECTOR, 'MSGSECRETSECTOR');
 
-  DEH_AddString(@deh_strings, @DETAILULTRA, 'DETAILULTRA');
-  DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHI');
-  DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHIGH');
-  DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORM');
-  DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORMAL');
-  DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMED');
-  DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMEDIUM');
-  DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLO');
-  DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLOW');
-  DEH_AddString(@deh_strings, @DETAILLOWEST, 'DETAILLOWEST');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILULTRA, 'DETAILULTRA');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHI');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILHI, 'DETAILHIGH');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORM');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILNORM, 'DETAILNORMAL');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILMED, 'DETAILMEDIUM');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLO');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILLOW, 'DETAILLOW');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DETAILLOWEST, 'DETAILLOWEST');
 
-  DEH_AddString(@deh_strings, @GAMMALVL0, 'GAMMALVL0');
-  DEH_AddString(@deh_strings, @GAMMALVL1, 'GAMMALVL1');
-  DEH_AddString(@deh_strings, @GAMMALVL2, 'GAMMALVL2');
-  DEH_AddString(@deh_strings, @GAMMALVL3, 'GAMMALVL3');
-  DEH_AddString(@deh_strings, @GAMMALVL4, 'GAMMALVL4');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL0, 'GAMMALVL0');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL1, 'GAMMALVL1');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL2, 'GAMMALVL2');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL3, 'GAMMALVL3');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GAMMALVL4, 'GAMMALVL4');
 
-  DEH_AddString(@deh_strings, @EMPTYSTRING, 'EMPTYSTRING');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @EMPTYSTRING, 'EMPTYSTRING');
 
-  DEH_AddString(@deh_strings, @D_DEVSTR, 'D_DEVSTR');
-  DEH_AddString(@deh_strings, @D_CDROM, 'D_CDROM');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @D_DEVSTR, 'D_DEVSTR');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @D_CDROM, 'D_CDROM');
 
-  DEH_AddString(@deh_strings, @PRESSKEY, 'PRESSKEY');
-  DEH_AddString(@deh_strings, @PRESSYN, 'PRESSYN');
-  DEH_AddString(@deh_strings, @LOADNET, 'LOADNET');
-  DEH_AddString(@deh_strings, @QLOADNET, 'QLOADNET');
-  DEH_AddString(@deh_strings, @QSAVESPOT, 'QSAVESPOT');
-  DEH_AddString(@deh_strings, @SAVEDEAD, 'SAVEDEAD');
-  DEH_AddString(@deh_strings, @QSPROMPT, 'QSPROMPT');
-  DEH_AddString(@deh_strings, @QLPROMPT, 'QLPROMPT');
-  DEH_AddString(@deh_strings, @SNEWGAME, 'SNEWGAME');
-  DEH_AddString(@deh_strings, @SNIGHTMARE, 'SNIGHTMARE');
-  DEH_AddString(@deh_strings, @SWSTRING, 'SWSTRING');
-  DEH_AddString(@deh_strings, @MSGOFF, 'MSGOFF');
-  DEH_AddString(@deh_strings, @MSGON, 'MSGON');
-  DEH_AddString(@deh_strings, @NETEND, 'NETEND');
-  DEH_AddString(@deh_strings, @SENDGAME, 'SENDGAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @PRESSKEY, 'PRESSKEY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @PRESSYN, 'PRESSYN');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @LOADNET, 'LOADNET');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QLOADNET, 'QLOADNET');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QSAVESPOT, 'QSAVESPOT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEDEAD, 'SAVEDEAD');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QSPROMPT, 'QSPROMPT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @QLPROMPT, 'QLPROMPT');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SNEWGAME, 'SNEWGAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SNIGHTMARE, 'SNIGHTMARE');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SWSTRING, 'SWSTRING');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSGOFF, 'MSGOFF');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @MSGON, 'MSGON');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @NETEND, 'NETEND');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SENDGAME, 'SENDGAME');
 
-  DEH_AddString(@deh_strings, @DOSY, 'DOSY');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @DOSY, 'DOSY');
 
-  DEH_AddString(@deh_strings, @GGSAVED, 'GGSAVED');
-  DEH_AddString(@deh_strings, @SAVEGAMENAME, 'SAVEGAMENAME');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @GGSAVED, 'GGSAVED');
+  TDehMainLocalRoutines.DEH_AddString(@deh_strings, @SAVEGAMENAME, 'SAVEGAMENAME');
 
   ammo_tokens := TDTextList.Create;
 
@@ -1257,7 +1276,7 @@ end;
 // DEH_ShutDown
 //
 //==============================================================================
-procedure DEH_ShutDown;
+class procedure TDehMainRoutines.DEH_ShutDown;
 begin
   if not deh_initialized then
     exit;

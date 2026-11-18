@@ -93,10 +93,10 @@ begin
     exit;
   end;
 
-  panel0lump := W_CheckNumForName(DEH_GetString('PANEL0'));
+  panel0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('PANEL0'));
 
   if panel0lump < 0 then
-    panel0lump := W_CheckNumForName(DEH_GetString('HLPBCK'));
+    panel0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('HLPBCK'));
 
   result := panel0lump;
 end;
@@ -117,10 +117,10 @@ begin
     exit;
   end;
 
-  help0lump := W_CheckNumForName(DEH_GetString('HELP0'));
+  help0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('HELP0'));
 
   if help0lump < 0 then
-    help0lump := W_CheckNumForName(DEH_GetString('HLPBCK'));
+    help0lump := W_CheckNumForName(TDehMainRoutines.DEH_GetString('HLPBCK'));
 
   result := help0lump;
 end;

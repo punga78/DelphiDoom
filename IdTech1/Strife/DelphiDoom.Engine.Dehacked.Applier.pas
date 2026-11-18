@@ -871,7 +871,7 @@ var
 
 begin
   // DEH_Init does nothing after the first call
-  DEH_Init;
+  TDehMainRoutines.DEH_Init;
 
   deh_initialstates := numstates;
 

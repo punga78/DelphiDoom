@@ -914,7 +914,7 @@ begin
         p.frags[pDiff(target.player, @TGameSession.Players[0], SizeOf(TGameSession.Players[0]))] + 1;
       if TGameSession.NetGame then
       begin
-        sprintf(plrkilledmsg, DEH_GetString('%s killed %s'),
+        sprintf(plrkilledmsg, TDehMainRoutines.DEH_GetString('%s killed %s'),
           [player_names[p.allegiance], player_names[Pplayer_t(target.player).allegiance]]);
         TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
       end;
@@ -1138,7 +1138,7 @@ begin
 
         if TGameSession.DeathMatch <> 0 then
         begin
-          plrkilledmsg := DEH_GetString('You''re dead!  You set off the alarm.');
+          plrkilledmsg := TDehMainRoutines.DEH_GetString('You''re dead!  You set off the alarm.');
           TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
         end;
 
@@ -1188,7 +1188,7 @@ begin
 
         if TGameSession.DeathMatch <> 0 then
         begin
-          plrkilledmsg := DEH_GetString('You Fool!  You''ve set off the alarm');
+          plrkilledmsg := TDehMainRoutines.DEH_GetString('You Fool!  You''ve set off the alarm');
           TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
           exit;
         end;

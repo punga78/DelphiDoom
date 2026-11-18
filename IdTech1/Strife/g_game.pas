@@ -1760,7 +1760,7 @@ begin
     p.inventory[i]._type := nummobjtypes;
 
   // villsa [STRIFE]: Default objective
-  mission_objective := DEH_GetString('Find help');
+  mission_objective := TDehMainRoutines.DEH_GetString('Find help');
 end;
 
 //==============================================================================

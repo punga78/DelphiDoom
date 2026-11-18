@@ -2088,7 +2088,7 @@ begin
     M_FromCurr;
   end
   else
-    M_StartMessage(DEH_GetString(QSAVESPOT), nil, false);
+    M_StartMessage(TDehMainRoutines.DEH_GetString(QSAVESPOT), nil, false);
 end;
 
 //==============================================================================
@@ -2140,7 +2140,7 @@ begin
   if TGameSession.NetGame then
   begin
     // haleyjd 20110211: Hooray for Rogue's awesome multiplayer support...
-    M_StartMessage(DEH_GetString('You can''t save a netgame'), nil, false);
+    M_StartMessage(TDehMainRoutines.DEH_GetString('You can''t save a netgame'), nil, false);
     exit;
   end;
 
@@ -2196,7 +2196,7 @@ var
 begin
   if TGameSession.NetGame then
   begin
-    M_StartMessage(DEH_GetString('You can''t save a netgame'), nil, false);
+    M_StartMessage(TDehMainRoutines.DEH_GetString('You can''t save a netgame'), nil, false);
     exit;
   end;
 
@@ -3149,8 +3149,8 @@ end;
 //==============================================================================
 procedure M_DrawNewGame;
 begin
-  V_DrawPatch(96, 14, SCN_TMP, DEH_GetSTring('M_NGAME'), false);
-  V_DrawPatch(54, 38, SCN_TMP, DEH_GetSTring('M_SKILL'), false);
+  V_DrawPatch(96, 14, SCN_TMP, TDehMainRoutines.DEH_GetString('M_NGAME'), false);
+  V_DrawPatch(54, 38, SCN_TMP, TDehMainRoutines.DEH_GetString('M_SKILL'), false);
 end;
 
 //==============================================================================
