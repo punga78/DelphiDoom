@@ -92,7 +92,7 @@ function G_DeferedPlayDemo(const name: string): boolean;
 //==============================================================================
 procedure G_CmdPlayDemo(const name: string);
 
-{ Can be called by the startup code or M_Responder, }
+{ Can be called by the startup code or TMenuRoutines.M_Responder, }
 { calls P_SetupLevel or W_EnterWorld. }
 
 //==============================================================================
@@ -109,7 +109,7 @@ procedure G_LoadGame(const name: string);
 //==============================================================================
 procedure G_DoLoadGame;
 
-{ Called by M_Responder. }
+{ Called by TMenuRoutines.M_Responder. }
 
 //==============================================================================
 //
@@ -1474,7 +1474,7 @@ begin
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
        ((ev._type = ev_joystick) and (ev.data1 <> 0)) then
     begin
-      M_StartControlPanel;
+      TMenuRoutines.M_StartControlPanel;
       result := true;
       exit;
     end;
@@ -1489,7 +1489,7 @@ begin
       result := true; // chat ate the event
       exit;
     end;
-    if SB_Responder(ev) then
+    if TStatusBarRoutines.SB_Responder(ev) then
     begin
       result := true; // status window ate it
       exit;
@@ -1503,7 +1503,7 @@ begin
 
   if TGameSession.GameState = GS_FINALE then
   begin
-    if F_Responder(ev) then
+    if TFinaleRoutines.F_Responder(ev) then
     begin
       result := true; // finale ate the event
       exit;
@@ -1666,7 +1666,7 @@ begin
       ga_completed:
         G_DoCompleted;
       ga_victory:
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       ga_worlddone:
         G_DoWorldDone;
       ga_screenshot:
@@ -1768,17 +1768,17 @@ begin
     GS_LEVEL:
       begin
         P_Ticker;
-        SB_Ticker;
+        TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
         HU_Ticker;
       end;
     GS_INTERMISSION:
       begin
-        IN_Ticker;
+        TIntermissionRoutines.IN_Ticker;
       end;
     GS_FINALE:
       begin
-        F_Ticker;
+        TFinaleRoutines.F_Ticker;
       end;
     GS_DEMOSCREEN:
       begin
@@ -2147,7 +2147,7 @@ begin
   if statcopy <> nil then
     memcpy(statcopy, @TGameSession.WmInfo, SizeOf(TGameSession.WmInfo));
 
-  IN_Start(@TGameSession.WmInfo);
+  TIntermissionRoutines.IN_Start(@TGameSession.WmInfo);
 end;
 
 //==============================================================================
@@ -2167,13 +2167,13 @@ begin
     if (TGameSession.GameMapInfo.intertextsecret[0] <> #0) and TGameSession.SecretExit then
     begin
       if TGameSession.GameMapInfo.intertextsecret[0] <> '-' then // '-' means that any default intermission was cleared.
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       exit;
     end
     else if (TGameSession.GameMapInfo.intertext[0] <> #0) and not TGameSession.SecretExit then
     begin
       if TGameSession.GameMapInfo.intertext[0] <> '-' then // '-' means that any default intermission was cleared.
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       exit;
     end
     else if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then

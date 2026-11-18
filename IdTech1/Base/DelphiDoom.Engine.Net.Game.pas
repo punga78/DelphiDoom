@@ -394,7 +394,7 @@ begin
       if FPlanner.MustYield then
       begin
         FEndScreenTick;
-        M_Ticker;
+        TMenuRoutines.M_Ticker;
         Exit;
       end;
 
@@ -443,7 +443,7 @@ begin
           TMainRoutines.D_DoAdvanceDemo;
         R_Ticker;
         FEndScreenTick;
-        M_Ticker;
+        TMenuRoutines.M_Ticker;
         FConsole.Tick;
         interpolationstarttime := FClock.Steps(TICRATE) * $10000; // I_GetFracTime;
         G_Ticker;
@@ -481,7 +481,7 @@ begin
       TMainRoutines.D_DoAdvanceDemo;
     R_Ticker;
     FEndScreenTick;
-    M_Ticker;
+    TMenuRoutines.M_Ticker;
     FConsole.Tick;
     G_Ticker;
     Inc(TGameSession.GameTic);

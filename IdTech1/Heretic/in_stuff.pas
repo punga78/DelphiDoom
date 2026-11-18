@@ -37,26 +37,35 @@ interface
 uses
   d_player;
 
-//==============================================================================
-//
-// IN_Start
-//
-//==============================================================================
-procedure IN_Start(const wbstartstruct: Pwbstartstruct_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TIntermissionRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // IN_Start
+    //
+    //==============================================================================
+    class procedure IN_Start(const wbstartstruct: Pwbstartstruct_t); static;
 
-//==============================================================================
-//
-// IN_Ticker
-//
-//==============================================================================
-procedure IN_Ticker;
+    //==============================================================================
+    //
+    // IN_Ticker
+    //
+    //==============================================================================
+    class procedure IN_Ticker; static;
 
-//==============================================================================
-//
-// IN_Drawer
-//
-//==============================================================================
-procedure IN_Drawer;
+    //==============================================================================
+    //
+    // IN_Drawer
+    //
+    //==============================================================================
+    class procedure IN_Drawer; static;
+  end;
+
 
 implementation
 
@@ -189,6 +198,33 @@ var
   wbs: Pwbstartstruct_t = nil;
   exitpic, enterpic: string; // UMAPINFO
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TIntermissionLocalRoutines = class sealed
+  public
+    class procedure IN_LoadPics; static;
+    class procedure IN_CheckCustomPics; static;
+    class procedure IN_InitStats; static;
+    class procedure IN_UnloadPics; static;
+    class procedure IN_Stop; static;
+    class procedure IN_WaitStop; static;
+    class procedure IN_CheckForSkip; static;
+    class procedure IN_DrawStatBack; static;
+    class procedure IN_DrTextB(const txt: string; x, y: integer); static;
+    class procedure IN_DrawNumber(val: integer; x, y: integer; digits: integer); static;
+    class procedure IN_DrawTime(x, y: integer; h, m, s: integer); static;
+    class procedure IN_DrawFinished; static;
+    class procedure IN_DrawEntering(const y: Integer); static;
+    class procedure IN_DrawSingleStats; static;
+    class procedure IN_DrawCoopStats; static;
+    class procedure IN_DrawDMStats; static;
+    class procedure IN_DrawOldLevel; static;
+    class procedure IN_DrawYAH; static;
+  end;
+
 //========================================================================
 //
 // IN_LoadPics
@@ -196,7 +232,7 @@ var
 //========================================================================
 //
 //==============================================================================
-procedure IN_LoadPics;
+class procedure TIntermissionLocalRoutines.IN_LoadPics;
 var
   i: integer;
 begin
@@ -228,7 +264,7 @@ end;
 // IN_CheckCustomPics
 //
 //==============================================================================
-procedure IN_CheckCustomPics;
+class procedure TIntermissionLocalRoutines.IN_CheckCustomPics;
 begin
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.exitpic <> '') then
   begin
@@ -261,7 +297,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_InitStats;
+class procedure TIntermissionLocalRoutines.IN_InitStats;
 var
   i: integer;
   j: integer;
@@ -346,7 +382,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_Start(const wbstartstruct: Pwbstartstruct_t);
+class procedure TIntermissionRoutines.IN_Start(const wbstartstruct: Pwbstartstruct_t);
 var
   palette: PByteArray;
 begin
@@ -357,9 +393,9 @@ begin
 
   wbs := wbstartstruct;
 
-  IN_CheckCustomPics;
-  IN_LoadPics;
-  IN_InitStats;
+  TIntermissionLocalRoutines.IN_CheckCustomPics;
+  TIntermissionLocalRoutines.IN_LoadPics;
+  TIntermissionLocalRoutines.IN_InitStats;
   intermission := true;
   interstate := -1;
   skipintermission := false;
@@ -376,7 +412,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_UnloadPics;
+class procedure TIntermissionLocalRoutines.IN_UnloadPics;
 var
   i: integer;
 begin
@@ -398,7 +434,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_Stop;
+class procedure TIntermissionLocalRoutines.IN_Stop;
 begin
   intermission := false;
   IN_UnloadPics;
@@ -412,7 +448,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_WaitStop;
+class procedure TIntermissionLocalRoutines.IN_WaitStop;
 begin
   dec(cnt);
   if cnt <= 0 then
@@ -430,7 +466,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_CheckForSkip;
+class procedure TIntermissionLocalRoutines.IN_CheckForSkip;
 var
   i: integer;
   player: Pplayer_t;
@@ -467,18 +503,18 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_Ticker;
+class procedure TIntermissionRoutines.IN_Ticker;
 begin
   if not intermission then
     exit;
 
   if interstate = 3 then
   begin
-    IN_WaitStop;
+    TIntermissionLocalRoutines.IN_WaitStop;
     exit;
   end;
 
-  IN_CheckForSkip;
+  TIntermissionLocalRoutines.IN_CheckForSkip;
 
   inc(intertime);
   if oldintertime < intertime then
@@ -539,7 +575,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_DrawStatBack;
+class procedure TIntermissionLocalRoutines.IN_DrawStatBack;
 var
   x: integer;
   y: integer;
@@ -584,7 +620,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_DrTextB(const txt: string; x, y: integer);
+class procedure TIntermissionLocalRoutines.IN_DrTextB(const txt: string; x, y: integer);
 var
   i: integer;
   c: char;
@@ -613,7 +649,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_DrawNumber(val: integer; x, y: integer; digits: integer);
+class procedure TIntermissionLocalRoutines.IN_DrawNumber(val: integer; x, y: integer; digits: integer);
 var
   patch: Ppatch_t;
   xpos: integer;
@@ -703,7 +739,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_DrawTime(x, y: integer; h, m, s: integer);
+class procedure TIntermissionLocalRoutines.IN_DrawTime(x, y: integer; h, m, s: integer);
 begin
   if h <> 0 then
   begin
@@ -726,7 +762,7 @@ end;
 // IN_DrawFinished
 //
 //==============================================================================
-procedure IN_DrawFinished;
+class procedure TIntermissionLocalRoutines.IN_DrawFinished;
 var
   x, y: integer;
   lpic: Ppatch_t;
@@ -737,7 +773,7 @@ begin
   // The level defines a new name but no texture for the name.
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelname <> '') and (wbs.lastmapinfo.levelpic = '') then
   begin
-    x := 160 - M_StringWidth2(wbs.lastmapinfo.levelname) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(wbs.lastmapinfo.levelname) div 2;
     IN_DrTextB(wbs.lastmapinfo.levelname, x, 3);
 
     y := 25;
@@ -753,13 +789,13 @@ begin
   else
   begin
     leveltitle := P_GetMapTitle(wbs.epsd + 1, wbs.last + 1);
-    x := 160 - M_StringWidth2(leveltitle) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(leveltitle) div 2;
     IN_DrTextB(leveltitle, x, 3);
     y := 25;
   end;
 
-  x := 160 - M_StringWidth('FINISHED') div 2;
-  M_WriteText(x, y, 'FINISHED');
+  x := 160 - TMenuRoutines.M_StringWidth('FINISHED') div 2;
+  TMenuRoutines.M_WriteText(x, y, 'FINISHED');
 end;
 
 //==============================================================================
@@ -767,19 +803,19 @@ end;
 // IN_DrawEntering
 //
 //==============================================================================
-procedure IN_DrawEntering(const y: Integer);
+class procedure TIntermissionLocalRoutines.IN_DrawEntering(const y: Integer);
 var
   x: integer;
   lpic: Ppatch_t;
   leveltitle: string;
 begin
-  x := 160 - M_StringWidth('NOW ENTERING:') div 2;
-  M_WriteText(x, y, 'NOW ENTERING:');
+  x := 160 - TMenuRoutines.M_StringWidth('NOW ENTERING:') div 2;
+  TMenuRoutines.M_WriteText(x, y, 'NOW ENTERING:');
 
   // The level defines a new name but no texture for the name.
   if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelname <> '') and (wbs.nextmapinfo.levelpic = '') then
   begin
-    x := 160 - M_StringWidth2(wbs.nextmapinfo.levelname) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(wbs.nextmapinfo.levelname) div 2;
     IN_DrTextB(wbs.nextmapinfo.levelname, x, y + 10);
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
@@ -791,7 +827,7 @@ begin
   else
   begin
     leveltitle := P_GetMapTitle(wbs.nextep + 1, wbs.next + 1);
-    x := 160 - M_StringWidth2(leveltitle) div 2;
+    x := 160 - TMenuRoutines.M_StringWidth2(leveltitle) div 2;
     IN_DrTextB(leveltitle, x, y + 10);
   end;
 end;
@@ -804,7 +840,7 @@ var
 // IN_DrawSingleStats
 //
 //==============================================================================
-procedure IN_DrawSingleStats;
+class procedure TIntermissionLocalRoutines.IN_DrawSingleStats;
 begin
   IN_DrTextB('KILLS', 50, 65);
   IN_DrTextB('ITEMS', 50, 90);
@@ -887,7 +923,7 @@ var
 // IN_DrawCoopStats
 //
 //==============================================================================
-procedure IN_DrawCoopStats;
+class procedure TIntermissionLocalRoutines.IN_DrawCoopStats;
 var
   i: integer;
   ypos: integer;
@@ -940,7 +976,7 @@ var
 // IN_DrawDMStats
 //
 //==============================================================================
-procedure IN_DrawDMStats;
+class procedure TIntermissionLocalRoutines.IN_DrawDMStats;
 var
   i: integer;
   j: integer;
@@ -952,9 +988,9 @@ begin
   ypos := 55;
 
   IN_DrTextB('TOTAL', 265, 30);
-  M_WriteText(140, 8, 'VICTIMS');
+  TMenuRoutines.M_WriteText(140, 8, 'VICTIMS');
   for i := 0 to 6 do
-    M_WriteText(10, 80 + 9 * i, KillersText[i]);
+    TMenuRoutines.M_WriteText(10, 80 + 9 * i, KillersText[i]);
   if intertime < 20 then
   begin
     for i := 0 to MAXPLAYERS - 1 do
@@ -1032,7 +1068,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_DrawOldLevel;
+class procedure TIntermissionLocalRoutines.IN_DrawOldLevel;
 var
   i: integer;
 begin
@@ -1086,7 +1122,7 @@ end;
 //========================================================================
 //
 //==============================================================================
-procedure IN_DrawYAH;
+class procedure TIntermissionLocalRoutines.IN_DrawYAH;
 var
   i: integer;
   prevmap: integer;
@@ -1133,7 +1169,7 @@ var
 // IN_Drawer
 //
 //==============================================================================
-procedure IN_Drawer;
+class procedure TIntermissionRoutines.IN_Drawer;
 begin
   if not intermission then
     exit;
@@ -1150,14 +1186,14 @@ begin
   case interstate of
     0: // draw stats
       begin
-        IN_DrawStatBack;
+        TIntermissionLocalRoutines.IN_DrawStatBack;
         case gametype of
           gt_single:
-            IN_DrawSingleStats;
+            TIntermissionLocalRoutines.IN_DrawSingleStats;
           gt_cooperative:
-            IN_DrawCoopStats;
+            TIntermissionLocalRoutines.IN_DrawCoopStats;
           gt_deathmatch:
-            IN_DrawDMStats;
+            TIntermissionLocalRoutines.IN_DrawDMStats;
         end;
       end;
     1: // leaving old level
@@ -1165,12 +1201,12 @@ begin
         if enterpic <> '' then
         begin
           V_TileScreen8(enterpic, SCN_TMP);
-          IN_DrawFinished;
+          TIntermissionLocalRoutines.IN_DrawFinished;
         end
         else if TGameSession.GameEpisode < 4 then
         begin
           V_DrawPatchFullScreenTMP320x200(patchINTERPIC);
-          IN_DrawOldLevel;
+          TIntermissionLocalRoutines.IN_DrawOldLevel;
         end;
       end;
     2: // going to the next level
@@ -1178,12 +1214,12 @@ begin
         if enterpic <> '' then
         begin
           V_TileScreen8(enterpic, SCN_TMP);
-          IN_DrawEntering(10);
+          TIntermissionLocalRoutines.IN_DrawEntering(10);
         end
         else if TGameSession.GameEpisode < 4 then
         begin
           V_DrawPatchFullScreenTMP320x200(patchINTERPIC);
-          IN_DrawYAH;
+          TIntermissionLocalRoutines.IN_DrawYAH;
         end;
       end;
     3: // waiting before going to the next level

@@ -34,43 +34,52 @@ interface
 uses
   d_event;
 
-//==============================================================================
-// F_Responder
-//
-//-----------------------------------------------------------------------------
-//
-// DESCRIPTION:
-// Game completion, final screen animation.
-//
-//-----------------------------------------------------------------------------
-//
-//==============================================================================
-function F_Responder(ev: Pevent_t): boolean;
+{ Called by main loop. }
 
 { Called by main loop. }
 
-//==============================================================================
-//
-// F_Ticker
-//
-//==============================================================================
-procedure F_Ticker;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFinaleRoutines = class sealed
+  public
+    //==============================================================================
+    // F_Responder
+    //
+    //-----------------------------------------------------------------------------
+    //
+    // DESCRIPTION:
+    // Game completion, final screen animation.
+    //
+    //-----------------------------------------------------------------------------
+    //
+    //==============================================================================
+    class function F_Responder(ev: Pevent_t): boolean; static;
 
-{ Called by main loop. }
+    //==============================================================================
+    //
+    // F_Ticker
+    //
+    //==============================================================================
+    class procedure F_Ticker; static;
 
-//==============================================================================
-//
-// F_Drawer
-//
-//==============================================================================
-procedure F_Drawer;
+    //==============================================================================
+    //
+    // F_Drawer
+    //
+    //==============================================================================
+    class procedure F_Drawer; static;
 
-//==============================================================================
-//
-// F_StartFinale
-//
-//==============================================================================
-procedure F_StartFinale;
+    //==============================================================================
+    //
+    // F_StartFinale
+    //
+    //==============================================================================
+    class procedure F_StartFinale; static;
+  end;
+
 
 implementation
 
@@ -122,12 +131,27 @@ const
     'win3msg'
   );
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFinaleLocalRoutines = class sealed
+  public
+    class function F_GetFinaleText(sequence: integer): string; static;
+    class procedure F_InitializeFade(fadeIn: boolean); static;
+    class procedure F_DeInitializeFade; static;
+    class procedure F_FadePic; static;
+    class procedure F_TextWrite; static;
+    class procedure F_DrawPic; static;
+  end;
+
 //==============================================================================
 //
 // F_GetFinaleText
 //
 //==============================================================================
-function F_GetFinaleText(sequence: integer): string;
+class function TFinaleLocalRoutines.F_GetFinaleText(sequence: integer): string;
 begin
   result := W_TextLumpName(winMsgLumpNames[sequence]);
   if length(result) >= MAX_INTRMSN_MESSAGE_SIZE then
@@ -139,7 +163,7 @@ end;
 // F_InitializeFade
 //
 //==============================================================================
-procedure F_InitializeFade(fadeIn: boolean);
+class procedure TFinaleLocalRoutines.F_InitializeFade(fadeIn: boolean);
 var
   i: integer;
   pal: PByteArray;
@@ -177,7 +201,7 @@ end;
 // F_DeInitializeFade
 //
 //==============================================================================
-procedure F_DeInitializeFade;
+class procedure TFinaleLocalRoutines.F_DeInitializeFade;
 begin
   Z_Free(Palette);
   Z_Free(PaletteDelta);
@@ -189,7 +213,7 @@ end;
 // F_StartFinale
 //
 //==============================================================================
-procedure F_StartFinale;
+class procedure TFinaleRoutines.F_StartFinale;
 begin
   TGameSession.GameAction := ga_nothing;
   TGameSession.GameState := GS_FINALE;
@@ -199,10 +223,10 @@ begin
 
   FinaleStage := 0;
   FinaleCount := 0;
-  FinaleText := F_GetFinaleText(0);
+  FinaleText := TFinaleLocalRoutines.F_GetFinaleText(0);
   FinaleEndCount := 70;
   FinaleLumpNum := W_GetNumForName('FINALE1');
-  F_InitializeFade(true);
+  TFinaleLocalRoutines.F_InitializeFade(true);
 
   S_ChangeMusic(Ord(mus_hall), false); // don't loop the song
 end;
@@ -212,7 +236,7 @@ end;
 // F_Responder
 //
 //==============================================================================
-function F_Responder(ev: Pevent_t): boolean;
+class function TFinaleRoutines.F_Responder(ev: Pevent_t): boolean;
 begin
   result := false;
 end;
@@ -223,7 +247,7 @@ end;
 // FadePic
 //
 //==============================================================================
-procedure F_FadePic;
+class procedure TFinaleLocalRoutines.F_FadePic;
 var
   i: integer;
 begin
@@ -240,7 +264,7 @@ end;
 // F_Ticker
 //
 //==============================================================================
-procedure F_Ticker;
+class procedure TFinaleRoutines.F_Ticker;
 begin
   inc(FinaleCount);
   if (FinaleStage < 5) and (FinaleCount >= FinaleEndCount) then
@@ -254,7 +278,7 @@ begin
         end;
       2: // Pic 2, Text 2
         begin
-          FinaleText := F_GetFinaleText(1);
+          FinaleText := TFinaleLocalRoutines.F_GetFinaleText(1);
           FinaleEndCount := Length(FinaleText) * TEXTSPEED + TEXTWAIT;
           FinaleLumpNum := W_GetNumForName('FINALE2');
           S_ChangeMusic(Ord(mus_orb), false);
@@ -262,28 +286,28 @@ begin
       3: // Pic 2 -- Fade out
         begin
           FinaleEndCount := 70;
-          F_DeInitializeFade;
-          F_InitializeFade(false);
+          TFinaleLocalRoutines.F_DeInitializeFade;
+          TFinaleLocalRoutines.F_InitializeFade(false);
         end;
       4: // Pic 3 -- Fade in
         begin
           FinaleLumpNum := W_GetNumForName('FINALE3');
           FinaleEndCount := 71;
-          F_DeInitializeFade;
-          F_InitializeFade(true);
+          TFinaleLocalRoutines.F_DeInitializeFade;
+          TFinaleLocalRoutines.F_InitializeFade(true);
           S_ChangeMusic(Ord(mus_chess), true);
         end;
       5: // Pic 3 , Text 3
         begin
-          FinaleText := F_GetFinaleText(2);
-          F_DeInitializeFade;
+          FinaleText := TFinaleLocalRoutines.F_GetFinaleText(2);
+          TFinaleLocalRoutines.F_DeInitializeFade;
         end;
     end;
     exit;
   end;
 
   if (FinaleStage = 0) or (FinaleStage = 3) or (FinaleStage = 4) then
-    F_FadePic;
+    TFinaleLocalRoutines.F_FadePic;
 end;
 
 //==============================================================================
@@ -291,7 +315,7 @@ end;
 // F_TextWrite
 //
 //==============================================================================
-procedure F_TextWrite;
+class procedure TFinaleLocalRoutines.F_TextWrite;
 var
   w: integer;
   count: integer;
@@ -382,7 +406,7 @@ end;
 // F_DrawPic
 //
 //==============================================================================
-procedure F_DrawPic;
+class procedure TFinaleLocalRoutines.F_DrawPic;
 begin
   memcpy(@screens[SCN_TMP][0], W_CacheLumpNum(FinaleLumpNum, PU_CACHE), 320 * 200);
 
@@ -404,20 +428,20 @@ end;
 // F_Drawer
 //
 //==============================================================================
-procedure F_Drawer;
+class procedure TFinaleRoutines.F_Drawer;
 begin
   case FinaleStage of
     0: // Fade in initial finale screen
-      F_DrawPic;
+      TFinaleLocalRoutines.F_DrawPic;
     1,
     2:
-      F_TextWrite;
+      TFinaleLocalRoutines.F_TextWrite;
     3: // Fade screen out
-      F_DrawPic;
+      TFinaleLocalRoutines.F_DrawPic;
     4: // Fade in chess screen
-      F_DrawPic;
+      TFinaleLocalRoutines.F_DrawPic;
     5:
-      F_TextWrite;
+      TFinaleLocalRoutines.F_TextWrite;
   end;
 end;
 

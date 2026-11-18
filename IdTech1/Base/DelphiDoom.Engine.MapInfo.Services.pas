@@ -87,7 +87,7 @@ end;
 procedure TEngineMapInfoServices.ClearEpisodes;
 begin
 {$IFNDEF STRIFE}
-  M_ClearEpisodes;
+  TMenuRoutines.M_ClearEpisodes;
 {$ENDIF}
   // Strife has no episodes: the composition root does not give it as a sink
 end;
@@ -95,7 +95,7 @@ end;
 procedure TEngineMapInfoServices.AddEpisode(const AMapName, APicture, AText: string; AKey: Char);
 begin
 {$IFNDEF STRIFE}
-  M_AddEpisode(AMapName, APicture, AText, AKey);
+  TMenuRoutines.M_AddEpisode(AMapName, APicture, AText, AKey);
 {$ENDIF}
 end;
 

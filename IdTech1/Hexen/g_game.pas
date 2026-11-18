@@ -82,7 +82,7 @@ procedure G_DeferedInitNewUntranslated(skill: skill_t; map: integer);
 //==============================================================================
 procedure G_CmdNewGame(const parm1, parm2: string);
 
-{ Can be called by the startup code or M_Responder, }
+{ Can be called by the startup code or TMenuRoutines.M_Responder, }
 { calls P_SetupLevel or W_EnterWorld. }
 
 //==============================================================================
@@ -99,7 +99,7 @@ procedure G_LoadGame(slot: integer);
 //==============================================================================
 procedure G_DoLoadGame;
 
-{ Called by M_Responder. }
+{ Called by TMenuRoutines.M_Responder. }
 
 //==============================================================================
 //
@@ -1298,7 +1298,7 @@ begin
        ((ev._type = ev_mouse) and (ev.data1 <> 0)) or
        ((ev._type = ev_joystick) and (ev.data1 <> 0)) then
     begin
-      M_StartControlPanel;
+      TMenuRoutines.M_StartControlPanel;
       result := true;
       exit;
     end;
@@ -1313,7 +1313,7 @@ begin
       result := true; // chat ate the event
       exit;
     end;
-    if SB_Responder(ev) then
+    if TStatusBarRoutines.SB_Responder(ev) then
     begin
       result := true; // status window ate it
       exit;
@@ -1327,7 +1327,7 @@ begin
 
   if TGameSession.GameState = GS_FINALE then
   begin
-    if F_Responder(ev) then
+    if TFinaleRoutines.F_Responder(ev) then
     begin
       result := true; // finale ate the event
       exit;
@@ -1763,7 +1763,7 @@ begin
   else
   begin
     TGameSession.GameState := GS_INTERMISSION;
-    IN_Start;
+    TIntermissionRoutines.IN_Start;
   end;
 end;
 
@@ -1792,7 +1792,7 @@ procedure G_DoSingleReborn;
 begin
   TGameSession.GameAction := ga_nothing;
   SV_LoadGame(SV_GetRebornSlot);
-  SB_SetClassData;
+  TStatusBarRoutines.SB_SetClassData;
 end;
 
 //
@@ -1830,7 +1830,7 @@ begin
   begin // Copy the base slot to the reborn slot
     SV_UpdateRebornSlot;
   end;
-  SB_SetClassData;
+  TStatusBarRoutines.SB_SetClassData;
   P_LevelInfoChangeMusic;
   borderneedsrefresh := true;
 end;
@@ -2078,12 +2078,12 @@ begin
         G_DoNewGame;
       ga_loadgame:
         begin
-          M_DrawLoadIcon;
+          TMenuRoutines.M_DrawLoadIcon;
           G_DoLoadGame;
         end;
       ga_savegame:
         begin
-          M_DrawSaveIcon;
+          TMenuRoutines.M_DrawSaveIcon;
           G_DoSaveGame;
         end;
       ga_singlereborn:
@@ -2093,7 +2093,7 @@ begin
       ga_completed:
         G_DoCompleted;
       ga_victory:
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       ga_worlddone:
         G_DoWorldDone;
       ga_screenshot:
@@ -2189,17 +2189,17 @@ begin
     GS_LEVEL:
       begin
         P_Ticker;
-        SB_Ticker;
+        TStatusBarRoutines.SB_Ticker;
         AM_Ticker;
         HU_Ticker;
       end;
     GS_INTERMISSION:
       begin
-        IN_Ticker;
+        TIntermissionRoutines.IN_Ticker;
       end;
     GS_FINALE:
       begin
-        F_Ticker;
+        TFinaleRoutines.F_Ticker;
       end;
     GS_DEMOSCREEN:
       begin

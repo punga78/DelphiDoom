@@ -33,26 +33,35 @@ unit in_stuff;
 
 interface
 
-//==============================================================================
-//
-// IN_Start
-//
-//==============================================================================
-procedure IN_Start;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TIntermissionRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // IN_Start
+    //
+    //==============================================================================
+    class procedure IN_Start; static;
 
-//==============================================================================
-//
-// IN_Ticker
-//
-//==============================================================================
-procedure IN_Ticker;
+    //==============================================================================
+    //
+    // IN_Ticker
+    //
+    //==============================================================================
+    class procedure IN_Ticker; static;
 
-//==============================================================================
-//
-// IN_Drawer
-//
-//==============================================================================
-function IN_Drawer: boolean;
+    //==============================================================================
+    //
+    // IN_Drawer
+    //
+    //==============================================================================
+    class function IN_Drawer: boolean; static;
+  end;
+
 
 implementation
 
@@ -118,6 +127,26 @@ var
   HubCount: integer;
   HubText: string;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TIntermissionLocalRoutines = class sealed
+  public
+    class procedure IN_InitStats; static;
+    class procedure IN_LoadPics; static;
+    class procedure IN_UnloadPics; static;
+    class procedure IN_Stop; static;
+    class procedure IN_WaitStop; static;
+    class procedure IN_CheckForSkip; static;
+    class procedure IN_DrawHubText; static;
+    class procedure IN_DrNumber(val: integer; x, y: integer; wrapThresh: integer); static;
+    class procedure IN_DrNumberBold(val: integer; x, y: integer; wrapThresh: integer); static;
+    class procedure IN_DrDeathTally; static;
+    class procedure IN_DrawTravel; static;
+  end;
+
 //==============================================================================
 //
 // IN_InitStats
@@ -125,7 +154,7 @@ var
 //   Initializes the stats for single player mode
 //
 //==============================================================================
-procedure IN_InitStats;
+class procedure TIntermissionLocalRoutines.IN_InitStats;
 var
   i: integer;
   j: integer;
@@ -201,7 +230,7 @@ end;
 // IN_LoadPics
 //
 //==============================================================================
-procedure IN_LoadPics;
+class procedure TIntermissionLocalRoutines.IN_LoadPics;
 var
   i: integer;
 begin
@@ -225,7 +254,7 @@ end;
 // IN_UnloadPics
 //
 //==============================================================================
-procedure IN_UnloadPics;
+class procedure TIntermissionLocalRoutines.IN_UnloadPics;
 var
   i: integer;
 begin
@@ -245,7 +274,7 @@ end;
 // IN_Start
 //
 //==============================================================================
-procedure IN_Start;
+class procedure TIntermissionRoutines.IN_Start;
 var
   i: integer;
   palette: PByteArray;
@@ -255,8 +284,8 @@ begin
   V_SetPalette(palette);
   Z_ChangeTag(palette, PU_CACHE);
 
-  IN_InitStats;
-  IN_LoadPics;
+  TIntermissionLocalRoutines.IN_InitStats;
+  TIntermissionLocalRoutines.IN_LoadPics;
   intermission := true;
   interstate := 0;
   skipintermission := false;
@@ -279,7 +308,7 @@ end;
 // IN_Stop
 //
 //==============================================================================
-procedure IN_Stop;
+class procedure TIntermissionLocalRoutines.IN_Stop;
 begin
   intermission := false;
   IN_UnloadPics;
@@ -290,7 +319,7 @@ end;
 // IN_WaitStop
 //
 //==============================================================================
-procedure IN_WaitStop;
+class procedure TIntermissionLocalRoutines.IN_WaitStop;
 begin
   dec(cnt);
   if cnt <= 0 then
@@ -313,7 +342,7 @@ var
 // IN_CheckForSkip
 //
 //==============================================================================
-procedure IN_CheckForSkip;
+class procedure TIntermissionLocalRoutines.IN_CheckForSkip;
 var
   i: integer;
   player: Pplayer_t;
@@ -372,19 +401,19 @@ end;
 // IN_Ticker
 //
 //==============================================================================
-procedure IN_Ticker;
+class procedure TIntermissionRoutines.IN_Ticker;
 begin
   if not intermission then
     exit;
 
   if interstate <> 0 then
   begin
-    IN_WaitStop;
+    TIntermissionLocalRoutines.IN_WaitStop;
     exit;
   end;
 
   skipintermission := false;
-  IN_CheckForSkip;
+  TIntermissionLocalRoutines.IN_CheckForSkip;
   inc(intertime);
   if skipintermission or ((gametype = gt_single) and (HubCount = 0)) then
   begin
@@ -399,7 +428,7 @@ end;
 // IN_DrawHubText
 //
 //==============================================================================
-procedure IN_DrawHubText;
+class procedure TIntermissionLocalRoutines.IN_DrawHubText;
 var
   i, count: integer;
   cx, cy: integer;
@@ -451,7 +480,7 @@ end;
 // IN_DrNumber
 //
 //==============================================================================
-procedure IN_DrNumber(val: integer; x, y: integer; wrapThresh: integer);
+class procedure TIntermissionLocalRoutines.IN_DrNumber(val: integer; x, y: integer; wrapThresh: integer);
 var
   buff: string;
 begin
@@ -464,7 +493,7 @@ begin
   end
   else
     buff := 'XX';
-  M_WriteText(x - M_StringWidth(buff) div 2, y, buff);
+  TMenuRoutines.M_WriteText(x - TMenuRoutines.M_StringWidth(buff) div 2, y, buff);
 end;
 
 //==============================================================================
@@ -472,7 +501,7 @@ end;
 // IN_DrNumberBold
 //
 //==============================================================================
-procedure IN_DrNumberBold(val: integer; x, y: integer; wrapThresh: integer);
+class procedure TIntermissionLocalRoutines.IN_DrNumberBold(val: integer; x, y: integer; wrapThresh: integer);
 var
   buff: string;
 begin
@@ -485,7 +514,7 @@ begin
   end
   else
     buff := 'XX';
-  M_WriteTextYellow(x - M_StringWidth(buff) div 2, y, buff);
+  TMenuRoutines.M_WriteTextYellow(x - TMenuRoutines.M_StringWidth(buff) div 2, y, buff);
 end;
 
 //
@@ -514,7 +543,7 @@ var
 // IN_DrDeathTally
 //
 //==============================================================================
-procedure IN_DrDeathTally;
+class procedure TIntermissionLocalRoutines.IN_DrDeathTally;
 var
   i, j: integer;
   xPos, yPos: fixed_t;
@@ -568,14 +597,14 @@ begin
       end
       else
       begin
-        temp := M_StringWidth('--') div 2;
+        temp := TMenuRoutines.M_StringWidth('--') div 2;
         if bold then
         begin
-          M_WriteTextYellow(x - temp, y, '--');
+          TMenuRoutines.M_WriteTextYellow(x - temp, y, '--');
         end
         else
         begin
-          M_WriteText(x - temp, y, '--');
+          TMenuRoutines.M_WriteText(x - temp, y, '--');
         end;
       end;
       xPos := xPos + xDelta
@@ -600,7 +629,7 @@ var
 // IN_DrawTravel
 //
 //==============================================================================
-procedure IN_DrawTravel;
+class procedure TIntermissionLocalRoutines.IN_DrawTravel;
 var
   r: integer;
   pal: PByteArray;
@@ -635,7 +664,7 @@ end;
 // IN_Drawer
 //
 //==============================================================================
-function IN_Drawer: boolean;
+class function TIntermissionRoutines.IN_Drawer: boolean;
 begin
   if not intermission then
     result := false
@@ -650,13 +679,13 @@ begin
     if gametype = gt_single then
     begin
       if HubCount <> 0 then
-        IN_DrawHubText;
+        TIntermissionLocalRoutines.IN_DrawHubText;
     end
     else
-      IN_DrDeathTally;
+      TIntermissionLocalRoutines.IN_DrDeathTally;
   end
   else
-    IN_DrawTravel;
+    TIntermissionLocalRoutines.IN_DrawTravel;
 
   V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_FG, true);
 

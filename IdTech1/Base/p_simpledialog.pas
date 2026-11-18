@@ -205,7 +205,7 @@ begin
   if currentsimpledialog = numsimpledialogs then
     menuactive := False
   else
-    M_SetupNextMenu(@simpledialogmenus[currentsimpledialog]);
+    TMenuRoutines.M_SetupNextMenu(@simpledialogmenus[currentsimpledialog]);
 end;
 
 //==============================================================================
@@ -219,7 +219,7 @@ var
 begin
   V_DrawPatchTransparent(20, 10, SCN_FG, W_CacheLumpName('M_DIALOG', PU_STATIC), true);
   str := M_SimpleDialogDimMsg(39, 17, P_SimpleDialogLoadText(simpledialoglumps[currentsimpledialog]));
-  M_WriteText(39, 17, str);
+  TMenuRoutines.M_WriteText(39, 17, str);
 end;
 
 //==============================================================================
@@ -276,7 +276,7 @@ begin
     simpledialogmenus[i].runonselect := true;
   end;
 
-  M_StartControlPanel;
+  TMenuRoutines.M_StartControlPanel;
   {$IFDEF DOOM_OR_STRIFE}
   sndid := Ord(sfx_swtchn);
   {$ENDIF}

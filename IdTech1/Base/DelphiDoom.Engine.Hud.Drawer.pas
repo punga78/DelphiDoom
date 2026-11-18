@@ -464,14 +464,14 @@ begin
   sprintf(s2, 'Items: %d/%d', [plr.itemcount, P_World.Totals.Items]);
   sprintf(s3, 'Secrets: %d/%d', [plr.secretcount, P_World.Totals.Secrets]);
 
-  x := XOFFS - Max3I(M_StringWidth(s1), M_StringWidth(s2), M_StringWidth(s3));
-  y := YOFFS - M_StringHeight(s3);
+  x := XOFFS - Max3I(TMenuRoutines.M_StringWidth(s1), TMenuRoutines.M_StringWidth(s2), TMenuRoutines.M_StringWidth(s3));
+  y := YOFFS - TMenuRoutines.M_StringHeight(s3);
   WriteText(x, y, s3, True);
 
-  y := y - M_StringHeight(s2);
+  y := y - TMenuRoutines.M_StringHeight(s2);
   WriteText(x, y, s2, True);
 
-  y := y - M_StringHeight(s1);
+  y := y - TMenuRoutines.M_StringHeight(s1);
   WriteText(x, y, s1, True);
 end;
 {$ENDIF}

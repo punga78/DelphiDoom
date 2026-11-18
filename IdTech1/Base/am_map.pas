@@ -502,9 +502,9 @@ begin
 
   // inform the status bar of the change
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  SB_Responder(@st_notify_AM_initVariables);
+  TStatusBarRoutines.SB_Responder(@st_notify_AM_initVariables);
 {$ELSE}
-  ST_Responder(@st_notify_AM_initVariables);
+  TStatusBarRoutines.ST_Responder(@st_notify_AM_initVariables);
 {$ENDIF}
 end;
 
@@ -645,9 +645,9 @@ begin
   begin
     AM_unloadPics;
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    SB_Responder(@st_notify_AM_Stop);
+    TStatusBarRoutines.SB_Responder(@st_notify_AM_Stop);
 {$ELSE}
-    ST_Responder(@st_notify_AM_Stop);
+    TStatusBarRoutines.ST_Responder(@st_notify_AM_Stop);
 {$ENDIF}
     stopped := true;
   end;

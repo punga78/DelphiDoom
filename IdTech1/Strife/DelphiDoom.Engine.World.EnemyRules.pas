@@ -3724,12 +3724,12 @@ begin
 
     Ord(MT_SUBENTITY):
       begin
-        F_StartFinale();
+        TFinaleRoutines.F_StartFinale();
       end;
 
     Ord(MT_PROGRAMMER):
       begin
-        F_StartFinale();
+        TFinaleRoutines.F_StartFinale();
         G_ExitLevel(0);
       end;
 

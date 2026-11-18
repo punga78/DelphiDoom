@@ -813,7 +813,7 @@ begin
     ev := @events[eventtail];
     if TMainLocalRoutines.D_Console.Respond(ev) then
       // console ate the event
-    else if M_Responder(ev) then
+    else if TMenuRoutines.M_Responder(ev) then
       // menu ate the event
     else
       G_Responder(ev);
@@ -982,7 +982,7 @@ begin
   if Ord(TGameSession.GameState) <> wipegamestate then
   begin
     wipe := true;
-    fade_StartScreen;
+    TFadeRoutines.fade_StartScreen;
   end
   else
     wipe := false;
@@ -1005,13 +1005,13 @@ begin
             redrawsbar := true; // just put away the help screen
           viewfullscreen := viewheight = SCREENHEIGHT;
           if viewfullscreen then
-            ST_Drawer(stdo_no, redrawsbar)
+            TStatusBarRoutines.ST_Drawer(stdo_no, redrawsbar)
           else
-            ST_Drawer(stdo_full, redrawsbar);
+            TStatusBarRoutines.ST_Drawer(stdo_full, redrawsbar);
         end;
       end;
     GS_FINALE:
-      F_Drawer;
+      TFinaleRoutines.F_Drawer;
     GS_DEMOSCREEN:
       D_PageDrawer;
   end;
@@ -1071,7 +1071,7 @@ begin
         end;
       end
       else if R_FullStOn and (TGameSession.GameTic <> 0) then
-        ST_Drawer(stdo_small, redrawsbar);
+        TStatusBarRoutines.ST_Drawer(stdo_small, redrawsbar);
     end;
   end;
 
@@ -1097,7 +1097,7 @@ begin
 
   if (TGameSession.GameState = GS_LEVEL) and (TGameSession.GameTic <> 0) then
   begin
-    if ST_DrawExternal then
+    if TStatusBarRoutines.ST_DrawExternal then
       popupactivestate := true
     else if popupactivestate then
     begin
@@ -1120,7 +1120,7 @@ begin
     OVR_Drawer;
 
     // Menus go directly to the screen
-    M_Drawer; // Menu is drawn even on top of everything
+    TMenuRoutines.M_Drawer; // Menu is drawn even on top of everything
 
     // Console goes directly to the screen
     TMainLocalRoutines.D_Console.Draw;   // Console is drawn even on top of menus
@@ -1139,7 +1139,7 @@ begin
 
     // JVAL: Overlay Drawer before menus
     OVR_Drawer;
-    M_Drawer;
+    TMenuRoutines.M_Drawer;
     TMainLocalRoutines.D_Console.Draw;
     diskbusyend := -1;
   end
@@ -1151,7 +1151,7 @@ begin
     // JVAL: Overlay Drawer before menus
     OVR_Drawer;
 
-    M_Drawer;
+    TMenuRoutines.M_Drawer;
     TMainLocalRoutines.D_Console.Draw;
   end;
 
@@ -1166,7 +1166,7 @@ begin
   end;
 
   // wipe update
-  fade_EndScreen;
+  TFadeRoutines.fade_EndScreen;
 
   wipedisplay := true;
   wipestart := I_GetTime - 1;
@@ -1179,8 +1179,8 @@ begin
       tics := nowtime - wipestart;
     until tics >= 1; // // haleyjd 08/23/2010: [STRIFE] Changed from == 0 to < 3 // JVAL: changed to 1
     wipestart := nowtime;
-    done := fade_Ticker(tics);
-    M_Drawer;         // Menu is drawn even on top of wipes
+    done := TFadeRoutines.fade_Ticker(tics);
+    TMenuRoutines.M_Drawer;         // Menu is drawn even on top of wipes
     TMainLocalRoutines.D_Console.Draw;         // Console draw on top of wipes and menus
     TMainLocalRoutines.D_FinishUpdate;   // page flip or blit buffer
     HU_DoFPSStuff;
@@ -1460,7 +1460,7 @@ begin
       end;
     8: // demo
       begin
-        M_ClearTmp;
+        TSaveSlotRoutines.M_ClearTmp;
         pagetic := 9 * TICRATE;
         G_DeferedPlayDemo('1');
       end;
@@ -2687,7 +2687,7 @@ begin
     autoexecfile := DEFAUTOEXEC;
 
   printf('M_InitMenus: Initializing menus.'#13#10);
-  M_InitMenus;
+  TMenuRoutines.M_InitMenus;
 
   printf('M_InitDialogs: Initializing dialogs.'#13#10);
   M_InitDialogs;
@@ -2778,7 +2778,7 @@ begin
   SUC_Progress(67);
 
   printf('M_Init: Init miscellaneous info.'#13#10);
-  M_Init;
+  TMenuRoutines.M_Init;
 
   SUC_Progress(68);
 
@@ -2822,13 +2822,13 @@ begin
 
   // haleyjd 20110210: Create Strife hub save folders
   printf('M_CreateSaveDirs: Creating game save directories.'#13#10);
-  M_CreateSaveDirs(M_SaveFileName(''));
+  TSaveSlotRoutines.M_CreateSaveDirs(M_SaveFileName(''));
 
   SUC_Progress(86);
 
-  savepathtemp := M_SafeFilePath(M_SaveFileName(''), 'strfsav8.ssg');
+  savepathtemp := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), 'strfsav8.ssg');
   printf('M_ClearTmp: Clear temporary save directory.'#13#10);
-  M_ClearTmp;
+  TSaveSlotRoutines.M_ClearTmp;
 
   SUC_Progress(87);
 
@@ -2848,7 +2848,7 @@ begin
   SUC_Progress(91);
 
   printf('ST_Init: Init status bar.'#13#10);
-  ST_Init;
+  TStatusBarRoutines.ST_Init;
 
   SUC_Progress(92);
 
@@ -2885,15 +2885,15 @@ begin
     inc(p);
     kparm := strupper(myargv[p]);
     if (kparm = '0') or (kparm = 'ARROWS') then
-      M_SetKeyboardMoveMode(0)
+      TMenuRoutines.M_SetKeyboardMoveMode(0)
     else if (kparm = '1') or (kparm = 'WASD') then
-      M_SetKeyboardMoveMode(1)
+      TMenuRoutines.M_SetKeyboardMoveMode(1)
     else if (kparm = '2') or (kparm = 'ESDF') then
-      M_SetKeyboardMoveMode(2);
+      TMenuRoutines.M_SetKeyboardMoveMode(2);
   end;
 
   printf('F_Init: Setting up startcast :)'#13#10);
-  F_Init;
+  TFinaleRoutines.F_Init;
 
   SUC_Progress(98);
 
@@ -2933,8 +2933,8 @@ begin
     // A saved game of Strife is a folder for every slot: the same steps as M_LoadSelect of the menu
     // (the old G_LoadGame of a file name left loadpath empty and a new game started instead)
     G_WriteSaveName(Ord(myargv[p + 1][1]) - Ord('0'), '');
-    M_ToCurr;
-    filename := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(Ord(myargv[p + 1][1]) - Ord('0'), ''));
+    TSaveSlotRoutines.M_ToCurr;
+    filename := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), TSaveSlotRoutines.M_MakeStrifeSaveDir(Ord(myargv[p + 1][1]) - Ord('0'), ''));
     G_ReadCurrent(filename);
   end;
 
@@ -2961,7 +2961,7 @@ var
   i: integer;
 begin
   printf('M_ShutDownMenus: Shut down menus.'#13#10);
-  M_ShutDownMenus;
+  TMenuRoutines.M_ShutDownMenus;
   printf('C_ShutDown: Shut down console.'#13#10);
   if main_console <> nil then
     main_console.Shutdown;

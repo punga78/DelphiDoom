@@ -37,37 +37,9 @@ interface
 uses
   d_event;
 
-//==============================================================================
-//
-// F_Responder
-//
-//==============================================================================
-function F_Responder(ev: Pevent_t): boolean;
-
 { Called by main loop. }
 
-//==============================================================================
-//
-// F_Ticker
-//
-//==============================================================================
-procedure F_Ticker;
-
 { Called by main loop. }
-
-//==============================================================================
-//
-// F_Drawer
-//
-//==============================================================================
-procedure F_Drawer;
-
-//==============================================================================
-//
-// F_StartFinale
-//
-//==============================================================================
-procedure F_StartFinale;
 
 var
   bgflatE1: string = 'FLOOR25';   // end of Heretic Episode 1
@@ -75,6 +47,43 @@ var
   bgflatE3: string = 'FLTWAWA2';  // end of Heretic Episode 3
   bgflatE4: string = 'FLOOR28';   // end of Heretic Episode 4
   bgflatE5: string = 'FLOOR08';   // end of Heretic Episode 5
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFinaleRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // F_Responder
+    //
+    //==============================================================================
+    class function F_Responder(ev: Pevent_t): boolean; static;
+
+    //==============================================================================
+    //
+    // F_Ticker
+    //
+    //==============================================================================
+    class procedure F_Ticker; static;
+
+    //==============================================================================
+    //
+    // F_Drawer
+    //
+    //==============================================================================
+    class procedure F_Drawer; static;
+
+    //==============================================================================
+    //
+    // F_StartFinale
+    //
+    //==============================================================================
+    class procedure F_StartFinale; static;
+  end;
+
 
 implementation
 
@@ -128,7 +137,7 @@ var
 // F_StartFinale
 //
 //==============================================================================
-procedure F_StartFinale;
+class procedure TFinaleRoutines.F_StartFinale;
 begin
   TGameSession.GameAction := ga_nothing;
   TGameSession.GameState := GS_FINALE;
@@ -202,7 +211,7 @@ end;
 // F_Responder
 //
 //==============================================================================
-function F_Responder(ev: Pevent_t): boolean;
+class function TFinaleRoutines.F_Responder(ev: Pevent_t): boolean;
 begin
   if ev._type <> ev_keydown then
   begin
@@ -246,12 +255,26 @@ begin
     result := false;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFinaleLocalRoutines = class sealed
+  public
+    class procedure FMI_Ticker; static;
+    class procedure F_TextWrite; static;
+    class procedure F_DemonScroll; static;
+    class procedure F_DrawUnderwaterPic; static;
+    class procedure F_DrawUnderwater; static;
+  end;
+
 //==============================================================================
 //
 // FMI_Ticker
 //
 //==============================================================================
-procedure FMI_Ticker;
+class procedure TFinaleLocalRoutines.FMI_Ticker;
 begin
   if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then
   begin
@@ -270,7 +293,7 @@ end;
 // F_Ticker
 //
 //==============================================================================
-procedure F_Ticker;
+class procedure TFinaleRoutines.F_Ticker;
 begin
   // advance animation
   inc(finalecount);
@@ -278,7 +301,7 @@ begin
   if (finalestage = 0) and (finalecount > Length(finaletext) * TEXTSPEED + TEXTWAIT) then
   begin
     if using_FMI then
-      FMI_Ticker
+      TFinaleLocalRoutines.FMI_Ticker
     else
     begin
       finalecount := 0;
@@ -293,7 +316,7 @@ end;
 // F_TextWrite
 //
 //==============================================================================
-procedure F_TextWrite;
+class procedure TFinaleLocalRoutines.F_TextWrite;
 var
   bkok: boolean;
   w: integer;
@@ -365,7 +388,7 @@ end;
 // F_DemonScroll
 //
 //==============================================================================
-procedure F_DemonScroll;
+class procedure TFinaleLocalRoutines.F_DemonScroll;
 var
   p1, p2: PByteArray;
 begin
@@ -411,7 +434,7 @@ var
 // F_DrawUnderwaterPic
 //
 //==============================================================================
-procedure F_DrawUnderwaterPic;
+class procedure TFinaleLocalRoutines.F_DrawUnderwaterPic;
 var
   pal: PByteArray;
 begin
@@ -447,7 +470,7 @@ end;
 // F_DrawUnderwater
 //
 //==============================================================================
-procedure F_DrawUnderwater;
+class procedure TFinaleLocalRoutines.F_DrawUnderwater;
 var
   pal: PByteArray;
 begin
@@ -475,12 +498,12 @@ end;
 // F_Drawer
 //
 //==============================================================================
-procedure F_Drawer;
+class procedure TFinaleRoutines.F_Drawer;
 begin
   if using_FMI then
   begin
     if finalestage = 0 then
-      F_TextWrite
+      TFinaleLocalRoutines.F_TextWrite
     else
       V_PageDrawer(TGameSession.GameMapInfo.endpic);
     exit;
@@ -488,7 +511,7 @@ begin
 
   if finalestage = 0 then
   begin
-    F_TextWrite;
+    TFinaleLocalRoutines.F_TextWrite;
     exit;
   end;
 
@@ -500,8 +523,8 @@ begin
         else
           V_PageDrawer(pg_CREDIT);
       end;
-    2: F_DrawUnderwater;
-    3: F_DemonScroll;
+    2: TFinaleLocalRoutines.F_DrawUnderwater;
+    3: TFinaleLocalRoutines.F_DemonScroll;
     else
       begin
         V_PageDrawer(pg_CREDIT);

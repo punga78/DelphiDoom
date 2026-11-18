@@ -316,7 +316,7 @@ begin
   else if name = 'M_NEWG' then
   begin
     RX_MenuDrawPicture(0, 0, 'SelectSkill');
-    case M_ItemOn of
+    case TMenuRoutines.M_ItemOn of
       0: RX_MenuDrawPicture(51, 16, 'SkillButton1');
       1: RX_MenuDrawPicture(50, 62, 'SkillButton2');
       2: RX_MenuDrawPicture(52, 106, 'SkillButton3');
@@ -328,7 +328,7 @@ begin
   else if name = 'M_EPISOD' then
   begin
     RX_MenuDrawPicture(0, 0, 'SelectEpisode');
-    case M_ItemOn of
+    case TMenuRoutines.M_ItemOn of
       0: RX_MenuDrawPicture(36, 22, 'EpisodeButton1');
       1: RX_MenuDrawPicture(36, 81, 'EpisodeButton2');
       2: RX_MenuDrawPicture(37, 142, 'EpisodeButton3');
@@ -392,7 +392,7 @@ begin
       M_WriteBigTextGrayCenter(y, str, SCN_TMP);
   end
   else if menu.itemheight <= SMALLLINEHEIGHT then
-    M_WriteWhiteText(x, y, str)
+    TMenuRoutines.M_WriteWhiteText(x, y, str)
   else if selected then
     M_WriteBigTextOrange(x, y, str, SCN_TMP)
   else
@@ -600,7 +600,7 @@ begin
 
   pilotStringEnter := true;
   pilotOldString := pilotname;
-  M_SetupNextMenu(@PilotNameDef);
+  TMenuRoutines.M_SetupNextMenu(@PilotNameDef);
 end;
 
 //==============================================================================
@@ -678,7 +678,7 @@ end;
 function RX_MenuTopTen(choice: integer): pointer;
 begin
   result := nil;
-  M_SetupNextMenu(@TopTenDef);
+  TMenuRoutines.M_SetupNextMenu(@TopTenDef);
 end;
 
 //==============================================================================
@@ -689,7 +689,7 @@ end;
 function RX_MenuTopTenExit(choice: integer): pointer;
 begin
   result := nil;
-  M_SetupNextMenu(rxmenus.main);
+  TMenuRoutines.M_SetupNextMenu(rxmenus.main);
 end;
 
 //==============================================================================
@@ -766,7 +766,7 @@ end;
 function RX_MenuGameplay(choice: integer): pointer;
 begin
   result := nil;
-  M_SetupNextMenu(@GameplayDef);
+  TMenuRoutines.M_SetupNextMenu(@GameplayDef);
 end;
 
 //==============================================================================

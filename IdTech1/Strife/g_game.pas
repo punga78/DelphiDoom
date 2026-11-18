@@ -99,7 +99,7 @@ function G_DeferedPlayDemo(const name: string): boolean;
 //==============================================================================
 procedure G_CmdPlayDemo(const name: string);
 
-{ Can be called by the startup code or M_Responder, }
+{ Can be called by the startup code or TMenuRoutines.M_Responder, }
 { calls P_SetupLevel or W_EnterWorld. }
 
 //==============================================================================
@@ -1445,7 +1445,7 @@ begin
       if devparm and (ev.data1 = Ord('g')) then
         TMainRoutines.D_PageTicker  // [STRIFE]: wat? o_O
       else
-        M_StartControlPanel;
+        TMenuRoutines.M_StartControlPanel;
       result := true;
       exit;
     end;
@@ -1460,7 +1460,7 @@ begin
       result := true; // chat ate the event
       exit;
     end;
-    if ST_Responder(ev) then
+    if TStatusBarRoutines.ST_Responder(ev) then
     begin
       result := true; // status window ate it
       exit;
@@ -1474,7 +1474,7 @@ begin
 
   if TGameSession.GameState = GS_FINALE then
   begin
-    if F_Responder(ev) then
+    if TFinaleRoutines.F_Responder(ev) then
     begin
       result := true; // finale ate the event
       exit;
@@ -1585,16 +1585,16 @@ begin
       ga_loadgame:
         begin
           G_DoLoadGame(true);
-          M_SaveMoveHereToMap;
-          M_ReadMisObj;
-          M_ReadWorldVars;
+          TSaveSlotRoutines.M_SaveMoveHereToMap;
+          TSaveSlotRoutines.M_ReadMisObj;
+          TSaveSlotRoutines.M_ReadWorldVars;
         end;
       ga_savegame:
         begin
-          M_SaveMoveMapToHere;
-          M_SaveMisObj(savepath);
-          M_SaveWorldVars(savepath);
-          M_SaveSaveScreenShot(savepath);
+          TSaveSlotRoutines.M_SaveMoveMapToHere;
+          TSaveSlotRoutines.M_SaveMisObj(savepath);
+          TSaveSlotRoutines.M_SaveWorldVars(savepath);
+          TSaveSlotRoutines.M_SaveSaveScreenShot(savepath);
           G_DoSaveGame(savepath);
         end;
       ga_playdemo:
@@ -1602,7 +1602,7 @@ begin
       ga_completed:
         G_DoCompleted;
       ga_victory:
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       ga_worlddone:
         G_DoWorldDone;
       ga_screenshot:
@@ -1691,13 +1691,13 @@ begin
     GS_LEVEL:
       begin
         P_Ticker;
-        ST_Ticker;
+        TStatusBarRoutines.ST_Ticker;
         AM_Ticker;
         HU_Ticker;
       end;
     GS_FINALE:
       begin
-        F_Ticker;
+        TFinaleRoutines.F_Ticker;
       end;
     GS_DEMOSCREEN:
       begin
@@ -1794,7 +1794,7 @@ begin
   mapbuf := itoa(map);
 
   // haleyjd: free if already set, and use M_SafeFilePath
-  loadpath := M_SafeFilePath(savepathtemp, mapbuf);
+  loadpath := TSaveSlotRoutines.M_SafeFilePath(savepathtemp, mapbuf);
 end;
 
 //==============================================================================
@@ -2044,8 +2044,8 @@ begin
     // [STRIFE] HUB SAVE
     G_RiftPlayer();
     G_DoSaveGame(savepathtemp);
-    M_SaveMisObj(savepathtemp);
-    M_SaveWorldVars(savepathtemp);
+    TSaveSlotRoutines.M_SaveMisObj(savepathtemp);
+    TSaveSlotRoutines.M_SaveWorldVars(savepathtemp);
   end;
 
   TGameSession.GameAction := ga_nothing;
@@ -2066,7 +2066,7 @@ var
   temppath: string;
   buffer: PByteArray;
 begin
-  temppath := M_SafeFilePath(path, 'current');
+  temppath := TSaveSlotRoutines.M_SafeFilePath(path, 'current');
 
   if G_Files.ReadFile(temppath, pointer(buffer)) <= 0 then
     TGameSession.GameAction := ga_newgame
@@ -2247,13 +2247,13 @@ begin
   savegameslot := slot;
 
   // haleyjd: as above.
-  savepath := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(savegameslot, ''));
+  savepath := TSaveSlotRoutines.M_SafeFilePath(M_SaveFileName(''), TSaveSlotRoutines.M_MakeStrifeSaveDir(savegameslot, ''));
 
   // haleyjd: memset full character_name for safety
   character_name := charname;
 
   // haleyjd: use M_SafeFilePath
-  tmpname := M_SafeFilePath(savepathtemp, 'name');
+  tmpname := TSaveSlotRoutines.M_SafeFilePath(savepathtemp, 'name');
 
   for i := 1 to length(character_name) do
   begin
@@ -2286,11 +2286,11 @@ var
   gamemapstr: string;
 begin
   gamemapstr := itoa(TGameSession.GameMap);
-  savegame_file := M_SafeFilePath(path, gamemapstr);
+  savegame_file := TSaveSlotRoutines.M_SafeFilePath(path, gamemapstr);
 
   // [STRIFE] write the "current" file, which tells which hub map
   //   the save slot is currently on.
-  current_path := M_SafeFilePath(path, 'current');
+  current_path := TSaveSlotRoutines.M_SafeFilePath(path, 'current');
   // haleyjd: endian-agnostic IO
   gamemapbytes[0] := TGameSession.GameMap;
   gamemapbytes[1] := 0;
@@ -2402,8 +2402,8 @@ procedure G_SaveGameNow(slot: integer; const description: string);
 begin
   // as M_DoSave of the menu does, without waiting for the command of the next tic
   G_WriteSaveName(slot, description);
-  M_ClearSlot;
-  M_FromCurr;
+  TSaveSlotRoutines.M_ClearSlot;
+  TSaveSlotRoutines.M_FromCurr;
   TGameSession.GameAction := ga_savegame;
 end;
 

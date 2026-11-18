@@ -45,47 +45,56 @@ const
 type
   stateenum_t = integer;
 
-//==============================================================================
-// WI_Ticker
-//
-// Called by main loop, animate the intermission.
-//
-//==============================================================================
-procedure WI_Ticker;
-
-//==============================================================================
-// WI_Drawer
-//
-// Called by main loop,
-// draws the intermission directly into the screen buffer.
-//
-//==============================================================================
-procedure WI_Drawer;
-
-//==============================================================================
-// WI_Start
-//
-// Setup for an intermission screen.
-//
-//==============================================================================
-procedure WI_Start(wbstartstruct: Pwbstartstruct_t);
-
 type
   wi_replacementstart_t = procedure(wbstartstruct: Pwbstartstruct_t);
   wi_replacement_t = procedure;
 
-//==============================================================================
-// WI_ConfigureReplacement
-//
-// A game on the engine of Doom that has its own screen between two levels
-// (Radix: the debriefing) gives the three procedures that take the place of
-// WI_Start, WI_Ticker and WI_Drawer: the pictures of the intermission of Doom
-// are not loaded. The replacement ends by calling G_WorldDone. Doom does not
-// call it.
-//
-//==============================================================================
-procedure WI_ConfigureReplacement(const start: wi_replacementstart_t;
-  const ticker, drawer: wi_replacement_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TIntermissionRoutines = class sealed
+  public
+    //==============================================================================
+    // WI_Ticker
+    //
+    // Called by main loop, animate the intermission.
+    //
+    //==============================================================================
+    class procedure WI_Ticker; static;
+
+    //==============================================================================
+    // WI_Drawer
+    //
+    // Called by main loop,
+    // draws the intermission directly into the screen buffer.
+    //
+    //==============================================================================
+    class procedure WI_Drawer; static;
+
+    //==============================================================================
+    // WI_Start
+    //
+    // Setup for an intermission screen.
+    //
+    //==============================================================================
+    class procedure WI_Start(wbstartstruct: Pwbstartstruct_t); static;
+
+    //==============================================================================
+    // WI_ConfigureReplacement
+    //
+    // A game on the engine of Doom that has its own screen between two levels
+    // (Radix: the debriefing) gives the three procedures that take the place of
+    // WI_Start, WI_Ticker and WI_Drawer: the pictures of the intermission of Doom
+    // are not loaded. The replacement ends by calling G_WorldDone. Doom does not
+    // call it.
+    //
+    //==============================================================================
+    class procedure WI_ConfigureReplacement(const start: wi_replacementstart_t;
+      const ticker, drawer: wi_replacement_t); static;
+  end;
+
 
 implementation
 
@@ -435,13 +444,55 @@ var
 
   wide_inter: integer = 320;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TIntermissionLocalRoutines = class sealed
+  public
+    class procedure WI_DrawPatch(const x, y: Integer; const p: Ppatch_t); static;
+    class procedure WI_SlamBackground; static;
+    class procedure WI_DrawLF; static;
+    class procedure WI_DrawEL; static;
+    class procedure WI_DrawOnLnode(n: integer; c: Ppatch_tPArray); static;
+    class procedure WI_InitAnimatedBack; static;
+    class procedure WI_UpdateAnimatedBack; static;
+    class procedure WI_DrawAnimatedBack; static;
+    class function WI_DrawNum(x, y: integer; n: integer; digits: integer): integer; static;
+    class procedure WI_DrawPercent(x, y: integer; p: integer); static;
+    class procedure WI_DrawTime(x, y: integer; t: integer); static;
+    class procedure WI_End; static;
+    class procedure WI_InitNoState; static;
+    class procedure WI_UpdateNoState; static;
+    class procedure WI_InitShowNextLoc; static;
+    class procedure WI_UpdateShowNextLoc; static;
+    class procedure WI_DrawShowNextLoc; static;
+    class procedure WI_DrawNoState; static;
+    class function WI_FragSum(playernum: integer): integer; static;
+    class procedure WI_InitDeathmatchStats; static;
+    class procedure WI_UpdateDeathmatchStats; static;
+    class procedure WI_DrawDeathmatchStats; static;
+    class function NG_STATSX: integer; static;
+    class procedure WI_InitNetgameStats; static;
+    class procedure WI_UpdateNetgameStats; static;
+    class procedure WI_DrawNetgameStats; static;
+    class procedure WI_InitStats; static;
+    class procedure WI_UpdateStats; static;
+    class procedure WI_DrawStats; static;
+    class procedure WI_checkForAccelerate; static;
+    class procedure WI_LoadData; static;
+    class procedure WI_UnloadData; static;
+    class procedure WI_InitVariables(wbstartstruct: Pwbstartstruct_t); static;
+  end;
+
 //==============================================================================
 //
 // WI_DrawPatch
 //  Draws intermission patches, depending on 426x200 or 320x200 background
 //
 //==============================================================================
-procedure WI_DrawPatch(const x, y: Integer; const p: Ppatch_t);
+class procedure TIntermissionLocalRoutines.WI_DrawPatch(const x, y: Integer; const p: Ppatch_t);
 begin
   if wide_inter = 426 then
     V_DrawPatch(x + (426 - 320) div 2, y, SCN_TMP426, p, false)
@@ -460,7 +511,7 @@ end;
 // UNUSED static unsigned char *background=0;
 //
 //==============================================================================
-procedure WI_SlamBackground;
+class procedure TIntermissionLocalRoutines.WI_SlamBackground;
 var
   name: string;
 begin
@@ -491,7 +542,7 @@ end;
 // Draws "<Levelname> Finished!"
 //
 //==============================================================================
-procedure WI_DrawLF;
+class procedure TIntermissionLocalRoutines.WI_DrawLF;
 var
   y: integer;
   lpic: Ppatch_t;
@@ -501,9 +552,9 @@ begin
   // The level defines a new name but no texture for the name.
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelname <> '') and (wbs.lastmapinfo.levelpic = '') then
   begin
-    M_WriteText(160 - M_StringWidth(wbs.lastmapinfo.levelname), y, wbs.lastmapinfo.levelname);
+    TMenuRoutines.M_WriteText(160 - TMenuRoutines.M_StringWidth(wbs.lastmapinfo.levelname), y, wbs.lastmapinfo.levelname);
 
-    y := y + (5 * M_StringHeight(wbs.lastmapinfo.levelname) div 4);
+    y := y + (5 * TMenuRoutines.M_StringHeight(wbs.lastmapinfo.levelname) div 4);
   end
   else if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelpic <> '') then
   begin
@@ -532,7 +583,7 @@ end;
 // Draws "Entering <LevelName>"
 //
 //==============================================================================
-procedure WI_DrawEL;
+class procedure TIntermissionLocalRoutines.WI_DrawEL;
 var
   y: integer;
   lpic: Ppatch_t;
@@ -547,7 +598,7 @@ begin
   begin
     y := y + (5 * entering.height) div 4;
 
-    M_WriteText(160 - M_StringWidth(wbs.nextmapinfo.levelname), y, wbs.nextmapinfo.levelname);
+    TMenuRoutines.M_WriteText(160 - TMenuRoutines.M_StringWidth(wbs.nextmapinfo.levelname), y, wbs.nextmapinfo.levelname);
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
   begin
@@ -574,7 +625,7 @@ end;
 // WI_DrawOnLnode
 //
 //==============================================================================
-procedure WI_DrawOnLnode(n: integer; c: Ppatch_tPArray);
+class procedure TIntermissionLocalRoutines.WI_DrawOnLnode(n: integer; c: Ppatch_tPArray);
 var
   i: integer;
   left: integer;
@@ -613,7 +664,7 @@ end;
 // WI_InitAnimatedBack
 //
 //==============================================================================
-procedure WI_InitAnimatedBack;
+class procedure TIntermissionLocalRoutines.WI_InitAnimatedBack;
 var
   i: integer;
   a: Pwianim_t;
@@ -652,7 +703,7 @@ end;
 // WI_UpdateAnimatedBack
 //
 //==============================================================================
-procedure WI_UpdateAnimatedBack;
+class procedure TIntermissionLocalRoutines.WI_UpdateAnimatedBack;
 var
   i: integer;
   a: Pwianim_t;
@@ -716,7 +767,7 @@ end;
 // WI_DrawAnimatedBack
 //
 //==============================================================================
-procedure WI_DrawAnimatedBack;
+class procedure TIntermissionLocalRoutines.WI_DrawAnimatedBack;
 var
   i: integer;
   a: Pwianim_t;
@@ -751,7 +802,7 @@ end;
 // Returns new x position.
 //
 //==============================================================================
-function WI_DrawNum(x, y: integer; n: integer; digits: integer): integer;
+class function TIntermissionLocalRoutines.WI_DrawNum(x, y: integer; n: integer; digits: integer): integer;
 var
   fontwidth: integer;
   neg: boolean;
@@ -813,7 +864,7 @@ end;
 // WI_DrawPercent
 //
 //==============================================================================
-procedure WI_DrawPercent(x, y: integer; p: integer);
+class procedure TIntermissionLocalRoutines.WI_DrawPercent(x, y: integer; p: integer);
 begin
   if p < 0 then
     exit;
@@ -829,7 +880,7 @@ end;
 //  or "sucks" message if overflow.
 //
 //==============================================================================
-procedure WI_DrawTime(x, y: integer; t: integer);
+class procedure TIntermissionLocalRoutines.WI_DrawTime(x, y: integer; t: integer);
 var
   _div: integer;
   n: integer;
@@ -861,14 +912,13 @@ end;
 // WI_UnloadData
 //
 //==============================================================================
-procedure WI_UnloadData; forward;
 
 //==============================================================================
 //
 // WI_End
 //
 //==============================================================================
-procedure WI_End;
+class procedure TIntermissionLocalRoutines.WI_End;
 begin
   WI_UnloadData;
 end;
@@ -878,7 +928,7 @@ end;
 // WI_InitNoState
 //
 //==============================================================================
-procedure WI_InitNoState;
+class procedure TIntermissionLocalRoutines.WI_InitNoState;
 begin
   state := NoState;
   acceleratestage := 0;
@@ -890,7 +940,7 @@ end;
 // WI_UpdateNoState
 //
 //==============================================================================
-procedure WI_UpdateNoState;
+class procedure TIntermissionLocalRoutines.WI_UpdateNoState;
 begin
   WI_UpdateAnimatedBack;
 
@@ -910,14 +960,13 @@ var
 // WI_LoadData
 //
 //==============================================================================
-procedure WI_LoadData; forward;
 
 //==============================================================================
 //
 // WI_InitShowNextLoc
 //
 //==============================================================================
-procedure WI_InitShowNextLoc;
+class procedure TIntermissionLocalRoutines.WI_InitShowNextLoc;
 begin
   if TGameSession.GameMapInfo <> nil then
   begin
@@ -949,7 +998,7 @@ end;
 // WI_UpdateShowNextLoc
 //
 //==============================================================================
-procedure WI_UpdateShowNextLoc;
+class procedure TIntermissionLocalRoutines.WI_UpdateShowNextLoc;
 begin
   WI_UpdateAnimatedBack;
 
@@ -965,7 +1014,7 @@ end;
 // WI_DrawShowNextLoc
 //
 //==============================================================================
-procedure WI_DrawShowNextLoc;
+class procedure TIntermissionLocalRoutines.WI_DrawShowNextLoc;
 var
   i: integer;
   last: integer;
@@ -1024,7 +1073,7 @@ end;
 // WI_DrawNoState
 //
 //==============================================================================
-procedure WI_DrawNoState;
+class procedure TIntermissionLocalRoutines.WI_DrawNoState;
 begin
   snl_pointeron := true;
   WI_DrawShowNextLoc;
@@ -1035,7 +1084,7 @@ end;
 // WI_FragSum
 //
 //==============================================================================
-function WI_FragSum(playernum: integer): integer;
+class function TIntermissionLocalRoutines.WI_FragSum(playernum: integer): integer;
 var
   i: integer;
 begin
@@ -1063,7 +1112,7 @@ var
 // WI_InitDeathmatchStats
 //
 //==============================================================================
-procedure WI_InitDeathmatchStats;
+class procedure TIntermissionLocalRoutines.WI_InitDeathmatchStats;
 var
   i: integer;
   j: integer;
@@ -1094,7 +1143,7 @@ end;
 // WI_UpdateDeathmatchStats
 //
 //==============================================================================
-procedure WI_UpdateDeathmatchStats;
+class procedure TIntermissionLocalRoutines.WI_UpdateDeathmatchStats;
 var
   i: integer;
   j: integer;
@@ -1191,7 +1240,7 @@ end;
 // WI_DrawDeathmatchStats
 //
 //==============================================================================
-procedure WI_DrawDeathmatchStats;
+class procedure TIntermissionLocalRoutines.WI_DrawDeathmatchStats;
 var
   i: integer;
   j: integer;
@@ -1268,7 +1317,7 @@ var
 // NG_STATSX
 //
 //==============================================================================
-function NG_STATSX: integer;
+class function TIntermissionLocalRoutines.NG_STATSX: integer;
 begin
   result := 64 + star.width div 2 + 32 * (not intval(dofrags <> 0)); // JVAL ???
 end;
@@ -1278,7 +1327,7 @@ end;
 // WI_InitNetgameStats
 //
 //==============================================================================
-procedure WI_InitNetgameStats;
+class procedure TIntermissionLocalRoutines.WI_InitNetgameStats;
 var
   i: integer;
 begin
@@ -1311,7 +1360,7 @@ end;
 // WI_UpdateNetgameStats
 //
 //==============================================================================
-procedure WI_UpdateNetgameStats;
+class procedure TIntermissionLocalRoutines.WI_UpdateNetgameStats;
 var
   i: integer;
   fsum: integer;
@@ -1467,7 +1516,7 @@ end;
 // WI_DrawNetgameStats
 //
 //==============================================================================
-procedure WI_DrawNetgameStats;
+class procedure TIntermissionLocalRoutines.WI_DrawNetgameStats;
 var
   i: integer;
   x: integer;
@@ -1525,7 +1574,7 @@ var
 // WI_InitStats
 //
 //==============================================================================
-procedure WI_InitStats;
+class procedure TIntermissionLocalRoutines.WI_InitStats;
 begin
   state := StatCount;
   acceleratestage := 0;
@@ -1545,7 +1594,7 @@ end;
 // WI_UpdateStats
 //
 //==============================================================================
-procedure WI_UpdateStats;
+class procedure TIntermissionLocalRoutines.WI_UpdateStats;
 begin
   WI_UpdateAnimatedBack;
 
@@ -1654,7 +1703,7 @@ end;
 // WI_DrawStats
 //
 //==============================================================================
-procedure WI_DrawStats;
+class procedure TIntermissionLocalRoutines.WI_DrawStats;
 var
   // line height
   lh: integer;
@@ -1687,7 +1736,7 @@ end;
 // WI_checkForAccelerate
 //
 //==============================================================================
-procedure WI_checkForAccelerate;
+class procedure TIntermissionLocalRoutines.WI_checkForAccelerate;
 var
   i: integer;
   player: Pplayer_t;
@@ -1727,7 +1776,7 @@ end;
 // Updates stuff each tick
 //
 //==============================================================================
-procedure WI_Ticker;
+class procedure TIntermissionRoutines.WI_Ticker;
 begin
   if Assigned(wi_replacementticker) then
   begin
@@ -1747,27 +1796,27 @@ begin
       S_ChangeMusic(Ord(mus_inter), true);
   end;
 
-  WI_checkForAccelerate;
+  TIntermissionLocalRoutines.WI_checkForAccelerate;
 
   case state of
     StatCount:
       begin
         if TGameSession.DeathMatch <> 0 then
-          WI_UpdateDeathmatchStats
+          TIntermissionLocalRoutines.WI_UpdateDeathmatchStats
         else if TGameSession.NetGame then
-          WI_UpdateNetgameStats
+          TIntermissionLocalRoutines.WI_UpdateNetgameStats
         else
-          WI_UpdateStats;
+          TIntermissionLocalRoutines.WI_UpdateStats;
       end;
 
     ShowNextLoc:
       begin
-        WI_UpdateShowNextLoc;
+        TIntermissionLocalRoutines.WI_UpdateShowNextLoc;
       end;
 
     NoState:
       begin
-        WI_UpdateNoState;
+        TIntermissionLocalRoutines.WI_UpdateNoState;
       end;
   end;
 end;
@@ -1780,7 +1829,7 @@ var
 // WI_LoadData
 //
 //==============================================================================
-procedure WI_LoadData;
+class procedure TIntermissionLocalRoutines.WI_LoadData;
 var
   i: integer;
   j: integer;
@@ -1954,7 +2003,7 @@ end;
 // WI_UnloadData
 //
 //==============================================================================
-procedure WI_UnloadData;
+class procedure TIntermissionLocalRoutines.WI_UnloadData;
 var
   i: integer;
   j: integer;
@@ -2025,7 +2074,7 @@ end;
 // WI_Drawer
 //
 //==============================================================================
-procedure WI_Drawer;
+class procedure TIntermissionRoutines.WI_Drawer;
 begin
   if Assigned(wi_replacementdrawer) then
   begin
@@ -2034,32 +2083,32 @@ begin
   end;
 
   if not wi_loaded then
-    WI_LoadData;
+    TIntermissionLocalRoutines.WI_LoadData;
 
-  WI_SlamBackground;
+  TIntermissionLocalRoutines.WI_SlamBackground;
 
   // draw animated background
-  WI_DrawAnimatedBack;
+  TIntermissionLocalRoutines.WI_DrawAnimatedBack;
 
   case state of
     StatCount:
       begin
         if TGameSession.DeathMatch <> 0 then
-          WI_DrawDeathmatchStats
+          TIntermissionLocalRoutines.WI_DrawDeathmatchStats
         else if TGameSession.NetGame then
-          WI_DrawNetgameStats
+          TIntermissionLocalRoutines.WI_DrawNetgameStats
         else
-          WI_DrawStats;
+          TIntermissionLocalRoutines.WI_DrawStats;
       end;
 
     ShowNextLoc:
       begin
-        WI_DrawShowNextLoc;
+        TIntermissionLocalRoutines.WI_DrawShowNextLoc;
       end;
 
     NoState:
       begin
-        WI_DrawNoState;
+        TIntermissionLocalRoutines.WI_DrawNoState;
       end;
   end;
 
@@ -2077,7 +2126,7 @@ end;
 // WI_InitVariables
 //
 //==============================================================================
-procedure WI_InitVariables(wbstartstruct: Pwbstartstruct_t);
+class procedure TIntermissionLocalRoutines.WI_InitVariables(wbstartstruct: Pwbstartstruct_t);
 begin
   wbs := wbstartstruct;
 
@@ -2107,7 +2156,7 @@ end;
 // WI_Start
 //
 //==============================================================================
-procedure WI_Start(wbstartstruct: Pwbstartstruct_t);
+class procedure TIntermissionRoutines.WI_Start(wbstartstruct: Pwbstartstruct_t);
 begin
   if Assigned(wi_replacementstart) then
   begin
@@ -2115,7 +2164,7 @@ begin
     exit;
   end;
 
-  WI_InitVariables(wbstartstruct);
+  TIntermissionLocalRoutines.WI_InitVariables(wbstartstruct);
 
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.exitpic <> '') then
     exitpic := wbs.lastmapinfo.exitpic
@@ -2127,14 +2176,14 @@ begin
   else
     enterpic := '';
 
-  WI_LoadData;
+  TIntermissionLocalRoutines.WI_LoadData;
 
   if TGameSession.DeathMatch <> 0 then
-    WI_InitDeathmatchStats
+    TIntermissionLocalRoutines.WI_InitDeathmatchStats
   else if TGameSession.NetGame then
-    WI_InitNetgameStats
+    TIntermissionLocalRoutines.WI_InitNetgameStats
   else
-    WI_InitStats;
+    TIntermissionLocalRoutines.WI_InitStats;
 end;
 
 //==============================================================================
@@ -2142,7 +2191,7 @@ end;
 // WI_ConfigureReplacement
 //
 //==============================================================================
-procedure WI_ConfigureReplacement(const start: wi_replacementstart_t;
+class procedure TIntermissionRoutines.WI_ConfigureReplacement(const start: wi_replacementstart_t;
   const ticker, drawer: wi_replacement_t);
 begin
   wi_replacementstart := start;

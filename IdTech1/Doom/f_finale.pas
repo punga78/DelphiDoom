@@ -37,51 +37,12 @@ uses
   d_event,
   info_h;
 
-//==============================================================================
-//
-// F_Responder
-//
-//==============================================================================
-function F_Responder(ev: Pevent_t): boolean;
-
 { Called by main loop. }
 
-//==============================================================================
-//
-// F_Ticker
-//
-//==============================================================================
-procedure F_Ticker;
-
 { Called by main loop. }
-
-//==============================================================================
-//
-// F_Drawer
-//
-//==============================================================================
-procedure F_Drawer;
-
-//==============================================================================
-//
-// F_StartFinale
-//
-//==============================================================================
-procedure F_StartFinale;
 
 type
   f_replacement_t = procedure;
-
-//==============================================================================
-// F_ConfigureReplacement
-//
-// A game on the engine of Doom that has its own end of an episode (Radix: the
-// text over the flight among the stars) gives the three procedures that take
-// the place of the body of F_StartFinale (after the game state is set),
-// F_Ticker and F_Drawer. Doom does not call it.
-//
-//==============================================================================
-procedure F_ConfigureReplacement(const start, ticker, drawer: f_replacement_t);
 
 //
 // Final DOOM 2 animation
@@ -111,6 +72,54 @@ var
   bgflat15: string = 'RROCK13';   // DOOM2 going MAP15 to MAP31
   bgflat31: string = 'RROCK19';   // DOOM2 going MAP31 to MAP32
   bgcastcall: string = 'BOSSBACK';// Panel behind cast call
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFinaleRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // F_Responder
+    //
+    //==============================================================================
+    class function F_Responder(ev: Pevent_t): boolean; static;
+
+    //==============================================================================
+    //
+    // F_Ticker
+    //
+    //==============================================================================
+    class procedure F_Ticker; static;
+
+    //==============================================================================
+    //
+    // F_Drawer
+    //
+    //==============================================================================
+    class procedure F_Drawer; static;
+
+    //==============================================================================
+    //
+    // F_StartFinale
+    //
+    //==============================================================================
+    class procedure F_StartFinale; static;
+
+    //==============================================================================
+    // F_ConfigureReplacement
+    //
+    // A game on the engine of Doom that has its own end of an episode (Radix: the
+    // text over the flight among the stars) gives the three procedures that take
+    // the place of the body of F_StartFinale (after the game state is set),
+    // F_Ticker and F_Drawer. Doom does not call it.
+    //
+    //==============================================================================
+    class procedure F_ConfigureReplacement(const start, ticker, drawer: f_replacement_t); static;
+  end;
+
 
 implementation
 
@@ -160,12 +169,30 @@ var
   f_replacementticker: f_replacement_t = nil;
   f_replacementdrawer: f_replacement_t = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TFinaleLocalRoutines = class sealed
+  public
+    class procedure FMI_Ticker; static;
+    class procedure F_TextWrite; static;
+    class procedure F_StartCast; static;
+    class procedure F_CastTicker; static;
+    class function F_CastResponder(ev: Pevent_t): boolean; static;
+    class procedure F_CastPrint(const text: string); static;
+    class procedure F_CastDrawer; static;
+    class procedure F_DrawPatchCol(x: integer; patch: Ppatch_t; col: integer); static;
+    class procedure F_BunnyScroll; static;
+  end;
+
 //==============================================================================
 //
 // F_ConfigureReplacement
 //
 //==============================================================================
-procedure F_ConfigureReplacement(const start, ticker, drawer: f_replacement_t);
+class procedure TFinaleRoutines.F_ConfigureReplacement(const start, ticker, drawer: f_replacement_t);
 begin
   f_replacementstart := start;
   f_replacementticker := ticker;
@@ -177,35 +204,31 @@ end;
 // F_StartCast
 //
 //==============================================================================
-procedure F_StartCast; forward;
 
 //==============================================================================
 //
 // F_CastTicker
 //
 //==============================================================================
-procedure F_CastTicker; forward;
 
 //==============================================================================
 //
 // F_CastResponder
 //
 //==============================================================================
-function F_CastResponder(ev: Pevent_t): boolean; forward;
 
 //==============================================================================
 //
 // F_CastDrawer
 //
 //==============================================================================
-procedure F_CastDrawer; forward;
 
 //==============================================================================
 //
 // F_StartFinale
 //
 //==============================================================================
-procedure F_StartFinale;
+class procedure TFinaleRoutines.F_StartFinale;
 var
   mus_changed: boolean;
 begin
@@ -375,10 +398,10 @@ end;
 // F_Responder
 //
 //==============================================================================
-function F_Responder(ev: Pevent_t): boolean;
+class function TFinaleRoutines.F_Responder(ev: Pevent_t): boolean;
 begin
   if finalestage = 2 then
-    result := F_CastResponder(ev)
+    result := TFinaleLocalRoutines.F_CastResponder(ev)
   else
     result := false;
 end;
@@ -388,7 +411,7 @@ end;
 // FMI_Ticker
 //
 //==============================================================================
-procedure FMI_Ticker;
+class procedure TFinaleLocalRoutines.FMI_Ticker;
 begin
   if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then
   begin
@@ -417,7 +440,7 @@ end;
 // F_Ticker
 //
 //==============================================================================
-procedure F_Ticker;
+class procedure TFinaleRoutines.F_Ticker;
 var
   i: integer;
 begin
@@ -442,9 +465,9 @@ begin
     if i < MAXPLAYERS then
     begin
       if using_FMI then
-        FMI_Ticker
+        TFinaleLocalRoutines.FMI_Ticker
       else if TGameSession.GameMap = 30 then
-        F_StartCast
+        TFinaleLocalRoutines.F_StartCast
       else
         TGameSession.GameAction := ga_worlddone;
     end;
@@ -455,14 +478,14 @@ begin
 
   if finalestage = 2 then
   begin
-    F_CastTicker;
+    TFinaleLocalRoutines.F_CastTicker;
     exit;
   end;
 
   if (finalestage = 0) and (finalecount > Length(finaletext) * TEXTSPEED + TEXTWAIT) then
   begin
     if using_FMI then
-      FMI_Ticker
+      TFinaleLocalRoutines.FMI_Ticker
     else if gamemode <> commercial then
     begin
       finalecount := 0;
@@ -479,7 +502,7 @@ end;
 // F_TextWrite
 //
 //==============================================================================
-procedure F_TextWrite;
+class procedure TFinaleLocalRoutines.F_TextWrite;
 var
   bkok: boolean;
   w: integer;
@@ -561,7 +584,7 @@ var
 // F_StartCast
 //
 //==============================================================================
-procedure F_StartCast;
+class procedure TFinaleLocalRoutines.F_StartCast;
 begin
   if finalestage = 2 then
     exit;
@@ -582,7 +605,7 @@ end;
 // F_CastTicker
 //
 //==============================================================================
-procedure F_CastTicker;
+class procedure TFinaleLocalRoutines.F_CastTicker;
 var
   st: integer;
   sfx: integer;
@@ -694,7 +717,7 @@ end;
 // F_CastResponder
 //
 //==============================================================================
-function F_CastResponder(ev: Pevent_t): boolean;
+class function TFinaleLocalRoutines.F_CastResponder(ev: Pevent_t): boolean;
 begin
   if ev._type <> ev_keydown then
   begin
@@ -725,7 +748,7 @@ end;
 // F_CastPrint
 //
 //==============================================================================
-procedure F_CastPrint(const text: string);
+class procedure TFinaleLocalRoutines.F_CastPrint(const text: string);
 var
   ch: string;
   i: integer;
@@ -780,7 +803,7 @@ end;
 // F_CastDrawer
 //
 //==============================================================================
-procedure F_CastDrawer;
+class procedure TFinaleLocalRoutines.F_CastDrawer;
 var
   sprdef: Pspritedef_t;
   sprframe: Pspriteframe_t;
@@ -816,7 +839,7 @@ end;
 // F_DrawPatchCol
 //
 //==============================================================================
-procedure F_DrawPatchCol(x: integer; patch: Ppatch_t; col: integer);
+class procedure TFinaleLocalRoutines.F_DrawPatchCol(x: integer; patch: Ppatch_t; col: integer);
 var
   column: Pcolumn_t;
   source: PByte;
@@ -870,7 +893,7 @@ var
 // F_BunnyScroll
 //
 //==============================================================================
-procedure F_BunnyScroll;
+class procedure TFinaleLocalRoutines.F_BunnyScroll;
 var
   scrolled: integer;
   x: integer;
@@ -933,7 +956,7 @@ end;
 // F_Drawer
 //
 //==============================================================================
-procedure F_Drawer;
+class procedure TFinaleRoutines.F_Drawer;
 begin
   if Assigned(f_replacementdrawer) then
   begin
@@ -945,12 +968,12 @@ begin
   begin
     if finalestage = 0 then
     begin
-      F_TextWrite;
+      TFinaleLocalRoutines.F_TextWrite;
       if TGameSession.GameMapInfo.endpic = '' then
         using_FMI := false;
     end
     else if TGameSession.GameMapInfo.endpic = '$BUNNY' then
-      F_BunnyScroll
+      TFinaleLocalRoutines.F_BunnyScroll
     else
       V_PageDrawer(TGameSession.GameMapInfo.endpic);
     exit;
@@ -958,13 +981,13 @@ begin
 
   if finalestage = 2 then
   begin
-    F_CastDrawer;
+    TFinaleLocalRoutines.F_CastDrawer;
     exit;
   end;
 
   if finalestage = 0 then
   begin
-    F_TextWrite;
+    TFinaleLocalRoutines.F_TextWrite;
     exit;
   end;
 
@@ -982,7 +1005,7 @@ begin
       end;
     3:
       begin
-        F_BunnyScroll;
+        TFinaleLocalRoutines.F_BunnyScroll;
       end;
     4:
       begin

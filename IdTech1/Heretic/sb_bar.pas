@@ -56,33 +56,42 @@ var
 var
   playerkeys: integer = 0;
 
-//==============================================================================
-//
-// SB_Responder
-//
-//==============================================================================
-function SB_Responder(ev: Pevent_t): boolean;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusBarRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // SB_Responder
+    //
+    //==============================================================================
+    class function SB_Responder(ev: Pevent_t): boolean; static;
 
-//==============================================================================
-//
-// SB_Ticker
-//
-//==============================================================================
-procedure SB_Ticker;
+    //==============================================================================
+    //
+    // SB_Ticker
+    //
+    //==============================================================================
+    class procedure SB_Ticker; static;
 
-//==============================================================================
-//
-// SB_Init
-//
-//==============================================================================
-procedure SB_Init;
+    //==============================================================================
+    //
+    // SB_Init
+    //
+    //==============================================================================
+    class procedure SB_Init; static;
 
-//==============================================================================
-//
-// SB_Drawer
-//
-//==============================================================================
-procedure SB_Drawer;
+    //==============================================================================
+    //
+    // SB_Drawer
+    //
+    //==============================================================================
+    class procedure SB_Drawer; static;
+  end;
+
 
 implementation
 
@@ -165,13 +174,50 @@ var
   spinflylump: integer;
   useartibase: integer;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TStatusBarLocalRoutines = class sealed
+  public
+    class function SB_CmdCheckPlayerStatus: boolean; static;
+    class procedure SB_CmdGod; static;
+    class procedure SB_CmdIddqd; static;
+    class procedure SB_CmdLowGravity; static;
+    class procedure SB_CmdIDFA; static;
+    class procedure SB_CmdIDKFA; static;
+    class procedure SB_CmdSkel; static;
+    class procedure SB_CmdIDDT; static;
+    class procedure SB_CmdIDNoClip; static;
+    class procedure SB_CmdMassacre; static;
+    class procedure SB_CmdPonce; static;
+    class procedure SB_CmdCheatSoundFunc; static;
+    class procedure SB_GiveArtifacts(arti: artitype_t; num: integer); static;
+    class procedure SB_CmdGimme(const art: string; const num: string); static;
+    class procedure SB_DrawPatch(const x, y: integer; patch: Ppatch_t); overload; static;
+    class procedure SB_DrawPatch(const x, y: integer; const patchname: string); overload; static;
+    class procedure SB_DrINumber(val: integer; x, y: integer); static;
+    class procedure SB_DrBNumber(val: integer; x, y: integer); static;
+    class procedure SB_DrSmallNumber(val: integer; x, y: integer); static;
+    class procedure SB_ShadeLine(x, y: integer; height: integer; shade: integer); static;
+    class procedure SB_ShadeChain; static;
+    class procedure SB_WriteText(x, y: integer; const str: string); static;
+    class procedure SB_DrawSoundInfo; static;
+    class procedure SB_DrawFullScreenStuff; static;
+    class procedure SB_DrawCommonBar; static;
+    class procedure SB_DrawMainBar; static;
+    class procedure SB_DrawInventoryBar; static;
+    class procedure SB_PaletteFlash; static;
+  end;
+
 //==============================================================================
 // SB_CmdCheckPlayerStatus
 //
 // Commands
 //
 //==============================================================================
-function SB_CmdCheckPlayerStatus: boolean;
+class function TStatusBarLocalRoutines.SB_CmdCheckPlayerStatus: boolean;
 begin
   if (CPlayer = nil) or (TGameSession.GameState <> GS_LEVEL) or TGameSession.DemoPlayback or TGameSession.NetGame then
   begin
@@ -187,7 +233,7 @@ end;
 // SB_CmdGod
 //
 //==============================================================================
-procedure SB_CmdGod;
+class procedure TStatusBarLocalRoutines.SB_CmdGod;
 begin
   if not SB_CmdCheckPlayerStatus then
     exit;
@@ -218,7 +264,7 @@ end;
 // SB_CmdIddqd
 //
 //==============================================================================
-procedure SB_CmdIddqd;
+class procedure TStatusBarLocalRoutines.SB_CmdIddqd;
 begin
   if not SB_CmdCheckPlayerStatus then
     exit;
@@ -235,7 +281,7 @@ end;
 // SB_CmdLowGravity
 //
 //==============================================================================
-procedure SB_CmdLowGravity;
+class procedure TStatusBarLocalRoutines.SB_CmdLowGravity;
 begin
   if not SB_CmdCheckPlayerStatus then
     exit;
@@ -252,7 +298,7 @@ end;
 // SB_CmdIDFA
 //
 //==============================================================================
-procedure SB_CmdIDFA;
+class procedure TStatusBarLocalRoutines.SB_CmdIDFA;
 var
   i: integer;
 begin
@@ -283,7 +329,7 @@ end;
 // SB_CmdIDKFA
 //
 //==============================================================================
-procedure SB_CmdIDKFA;
+class procedure TStatusBarLocalRoutines.SB_CmdIDKFA;
 var
   i: integer;
 begin
@@ -318,7 +364,7 @@ end;
 // SB_CmdSkel
 //
 //==============================================================================
-procedure SB_CmdSkel;
+class procedure TStatusBarLocalRoutines.SB_CmdSkel;
 var
   i: integer;
 begin
@@ -337,7 +383,7 @@ end;
 // SB_CmdIDDT
 //
 //==============================================================================
-procedure SB_CmdIDDT;
+class procedure TStatusBarLocalRoutines.SB_CmdIDDT;
 begin
   if not SB_CmdCheckPlayerStatus then
     exit;
@@ -350,7 +396,7 @@ end;
 // SB_CmdIDNoClip
 //
 //==============================================================================
-procedure SB_CmdIDNoClip;
+class procedure TStatusBarLocalRoutines.SB_CmdIDNoClip;
 begin
   if not SB_CmdCheckPlayerStatus then
     exit;
@@ -368,7 +414,7 @@ end;
 // SB_CmdMassacre
 //
 //==============================================================================
-procedure SB_CmdMassacre;
+class procedure TStatusBarLocalRoutines.SB_CmdMassacre;
 begin
   if not SB_CmdCheckPlayerStatus then
     exit;
@@ -382,7 +428,7 @@ end;
 // SB_CmdPonce
 //
 //==============================================================================
-procedure SB_CmdPonce;
+class procedure TStatusBarLocalRoutines.SB_CmdPonce;
 var
   health: integer;
 begin
@@ -405,7 +451,7 @@ end;
 // SB_CmdCheatSoundFunc
 //
 //==============================================================================
-procedure SB_CmdCheatSoundFunc;
+class procedure TStatusBarLocalRoutines.SB_CmdCheatSoundFunc;
 begin
   DebugSound := not DebugSound;
   if DebugSound then
@@ -419,7 +465,7 @@ end;
 // SB_GiveArtifacts
 //
 //==============================================================================
-procedure SB_GiveArtifacts(arti: artitype_t; num: integer);
+class procedure TStatusBarLocalRoutines.SB_GiveArtifacts(arti: artitype_t; num: integer);
 var
   i: integer;
 begin
@@ -456,7 +502,7 @@ end;
 // SB_CmdGimme
 //
 //==============================================================================
-procedure SB_CmdGimme(const art: string; const num: string);
+class procedure TStatusBarLocalRoutines.SB_CmdGimme(const art: string; const num: string);
 var
   narti: integer;
   sarti: string;
@@ -774,7 +820,7 @@ var
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_Init;
+class procedure TStatusBarRoutines.SB_Init;
 var
   i: integer;
   startLump: integer;
@@ -868,18 +914,18 @@ begin
   spinflylump := W_GetNumForName('SPFLY0');
   useartibase := W_GetNumForName('USEARTIA');
 
-  C_AddCmd('god, quicken', @SB_CmdGod);
-  C_AddCmd('iddqd', @SB_CmdIddqd);
-  C_AddCmd('givefullammo, rambo, idfa', @SB_CmdIDFA);
-  C_AddCmd('lowgravity', @SB_CmdLowGravity);
-  C_AddCmd('givefullammoandkeys, idkfa', @SB_CmdIDKFA);
-  C_AddCmd('iddt', @SB_CmdIDDT);
-  C_AddCmd('kitty, idspispopd, idclip', @SB_CmdIDNoClip);
-  C_AddCmd('massacre', @SB_CmdMassacre);
-  C_AddCmd('gimme', @SB_CmdGimme);
-  C_AddCmd('skel, idskel, giveallkeys, idkeys', @SB_CmdSkel);
-  C_AddCmd('ponce', @SB_CmdPonce);
-  C_AddCmd('noise, debugsound', @SB_CmdCheatSoundFunc);
+  C_AddCmd('god, quicken', @TStatusBarLocalRoutines.SB_CmdGod);
+  C_AddCmd('iddqd', @TStatusBarLocalRoutines.SB_CmdIddqd);
+  C_AddCmd('givefullammo, rambo, idfa', @TStatusBarLocalRoutines.SB_CmdIDFA);
+  C_AddCmd('lowgravity', @TStatusBarLocalRoutines.SB_CmdLowGravity);
+  C_AddCmd('givefullammoandkeys, idkfa', @TStatusBarLocalRoutines.SB_CmdIDKFA);
+  C_AddCmd('iddt', @TStatusBarLocalRoutines.SB_CmdIDDT);
+  C_AddCmd('kitty, idspispopd, idclip', @TStatusBarLocalRoutines.SB_CmdIDNoClip);
+  C_AddCmd('massacre', @TStatusBarLocalRoutines.SB_CmdMassacre);
+  C_AddCmd('gimme', @TStatusBarLocalRoutines.SB_CmdGimme);
+  C_AddCmd('skel, idskel, giveallkeys, idkeys', @TStatusBarLocalRoutines.SB_CmdSkel);
+  C_AddCmd('ponce', @TStatusBarLocalRoutines.SB_CmdPonce);
+  C_AddCmd('noise, debugsound', @TStatusBarLocalRoutines.SB_CmdCheatSoundFunc);
 
 end;
 
@@ -890,7 +936,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_Ticker;
+class procedure TStatusBarRoutines.SB_Ticker;
 var
   delta: integer;
   curHealth: integer;
@@ -930,7 +976,7 @@ var
 // SB_DrawPatch
 //
 //==============================================================================
-procedure SB_DrawPatch(const x, y: integer; patch: Ppatch_t); overload;
+class procedure TStatusBarLocalRoutines.SB_DrawPatch(const x, y: integer; patch: Ppatch_t);
 var
   toffs: integer;
 begin
@@ -948,7 +994,7 @@ end;
 // SB_DrawPatch
 //
 //==============================================================================
-procedure SB_DrawPatch(const x, y: integer; const patchname: string); overload;
+class procedure TStatusBarLocalRoutines.SB_DrawPatch(const x, y: integer; const patchname: string);
 var
   toffs: integer;
   patch: Ppatch_t;
@@ -976,7 +1022,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_DrINumber(val: integer; x, y: integer);
+class procedure TStatusBarLocalRoutines.SB_DrINumber(val: integer; x, y: integer);
 var
   patch: Ppatch_t;
   oldval: integer;
@@ -1019,7 +1065,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_DrBNumber(val: integer; x, y: integer);
+class procedure TStatusBarLocalRoutines.SB_DrBNumber(val: integer; x, y: integer);
 var
   patch: Ppatch_t;
   xpos: integer;
@@ -1056,7 +1102,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_DrSmallNumber(val: integer; x, y: integer);
+class procedure TStatusBarLocalRoutines.SB_DrSmallNumber(val: integer; x, y: integer);
 var
   patch: Ppatch_t;
 begin
@@ -1080,7 +1126,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_ShadeLine(x, y: integer; height: integer; shade: integer);
+class procedure TStatusBarLocalRoutines.SB_ShadeLine(x, y: integer; height: integer; shade: integer);
 var
   dest: PByte;
   shades: PByteArray;
@@ -1102,7 +1148,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_ShadeChain;
+class procedure TStatusBarLocalRoutines.SB_ShadeChain;
 var
   i: integer;
 begin
@@ -1119,7 +1165,7 @@ end;
 //      Write a string using the hu_font
 //
 //==============================================================================
-procedure SB_WriteText(x, y: integer; const str: string);
+class procedure TStatusBarLocalRoutines.SB_WriteText(x, y: integer; const str: string);
 var
   w: integer;
   ch: integer;
@@ -1190,7 +1236,7 @@ const
 // SB_DrawSoundInfo
 //
 //==============================================================================
-procedure SB_DrawSoundInfo;
+class procedure TStatusBarLocalRoutines.SB_DrawSoundInfo;
 var
   i: integer;
   s: soundinfo_t;
@@ -1283,7 +1329,7 @@ var
 // SB_DrawFullScreenStuff
 //
 //==============================================================================
-procedure SB_DrawFullScreenStuff;
+class procedure TStatusBarLocalRoutines.SB_DrawFullScreenStuff;
 var
   i: integer;
   x: integer;
@@ -1348,7 +1394,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_DrawCommonBar;
+class procedure TStatusBarLocalRoutines.SB_DrawCommonBar;
 var
   chainY: integer;
   healthPos: integer;
@@ -1385,7 +1431,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_DrawMainBar;
+class procedure TStatusBarLocalRoutines.SB_DrawMainBar;
 var
   i: integer;
   temp: integer;
@@ -1454,7 +1500,7 @@ end;
 //---------------------------------------------------------------------------
 //
 //==============================================================================
-procedure SB_DrawInventoryBar;
+class procedure TStatusBarLocalRoutines.SB_DrawInventoryBar;
 var
   i: integer;
   x: integer;
@@ -1498,7 +1544,7 @@ var
 // SB_PaletteFlash
 //
 //==============================================================================
-procedure SB_PaletteFlash;
+class procedure TStatusBarLocalRoutines.SB_PaletteFlash;
 var
   palette: integer;
   pal: PByteArray;
@@ -1543,7 +1589,7 @@ end;
 // SB_Drawer
 //
 //==============================================================================
-procedure SB_Drawer;
+class procedure TStatusBarRoutines.SB_Drawer;
 var
   frame: integer;
   icons_x: integer;
@@ -1556,43 +1602,43 @@ begin
 
     // Sound info debug stuff
     if DebugSound then
-      SB_DrawSoundInfo;
+      TStatusBarLocalRoutines.SB_DrawSoundInfo;
 
     CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
     if not R_StOff or (amstate = am_only) then
     begin
       if (viewheight = SCREENHEIGHT) and (amstate <> am_only) then
       begin
-        SB_DrawFullScreenStuff;
+        TStatusBarLocalRoutines.SB_DrawFullScreenStuff;
         SB_state := -1;
       end
       else
       begin
-        SB_DrawPatch(0, 158, PatchBARBACK);
+        TStatusBarLocalRoutines.SB_DrawPatch(0, 158, PatchBARBACK);
         if TGameSession.Players[TGameSession.ConsolePlayer].cheats and CF_GODMODE <> 0 then
         begin
-          SB_DrawPatch(16, 167, 'GOD1');
-          SB_DrawPatch(287, 167, 'GOD2');
+          TStatusBarLocalRoutines.SB_DrawPatch(16, 167, 'GOD1');
+          TStatusBarLocalRoutines.SB_DrawPatch(287, 167, 'GOD2');
         end;
         oldhealth := -1;
-        SB_DrawCommonBar;
+        TStatusBarLocalRoutines.SB_DrawCommonBar;
         if not inventory then
         begin
           // Main interface
-          SB_DrawPatch(34, 160, PatchSTATBAR);
-          SB_DrawMainBar;
+          TStatusBarLocalRoutines.SB_DrawPatch(34, 160, PatchSTATBAR);
+          TStatusBarLocalRoutines.SB_DrawMainBar;
           SB_state := 0;
         end
         else
         begin
-          SB_DrawPatch(34, 160, PatchINVBAR);
-          SB_DrawInventoryBar;
+          TStatusBarLocalRoutines.SB_DrawPatch(34, 160, PatchINVBAR);
+          TStatusBarLocalRoutines.SB_DrawInventoryBar;
           SB_state := 1;
         end;
       end;
     end;
 
-    SB_PaletteFlash;
+    TStatusBarLocalRoutines.SB_PaletteFlash;
 
     icons_x := (viewwindowx + viewwidth) * 320 div SCREENWIDTH - 20;
     icons_y := viewwindowy * 200 div SCREENHEIGHT + 25;
@@ -1606,10 +1652,10 @@ begin
         if CPlayer.mo.flags2 and MF2_FLY <> 0 then
         begin
           if hitCenterFrame and (frame <> 15) and (frame <> 0) then
-            SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + 15, PU_CACHE))
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + 15, PU_CACHE))
           else
           begin
-            SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + frame, PU_CACHE));
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + frame, PU_CACHE));
             hitCenterFrame := false;
           end;
         end
@@ -1617,12 +1663,12 @@ begin
         begin
           if not hitCenterFrame and (frame <> 15) and (frame <> 0) then
           begin
-            SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + frame, PU_CACHE));
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + frame, PU_CACHE));
             hitCenterFrame := false;
           end
           else
           begin
-            SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + 15, PU_CACHE));
+            TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinflylump + 15, PU_CACHE));
             hitCenterFrame := true;
           end;
         end;
@@ -1636,7 +1682,7 @@ begin
       if (CPlayer.powers[Ord(pw_weaponlevel2)] > BLINKTHRESHOLD) or (CPlayer.powers[Ord(pw_weaponlevel2)] and 16 = 0) then
       begin
         frame := (TTickState.LevelTime div 3) and 15;
-        SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
+        TStatusBarLocalRoutines.SB_DrawPatch(icons_x, icons_y, W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
       end;
     end;
   end;
@@ -1651,7 +1697,7 @@ end;
 //  intercept cheats.
 //
 //==============================================================================
-function SB_Responder(ev: Pevent_t): boolean;
+class function TStatusBarRoutines.SB_Responder(ev: Pevent_t): boolean;
 var
   buf: string;
   musnum: integer;
@@ -1701,39 +1747,39 @@ begin
       // 'dqd' cheat for toggleable god mode
       if check_cheat(@cheat_quicken, Chr(ev.data1)) then
       begin
-        SB_CmdGod;
+        TStatusBarLocalRoutines.SB_CmdGod;
       end
       else if check_cheat(@cheat_iddqd, Chr(ev.data1)) then
       begin
-        SB_CmdIddqd;
+        TStatusBarLocalRoutines.SB_CmdIddqd;
       end
       // 'fa' cheat for killer fucking arsenal
       // rambo for Heretic
       else if check_cheat(@cheat_ammonokey, Chr(ev.data1)) or
               check_cheat(@cheat_rambo, Chr(ev.data1)) then
       begin
-        SB_CmdIDFA;
+        TStatusBarLocalRoutines.SB_CmdIDFA;
       end
       // 'kfa' cheat for key full ammo
       else if check_cheat(@cheat_ammo, Chr(ev.data1)) then
       begin
-        SB_CmdIDKFA;
+        TStatusBarLocalRoutines.SB_CmdIDKFA;
       end
       else if check_cheat(@cheat_skel, Chr(ev.data1)) then
       begin
-        SB_CmdSkel;
+        TStatusBarLocalRoutines.SB_CmdSkel;
       end
       else if check_cheat(@cheat_ponce, Chr(ev.data1)) then
       begin
-        SB_CmdPonce;
+        TStatusBarLocalRoutines.SB_CmdPonce;
       end
       else if check_cheat(@cheat_noise, Chr(ev.data1)) then
       begin
-        SB_CmdCheatSoundFunc;
+        TStatusBarLocalRoutines.SB_CmdCheatSoundFunc;
       end
       else if check_cheat(@cheat_amap, Chr(ev.data1)) then
       begin
-        SB_CmdIDDT;
+        TStatusBarLocalRoutines.SB_CmdIDDT;
       end
       // 'mus' cheat for changing music
       else if check_cheat(@cheat_mus, Chr(ev.data1)) then
@@ -1756,11 +1802,11 @@ begin
               check_cheat(@cheat_noclip, Chr(ev.data1)) or
               check_cheat(@cheat_commercial_noclip, Chr(ev.data1)) then
       begin
-        SB_CmdIDNoClip;
+        TStatusBarLocalRoutines.SB_CmdIDNoClip;
       end
       else if check_cheat(@cheat_massacre, Chr(ev.data1)) then
       begin
-        SB_CmdMassacre;
+        TStatusBarLocalRoutines.SB_CmdMassacre;
       end
       else if check_cheat(@cheat_mypos, Chr(ev.data1)) then
       begin

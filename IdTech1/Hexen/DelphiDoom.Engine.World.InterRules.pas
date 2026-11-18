@@ -732,7 +732,7 @@ begin
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, Ord(SFX_PICKUP_WEAPON));
-    SB_PaletteFlash(false);
+    TStatusBarRoutines.SB_PaletteFlash(false);
   end;
 end;
 
@@ -826,7 +826,7 @@ begin
   player.bonuscount := player.bonuscount + BONUSADD;
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
-    SB_PaletteFlash(false);
+    TStatusBarRoutines.SB_PaletteFlash(false);
   end;
 
   // Check if fourth weapon assembled
@@ -1148,7 +1148,7 @@ begin
           if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           begin
             S_StartSound(nil, sound);
-            SB_PaletteFlash(false);
+            TStatusBarRoutines.SB_PaletteFlash(false);
           end;
         end;
       end;
@@ -1499,7 +1499,7 @@ begin
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     S_StartSound(nil, sound);
-    SB_PaletteFlash(false);
+    TStatusBarRoutines.SB_PaletteFlash(false);
   end;
 end;
 
@@ -2139,7 +2139,7 @@ begin
     else
       I_Tactile(40, 10, 40 + 100 * 2); // JVAL Force Feedback
 }
-      SB_PaletteFlash(false);
+      TStatusBarRoutines.SB_PaletteFlash(false);
     end;
   end;
 

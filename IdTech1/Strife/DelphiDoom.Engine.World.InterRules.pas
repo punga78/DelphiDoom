@@ -938,7 +938,7 @@ begin
     if (TGameSession.GameMap = 29) and not TGameSession.NetGame then
     begin
       // haleyjd 09/13/10: [STRIFE] Give player the bad ending.
-      F_StartFinale();
+      TFinaleRoutines.F_StartFinale();
       exit;
     end;
 
