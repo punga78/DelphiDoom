@@ -69,34 +69,40 @@ type
     property radius: fixed_t read fradius;
   end;
 
-//==============================================================================
-//
-// R_ConfigureVoxelPalette
-// The default palette, that gives the colors of the voxels: given by the composition root
-//
-//==============================================================================
-procedure R_ConfigureVoxelPalette(const APalette: IEngineDefaultPalette);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererVoxels = class sealed
+  public
+    //==============================================================================
+    //
+    // R_ConfigureVoxelPalette
+    // The default palette, that gives the colors of the voxels: given by the composition root
+    //
+    //==============================================================================
+    class procedure R_ConfigureVoxelPalette(const APalette: IEngineDefaultPalette); static;
+    //==============================================================================
+    //
+    // R_InitVoxels
+    //
+    //==============================================================================
+    class procedure R_InitVoxels; static;
+    //==============================================================================
+    //
+    // R_VoxelsDone
+    //
+    //==============================================================================
+    class procedure R_VoxelsDone; static;
+    //==============================================================================
+    //
+    // R_DrawVoxel
+    //
+    //==============================================================================
+    class procedure R_DrawVoxel(const vis: Pvissprite_t); static;
+  end;
 
-//==============================================================================
-//
-// R_InitVoxels
-//
-//==============================================================================
-procedure R_InitVoxels;
-
-//==============================================================================
-//
-// R_VoxelsDone
-//
-//==============================================================================
-procedure R_VoxelsDone;
-
-//==============================================================================
-//
-// R_DrawVoxel
-//
-//==============================================================================
-procedure R_DrawVoxel(const vis: Pvissprite_t);
 
 implementation
 
@@ -196,12 +202,56 @@ var
   // given by the composition root (R_ConfigureVoxelPalette)
   voxel_palette: IEngineDefaultPalette = nil;
 
+type
+  mt_struct1_t = record
+    voxelbuffer: voxelbuffer_p;
+    voxelsize: integer;
+    start, finish: integer;
+  end;
+  mt_struct1_p = ^mt_struct1_t;
+
+
+type
+  distancetableitem_t = record
+    dist: LongWord;
+    idx: integer;
+  end;
+
+  distancetable_t = array[0..$1FFF] of distancetableitem_t;
+  distancetable_p = ^distancetable_t;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererVoxelsLocal = class sealed
+  public
+    class function R_VoxelColumnFromBuffer(const buf: voxelbuffer2D_p; const size: integer; const mip: integer): voxelcolumn_p; static;
+    class procedure R_ClearVoxelBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer); static;
+    class function _mt_prepare_optimize_voxel_buffer(r: mt_struct1_p): integer; stdcall; static;
+    class procedure R_OptimizeVoxelBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer); static;
+    class function _mt_prepare_voxel_columns(r: mt_struct1_p): integer; stdcall; static;
+    class procedure R_PrepareVoxelColumns(const voxelbuffer: voxelbuffer_p; const voxelsize: integer); static;
+    class procedure R_QSortDistanceTable(const A: distancetable_p; const len: Integer); static;
+    class function R_CreateVoxelMipSortOrderAngle(const mip: voxelmip_p; const an: integer): boolean; static;
+    class procedure R_CreateVoxelMipSortOrder(const mip: voxelmip_p); static;
+    class function R_VoxelColumnsFromBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer; const offset, scale: fixed_t): voxelcolumns_p; static;
+    class function R_LoadVoxelColumns(const name: string; const offset, scale: fixed_t;
+      const loader: IVoxelLoader; const cubes: IVoxelCubeBuilder): voxelcolumns_p; static;
+    class procedure R_DrawThingVoxel(const thing: Pmobj_t; const vidx: integer; const depth: LongWord;
+      const renderflags: LongWord); static;
+    class procedure R_DrawThingVoxels(const thing: Pmobj_t; const depth: LongWord;
+      const renderflags: LongWord); static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigureVoxelPalette
 //
 //==============================================================================
-procedure R_ConfigureVoxelPalette(const APalette: IEngineDefaultPalette);
+class procedure TRendererVoxels.R_ConfigureVoxelPalette(const APalette: IEngineDefaultPalette);
 begin
   voxel_palette := APalette;
 end;
@@ -213,7 +263,7 @@ end;
 // Create a vertical column from a voxelbuffer
 //
 //==============================================================================
-function R_VoxelColumnFromBuffer(const buf: voxelbuffer2D_p; const size: integer; const mip: integer): voxelcolumn_p;
+class function TRendererVoxelsLocal.R_VoxelColumnFromBuffer(const buf: voxelbuffer2D_p; const size: integer; const mip: integer): voxelcolumn_p;
 var
   i, j: integer;
   rover: voxelcolumn_p;
@@ -387,7 +437,7 @@ end;
 // R_ClearVoxelBuffer
 //
 //==============================================================================
-procedure R_ClearVoxelBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer);
+class procedure TRendererVoxelsLocal.R_ClearVoxelBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer);
 var
   xx, yy, zz: integer;
   vp: voxelitem_p;
@@ -412,20 +462,12 @@ begin
   end;
 end;
 
-type
-  mt_struct1_t = record
-    voxelbuffer: voxelbuffer_p;
-    voxelsize: integer;
-    start, finish: integer;
-  end;
-  mt_struct1_p = ^mt_struct1_t;
-
 //==============================================================================
 //
 // _mt_prepare_optimize_voxel_buffer
 //
 //==============================================================================
-function _mt_prepare_optimize_voxel_buffer(r: mt_struct1_p): integer; stdcall;
+class function TRendererVoxelsLocal._mt_prepare_optimize_voxel_buffer(r: mt_struct1_p): integer; stdcall;
 var
   xx, yy, zz: integer;
   voxelsize: integer;
@@ -454,7 +496,7 @@ end;
 // R_OptimizeVoxelBuffer
 //
 //==============================================================================
-procedure R_OptimizeVoxelBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer);
+class procedure TRendererVoxelsLocal.R_OptimizeVoxelBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer);
 var
   xx, yy, zz: integer;
   r1, r2, r3, r4: mt_struct1_t;
@@ -513,7 +555,7 @@ end;
 // _mt_prepare_voxel_columns
 //
 //==============================================================================
-function _mt_prepare_voxel_columns(r: mt_struct1_p): integer; stdcall;
+class function TRendererVoxelsLocal._mt_prepare_voxel_columns(r: mt_struct1_p): integer; stdcall;
 var
   xx, yy, zz: integer;
   skip: boolean;
@@ -542,7 +584,7 @@ end;
 // R_PrepareVoxelColumns
 //
 //==============================================================================
-procedure R_PrepareVoxelColumns(const voxelbuffer: voxelbuffer_p; const voxelsize: integer);
+class procedure TRendererVoxelsLocal.R_PrepareVoxelColumns(const voxelbuffer: voxelbuffer_p; const voxelsize: integer);
 var
   xx, yy, zz: integer;
   skip: boolean;
@@ -589,21 +631,12 @@ begin
   end;
 end;
 
-type
-  distancetableitem_t = record
-    dist: LongWord;
-    idx: integer;
-  end;
-
-  distancetable_t = array[0..$1FFF] of distancetableitem_t;
-  distancetable_p = ^distancetable_t;
-
 //==============================================================================
 //
 // R_QSortDistanceTable
 //
 //==============================================================================
-procedure R_QSortDistanceTable(const A: distancetable_p; const len: Integer);
+class procedure TRendererVoxelsLocal.R_QSortDistanceTable(const A: distancetable_p; const len: Integer);
 
   procedure qsorttbl(l, r: Integer);
   var
@@ -645,7 +678,7 @@ end;
 // R_CreateVoxelMipSortOrderAngle
 //
 //==============================================================================
-function R_CreateVoxelMipSortOrderAngle(const mip: voxelmip_p; const an: integer): boolean;
+class function TRendererVoxelsLocal.R_CreateVoxelMipSortOrderAngle(const mip: voxelmip_p; const an: integer): boolean;
 var
   i: integer;
   distancetable: distancetable_p;  // Holds square distance
@@ -730,7 +763,7 @@ end;
 // R_CreateVoxelMipSortOrder
 //
 //==============================================================================
-procedure R_CreateVoxelMipSortOrder(const mip: voxelmip_p);
+class procedure TRendererVoxelsLocal.R_CreateVoxelMipSortOrder(const mip: voxelmip_p);
 var
   i: integer;
 begin
@@ -746,7 +779,7 @@ end;
 // R_VoxelColumnsFromBuffer
 //
 //==============================================================================
-function R_VoxelColumnsFromBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer; const offset, scale: fixed_t): voxelcolumns_p;
+class function TRendererVoxelsLocal.R_VoxelColumnsFromBuffer(const voxelbuffer: voxelbuffer_p; const voxelsize: integer; const offset, scale: fixed_t): voxelcolumns_p;
 var
   xx, yy, zz: integer;
   i, j: integer;
@@ -1050,7 +1083,7 @@ end;
 // in the buffer of the renderer
 //
 //==============================================================================
-function R_LoadVoxelColumns(const name: string; const offset, scale: fixed_t;
+class function TRendererVoxelsLocal.R_LoadVoxelColumns(const name: string; const offset, scale: fixed_t;
   const loader: IVoxelLoader; const cubes: IVoxelCubeBuilder): voxelcolumns_p;
 var
   model: IVoxelModel;
@@ -1115,7 +1148,7 @@ begin
   if ALoader.IsSupported(name) then
   begin
     fnumframes := 1;
-    frames.Add(R_LoadVoxelColumns(name, offset, scale, ALoader, ACubes));
+    frames.Add(TRendererVoxelsLocal.R_LoadVoxelColumns(name, offset, scale, ALoader, ACubes));
   end
   else
     I_Error('TVoxelModel.Create(): Can not identify voxel type "%s"', [name]);
@@ -1147,7 +1180,7 @@ var
 // R_InitVoxels
 //
 //==============================================================================
-procedure R_InitVoxels;
+class procedure TRendererVoxels.R_InitVoxels;
 var
   size: integer;
 begin
@@ -1162,7 +1195,7 @@ end;
 // R_VoxelsDone
 //
 //==============================================================================
-procedure R_VoxelsDone;
+class procedure TRendererVoxels.R_VoxelsDone;
 begin
   VX_VoxelsDone;
 end;
@@ -1172,7 +1205,7 @@ end;
 // R_DrawThingVoxel
 //
 //==============================================================================
-procedure R_DrawThingVoxel(const thing: Pmobj_t; const vidx: integer; const depth: LongWord;
+class procedure TRendererVoxelsLocal.R_DrawThingVoxel(const thing: Pmobj_t; const vidx: integer; const depth: LongWord;
   const renderflags: LongWord);
 var
   info: Pvoxelstate_t;
@@ -1747,7 +1780,7 @@ end;
 // R_DrawThingVoxels
 //
 //==============================================================================
-procedure R_DrawThingVoxels(const thing: Pmobj_t; const depth: LongWord;
+class procedure TRendererVoxelsLocal.R_DrawThingVoxels(const thing: Pmobj_t; const depth: LongWord;
   const renderflags: LongWord);
 var
   i: integer;
@@ -1761,7 +1794,7 @@ end;
 // R_DrawVoxel
 //
 //==============================================================================
-procedure R_DrawVoxel(const vis: Pvissprite_t);
+class procedure TRendererVoxels.R_DrawVoxel(const vis: Pvissprite_t);
 var
   i: integer;
   ds: Pdrawseg_t;
@@ -2088,7 +2121,7 @@ begin
     end;
   end;
 
-  R_DrawThingVoxels(vis.mo, depth, vis.renderflags);
+  TRendererVoxelsLocal.R_DrawThingVoxels(vis.mo, depth, vis.renderflags);
 end;
 
 end.

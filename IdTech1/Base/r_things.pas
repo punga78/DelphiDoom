@@ -2872,7 +2872,7 @@ begin
         if spr.mobjflags_ex and MF_EX_LIGHT <> 0 then
           R_DrawSpriteLight(spr);
         if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2889,7 +2889,7 @@ begin
           Break;
         end
         else if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2898,7 +2898,7 @@ begin
       begin
         spr := vissprites[i];
         if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2909,7 +2909,7 @@ begin
       begin
         spr := vissprites[i];
         if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;

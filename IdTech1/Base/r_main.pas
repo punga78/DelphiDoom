@@ -2152,7 +2152,7 @@ begin
   R_InitPrecalc;
 {$IFNDEF OPENGL}
   printf('R_InitVoxels'#13#10);
-  R_InitVoxels;
+  TRendererVoxels.R_InitVoxels;
   printf('R_InitWallsCache8'#13#10);
   TRendererWall8.R_InitWallsCache8;
   printf('R_InitWallsCache32'#13#10);
@@ -2250,7 +2250,7 @@ begin
   R_FreeMemory;
 {$IFNDEF OPENGL}
   printf(#13#10 + 'R_VoxelsDone');
-  R_VoxelsDone;
+  TRendererVoxels.R_VoxelsDone;
   printf(#13#10 + 'R_ShutDownDepthBuffer'); // JVAL: 3d Floors
   R_ShutDownDepthBuffer;
   printf(#13#10 + 'R_ShutDownZBuffer'); // JVAL: version 205

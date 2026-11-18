@@ -995,7 +995,7 @@ begin
   R_ConfigureCustomColormaps(TPaletteFactory.CreateColormapPreparer, LDefaultPalette);
 {$ENDIF}
 {$IFNDEF OPENGL}
-  R_ConfigureVoxelPalette(LDefaultPalette);
+  TRendererVoxels.R_ConfigureVoxelPalette(LDefaultPalette);
 {$ENDIF}
   R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames, APakFiles);
   V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
