@@ -2366,7 +2366,7 @@ begin
 
   R_AdjustTeleportZoom(player);
   R_AdjustChaseCamera;
-  R_AdjustGlobalEarthQuake(player);
+  TRendererEarthquake.R_AdjustGlobalEarthQuake(player);
 
 {$IFNDEF OPENGL}
   viewsubsector := R_PointInSubSector(viewx, viewy); // JVAL: 3d Floors

@@ -36,12 +36,21 @@ interface
 uses
   d_player;
 
-//==============================================================================
-//
-// R_AdjustGlobalEarthQuake
-//
-//==============================================================================
-procedure R_AdjustGlobalEarthQuake(const player: Pplayer_t);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererEarthquake = class sealed
+  public
+    //==============================================================================
+    //
+    // R_AdjustGlobalEarthQuake
+    //
+    //==============================================================================
+    class procedure R_AdjustGlobalEarthQuake(const player: Pplayer_t); static;
+  end;
+
 
 implementation
 
@@ -55,7 +64,7 @@ uses
 // R_AdjustGlobalEarthQuake
 //
 //==============================================================================
-procedure R_AdjustGlobalEarthQuake(const player: Pplayer_t);
+class procedure TRendererEarthquake.R_AdjustGlobalEarthQuake(const player: Pplayer_t);
 var
   seed1, seed2: integer;
   rnd1a, rnd1b, rnd2a, rnd2b: integer;
