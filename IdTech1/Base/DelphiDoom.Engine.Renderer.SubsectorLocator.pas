@@ -40,9 +40,9 @@ var
   LSubsector: Psubsector_t;
   LIndex: Integer;
 begin
-  LSubsector := R_PointInSubSectorClassic(AX, AY);
+  LSubsector := TRendererMain.R_PointInSubSectorClassic(AX, AY);
   for LIndex := 0 to LSubsector.numlines - 1 do
-    if R_PointOnSegSide(AX, AY, @segs[LSubsector.firstline + LIndex]) then
+    if TRendererMain.R_PointOnSegSide(AX, AY, @segs[LSubsector.firstline + LIndex]) then
     begin
       Result := -1;
       Exit;

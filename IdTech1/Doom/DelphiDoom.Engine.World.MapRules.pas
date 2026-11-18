@@ -1079,7 +1079,7 @@ begin
   while nodenum and NF_SUBSECTOR = 0 do
   begin
     node := @vanillanodes[nodenum];
-    if R_PointOnSideVanilla(x, y, node) then
+    if TRendererMain.R_PointOnSideVanilla(x, y, node) then
       nodenum := node.children[1]
     else
       nodenum := node.children[0]
@@ -1098,6 +1098,6 @@ begin
   if G_IsOldDemoPlaying and hasvanillanodes then
     result := TMapLocalRoutines.P_PointInSectorVanilla(x, y)
   else
-    result := R_PointInSubSector(x, y).sector;
+    result := TRendererMain.R_PointInSubSector(x, y).sector;
 end;
 end.

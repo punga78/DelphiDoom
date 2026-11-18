@@ -327,7 +327,7 @@ begin
       detailLevel := DL_LOWEST
     else
       detailLevel := DL_MEDIUM;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
   R_CmdLowestRes;
 end;
@@ -354,7 +354,7 @@ begin
       detailLevel := DL_LOW
     else
       detailLevel := DL_MEDIUM;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
   R_CmdLowRes;
 end;
@@ -381,7 +381,7 @@ begin
       detailLevel := DL_MEDIUM
     else
       detailLevel := DL_NORMAL;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
   R_CmdNormalRes;
 end;
@@ -408,7 +408,7 @@ begin
       detailLevel := DL_NORMAL
     else
       detailLevel := DL_MEDIUM;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
   R_CmdNormalRes;
 end;
@@ -435,7 +435,7 @@ begin
       detailLevel := DL_HIRES
     else
       detailLevel := DL_NORMAL;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
   R_CmdHiRes;
 end;
@@ -466,7 +466,7 @@ begin
       detailLevel := DL_ULTRARES
     else
       detailLevel := DL_HIRES;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
   R_CmdUltraRes;
 end;
@@ -501,7 +501,7 @@ begin
   if newdetail <> detailLevel then
   begin
     detailLevel := newdetail;
-    R_SetViewSize;
+    TRendererMain.R_SetViewSize;
   end;
 
   R_CmdDetailLevel;

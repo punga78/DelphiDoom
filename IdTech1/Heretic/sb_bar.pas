@@ -1605,7 +1605,7 @@ begin
       TStatusBarLocalRoutines.SB_DrawSoundInfo;
 
     CPlayer := @TGameSession.Players[TGameSession.ConsolePlayer];
-    if not R_StOff or (amstate = am_only) then
+    if not TRendererMain.R_StOff or (amstate = am_only) then
     begin
       if (viewheight = SCREENHEIGHT) and (amstate <> am_only) then
       begin

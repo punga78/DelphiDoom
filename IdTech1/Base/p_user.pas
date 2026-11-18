@@ -530,7 +530,7 @@ begin
   if (player.attacker <> nil) and (player.attacker <> player.mo) then
   begin
 
-    angle := R_PointToAngle2(
+    angle := TRendererMain.R_PointToAngle2(
       player.mo.x, player.mo.y, player.attackerx, player.attackery);
 
     delta := angle - player.mo.angle;

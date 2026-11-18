@@ -805,7 +805,7 @@ begin
 {$ENDIF}
 
   if player <> nil then
-    R_RenderPlayerView(player);
+    TRendererMain.R_RenderPlayerView(player);
 end;
 
 var
@@ -862,14 +862,14 @@ begin
   // change the view size if needed
   if setsizeneeded then
   begin
-    R_ExecuteSetViewSize;
+    TRendererMain.R_ExecuteSetViewSize;
     TGameSession.OldGameState := -1; // force background redraw
     borderdrawcount := 3;
   end;
 {$IFNDEF OPENGL}
   if oldusemultithread <> usemultithread then
   begin
-    R_SetRenderingFunctions;
+    TRendererMain.R_SetRenderingFunctions;
     oldusemultithread := usemultithread;
   end;
 {$ENDIF}
@@ -2560,7 +2560,7 @@ begin
   SUC_Progress(70);
 
   printf('R_Init: Init %s refresh daemon.'#13#10, [strupper(_GAME)]);
-  R_Init;
+  TRendererMain.R_Init;
 
   SUC_Progress(80);
 
@@ -2712,7 +2712,7 @@ begin
   printf('P_ShutDown: Shut down Playloop state.'#13#10);
   TMainLocalRoutines.D_LevelLoader.ShutDown;
   printf('R_ShutDown: Shut down %s refresh daemon.', [strupper(_GAME)]);
-  R_ShutDown;
+  TRendererMain.R_ShutDown;
   printf('Info_ShutDownRandom: Shut down randomizers.'#13#10);
   Info_ShutDownRandom;
   printf('P_ACSShutDown: Shut down ACS script.'#13#10);

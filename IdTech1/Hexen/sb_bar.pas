@@ -1971,11 +1971,11 @@ begin
       TStatusBarLocalRoutines.SB_DrawPatch(38, 162, PatchKEYBAR);
       TStatusBarLocalRoutines.SB_DrawKeyBar;
     end
-    else if R_FullStOn then
+    else if TRendererMain.R_FullStOn then
     begin
       TStatusBarLocalRoutines.SB_DrawFullScreenStuff;
     end
-    else if not R_StOff then
+    else if not TRendererMain.R_StOff then
     begin
       TStatusBarLocalRoutines.SB_DrawPatch(0, 134, PatchH2BAR);
       TStatusBarLocalRoutines.SB_DrawCommonBar;

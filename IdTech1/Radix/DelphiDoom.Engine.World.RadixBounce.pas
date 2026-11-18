@@ -207,7 +207,7 @@ begin
       mo.momy := TRadixBounceRules.SlowDown(mo.momy, False, 0);
     end;
     TRadixBounceRules.Mirror(mo.momx, mo.momy, P_TryMove(mo, mo.x - xmove, ymove + mo.y));
-    mo.angle := R_PointToAngle2(0, 0, -mo.momx, -mo.momy);
+    mo.angle := TRendererMain.R_PointToAngle2(0, 0, -mo.momx, -mo.momy);
   end;
 
   // read after the movement: P_WallBounceMobj and P_TryMove ran

@@ -208,10 +208,10 @@ begin
         continue;
       if cl - fl <= mo.height then
         if (Psubsector_t(mo.subsector).sector = sec) or
-           (R_PointInSubsector(mo.x - mo.radius, mo.y - mo.radius).sector = sec) or
-           (R_PointInSubsector(mo.x + mo.radius, mo.y - mo.radius).sector = sec) or
-           (R_PointInSubsector(mo.x + mo.radius, mo.y + mo.radius).sector = sec) or
-           (R_PointInSubsector(mo.x - mo.radius, mo.y + mo.radius).sector = sec) then
+           (TRendererMain.R_PointInSubsector(mo.x - mo.radius, mo.y - mo.radius).sector = sec) or
+           (TRendererMain.R_PointInSubsector(mo.x + mo.radius, mo.y - mo.radius).sector = sec) or
+           (TRendererMain.R_PointInSubsector(mo.x + mo.radius, mo.y + mo.radius).sector = sec) or
+           (TRendererMain.R_PointInSubsector(mo.x - mo.radius, mo.y + mo.radius).sector = sec) then
         begin
           result := true;
           exit;
@@ -1609,7 +1609,7 @@ begin
     parms.mobjid := target.key;
   end;
   parms.linelength := round(RX_LineLengthf(li));
-  parms.baseangle := R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y) - ANG90;
+  parms.baseangle := TRendererMain.R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y) - ANG90;
   parms.nextticfire := -1;
   parms.initialized := true;
 end;

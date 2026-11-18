@@ -1541,7 +1541,7 @@ begin
 
     if not allaround then
     begin
-      an := R_PointToAngle2(actor.x, actor.y, player.mo.x, player.mo.y) - actor.angle;
+      an := TRendererMain.R_PointToAngle2(actor.x, actor.y, player.mo.x, player.mo.y) - actor.angle;
 
       if (an > ANG90) and (an < ANG270) then
       begin
@@ -3572,7 +3572,7 @@ begin
   end;
   if (target.flags and MF_SHOOTABLE <> 0) and (P_Random < 64) then
   begin // attack the destination mobj if it's attackable
-    tangle := actor.angle - R_PointToAngle2(actor.x, actor.y, target.x, target.y);
+    tangle := actor.angle - TRendererMain.R_PointToAngle2(actor.x, actor.y, target.x, target.y);
     if (tangle < ANG45 div 2) or (tangle > ANGLE_MAX - ANG45 div 2) then
     begin
       oldTarget := actor.target;
@@ -3596,7 +3596,7 @@ begin
     begin
       bestArg := -1;
       bestAngle := ANGLE_MAX;
-      angleToTarget := R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
+      angleToTarget := TRendererMain.R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
       for i := 0 to 4 do
       begin
         if target.args[i] = 0 then
@@ -3604,7 +3604,7 @@ begin
 
         search := -1;
         mo := P_FindMobjFromTID(target.args[i], @search);
-        angleToSpot := R_PointToAngle2(actor.x, actor.y, mo.x, mo.y);
+        angleToSpot := TRendererMain.R_PointToAngle2(actor.x, actor.y, mo.x, mo.y);
         tangle := angleToSpot - angleToTarget;
         if (tangle < bestAngle) or (tangle > ANGLE_MAX - bestAngle) then
         begin
@@ -3669,7 +3669,7 @@ begin
       actor.target := nil;
       exit;
     end;
-    angle := R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
+    angle := TRendererMain.R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
     tangle := actor.angle - angle;
     angbool := (tangle < ANG45 div 2) or (tangle > ANGLE_MAX - ANG45 div 2);
     if angbool and TMonsterBaseActions.P_CheckMeleeRange(actor) then
@@ -4377,7 +4377,7 @@ begin
     begin
       if P_Random < 30 then
       begin
-        ang := R_PointToAngle2(actor.x, actor.y, target.x, target.y);
+        ang := TRendererMain.R_PointToAngle2(actor.x, actor.y, target.x, target.y);
         if P_Random < 128 then
           ang := ang + ANG90
         else
@@ -5382,7 +5382,7 @@ begin
     begin
       if P_Random < 100 then
       begin
-        ang := R_PointToAngle2(actor.x, actor.y, target.x, target.y);
+        ang := TRendererMain.R_PointToAngle2(actor.x, actor.y, target.x, target.y);
         if P_Random < 128 then
           ang := ang + ANG90
         else

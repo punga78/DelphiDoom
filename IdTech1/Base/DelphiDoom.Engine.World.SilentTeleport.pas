@@ -136,7 +136,7 @@ begin
           // Rotate 90 degrees, so that walking perpendicularly across
           // teleporter linedef causes thing to exit in the direction
           // indicated by the exit thing.
-          angle := TTeleportGeometry.SilentExitAngle(R_PointToAngle2(0, 0, line.dx, line.dy), m.angle);
+          angle := TTeleportGeometry.SilentExitAngle(TRendererMain.R_PointToAngle2(0, 0, line.dx, line.dy), m.angle);
 
           // Sine, cosine of angle adjustment
           s := TTeleportGeometry.SineOf(angle);
@@ -258,12 +258,12 @@ begin
       lineinput.SourceDy := line.dy;
       lineinput.SourceStartX := line.v1.x;
       lineinput.SourceStartY := line.v1.y;
-      lineinput.SourceAngle := R_PointToAngle2(0, 0, line.dx, line.dy);
+      lineinput.SourceAngle := TRendererMain.R_PointToAngle2(0, 0, line.dx, line.dy);
       lineinput.ExitDx := l.dx;
       lineinput.ExitDy := l.dy;
       lineinput.ExitEndX := l.v2.x;
       lineinput.ExitEndY := l.v2.y;
-      lineinput.ExitAngle := R_PointToAngle2(0, 0, l.dx, l.dy);
+      lineinput.ExitAngle := TRendererMain.R_PointToAngle2(0, 0, l.dx, l.dy);
       lineinput.ThingX := thing.x;
       lineinput.ThingY := thing.y;
       lineinput.Reverse := reverse;

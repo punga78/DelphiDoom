@@ -837,7 +837,7 @@ begin
     TRendererInterpolationLocal.R_AddInterpolationItem(@player.psprites[i].sx, iinteger, @istructs[IDS_PLAYER]);
     TRendererInterpolationLocal.R_AddInterpolationItem(@player.psprites[i].sy, iinteger, @istructs[IDS_PLAYER]);
   end;
-  sec := R_PointInSubsector(viewx, viewy).sector;
+  sec := TRendererMain.R_PointInSubsector(viewx, viewy).sector;
   if sec.renderflags and SRF_NO_INTERPOLATE = 0 then
     TRendererInterpolationLocal.R_AddInterpolationItem(@player.viewz, iinteger, @istructs[IDS_PLAYER]);
 

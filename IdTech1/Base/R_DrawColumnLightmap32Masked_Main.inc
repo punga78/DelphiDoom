@@ -18,7 +18,7 @@
         sameseg := (seg = db.seg) and (seg <> nil);
         seg := db.seg;
         if seg <> nil then
-          skip := R_PointOnSegSide(parms.lightsourcex, parms.lightsourcey, seg)
+          skip := TRendererMain.R_PointOnSegSide(parms.lightsourcex, parms.lightsourcey, seg)
         else
           skip := false;
       end;

@@ -2072,7 +2072,7 @@ begin
      ((source = nil) or (source.player = nil)) and
      (inflictor.flags2 and MF2_NODMGTHRUST = 0) then
   begin
-    ang := R_PointToAngle2(inflictor.x, inflictor.y, target.x, target.y);
+    ang := TRendererMain.R_PointToAngle2(inflictor.x, inflictor.y, target.x, target.y);
     mass := target.mass;
     if (mass = 0) or (G_PlayingEngineVersion < VERSION204) then  // JVAL: 20180218 - VERSION 2.0.4.715 Change from (<> 0) to (= 0)
       thrust := 0

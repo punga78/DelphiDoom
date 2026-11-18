@@ -6975,7 +6975,7 @@ begin
     exit;
 
   // change angle
-  exact := R_PointToAngle2(actor.x, actor.y, dest.x, dest.y);
+  exact := TRendererMain.R_PointToAngle2(actor.x, actor.y, dest.x, dest.y);
 
   if actor.state.params.Count >= 2 then
     maxturn := actor.state.params.IntVal[1] * ANG1
@@ -8997,7 +8997,7 @@ begin
     exit;
 
   // change angle
-  exact := R_PointToAngle2(actor.x, actor.y, dest.x, dest.y);
+  exact := TRendererMain.R_PointToAngle2(actor.x, actor.y, dest.x, dest.y);
 
   if exact <> actor.angle then
   begin
@@ -10060,7 +10060,7 @@ var
   angle2: angle_t;
 begin
   angle1 := source.angle;
-  angle2 := R_PointToAngle2(source.x, source.y, target.x, target.y);
+  angle2 := TRendererMain.R_PointToAngle2(source.x, source.y, target.x, target.y);
   if angle2 > angle1 then
   begin
     diff := angle2 - angle1;
@@ -10105,7 +10105,7 @@ class function TCommonSearchActions.P_CheckFov(t1, t2: Pmobj_t; ffov: angle_t): 
 var
   angle, minang, maxang: angle_t;
 begin
-  angle := R_PointToAngle2(t1.x, t1.y, t2.x, t2.y);
+  angle := TRendererMain.R_PointToAngle2(t1.x, t1.y, t2.x, t2.y);
   minang := t1.angle - ffov div 2;
   maxang := t1.angle + ffov div 2;
 
@@ -12174,7 +12174,7 @@ begin
     S_StartSound(player.mo, hitsound);
 
   // turn to face target
-  player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+  player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
 end;
 
 //==============================================================================

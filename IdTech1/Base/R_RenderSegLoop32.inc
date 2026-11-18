@@ -172,12 +172,12 @@ begin
         index := 0;
 
       dc_colormap := walllights[index];
-      dc_colormap32 := R_GetColormap32(dc_colormap);
+      dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
 {$IFDEF FLOORS3DVIS}
       if fixedcolormap = nil then
       begin
         dc_colormap2 := walllights2[index];
-        dc_colormap322 := R_GetColormap32(dc_colormap2);
+        dc_colormap322 := TRendererMain.R_GetColormap32(dc_colormap2);
       end;
 {$ENDIF}
 
@@ -214,10 +214,10 @@ begin
       end
       else
       begin
-        dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+        dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
 {$IFDEF FLOORS3DVIS}
         seglooplightlevel1 := dc_lightlevel;
-        dc_lightlevel2 := R_GetColormapLightLevel(dc_colormap2);
+        dc_lightlevel2 := TRendererMain.R_GetColormapLightLevel(dc_colormap2);
         seglooplightlevel2 := dc_lightlevel2;
 {$ENDIF}
       end;

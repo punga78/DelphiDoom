@@ -525,7 +525,7 @@ begin
       S_StartSound(player.mo, Ord(sfx_meatht));
 
     player.mo.angle :=
-      R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+      TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
 
     // villsa [STRIFE] apply flag
     player.mo.flags := player.mo.flags or MF_JUSTATTACKED;

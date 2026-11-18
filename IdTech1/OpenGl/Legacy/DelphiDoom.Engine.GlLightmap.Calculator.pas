@@ -412,7 +412,7 @@ begin
         LMapX := -Round(LLightX * MAP_SCALE);
         LMapY := Round(LLightZ * MAP_SCALE);
         LMapZ := Round(LLightY * MAP_SCALE);
-        LSector := R_PointInSubsector(LMapX, LMapY).sector;
+        LSector := TRendererMain.R_PointInSubsector(LMapX, LMapY).sector;
         if LLight.shadow then
         begin
           LLightY1 := (P_3dFloorHeight(LSector, LMapX, LMapY, LMapZ) - 4 * FRACUNIT) / MAP_SCALE;

@@ -456,7 +456,7 @@ begin
       if fixedcolormapnum = INVERSECOLORMAP then
         ds_lightlevel := -1  // Negative value -> Use colormaps
       else
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
     end;
   end
   else
@@ -476,7 +476,7 @@ begin
       end
       else
       begin
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
       end;
     end;
   end;
@@ -585,7 +585,7 @@ begin
       if fixedcolormapnum = INVERSECOLORMAP then
         ds_lightlevel := -1  // Negative value -> Use colormaps
       else
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
     end;
   end
   else
@@ -605,7 +605,7 @@ begin
       end
       else
       begin
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
       end;
     end;
   end;

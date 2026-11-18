@@ -2166,7 +2166,7 @@ begin
     end;
     if i = po_NumPolyobjs then
     begin // Sound is attached to a sector, not a polyobj
-      sec := R_PointInSubsector(node.mobj.x, node.mobj.y).sector;
+      sec := TRendererMain.R_PointInSubsector(node.mobj.x, node.mobj.y).sector;
       difference := (NativeUInt(sec) - NativeUInt(@sectors[0])) div SizeOf(sector_t);
       StreamOutLong(0); // 0 -- sector sound origin
     end

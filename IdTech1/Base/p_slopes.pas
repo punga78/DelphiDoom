@@ -167,7 +167,7 @@ end;
 //==============================================================================
 function P_FloorHeight(const x, y: fixed_t): fixed_t; overload;
 begin
-  result := P_FloorHeight(R_PointInSubSector(x, y).sector, x, y);
+  result := P_FloorHeight(TRendererMain.R_PointInSubSector(x, y).sector, x, y);
 end;
 
 //==============================================================================
@@ -190,7 +190,7 @@ end;
 //==============================================================================
 function P_CeilingHeight(const x, y: fixed_t): fixed_t; overload;
 begin
-  result := P_CeilingHeight(R_PointInSubSector(x, y).sector, x, y);
+  result := P_CeilingHeight(TRendererMain.R_PointInSubSector(x, y).sector, x, y);
 end;
 
 type

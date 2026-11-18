@@ -1301,7 +1301,7 @@ begin
       else
       begin
         badguyangle :=
-          R_PointToAngle2(plyr.mo.x, plyr.mo.y, plyr.attacker.x, plyr.attacker.y);
+          TRendererMain.R_PointToAngle2(plyr.mo.x, plyr.mo.y, plyr.attacker.x, plyr.attacker.y);
 
         if badguyangle > plyr.mo.angle then
         begin

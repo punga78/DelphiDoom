@@ -663,7 +663,7 @@ begin
   begin
     S_StartSound(player.mo, Ord(sfx_punch));
     player.mo.angle :=
-      R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+      TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
 end;
 
@@ -706,7 +706,7 @@ begin
 
   // turn to face target
   angle :=
-    R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+    TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   if angle - player.mo.angle > ANG180 then
   begin
     if integer(angle - player.mo.angle) < - integer(ANG90 div 20) then

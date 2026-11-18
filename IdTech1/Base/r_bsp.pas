@@ -783,11 +783,11 @@ begin
 
   // OPTIMIZE: quickly reject orthogonal back sides.
   {$IFDEF OPENGL}
-  angle1 := R_PointToAngle(line.v1.x, line.v1.y);
-  angle2 := R_PointToAngle(line.v2.x, line.v2.y);
+  angle1 := TRendererMain.R_PointToAngle(line.v1.x, line.v1.y);
+  angle2 := TRendererMain.R_PointToAngle(line.v2.x, line.v2.y);
   {$ELSE}
-  angle1 := R_PointToAngleEx(line.v1.x, line.v1.y);
-  angle2 := R_PointToAngleEx(line.v2.x, line.v2.y);
+  angle1 := TRendererMain.R_PointToAngleEx(line.v1.x, line.v1.y);
+  angle2 := TRendererMain.R_PointToAngleEx(line.v2.x, line.v2.y);
   {$ENDIF}
 
   // Clip to view edges.
@@ -1010,14 +1010,14 @@ begin
   y2 := bspcoord[pcoord[3]];
 
 {$IFDEF OPENGL}
-  angle1 := R_PointToAngleEx(x1, y1);
-  angle2 := R_PointToAngleEx(x2, y2);
+  angle1 := TRendererMain.R_PointToAngleEx(x1, y1);
+  angle2 := TRendererMain.R_PointToAngleEx(x2, y2);
   result := gld_clipper_SafeCheckRange(angle2, angle1);
   exit;
 {$ELSE}
   // check clip list for an open space
-  angle1 := R_PointToAngleEx(x1, y1) - viewangle;
-  angle2 := R_PointToAngleEx(x2, y2) - viewangle;
+  angle1 := TRendererMain.R_PointToAngleEx(x1, y1) - viewangle;
+  angle2 := TRendererMain.R_PointToAngleEx(x2, y2) - viewangle;
 
   span := angle1 - angle2;
 
@@ -1616,11 +1616,11 @@ begin
 
   // Decide which side the view point is on.
 
-  if R_PointOnSide(viewx, viewy, bsp) then
+  if TRendererMain.R_PointOnSide(viewx, viewy, bsp) then
   begin
 {$ELSE}
     // Decide which side the view point is on.
-    if R_PointOnSide(viewx, viewy, bsp) then
+    if TRendererMain.R_PointOnSide(viewx, viewy, bsp) then
       side := 1
     else
       side := 0;

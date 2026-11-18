@@ -536,7 +536,7 @@ begin
     result.x2 := x2;
 
   // get depthbuffer range
-  an := R_PointToAngle(x, y);
+  an := TRendererMain.R_PointToAngle(x, y);
   an := an shr ANGLETOFINESHIFT;
   dx := FixedMul(radius, finecosine[an]);
   dy := FixedMul(radius, finesine[an]);

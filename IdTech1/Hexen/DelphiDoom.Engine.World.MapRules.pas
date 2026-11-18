@@ -274,7 +274,7 @@ var
 
 class function TMapGameRules.PointInSector(const x, y: fixed_t): Psector_t;
 begin
-  result := R_PointInSubsector(x, y).sector;
+  result := TRendererMain.R_PointInSubsector(x, y).sector;
 end;
 
 class function TMapGameRules.CanStomp(thing: Pmobj_t): boolean;
@@ -1514,10 +1514,10 @@ begin
   P_PathTraverse(leadx, leady, leadx + mo.momx, leady + mo.momy, PT_ADDLINES, TMapLocalRoutines.PTR_BounceTraverse);
 
   side := P_PointOnLineSide(mo.x, mo.y, TMapSlide.BestLine);
-  lineangle := R_PointToAngle2(0, 0, TMapSlide.BestLine.dx, TMapSlide.BestLine.dy);
+  lineangle := TRendererMain.R_PointToAngle2(0, 0, TMapSlide.BestLine.dx, TMapSlide.BestLine.dy);
   if side = 1 then
     lineangle := lineangle + ANG180;
-  moveangle := R_PointToAngle2(0, 0, mo.momx, mo.momy);
+  moveangle := TRendererMain.R_PointToAngle2(0, 0, mo.momx, mo.momy);
   deltaangle := (2 * lineangle) - moveangle;
 
   deltaangle := deltaangle shr ANGLETOFINESHIFT;

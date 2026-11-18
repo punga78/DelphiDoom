@@ -2347,7 +2347,7 @@ begin
   Z_Free(savebuffer);
 
   if setsizeneeded then
-    R_ExecuteSetViewSize;
+    TRendererMain.R_ExecuteSetViewSize;
 
   P_LevelInfoChangeMusic;
 

@@ -98,7 +98,7 @@ begin
       SetLength(forcefield, numforcefielditems + 16);
     forcefield[numforcefielditems].xpos := x * FRACUNIT;
     forcefield[numforcefielditems].ypos := y * FRACUNIT;
-    forcefield[numforcefielditems].sector := R_PointInSubSector(x * FRACUNIT, y * FRACUNIT).sector;
+    forcefield[numforcefielditems].sector := TRendererMain.R_PointInSubSector(x * FRACUNIT, y * FRACUNIT).sector;
     forcefield[numforcefielditems].trigger := trig_id;
     inc(numforcefielditems);
   end;

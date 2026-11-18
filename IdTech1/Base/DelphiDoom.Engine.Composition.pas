@@ -661,7 +661,7 @@ begin
   LNetGame := TEngineNetGame.Create(AClock, ALog, AGame, AConsole, AEndScreenTick, AShutdown);
   TMainRoutines.D_ConfigureNetGame(LNetGame);
   G_ConfigureNetGame(LNetGame);
-  R_ConfigureNetGame(LNetGame);
+  TRendererMain.R_ConfigureNetGame(LNetGame);
   I_ConfigureNetGame(LNetGame);
   Result := LNetGame;
 end;
@@ -853,7 +853,7 @@ begin
   gld_ConfigureSpriteCollector(TEngineGlSceneSpriteCollector.Create(gld_SceneDrawList, gld_LightTable,
     TEngineGlSceneLightMarker.Create(LCache)));
 {$ELSE}
-  R_ConfigureDynamicLights(LCache);
+  TRendererMain.R_ConfigureDynamicLights(LCache);
   TRendererSoftLights.R_ConfigureSoftLights(LCache);
 {$ENDIF}
 end;
@@ -999,7 +999,7 @@ begin
 {$ENDIF}
   R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames, APakFiles);
   V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
-  R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
+  TRendererMain.R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
   R_ConfigurePrecalc(TPaletteFactory.CreatePrecalcTables);
 {$IF DEFINED(DOOM)}
   R_ConfigurePlayerTranslations(TPaletteFactory.CreateDoomPlayerTranslations);
@@ -1181,7 +1181,7 @@ begin
 {$IFNDEF OPENGL}
   R_ConfigureFixedColumn(TImagingFactory.CreateFixedColumnBuilder);
 {$ENDIF}
-  R_ConfigureMenuThumbnail(TImagingFactory.CreateThumbnailBuilder(
+  TRendererMain.R_ConfigureMenuThumbnail(TImagingFactory.CreateThumbnailBuilder(
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
   W_ConfigureSpritePatches(TImagingFactory.CreateColorPatchBuilder(
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
@@ -1210,8 +1210,8 @@ begin
     TEngineRendererSpriteSource.Create, ALog));
   TRendererSubsectors.R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);
-  R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
-  R_ConfigureViewTables(TRendererFactory.CreateViewTables);
+  TRendererMain.R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
+  TRendererMain.R_ConfigureViewTables(TRendererFactory.CreateViewTables);
   LDirectory := TEngineRendererLumpDirectory.Create;
   R_ConfigureLumpRanges(TRendererFactory.CreateLumpRanges(LDirectory, ALog),
     TRendererFactory.CreateSpriteTableBuilder(LDirectory,

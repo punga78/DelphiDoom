@@ -2308,7 +2308,7 @@ begin
     game_loadgameextension(savename);
 
   if setsizeneeded then
-    R_ExecuteSetViewSize;
+    TRendererMain.R_ExecuteSetViewSize;
 
   P_LevelInfoChangeMusic;
 

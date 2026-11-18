@@ -87,7 +87,7 @@ begin
     if not LThruSky then
       Exit;
   end;
-  LSector := R_PointInSubsector(TMapCheck.X, TMapCheck.Y).sector;
+  LSector := TRendererMain.R_PointInSubsector(TMapCheck.X, TMapCheck.Y).sector;
   TMapCheck.CeilingZ := TMapCheck.CeilingZ + Offset(LThing, LSector, True);
   LUnder := Offset(LThing, LSector, False);
   TMapCheck.DropOffZ := TMapCheck.DropOffZ - LUnder;

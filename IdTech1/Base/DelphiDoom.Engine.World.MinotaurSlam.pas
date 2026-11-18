@@ -47,7 +47,7 @@ var
   angle: angle_t;
   thrust: fixed_t;
 begin
-  angle := R_PointToAngle2(source.x, source.y, target.x, target.y);
+  angle := TRendererMain.R_PointToAngle2(source.x, source.y, target.x, target.y);
   angle := angle shr ANGLETOFINESHIFT;
   thrust := 16 * FRACUNIT + (P_Random * 1024);
   target.momx := target.momx + FixedMul(thrust, finecosine[angle]);

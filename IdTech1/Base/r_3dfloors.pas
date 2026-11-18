@@ -340,11 +340,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
 {$IFDEF CPUX86}
@@ -407,7 +407,7 @@ begin
 
         dc_colormap := walllights[index];
         if videomode = vm32bit then
-          dc_colormap32 := R_GetColormap32(dc_colormap);
+          dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
       end;
 
 {$IFDEF CPUX86}
@@ -582,11 +582,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
 {$IFDEF CPUX86}
@@ -680,8 +680,8 @@ begin
         dc_colormap2 := walllights2[index];
         if videomode = vm32bit then
         begin
-          dc_colormap32 := R_GetColormap32(dc_colormap);
-          dc_colormap322 := R_GetColormap32(dc_colormap2);
+          dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
+          dc_colormap322 := TRendererMain.R_GetColormap32(dc_colormap2);
         end;
       end;
 
@@ -893,11 +893,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
   texscale := FixedMul(dc_texturemid, ds.scale1);
@@ -939,7 +939,7 @@ begin
 
         dc_colormap := walllights[index];
         if videomode = vm32bit then
-          dc_colormap32 := R_GetColormap32(dc_colormap);
+          dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
       end;
 
       sprtopscreen := centeryfrac - texscale;
@@ -1061,11 +1061,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
   texscale[0] := FixedMul(texturemid[0], ds.scale1);
@@ -1117,8 +1117,8 @@ begin
         dc_colormap2 := walllights2[index];
         if videomode = vm32bit then
         begin
-          dc_colormap32 := R_GetColormap32(dc_colormap);
-          dc_colormap322 := R_GetColormap32(dc_colormap2);
+          dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
+          dc_colormap322 := TRendererMain.R_GetColormap32(dc_colormap2);
         end;
       end;
 

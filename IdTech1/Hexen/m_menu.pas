@@ -4074,7 +4074,7 @@ class procedure TMenuLocalRoutines.M_ChangeDetail(choice: integer);
 begin
   detailLevel := (detailLevel + 1) mod DL_NUMRESOLUTIONS;
 
-  R_SetViewSize;
+  TRendererMain.R_SetViewSize;
 
   case detailLevel of
     DL_LOWEST:
@@ -4190,7 +4190,7 @@ begin
       end;
   end;
 
-  R_SetViewSize;
+  TRendererMain.R_SetViewSize;
 end;
 
 //

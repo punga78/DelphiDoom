@@ -1034,11 +1034,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
   if dc_colormap = nil then
@@ -1588,7 +1588,7 @@ begin
   1:  // 8 angles
     begin
       // choose a different rotation based on player view
-      ang := R_PointToAngle(thing.x, thing.y);
+      ang := TRendererMain.R_PointToAngle(thing.x, thing.y);
       rot := (ang - thing.angle + LongWord(ANG45 div 2) * 9) shr 29;
       lump := sprframe.lump[rot];
       flip := sprframe.flip[rot];
@@ -1596,7 +1596,7 @@ begin
   2:  // 16 angles
     begin
       // choose a different rotation based on player view
-      ang := R_PointToAngle(thing.x, thing.y);
+      ang := TRendererMain.R_PointToAngle(thing.x, thing.y);
       rot := translaterotations[2, (ang - thing.angle + LongWord(ANG45 div 4) * 17) shr 28];
       lump := sprframe.lump[rot];
       flip := sprframe.flip[rot];
@@ -1604,7 +1604,7 @@ begin
   3:  // 32 angles
     begin
       // choose a different rotation based on player view
-      ang := R_PointToAngle(thing.x, thing.y);
+      ang := TRendererMain.R_PointToAngle(thing.x, thing.y);
       rot := translaterotations[3, (ang - thing.angle + LongWord(ANG45 div 8) * 33) shr 27];
       lump := sprframe.lump[rot];
       flip := sprframe.flip[rot];
@@ -2287,7 +2287,7 @@ begin
     end;
 
     if (scale < spr.scale) or
-       ((lowscale < spr.scale) and not R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
+       ((lowscale < spr.scale) and not TRendererMain.R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
     begin
       if ds.x1 < sx1 then
         item.r1 := sx1
@@ -2515,7 +2515,7 @@ begin
     end;
 
     if (scale < spr.scale) or
-       ((lowscale < spr.scale) and not R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
+       ((lowscale < spr.scale) and not TRendererMain.R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
     begin
       if ds.x1 < sx1 then
         r1 := sx1
@@ -2743,7 +2743,7 @@ begin
     end;
 
     if (scale < spr.scale) or
-       ((lowscale < spr.scale) and not R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
+       ((lowscale < spr.scale) and not TRendererMain.R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
     begin
       if ds.x1 <= x1 then
         r1 := x1

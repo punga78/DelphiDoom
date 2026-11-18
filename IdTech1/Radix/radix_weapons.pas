@@ -467,7 +467,7 @@ begin
   source.x := newx - offsx;
   source.y := newy - offsy;
 
-  sec := R_PointInSubsector(source.x, source.y).sector;
+  sec := TRendererMain.R_PointInSubsector(source.x, source.y).sector;
 
   sfloor := P_3dFloorHeight(sec, source.x, source.y, newz);
   sceiling := P_3dCeilingHeight(sec, source.x, source.y, newz);

@@ -1360,7 +1360,7 @@ begin
         for LSlot := 0 to SlotCount - 1 do
           SlotAddress(LSlot)^ := nil;
         setdetail := DetailOfIndex(LDetail);
-        R_SetRenderingFunctions;
+        TRendererMain.R_SetRenderingFunctions;
         LLine := Format('d=%d c=%d videomode=%s', [LDetail, LCombination, VideoModeName(LDetail)]);
         for LSlot := 0 to SlotCount - 1 do
         begin

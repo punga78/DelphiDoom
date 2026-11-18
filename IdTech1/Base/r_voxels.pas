@@ -1318,7 +1318,7 @@ begin
     end;
     angleadd := spinang - angleadd;
 
-    rot := (R_PointToAngleEx(thing.x, thing.y) - thing.angle + angleadd + LongWord(ANG45 div 2) * 9) shr 29;
+    rot := (TRendererMain.R_PointToAngleEx(thing.x, thing.y) - thing.angle + angleadd + LongWord(ANG45 div 2) * 9) shr 29;
 
     tr_x := thing.x - viewx;
     tr_y := thing.y - viewy;
@@ -1856,7 +1856,7 @@ begin
     end;
 
     if (scale < vis.scale) or
-       ((lowscale < vis.scale) and not R_PointOnSegSide(vis.gx, vis.gy, ds.curline)) then
+       ((lowscale < vis.scale) and not TRendererMain.R_PointOnSegSide(vis.gx, vis.gy, ds.curline)) then
     begin
       if ds.x1 < vis.vx1 then
         r1 := vis.vx1
@@ -2008,11 +2008,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
     putpixelfunc := @R_PutPixel32
   end
   else

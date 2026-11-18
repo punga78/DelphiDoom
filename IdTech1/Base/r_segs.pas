@@ -478,11 +478,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
   // draw the columns
@@ -524,7 +524,7 @@ begin
 
         dc_colormap := walllights[index];
         if videomode = vm32bit then
-          dc_colormap32 := R_GetColormap32(dc_colormap);
+          dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
       end;
 
       // killough 3/2/98:

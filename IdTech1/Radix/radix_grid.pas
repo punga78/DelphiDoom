@@ -117,7 +117,7 @@ begin
 
   if not TRadixTriggerGrid.IsMoving(mo.momx, mo.momy) then
   begin
-    sec := R_PointInSubSector(mo.x, mo.y).sector;
+    sec := TRendererMain.R_PointInSubSector(mo.x, mo.y).sector;
     result.Add(radixgrid.CellAt(RX_SectorPosition(sec), mo.x div FRACUNIT, mo.y div FRACUNIT));
     exit;
   end;
@@ -129,7 +129,7 @@ begin
     if i = RADIX_MAX_GRID_POSITIONS - 1 then
       sec := Psubsector_t(mo.subsector).sector // Current mo Position
     else
-      sec := R_PointInSubSector(samples[i].X * FRACUNIT, samples[i].Y * FRACUNIT).sector;
+      sec := TRendererMain.R_PointInSubSector(samples[i].X * FRACUNIT, samples[i].Y * FRACUNIT).sector;
     result.Add(radixgrid.CellAt(RX_SectorPosition(sec), samples[i].X, samples[i].Y));
   end;
 end;

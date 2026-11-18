@@ -74,7 +74,7 @@ begin
   TMobjGameRules.MissileSeeSound(th);
 
   th.target := source;  // where it came from
-  an := R_PointToAngle2(source.x, source.y, dest.x, dest.y);
+  an := TRendererMain.R_PointToAngle2(source.x, source.y, dest.x, dest.y);
 
   // fuzzy player
   an := TMobjGameRules.FuzzyAim(source, dest, an);
@@ -175,7 +175,7 @@ begin
       th.momy := th.momy + FixedMul(th.info.speed, finesine[an]);
     end;
 
-  th.angle := R_PointToAngle2(0, 0, th.momx, th.momy);
+  th.angle := TRendererMain.R_PointToAngle2(0, 0, th.momx, th.momy);
 
   if P_CheckMissileSpawn(th) then
     result := th

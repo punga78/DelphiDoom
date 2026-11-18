@@ -104,85 +104,9 @@ var
 {$ENDIF}
   diher8bittransparency: boolean;
 
-//==============================================================================
-// R_ApplyColormap
-//
-// Utility functions.
-//
-//==============================================================================
-procedure R_ApplyColormap(const ofs, count: integer; const scrn: integer; const cmap: integer);
-
-//==============================================================================
-//
-// R_PointOnSide
-//
-//==============================================================================
-function R_PointOnSide(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
 {$IFDEF DOOM}
 
-//==============================================================================
-//
-// R_PointOnSideVanilla
-//
-//==============================================================================
-function R_PointOnSideVanilla(const x: fixed_t; const y: fixed_t; const node: Pvanillanode_t): boolean;
 {$ENDIF}
-
-//==============================================================================
-//
-// R_PointOnSegSide
-//
-//==============================================================================
-function R_PointOnSegSide(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
-
-//==============================================================================
-//
-// R_PointOnLineSide
-//
-//==============================================================================
-function R_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
-
-//==============================================================================
-//
-// R_PointToAngle
-//
-//==============================================================================
-function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;
-
-//==============================================================================
-//
-// R_PointToAngleEx
-//
-//==============================================================================
-function R_PointToAngleEx(x: fixed_t; y: fixed_t): angle_t;
-
-//==============================================================================
-//
-// R_PointToAngle2
-//
-//==============================================================================
-function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;
-
-//==============================================================================
-//
-// R_PointToDist
-//
-//==============================================================================
-function R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t;
-
-//==============================================================================
-//
-// R_PointInSubsectorClassic
-//
-//==============================================================================
-function R_PointInSubsectorClassic(const x: fixed_t; const y: fixed_t): Psubsector_t;
-
-//==============================================================================
-//
-// R_PointInSubsector
-//
-//==============================================================================
-function R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t;
 
 //==============================================================================
 //
@@ -190,107 +114,10 @@ function R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t;
 //
 //==============================================================================
 
-//==============================================================================
-// R_RenderPlayerView
-//
-// REFRESH - the actual rendering functions.
-//
-// Called by G_Drawer.
-//
-//==============================================================================
-procedure R_RenderPlayerView(player: Pplayer_t);
-
-//==============================================================================
-//
-// R_ConfigureLightTables
-//
-//==============================================================================
-procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
-
-//==============================================================================
-//
-// R_ConfigureTextureMapping
-//
-//==============================================================================
-procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder);
-
-//==============================================================================
-//
-// R_ConfigureViewTables
-//
-//==============================================================================
-procedure R_ConfigureViewTables(const ATables: IRendererViewTables);
-
-//==============================================================================
-//
-// R_ConfigureMenuThumbnail
-//
-//==============================================================================
-procedure R_ConfigureMenuThumbnail(const ABuilder: IImagingThumbnailBuilder);
-
-//==============================================================================
-// R_Init
-//
-// Called by startup code.
-//
-//==============================================================================
-procedure R_Init;
-
-//==============================================================================
-//
-// R_ShutDown
-//
-//==============================================================================
-procedure R_ShutDown;
-
 {$IFNDEF OPENGL}
-//==============================================================================
-//
-// R_ConfigureDynamicLights
-//
-// The lights of the level (IdTech1\DynLights): R_Init reads the lumps, R_ShutDown forgets them.
-// The composition root calls it; without it R_Init stops with I_Error
-//
-//==============================================================================
-procedure R_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
 {$ENDIF}
 
-//==============================================================================
-// R_SetViewSize
-//
-// Called by M_Responder.
-//
-//==============================================================================
-procedure R_SetViewSize;
-
-//==============================================================================
-//
-// R_ExecuteSetViewSize
-//
-//==============================================================================
-procedure R_ExecuteSetViewSize;
-
-//==============================================================================
-//
-// R_SetViewAngleOffset
-//
-//==============================================================================
-procedure R_SetViewAngleOffset(const angle: angle_t);
-
-//==============================================================================
-//
-// R_FullStOn
-//
-//==============================================================================
-function R_FullStOn: boolean;
-
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-//==============================================================================
-//
-// R_StOff
-//
-//==============================================================================
-function R_StOff: boolean;
 
 {$ENDIF}
 var
@@ -493,38 +320,12 @@ var
 // Blocky mode, has default, 0 = high, 1 = normal
   screenblocks: integer;  // has default
 
-//==============================================================================
-//
-// R_GetColormapLightLevel
-//
-//==============================================================================
-function R_GetColormapLightLevel(const cmap: PByteArray): fixed_t;
-
-//==============================================================================
-//
-// R_GetColormap32
-//
-//==============================================================================
-function R_GetColormap32(const cmap: PByteArray): PLongWordArray;
-
 {$IFDEF HEXEN}
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_SetPalette64
-//
-//==============================================================================
-procedure R_SetPalette64;
 {$ENDIF}
 
 {$ENDIF}
-//==============================================================================
-//
-// R_Ticker
-//
-//==============================================================================
-procedure R_Ticker;
 
 {$IFDEF OPENGL}
 var
@@ -541,24 +342,222 @@ var
 
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_SetRenderingFunctions
-//
-//==============================================================================
-procedure R_SetRenderingFunctions;
 {$ENDIF}
 
 var
   rendervalidcount: integer = 0; // Don't bother reseting this // version 205
 
-//==============================================================================
-//
-// R_ConfigureNetGame
-// The network, given by the composition root
-//
-//==============================================================================
-procedure R_ConfigureNetGame(const ANetGame: IEngineNetGame);
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererMain = class sealed
+  public
+    //==============================================================================
+    // R_ApplyColormap
+    //
+    // Utility functions.
+    //
+    //==============================================================================
+    class procedure R_ApplyColormap(const ofs, count: integer; const scrn: integer; const cmap: integer); static;
+    //==============================================================================
+    //
+    // R_PointOnSide
+    //
+    //==============================================================================
+    class function R_PointOnSide(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean; static;
+{$IFDEF DOOM}
+    //==============================================================================
+    //
+    // R_PointOnSideVanilla
+    //
+    //==============================================================================
+    class function R_PointOnSideVanilla(const x: fixed_t; const y: fixed_t; const node: Pvanillanode_t): boolean; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_PointOnSegSide
+    //
+    //==============================================================================
+    class function R_PointOnSegSide(x: fixed_t; y: fixed_t; line: Pseg_t): boolean; static;
+    //==============================================================================
+    //
+    // R_PointOnLineSide
+    //
+    //==============================================================================
+    class function R_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): boolean; static;
+    //==============================================================================
+    //
+    // R_PointToAngle
+    //
+    //==============================================================================
+    class function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t; static;
+    //==============================================================================
+    //
+    // R_PointToAngleEx
+    //
+    //==============================================================================
+    class function R_PointToAngleEx(x: fixed_t; y: fixed_t): angle_t; static;
+    //==============================================================================
+    //
+    // R_PointToAngle2
+    //
+    //==============================================================================
+    class function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t; static;
+    //==============================================================================
+    //
+    // R_PointToDist
+    //
+    //==============================================================================
+    class function R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t; static;
+    //==============================================================================
+    //
+    // R_PointInSubsectorClassic
+    //
+    //==============================================================================
+    class function R_PointInSubsectorClassic(const x: fixed_t; const y: fixed_t): Psubsector_t; static;
+    //==============================================================================
+    //
+    // R_PointInSubsector
+    //
+    //==============================================================================
+    class function R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t; static;
+    //==============================================================================
+    // R_RenderPlayerView
+    //
+    // REFRESH - the actual rendering functions.
+    //
+    // Called by G_Drawer.
+    //
+    //==============================================================================
+    class procedure R_RenderPlayerView(player: Pplayer_t); static;
+    //==============================================================================
+    //
+    // R_ConfigureLightTables
+    //
+    //==============================================================================
+    class procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator); static;
+    //==============================================================================
+    //
+    // R_ConfigureTextureMapping
+    //
+    //==============================================================================
+    class procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder); static;
+    //==============================================================================
+    //
+    // R_ConfigureViewTables
+    //
+    //==============================================================================
+    class procedure R_ConfigureViewTables(const ATables: IRendererViewTables); static;
+    //==============================================================================
+    //
+    // R_ConfigureMenuThumbnail
+    //
+    //==============================================================================
+    class procedure R_ConfigureMenuThumbnail(const ABuilder: IImagingThumbnailBuilder); static;
+    //==============================================================================
+    // R_Init
+    //
+    // Called by startup code.
+    //
+    //==============================================================================
+    class procedure R_Init; static;
+    //==============================================================================
+    //
+    // R_ShutDown
+    //
+    //==============================================================================
+    class procedure R_ShutDown; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_ConfigureDynamicLights
+    //
+    // The lights of the level (IdTech1\DynLights): R_Init reads the lumps, R_ShutDown forgets them.
+    // The composition root calls it; without it R_Init stops with I_Error
+    //
+    //==============================================================================
+    class procedure R_ConfigureDynamicLights(const ACache: IDynLightRenderCache); static;
+{$ENDIF}
+    //==============================================================================
+    // R_SetViewSize
+    //
+    // Called by M_Responder.
+    //
+    //==============================================================================
+    class procedure R_SetViewSize; static;
+    //==============================================================================
+    //
+    // R_ExecuteSetViewSize
+    //
+    //==============================================================================
+    class procedure R_ExecuteSetViewSize; static;
+    //==============================================================================
+    //
+    // R_SetViewAngleOffset
+    //
+    //==============================================================================
+    class procedure R_SetViewAngleOffset(const angle: angle_t); static;
+    //==============================================================================
+    //
+    // R_FullStOn
+    //
+    //==============================================================================
+    class function R_FullStOn: boolean; static;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    //==============================================================================
+    //
+    // R_StOff
+    //
+    //==============================================================================
+    class function R_StOff: boolean; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_GetColormapLightLevel
+    //
+    //==============================================================================
+    class function R_GetColormapLightLevel(const cmap: PByteArray): fixed_t; static;
+    //==============================================================================
+    //
+    // R_GetColormap32
+    //
+    //==============================================================================
+    class function R_GetColormap32(const cmap: PByteArray): PLongWordArray; static;
+{$IFDEF HEXEN}
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_SetPalette64
+    //
+    //==============================================================================
+    class procedure R_SetPalette64; static;
+{$ENDIF}
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_Ticker
+    //
+    //==============================================================================
+    class procedure R_Ticker; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_SetRenderingFunctions
+    //
+    //==============================================================================
+    class procedure R_SetRenderingFunctions; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_ConfigureNetGame
+    // The network, given by the composition root
+    //
+    //==============================================================================
+    class procedure R_ConfigureNetGame(const ANetGame: IEngineNetGame); static;
+  end;
+
 
 implementation
 
@@ -694,12 +693,57 @@ var
   // given by the composition root
   r_netgame_ref: IEngineNetGame = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererMainLocal = class sealed
+  public
+    class function R_NetGame: IEngineNetGame; static;
+    class function R_PointOnSide32(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean; static;
+    class function R_PointOnSide64(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean; static;
+    class function R_PointOnSegSide32(x: fixed_t; y: fixed_t; line: Pseg_t): boolean; static;
+    class function R_PointOnSegSide64(x: fixed_t; y: fixed_t; line: Pseg_t): boolean; static;
+    class function R_PointOnLineSide32(x: fixed_t; y: fixed_t; line: Pline_t): boolean; static;
+    class function R_PointOnLineSide64(x: fixed_t; y: fixed_t; line: Pline_t): boolean; static;
+    class function R_PointToAngleEx1(x: fixed_t; y: fixed_t): angle_t; static;
+    class procedure R_InitPointToAngle; static;
+    class procedure R_InitTables; static;
+    class procedure R_InitTextureMapping; static;
+    class procedure R_MakeMenuThumbnail; static;
+    class procedure R_InitLightTables; static;
+    class procedure R_CmdZAxisShift(const parm1: string = ''); static;
+{$IFNDEF OPENGL}
+    class procedure R_CmdUseFake3D(const parm1: string = ''); static;
+{$ENDIF}
+{$IF DEFINED(HEXEN)}
+    class procedure R_CmdUseClassicFuzzEffect(const parm1: string = ''); static;
+{$ELSEIF DEFINED(STRIFE)}
+{$ELSE}
+    class procedure R_CmdUse32bitfuzzeffect(const parm1: string = ''); static;
+{$ENDIF}
+    class procedure R_CmdDiher8bitTransparency(const parm1: string = ''); static;
+    class procedure R_CmdScreenWidth; static;
+    class procedure R_CmdScreenHeight; static;
+    class procedure R_CmdClearCache; static;
+    class procedure R_CmdResetCache; static;
+    class procedure R_SetupFrame(player: Pplayer_t); static;
+{$IFNDEF OPENGL}
+    class procedure R_Fake3DPrepare(player: Pplayer_t); static;
+    class procedure R_MaskedStuffMT; static;
+    class procedure R_DoRenderPlayerView8_MultiThread(player: Pplayer_t); static;
+    class procedure R_DoRenderPlayerView32_MultiThread(player: Pplayer_t); static;
+{$ENDIF}
+    class procedure R_DoRenderPlayerView_SingleThread(player: Pplayer_t); static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigureNetGame
 //
 //==============================================================================
-procedure R_ConfigureNetGame(const ANetGame: IEngineNetGame);
+class procedure TRendererMain.R_ConfigureNetGame(const ANetGame: IEngineNetGame);
 begin
   r_netgame_ref := ANetGame;
 end;
@@ -709,7 +753,7 @@ end;
 // R_NetGame
 //
 //==============================================================================
-function R_NetGame: IEngineNetGame;
+class function TRendererMainLocal.R_NetGame: IEngineNetGame;
 begin
   if r_netgame_ref = nil then
     I_Error('R_ConfigureNetGame() was not called: the network is missing');
@@ -726,7 +770,7 @@ var
 // R_ApplyColormap
 //
 //==============================================================================
-procedure R_ApplyColormap(const ofs, count: integer; const scrn: integer; const cmap: integer);
+class procedure TRendererMain.R_ApplyColormap(const ofs, count: integer; const scrn: integer; const cmap: integer);
 var
   src: PByte;
   cnt: integer;
@@ -758,7 +802,7 @@ end;
 // Returns side 0 (front) or 1 (back).
 //
 //==============================================================================
-function R_PointOnSide32(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
+class function TRendererMainLocal.R_PointOnSide32(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
 var
   dx: fixed_t;
   dy: fixed_t;
@@ -804,7 +848,7 @@ end;
 // R_PointOnSide64
 //
 //==============================================================================
-function R_PointOnSide64(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
+class function TRendererMainLocal.R_PointOnSide64(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
 var
   dx64: int64;
   dy64: int64;
@@ -843,12 +887,12 @@ end;
 // R_PointOnSide
 //
 //==============================================================================
-function R_PointOnSide(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
+class function TRendererMain.R_PointOnSide(const x: fixed_t; const y: fixed_t; const node: Pnode_t): boolean;
 begin
   if largemap then
-    result := R_PointOnSide64(x, y, node)
+    result := TRendererMainLocal.R_PointOnSide64(x, y, node)
   else
-    result := R_PointOnSide32(x, y, node);
+    result := TRendererMainLocal.R_PointOnSide32(x, y, node);
 {$IFDEF DOOM}
 end;
 
@@ -857,7 +901,7 @@ end;
 // R_PointOnSideVanilla
 //
 //==============================================================================
-function R_PointOnSideVanilla(const x: fixed_t; const y: fixed_t; const node: Pvanillanode_t): boolean;
+class function TRendererMain.R_PointOnSideVanilla(const x: fixed_t; const y: fixed_t; const node: Pvanillanode_t): boolean;
 var
   dx: fixed_t;
   dy: fixed_t;
@@ -904,7 +948,7 @@ end;
 // R_PointOnSegSide32
 //
 //==============================================================================
-function R_PointOnSegSide32(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
+class function TRendererMainLocal.R_PointOnSegSide32(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
 var
   lx: fixed_t;
   ly: fixed_t;
@@ -960,7 +1004,7 @@ end;
 // R_PointOnSegSide64
 //
 //==============================================================================
-function R_PointOnSegSide64(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
+class function TRendererMainLocal.R_PointOnSegSide64(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
 var
   lx: fixed_t;
   ly: fixed_t;
@@ -1009,12 +1053,12 @@ end;
 // R_PointOnSegSide
 //
 //==============================================================================
-function R_PointOnSegSide(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
+class function TRendererMain.R_PointOnSegSide(x: fixed_t; y: fixed_t; line: Pseg_t): boolean;
 begin
   if largemap then
-    result := R_PointOnSegSide64(x, y, line)
+    result := TRendererMainLocal.R_PointOnSegSide64(x, y, line)
   else
-    result := R_PointOnSegSide32(x, y, line);
+    result := TRendererMainLocal.R_PointOnSegSide32(x, y, line);
 end;
 
 //==============================================================================
@@ -1022,7 +1066,7 @@ end;
 // R_PointOnLineSide32
 //
 //==============================================================================
-function R_PointOnLineSide32(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
+class function TRendererMainLocal.R_PointOnLineSide32(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
 var
   lx: fixed_t;
   ly: fixed_t;
@@ -1071,7 +1115,7 @@ end;
 // R_PointOnLineSide64
 //
 //==============================================================================
-function R_PointOnLineSide64(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
+class function TRendererMainLocal.R_PointOnLineSide64(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
 var
   lx: fixed_t;
   ly: fixed_t;
@@ -1120,12 +1164,12 @@ end;
 // R_PointOnLineSide
 //
 //==============================================================================
-function R_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
+class function TRendererMain.R_PointOnLineSide(x: fixed_t; y: fixed_t; line: Pline_t): boolean;
 begin
   if largemap then
-    result := R_PointOnLineSide64(x, y, line)
+    result := TRendererMainLocal.R_PointOnLineSide64(x, y, line)
   else
-    result := R_PointOnLineSide32(x, y, line)
+    result := TRendererMainLocal.R_PointOnLineSide32(x, y, line)
 end;
 
 //==============================================================================
@@ -1141,7 +1185,7 @@ end;
 // JVAL  -> Calculates: result := round(683565275 * (arctan2(y, x)));
 //
 //==============================================================================
-function R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;
+class function TRendererMain.R_PointToAngle(x: fixed_t; y: fixed_t): angle_t;
 begin
   x := x - viewx;
   y := y - viewy;
@@ -1236,7 +1280,7 @@ end;
 // R_PointToAngleEx1
 //
 //==============================================================================
-function R_PointToAngleEx1(x: fixed_t; y: fixed_t): angle_t;
+class function TRendererMainLocal.R_PointToAngleEx1(x: fixed_t; y: fixed_t): angle_t;
 begin
   if (x = 0) and (y = 0) then
   begin
@@ -1332,7 +1376,7 @@ var
 // R_PointToAngleEx
 //
 //==============================================================================
-function R_PointToAngleEx(x: fixed_t; y: fixed_t): angle_t;
+class function TRendererMain.R_PointToAngleEx(x: fixed_t; y: fixed_t): angle_t;
 begin
   x := x - viewx;
   y := y - viewy;
@@ -1344,7 +1388,7 @@ begin
       Exit;
     end;
 
-  result := R_PointToAngleEx1(x, y);
+  result := TRendererMainLocal.R_PointToAngleEx1(x, y);
   pta_x := x;
   pta_y := y;
   pta_ret := Result;
@@ -1355,7 +1399,7 @@ end;
 // R_PointToAngle2
 //
 //==============================================================================
-function R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;
+class function TRendererMain.R_PointToAngle2(const x1: fixed_t; const y1: fixed_t; const x2: fixed_t; const y2: fixed_t): angle_t;
 begin
   result := R_PointToAngle(x2 - x1 + viewx, y2 - y1 + viewy);
 end;
@@ -1365,7 +1409,7 @@ end;
 // R_PointToDist
 //
 //==============================================================================
-function R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t;
+class function TRendererMain.R_PointToDist(const x: fixed_t; const y: fixed_t): fixed_t;
 var
   angle: integer;
   dx: fixed_t;
@@ -1406,7 +1450,7 @@ end;
 // R_InitPointToAngle
 //
 //==============================================================================
-procedure R_InitPointToAngle;
+class procedure TRendererMainLocal.R_InitPointToAngle;
 {var
   i: integer;
   t: angle_t;
@@ -1428,7 +1472,7 @@ end;
 // R_InitTables
 //
 //==============================================================================
-procedure R_InitTables;
+class procedure TRendererMainLocal.R_InitTables;
 // JVAL: Caclulate tables constants
 {var
   i: integer;
@@ -1469,7 +1513,7 @@ var
 // The tables of the size of the view of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureViewTables(const ATables: IRendererViewTables);
+class procedure TRendererMain.R_ConfigureViewTables(const ATables: IRendererViewTables);
 begin
   view_tables := ATables;
 end;
@@ -1480,7 +1524,7 @@ end;
 // The builder of the tables of the view angles of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder);
+class procedure TRendererMain.R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder);
 begin
   texture_mapping := ABuilder;
 end;
@@ -1490,7 +1534,7 @@ end;
 // R_InitTextureMapping
 //
 //==============================================================================
-procedure R_InitTextureMapping;
+class procedure TRendererMainLocal.R_InitTextureMapping;
 var
   i: integer;
   x: integer;
@@ -1552,7 +1596,7 @@ var
 // The calculator of the light tables of Framework\Palette, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
+class procedure TRendererMain.R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
 begin
   light_tables := ACalculator;
 end;
@@ -1567,7 +1611,7 @@ var
 // the composition root
 //
 //==============================================================================
-procedure R_ConfigureMenuThumbnail(const ABuilder: IImagingThumbnailBuilder);
+class procedure TRendererMain.R_ConfigureMenuThumbnail(const ABuilder: IImagingThumbnailBuilder);
 begin
   menu_thumbnails := ABuilder;
 end;
@@ -1579,7 +1623,7 @@ end;
 // (it was MN_ScreenShotFromBlitBuffer of mn_screenshot.pas)
 //
 //==============================================================================
-procedure R_MakeMenuThumbnail;
+class procedure TRendererMainLocal.R_MakeMenuThumbnail;
 var
   settings: TImagingThumbnailSettings;
   buf: TArray<Byte>;
@@ -1620,7 +1664,7 @@ end;
 //
 //==============================================================================
 
-procedure R_InitLightTables;
+class procedure TRendererMainLocal.R_InitLightTables;
 var
   i: integer;
   j: integer;
@@ -1674,7 +1718,7 @@ var
 // R_SetViewSize
 //
 //==============================================================================
-procedure R_SetViewSize;
+class procedure TRendererMain.R_SetViewSize;
 begin
   if not allowlowdetails then
     if detailLevel < DL_MEDIUM then
@@ -1707,7 +1751,7 @@ end;
 // R_SetPalette64
 //
 //==============================================================================
-procedure R_SetPalette64;
+class procedure TRendererMain.R_SetPalette64;
 begin
   if setdetail in [DL_LOWEST, DL_LOW, DL_MEDIUM] then
     I_SetPalette64;
@@ -1718,7 +1762,7 @@ end;
 // R_SetRenderingFunctions
 //
 //==============================================================================
-procedure R_SetRenderingFunctions;
+class procedure TRendererMain.R_SetRenderingFunctions;
 begin
   TEngineRendererFunctionTable.Apply(setdetail);
 end;
@@ -1729,7 +1773,7 @@ end;
 // R_ExecuteSetViewSize
 //
 //==============================================================================
-procedure R_ExecuteSetViewSize;
+class procedure TRendererMain.R_ExecuteSetViewSize;
 var
   i: integer;
   j: integer;
@@ -1816,7 +1860,7 @@ begin
 
   R_InitBuffer(scaledviewwidth, viewheight);
 
-  R_InitTextureMapping;
+  TRendererMainLocal.R_InitTextureMapping;
 
 // psprite scales
 // JVAL: Widescreen support
@@ -1899,7 +1943,7 @@ end;
 // R_CmdZAxisShift
 //
 //==============================================================================
-procedure R_CmdZAxisShift(const parm1: string = '');
+class procedure TRendererMainLocal.R_CmdZAxisShift(const parm1: string = '');
 var
   newz: boolean;
 begin
@@ -1925,7 +1969,7 @@ end;
 // R_CmdUseFake3D
 //
 //==============================================================================
-procedure R_CmdUseFake3D(const parm1: string = '');
+class procedure TRendererMainLocal.R_CmdUseFake3D(const parm1: string = '');
 var
   newf: boolean;
 begin
@@ -1952,7 +1996,7 @@ end;
 // R_CmdUseClassicFuzzEffect
 //
 //==============================================================================
-procedure R_CmdUseClassicFuzzEffect(const parm1: string = '');
+class procedure TRendererMainLocal.R_CmdUseClassicFuzzEffect(const parm1: string = '');
 var
   newusefz: boolean;
 begin
@@ -1967,7 +2011,7 @@ begin
   begin
     useclassicfuzzeffect := newusefz;
 {$IFNDEF OPENGL}
-    R_SetRenderingFunctions;
+    TRendererMain.R_SetRenderingFunctions;
 {$ENDIF}
   end;
   R_CmdUseClassicFuzzEffect;
@@ -1980,7 +2024,7 @@ end;
 // R_CmdUse32bitfuzzeffect
 //
 //==============================================================================
-procedure R_CmdUse32bitfuzzeffect(const parm1: string = '');
+class procedure TRendererMainLocal.R_CmdUse32bitfuzzeffect(const parm1: string = '');
 var
   newusefz: boolean;
 begin
@@ -1995,7 +2039,7 @@ begin
   begin
     use32bitfuzzeffect := newusefz;
 {$IFNDEF OPENGL}
-    R_SetRenderingFunctions;
+    TRendererMain.R_SetRenderingFunctions;
 {$ENDIF}
   end;
   R_CmdUse32bitfuzzeffect;
@@ -2007,7 +2051,7 @@ end;
 // R_CmdDiher8bitTransparency
 //
 //==============================================================================
-procedure R_CmdDiher8bitTransparency(const parm1: string = '');
+class procedure TRendererMainLocal.R_CmdDiher8bitTransparency(const parm1: string = '');
 var
   newdih: boolean;
 begin
@@ -2022,7 +2066,7 @@ begin
   begin
     diher8bittransparency := newdih;
 {$IFNDEF OPENGL}
-    R_SetRenderingFunctions;
+    TRendererMain.R_SetRenderingFunctions;
 {$ENDIF}
   end;
   R_CmdDiher8bitTransparency;
@@ -2033,7 +2077,7 @@ end;
 // R_CmdScreenWidth
 //
 //==============================================================================
-procedure R_CmdScreenWidth;
+class procedure TRendererMainLocal.R_CmdScreenWidth;
 begin
   {$IFDEF OPENGL}
   printf('ScreenWidth = %d.'#13#10, [SCREENWIDTH]);
@@ -2047,7 +2091,7 @@ end;
 // R_CmdScreenHeight
 //
 //==============================================================================
-procedure R_CmdScreenHeight;
+class procedure TRendererMainLocal.R_CmdScreenHeight;
 begin
   {$IFDEF OPENGL}
   printf('ScreenHeight = %d.'#13#10, [SCREENHEIGHT]);
@@ -2061,7 +2105,7 @@ end;
 // R_CmdClearCache
 //
 //==============================================================================
-procedure R_CmdClearCache;
+class procedure TRendererMainLocal.R_CmdClearCache;
 begin
   {$IFDEF OPENGL}
   gld_ClearTextureMemory;
@@ -2077,7 +2121,7 @@ end;
 // R_CmdResetCache
 //
 //==============================================================================
-procedure R_CmdResetCache;
+class procedure TRendererMainLocal.R_CmdResetCache;
 begin
   {$IFNDEF OPENGL}
   R_Reset32Cache;
@@ -2096,7 +2140,7 @@ var
 // R_ConfigureDynamicLights
 //
 //==============================================================================
-procedure R_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
+class procedure TRendererMain.R_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
 begin
   main_dynlights := ACache;
 end;
@@ -2107,7 +2151,7 @@ end;
 // R_Init
 //
 //==============================================================================
-procedure R_Init;
+class procedure TRendererMain.R_Init;
 begin
 {$IFNDEF OPENGL}
   printf('R_Init32Cache'#13#10);
@@ -2128,16 +2172,16 @@ begin
   printf('R_InitInterpolations'#13#10);
   TRendererInterpolation.R_InitInterpolations;
   printf('R_InitPointToAngle'#13#10);
-  R_InitPointToAngle;
+  TRendererMainLocal.R_InitPointToAngle;
   printf('R_InitTables'#13#10);
-  R_InitTables;
+  TRendererMainLocal.R_InitTables;
   printf('R_SetViewSize'#13#10);
   // viewwidth / viewheight / detailLevel are set by the defaults
   R_SetViewSize;
   printf('R_InitPlanes'#13#10);
   TRendererPlane.R_InitPlanes;
   printf('R_InitLightTables'#13#10);
-  R_InitLightTables;
+  TRendererMainLocal.R_InitLightTables;
   printf('R_InitSkyMap'#13#10);
   R_InitSkyMap;
   printf('R_InitTranslationsTables'#13#10);
@@ -2174,9 +2218,9 @@ begin
 
   framecount := 0;
 
-  C_AddCmd('zaxisshift', @R_CmdZAxisShift);
+  C_AddCmd('zaxisshift', @TRendererMainLocal.R_CmdZAxisShift);
 {$IFNDEF OPENGL}
-  C_AddCmd('fake3d, usefake3d', @R_CmdUseFake3D);
+  C_AddCmd('fake3d, usefake3d', @TRendererMainLocal.R_CmdUseFake3D);
 {$ENDIF}
   C_AddCmd('lowestres, lowestresolution', @R_CmdLowestRes);
   C_AddCmd('lowres, lowresolution', @R_CmdLowRes);
@@ -2190,17 +2234,17 @@ begin
   C_AddCmd('32bittexturepaletteeffects, use32bittexturepaletteeffects', @R_Cmd32bittexturepaletteeffects);
   C_AddCmd('useexternaltextures', @R_CmdUseExternalTextures);
 {$IF DEFINED(HEXEN)}
-  C_AddCmd('useclassicfuzzeffect', @R_CmdUseClassicFuzzEffect);
+  C_AddCmd('useclassicfuzzeffect', @TRendererMainLocal.R_CmdUseClassicFuzzEffect);
 {$ELSEIF DEFINED(STRIFE)}
 {$ELSE}
-  C_AddCmd('use32bitfuzzeffect', @R_CmdUse32bitfuzzeffect);
+  C_AddCmd('use32bitfuzzeffect', @TRendererMainLocal.R_CmdUse32bitfuzzeffect);
 {$ENDIF}
-  C_AddCmd('diher8bittransparency', @R_CmdDiher8bitTransparency);
+  C_AddCmd('diher8bittransparency', @TRendererMainLocal.R_CmdDiher8bitTransparency);
   C_AddCmd('lightboostfactor', @R_CmdLightBoostFactor);
-  C_AddCmd('screenwidth', @R_CmdScreenWidth);
-  C_AddCmd('screenheight', @R_CmdScreenHeight);
-  C_AddCmd('clearcache, cleartexturecache', @R_CmdClearCache);
-  C_AddCmd('resetcache, resettexturecache', @R_CmdResetCache);
+  C_AddCmd('screenwidth', @TRendererMainLocal.R_CmdScreenWidth);
+  C_AddCmd('screenheight', @TRendererMainLocal.R_CmdScreenHeight);
+  C_AddCmd('clearcache, cleartexturecache', @TRendererMainLocal.R_CmdClearCache);
+  C_AddCmd('resetcache, resettexturecache', @TRendererMainLocal.R_CmdResetCache);
 end;
 
 //==============================================================================
@@ -2208,7 +2252,7 @@ end;
 // R_ShutDown
 //
 //==============================================================================
-procedure R_ShutDown;
+class procedure TRendererMain.R_ShutDown;
 begin
   printf(#13#10 + 'R_ShutDownLightBoost');
   R_ShutDownLightBoost;
@@ -2273,7 +2317,7 @@ end;
 // R_PointInSubsector
 //
 //==============================================================================
-function R_PointInSubsectorClassic(const x: fixed_t; const y: fixed_t): Psubsector_t;
+class function TRendererMain.R_PointInSubsectorClassic(const x: fixed_t; const y: fixed_t): Psubsector_t;
 var
   node: Pnode_t;
   nodenum: LongWord;
@@ -2304,7 +2348,7 @@ end;
 // R_PointInSubsector
 //
 //==============================================================================
-function R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t;
+class function TRendererMain.R_PointInSubsector(const x: fixed_t; const y: fixed_t): Psubsector_t;
 begin
   result := TRendererSubsectors.R_PointInSubsectorPrecalc(x, y);
   if result = nil then
@@ -2321,7 +2365,7 @@ var
 // R_SetupFrame
 //
 //==============================================================================
-procedure R_SetupFrame(player: Pplayer_t);
+class procedure TRendererMainLocal.R_SetupFrame(player: Pplayer_t);
 var
   i: integer;
 {$IFDEF HEXEN}
@@ -2369,7 +2413,7 @@ begin
   TRendererEarthquake.R_AdjustGlobalEarthQuake(player);
 
 {$IFNDEF OPENGL}
-  viewsubsector := R_PointInSubSector(viewx, viewy); // JVAL: 3d Floors
+  viewsubsector := TRendererMain.R_PointInSubSector(viewx, viewy); // JVAL: 3d Floors
   hasExtraFloors := viewsubsector.sector.midsec >= 0;  // JVAL: 3d Floors
 {$ENDIF}
 
@@ -2524,7 +2568,7 @@ end;
 // R_SetViewAngleOffset
 //
 //==============================================================================
-procedure R_SetViewAngleOffset(const angle: angle_t);
+class procedure TRendererMain.R_SetViewAngleOffset(const angle: angle_t);
 begin
   viewangleoffset := angle;
 end;
@@ -2534,7 +2578,7 @@ end;
 // R_FullStOn
 //
 //==============================================================================
-function R_FullStOn: boolean;
+class function TRendererMain.R_FullStOn: boolean;
 begin
   result := setblocks = 11;
 end;
@@ -2545,7 +2589,7 @@ end;
 // R_StOff
 //
 //==============================================================================
-function R_StOff: boolean;
+class function TRendererMain.R_StOff: boolean;
 begin
   result := setblocks = 12;
 end;
@@ -2556,7 +2600,7 @@ end;
 // R_GetColormapLightLevel
 //
 //==============================================================================
-function R_GetColormapLightLevel(const cmap: PByteArray): fixed_t;
+class function TRendererMain.R_GetColormapLightLevel(const cmap: PByteArray): fixed_t;
 var
   m: integer;
 begin
@@ -2578,7 +2622,7 @@ end;
 // R_GetColormap32
 //
 //==============================================================================
-function R_GetColormap32(const cmap: PByteArray): PLongWordArray;
+class function TRendererMain.R_GetColormap32(const cmap: PByteArray): PLongWordArray;
 var
   m: integer;
 begin
@@ -2617,7 +2661,7 @@ var
 // R_Fake3DPrepare
 //
 //==============================================================================
-procedure R_Fake3DPrepare(player: Pplayer_t);
+class procedure TRendererMainLocal.R_Fake3DPrepare(player: Pplayer_t);
 begin
   if oldlookdir16 = player.lookdir16 then
     Exit;
@@ -2625,7 +2669,7 @@ begin
   oldlookdir16 := player.lookdir16;
 
   viewplayer := player;
-  R_ExecuteSetViewSize;
+  TRendererMain.R_ExecuteSetViewSize;
 end;
 
 var
@@ -2633,7 +2677,7 @@ var
   task_8bitlights: integer = -1;
   task_maskedstuff: integer = -1;
 
-procedure R_MaskedStuffMT;
+class procedure TRendererMainLocal.R_MaskedStuffMT;
 begin
   R_SortVisSprites;
   TRendererSegs2.R_SetUpDrawSegLists;
@@ -2645,7 +2689,7 @@ end;
 // R_DoRenderPlayerView8_MultiThread
 //
 //==============================================================================
-procedure R_DoRenderPlayerView8_MultiThread(player: Pplayer_t);
+class procedure TRendererMainLocal.R_DoRenderPlayerView8_MultiThread(player: Pplayer_t);
 begin
   R_Fake3DPrepare(player);
   R_SetupFrame(player);
@@ -2726,7 +2770,7 @@ end;
 // R_DoRenderPlayerView32_MultiThread
 //
 //==============================================================================
-procedure R_DoRenderPlayerView32_MultiThread(player: Pplayer_t);
+class procedure TRendererMainLocal.R_DoRenderPlayerView32_MultiThread(player: Pplayer_t);
 begin
   R_Fake3DPrepare(player);
   R_SetupFrame(player);
@@ -2806,7 +2850,7 @@ end;
 // R_DoRenderPlayerView_SingleThread
 //
 //==============================================================================
-procedure R_DoRenderPlayerView_SingleThread(player: Pplayer_t);
+class procedure TRendererMainLocal.R_DoRenderPlayerView_SingleThread(player: Pplayer_t);
 begin
 {$IFNDEF OPENGL}
   R_Fake3DPrepare(player);
@@ -2886,7 +2930,7 @@ end;
 // R_RenderPlayerView
 //
 //==============================================================================
-procedure R_RenderPlayerView(player: Pplayer_t);
+class procedure TRendererMain.R_RenderPlayerView(player: Pplayer_t);
 begin
   // new render validcount
   Inc(rendervalidcount);
@@ -2898,19 +2942,19 @@ begin
   if usemultithread then
   begin
     if videomode = vm8bit then
-      R_DoRenderPlayerView8_MultiThread(player)
+      TRendererMainLocal.R_DoRenderPlayerView8_MultiThread(player)
     else
-      R_DoRenderPlayerView32_MultiThread(player);
+      TRendererMainLocal.R_DoRenderPlayerView32_MultiThread(player);
   end
   else
 {$ENDIF}
-    R_DoRenderPlayerView_SingleThread(player);
+    TRendererMainLocal.R_DoRenderPlayerView_SingleThread(player);
 {$IFNDEF OPENGL}
   if zbufferactive then
     TRendererZBuffer.R_StopZBuffer;
 {$ENDIF}
   if mn_makescreenshot then
-    R_MakeMenuThumbnail;
+    TRendererMainLocal.R_MakeMenuThumbnail;
 end;
 
 //==============================================================================
@@ -2918,7 +2962,7 @@ end;
 // R_Ticker
 //
 //==============================================================================
-procedure R_Ticker;
+class procedure TRendererMain.R_Ticker;
 begin
   TRendererInterpolation.R_InterpolateTicker;
 end;

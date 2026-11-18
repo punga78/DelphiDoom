@@ -142,7 +142,7 @@ var
   ss: Psubsector_t;
   msec: Psector_t;
 begin
-  ss := R_PointInSubsector(m.x, m.y);
+  ss := TRendererMain.R_PointInSubsector(m.x, m.y);
   if ss.sector.midsec >= 0 then
   begin
     msec := @sectors[ss.sector.midsec];
@@ -189,7 +189,7 @@ var
 begin
   x := m.x * FRACUNIT;
   y := m.y * FRACUNIT;
-  ss := R_PointInSubsector(x, y);
+  ss := TRendererMain.R_PointInSubsector(x, y);
   if m.options and MTF_ONMIDSECTOR = 0 then
   begin
     result := P_FloorHeight(ss.sector, x, y);
@@ -218,7 +218,7 @@ var
 begin
   x := m.x * FRACUNIT;
   y := m.y * FRACUNIT;
-  ss := R_PointInSubsector(x, y);
+  ss := TRendererMain.R_PointInSubsector(x, y);
   if m.options and MTF_ONMIDSECTOR <> 0 then
   begin
     result := P_CeilingHeight(ss.sector, x, y);
@@ -244,7 +244,7 @@ var
   ss: Psubsector_t;
   msec: Psector_t;
 begin
-  ss := R_PointInSubsector(x, y);
+  ss := TRendererMain.R_PointInSubsector(x, y);
   if ss.sector.midsec >= 0 then
   begin
     msec := @sectors[ss.sector.midsec];
@@ -267,7 +267,7 @@ var
   ss: Psubsector_t;
   msec: Psector_t;
 begin
-  ss := R_PointInSubsector(x, y);
+  ss := TRendererMain.R_PointInSubsector(x, y);
   if ss.sector.midsec >= 0 then
   begin
     msec := @sectors[ss.sector.midsec];
@@ -352,7 +352,7 @@ var
   s: Psubsector_t;
   sec: Psector_t;
 begin
-  s := R_PointInSubsector(x, y);
+  s := TRendererMain.R_PointInSubsector(x, y);
   if s.sector.midsec >= 0 then
   begin
     sec := @sectors[s.sector.midsec];

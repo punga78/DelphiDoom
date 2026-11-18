@@ -288,7 +288,7 @@ begin
       else
       begin
         li.miniseg := false;
-        li.angle := R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y);
+        li.angle := TRendererMain.R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y);
         linedef := ml.linedef;
         ldef := @lines[linedef];
         if ml.side <> 0 then
@@ -346,7 +346,7 @@ begin
       else
       begin
         li.miniseg := false;
-        li.angle := R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y);
+        li.angle := TRendererMain.R_PointToAngle2(li.v1.x, li.v1.y, li.v2.x, li.v2.y);
         linedef := ml3.linedef;
         ldef := @lines[linedef];
         if ml3.side <> 0 then

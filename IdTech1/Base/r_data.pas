@@ -1722,8 +1722,8 @@ begin
   memcpy(colormaps, @bytes[0], length);
   v_translation := colormaps;
   {$IFNDEF OPENGL}
-  R_SetRenderingFunctions;
-  R_SetPalette64;
+  TRendererMain.R_SetRenderingFunctions;
+  TRendererMain.R_SetPalette64;
   if usemultithread then
     R_CalcHiResTables_MultiThread
   else

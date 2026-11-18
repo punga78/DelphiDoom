@@ -1770,7 +1770,7 @@ begin
   // First check for trivial rejection.
 
   // Determine subsector entries in REJECT table.
-  s1 := R_PointInSubsector(x, y).sector.iSectorID;
+  s1 := TRendererMain.R_PointInSubsector(x, y).sector.iSectorID;
   s2 := Psubsector_t(t2.subsector).sector.iSectorID;
 
   if numsectors > 1 then

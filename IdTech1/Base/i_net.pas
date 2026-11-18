@@ -111,9 +111,9 @@ begin
   net_port := options.Port;
 
   case options.Drone of
-    ndvLeft: R_SetViewAngleOffset(ANG90);
-    ndvRight: R_SetViewAngleOffset(ANG270);
-    ndvBack: R_SetViewAngleOffset(ANG180);
+    ndvLeft: TRendererMain.R_SetViewAngleOffset(ANG90);
+    ndvRight: TRendererMain.R_SetViewAngleOffset(ANG270);
+    ndvBack: TRendererMain.R_SetViewAngleOffset(ANG180);
   end;
 
   TGameSession.NetGame := options.IsNetGame;

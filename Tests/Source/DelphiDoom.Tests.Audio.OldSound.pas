@@ -65,7 +65,7 @@ type
     NeedsCompatibilityMode: Boolean;
     snd_SfxVolume: Integer;
     finesine: array[0..8191] of Integer;
-    R_PointToAngle2: TOldAngleFunction;
+    TRendererMain.R_PointToAngle2: TOldAngleFunction;
     numChannels: Integer;
     channels: array of TOldChannel;
     /// <summary>players[consoleplayer].mo</summary>
@@ -166,7 +166,7 @@ begin
   end;
 
   // angle of source to listener
-  angle := R_PointToAngle2(listener.x, listener.y, source.x, source.y);
+  angle := TRendererMain.R_PointToAngle2(listener.x, listener.y, source.x, source.y);
 
   langle := listener.angle + listener.viewangle;
   if angle > langle then

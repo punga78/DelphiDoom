@@ -672,7 +672,7 @@ begin
   if not ST_CmdCheckPlayerStatus then
     exit;
 
-  ss := R_PointInSubsector(plyr.mo.x, plyr.mo.y);
+  ss := TRendererMain.R_PointInSubsector(plyr.mo.x, plyr.mo.y);
   sprintf(buf, 'ssector = %d, sector = %d'#13#10, [
           (NativeInt(ss) - NativeInt(@subsectors[0])) div SizeOf(subsector_t),
           (NativeInt(ss.sector) - NativeInt(@sectors[0])) div SizeOf(sector_t)]);

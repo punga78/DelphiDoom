@@ -441,7 +441,7 @@ begin
         FPlanner.VerifyCanRunTic;
         if advancedemo then
           TMainRoutines.D_DoAdvanceDemo;
-        R_Ticker;
+        TRendererMain.R_Ticker;
         FEndScreenTick;
         TMenuRoutines.M_Ticker;
         FConsole.Tick;
@@ -479,7 +479,7 @@ begin
     FSync.BuildSingleTic;
     if advancedemo then
       TMainRoutines.D_DoAdvanceDemo;
-    R_Ticker;
+    TRendererMain.R_Ticker;
     FEndScreenTick;
     TMenuRoutines.M_Ticker;
     FConsole.Tick;

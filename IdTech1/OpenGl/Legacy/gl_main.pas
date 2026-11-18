@@ -713,7 +713,7 @@ begin
 
     AM_Start;               // Start the automap
     GL_Console.AdjustScreenSize;
-    R_ExecuteSetViewSize;   // Set-up new SCREENWIDTH & SCREENHEIGHT
+    TRendererMain.R_ExecuteSetViewSize;   // Set-up new SCREENWIDTH & SCREENHEIGHT
     overlay.ReCalcOverlayLookUp;
     result := true;
   end;

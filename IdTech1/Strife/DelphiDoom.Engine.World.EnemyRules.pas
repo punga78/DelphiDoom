@@ -1364,7 +1364,7 @@ begin
 
     if not allaround then
     begin
-      an := R_PointToAngle2(actor.x, actor.y, player.mo.x, player.mo.y) - actor.angle;
+      an := TRendererMain.R_PointToAngle2(actor.x, actor.y, player.mo.x, player.mo.y) - actor.angle;
 
       if (an > ANG90) and (an < ANG270) then
       begin
@@ -1702,7 +1702,7 @@ begin
       if dist < 64 * 10 * FRACUNIT then
         if P_Random < 100 then
         begin
-          ang := R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
+          ang := TRendererMain.R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
           if P_Random < 128 then
             ang := ang + ANG90
           else
@@ -2782,7 +2782,7 @@ begin
     exit;
 
   // change angle
-  exact := R_PointToAngle2(actor.x, actor.y, dest.x, dest.y);
+  exact := TRendererMain.R_PointToAngle2(actor.x, actor.y, dest.x, dest.y);
 
   if exact <> actor.angle then
   begin
