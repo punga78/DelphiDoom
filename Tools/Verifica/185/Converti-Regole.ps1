@@ -95,6 +95,13 @@ if ($ImplOnly) {
   $j = $implementation
   while ($j -lt $lines.Count) {
     $l = $lines[$j]
+    # una dichiarazione `forward;` non serve a una classe (i metodi si vedono tra loro): sparisce
+    if (-not $inConverted -and $l -match '^(procedure|function)\s+\w+.*;\s*forward;') { $j++; continue }
+    # la classe va prima della PRIMA routine dell'implementazione (anche una gia' metodo di un'altra classe)
+    if (-not $inConverted -and $firstHeader -lt 0 -and $l -match '^(class\s+)?(procedure|function)\s') {
+      $firstHeader = $impl.Count
+      while ($firstHeader -gt 0 -and $impl[$firstHeader - 1] -match '^//') { $firstHeader-- }
+    }
     if (-not $inConverted -and $l -match '^(procedure|function)\s+(\w+)\b' -and ($all -contains $Matches[2])) {
       $inConverted = $true
       if ($firstHeader -lt 0) {

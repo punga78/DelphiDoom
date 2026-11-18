@@ -1503,7 +1503,7 @@ begin
 
   if TGameSession.GameState = GS_FINALE then
   begin
-    if F_Responder(ev) then
+    if TFinaleRoutines.F_Responder(ev) then
     begin
       result := true; // finale ate the event
       exit;
@@ -1666,7 +1666,7 @@ begin
       ga_completed:
         G_DoCompleted;
       ga_victory:
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       ga_worlddone:
         G_DoWorldDone;
       ga_screenshot:
@@ -1778,7 +1778,7 @@ begin
       end;
     GS_FINALE:
       begin
-        F_Ticker;
+        TFinaleRoutines.F_Ticker;
       end;
     GS_DEMOSCREEN:
       begin
@@ -2167,13 +2167,13 @@ begin
     if (TGameSession.GameMapInfo.intertextsecret[0] <> #0) and TGameSession.SecretExit then
     begin
       if TGameSession.GameMapInfo.intertextsecret[0] <> '-' then // '-' means that any default intermission was cleared.
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       exit;
     end
     else if (TGameSession.GameMapInfo.intertext[0] <> #0) and not TGameSession.SecretExit then
     begin
       if TGameSession.GameMapInfo.intertext[0] <> '-' then // '-' means that any default intermission was cleared.
-        F_StartFinale;
+        TFinaleRoutines.F_StartFinale;
       exit;
     end
     else if (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-') then

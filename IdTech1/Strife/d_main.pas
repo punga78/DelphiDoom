@@ -951,7 +951,7 @@ begin
         end;
       end;
     GS_FINALE:
-      F_Drawer;
+      TFinaleRoutines.F_Drawer;
     GS_DEMOSCREEN:
       D_PageDrawer;
   end;
@@ -2833,7 +2833,7 @@ begin
   end;
 
   printf('F_Init: Setting up startcast :)'#13#10);
-  F_Init;
+  TFinaleRoutines.F_Init;
 
   SUC_Progress(98);
 

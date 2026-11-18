@@ -124,7 +124,7 @@ begin
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
   WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
   // the end of an episode: the text of RADIX.DAT over the flight among the stars
-  F_ConfigureReplacement(RX_Finale_Start, RX_Finale_Ticker, RX_Finale_Drawer);
+  TFinaleRoutines.F_ConfigureReplacement(RX_Finale_Start, RX_Finale_Ticker, RX_Finale_Drawer);
   // the screens fade into one another (the engine of Doom melts them)
   wipe_ConfigureCustom(RX_WipeFade);
   // the look of the menus of Rad-X, the name of the pilot, the top ten, the gameplay options

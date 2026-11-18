@@ -945,7 +945,7 @@ begin
     GS_INTERMISSION:
       WI_Drawer;
     GS_FINALE:
-      F_Drawer;
+      TFinaleRoutines.F_Drawer;
     GS_DEMOSCREEN:
       D_PageDrawer;
   end;
