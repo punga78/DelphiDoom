@@ -11251,25 +11251,9 @@ const
   MF_MBF21_SLIDE = $2000;
 {$ENDIF}
 
-//==============================================================================
-//
-// P_SetMBF21Flags
-//
-//==============================================================================
-class procedure TCommonGameDependentActionsLocal.P_SetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer);
-var
-  istransparent: boolean;
-  isfriend: boolean;
-  isbouncy: boolean;
-  istouchy: boolean;
-  flags: integer;
-begin
-  istransparent := bits < 0;
-  isfriend := bits and (1 shl 30) <> 0;
-  isbouncy := bits and (1 shl 29) <> 0;
-  istouchy := bits and (1 shl 28) <> 0;
-
-  flags := bits and (
+const
+  // The engine flags that the bits of a thing type (DEHACKED flags) turn on, shared by the three routines below
+  MF_MBF21_ENGINE_MASK =
     MF_SPECIAL or
     MF_SOLID or
     MF_SHOOTABLE or
@@ -11312,7 +11296,27 @@ begin
     {$ENDIF}
     MF_NOTDMATCH{$IFNDEF STRIFE} or
     MF_TRANSLATION or
-    (MF_TRANSLATION * 2){$ENDIF});
+    (MF_TRANSLATION * 2){$ENDIF};
+
+//==============================================================================
+//
+// P_SetMBF21Flags
+//
+//==============================================================================
+class procedure TCommonGameDependentActionsLocal.P_SetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer);
+var
+  istransparent: boolean;
+  isfriend: boolean;
+  isbouncy: boolean;
+  istouchy: boolean;
+  flags: integer;
+begin
+  istransparent := bits < 0;
+  isfriend := bits and (1 shl 30) <> 0;
+  isbouncy := bits and (1 shl 29) <> 0;
+  istouchy := bits and (1 shl 28) <> 0;
+
+  flags := bits and MF_MBF21_ENGINE_MASK;
 
   m.flags := m.flags or flags;
 
@@ -11470,50 +11474,7 @@ begin
   isbouncy := bits and (1 shl 29) <> 0;
   istouchy := bits and (1 shl 28) <> 0;
 
-  flags := bits and (
-    MF_SPECIAL or
-    MF_SOLID or
-    MF_SHOOTABLE or
-    MF_NOSECTOR or
-    MF_NOBLOCKMAP or
-    MF_AMBUSH or
-    MF_JUSTHIT or
-    MF_JUSTATTACKED or
-    MF_SPAWNCEILING or
-    MF_NOGRAVITY or
-    MF_DROPOFF or
-    {$IFNDEF STRIFE}
-    MF_PICKUP or
-    {$ENDIF}
-    MF_NOCLIP or
-    {$IFDEF DOOM}
-    MF_SLIDE or
-    {$ENDIF}
-    {$IFDEF HERETIC_OR_HEXEN}
-    MF_SLIDEONWALLS or
-    {$ENDIF}
-    MF_FLOAT or
-    {$IFNDEF STRIFE}
-    MF_TELEPORT or
-    {$ENDIF}
-    MF_MISSILE or
-    {$IFNDEF HEXEN}
-    MF_DROPPED or
-    {$ENDIF}
-    MF_SHADOW or
-    MF_NOBLOOD or
-    MF_CORPSE or
-    MF_INFLOAT or
-    MF_COUNTKILL or
-    {$IFDEF DOOM_OR_HERETIC}
-    MF_COUNTITEM or
-    {$ENDIF}
-    {$IFNDEF STRIFE}
-    MF_SKULLFLY or
-    {$ENDIF}
-    MF_NOTDMATCH{$IFNDEF STRIFE} or
-    MF_TRANSLATION or
-    (MF_TRANSLATION * 2){$ENDIF});
+  flags := bits and MF_MBF21_ENGINE_MASK;
 
   m.flags := m.flags and not flags;
 
@@ -11671,50 +11632,7 @@ begin
   isbouncy := bits and (1 shl 29) <> 0;
   istouchy := bits and (1 shl 28) <> 0;
 
-  flags := bits and (
-    MF_SPECIAL or
-    MF_SOLID or
-    MF_SHOOTABLE or
-    MF_NOSECTOR or
-    MF_NOBLOCKMAP or
-    MF_AMBUSH or
-    MF_JUSTHIT or
-    MF_JUSTATTACKED or
-    MF_SPAWNCEILING or
-    MF_NOGRAVITY or
-    MF_DROPOFF or
-    {$IFNDEF STRIFE}
-    MF_PICKUP or
-    {$ENDIF}
-    MF_NOCLIP or
-    {$IFDEF DOOM}
-    MF_SLIDE or
-    {$ENDIF}
-    {$IFDEF HERETIC_OR_HEXEN}
-    MF_SLIDEONWALLS or
-    {$ENDIF}
-    MF_FLOAT or
-    {$IFNDEF STRIFE}
-    MF_TELEPORT or
-    {$ENDIF}
-    MF_MISSILE or
-    {$IFNDEF HEXEN}
-    MF_DROPPED or
-    {$ENDIF}
-    MF_SHADOW or
-    MF_NOBLOOD or
-    MF_CORPSE or
-    MF_INFLOAT or
-    MF_COUNTKILL or
-    {$IFDEF DOOM_OR_HERETIC}
-    MF_COUNTITEM or
-    {$ENDIF}
-    {$IFNDEF STRIFE}
-    MF_SKULLFLY or
-    {$ENDIF}
-    MF_NOTDMATCH{$IFNDEF STRIFE} or
-    MF_TRANSLATION or
-    (MF_TRANSLATION * 2){$ENDIF});
+  flags := bits and MF_MBF21_ENGINE_MASK;
 
   result := (m.flags and flags = flags);
   if not result then
