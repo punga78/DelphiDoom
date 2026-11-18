@@ -136,7 +136,7 @@ begin
     if dist < HISTORYIGNOREDISTANCE div 2 then
       exit;
     if dist < HISTORYIGNOREDISTANCE then
-      if P_CheckSightXYZ(item.x, item.y, item.z, pmo) then
+      if TSightRoutines.P_CheckSightXYZ(item.x, item.y, item.z, pmo) then
         exit;
     nrover := history.rover + 1;
     if nrover >= NUMPLAYERTRACEHISTORY then
@@ -226,7 +226,7 @@ begin
   if p = nil then
     exit;
 
-  seeplayer := P_CheckSight(mo, p.mo);
+  seeplayer := TSightRoutines.P_CheckSight(mo, p.mo);
   if seeplayer then
     if mo.target <> nil then
       if mo.target <> p.mo then
@@ -244,7 +244,7 @@ begin
   if mo.flags4_ex and MF4_EX_TRACEDEFINED <> 0 then
   begin
     dist := TMapUtilRoutines.P_AproxDistance(mo.tracex - mo.x, mo.tracey - mo.y);
-    if (dist > HISTORYIGNOREDISTANCE) and P_CheckSightXYZ(mo.tracex, mo.tracey, mo.tracez, mo) then
+    if (dist > HISTORYIGNOREDISTANCE) and TSightRoutines.P_CheckSightXYZ(mo.tracex, mo.tracey, mo.tracez, mo) then
     begin
       tmp.x := mo.tracex;
       tmp.y := mo.tracey;
@@ -272,7 +272,7 @@ begin
     item := @history.data[hpos];
     if item.leveltime > mo.tracefollowtimestamp then
     begin
-      if P_CheckSightXYZ(item.x, item.y, item.z, mo) then
+      if TSightRoutines.P_CheckSightXYZ(item.x, item.y, item.z, mo) then
       begin
         if item.leveltime > bestleveltime then
         begin

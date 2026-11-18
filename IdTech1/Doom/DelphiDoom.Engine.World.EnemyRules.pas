@@ -615,7 +615,7 @@ begin
     end;
   end;
 
-  result := P_CheckSight(actor, actor.target);
+  result := TSightRoutines.P_CheckSight(actor, actor.target);
 end;
 
 type
@@ -641,7 +641,7 @@ class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean
 var
   dist: fixed_t;
 begin
-  if not P_CheckSight(actor, actor.target) then
+  if not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     result := false;
     exit;
@@ -777,7 +777,7 @@ begin
       if TMapUtilRoutines.P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
         continue; // JVAL: 20210211 - Out of range
 
-    if not P_CheckSight(actor, player.mo) then
+    if not TSightRoutines.P_CheckSight(actor, player.mo) then
       continue;   // out of sight
 
     if not allaround then
@@ -888,7 +888,7 @@ begin
 
     if actor.flags and MF_AMBUSH <> 0 then
     begin
-      if P_CheckSight(actor, targ) then
+      if TSightRoutines.P_CheckSight(actor, targ) then
         seeyou := true;
     end
     else
@@ -1031,7 +1031,7 @@ begin
   // possibly choose another target
   if TGameSession.NetGame and
     (actor.threshold = 0) and
-    not P_CheckSight(actor, actor.target) then
+    not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     if P_LookForTargets(actor, true) then
       exit;  // got a new target
@@ -1169,7 +1169,7 @@ begin
   end;
 
   // possibly choose another target
-  if TGameSession.NetGame and (actor.threshold = 0) and not P_CheckSight(actor, actor.target) then
+  if TGameSession.NetGame and (actor.threshold = 0) and not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     if TMonsterBaseActions.P_LookForPlayers(actor, True) then
       exit;  // got a new target
@@ -1291,7 +1291,7 @@ begin
     exit;
 
   if (actor.target = nil) or (actor.target.health <= 0) or
-     not P_CheckSight(actor, actor.target) then
+     not TSightRoutines.P_CheckSight(actor, actor.target) then
     P_SetMobjState(actor, statenum_t(actor.info.seestate));
 end;
 
@@ -1309,7 +1309,7 @@ begin
     exit;
 
   if (actor.target = nil) or (actor.target.health <= 0) or
-     not P_CheckSight(actor, actor.target) then
+     not TSightRoutines.P_CheckSight(actor, actor.target) then
     P_SetMobjState(actor, statenum_t(actor.info.seestate));
 end;
 
@@ -1759,7 +1759,7 @@ begin
     exit;
 
   // don't move it if the vile lost sight
-  if not P_CheckSight(actor.target, dest) then
+  if not TSightRoutines.P_CheckSight(actor.target, dest) then
     exit;
 
   {$IFDEF FPC}
@@ -1840,7 +1840,7 @@ begin
 
   A_FaceTarget(actor);
 
-  if not P_CheckSight(actor, actor.target) then
+  if not TSightRoutines.P_CheckSight(actor, actor.target) then
     exit;
 
   S_StartSound(actor, Ord(sfx_barexp));
@@ -2978,7 +2978,7 @@ begin
   // possibly choose another target
   if TGameSession.NetGame and
     (actor.threshold = 0) and
-    not P_CheckSight(actor, actor.target) then
+    not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     if P_LookForTargets(actor, true) then
       exit;  // got a new target

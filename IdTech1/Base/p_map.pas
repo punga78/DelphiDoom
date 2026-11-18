@@ -2538,7 +2538,7 @@ begin
     exit;
   end;
 
-  if P_CheckSight(thing, TMapBlast.Spot) then
+  if TSightRoutines.P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
     P_DamageMobj(thing, TMapBlast.Spot, TMapBlast.Source, TMapGameRules.BlastDamage(thing, TMapBlast.Damage, dist));
@@ -2710,7 +2710,7 @@ begin
       exit;
     end;
 
-  if P_CheckSight(thing, TMapBlast.Spot) then
+  if TSightRoutines.P_CheckSight(thing, TMapBlast.Spot) then
   begin
     // must be in direct path
     if TMapBlast.Radius = 0 then

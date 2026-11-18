@@ -39,25 +39,7 @@ uses
 
 //==============================================================================
 //
-// P_CheckSight
-//
-//==============================================================================
-function P_CheckSight(t1: Pmobj_t; t2: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_CheckSightXYZ
-//
-//==============================================================================
-function P_CheckSightXYZ(const x, y, z: fixed_t; t2: Pmobj_t): boolean;
-
-//==============================================================================
-//
 {$IFDEF HEXEN}
-// P_SightPathTraverse
-//
-//==============================================================================
-function P_SightPathTraverse(x1, y1, x2, y2: fixed_t): boolean;
 
 //==============================================================================
 //
@@ -66,9 +48,7 @@ function P_SightPathTraverse(x1, y1, x2, y2: fixed_t): boolean;
 //
 //==============================================================================
 {$IFDEF HEXEN}
-function P_CheckCameraSight(camx, camy, camz: fixed_t; mo: Pmobj_t): boolean;
 {$ELSE}
-function P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean;
 {$ENDIF}
 
 {$IFDEF HEXEN}
@@ -77,13 +57,49 @@ var
   topslope: fixed_t;
   sightzstart: fixed_t; // eye z of looker
 {$ELSE}
-//==============================================================================
-//
-// P_CheckVisibility
-//
-//==============================================================================
-function P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSightRoutines = class sealed
+  public
+    //==============================================================================
+    //
+    // P_CheckSight
+    //
+    //==============================================================================
+    class function P_CheckSight(t1: Pmobj_t; t2: Pmobj_t): boolean; static;
+    //==============================================================================
+    //
+    // P_CheckSightXYZ
+    //
+    //==============================================================================
+    class function P_CheckSightXYZ(const x, y, z: fixed_t; t2: Pmobj_t): boolean; static;
+{$IFDEF HEXEN}
+    // P_SightPathTraverse
+    //
+    //==============================================================================
+    class function P_SightPathTraverse(x1, y1, x2, y2: fixed_t): boolean; static;
+{$ENDIF}
+{$IFDEF HEXEN}
+    class function P_CheckCameraSight(camx, camy, camz: fixed_t; mo: Pmobj_t): boolean; static;
+{$ELSE}
+    class function P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean; static;
+{$ENDIF}
+{$IFDEF HEXEN}
+{$ELSE}
+    //==============================================================================
+    //
+    // P_CheckVisibility
+    //
+    //==============================================================================
+    class function P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean; static;
+{$ENDIF}
+  end;
+
 
 implementation
 
@@ -115,6 +131,57 @@ uses
 {$ENDIF}
   r_defs,
   r_main;
+type
+  los_t = record
+    sightzstart: fixed_t;
+    t2x: fixed_t;
+    t2y: fixed_t;
+    strace: divline_t;
+    topslope: fixed_t;
+    bottomslope: fixed_t;
+    bbox: array[0..3] of fixed_t;
+  end;
+  Plos_t = ^los_t;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TSightLocalRoutines = class sealed
+  public
+{$IFNDEF HEXEN}
+    class function P_DivlineSide(const x, y: fixed_t; const node: Pdivline_t): integer; static;
+    class function P_InterceptVector2(v2, v1: Pdivline_t): fixed_t; static;
+{$ENDIF}
+{$IFDEF HEXEN}
+    class function PTR_SightTraverse(_in: Pintercept_t): boolean; static;
+{$ELSE}
+    class function P_CrossSubsecPolyObj(const po: Ppolyobj_t; const los: Plos_t): boolean; static;
+{$ENDIF}
+{$IFDEF HEXEN}
+    class function P_SightBlockLinesIterator(x, y: integer): boolean; static;
+{$ELSE}
+    class function P_CrossSubsector(const num: integer; const los: Plos_t): boolean; static;
+{$ENDIF}
+{$IFDEF HEXEN}
+    class function P_SightTraverseIntercepts: boolean; static;
+{$ELSE}
+    class function P_CrossBSPNode(bspnum: integer; const los: Plos_t): boolean; static;
+{$ENDIF}
+{$IFDEF HEXEN}
+    class function P_SightPathTraverse32(x1, y1, x2, y2: fixed_t): boolean; static;
+{$ELSE}
+{$ENDIF}
+{$IF DEFINED(DOOM)}
+    class function P_CrossVanillaSubsector(num: integer; const los: Plos_t): boolean; static;
+    class function P_CrossVanillaBSPNode(bspnum: integer; const los: Plos_t): boolean; static;
+{$ELSEIF DEFINED(HEXEN)}
+    class function P_SightPathTraverse64(x1, y1, x2, y2: fixed_t): boolean; static;
+{$ENDIF}
+  end;
+
 {$IFNDEF HEXEN}
 
 //==============================================================================
@@ -125,7 +192,7 @@ uses
 // Returns side 0 (front), 1 (back), or 2 (on).
 //
 //==============================================================================
-function P_DivlineSide(const x, y: fixed_t; const node: Pdivline_t): integer;
+class function TSightLocalRoutines.P_DivlineSide(const x, y: fixed_t; const node: Pdivline_t): integer;
 var
   dx: fixed_t;
   dy: fixed_t;
@@ -211,7 +278,7 @@ end;
 // This is only called by the addthings and addlines traversers.
 //
 //==============================================================================
-function P_InterceptVector2(v2, v1: Pdivline_t): fixed_t;
+class function TSightLocalRoutines.P_InterceptVector2(v2, v1: Pdivline_t): fixed_t;
 var
   num: fixed_t;
   den: fixed_t;
@@ -233,18 +300,6 @@ end;
 {$ENDIF}
 
 // JVAL: 3d Floors
-type
-  los_t = record
-    sightzstart: fixed_t;
-    t2x: fixed_t;
-    t2y: fixed_t;
-    strace: divline_t;
-    topslope: fixed_t;
-    bottomslope: fixed_t;
-    bbox: array[0..3] of fixed_t;
-  end;
-  Plos_t = ^los_t;
-
 //==============================================================================
 //
 {$IFDEF HEXEN}
@@ -264,9 +319,9 @@ type
 //
 //==============================================================================
 {$IFDEF HEXEN}
-function PTR_SightTraverse(_in: Pintercept_t): boolean;
+class function TSightLocalRoutines.PTR_SightTraverse(_in: Pintercept_t): boolean;
 {$ELSE}
-function P_CrossSubsecPolyObj(const po: Ppolyobj_t; const los: Plos_t): boolean;
+class function TSightLocalRoutines.P_CrossSubsecPolyObj(const po: Ppolyobj_t; const los: Plos_t): boolean;
 {$ENDIF}
 var
 {$IFDEF HEXEN}
@@ -388,9 +443,9 @@ end;
 //
 //==============================================================================
 {$IFDEF HEXEN}
-function P_SightBlockLinesIterator(x, y: integer): boolean;
+class function TSightLocalRoutines.P_SightBlockLinesIterator(x, y: integer): boolean;
 {$ELSE}
-function P_CrossSubsector(const num: integer; const los: Plos_t): boolean;
+class function TSightLocalRoutines.P_CrossSubsector(const num: integer; const los: Plos_t): boolean;
 {$ENDIF}
 var
 {$IFDEF HEXEN}
@@ -844,9 +899,9 @@ end;
 //
 //==============================================================================
 {$IFDEF HEXEN}
-function P_SightTraverseIntercepts: boolean;
+class function TSightLocalRoutines.P_SightTraverseIntercepts: boolean;
 {$ELSE}
-function P_CrossBSPNode(bspnum: integer; const los: Plos_t): boolean;
+class function TSightLocalRoutines.P_CrossBSPNode(bspnum: integer; const los: Plos_t): boolean;
 {$ENDIF}
 var
 {$IFDEF HEXEN}
@@ -937,7 +992,7 @@ end;
 //==================
 //
 //==============================================================================
-function P_SightPathTraverse32(x1, y1, x2, y2: fixed_t): boolean;
+class function TSightLocalRoutines.P_SightPathTraverse32(x1, y1, x2, y2: fixed_t): boolean;
 var
   xt1, yt1, xt2, yt2: fixed_t;
   xstep, ystep: fixed_t;
@@ -1081,7 +1136,7 @@ end;
 //  if strace crosses the given subsector successfully.
 //
 //==============================================================================
-function P_CrossVanillaSubsector(num: integer; const los: Plos_t): boolean;
+class function TSightLocalRoutines.P_CrossVanillaSubsector(num: integer; const los: Plos_t): boolean;
 var
   seg: Pvanillaseg_t;
   line: Pline_t;
@@ -1204,7 +1259,7 @@ end;
 //  if strace crosses the given node successfully.
 //
 //==============================================================================
-function P_CrossVanillaBSPNode(bspnum: integer; const los: Plos_t): boolean;
+class function TSightLocalRoutines.P_CrossVanillaBSPNode(bspnum: integer; const los: Plos_t): boolean;
 var
   bsp: Pvanillanode_t;
   side: integer;
@@ -1250,7 +1305,7 @@ end;
 // P_SightPathTraverse64
 //
 //==============================================================================
-function P_SightPathTraverse64(x1, y1, x2, y2: fixed_t): boolean;
+class function TSightLocalRoutines.P_SightPathTraverse64(x1, y1, x2, y2: fixed_t): boolean;
 var
   _x1, _x2, _y1, _y2: int64;
   xt1, yt1, xt2, yt2: fixed_t;
@@ -1388,12 +1443,12 @@ end;
 // P_SightPathTraverse
 //
 //==============================================================================
-function P_SightPathTraverse(x1, y1, x2, y2: fixed_t): boolean;
+class function TSightRoutines.P_SightPathTraverse(x1, y1, x2, y2: fixed_t): boolean;
 begin
   if largemap or internalblockmapformat then
-    result := P_SightPathTraverse64(x1, y1, x2, y2)
+    result := TSightLocalRoutines.P_SightPathTraverse64(x1, y1, x2, y2)
   else
-    result := P_SightPathTraverse32(x1, y1, x2, y2);
+    result := TSightLocalRoutines.P_SightPathTraverse32(x1, y1, x2, y2);
 end;
 
 //==============================================================================
@@ -1415,7 +1470,7 @@ end;
 {$ENDIF}
 //
 //==============================================================================
-function P_CheckSight(t1: Pmobj_t; t2: Pmobj_t): boolean;
+class function TSightRoutines.P_CheckSight(t1: Pmobj_t; t2: Pmobj_t): boolean;
 var
   s1: integer;
   s2: integer;
@@ -1580,9 +1635,9 @@ begin
 
   // the head node is the last node output
   if G_IsOldDemoPlaying and hasvanillanodes then
-    result := P_CrossVanillaBSPNode(numvanillanodes - 1, @los)
+    result := TSightLocalRoutines.P_CrossVanillaBSPNode(numvanillanodes - 1, @los)
   else
-    result := P_CrossBSPNode(numnodes - 1, @los);
+    result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 end;
 
 //==============================================================================
@@ -1592,7 +1647,7 @@ end;
 // JVAL: To determine if camera chase view can see the player
 //
 //==============================================================================
-function P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean;
+class function TSightRoutines.P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean;
 var
   los: los_t;
 begin
@@ -1640,7 +1695,7 @@ begin
   end;
 
   // the head node is the last node output
-  result := P_CrossBSPNode(numnodes - 1, @los);
+  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 {$ELSEIF DEFINED(HEXEN)}
   result := P_SightPathTraverse(t1.x, t1.y, t2.x, t2.y);
 {$ELSE}
@@ -1678,7 +1733,7 @@ begin
   end;
 
   // the head node is the last node output
-  result := P_CrossBSPNode(numnodes - 1, @los);
+  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 end;
 
 //==============================================================================
@@ -1688,7 +1743,7 @@ end;
 // JVAL: To determine if camera chase view can see the player
 //
 //==============================================================================
-function P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean;
+class function TSightRoutines.P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean;
 var
   los: los_t;
 begin
@@ -1736,7 +1791,7 @@ begin
   end;
 
   // the head node is the last node output
-  result := P_CrossBSPNode(numnodes - 1, @los);
+  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 {$ENDIF}
 end;
 
@@ -1745,7 +1800,7 @@ end;
 // P_CheckSightXYZ
 //
 //==============================================================================
-function P_CheckSightXYZ(const x, y, z: fixed_t; t2: Pmobj_t): boolean;
+class function TSightRoutines.P_CheckSightXYZ(const x, y, z: fixed_t; t2: Pmobj_t): boolean;
 {$IFDEF DOOM}
 var
   s1: integer;
@@ -1864,7 +1919,7 @@ begin
   end;
 
   // the head node is the last node output
-  result := P_CrossBSPNode(numnodes - 1, @los);
+  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 end;
 
 //==============================================================================
@@ -1876,7 +1931,7 @@ end;
 // possibly visible
 //
 //==============================================================================
-function P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
+class function TSightRoutines.P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
 var
   los: los_t;
 begin
@@ -1916,7 +1971,7 @@ begin
   end;
 
   // the head node is the last node output
-  result := P_CrossBSPNode(numnodes - 1, @los);
+  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 {$ELSEIF DEFINED(HEXEN)}
   Result := P_CheckCameraSight(x, y, z, t2);
 end;
@@ -1928,7 +1983,7 @@ end;
 // JVAL: Check if the camera can see mo (=player.mo)
 //
 //==============================================================================
-function P_CheckCameraSight(camx, camy, camz: fixed_t; mo: Pmobj_t): boolean;
+class function TSightRoutines.P_CheckCameraSight(camx, camy, camz: fixed_t; mo: Pmobj_t): boolean;
 begin
   if mo = nil then
   begin
@@ -1956,7 +2011,7 @@ end;
 // possibly visible
 //
 //==============================================================================
-function P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
+class function TSightRoutines.P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
 var
   los: los_t;
 begin
@@ -1996,7 +2051,7 @@ begin
   end;
 
   // the head node is the last node output
-  result := P_CrossBSPNode(numnodes - 1, @los);
+  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 {$ENDIF}
 end;
 

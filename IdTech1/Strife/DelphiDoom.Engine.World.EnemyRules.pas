@@ -916,7 +916,7 @@ begin
   begin
     // we only wake up certain thing types (Acolytes and Templars?)
     if (rover.health > 0) and (rover._type >= Ord(MT_GUARD1)) and (rover._type <= Ord(MT_PGUARD)) and
-       (P_CheckSight(rover, puncher) or P_CheckSight(rover, punchee)) then
+       (TSightRoutines.P_CheckSight(rover, puncher) or TSightRoutines.P_CheckSight(rover, punchee)) then
     begin
       TMonsterLocalActions.P_WakeUpThing(puncher, rover);
       rover.flags := rover.flags or MF_NODIALOG;
@@ -930,7 +930,7 @@ begin
   begin
     // we only wake up certain thing types (Acolytes and Templars?)
     if (rover.health > 0) and (rover._type >= Ord(MT_GUARD1)) and (rover._type <= Ord(MT_PGUARD)) and
-       (P_CheckSight(rover, puncher) or P_CheckSight(rover, punchee)) then
+       (TSightRoutines.P_CheckSight(rover, puncher) or TSightRoutines.P_CheckSight(rover, punchee)) then
     begin
       TMonsterLocalActions.P_WakeUpThing(puncher, rover);
       rover.flags := rover.flags or MF_NODIALOG;
@@ -998,7 +998,7 @@ begin
     end;
   end;
 
-  result := P_CheckSight(actor, actor.target);
+  result := TSightRoutines.P_CheckSight(actor, actor.target);
 end;
 
 //==============================================================================
@@ -1015,7 +1015,7 @@ class function TMonsterLocalActions.P_CheckMissileRange(actor: Pmobj_t): boolean
 var
   dist: fixed_t;
 begin
-  if not P_CheckSight(actor, actor.target) then
+  if not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     result := false;
     exit;
@@ -1130,7 +1130,7 @@ class function TMonsterLocalActions.P_CheckRobotRange(actor: Pmobj_t): boolean;
 var
   dist: fixed_t;
 begin
-  if not P_CheckSight(actor, actor.target) then
+  if not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     result := false;
     exit;
@@ -1359,7 +1359,7 @@ begin
       if TMapUtilRoutines.P_AproxDistance(actor.x - player.mo.x, actor.y - player.mo.y) > actor.info.maxtargetrange * FRACUNIT then
         continue; // JVAL: 20210211 - Out of range
 
-    if not P_CheckSight(actor, player.mo) then
+    if not TSightRoutines.P_CheckSight(actor, player.mo) then
       continue;   // out of sight
 
     if not allaround then
@@ -1411,7 +1411,7 @@ begin
 
       if actor.flags and MF_AMBUSH <> 0 then
       begin
-        if P_CheckSight(actor, targ) then
+        if TSightRoutines.P_CheckSight(actor, targ) then
           seeyou := true;
       end
       else
@@ -1538,7 +1538,7 @@ begin
     begin
       actor.target := soundtarget;
 
-      if (actor.flags and MF_AMBUSH = 0) or P_CheckSight(actor, actor.target) then
+      if (actor.flags and MF_AMBUSH = 0) or TSightRoutines.P_CheckSight(actor, actor.target) then
       begin
         actor.threshold := 10;
         P_SetMobjState(actor, statenum_t(actor.info.seestate));
@@ -1577,7 +1577,7 @@ begin
     begin
       actor.target := soundtarget;
 
-      if (actor.flags and MF_AMBUSH = 0) or P_CheckSight(actor, actor.target) then
+      if (actor.flags and MF_AMBUSH = 0) or TSightRoutines.P_CheckSight(actor, actor.target) then
       begin
         A_SeeSound1(actor);
         actor.threshold := 10;
@@ -1678,7 +1678,7 @@ begin
   // possibly choose another target
   if TGameSession.NetGame and
     (actor.threshold = 0) and
-    not P_CheckSight(actor, actor.target) then
+    not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     if P_LookForTargets(actor, true) then
       exit;  // got a new target
@@ -1849,7 +1849,7 @@ begin
   begin
     target := actor.target;
 
-    if (target <> nil) or (target.health <= 0) or not P_CheckSight(actor, target) or (P_Random < 40) then
+    if (target <> nil) or (target.health <= 0) or not TSightRoutines.P_CheckSight(actor, target) or (P_Random < 40) then
       P_SetMobjState(actor, statenum_t(actor.info.seestate));
   end;
 end;
@@ -2168,7 +2168,7 @@ end;
 class procedure TStrifeMonsterActions.A_CheckTargetVisible2(actor: Pmobj_t);
 begin
   if (actor.target = nil) or (actor.target.health <= 0) or
-     not P_CheckSight(actor, actor.target) then
+     not TSightRoutines.P_CheckSight(actor, actor.target) then
     P_SetMobjState(actor, statenum_t(actor.info.seestate));
 end;
 

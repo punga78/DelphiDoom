@@ -1013,7 +1013,7 @@ begin
   if dist >= TRadixWeaponRules.PLASMA_BOMB_RADIUS then
     exit; // out of range
 
-  if P_CheckSight(thing, pbplayer.mo) then
+  if TSightRoutines.P_CheckSight(thing, pbplayer.mo) then
   begin
     // must be in direct path
     P_DamageMobj(thing, pbplayer.mo, pbplayer.mo, TRadixWeaponRules.PLASMA_BOMB_DAMAGE);

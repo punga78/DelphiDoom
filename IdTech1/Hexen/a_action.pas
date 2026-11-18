@@ -495,7 +495,7 @@ begin
       check := rp - pmo.angle <= ANG45
     else
       check := pmo.angle - rp <= ANG45;
-    if check and P_CheckSight(actor, pmo) then
+    if check and TSightRoutines.P_CheckSight(actor, pmo) then
     begin // Previous state (pottery bit waiting state)
       st := (NativeInt(actor.state) - NativeInt(@states[0])) div SizeOf(state_t);
       dec(st);
@@ -520,7 +520,7 @@ begin
         check := rp - pmo.angle <= ANG45
       else
         check := pmo.angle - rp <= ANG45;
-      if check and P_CheckSight(actor, pmo) then
+      if check and TSightRoutines.P_CheckSight(actor, pmo) then
       begin // Previous state (pottery bit waiting state)
         st := (NativeInt(actor.state) - NativeInt(@states[0])) div SizeOf(state_t);
         dec(st);

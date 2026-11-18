@@ -1863,7 +1863,7 @@ begin
           continue;
         end;
 
-        if P_CheckSight(mo, mobj) then
+        if TSightRoutines.P_CheckSight(mo, mobj) then
         begin
           result := mobj;
           exit;
@@ -1899,7 +1899,7 @@ begin
           continue;
         end;
 
-        if P_CheckSight(mo, mobj) then
+        if TSightRoutines.P_CheckSight(mo, mobj) then
         begin
           result := mobj;
           exit;
@@ -1923,7 +1923,7 @@ begin
           continue;
         end;
 
-        if P_CheckSight(mo, mobj) then
+        if TSightRoutines.P_CheckSight(mo, mobj) then
         begin
           master := mo.target;
           angle := TRendererMain.R_PointToAngle2(master.x, master.y, mobj.x, mobj.y) - master.angle;
@@ -1958,7 +1958,7 @@ begin
           continue;
         end;
 
-        if P_CheckSight(mo, mobj) then
+        if TSightRoutines.P_CheckSight(mo, mobj) then
         begin
           result := mobj;
           exit;

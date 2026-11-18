@@ -332,7 +332,7 @@ begin
   // If speed <= 0, you're outside the effective radius. You also have
   // to be able to see the push/pull source point.
 
-  if (speed > 0) and P_CheckSight(thing, tmpusher.source) then
+  if (speed > 0) and TSightRoutines.P_CheckSight(thing, tmpusher.source) then
   begin
     pushangle := TRendererMain.R_PointToAngle2(thing.x, thing.y, sx, sy);
     if tmpusher.source._type = Ord(MT_PUSH) then

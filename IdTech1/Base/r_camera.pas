@@ -126,7 +126,7 @@ begin
           cz := floorz
       end;
 
-      if {(sec.renderflags and SRF_SLOPED <> 0) or} P_CheckCameraSight(cx, cy, cz, viewplayer.mo) then // JVAL: Slopes
+      if {(sec.renderflags and SRF_SLOPED <> 0) or} TSightRoutines.P_CheckCameraSight(cx, cy, cz, viewplayer.mo) then // JVAL: Slopes
         if not T3dFloorRoutines.P_PtInSolidFloor2(cx, cy, cz, CAMERARADIOUS) then  // JVAL: 3d Floors
           break;
 

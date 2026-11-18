@@ -124,7 +124,7 @@ begin
         LDistance := LDeltaX * LDeltaX + LDeltaY * LDeltaY;
         // the sight is traced last, and only for a monster nearer than the best so far: an enemy behind a
         // wall (it can have heard the player) would keep the pilot firing at the wall
-        if (LDistance <= LBest) and P_CheckSight(APlayer, LMobj) then
+        if (LDistance <= LBest) and TSightRoutines.P_CheckSight(APlayer, LMobj) then
         begin
           LBest := LDistance;
           AView.HasEnemy := True;

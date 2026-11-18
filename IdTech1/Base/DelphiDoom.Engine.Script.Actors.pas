@@ -591,7 +591,7 @@ end;
 
 function TEngineScriptActors.CheckSight(const AKey1, AKey2: Cardinal): Boolean;
 begin
-  Result := P_CheckSight(MobjOfKey(AKey1), MobjOfKey(AKey2));
+  Result := TSightRoutines.P_CheckSight(MobjOfKey(AKey1), MobjOfKey(AKey2));
 end;
 
 class procedure TEngineScriptActors.CollectKeys(const ASelection: TScriptActorSelection;

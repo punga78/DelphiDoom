@@ -246,7 +246,7 @@ begin
     visible := false;
     for i := 0 to MAXPLAYERS - 1 do
       if TGameSession.PlayerInGame[i] then
-        if P_CheckSight(TGameSession.Players[i].mo, actor) then
+        if TSightRoutines.P_CheckSight(TGameSession.Players[i].mo, actor) then
         begin
           visible := true;
           break;
@@ -325,7 +325,7 @@ begin
       exit;
     end;
 
-    if not P_CheckSight(actor, mo) then
+    if not TSightRoutines.P_CheckSight(actor, mo) then
     begin // Out of sight
       think := think.next;
       continue;

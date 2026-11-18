@@ -7351,7 +7351,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
       if TGameSession.Players[i].mo <> actor then
-        if P_CheckSight(TGameSession.Players[i].mo, actor) then
+        if TSightRoutines.P_CheckSight(TGameSession.Players[i].mo, actor) then
           exit;
 
   offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[0]);
@@ -7401,7 +7401,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
     if TGameSession.PlayerInGame[i] then
       if TGameSession.Players[i].mo <> actor then
-        if P_CheckSight(TGameSession.Players[i].mo, actor) then
+        if TSightRoutines.P_CheckSight(TGameSession.Players[i].mo, actor) then
           exit;
 
   offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[1]);
@@ -9059,7 +9059,7 @@ begin
   if N_Random < prob then
     exit;
 
-  if (actor.target = nil) or (actor.target.health <= 0) or not P_CheckSight(actor, actor.target) then
+  if (actor.target = nil) or (actor.target.health <= 0) or not TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     offset := P_GetStateFromNameWithOffsetCheck(actor, actor.state.params.StrVal[1]);
     if @states[offset] <> actor.state then
@@ -10039,7 +10039,7 @@ begin
     end;
   end;
 
-  result := P_CheckSight(actor, actor.target);
+  result := TSightRoutines.P_CheckSight(actor, actor.target);
 end;
 
 //----------------------------------------------------------------------------
@@ -10151,7 +10151,7 @@ begin
       continue;
 
     // skip actors not in line of sight
-    if not P_CheckSight(mo, mobj) then
+    if not TSightRoutines.P_CheckSight(mo, mobj) then
       continue;
 
     // all good! return it.
@@ -11116,7 +11116,7 @@ begin
   if (ffov > 0) and not TCommonSearchActions.P_CheckFov(actor, actor.target, ffov) then
     exit;
 
-  if P_CheckSight(actor, actor.target) then
+  if TSightRoutines.P_CheckSight(actor, actor.target) then
   begin
     if not actor.state.params.IsComputed[0] then
     begin
@@ -11190,7 +11190,7 @@ begin
   if (ffov > 0) and not TCommonSearchActions.P_CheckFov(actor, actor.tracer, ffov) then
     exit;
 
-  if P_CheckSight(actor, actor.tracer) then
+  if TSightRoutines.P_CheckSight(actor, actor.tracer) then
   begin
     if not actor.state.params.IsComputed[0] then
     begin
