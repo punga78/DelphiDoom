@@ -594,12 +594,12 @@ end;
 
 procedure TEngineScriptWorld.SetFloorSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
 begin
-  p_slopes.PS_SetFloorSlope(AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3);
+  TSlopeRoutines.PS_SetFloorSlope(AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3);
 end;
 
 procedure TEngineScriptWorld.SetCeilingSlope(const AIndex: Integer; const X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3: Integer);
 begin
-  p_slopes.PS_SetCeilingSlope(AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3);
+  TSlopeRoutines.PS_SetCeilingSlope(AIndex, X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3);
 end;
 
 end.
