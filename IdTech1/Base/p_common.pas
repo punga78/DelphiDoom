@@ -80,90 +80,6 @@ procedure A_ConsoleCommand(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetCustomParam
-//
-//==============================================================================
-procedure A_SetCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_AddCustomParam
-//
-//==============================================================================
-procedure A_AddCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SubtractCustomParam
-//
-//==============================================================================
-procedure A_SubtractCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTargetCustomParam
-//
-//==============================================================================
-procedure A_SetTargetCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_AddTargetCustomParam
-//
-//==============================================================================
-procedure A_AddTargetCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SubtractTargetCustomParam
-//
-//==============================================================================
-procedure A_SubtractTargetCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMasterCustomParam
-//
-//==============================================================================
-procedure A_SetMasterCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_AddMasterCustomParam
-//
-//==============================================================================
-procedure A_AddMasterCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SubtractMasterCustomParam
-//
-//==============================================================================
-procedure A_SubtractMasterCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTracerCustomParam
-//
-//==============================================================================
-procedure A_SetTracerCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_AddTracerCustomParam
-//
-//==============================================================================
-procedure A_AddTracerCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SubtractTracerCustomParam
-//
-//==============================================================================
-procedure A_SubtractTracerCustomParam(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_JumpIf
 //
 //==============================================================================
@@ -766,48 +682,6 @@ procedure A_GlobalEarthQuake(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_SetMapStr
-//
-//==============================================================================
-procedure A_SetMapStr(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWorldStr
-//
-//==============================================================================
-procedure A_SetWorldStr(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMapInt
-//
-//==============================================================================
-procedure A_SetMapInt(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWorldInt
-//
-//==============================================================================
-procedure A_SetWorldInt(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetMapFloat
-//
-//==============================================================================
-procedure A_SetMapFloat(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetWorldFloat
-//
-//==============================================================================
-procedure A_SetWorldFloat(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_RandomGoto
 //
 //==============================================================================
@@ -987,20 +861,6 @@ procedure A_CheckFlag(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_SetAngle(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetUserVar
-//
-//==============================================================================
-procedure A_SetUserVar(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetUserArray
-//
-//==============================================================================
-procedure A_SetUserArray(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -2391,6 +2251,154 @@ type
     class procedure A_WeaponSound(player: Pplayer_t; psp: Ppspdef_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonCustomParamActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_SetCustomParam
+    //
+    //==============================================================================
+    class procedure A_SetCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AddCustomParam
+    //
+    //==============================================================================
+    class procedure A_AddCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SubtractCustomParam
+    //
+    //==============================================================================
+    class procedure A_SubtractCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTargetCustomParam
+    //
+    //==============================================================================
+    class procedure A_SetTargetCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AddTargetCustomParam
+    //
+    //==============================================================================
+    class procedure A_AddTargetCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SubtractTargetCustomParam
+    //
+    //==============================================================================
+    class procedure A_SubtractTargetCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMasterCustomParam
+    //
+    //==============================================================================
+    class procedure A_SetMasterCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AddMasterCustomParam
+    //
+    //==============================================================================
+    class procedure A_AddMasterCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SubtractMasterCustomParam
+    //
+    //==============================================================================
+    class procedure A_SubtractMasterCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTracerCustomParam
+    //
+    //==============================================================================
+    class procedure A_SetTracerCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_AddTracerCustomParam
+    //
+    //==============================================================================
+    class procedure A_AddTracerCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SubtractTracerCustomParam
+    //
+    //==============================================================================
+    class procedure A_SubtractTracerCustomParam(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMapStr
+    //
+    //==============================================================================
+    class procedure A_SetMapStr(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWorldStr
+    //
+    //==============================================================================
+    class procedure A_SetWorldStr(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMapInt
+    //
+    //==============================================================================
+    class procedure A_SetMapInt(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWorldInt
+    //
+    //==============================================================================
+    class procedure A_SetWorldInt(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetMapFloat
+    //
+    //==============================================================================
+    class procedure A_SetMapFloat(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetWorldFloat
+    //
+    //==============================================================================
+    class procedure A_SetWorldFloat(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetUserVar
+    //
+    //==============================================================================
+    class procedure A_SetUserVar(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetUserArray
+    //
+    //==============================================================================
+    class procedure A_SetUserArray(actor: Pmobj_t); static;
+  end;
+
 
 implementation
 
@@ -2770,7 +2778,7 @@ end;
 // A_SetCustomParam
 //
 //==============================================================================
-procedure A_SetCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetCustomParam(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -2783,7 +2791,7 @@ end;
 // A_AddCustomParam
 //
 //==============================================================================
-procedure A_AddCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_AddCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2804,7 +2812,7 @@ end;
 // A_SubtractCustomParam
 //
 //==============================================================================
-procedure A_SubtractCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SubtractCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2825,7 +2833,7 @@ end;
 // A_SetTargetCustomParam
 //
 //==============================================================================
-procedure A_SetTargetCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetTargetCustomParam(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -2841,7 +2849,7 @@ end;
 // A_AddTargetCustomParam
 //
 //==============================================================================
-procedure A_AddTargetCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_AddTargetCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2865,7 +2873,7 @@ end;
 // A_SubtractTargetCustomParam
 //
 //==============================================================================
-procedure A_SubtractTargetCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SubtractTargetCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2889,7 +2897,7 @@ end;
 // A_SetMasterCustomParam
 //
 //==============================================================================
-procedure A_SetMasterCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetMasterCustomParam(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -2905,7 +2913,7 @@ end;
 // A_AddMasterCustomParam
 //
 //==============================================================================
-procedure A_AddMasterCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_AddMasterCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2929,7 +2937,7 @@ end;
 // A_SubtractMasterCustomParam
 //
 //==============================================================================
-procedure A_SubtractMasterCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SubtractMasterCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2953,7 +2961,7 @@ end;
 // A_SetTracerCustomParam
 //
 //==============================================================================
-procedure A_SetTracerCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetTracerCustomParam(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -2969,7 +2977,7 @@ end;
 // A_AddTracerCustomParam
 //
 //==============================================================================
-procedure A_AddTracerCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_AddTracerCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -2993,7 +3001,7 @@ end;
 // A_SubtractTracerCustomParam
 //
 //==============================================================================
-procedure A_SubtractTracerCustomParam(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SubtractTracerCustomParam(actor: Pmobj_t);
 var
   parm: Pmobjcustomparam_t;
   sparm: string;
@@ -6264,7 +6272,7 @@ end;
 // A_SetMapStr(var: string; value1: string; [value2: string],...)
 //
 //==============================================================================
-procedure A_SetMapStr(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetMapStr(actor: Pmobj_t);
 var
   s: string;
   i: integer;
@@ -6286,7 +6294,7 @@ end;
 // A_SetWorldStr(var: string; value1: string; [value2: string],...)
 //
 //==============================================================================
-procedure A_SetWorldStr(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetWorldStr(actor: Pmobj_t);
 var
   s: string;
   i: integer;
@@ -6308,7 +6316,7 @@ end;
 // A_SetMapInt(var: string; value: integer);
 //
 //==============================================================================
-procedure A_SetMapInt(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetMapInt(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -6319,7 +6327,7 @@ end;
 // A_SetWorldInt(var: string; value: integer);
 //
 //==============================================================================
-procedure A_SetWorldInt(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetWorldInt(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -6330,7 +6338,7 @@ end;
 // A_SetMapFloat(var: string; value: float);
 //
 //==============================================================================
-procedure A_SetMapFloat(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetMapFloat(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -6341,7 +6349,7 @@ end;
 // A_SetWorldFloat(var: string; value: float);
 //
 //==============================================================================
-procedure A_SetWorldFloat(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetWorldFloat(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -7703,7 +7711,7 @@ end;
 // In ZDoom displays an error message.
 //
 //==============================================================================
-procedure A_SetUserVar(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetUserVar(actor: Pmobj_t);
 begin
   if not P_CheckStateParams(actor, 2) then
     exit;
@@ -7721,7 +7729,7 @@ end;
 // In ZDoom displays an error message.
 //
 //==============================================================================
-procedure A_SetUserArray(actor: Pmobj_t);
+class procedure TCommonCustomParamActions.A_SetUserArray(actor: Pmobj_t);
 var
   arr: string;
 begin

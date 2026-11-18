@@ -823,12 +823,12 @@ begin
   DEH_AddAction(@A_ConsoleCommand, 'A_ConsoleCommand(cmd: string, [parm1: string], [parm2: string], ...)'); // 290
   DEH_AddAction(@TCommonStateBitActions.A_SetFrightened, 'A_SetFrightened()'); // 291
   DEH_AddAction(@TCommonStateBitActions.A_UnSetFrightened, 'A_UnSetFrightened()'); // 292
-  DEH_AddAction(@A_SetCustomParam, 'A_SetCustomParam(param: string, value: integer)'); // 293
-  DEH_AddAction(@A_AddCustomParam, 'A_AddCustomParam(param: string, value: integer)'); // 294
-  DEH_AddAction(@A_SubtractCustomParam, 'A_SubtractCustomParam(param: string, value: integer)'); // 295
-  DEH_AddAction(@A_SetTargetCustomParam, 'A_SetTargetCustomParam(param: string, value: integer)'); // 296
-  DEH_AddAction(@A_AddTargetCustomParam, 'A_AddTargetCustomParam(param: string, value: integer)'); // 297
-  DEH_AddAction(@A_SubtractTargetCustomParam, 'A_SubtractTargetCustomParam(param: string, value: integer)'); // 298
+  DEH_AddAction(@TCommonCustomParamActions.A_SetCustomParam, 'A_SetCustomParam(param: string, value: integer)'); // 293
+  DEH_AddAction(@TCommonCustomParamActions.A_AddCustomParam, 'A_AddCustomParam(param: string, value: integer)'); // 294
+  DEH_AddAction(@TCommonCustomParamActions.A_SubtractCustomParam, 'A_SubtractCustomParam(param: string, value: integer)'); // 295
+  DEH_AddAction(@TCommonCustomParamActions.A_SetTargetCustomParam, 'A_SetTargetCustomParam(param: string, value: integer)'); // 296
+  DEH_AddAction(@TCommonCustomParamActions.A_AddTargetCustomParam, 'A_AddTargetCustomParam(param: string, value: integer)'); // 297
+  DEH_AddAction(@TCommonCustomParamActions.A_SubtractTargetCustomParam, 'A_SubtractTargetCustomParam(param: string, value: integer)'); // 298
   DEH_AddAction(@A_JumpIfCustomParam, 'A_JumpIfCustomParam(param: string, value: integer, offset: integer)'); // 299
   DEH_AddAction(@A_JumpIfCustomParamLess, 'A_JumpIfCustomParamLess(param: string, value: integer, offset: integer)'); // 300
   DEH_AddAction(@A_JumpIfCustomParamGreater, 'A_JumpIfCustomParamGreater(param: string, value: integer, offset: integer)'); // 301
@@ -892,12 +892,12 @@ begin
   DEH_AddAction(@A_GoToIfWorldFloatEqual, 'A_GoToIfWorldFloatEqual(parm: string, value: float, state: state_t)'); // 359
   DEH_AddAction(@A_GoToIfWorldFloatLess, 'A_GoToIfWorldFloatLess(parm: string, value: float, state: state_t)'); // 360
   DEH_AddAction(@A_GoToIfWorldFloatGreater, 'A_GoToIfWorldFloatGreater(parm: string, value: float, state: state_t)'); // 361
-  DEH_AddAction(@A_SetMapStr, 'A_SetMapStr(mvar: string; value1: string; [value2: string],...)'); // 362
-  DEH_AddAction(@A_SetWorldStr, 'A_SetWorldStr(wvar: string; value1: string; [value2: string],...)'); // 363
-  DEH_AddAction(@A_SetMapInt, 'A_SetMapInt(mvar: string; value: integer)'); // 364
-  DEH_AddAction(@A_SetWorldInt, 'A_SetWorldInt(wvar: string; value: integer)'); // 365
-  DEH_AddAction(@A_SetMapFloat, 'A_SetMapFloat(mvar: string; value: float)'); // 366
-  DEH_AddAction(@A_SetWorldFloat, 'A_SetWorldFloat(wvar: string; value: float)'); // 367
+  DEH_AddAction(@TCommonCustomParamActions.A_SetMapStr, 'A_SetMapStr(mvar: string; value1: string; [value2: string],...)'); // 362
+  DEH_AddAction(@TCommonCustomParamActions.A_SetWorldStr, 'A_SetWorldStr(wvar: string; value1: string; [value2: string],...)'); // 363
+  DEH_AddAction(@TCommonCustomParamActions.A_SetMapInt, 'A_SetMapInt(mvar: string; value: integer)'); // 364
+  DEH_AddAction(@TCommonCustomParamActions.A_SetWorldInt, 'A_SetWorldInt(wvar: string; value: integer)'); // 365
+  DEH_AddAction(@TCommonCustomParamActions.A_SetMapFloat, 'A_SetMapFloat(mvar: string; value: float)'); // 366
+  DEH_AddAction(@TCommonCustomParamActions.A_SetWorldFloat, 'A_SetWorldFloat(wvar: string; value: float)'); // 367
   DEH_AddAction(@A_RandomGoto, 'A_RandomGoto(state1: state_t; [state2: state_t],...)'); // 368
   DEH_AddAction(@A_ResetHealth, 'A_ResetHealth()'); // 369
   DEH_AddAction(@A_Recoil, 'A_Recoil(xymom: float)'); // 370
@@ -940,8 +940,8 @@ begin
   DEH_AddAction(@A_SetSpecial, 'A_SetSpecial(special: integer, [arg1, arg2, arg3, arg4, arg5: integer])'); // 407
   DEH_AddAction(@A_CheckFlag, 'A_CheckFlag(flag: string, offset: integer, [aaprt: AAPTR])'); // 408
   DEH_AddAction(@A_SetAngle, 'A_SetAngle(angle: integer, [flags: integer], [aaprt: AAPTR])'); // 409
-  DEH_AddAction(@A_SetUserVar, 'A_SetUserVar(varname: string, value: integer)'); // 410
-  DEH_AddAction(@A_SetUserArray, 'A_SetUserArray(varname: string, index: integer, value: integer)'); // 411
+  DEH_AddAction(@TCommonCustomParamActions.A_SetUserVar, 'A_SetUserVar(varname: string, value: integer)'); // 410
+  DEH_AddAction(@TCommonCustomParamActions.A_SetUserArray, 'A_SetUserArray(varname: string, index: integer, value: integer)'); // 411
   DEH_AddAction(@A_SetTics, 'A_SetTics(tics: integer)'); // 412
   DEH_AddAction(@A_DropItem, 'A_DropItem(spawntype: string, amount: integer, chance: integer)'); // 413
   DEH_AddAction(@A_DamageSelf, 'A_DamageSelf(actor: Pmobj_t)'); // 414
@@ -1022,18 +1022,18 @@ begin
   DEH_AddAction(@TCommonStateBitActions.A_SetInteractive, 'A_SetInteractive()'); // 489
   DEH_AddAction(@TCommonStateBitActions.A_UnSetInteractive, 'A_UnSetInteractive()'); // 490
   DEH_AddAction(@A_SimpleDialog, 'A_SimpleDialog(dialog1: string; [dialog2...])'); // 491
-  DEH_AddAction(@A_SetMasterCustomParam, 'A_SetMasterCustomParam(param: string, value: integer)');
-  DEH_AddAction(@A_AddMasterCustomParam, 'A_AddMasterCustomParam(param: string, value: integer)');
-  DEH_AddAction(@A_SubtractMasterCustomParam, 'A_SubtractMasterCustomParam(param: string, value: integer)');
+  DEH_AddAction(@TCommonCustomParamActions.A_SetMasterCustomParam, 'A_SetMasterCustomParam(param: string, value: integer)');
+  DEH_AddAction(@TCommonCustomParamActions.A_AddMasterCustomParam, 'A_AddMasterCustomParam(param: string, value: integer)');
+  DEH_AddAction(@TCommonCustomParamActions.A_SubtractMasterCustomParam, 'A_SubtractMasterCustomParam(param: string, value: integer)');
   DEH_AddAction(@A_JumpIfMasterCustomParam, 'A_JumpIfMasterCustomParam(param: string, value: integer, offset: integer)');
   DEH_AddAction(@A_JumpIfMasterCustomParamLess, 'A_JumpIfMasterCustomParamLess(param: string, value: integer, offset: integer)');
   DEH_AddAction(@A_JumpIfMasterCustomParamGreater, 'A_JumpIfMasterCustomParamGreater(param: string, value: integer, offset: integer)');
   DEH_AddAction(@A_GoToIfMasterCustomParam, 'A_GoToIfMasterCustomParam(param: string, value: integer, state: state_t)');
   DEH_AddAction(@A_GoToIfMasterCustomParamLess, 'A_GoToIfMasterCustomParamLess(param: string, value: integer, state: state_t)');
   DEH_AddAction(@A_GoToIfMasterCustomParamGreater, 'A_GoToIfMasterCustomParamGreater(param: string, value: integer, state: state_t)');
-  DEH_AddAction(@A_SetTracerCustomParam, 'A_SetTracerCustomParam(param: string, value: integer)');
-  DEH_AddAction(@A_AddTracerCustomParam, 'A_AddTracerCustomParam(param: string, value: integer)');
-  DEH_AddAction(@A_SubtractTracerCustomParam, 'A_SubtractTracerCustomParam(param: string, value: integer)');
+  DEH_AddAction(@TCommonCustomParamActions.A_SetTracerCustomParam, 'A_SetTracerCustomParam(param: string, value: integer)');
+  DEH_AddAction(@TCommonCustomParamActions.A_AddTracerCustomParam, 'A_AddTracerCustomParam(param: string, value: integer)');
+  DEH_AddAction(@TCommonCustomParamActions.A_SubtractTracerCustomParam, 'A_SubtractTracerCustomParam(param: string, value: integer)');
   DEH_AddAction(@A_JumpIfTracerCustomParam, 'A_JumpIfTracerCustomParam(param: string, value: integer, offset: integer)');
   DEH_AddAction(@A_JumpIfTracerCustomParamLess, 'A_JumpIfTracerCustomParamLess(param: string, value: integer, offset: integer)');
   DEH_AddAction(@A_JumpIfTracerCustomParamGreater, 'A_JumpIfTracerCustomParamGreater(param: string, value: integer, offset: integer)');
