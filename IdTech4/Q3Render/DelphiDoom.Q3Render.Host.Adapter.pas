@@ -23,12 +23,13 @@ uses
 type
   /// <summary>
   ///   A decorator: every call goes to the inner IQ3HostRenderer (the recording renderer of Q3Host, which keeps its
-  ///   numbers and its counters, so the answers cgame and ui get do not change), and the registrations also load the
-  ///   real thing: RegisterShader and RegisterShaderNoMip read the script and the images of the stages,
-  ///   RegisterModel reads the md3 (with its shaders), LoadWorld loads the BSP into surface lists. Where the loaded
-  ///   data give a better answer than the neutral one of the inner renderer, the adapter gives it: ModelBounds of a
-  ///   model that loaded, LerpTag of a tag that exists, InPVS with a world. Everything else (the scene, the 2D
-  ///   calls, fonts, skins, decals, LightForPoint, the glconfig) is the inner renderer's
+  ///   numbers and its counters: the handles cgame and ui get are the recorder's, and the number of system calls a
+  ///   module makes is the same as with the recorder alone), and the registrations also load the real thing:
+  ///   RegisterShader and RegisterShaderNoMip read the script and the images of the stages, RegisterModel reads the
+  ///   md3 (with its shaders), LoadWorld loads the BSP into surface lists. **Three answers change**, where the loaded
+  ///   data give a real one in place of the neutral one of the recorder: ModelBounds of a model that loaded,
+  ///   LerpTag of a tag that exists (the result is then 1), and InPVS once a world is loaded. Everything else (the
+  ///   scene, the 2D calls, fonts, skins, decals, LightForPoint, the glconfig) is the recorder's
   /// </summary>
   TQ3HostRendererAdapter = class(TInterfacedObject, IQ3HostRenderer)
   strict private

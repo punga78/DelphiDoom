@@ -191,16 +191,23 @@ begin
   LCluster1 := FTree.Nodes[LLeaf].Cluster;
   LLeaf := PointInLeaf(APoint2);
   LCluster2 := FTree.Nodes[LLeaf].Cluster;
-  // CM_ClusterPVS: a cluster outside the table, or no visibility at all, sees everything
-  if (LCluster1 < 0) or (LCluster1 >= FVisibility.NumClusters) or (FVisibility.ClusterBytes <= 0) then
+  // CM_ClusterPVS: without visibility data the row is all ones (everything is seen); with it, a cluster outside
+  // the table gets the row of cluster 0 (cm.visibility itself)
+  if (Length(FVisibility.Vis) = 0) or (FVisibility.ClusterBytes <= 0) then
     Exit(True);
-  // the C reads the byte before the row for a point in a solid leaf: here it is not visible
+  if (LCluster1 < 0) or (LCluster1 >= FVisibility.NumClusters) then
+    LRow := 0
+  else
+    LRow := LCluster1 * FVisibility.ClusterBytes;
+  // vis[cluster >> 3] with an arithmetic shift: the cluster -1 of a solid leaf is the byte before the row (the last
+  // byte of the row of the cluster before, or memory before the block for the first row: read as zero here), bit 7
   if LCluster2 < 0 then
+    LRow := LRow - 1
+  else
+    LRow := LRow + (LCluster2 shr 3);
+  if (LRow < 0) or (LRow >= Length(FVisibility.Vis)) then
     Exit(False);
-  LRow := LCluster1 * FVisibility.ClusterBytes;
-  if (LRow + (LCluster2 shr 3) >= Length(FVisibility.Vis)) or ((LCluster2 shr 3) >= FVisibility.ClusterBytes) then
-    Exit(False);
-  Result := (FVisibility.Vis[LRow + (LCluster2 shr 3)] and (1 shl (LCluster2 and 7))) <> 0;
+  Result := (FVisibility.Vis[LRow] and (1 shl (LCluster2 and 7))) <> 0;
 end;
 
 function TQ3RenderWorld.SubmodelBounds(AIndex: Integer; out AMins, AMaxs: TQ3RenderVec3): Boolean;

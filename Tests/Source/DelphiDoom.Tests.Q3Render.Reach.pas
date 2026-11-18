@@ -72,6 +72,33 @@ begin
       Result := Result + IfThen(Result = '', '', ', ') + ANames[LIndex];
 end;
 
+// the names the module itself asked for (the recorder keeps them) against what loaded: the tables also hold the
+// shaders that the md3 surfaces name, so their totals are larger. Register is cached: asking again changes nothing
+function Asked(const ARecorder: TQ3RecordingRenderer; const ASystem: IQ3RenderSystem): string;
+var
+  LName: string;
+  LShaders, LShadersLoaded, LModels, LModelsLoaded: Integer;
+begin
+  LShaders := 0;
+  LShadersLoaded := 0;
+  for LName in ARecorder.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER) do
+  begin
+    Inc(LShaders);
+    if ASystem.Shaders.Register(AnsiString(LName)) > 0 then
+      Inc(LShadersLoaded);
+  end;
+  LModels := 0;
+  LModelsLoaded := 0;
+  for LName in ARecorder.RegisteredNames(TQ3RecordingRenderer.KIND_MODEL) do
+  begin
+    Inc(LModels);
+    if ASystem.Models.Register(AnsiString(LName)) > 0 then
+      Inc(LModelsLoaded);
+  end;
+  Result := Format('asked shaders=%d loaded=%d defective=%d | asked models=%d loaded=%d missing=%d',
+    [LShaders, LShadersLoaded, LShaders - LShadersLoaded, LModels, LModelsLoaded, LModels - LModelsLoaded]);
+end;
+
 // what the tables hold, as one line
 function Stats(const ASystem: IQ3RenderSystem; const AAdapter: TQ3HostRendererAdapter): string;
 var
@@ -226,7 +253,9 @@ begin
       ALines.Add(AGame + '/cgame ' + LResult + ' | recorder shaders=' +
         IntToStr(Length(LRecorder.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER))) + ' models=' +
         IntToStr(Length(LRecorder.RegisteredNames(TQ3RecordingRenderer.KIND_MODEL))));
-      ALines.Add(AGame + '/cgame loaded for real: ' + Stats(LSystem, LRenderer as TQ3HostRendererAdapter));
+      ALines.Add(AGame + '/cgame asked by the module: ' + Asked(LRecorder, LSystem));
+      ALines.Add(AGame + '/cgame tables (with the shaders of the md3 surfaces): ' +
+        Stats(LSystem, LRenderer as TQ3HostRendererAdapter));
       ADetails.Add(AGame + '/cgame defective shaders: ' + Joined(LSystem.Shaders.DefectiveNames, 400));
       ADetails.Add(AGame + '/cgame missing images: ' + Joined(LSystem.Images.MissingNames, 400));
       ADetails.Add(AGame + '/cgame missing models: ' + Joined(LSystem.Models.MissingNames, 40));
@@ -260,7 +289,8 @@ begin
       end;
       ALines.Add(AGame + '/ui ' + LResult + ' | recorder shaders=' +
         IntToStr(Length(LRecorder.RegisteredNames(TQ3RecordingRenderer.KIND_SHADER))));
-      ALines.Add(AGame + '/ui (cumulative) loaded for real: ' + Stats(LSystem, LRenderer as TQ3HostRendererAdapter));
+      ALines.Add(AGame + '/ui (cumulative with cgame) asked by the modules: ' + Asked(LRecorder, LSystem));
+      ALines.Add(AGame + '/ui (cumulative) tables: ' + Stats(LSystem, LRenderer as TQ3HostRendererAdapter));
       ADetails.Add(AGame + '/ui defective shaders: ' + Joined(LSystem.Shaders.DefectiveNames, 400));
       ADetails.Add(AGame + '/ui missing images: ' + Joined(LSystem.Images.MissingNames, 400));
       Result := LResult;

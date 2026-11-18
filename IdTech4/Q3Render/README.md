@@ -36,14 +36,14 @@ LSystem.Shaders.RegisteredCount; LSystem.Images.MissingNames; LSystem.Models.Loa
 2. PNG, PCX e BMP non si decodificano (contati in `TQ3ImageLoader.UnsupportedFound`); MD4 non portato.
 3. Un file TGA che finisce prima dell'immagine, una larghezza o altezza negativa (il C la legge `short` con segno) o sopra 8192 sono `EQ3RenderException` (il C legge oltre il buffer o alloca gigabyte). Un JPEG in scala di grigi e' R = G = B (il C scrive 4 byte per pixel in un buffer da 1: testato sul C vero, un file del repository lo manda in un ciclo), un JPEG rovinato o troncato e' `False` (il C chiama `exit`).
 4. Un'immagine che non carica (o che solleva) e' **mancante** e ricordata: non si rilegge (il C la cerca a ogni richiesta). I pixel si tengono solo con `AKeepPixels` (le immagini di un gioco sono centinaia di megabyte).
-5. **`R_inPVS` con un punto in una foglia solida** (cluster -1): il C legge il byte prima della riga di visibilita'; qui "non visibile". Un cluster fuori tabella o senza dati di visibilita' vede tutto, come `CM_ClusterPVS`.
+5. **`R_inPVS`** come `CM_ClusterPVS`: senza dati di visibilita' la riga e' tutta uno (si vede tutto); con i dati, un cluster fuori tabella ha la riga del cluster 0; un punto in una foglia solida (cluster -1) legge il byte prima della riga (`vis[-1 >> 3]`, bit 7: l'ultimo byte della riga precedente; per la prima riga il C legge memoria dell'heap prima del blocco, qui zero). Nessuna divergenza voluta se non quest'ultima.
 6. Una superficie che i caricatori rifiutano (vertici o indici oltre i lump) e' contata in `RefusedCount` e lasciata fuori (il C legge fuori dal lump): `IdTech4\MapFile` le segnala.
 7. Le shader di un md3 si registrano per ogni LOD letto, anche se solo il LOD 0 si tiene. Il modello che non carica non e' un modello difettoso nella tabella (il C tiene una voce `MOD_BAD`): qui e' ricordato come mancante e `Register` da' 0.
 8. Le numerazioni dei handle sono quelle della libreria (1, 2, ...), **non** quelle del registratore di `Q3Host`: l'adattatore tiene la corrispondenza e ai moduli da' sempre i numeri del registratore.
 
 ## Difetti del C conservati
 
-- Il confronto `LoadTGA` accetta il tipo 3 con 24 o 32 bit (lo `switch` e' sulla profondita'), un'esecuzione RLE puo' passare da una riga all'altra e finisce all'ultima riga, il bit "origine in alto" e' solo un avviso (non capovolge): tutto conservato e nel golden.
+- `LoadTGA` accetta il tipo 3 con 24 o 32 bit (lo `switch` e' sulla profondita'), un'esecuzione RLE puo' passare da una riga all'altra e finisce all'ultima riga, il bit "origine in alto" e' solo un avviso (non capovolge): tutto conservato e nel golden.
 - `LoadJPG` termina con `jpeg_destroy_compress` su un decompressore, e legge un blocco intero di 4096 byte oltre la fine del file.
 - `R_ModelBounds` di un modello a maglia dice i limiti del **primo** fotogramma.
 
@@ -53,4 +53,4 @@ Lista di disegno (`tr_scene`, `R_RenderView`, `R_MarkLeaves`, `R_AddMD3Surfaces`
 
 ## Licenza
 
-GPL v2 o successiva (intestazione "Based on the Quake III Arena GPL Source Code (id Software)" nelle unit portate). **Dipendenza da codice di Doom 3**: il lettore md3 che la libreria usa (`Framework\Models`, `Models.Static.Md3.*`, #105) deriva da `Model_md3.cpp` di Doom 3 (GPL v3 o successiva con termini aggiuntivi, `docs\LICENZE.md`): un eseguibile che include `Q3Render` e quel lettore e' GPL v3 o successiva. Non e' stato riscritto (`R_LoadMD3` e' un'altra rappresentazione dei stessi byte): se serve un eseguibile solo v2, il lettore md3 va riscritto dal C di Quake III (un'unit).
+GPL v2 o successiva (intestazione "Based on the Quake III Arena GPL Source Code (id Software)" nelle unit portate). **Dipendenze da codice di Doom 3 (GPL v3 o successiva con i termini aggiuntivi, `docs\LICENZE.md`)**: il lettore md3 (`Framework\Models`, `Models.Static.Md3.*`, #105, da `Model_md3.cpp`), il gestore delle dichiarazioni (`IdTech4\Decl`, `TDeclManager` da `DeclManager.cpp`, da cui passa la tabella delle shader) e `Framework\IdLib`: un eseguibile che include `Q3Render` e' quindi GPL v3 o successiva, non v2. La libreria stessa e' v2 o successiva. Per un eseguibile solo v2 andrebbero riscritti il lettore md3 e il gestore delle shader dal C di Quake III; non e' stato fatto (decisione sulle licenze del 2026-11-17: v3 o successiva accettata).
