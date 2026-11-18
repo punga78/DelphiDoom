@@ -270,7 +270,7 @@ begin
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
   TEngineGl2dMode.SetMode;
 
-  R_DrawPlayer;
+  TRendererThings.R_DrawPlayer;
 
   if GOldScissorOn then
     glDisable(GL_SCISSOR_TEST);

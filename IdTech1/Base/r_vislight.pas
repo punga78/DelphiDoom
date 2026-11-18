@@ -74,12 +74,21 @@ var
   vislight_p: integer = 0;
   vislights: array[0..MAXVISLIGHTS - 1] of vislight_t;
 
-//==============================================================================
-//
-// R_NewVisLight
-//
-//==============================================================================
-function R_NewVisLight: Pvislight_t;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererVisLight = class sealed
+  public
+    //==============================================================================
+    //
+    // R_NewVisLight
+    //
+    //==============================================================================
+    class function R_NewVisLight: Pvislight_t; static;
+  end;
+
 
 implementation
 
@@ -88,7 +97,7 @@ implementation
 // R_NewVisLight
 //
 //==============================================================================
-function R_NewVisLight: Pvislight_t;
+class function TRendererVisLight.R_NewVisLight: Pvislight_t;
 begin
   if vislight_p = MAXVISLIGHTS then
     result := @vislights[MAXVISLIGHTS - 1]

@@ -45,24 +45,43 @@ var
   ds_ripple: PIntegerArray = nil;
   curripple: PIntegerArray = nil;
 
-//==============================================================================
-//
-// R_InitRippleEffects
-//
-//==============================================================================
-procedure R_InitRippleEffects;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererRipple = class sealed
+  public
+    //==============================================================================
+    //
+    // R_InitRippleEffects
+    //
+    //==============================================================================
+    class procedure R_InitRippleEffects; static;
+  end;
+
 
 implementation
 
 uses
   m_fixed;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererRippleLocal = class sealed
+  public
+    class procedure R_InitDefaultRipple; static;
+  end;
+
 //==============================================================================
 //
 // R_InitDefaultRipple
 //
 //==============================================================================
-procedure R_InitDefaultRipple;
+class procedure TRendererRippleLocal.R_InitDefaultRipple;
 var
   i: integer;
   tic: integer;
@@ -81,9 +100,9 @@ end;
 // R_InitRippleEffects
 //
 //==============================================================================
-procedure R_InitRippleEffects;
+class procedure TRendererRipple.R_InitRippleEffects;
 begin
-  R_InitDefaultRipple;
+  TRendererRippleLocal.R_InitDefaultRipple;
 end;
 
 end.

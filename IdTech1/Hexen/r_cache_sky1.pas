@@ -81,8 +81,8 @@ var
 {$ENDIF}
 begin
   // Cache read of the caclulated dc_source32, 98-99% propability not to recalc...
-  hash := R_GetHash(rtex, rcol, 0);
-  UID := R_GetUID(rtex, rcol, 0);
+  hash := TRendererCacheWalls.R_GetHash(rtex, rcol, 0);
+  UID := TRendererCacheWalls.R_GetUID(rtex, rcol, 0);
   index := 0;
   cachemiss := true;
   if dc32cache[hash] <> nil then
@@ -110,14 +110,14 @@ begin
 
     inc(c_cmiss); // Cache miss
     {$IFDEF FPC}
-    pdc32 := R_Get_dc32(dc32cache[hash][index], 256);
+    pdc32 := TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], 256);
     plw := @pdc32[0];
     {$ELSE}
-    plw := @R_Get_dc32(dc32cache[hash][index], 256)[0];
+    plw := @TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], 256)[0];
     {$ENDIF}
     textures[rtex].factorbits := 0;
 
-    dc_source := R_GetColumn(rtex, rcol);
+    dc_source := TRendererData.R_GetColumn(rtex, rcol);
     src1 := @dc_source[0];
     frac := 0;
     fracstep := FRACUNIT * 200 div 256;

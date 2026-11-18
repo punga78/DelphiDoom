@@ -181,7 +181,7 @@ var
   LSubsector: Psubsector_t;
 begin
   // JVAL: 3d floors
-  LSubsector := R_PointInSubsector(AX, AY);
+  LSubsector := TRendererMain.R_PointInSubsector(AX, AY);
   Result := LSubsector.sector.floorheight;
   if LSubsector.sector.midsec >= 0 then
     if TGameSession.Players[APlayer].mo.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then

@@ -124,7 +124,7 @@ begin
   LExtra.x := AThing.x * FRACUNIT;
   LExtra.y := AThing.y * FRACUNIT;
   LExtra.z := TRadixThingSpawnRules.Height(ARadix.Z,
-    R_PointInSubsector(LExtra.x, LExtra.y).sector.floorheight, LIsPlayer);
+    TRendererMain.R_PointInSubsector(LExtra.x, LExtra.y).sector.floorheight, LIsPlayer);
   LExtra.id := TRadixThingSpawnRules.ThingId(ARadix.RadixId);
 
   LMobj := P_SpawnMapThing(AThing, @LExtra);

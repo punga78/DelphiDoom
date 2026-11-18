@@ -506,9 +506,9 @@ begin
     Exit('R_DrawSpanMedium');
   if AValue = @TRendererSpanDrawers.R_DrawSpanMedium_Ripple then
     Exit('R_DrawSpanMedium_Ripple');
-  if AValue = @R_DrawSlopeMedium then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium then
     Exit('R_DrawSlopeMedium');
-  if AValue = @R_DrawSlopeMedium_Ripple then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
@@ -848,9 +848,9 @@ begin
     Exit('R_DrawSpanMedium');
   if AValue = @TRendererSpanDrawers.R_DrawSpanMedium_Ripple then
     Exit('R_DrawSpanMedium_Ripple');
-  if AValue = @R_DrawSlopeMedium then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium then
     Exit('R_DrawSlopeMedium');
-  if AValue = @R_DrawSlopeMedium_Ripple then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
@@ -1168,9 +1168,9 @@ begin
     Exit('R_DrawSpanMedium');
   if AValue = @TRendererSpanDrawers.R_DrawSpanMedium_Ripple then
     Exit('R_DrawSpanMedium_Ripple');
-  if AValue = @R_DrawSlopeMedium then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium then
     Exit('R_DrawSlopeMedium');
-  if AValue = @R_DrawSlopeMedium_Ripple then
+  if AValue = @TRendererSlopes.R_DrawSlopeMedium_Ripple then
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
@@ -1360,7 +1360,7 @@ begin
         for LSlot := 0 to SlotCount - 1 do
           SlotAddress(LSlot)^ := nil;
         setdetail := DetailOfIndex(LDetail);
-        R_SetRenderingFunctions;
+        TRendererMain.R_SetRenderingFunctions;
         LLine := Format('d=%d c=%d videomode=%s', [LDetail, LCombination, VideoModeName(LDetail)]);
         for LSlot := 0 to SlotCount - 1 do
         begin

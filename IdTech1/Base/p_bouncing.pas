@@ -122,8 +122,8 @@ var
 begin
   dist1 := P_PointLineSqrDistance(mo.x, mo.y, line);
   dist2 := P_PointLineSqrDistance(mo.x + mo.momx, mo.y + mo.momy, line);
-  s1 := R_PointOnLineSide(mo.x, mo.y, line);
-  s2 := R_PointOnLineSide(mo.x + mo.momx, mo.y + mo.momy, line);
+  s1 := TRendererMain.R_PointOnLineSide(mo.x, mo.y, line);
+  s2 := TRendererMain.R_PointOnLineSide(mo.x + mo.momx, mo.y + mo.momy, line);
   if (s1 <> s2) or ((s1 = s2) and (dist2 < dist1)) then
   begin
     d[0] := mo.momx / FRACUNIT;
@@ -133,7 +133,7 @@ begin
     TVectorMath.CalculateReflect2(d, wall, reflect);
     mo.momx := Round(reflect[0] * FRACUNIT);
     mo.momy := Round(reflect[1] * FRACUNIT);
-    mo.angle := R_PointToAngle2(0, 0, mo.momx, mo.momy);
+    mo.angle := TRendererMain.R_PointToAngle2(0, 0, mo.momx, mo.momy);
   end;
   newx := mo.x + mo.momx;
   newy := mo.y + mo.momy;

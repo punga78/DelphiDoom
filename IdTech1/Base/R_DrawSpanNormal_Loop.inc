@@ -42,7 +42,7 @@
         destl^ := precal32_ic[r1 + g1 + b1];
 {$ELSE}
 {$IFDEF TRANSPARENTFLAT}
-      destl^ := R_ColorMidAverage(c, destl^);
+      destl^ := TRendererHires.R_ColorMidAverage(c, destl^);
 {$ELSE}
       destl^ := bf_r[c and $FF] + bf_g[(c shr 8) and $FF] + bf_b[(c shr 16) and $FF];
 {$ENDIF}

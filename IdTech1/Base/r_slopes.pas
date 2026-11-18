@@ -37,27 +37,6 @@ uses
   r_defs,
   r_visplanes;
 
-//==============================================================================
-//
-// R_StoreSlopeRange
-//
-//==============================================================================
-procedure R_StoreSlopeRange(const start: integer; const stop: integer);
-
-//==============================================================================
-//
-// R_VisSlopesFromSubsector
-//
-//==============================================================================
-procedure R_VisSlopesFromSubsector(const ssector: Psubsector_t);
-
-//==============================================================================
-//
-// R_DoDrawSlope
-//
-//==============================================================================
-procedure R_DoDrawSlope(const pl: Pvisplane_t);
-
 const
   MAXVISSLOPES = $10000;
 
@@ -70,29 +49,54 @@ var
   floorslope: Pvisslope_t;
   ceilingslope: Pvisslope_t;
 
-//==============================================================================
-//
-// R_DrawSlopeMedium
-//
-//==============================================================================
-procedure R_DrawSlopeMedium;
-
-//==============================================================================
-//
-// R_DrawSlopeMedium_Ripple
-//
-//==============================================================================
-procedure R_DrawSlopeMedium_Ripple;
-
-//==============================================================================
-//
-// R_ClearVisSlopes
-//
-//==============================================================================
-procedure R_ClearVisSlopes;
-
 var
   preciseslopedrawing: Boolean = false;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSlopes = class sealed
+  public
+    //==============================================================================
+    //
+    // R_StoreSlopeRange
+    //
+    //==============================================================================
+    class procedure R_StoreSlopeRange(const start: integer; const stop: integer); static;
+    //==============================================================================
+    //
+    // R_VisSlopesFromSubsector
+    //
+    //==============================================================================
+    class procedure R_VisSlopesFromSubsector(const ssector: Psubsector_t); static;
+    //==============================================================================
+    //
+    // R_DoDrawSlope
+    //
+    //==============================================================================
+    class procedure R_DoDrawSlope(const pl: Pvisplane_t); static;
+    //==============================================================================
+    //
+    // R_DrawSlopeMedium
+    //
+    //==============================================================================
+    class procedure R_DrawSlopeMedium; static;
+    //==============================================================================
+    //
+    // R_DrawSlopeMedium_Ripple
+    //
+    //==============================================================================
+    class procedure R_DrawSlopeMedium_Ripple; static;
+    //==============================================================================
+    //
+    // R_ClearVisSlopes
+    //
+    //==============================================================================
+    class procedure R_ClearVisSlopes; static;
+  end;
+
 
 implementation
 
@@ -133,13 +137,54 @@ uses
   tables,
   z_zone;
 
+const
+  SLOPESRECALCSTEP = 16;
+
+
+const
+  ANGLESLOPESRECALCSTEP = 8;
+
+
+type
+  sspoint_t = record
+    screenX, screenY, screenZ: Double; // SCREEN UNITS
+    worldX, worldY, worldZ: Double;    // WORLD UNITS
+  end;
+  Psspoint_t = ^sspoint_t;
+  sspoint_tArray = array[0..MAXSUBSECTORPOINTS - 1] of sspoint_t;
+  ssPpoint_tArray = ^sspoint_tArray;
+
+
+const
+  SLOPESPLITFACTOR = 2;
+  SLOPECOEFF = 256 * FRACUNIT;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSlopesLocal = class sealed
+  public
+    class function R_NewVisSlope: Pvisslope_t; static;
+    class function R_FindExistingVisSlope(const sectorID: Integer; const virtualfloor: Boolean): Pvisslope_t; static;
+    class function R_FindVisSlope(const sectorID: Integer; const virtualfloor: Boolean): Pvisslope_t; static;
+    class procedure R_MapSlopePerPixelLight(const y: integer; const x1, x2: integer); static;
+    class procedure R_MapSlope(const y: integer; const x1, x2: integer); static;
+    class procedure R_MapSlopeAngle(const y: integer; const x1, x2: integer); static;
+    class procedure R_SlopesCalcSSPoint(const wx, wy, wz: fixed_t; var x, y, z: Double); static;
+    class function R_VisSlopeFromSubsector(const ssector: Psubsector_t;
+      const virtualfloor: boolean): Pvisslope_t; static;
+  end;
+
 //==============================================================================
 // R_DrawSlopeMedium
 //
 // Draws the actual span (Medium resolution).
 //
 //==============================================================================
-procedure R_DrawSlopeMedium;
+class procedure TRendererSlopes.R_DrawSlopeMedium;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;
@@ -163,7 +208,7 @@ end;
 // R_DrawSlopeMedium_Ripple
 //
 //==============================================================================
-procedure R_DrawSlopeMedium_Ripple;
+class procedure TRendererSlopes.R_DrawSlopeMedium_Ripple;
 var
   xfrac: fixed_t;
   yfrac: fixed_t;
@@ -190,7 +235,7 @@ end;
 // R_NewVisSlope
 //
 //==============================================================================
-function R_NewVisSlope: Pvisslope_t;
+class function TRendererSlopesLocal.R_NewVisSlope: Pvisslope_t;
 begin
   // JVAL: Do not overflow and crash - Unneeded (?) we'll have a visplane overflow before
   if lastvisslope = MAXVISSLOPES then
@@ -232,7 +277,7 @@ end;
 // R_ClearVisSlopes
 //
 //==============================================================================
-procedure R_ClearVisSlopes;
+class procedure TRendererSlopes.R_ClearVisSlopes;
 var
   i: integer;
 begin
@@ -251,7 +296,7 @@ end;
 // R_FindExistingVisSlope
 //
 //==============================================================================
-function R_FindExistingVisSlope(const sectorID: Integer; const virtualfloor: Boolean): Pvisslope_t;
+class function TRendererSlopesLocal.R_FindExistingVisSlope(const sectorID: Integer; const virtualfloor: Boolean): Pvisslope_t;
 var
   sec: Psector_t;
 begin
@@ -283,7 +328,7 @@ end;
 // R_FindVisSlope
 //
 //==============================================================================
-function R_FindVisSlope(const sectorID: Integer; const virtualfloor: Boolean): Pvisslope_t;
+class function TRendererSlopesLocal.R_FindVisSlope(const sectorID: Integer; const virtualfloor: Boolean): Pvisslope_t;
 begin
   Result := R_FindExistingVisSlope(sectorID, virtualfloor);
 
@@ -311,7 +356,7 @@ var
 //  Light calculated in every pixel
 //
 //==============================================================================
-procedure R_MapSlopePerPixelLight(const y: integer; const x1, x2: integer);
+class procedure TRendererSlopesLocal.R_MapSlopePerPixelLight(const y: integer; const x1, x2: integer);
 var
   angle: angle_t;
   distance: fixed_t;
@@ -375,7 +420,7 @@ begin
       if fixedcolormapnum = INVERSECOLORMAP then
         ds_lightlevel := -1  // Negative value -> Use colormaps
       else
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
     end;
   end;
 
@@ -437,7 +482,7 @@ begin
         end
         else
         begin
-          ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+          ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
         end;
       end;
     end;
@@ -452,15 +497,12 @@ begin
     if zbufferactive then
     begin
       planeheight := FixedDivEx(distance, yslopey);
-      R_DrawSlopeToZBuffer;
+      TRendererZBuffer.R_DrawSlopeToZBuffer;
     end;
 
   end;
 
 end;
-
-const
-  SLOPESRECALCSTEP = 16;
 
 //==============================================================================
 //
@@ -469,7 +511,7 @@ const
 //  Light calculated after SLOPESRECALCSTEP pixels and in start and stop pixels
 //
 //==============================================================================
-procedure R_MapSlope(const y: integer; const x1, x2: integer);
+class procedure TRendererSlopesLocal.R_MapSlope(const y: integer; const x1, x2: integer);
 var
   angle: angle_t;
   distance: fixed_t;
@@ -538,7 +580,7 @@ begin
       if fixedcolormapnum = INVERSECOLORMAP then
         ds_lightlevel := -1  // Negative value -> Use colormaps
       else
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
     end;
   end;
 
@@ -624,7 +666,7 @@ begin
           end
           else
           begin
-            ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+            ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
           end;
         end;
       end;
@@ -640,7 +682,7 @@ begin
       if zbufferactive then
       begin
         planeheight := FixedDivEx(distance, yslopey);
-        R_DrawSlopeToZBuffer;
+        TRendererZBuffer.R_DrawSlopeToZBuffer;
       end;
 
       cnt := 0;
@@ -654,15 +696,12 @@ begin
 
 end;
 
-const
-  ANGLESLOPESRECALCSTEP = 8;
-
 //==============================================================================
 //
 // R_MapSlopeAngle
 //
 //==============================================================================
-procedure R_MapSlopeAngle(const y: integer; const x1, x2: integer);
+class procedure TRendererSlopesLocal.R_MapSlopeAngle(const y: integer; const x1, x2: integer);
 var
   angle: fixed_t;
   distance: fixed_t;
@@ -732,7 +771,7 @@ begin
       if fixedcolormapnum = INVERSECOLORMAP then
         ds_lightlevel := -1  // Negative value -> Use colormaps
       else
-        ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+        ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
     end;
   end;
 
@@ -817,7 +856,7 @@ begin
           end
           else
           begin
-            ds_lightlevel := R_GetColormapLightLevel(ds_colormap);
+            ds_lightlevel := TRendererMain.R_GetColormapLightLevel(ds_colormap);
           end;
         end;
       end;
@@ -833,7 +872,7 @@ begin
       if zbufferactive then
       begin
         planeheight := FixedDivEx(distance, yslopey);
-        R_DrawSlopeToZBuffer;
+        TRendererZBuffer.R_DrawSlopeToZBuffer;
       end;
 
       cnt := 0;
@@ -852,7 +891,7 @@ end;
 // R_DoDrawSlope
 //
 //==============================================================================
-procedure R_DoDrawSlope(const pl: Pvisplane_t);
+class procedure TRendererSlopes.R_DoDrawSlope(const pl: Pvisplane_t);
 var
   light: integer;
   x: integer;
@@ -861,13 +900,13 @@ begin
   visslope := pl.slope;
   if visslope = nil then
   begin
-    visslope := R_FindExistingVisSlope(pl.slopeSID, pl.renderflags and SRF_SLOPEFLOOR <> 0);
+    visslope := TRendererSlopesLocal.R_FindExistingVisSlope(pl.slopeSID, pl.renderflags and SRF_SLOPEFLOOR <> 0);
     if visslope = nil then
     begin
       // JVAL: Render a small fraction, possible 1-2 pixels
       // This could happen because the clipper does not
       // return a solution (due to round errors)
-      R_DoDrawPlane(pl);
+      TRendererPlane.R_DoDrawPlane(pl);
       Exit;
     end;
   end;
@@ -898,7 +937,7 @@ begin
   yoffs := pl.yoffs;
   {$ENDIF}
   {$IFDEF HEXEN}
-  R_CalcPlaneOffsets(pl);
+  TRendererPlane.R_CalcPlaneOffsets(pl);
   {$ENDIF}
 
   if pl.renderflags and SRF_RIPPLE <> 0 then
@@ -943,7 +982,7 @@ begin
     // Slope with angle
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlopeAngle);
+      TRendererPlane.R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @TRendererSlopesLocal.R_MapSlopeAngle);
     end;
   end
   else if preciseslopedrawing then
@@ -951,7 +990,7 @@ begin
     // Slow but accurate lighting
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlopePerPixelLight);
+      TRendererPlane.R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @TRendererSlopesLocal.R_MapSlopePerPixelLight);
     end;
   end
   else
@@ -959,7 +998,7 @@ begin
     // Fast but the lighting is not that accurate
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlope);
+      TRendererPlane.R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @TRendererSlopesLocal.R_MapSlope);
     end;
   end;
 
@@ -974,7 +1013,7 @@ end;
 //  between start and stop pixels (inclusive).
 //
 //==============================================================================
-procedure R_StoreSlopeRange(const start: integer; const stop: integer);
+class procedure TRendererSlopes.R_StoreSlopeRange(const start: integer; const stop: integer);
 var
   lightnum: integer;
   lightnum2: integer; // JVAL: 3d Floors
@@ -989,7 +1028,7 @@ var
   rw_scale_dbl2: Double;
   sec2: Psector_t;
 begin
-  pds := R_NewDrawSeg;
+  pds := TRendererSegs.R_NewDrawSeg;
   if pds = nil then
     exit;
   pds.curline := curline;
@@ -1010,7 +1049,7 @@ begin
   // calculate rw_distance for scale calculation
   rw_normalangle := curline.angle + ANG90;
 
-  rw_distance := R_DistToSeg(curline);
+  rw_distance := TRendererSegs2.R_DistToSeg(curline);
 
   rw_x := start;
   pds.x1 := rw_x;
@@ -1047,9 +1086,9 @@ begin
     R_ScaleFromGlobalAngle(viewangle + xtoviewangle[stop], overflow);
   pds.use_double := overflow;
 
-  R_WiggleFix(frontsector);
+  TRendererSegs.R_WiggleFix(frontsector);
 
-  rw_offset := R_CalcSegOffset(curline);
+  rw_offset := TRendererSegs2.R_CalcSegOffset(curline);
 
   if LongWord(rw_normalangle - rw_angle1) < ANG180 then
     rw_offset := -rw_offset;
@@ -1421,7 +1460,7 @@ begin
     rw_bottomtexturemid := rw_bottomtexturemid + sidedef.rowoffset + sidedef.bottomrowoffset;
 
     // JVAL: 3d Floors
-    R_StoreThickSideRange(pds, frontsector, backsector);
+    TRenderer3dFloors.R_StoreThickSideRange(pds, frontsector, backsector);
 
     if sf1 < sf2 then
       sf1 := sf2;
@@ -1479,7 +1518,7 @@ begin
   if markceiling then
   begin
     if ceilingplane <> nil then
-      ceilingplane := R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
+      ceilingplane := TRendererPlane.R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
     else
       markceiling := false;
   end;
@@ -1495,9 +1534,9 @@ begin
       // a possibility, otherwise the floor marking would overwrite the ceiling
       // marking, resulting in HOM.
       if markceiling and (ceilingplane = floorplane) then
-        floorplane := R_DupPlane(floorplane, rw_x, rw_stopx - 1)
+        floorplane := TRendererPlane.R_DupPlane(floorplane, rw_x, rw_stopx - 1)
       else
-        floorplane := R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
+        floorplane := TRendererPlane.R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
     end
     else
       markfloor := false;
@@ -1633,15 +1672,6 @@ begin
   inc(ds_p);
 end;
 
-type
-  sspoint_t = record
-    screenX, screenY, screenZ: Double; // SCREEN UNITS
-    worldX, worldY, worldZ: Double;    // WORLD UNITS
-  end;
-  Psspoint_t = ^sspoint_t;
-  sspoint_tArray = array[0..MAXSUBSECTORPOINTS - 1] of sspoint_t;
-  ssPpoint_tArray = ^sspoint_tArray;
-
 var
   sspoints: sspoint_tArray;
 
@@ -1652,7 +1682,7 @@ var
 // output: x, y, z -> Screen coordinates
 //
 //==============================================================================
-procedure R_SlopesCalcSSPoint(const wx, wy, wz: fixed_t; var x, y, z: Double);
+class procedure TRendererSlopesLocal.R_SlopesCalcSSPoint(const wx, wy, wz: fixed_t; var x, y, z: Double);
 {$IFDEF CPUX86}
 var
   x1, y1: Double;
@@ -1694,16 +1724,12 @@ begin
 {$ENDIF}
 end;
 
-const
-  SLOPESPLITFACTOR = 2;
-  SLOPECOEFF = 256 * FRACUNIT;
-
 //==============================================================================
 //
 // R_VisSlopeFromSubsector
 //
 //==============================================================================
-function R_VisSlopeFromSubsector(const ssector: Psubsector_t;
+class function TRendererSlopesLocal.R_VisSlopeFromSubsector(const ssector: Psubsector_t;
   const virtualfloor: boolean): Pvisslope_t;
 var
   i, j, k, l: integer;
@@ -2137,17 +2163,17 @@ end;
 // R_VisSlopesFromSubsector
 //
 //==============================================================================
-procedure R_VisSlopesFromSubsector(const ssector: Psubsector_t);
+class procedure TRendererSlopes.R_VisSlopesFromSubsector(const ssector: Psubsector_t);
 var
   sec: Psector_t;
 begin
   sec := ssector.sector;
   if sec.renderflags and SRF_SLOPEFLOOR <> 0 then
-    floorslope := R_VisSlopeFromSubsector(ssector, True)
+    floorslope := TRendererSlopesLocal.R_VisSlopeFromSubsector(ssector, True)
   else
     floorslope := nil;
   if sec.renderflags and SRF_SLOPECEILING <> 0 then
-    ceilingslope := R_VisSlopeFromSubsector(ssector, False)
+    ceilingslope := TRendererSlopesLocal.R_VisSlopeFromSubsector(ssector, False)
   else
     ceilingslope := nil;
 end;

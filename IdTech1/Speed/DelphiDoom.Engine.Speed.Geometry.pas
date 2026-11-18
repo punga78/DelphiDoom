@@ -35,7 +35,7 @@ uses
 
 function TEngineSpeedGeometry.PointToAngle(AX1, AY1, AX2, AY2: TFixed): TAngle;
 begin
-  Result := R_PointToAngle2(AX1, AY1, AX2, AY2);
+  Result := TRendererMain.R_PointToAngle2(AX1, AY1, AX2, AY2);
 end;
 
 function TEngineSpeedGeometry.ApproximateDistanceFromView(AX, AY: TFixed): TFixed;

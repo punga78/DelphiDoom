@@ -547,7 +547,7 @@ begin
   spot := P_Random mod MaceSpotCount;
   mo.x := MaceSpots[spot].x;
   mo.y := MaceSpots[spot].y;
-  ss := R_PointInSubsector(mo.x, mo.y);
+  ss := TRendererMain.R_PointInSubsector(mo.x, mo.y);
   mo.z := ss.sector.floorheight;
   mo.floorz := mo.z;
   mo.ceilingz := ss.sector.ceilingheight;
@@ -815,7 +815,7 @@ begin
   P_LineAttack(player.mo, angle, mrange, slope, damage);
   if TMapAim.LineTarget <> nil then
   begin
-    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+    player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
   S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
   player.chickenPeck := 12;
@@ -843,7 +843,7 @@ begin
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
   if TMapAim.LineTarget <> nil then
-    player.mo.angle := R_PointToAngle2(player.mo.x,  player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+    player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x,  player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   S_StartSound(player.mo, Ord(sfx_chicpk1) + (P_Random mod 3));
   player.chickenPeck := 12;
   psp.tics := psp.tics - P_Random and 3;
@@ -874,7 +874,7 @@ begin
   begin
     //S_StartSound(player.mo, sfx_stfhit);
     // turn to face target
-    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+    player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
 end;
 
@@ -904,7 +904,7 @@ begin
   begin
     //S_StartSound(player.mo, sfx_stfpow);
     // turn to face target
-    player.mo.angle := R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+    player.mo.angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   end;
 end;
 
@@ -1254,7 +1254,7 @@ begin
       end
       else
       begin // Seek
-        angle := R_PointToAngle2(ball.x, ball.y, target.x, target.y);
+        angle := TRendererMain.R_PointToAngle2(ball.x, ball.y, target.x, target.y);
         newAngle := true;
       end;
     end
@@ -1266,7 +1266,7 @@ begin
         if (TMapAim.LineTarget <> nil) and (ball.target <> TMapAim.LineTarget) then
         begin
           ball.special1 := NativeInt(TMapAim.LineTarget);
-          angle := R_PointToAngle2(ball.x, ball.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+          angle := TRendererMain.R_PointToAngle2(ball.x, ball.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
           newAngle := true;
           break;
         end;
@@ -1777,7 +1777,7 @@ begin
     S_StartSound(player.mo, Ord(sfx_gnthit));
 
   // turn to face target
-  angle := R_PointToAngle2(player.mo.x, player.mo.y,  TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+  angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y,  TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   if angle - player.mo.angle > ANG180 then
   begin
     if angle - player.mo.angle < $FFFFFFFF - ANG90 div 20 then

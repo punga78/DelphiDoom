@@ -137,10 +137,10 @@ end;
 function V_DoSetDisplayMode(const newwidth, newheight: integer): boolean;
 begin
   MT_WaitTasks;            // Wait for running tasks to stop
-  R_ShutDownDepthBuffer;   // Shut down depthbuffer
-  R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
-  R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
-  R_ClearVisPlanes3d;      // Clear arrays
+  TRendererDepthBuffer.R_ShutDownDepthBuffer;   // Shut down depthbuffer
+  TRendererPlane.R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
+  TRendererSlopes.R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
+  TRenderer3dFloors.R_ClearVisPlanes3d;      // Clear arrays
   R_ShutDownFake3D;        // Clear fake 3d planes
   R_Clear32Cache;          // JVAL: unneeded ?
   AM_Stop;                 // Stop the automap
@@ -160,12 +160,12 @@ begin
   AM_Start;                // Start the automap
   V_Console.AdjustScreenSize;      // Notify console for screen resolution change
   setsizeneeded := true;   // Set-up new SCREENWIDTH & SCREENHEIGHT
-  R_InitDepthBuffer;       // Initialize the depth-buffer
+  TRendererDepthBuffer.R_InitDepthBuffer;       // Initialize the depth-buffer
   R_InitFake3D;            // Initialize fake 3d
   {$IFNDEF STRIFE}
   R_InitFuzzTable;         // Re-calculate fuzz tabble offsets
   {$ENDIF}
-  R_InitNegoArray;         // Re-calculate the nego-array
+  TRendererThings.R_InitNegoArray;         // Re-calculate the nego-array
   overlay.ReCalcOverlayLookUp;
   result := true;
 end;

@@ -812,7 +812,7 @@ var
   angle: angle_t;
   diff: angle_t;
 begin
-  angle := R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+  angle := TRendererMain.R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
   diff := angle - pmo.angle;
   if (diff > MAX_ANGLE_ADJUST) and (diff <= ANGLE_MAX - MAX_ANGLE_ADJUST) then // JVAL SOS
   begin
@@ -1122,7 +1122,7 @@ begin
     end
     else
     begin
-      actor.angle := R_PointToAngle2(actor.x, actor.y, target.x, target.y);
+      actor.angle := TRendererMain.R_PointToAngle2(actor.x, actor.y, target.x, target.y);
       actor.momx := 0;
       actor.momy := 0;
       TCommonMovementActions.P_ThrustMobj(actor, actor.angle, _SHR1(actor.info.speed));
@@ -1321,7 +1321,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(STARTSCOURGEPAL);
+    TRendererHires.R_SetPalette(STARTSCOURGEPAL);
   end;
 end;
 
@@ -1338,7 +1338,7 @@ begin
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
   begin
     pl := STARTSCOURGEPAL + (NativeInt(psp.state) - NativeInt(@states[Ord(S_MSTAFFATK_2)])) div SizeOf(state_t);
-    R_SetPalette(pl);
+    TRendererHires.R_SetPalette(pl);
     if pl = STARTSCOURGEPAL + 3 then
     begin // reset back to original playpal
       pl := 0;
@@ -1348,7 +1348,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(pl);
+    TRendererHires.R_SetPalette(pl);
   end;
 end;
 
@@ -1681,7 +1681,7 @@ begin
     if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, mrange, slope, damage);
-      pmo.angle := R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+      pmo.angle := TRendererMain.R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
       if ((TMapAim.LineTarget.player <> nil) or (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0)) and
          (TMapAim.LineTarget.flags2 and (MF2_DORMANT + MF2_INVULNERABLE) = 0) then
       begin
@@ -1700,7 +1700,7 @@ begin
     if TMapAim.LineTarget <> nil then
     begin
       P_LineAttack(pmo, angle, mrange, slope, damage);
-      pmo.angle := R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
+      pmo.angle := TRendererMain.R_PointToAngle2(pmo.x, pmo.y, TMapAim.LineTarget.x, TMapAim.LineTarget.y);
       if (TMapAim.LineTarget.player <> nil) or (TMapAim.LineTarget.flags and MF_COUNTKILL <> 0) then
       begin
         newLife := player.health + _SHR4(damage);
@@ -1981,7 +1981,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(STARTHOLYPAL);
+    TRendererHires.R_SetPalette(STARTHOLYPAL);
   end;
   S_StartSound(player.mo, Ord(SFX_CHOLY_FIRE));
 end;
@@ -2008,7 +2008,7 @@ begin
     I_SetPalette(pal);
     V_SetPalette(pal);
     Z_ChangeTag(palette, PU_CACHE);
-    R_SetPalette(pl);
+    TRendererHires.R_SetPalette(pl);
   end;
 end;
 
@@ -2177,7 +2177,7 @@ begin
   child := Pmobj_t(actor.special1);
   if child <> nil then
   begin
-    an := R_PointToAngle2(actor.x, actor.y, child.x, child.y) shr ANGLETOFINESHIFT;
+    an := TRendererMain.R_PointToAngle2(actor.x, actor.y, child.x, child.y) shr ANGLETOFINESHIFT;
     oldDistance := P_AproxDistance(child.x - actor.x, child.y - actor.y);
     if P_TryMove(child, actor.x + FixedMul(dist, finecosine[an]), actor.y + FixedMul(dist, finesine[an])) then
     begin

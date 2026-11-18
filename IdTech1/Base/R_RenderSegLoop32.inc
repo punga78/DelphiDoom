@@ -172,12 +172,12 @@ begin
         index := 0;
 
       dc_colormap := walllights[index];
-      dc_colormap32 := R_GetColormap32(dc_colormap);
+      dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
 {$IFDEF FLOORS3DVIS}
       if fixedcolormap = nil then
       begin
         dc_colormap2 := walllights2[index];
-        dc_colormap322 := R_GetColormap32(dc_colormap2);
+        dc_colormap322 := TRendererMain.R_GetColormap32(dc_colormap2);
       end;
 {$ENDIF}
 
@@ -214,10 +214,10 @@ begin
       end
       else
       begin
-        dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+        dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
 {$IFDEF FLOORS3DVIS}
         seglooplightlevel1 := dc_lightlevel;
-        dc_lightlevel2 := R_GetColormapLightLevel(dc_colormap2);
+        dc_lightlevel2 := TRendererMain.R_GetColormapLightLevel(dc_colormap2);
         seglooplightlevel2 := dc_lightlevel2;
 {$ENDIF}
       end;
@@ -240,7 +240,7 @@ begin
       // single sided line
       dc_texturemid := rw_midtexturemid;
       dc_height := rw_midtextureheight;
-      R_ReadDC32Cache(midtexture, texturecolumn);
+      TRendererCacheWalls.R_ReadDC32Cache(midtexture, texturecolumn);
 {$IFDEF FLOORS3DVIS}
       if pds.midvis <> nil then
       begin
@@ -254,14 +254,14 @@ begin
           dc_yh := r.floorheight[0];
           dc_lightlevel := Integer(r.lightlevel[0]);
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn32(@midwalls32);
+          TRendererWall32.R_StoreWallColumn32(@midwalls32);
           if totalclip then
-            R_FlashWallColumns32(@midwalls32);
+            TRendererWall32.R_FlashWallColumns32(@midwalls32);
           {$ELSE}
           midwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
           dc_yl := r.ceilingheight[1];
           dc_yh := r.floorheight[1];
@@ -269,21 +269,21 @@ begin
 
           {$IFDEF RENDERSEGOPTIMIZED}
           if totalclip then
-            R_FlashWallColumns32(@midwalls32b)
+            TRendererWall32.R_FlashWallColumns32(@midwalls32b)
           else
-            R_StoreWallColumn32(@midwalls32b);
+            TRendererWall32.R_StoreWallColumn32(@midwalls32b);
           {$ELSE}
           midwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
         end
         else
         begin
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_FlashWallColumns32(@midwalls32);
-          R_FlashWallColumns32(@midwalls32b);
+          TRendererWall32.R_FlashWallColumns32(@midwalls32);
+          TRendererWall32.R_FlashWallColumns32(@midwalls32b);
           {$ENDIF}
         end;
       end
@@ -300,12 +300,12 @@ begin
       begin
 {$ENDIF}
         {$IFDEF RENDERSEGOPTIMIZED}
-        R_StoreWallColumn32(@midwalls32);
+        TRendererWall32.R_StoreWallColumn32(@midwalls32);
         {$ELSE}
         midwallcolfunc;
         {$ENDIF}
         {$IFDEF USEZBUFFER}
-        R_DrawColumnToZBuffer;
+        TRendererZBuffer.R_DrawColumnToZBuffer;
         {$ENDIF}
 {$IFDEF USEDOUBLE}
       end;
@@ -344,9 +344,9 @@ begin
           {$IFDEF SPECIALOFFSETS}
           toptexturecolumn := rw_offset_top - tandist;
           toptexturecolumn := toptexturecolumn shr FRACBITS;
-          R_ReadDC32Cache(toptexture, toptexturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(toptexture, toptexturecolumn);
           {$ELSE}
-          R_ReadDC32Cache(toptexture, texturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(toptexture, texturecolumn);
           {$ENDIF}
 
     {$IFDEF FLOORS3DVIS}
@@ -363,14 +363,14 @@ begin
               dc_lightlevel := Integer(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_StoreWallColumn32(@upperwalls32);
+              TRendererWall32.R_StoreWallColumn32(@upperwalls32);
               if totalclip then
-                R_FlashWallColumns32(@upperwalls32);
+                TRendererWall32.R_FlashWallColumns32(@upperwalls32);
               {$ELSE}
               topwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
               dc_yl := r.ceilingheight[1];
               dc_yh := r.floorheight[1];
@@ -378,21 +378,21 @@ begin
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
-                R_FlashWallColumns32(@upperwalls32b)
+                TRendererWall32.R_FlashWallColumns32(@upperwalls32b)
               else
-                R_StoreWallColumn32(@upperwalls32b);
+                TRendererWall32.R_StoreWallColumn32(@upperwalls32b);
               {$ELSE}
               topwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
             end
             else
             begin
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_FlashWallColumns32(@upperwalls32);
-              R_FlashWallColumns32(@upperwalls32b);
+              TRendererWall32.R_FlashWallColumns32(@upperwalls32);
+              TRendererWall32.R_FlashWallColumns32(@upperwalls32b);
               {$ENDIF}
             end;
           end
@@ -403,12 +403,12 @@ begin
           dc_yl := yl;
           dc_yh := mid;
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn32(@upperwalls32);
+          TRendererWall32.R_StoreWallColumn32(@upperwalls32);
           {$ELSE}
           topwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
     {$IFDEF FLOORS3DVIS}
           end;
@@ -490,9 +490,9 @@ begin
           {$IFDEF SPECIALOFFSETS}
           bottomtexturecolumn := rw_offset_bot - tandist;
           bottomtexturecolumn := bottomtexturecolumn shr FRACBITS;
-          R_ReadDC32Cache(bottomtexture, bottomtexturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(bottomtexture, bottomtexturecolumn);
           {$ELSE}
-          R_ReadDC32Cache(bottomtexture, texturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(bottomtexture, texturecolumn);
           {$ENDIF}
 
     {$IFDEF FLOORS3DVIS}
@@ -509,14 +509,14 @@ begin
               dc_lightlevel := Integer(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_StoreWallColumn32(@lowerwalls32);
+              TRendererWall32.R_StoreWallColumn32(@lowerwalls32);
               if totalclip then
-                R_FlashWallColumns32(@lowerwalls32);
+                TRendererWall32.R_FlashWallColumns32(@lowerwalls32);
               {$ELSE}
               bottomwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
               dc_yl := r.ceilingheight[1];
               dc_yh := r.floorheight[1];
@@ -524,21 +524,21 @@ begin
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
-                R_FlashWallColumns32(@lowerwalls32b)
+                TRendererWall32.R_FlashWallColumns32(@lowerwalls32b)
               else
-                R_StoreWallColumn32(@lowerwalls32b);
+                TRendererWall32.R_StoreWallColumn32(@lowerwalls32b);
               {$ELSE}
               bottomwallcolfunc;
               {$ENDIF}
               {$IFDEF USEZBUFFER}
-              R_DrawColumnToZBuffer;
+              TRendererZBuffer.R_DrawColumnToZBuffer;
               {$ENDIF}
             end
             else
             begin
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_FlashWallColumns32(@lowerwalls32);
-              R_FlashWallColumns32(@lowerwalls32b);
+              TRendererWall32.R_FlashWallColumns32(@lowerwalls32);
+              TRendererWall32.R_FlashWallColumns32(@lowerwalls32b);
               {$ENDIF}
             end;
           end
@@ -548,12 +548,12 @@ begin
           dc_yl := mid;
           dc_yh := yh;
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn32(@lowerwalls32);
+          TRendererWall32.R_StoreWallColumn32(@lowerwalls32);
           {$ELSE}
           bottomwallcolfunc;
           {$ENDIF}
           {$IFDEF USEZBUFFER}
-          R_DrawColumnToZBuffer;
+          TRendererZBuffer.R_DrawColumnToZBuffer;
           {$ENDIF}
     {$IFDEF FLOORS3DVIS}
           end;
@@ -639,14 +639,14 @@ begin
     inc(pfloorclip);
   end;
   {$IFDEF RENDERSEGOPTIMIZED}
-  R_FlashWallColumns32(@midwalls32);
-  R_FlashWallColumns32(@lowerwalls32);
-  R_FlashWallColumns32(@upperwalls32);
+  TRendererWall32.R_FlashWallColumns32(@midwalls32);
+  TRendererWall32.R_FlashWallColumns32(@lowerwalls32);
+  TRendererWall32.R_FlashWallColumns32(@upperwalls32);
   {$IFDEF FLOORS3DVIS}
   // JVAL: 3d Floors
-  R_FlashWallColumns32(@midwalls32b);
-  R_FlashWallColumns32(@lowerwalls32b);
-  R_FlashWallColumns32(@upperwalls32b);
+  TRendererWall32.R_FlashWallColumns32(@midwalls32b);
+  TRendererWall32.R_FlashWallColumns32(@lowerwalls32b);
+  TRendererWall32.R_FlashWallColumns32(@upperwalls32b);
   {$ENDIF}
   {$ENDIF}
 end;

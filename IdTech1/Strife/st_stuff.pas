@@ -672,7 +672,7 @@ begin
   if not ST_CmdCheckPlayerStatus then
     exit;
 
-  ss := R_PointInSubsector(plyr.mo.x, plyr.mo.y);
+  ss := TRendererMain.R_PointInSubsector(plyr.mo.x, plyr.mo.y);
   sprintf(buf, 'ssector = %d, sector = %d'#13#10, [
           (NativeInt(ss) - NativeInt(@subsectors[0])) div SizeOf(subsector_t),
           (NativeInt(ss.sector) - NativeInt(@sectors[0])) div SizeOf(sector_t)]);
@@ -1220,7 +1220,7 @@ begin
     {$IFDEF OPENGL}
     gld_SetPalette(palette);
     {$ELSE}
-    R_SetPalette(palette);
+    TRendererHires.R_SetPalette(palette);
     {$ENDIF}
     p := W_CacheLumpNum(lu_palette, PU_STATIC);
     pal := PByteArray(NativeInt(p) + palette * 768);
@@ -1312,7 +1312,7 @@ var
 begin
   if firstinterpolation then
   begin
-    R_VideoBlanc(SCN_ST, 320 * 194, 320 * 6);
+    TRendererDraw.R_VideoBlanc(SCN_ST, 320 * 194, 320 * 6);
 
     ST_drawNumFontY2(15, 194, SCN_ST, plyr.health);
     ammo := weaponinfo[Ord(plyr.readyweapon)].ammo;
@@ -1346,7 +1346,7 @@ begin
   begin
     // TODO: only sometimes drawing?
     {$IFDEF OPENGL}
-    R_VideoBlanc(SCN_ST, 320 * 55, 320 * 114);
+    TRendererDraw.R_VideoBlanc(SCN_ST, 320 * 55, 320 * 114);
     {$ENDIF}
 
     plyr.st_update := false;
@@ -1735,7 +1735,7 @@ begin
 
     if firstinterpolation then
     begin
-      R_VideoBlanc(SCN_ST, 75 * 320, 85 * 320);
+      TRendererDraw.R_VideoBlanc(SCN_ST, 75 * 320, 85 * 320);
       {$IFDEF OPENGL}
        V_DrawPatch(0, 56, SCN_ST, invpop, false);
       {$ENDIF}

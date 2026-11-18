@@ -2409,7 +2409,7 @@ begin
       // JVAL: 20200517 - Rotate sector floor
       284:
         begin
-          ang := R_PointToAngle2(lines[i].v1.x, lines[i].v1.y, lines[i].v2.x, lines[i].v2.y);
+          ang := TRendererMain.R_PointToAngle2(lines[i].v1.x, lines[i].v1.y, lines[i].v2.x, lines[i].v2.y);
           s := -1;
           while P_FindSectorFromLineTag2(@lines[i], s) >= 0 do
           begin
@@ -2421,7 +2421,7 @@ begin
       // JVAL: 20200517 - Rotate sector ceiling
       285:
         begin
-          ang := R_PointToAngle2(lines[i].v1.x, lines[i].v1.y, lines[i].v2.x, lines[i].v2.y);
+          ang := TRendererMain.R_PointToAngle2(lines[i].v1.x, lines[i].v1.y, lines[i].v2.x, lines[i].v2.y);
           s := -1;
           while P_FindSectorFromLineTag2(@lines[i], s) >= 0 do
           begin

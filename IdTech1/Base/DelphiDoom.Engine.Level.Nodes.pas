@@ -437,7 +437,7 @@ begin
     else
     begin
       LSeg.miniseg := False;
-      LSeg.angle := R_PointToAngle2(LSeg.v1.x, LSeg.v1.y, LSeg.v2.x, LSeg.v2.y);
+      LSeg.angle := TRendererMain.R_PointToAngle2(LSeg.v1.x, LSeg.v1.y, LSeg.v2.x, LSeg.v2.y);
       LLineNumber := LGlSeg.Linedef;
       LLine := @lines[LLineNumber];
       if LGlSeg.Side <> 0 then

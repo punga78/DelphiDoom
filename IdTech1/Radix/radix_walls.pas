@@ -181,9 +181,9 @@ begin
     y := y1 + dy * Sys_Random * 256;
     z := z1 + dz * Sys_Random * 256;
     if side = 0 then
-      angle := R_PointToAngle2(x1, y1, x2, y2) - ANG90
+      angle := TRendererMain.R_PointToAngle2(x1, y1, x2, y2) - ANG90
     else
-      angle := R_PointToAngle2(x1, y1, x2, y2) + ANG90;
+      angle := TRendererMain.R_PointToAngle2(x1, y1, x2, y2) + ANG90;
     angle := angle shr ANGLETOFINESHIFT;
     c := finecosine[angle];
     s := finesine[angle];

@@ -38,30 +38,37 @@ uses
   m_fixed,
   DelphiDoom.Renderer.Intf;
 
-//==============================================================================
-//
-// R_PrecalcPointInSubSector
-//
-//==============================================================================
-procedure R_PrecalcPointInSubSector;
-
-//==============================================================================
-//
-// R_PointInSubsectorPrecalc
-//
-//==============================================================================
-function R_PointInSubsectorPrecalc(const x: fixed_t; const y: fixed_t): Psubsector_t;
-
-//==============================================================================
-//
-// R_ConfigureSubsectorGrid
-//
-//==============================================================================
-procedure R_ConfigureSubsectorGrid(const ABuilder: IRendererSubsectorGridBuilder;
-  const ALocator: IRendererSubsectorLocator);
-
 var
   map_max_bound: integer;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSubsectors = class sealed
+  public
+    //==============================================================================
+    //
+    // R_PrecalcPointInSubSector
+    //
+    //==============================================================================
+    class procedure R_PrecalcPointInSubSector; static;
+    //==============================================================================
+    //
+    // R_PointInSubsectorPrecalc
+    //
+    //==============================================================================
+    class function R_PointInSubsectorPrecalc(const x: fixed_t; const y: fixed_t): Psubsector_t; static;
+    //==============================================================================
+    //
+    // R_ConfigureSubsectorGrid
+    //
+    //==============================================================================
+    class procedure R_ConfigureSubsectorGrid(const ABuilder: IRendererSubsectorGridBuilder;
+      const ALocator: IRendererSubsectorLocator); static;
+  end;
+
 
 implementation
 
@@ -98,7 +105,7 @@ var
 // R_PrecalcPointInSubSector
 //
 //==============================================================================
-procedure R_PrecalcPointInSubSector;
+class procedure TRendererSubsectors.R_PrecalcPointInSubSector;
 var
   i: integer;
   vertexx: TArray<Integer>;
@@ -151,7 +158,7 @@ end;
 // given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureSubsectorGrid(const ABuilder: IRendererSubsectorGridBuilder;
+class procedure TRendererSubsectors.R_ConfigureSubsectorGrid(const ABuilder: IRendererSubsectorGridBuilder;
   const ALocator: IRendererSubsectorLocator);
 begin
   grid_builder := ABuilder;
@@ -162,7 +169,7 @@ end;
 // R_PointInSubsectorPrecalc
 //
 //==============================================================================
-function R_PointInSubsectorPrecalc(const x: fixed_t; const y: fixed_t): Psubsector_t;
+class function TRendererSubsectors.R_PointInSubsectorPrecalc(const x: fixed_t; const y: fixed_t): Psubsector_t;
 var
   idx: integer;
 begin

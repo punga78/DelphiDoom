@@ -661,7 +661,7 @@ begin
   LNetGame := TEngineNetGame.Create(AClock, ALog, AGame, AConsole, AEndScreenTick, AShutdown);
   TMainRoutines.D_ConfigureNetGame(LNetGame);
   G_ConfigureNetGame(LNetGame);
-  R_ConfigureNetGame(LNetGame);
+  TRendererMain.R_ConfigureNetGame(LNetGame);
   I_ConfigureNetGame(LNetGame);
   Result := LNetGame;
 end;
@@ -853,8 +853,8 @@ begin
   gld_ConfigureSpriteCollector(TEngineGlSceneSpriteCollector.Create(gld_SceneDrawList, gld_LightTable,
     TEngineGlSceneLightMarker.Create(LCache)));
 {$ELSE}
-  R_ConfigureDynamicLights(LCache);
-  R_ConfigureSoftLights(LCache);
+  TRendererMain.R_ConfigureDynamicLights(LCache);
+  TRendererSoftLights.R_ConfigureSoftLights(LCache);
 {$ENDIF}
 end;
 
@@ -995,18 +995,18 @@ begin
   R_ConfigureCustomColormaps(TPaletteFactory.CreateColormapPreparer, LDefaultPalette);
 {$ENDIF}
 {$IFNDEF OPENGL}
-  R_ConfigureVoxelPalette(LDefaultPalette);
+  TRendererVoxels.R_ConfigureVoxelPalette(LDefaultPalette);
 {$ENDIF}
   R_ConfigureTranslations(TPaletteFactory.CreateTranslationNames, APakFiles);
   V_ConfigureGamma(TPaletteFactory.CreateGammaTables);
-  R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
+  TRendererMain.R_ConfigureLightTables(TPaletteFactory.CreateLightTableCalculator);
   R_ConfigurePrecalc(TPaletteFactory.CreatePrecalcTables);
 {$IF DEFINED(DOOM)}
-  R_ConfigurePlayerTranslations(TPaletteFactory.CreateDoomPlayerTranslations);
+  TRendererDraw.R_ConfigurePlayerTranslations(TPaletteFactory.CreateDoomPlayerTranslations);
 {$ELSEIF DEFINED(HERETIC)}
-  R_ConfigurePlayerTranslations(TPaletteFactory.CreateHereticPlayerTranslations);
+  TRendererDraw.R_ConfigurePlayerTranslations(TPaletteFactory.CreateHereticPlayerTranslations);
 {$ELSEIF DEFINED(STRIFE)}
-  R_ConfigurePlayerTranslations(TPaletteFactory.CreateStrifePlayerTranslations);
+  TRendererDraw.R_ConfigurePlayerTranslations(TPaletteFactory.CreateStrifePlayerTranslations);
 {$ENDIF}
 end;
 
@@ -1174,14 +1174,14 @@ begin
   wipe_Configure(TImagingFactory.CreateMeltWipe(TEngineImagingRandom.Create(ARandom)));
 {$ENDIF}
 {$IFNDEF OPENGL}
-  R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
+  TRendererCacheFlats.R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
 {$ENDIF}
   V_ConfigureFlatShrink(TImagingFactory.CreateFlatShrinker);
   R_ConfigureComposite(TImagingFactory.CreateColumnPainter, TImagingFactory.CreateColumnRebuilder);
 {$IFNDEF OPENGL}
   R_ConfigureFixedColumn(TImagingFactory.CreateFixedColumnBuilder);
 {$ENDIF}
-  R_ConfigureMenuThumbnail(TImagingFactory.CreateThumbnailBuilder(
+  TRendererMain.R_ConfigureMenuThumbnail(TImagingFactory.CreateThumbnailBuilder(
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
   W_ConfigureSpritePatches(TImagingFactory.CreateColorPatchBuilder(
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
@@ -1197,7 +1197,7 @@ begin
     I_Error('ComposeEngine(): the game %s has no profile of the renderer', [_GAME]);
   LProfile := TRendererProfiles.ForGame(LGame);
   R_ConfigurePrecache(TRendererFactory.CreatePrecachePlanner, LProfile);
-  R_ConfigureSky(LProfile.SkyTextureMid);
+  TRendererSky.R_ConfigureSky(LProfile.SkyTextureMid);
   R_ConfigureAspect(TRendererFactory.CreateMonitorAspect(
     TVideoFactory.CreateWindowsDisplayModeSource));
 {$IFNDEF OPENGL}
@@ -1206,18 +1206,18 @@ begin
 {$ENDIF}
   R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
     TEngineRendererPatchSource.Create, ALog));
-  R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
+  TRendererThings.R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
     TEngineRendererSpriteSource.Create, ALog));
-  R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
+  TRendererSubsectors.R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);
-  R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
-  R_ConfigureViewTables(TRendererFactory.CreateViewTables);
+  TRendererMain.R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
+  TRendererMain.R_ConfigureViewTables(TRendererFactory.CreateViewTables);
   LDirectory := TEngineRendererLumpDirectory.Create;
   R_ConfigureLumpRanges(TRendererFactory.CreateLumpRanges(LDirectory, ALog),
     TRendererFactory.CreateSpriteTableBuilder(LDirectory,
       TEngineRendererSpriteHeaders.Create));
 {$IFNDEF OPENGL}
-  R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
+  TRendererSegs2.R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
 {$ENDIF}
 end;
 
@@ -1258,8 +1258,8 @@ begin
 {$IFDEF OPENGL}
   gld_ConfigureTextureFiles(LFiles);
 {$ELSE}
-  R_ConfigureFlatTextures(LFiles);
-  R_ConfigureWallTextures(LFiles);
+  TRendererCacheFlats.R_ConfigureFlatTextures(LFiles);
+  TRendererCacheWalls.R_ConfigureWallTextures(LFiles);
 {$ENDIF}
 end;
 

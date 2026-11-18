@@ -136,7 +136,7 @@ begin
 
   speed := mo.info.speed * FRACUNIT;
 
-  realangle := R_PointToAngle2(mo.x, mo.y, dplayermo.x, dplayermo.y) - ANG180;
+  realangle := TRendererMain.R_PointToAngle2(mo.x, mo.y, dplayermo.x, dplayermo.y) - ANG180;
 
   mo.momx := FixedMul(speed, finecosine[realangle shr ANGLETOFINESHIFT]);
   mo.momy := FixedMul(speed, finesine[realangle shr ANGLETOFINESHIFT]);

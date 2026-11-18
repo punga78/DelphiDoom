@@ -284,7 +284,7 @@ begin
   if (player.attacker <> nil) and (player.attacker <> player.mo) then
   begin
 
-    angle := R_PointToAngle2(
+    angle := TRendererMain.R_PointToAngle2(
       player.mo.x, player.mo.y, player.attackerx, player.attackery);
 
     delta := angle - player.mo.angle;
@@ -323,7 +323,7 @@ begin
       I_SetPalette(palette);
       V_SetPalette(palette);
       Z_ChangeTag(palette, PU_CACHE);
-      R_SetPalette(0);
+      TRendererHires.R_SetPalette(0);
 
       inv_ptr := 0;
       curpos := 0;
@@ -1064,7 +1064,7 @@ var
   mo: Pmobj_t;
   x, y, z: fixed_t;
 begin
-  angle := R_PointToAngle2(source.x, source.y, victim.x, victim.y);
+  angle := TRendererMain.R_PointToAngle2(source.x, source.y, victim.x, victim.y);
   angle := angle shr ANGLETOFINESHIFT;
   if strength < BLAST_FULLSTRENGTH then
   begin
@@ -1105,7 +1105,7 @@ begin
     victim.momy := FixedMul(BLAST_SPEED, finesine[angle]);
 
     // Spawn blast puff
-    ang := R_PointToAngle2(victim.x, victim.y, source.x, source.y);
+    ang := TRendererMain.R_PointToAngle2(victim.x, victim.y, source.x, source.y);
     ang := ang shr ANGLETOFINESHIFT;
     x := victim.x + FixedMul(victim.radius + FRACUNIT, finecosine[ang]);
     y := victim.y + FixedMul(victim.radius + FRACUNIT, finesine[ang]);

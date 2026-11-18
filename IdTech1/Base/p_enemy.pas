@@ -360,7 +360,7 @@ begin
   actor.flags := actor.flags and not MF_AMBUSH;
 
   actor.angle :=
-    R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
+    TRendererMain.R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
 
   TEnemyGameRules.BlurAim(actor);
 end;

@@ -176,7 +176,7 @@ begin
   newthrust := 0;
   if p.lookdir16 <> 0 then
   begin
-    an := (R_PointToAngle2(0, 0, pmo.momx, pmo.momy) - pmo.angle) shr FRACBITS;
+    an := (TRendererMain.R_PointToAngle2(0, 0, pmo.momx, pmo.momy) - pmo.angle) shr FRACBITS;
     xyspeed := FixedMul(FixedSqrt(FixedMul(pmo.momx, pmo.momx) + FixedMul(pmo.momy, pmo.momy)), fixedcosine[an]);
     newthrust := TRadixFlightModel.PitchThrust(xyspeed, p.lookdir16);
   end;

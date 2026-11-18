@@ -113,7 +113,7 @@ begin
       cx := viewx + dx;
       cy := viewy + dy;
 
-      sec := R_PointInSubSector(cx, cy).sector;
+      sec := TRendererMain.R_PointInSubSector(cx, cy).sector;
       cz := viewz + chasecamera_viewz * FRACUNIT; // JVAL: Slopes
       ceilz := P_3dCeilingHeight(sec, cx, cy, cz) +
                P_SectorJumpOverhead(sec{$IFDEF HERETIC_OR_HEXEN}, viewplayer{$ENDIF}) - 1 - CAMERARADIOUS; // JVAL: 3d floors
@@ -136,12 +136,12 @@ begin
     until loops > 64;
     {$IFNDEF OPENGL}
     if loops > 1 then
-      R_PlayerViewBlanc(aprox_black);
+      TRendererDraw.R_PlayerViewBlanc(aprox_black);
     {$ENDIF}
     viewx := cx;
     viewy := cy;
 
-    sec2 := R_PointInSubsector(viewx, viewy).sector;
+    sec2 := TRendererMain.R_PointInSubsector(viewx, viewy).sector;
     floorz := P_3dFloorHeight(sec2, viewx, viewy, cz);  // JVAL: Slopes
     if cz < floorz then
       cz := floorz + CAMERARADIOUS; // JVAL: Slopes

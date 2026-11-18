@@ -176,7 +176,7 @@ end;
 procedure TLevelLoader.Initialize;
 begin
   FRules.InitializeData;
-  R_InitSprites(sprnames);
+  TRendererThings.R_InitSprites(sprnames);
   FMusInfo.Load;
   // the commands have always been called with both parameters, whatever their own declaration
   FCommands.Add('suicide',
@@ -339,9 +339,9 @@ begin
 
 {$IFNDEF OPENGL}
   Trace('R_CalcSectors');
-  R_CalcSectors; // JVAL 20200105 - Check the map boundaries
+  TRendererSegs2.R_CalcSectors; // JVAL 20200105 - Check the map boundaries
   Trace('R_PrecalcSegs');
-  R_PrecalcSegs; // https://www.doomworld.com/forum/topic/70288-dynamic-wiggletall-sector-fix-for-fixed-point-software-renderer/?do=findComment&comment=1340433
+  TRendererSegs2.R_PrecalcSegs; // https://www.doomworld.com/forum/topic/70288-dynamic-wiggletall-sector-fix-for-fixed-point-software-renderer/?do=findComment&comment=1340433
 {$ENDIF}
 
   Trace('P_SlopesSetup');
@@ -360,7 +360,7 @@ begin
   P_CalcSubSectorsBridge;
 
   Trace('R_PrecalcPointInSubSector');
-  R_PrecalcPointInSubSector;
+  TRendererSubsectors.R_PrecalcPointInSubSector;
 end;
 
 procedure TLevelLoader.SpawnDeathmatchPlayers;
@@ -443,7 +443,7 @@ begin
   gld_PreprocessLevel; // JVAL OPENGL
 {$ENDIF}
 
-  R_SetInterpolateSkipTicks(2);
+  TRendererInterpolation.R_SetInterpolateSkipTicks(2);
 
   FRules.AfterLevel;
 end;

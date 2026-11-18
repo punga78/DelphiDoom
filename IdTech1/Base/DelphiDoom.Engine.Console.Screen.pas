@@ -772,7 +772,7 @@ begin
 {$ENDIF}
 
   // A little bit darker background...
-  R_ApplyColormap(0, 320 * 200, SCN_TMP, ConsoleColormap);
+  TRendererMain.R_ApplyColormap(0, 320 * 200, SCN_TMP, ConsoleColormap);
 
   V_CopyRect(0, 0, SCN_TMP, 320, 200, 0, 0, SCN_CON, true);
 end;

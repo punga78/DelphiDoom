@@ -48,28 +48,6 @@ const
   CACHECOLBITS = 10;
   CACHECOLMASK = 1 shl CACHECOLBITS - 1;
 
-//==============================================================================
-//
-// R_ConfigureWallTextures
-// The external textures (useexternaltextures), given by the composition root
-//
-//==============================================================================
-procedure R_ConfigureWallTextures(const AFiles: IEngineTextureFiles);
-
-//==============================================================================
-//
-// R_ReadDC32Cache
-//
-//==============================================================================
-procedure R_ReadDC32Cache(const rtex, rcol: integer);
-
-//==============================================================================
-//
-// R_Precache32bittexture
-//
-//==============================================================================
-procedure R_Precache32bittexture(const rtex: integer);
-
 const
   MAXTEXTUREHEIGHT = 1024;
   MAXTEXTUREWIDTH = 1 shl CACHECOLBITS;
@@ -97,57 +75,79 @@ type
   dc32cacheinfo_tArray = array[0..COL32CACHESIZE - 1] of dc32cacheinfo_t;
   dc32cacheinfo_tPArray = array[0..COL32CACHESIZE - 1] of Pdc32cacheinfo_t;
 
-//==============================================================================
-//
-// R_ClearDC32Cache
-//
-//==============================================================================
-procedure R_ClearDC32Cache;
-
-//==============================================================================
-//
-// R_ResetDC32Cache
-//
-//==============================================================================
-procedure R_ResetDC32Cache;
-
-//==============================================================================
-//
-// R_InitDC32Cache
-//
-//==============================================================================
-procedure R_InitDC32Cache;
-
-//==============================================================================
-//
-// R_ShutDownDC32Cache
-//
-//==============================================================================
-procedure R_ShutDownDC32Cache;
-
-//==============================================================================
-//
-// R_GetHash
-//
-//==============================================================================
-function R_GetHash(const tex, col, dmod: integer): integer;
-
-//==============================================================================
-//
-// R_GetUID
-//
-//==============================================================================
-function R_GetUID(const tex, col, dmod: integer): LongWord;
-
 var
   dc32cache: dc32cacheinfo_tPArray;
 
-//==============================================================================
-//
-// R_Get_dc32
-//
-//==============================================================================
-function R_Get_dc32(p: Pdc32cacheitem_t; columnsize: integer): Pdc32_t;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererCacheWalls = class sealed
+  public
+    //==============================================================================
+    //
+    // R_ConfigureWallTextures
+    // The external textures (useexternaltextures), given by the composition root
+    //
+    //==============================================================================
+    class procedure R_ConfigureWallTextures(const AFiles: IEngineTextureFiles); static;
+    //==============================================================================
+    //
+    // R_ReadDC32Cache
+    //
+    //==============================================================================
+    class procedure R_ReadDC32Cache(const rtex, rcol: integer); static;
+    //==============================================================================
+    //
+    // R_Precache32bittexture
+    //
+    //==============================================================================
+    class procedure R_Precache32bittexture(const rtex: integer); static;
+    //==============================================================================
+    //
+    // R_ClearDC32Cache
+    //
+    //==============================================================================
+    class procedure R_ClearDC32Cache; static;
+    //==============================================================================
+    //
+    // R_ResetDC32Cache
+    //
+    //==============================================================================
+    class procedure R_ResetDC32Cache; static;
+    //==============================================================================
+    //
+    // R_InitDC32Cache
+    //
+    //==============================================================================
+    class procedure R_InitDC32Cache; static;
+    //==============================================================================
+    //
+    // R_ShutDownDC32Cache
+    //
+    //==============================================================================
+    class procedure R_ShutDownDC32Cache; static;
+    //==============================================================================
+    //
+    // R_GetHash
+    //
+    //==============================================================================
+    class function R_GetHash(const tex, col, dmod: integer): integer; static;
+    //==============================================================================
+    //
+    // R_GetUID
+    //
+    //==============================================================================
+    class function R_GetUID(const tex, col, dmod: integer): LongWord; static;
+    //==============================================================================
+    //
+    // R_Get_dc32
+    //
+    //==============================================================================
+    class function R_Get_dc32(p: Pdc32cacheitem_t; columnsize: integer): Pdc32_t; static;
+  end;
+
 
 implementation
 
@@ -177,12 +177,23 @@ uses
 var
   wall_texturefiles: IEngineTextureFiles = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererCacheWallsLocal = class sealed
+  public
+    class function R_ReadDC32ExternalCache(const rtex, rcol: integer): boolean; static;
+    class procedure R_ReadDC32InternalCache(const rtex, rcol: integer); static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigureWallTextures
 //
 //==============================================================================
-procedure R_ConfigureWallTextures(const AFiles: IEngineTextureFiles);
+class procedure TRendererCacheWalls.R_ConfigureWallTextures(const AFiles: IEngineTextureFiles);
 begin
   wall_texturefiles := AFiles;
 end;
@@ -192,7 +203,7 @@ end;
 // R_GetHash
 //
 //==============================================================================
-function R_GetHash(const tex, col, dmod: integer): integer;
+class function TRendererCacheWalls.R_GetHash(const tex, col, dmod: integer): integer;
 // JVAL
 // Get a hash value depending on tex, col and dc_mod.
 // Although the followng hash is elementary, simple
@@ -207,7 +218,7 @@ end;
 // R_GetUID
 //
 //==============================================================================
-function R_GetUID(const tex, col, dmod: integer): LongWord;
+class function TRendererCacheWalls.R_GetUID(const tex, col, dmod: integer): LongWord;
 // JVAL
 // In addition the UID depending on tex, col and dc_mod
 // gives 100% correct hit to cache (of course we can't afford
@@ -230,7 +241,7 @@ end;
 // R_Get_dc32
 //
 //==============================================================================
-function R_Get_dc32(p: Pdc32cacheitem_t; columnsize: integer): Pdc32_t;
+class function TRendererCacheWalls.R_Get_dc32(p: Pdc32cacheitem_t; columnsize: integer): Pdc32_t;
 begin
   if p.dc32 = nil then
   begin
@@ -253,7 +264,7 @@ end;
 //  Create dc_source32 from an external texture
 //
 //==============================================================================
-function R_ReadDC32ExternalCache(const rtex, rcol: integer): boolean;
+class function TRendererCacheWallsLocal.R_ReadDC32ExternalCache(const rtex, rcol: integer): boolean;
 var
   plw: PLongWord;
   plw2: PLongWord;
@@ -294,8 +305,8 @@ begin
   end;
 
   // Cache read of the caclulated dc_source32, 98-99% propability not to recalc...
-  hash := R_GetHash(rtex, rcol, dc_texturemod);
-  UID := R_GetUID(rtex, rcol, dc_texturemod);
+  hash := TRendererCacheWalls.R_GetHash(rtex, rcol, dc_texturemod);
+  UID := TRendererCacheWalls.R_GetUID(rtex, rcol, dc_texturemod);
   index := 0;
   cachemiss := true;
   inf := dc32cache[hash];
@@ -323,9 +334,9 @@ begin
       if dc32cache[hash][index] <> nil then
         if dc32cache[hash][index].tic = TGameSession.GameTic then
         begin
-          R_RenderMultiThreadWalls32;
-          R_WaitWallsCache32;
-          R_ClearWallsCache32;
+          TRendererWall32.R_RenderMultiThreadWalls32;
+          TRendererWall32.R_WaitWallsCache32;
+          TRendererWall32.R_ClearWallsCache32;
         end;
 
     inc(c_cmiss); // Cache miss
@@ -398,10 +409,10 @@ begin
       if dc32cache[hash][index] = nil then
         dc32cache[hash][index] := mallocz(SizeOf(dc32cacheitem_t));
       {$IFDEF FPC}
-      pdc32 := R_Get_dc32(dc32cache[hash][index], columnsize);
+      pdc32 := TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], columnsize);
       plw := @pdc32[0];
       {$ELSE}
-      plw := @R_Get_dc32(dc32cache[hash][index], columnsize)[0];
+      plw := @TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], columnsize)[0];
       {$ENDIF}
 
       curgamma := @gammatable[usegamma]; // To Adjust gamma
@@ -429,7 +440,7 @@ begin
         cfrac2 := dc_texturemod shl (FRACBITS - DC_HIRESBITS);
         for i := 0 to columnsize - 1 do
         begin
-          plw^ := R_ColorAverage(plw^, plw2^, cfrac2);
+          plw^ := TRendererHires.R_ColorAverage(plw^, plw2^, cfrac2);
           inc(plw);
           inc(plw2);
         end;
@@ -438,10 +449,10 @@ begin
       if (t.GetBytesPerPixel <> 1) {$IFDEF DOOM_OR_STRIFE}or (customcolormap <> nil){$ENDIF} then
       begin
         {$IFDEF FPC}
-        pdc32 := R_Get_dc32(dc32cache[hash][index], columnsize);
+        pdc32 := TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], columnsize);
         plw := @pdc32[0];
         {$ELSE}
-        plw := @R_Get_dc32(dc32cache[hash][index], columnsize)[0];
+        plw := @TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], columnsize)[0];
         {$ENDIF}
         {$IFDEF DOOM_OR_STRIFE}
         if customcolormap <> nil then
@@ -574,7 +585,7 @@ end;
 //  Create dc_source32 from internal (IWAD) texture
 //
 //==============================================================================
-procedure R_ReadDC32InternalCache(const rtex, rcol: integer);
+class procedure TRendererCacheWallsLocal.R_ReadDC32InternalCache(const rtex, rcol: integer);
 var
   plw: PLongWord;
 {$IFDEF FPC}
@@ -591,8 +602,8 @@ var
   count: integer;
 begin
   // Cache read of the caclulated dc_source32, 98-99% propability not to recalc...
-  hash := R_GetHash(rtex, rcol, dc_mod);
-  UID := R_GetUID(rtex, rcol, dc_mod);
+  hash := TRendererCacheWalls.R_GetHash(rtex, rcol, dc_mod);
+  UID := TRendererCacheWalls.R_GetUID(rtex, rcol, dc_mod);
   index := 0;
   cachemiss := true;
   inf := dc32cache[hash];
@@ -622,24 +633,24 @@ begin
       if usemultithread then
         if dc32cache[hash][index].tic = TGameSession.GameTic then
         begin
-          R_RenderMultiThreadWalls32;
-          R_WaitWallsCache32;
-          R_ClearWallsCache32;
+          TRendererWall32.R_RenderMultiThreadWalls32;
+          TRendererWall32.R_WaitWallsCache32;
+          TRendererWall32.R_ClearWallsCache32;
         end;
     end;
 
     inc(c_cmiss); // Cache miss
-    R_GetColumn(rtex, rcol);
+    TRendererData.R_GetColumn(rtex, rcol);
     {$IFDEF FPC}
-    pdc32 := R_Get_dc32(dc32cache[hash][index], dc_height);
+    pdc32 := TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], dc_height);
     plw := @pdc32[0];
     {$ELSE}
-    plw := @R_Get_dc32(dc32cache[hash][index], dc_height)[0];
+    plw := @TRendererCacheWalls.R_Get_dc32(dc32cache[hash][index], dc_height)[0];
     {$ENDIF}
     textures[rtex].factorbits := 0;
     if dc_mod = 0 then
     begin
-      dc_source := R_GetColumn(rtex, rcol);
+      dc_source := TRendererData.R_GetColumn(rtex, rcol);
       src1 := @dc_source[0];
       if dc_height = 128 then
       begin
@@ -809,9 +820,9 @@ begin
     else
     begin
       tbl := @hirestable[dc_mod];
-      dc_source := R_GetColumn(rtex, rcol);
+      dc_source := TRendererData.R_GetColumn(rtex, rcol);
       src1 := @dc_source[0];
-      dc_source2 := R_GetColumn(rtex, rcol + 1);
+      dc_source2 := TRendererData.R_GetColumn(rtex, rcol + 1);
       src2 := @dc_source2[0];
       if dc_height = 128 then
       begin
@@ -997,16 +1008,16 @@ end;
 // R_ReadDC32Cache
 //
 //==============================================================================
-procedure R_ReadDC32Cache(const rtex, rcol: integer);
+class procedure TRendererCacheWalls.R_ReadDC32Cache(const rtex, rcol: integer);
 begin
-  if not R_ReadDC32ExternalCache(rtex, rcol) then
+  if not TRendererCacheWallsLocal.R_ReadDC32ExternalCache(rtex, rcol) then
   begin
 {$IFDEF HEXEN}
     if (rtex = SkyTexture) or (rtex = Sky2Texture) then
       R_ReadDC32InternalSkyCache(rtex, rcol)
     else
 {$ENDIF}
-    R_ReadDC32InternalCache(rtex, rcol);
+    TRendererCacheWallsLocal.R_ReadDC32InternalCache(rtex, rcol);
   end;
   inc(c_ctot);
 end;
@@ -1016,7 +1027,7 @@ end;
 // R_Precache32bittexture
 //
 //==============================================================================
-procedure R_Precache32bittexture(const rtex: integer);
+class procedure TRendererCacheWalls.R_Precache32bittexture(const rtex: integer);
 begin
   R_ReadDC32Cache(rtex, 0);
 end;
@@ -1026,7 +1037,7 @@ end;
 // R_ResetDC32Cache
 //
 //==============================================================================
-procedure R_ResetDC32Cache;
+class procedure TRendererCacheWalls.R_ResetDC32Cache;
 var
   i, j: integer;
 begin
@@ -1042,7 +1053,7 @@ end;
 // R_ClearDC32Cache
 //
 //==============================================================================
-procedure R_ClearDC32Cache;
+class procedure TRendererCacheWalls.R_ClearDC32Cache;
 var
   i, j: integer;
 begin
@@ -1075,7 +1086,7 @@ end;
 // R_InitDC32Cache
 //
 //==============================================================================
-procedure R_InitDC32Cache;
+class procedure TRendererCacheWalls.R_InitDC32Cache;
 var
   i: integer;
 begin
@@ -1088,7 +1099,7 @@ end;
 // R_ShutDownDC32Cache
 //
 //==============================================================================
-procedure R_ShutDownDC32Cache;
+class procedure TRendererCacheWalls.R_ShutDownDC32Cache;
 var
   i: integer;
 begin

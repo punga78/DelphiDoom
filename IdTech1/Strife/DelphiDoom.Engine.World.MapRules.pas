@@ -255,7 +255,7 @@ uses
 
 class function TMapGameRules.PointInSector(const x, y: fixed_t): Psector_t;
 begin
-  result := R_PointInSubsector(x, y).sector;
+  result := TRendererMain.R_PointInSubsector(x, y).sector;
 end;
 
 class function TMapGameRules.CanStomp(thing: Pmobj_t): boolean;

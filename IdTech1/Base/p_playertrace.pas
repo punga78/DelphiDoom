@@ -202,7 +202,7 @@ var
   procedure _follow_item;
   begin
     mo.target := p.mo;
-    ang := R_PointToAngle2(mo.x, mo.y, item.x, item.y);
+    ang := TRendererMain.R_PointToAngle2(mo.x, mo.y, item.x, item.y);
     mo.angle := ang;
     speed := mo.info.speed;
     if speed > FRACUNIT then

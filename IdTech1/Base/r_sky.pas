@@ -70,29 +70,40 @@ var
   DoubleSky: boolean;
 {$ENDIF}
 
-//==============================================================================
-//
-// R_InitSkyMap
-//
-//==============================================================================
-procedure R_InitSkyMap;
-
-//==============================================================================
-//
-// R_ConfigureSky
-//
-//==============================================================================
-procedure R_ConfigureSky(const ATextureMid: integer);
-
 {$IFDEF HEXEN}
-//==============================================================================
-//
-// R_InitSky
-//
-//==============================================================================
-procedure R_InitSky(map: integer);
 
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSky = class sealed
+  public
+    //==============================================================================
+    //
+    // R_InitSkyMap
+    //
+    //==============================================================================
+    class procedure R_InitSkyMap; static;
+    //==============================================================================
+    //
+    // R_ConfigureSky
+    //
+    //==============================================================================
+    class procedure R_ConfigureSky(const ATextureMid: integer); static;
+{$IFDEF HEXEN}
+    //==============================================================================
+    //
+    // R_InitSky
+    //
+    //==============================================================================
+    class procedure R_InitSky(map: integer); static;
+{$ENDIF}
+  end;
+
+
 implementation
 
 uses
@@ -111,7 +122,7 @@ var
 // Called whenever the view size changes.
 //
 //==============================================================================
-procedure R_InitSkyMap;
+class procedure TRendererSky.R_InitSkyMap;
 begin
   if not sky_configured then
     I_Error('R_InitSkyMap(): R_ConfigureSky() was not called');
@@ -127,7 +138,7 @@ end;
 // Called at level load.
 //
 //==============================================================================
-procedure R_InitSky(map: integer);
+class procedure TRendererSky.R_InitSky(map: integer);
 begin
   SkyTexture := P_GetMapSky1Texture(map);
   Sky2Texture := P_GetMapSky2Texture(map);
@@ -145,7 +156,7 @@ end;
 // The height of the middle of the sky texture of the game, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureSky(const ATextureMid: integer);
+class procedure TRendererSky.R_ConfigureSky(const ATextureMid: integer);
 begin
   sky_texturemid := ATextureMid;
   sky_configured := True;

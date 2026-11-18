@@ -268,7 +268,7 @@ begin
 
  // gld_AmbientExecute;
 
-  R_DrawPlayer;
+  TRendererThings.R_DrawPlayer;
 
   if FScissorOn then
     glDisable(GL_SCISSOR_TEST);

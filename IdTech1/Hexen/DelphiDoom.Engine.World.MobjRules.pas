@@ -1020,7 +1020,7 @@ begin
   end;
 
   // JVAL: 20191209 - 3d floors - Fixed Player spawned in 3d floor
-  ss := R_PointInSubsector(x, y);
+  ss := TRendererMain.R_PointInSubsector(x, y);
   if ss.sector.midsec >= 0 then
     if mthing.options and MTF_ONMIDSECTOR <> 0 then
       z := sectors[ss.sector.midsec].ceilingheight;
@@ -1256,7 +1256,7 @@ begin
 
   if (mthing._type >= 1400) and (mthing._type < 1410) then
   begin
-    R_PointInSubsector(mthing.x * FRACUNIT, mthing.y * FRACUNIT).sector.seqType := seqtype_t(mthing._type - 1400);
+    TRendererMain.R_PointInSubsector(mthing.x * FRACUNIT, mthing.y * FRACUNIT).sector.seqType := seqtype_t(mthing._type - 1400);
     exit;
   end;
 
@@ -1378,7 +1378,7 @@ begin
       z := uthing.z;
 
 // JVAL: 3d floors
-  ss := R_PointInSubsector(x, y);
+  ss := TRendererMain.R_PointInSubsector(x, y);
   if ss.sector.midsec >= 0 then
   begin
     msec := @sectors[ss.sector.midsec];
@@ -1899,7 +1899,7 @@ begin
   begin
     A_SeeSound(th, th);
     th.target := source; // Originator
-    an := R_PointToAngle2(source.x, source.y, dest.x, dest.y);
+    an := TRendererMain.R_PointToAngle2(source.x, source.y, dest.x, dest.y);
     if dest.flags and MF_SHADOW <> 0 then
     begin // Invisible target
       an := an + _SHLW(P_Random - P_Random, 21);
@@ -1971,7 +1971,7 @@ begin
   th := P_SpawnMobj(x, y, z, _type);
   A_SeeSound(th, th);
   th.target := source; // Originator
-  an := R_PointToAngle2(source.x, source.y, dest.x, dest.y);
+  an := TRendererMain.R_PointToAngle2(source.x, source.y, dest.x, dest.y);
   if dest.flags and MF_SHADOW <> 0 then
   begin // Invisible target
     an := an + _SHLW(P_Random - P_Random, 21);
@@ -2325,7 +2325,7 @@ begin
   begin
     A_SeeSound(th, th);
     th.target := source; // Originator
-    an := R_PointToAngle2(x, y, dest.x, dest.y);
+    an := TRendererMain.R_PointToAngle2(x, y, dest.x, dest.y);
     if dest.flags and MF_SHADOW <> 0 then
     begin // Invisible target
       an := an + _SHLW(P_Random - P_Random, 21);
@@ -2619,7 +2619,7 @@ begin
            (BlockingMobj.flags and MF_COUNTKILL = 0)) then
         begin
           rnd := P_Random;
-          angle := R_PointToAngle2(BlockingMobj.x, BlockingMobj.y, mo.x, mo.y) +
+          angle := TRendererMain.R_PointToAngle2(BlockingMobj.x, BlockingMobj.y, mo.x, mo.y) +
                        ANG1 * ((rnd mod 16) - 8);
           speed := P_AproxDistance(mo.momx, mo.momy);
           speed := FixedMul(speed, 3 * FRACUNIT div 4);
@@ -2662,7 +2662,7 @@ begin
     if (BlockingMobj <> nil) and
        (BlockingMobj.flags2_ex and MF2_EX_REFLECTIVE <> 0) then
     begin
-      angle := R_PointToAngle2(BlockingMobj.x, BlockingMobj.y, mo.x, mo.y);
+      angle := TRendererMain.R_PointToAngle2(BlockingMobj.x, BlockingMobj.y, mo.x, mo.y);
 
       // Change angle for delflection/reflection
       case BlockingMobj._type of

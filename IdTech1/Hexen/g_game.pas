@@ -2002,7 +2002,7 @@ begin
   levelinf.musname := stringtochar8('');
   levelinf.skyflat := stringtochar8('');
 
-  R_ResetInterpolationBuffer;
+  TRendererInterpolation.R_ResetInterpolationBuffer;
 
   M_ClearRandom;
   PS_NewWorld;
@@ -2043,7 +2043,7 @@ begin
   viewactive := true;
 
   // Initialize the sky
-  R_InitSky(map);
+  TRendererSky.R_InitSky(map);
 
   G_DoLoadLevel;
 end;

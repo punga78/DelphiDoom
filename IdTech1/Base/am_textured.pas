@@ -36,35 +36,41 @@ interface
 uses
   DelphiDoom.Automap.Types;
 
-//==============================================================================
-//
-// AM_setSubSectorDrawFuncs
-//
-//==============================================================================
-procedure AM_setSubSectorDrawFuncs;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TAutomapTextured = class sealed
+  public
+    //==============================================================================
+    //
+    // AM_setSubSectorDrawFuncs
+    //
+    //==============================================================================
+    class procedure AM_setSubSectorDrawFuncs; static;
+    //==============================================================================
+    //
+    // AM_drawSubSectors
+    //
+    // AWindow: the window on the map of IdTech1\Automap, read once for the frame
+    //
+    //==============================================================================
+    class procedure AM_drawSubSectors(const AWindow: TAutomapWindow); static;
+    //==============================================================================
+    //
+    // AM_InitTextured
+    //
+    //==============================================================================
+    class procedure AM_InitTextured; static;
+    //==============================================================================
+    //
+    // AM_ShutDownTextured
+    //
+    //==============================================================================
+    class procedure AM_ShutDownTextured; static;
+  end;
 
-//==============================================================================
-//
-// AM_drawSubSectors
-//
-// AWindow: the window on the map of IdTech1\Automap, read once for the frame
-//
-//==============================================================================
-procedure AM_drawSubSectors(const AWindow: TAutomapWindow);
-
-//==============================================================================
-//
-// AM_InitTextured
-//
-//==============================================================================
-procedure AM_InitTextured;
-
-//==============================================================================
-//
-// AM_ShutDownTextured
-//
-//==============================================================================
-procedure AM_ShutDownTextured;
 
 implementation
 
@@ -110,6 +116,43 @@ var
   drawsegfunc: drawsegfunc_t;
 {$ENDIF}
 
+type
+  seg_ap3 = array[0..2] of Pseg_t;
+
+
+type
+  dssparams_t = record
+    minx, maxx: integer;
+    // the window on the map, the same for all the threads
+    window: TAutomapWindow;
+  end;
+  dssparams_p = ^dssparams_t;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TAutomapTexturedLocal = class sealed
+  public
+{$IFNDEF OPENGL}
+    class procedure AM_DrawSeg8(xx, yy, cc: integer; const amcolormap: PByteArray); static;
+    class procedure AM_DrawSeg8Transparent(xx, yy, cc: integer; const amcolormap: PByteArray); static;
+    class procedure AM_DrawSeg32(xx, yy, cc: integer; const amcolormap: PLongWordArray); static;
+    class procedure AM_DrawSeg32Transparent(xx, yy, cc: integer; const amcolormap: PLongWordArray); static;
+{$ENDIF}
+{$IFNDEF OPENGL}
+    class procedure AM_DecodeUV(var xx, yy: integer; const sz: integer); static;
+    class procedure AM_DecodeAngleUV(var xx, yy: integer; const sz: integer;
+      const fangx, fangy, fangsin, fangcos: fixed_t); static;
+{$ENDIF}
+    class procedure AM_DrawTexturedTriangle(const lst: seg_ap3; const lump: integer; const sec: Psector_t;
+      const aminx, amaxx: integer; const {$IFDEF OPENGL}lightlevel: integer{$ELSE}amcolormap: pointer{$ENDIF};
+      const window: TAutomapWindow); static;
+    class function AM_dodrawSubSectors(parms: dssparams_p): integer; static; {$IFNDEF OPENGL}stdcall;{$ENDIF}
+  end;
+
 {$IFNDEF OPENGL}
 
 //==============================================================================
@@ -117,7 +160,7 @@ var
 // AM_DrawSeg8
 //
 //==============================================================================
-procedure AM_DrawSeg8(xx, yy, cc: integer; const amcolormap: PByteArray);
+class procedure TAutomapTexturedLocal.AM_DrawSeg8(xx, yy, cc: integer; const amcolormap: PByteArray);
 begin
 // JVAL Clip line if in overlay mode
   if amstate = am_overlay then
@@ -139,7 +182,7 @@ end;
 // AM_DrawSeg8Transparent
 //
 //==============================================================================
-procedure AM_DrawSeg8Transparent(xx, yy, cc: integer; const amcolormap: PByteArray);
+class procedure TAutomapTexturedLocal.AM_DrawSeg8Transparent(xx, yy, cc: integer; const amcolormap: PByteArray);
 var
   b: PByte;
 begin
@@ -164,7 +207,7 @@ end;
 // AM_DrawSeg32
 //
 //==============================================================================
-procedure AM_DrawSeg32(xx, yy, cc: integer; const amcolormap: PLongWordArray);
+class procedure TAutomapTexturedLocal.AM_DrawSeg32(xx, yy, cc: integer; const amcolormap: PLongWordArray);
 begin
 // JVAL Clip line if in overlay mode
   if amstate = am_overlay then
@@ -186,7 +229,7 @@ end;
 // AM_DrawSeg32Transparent
 //
 //==============================================================================
-procedure AM_DrawSeg32Transparent(xx, yy, cc: integer; const amcolormap: PLongWordArray);
+class procedure TAutomapTexturedLocal.AM_DrawSeg32Transparent(xx, yy, cc: integer; const amcolormap: PLongWordArray);
 var
   pl: PLongWord;
 begin
@@ -203,12 +246,9 @@ begin
       exit;
   end;
   pl := @fb32[yy * f_w + xx];
-  pl^ := R_ColorMean(pl^, amcolormap[cc]);
+  pl^ := TRendererHires.R_ColorMean(pl^, amcolormap[cc]);
 end;
 {$ENDIF}
-
-type
-  seg_ap3 = array[0..2] of Pseg_t;
 
 var
   pla, pla2: angle_t;
@@ -223,7 +263,7 @@ var
 // AM_DecodeUV
 //
 //==============================================================================
-procedure AM_DecodeUV(var xx, yy: integer; const sz: integer);
+class procedure TAutomapTexturedLocal.AM_DecodeUV(var xx, yy: integer; const sz: integer);
 var
   tmpx: fixed_t;
 begin
@@ -248,7 +288,7 @@ end;
 // AM_DecodeAngleUV
 //
 //==============================================================================
-procedure AM_DecodeAngleUV(var xx, yy: integer; const sz: integer;
+class procedure TAutomapTexturedLocal.AM_DecodeAngleUV(var xx, yy: integer; const sz: integer;
   const fangx, fangy, fangsin, fangcos: fixed_t);
 var
   tmpx: fixed_t;
@@ -286,7 +326,7 @@ end;
 // AM_DrawTexturedTriangle
 //
 //==============================================================================
-procedure AM_DrawTexturedTriangle(const lst: seg_ap3; const lump: integer; const sec: Psector_t;
+class procedure TAutomapTexturedLocal.AM_DrawTexturedTriangle(const lst: seg_ap3; const lump: integer; const sec: Psector_t;
   const aminx, amaxx: integer; const {$IFDEF OPENGL}lightlevel: integer{$ELSE}amcolormap: pointer{$ENDIF};
   const window: TAutomapWindow);
 {$IFNDEF OPENGL}
@@ -605,33 +645,25 @@ end;
 // AM_setSubSectorDrawFuncs
 //
 //==============================================================================
-procedure AM_setSubSectorDrawFuncs;
+class procedure TAutomapTextured.AM_setSubSectorDrawFuncs;
 begin
 {$IFNDEF OPENGL}
   if amstate = am_overlay then
   begin
     if videomode = vm32bit then
-      drawsegfunc := @AM_DrawSeg32Transparent
+      drawsegfunc := @TAutomapTexturedLocal.AM_DrawSeg32Transparent
     else
-      drawsegfunc := @AM_DrawSeg8Transparent;
+      drawsegfunc := @TAutomapTexturedLocal.AM_DrawSeg8Transparent;
   end
   else
   begin
     if videomode = vm32bit then
-      drawsegfunc := @AM_DrawSeg32
+      drawsegfunc := @TAutomapTexturedLocal.AM_DrawSeg32
     else
-      drawsegfunc := @AM_DrawSeg8;
+      drawsegfunc := @TAutomapTexturedLocal.AM_DrawSeg8;
   end;
 {$ENDIF}
 end;
-
-type
-  dssparams_t = record
-    minx, maxx: integer;
-    // the window on the map, the same for all the threads
-    window: TAutomapWindow;
-  end;
-  dssparams_p = ^dssparams_t;
 
 var
   amvalidcount: integer = 0;
@@ -641,7 +673,7 @@ var
 // AM_dodrawSubSectors
 //
 //==============================================================================
-function AM_dodrawSubSectors(parms: dssparams_p): integer; {$IFNDEF OPENGL}stdcall;{$ENDIF}
+class function TAutomapTexturedLocal.AM_dodrawSubSectors(parms: dssparams_p): integer; {$IFNDEF OPENGL}stdcall;{$ENDIF}
 var
   i, j: integer;
   ssector: Psubsector_t;
@@ -823,7 +855,7 @@ var
 // AM_drawSubSectors
 //
 //==============================================================================
-procedure AM_drawSubSectors(const AWindow: TAutomapWindow);
+class procedure TAutomapTextured.AM_drawSubSectors(const AWindow: TAutomapWindow);
 var
   parms: {$IFNDEF OPENGL}array[0..MAXDSSTHREADS - 1] of{$ENDIF} dssparams_t;
 {$IFNDEF OPENGL}
@@ -873,7 +905,7 @@ begin
         dssthreads[i].Activate(@parms[i]);
       end;
     end;
-    AM_dodrawSubSectors(@parms[numdssthreads - 1]);
+    TAutomapTexturedLocal.AM_dodrawSubSectors(@parms[numdssthreads - 1]);
     for i := 0 to numdssthreads - 2 do
       dssthreads[i].Wait;
   end
@@ -883,7 +915,7 @@ begin
     parms{$IFNDEF OPENGL}[0]{$ENDIF}.minx := 1;
     parms{$IFNDEF OPENGL}[0]{$ENDIF}.window := AWindow;
     parms{$IFNDEF OPENGL}[0]{$ENDIF}.maxx := f_w - 1;
-    AM_dodrawSubSectors(@parms{$IFNDEF OPENGL}[0]{$ENDIF});
+    TAutomapTexturedLocal.AM_dodrawSubSectors(@parms{$IFNDEF OPENGL}[0]{$ENDIF});
   end;
 end;
 
@@ -892,7 +924,7 @@ end;
 // AM_InitTextured
 //
 //==============================================================================
-procedure AM_InitTextured;
+class procedure TAutomapTextured.AM_InitTextured;
 {$IFNDEF OPENGL}
 var
   i: integer;
@@ -900,7 +932,7 @@ var
 begin
 {$IFNDEF OPENGL}
   for i := 0 to MAXDSSTHREADS - 2 do
-    dssthreads[i] := TDThread.Create(@AM_dodrawSubSectors);
+    dssthreads[i] := TDThread.Create(@TAutomapTexturedLocal.AM_dodrawSubSectors);
 {$ENDIF}
 end;
 
@@ -909,7 +941,7 @@ end;
 // AM_ShutDownTextured
 //
 //==============================================================================
-procedure AM_ShutDownTextured;
+class procedure TAutomapTextured.AM_ShutDownTextured;
 {$IFNDEF OPENGL}
 var
   i: integer;

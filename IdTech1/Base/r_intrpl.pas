@@ -38,62 +38,6 @@ uses
   d_delphi,
   m_fixed;
 
-//==============================================================================
-//
-// R_InitInterpolations
-//
-//==============================================================================
-procedure R_InitInterpolations;
-
-//==============================================================================
-//
-// R_ResetInterpolationBuffer
-//
-//==============================================================================
-procedure R_ResetInterpolationBuffer;
-
-//==============================================================================
-//
-// R_StoreInterpolationData
-//
-//==============================================================================
-procedure R_StoreInterpolationData(const tick: integer; const counts: integer);
-
-//==============================================================================
-//
-// R_RestoreInterpolationData
-//
-//==============================================================================
-procedure R_RestoreInterpolationData;
-
-//==============================================================================
-//
-// R_RestoreInterpolationPolys
-//
-//==============================================================================
-procedure R_RestoreInterpolationPolys;
-
-//==============================================================================
-//
-// R_Interpolate
-//
-//==============================================================================
-function R_Interpolate: boolean;
-
-//==============================================================================
-//
-// R_InterpolateTicker
-//
-//==============================================================================
-procedure R_InterpolateTicker;
-
-//==============================================================================
-//
-// R_SetInterpolateSkipTicks
-//
-//==============================================================================
-procedure R_SetInterpolateSkipTicks(const ticks: integer);
-
 var
   interpolate: boolean;
   interpolateprecise: boolean = true;
@@ -108,6 +52,64 @@ var
 
 const
   NUM_SECTOR_INTERPOLATE_GROUPS = 4;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererInterpolation = class sealed
+  public
+    //==============================================================================
+    //
+    // R_InitInterpolations
+    //
+    //==============================================================================
+    class procedure R_InitInterpolations; static;
+    //==============================================================================
+    //
+    // R_ResetInterpolationBuffer
+    //
+    //==============================================================================
+    class procedure R_ResetInterpolationBuffer; static;
+    //==============================================================================
+    //
+    // R_StoreInterpolationData
+    //
+    //==============================================================================
+    class procedure R_StoreInterpolationData(const tick: integer; const counts: integer); static;
+    //==============================================================================
+    //
+    // R_RestoreInterpolationData
+    //
+    //==============================================================================
+    class procedure R_RestoreInterpolationData; static;
+    //==============================================================================
+    //
+    // R_RestoreInterpolationPolys
+    //
+    //==============================================================================
+    class procedure R_RestoreInterpolationPolys; static;
+    //==============================================================================
+    //
+    // R_Interpolate
+    //
+    //==============================================================================
+    class function R_Interpolate: boolean; static;
+    //==============================================================================
+    //
+    // R_InterpolateTicker
+    //
+    //==============================================================================
+    class procedure R_InterpolateTicker; static;
+    //==============================================================================
+    //
+    // R_SetInterpolateSkipTicks
+    //
+    //==============================================================================
+    class procedure R_SetInterpolateSkipTicks(const ticks: integer); static;
+  end;
+
 
 implementation
 
@@ -200,12 +202,54 @@ var
   imobjs: array[0..$FFFF] of Pmobj_t;
   numismobjs: integer;
 
+const
+  II2MARGIN = 8 * FRACUNIT;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererInterpolationLocal = class sealed
+  public
+    class procedure CmdInterpolate(const parm: string = ''); static;
+    class procedure CmdInterpolateOncapped(const parm: string = ''); static;
+    class function R_InterpolationCalcIF(const prev, next: fixed_t): fixed_t; static;
+    class function R_InterpolationCalcIF2(const prev, next: fixed_t): fixed_t; static;
+    class function R_InterpolationCalcSIF(const prev, next: smallint): smallint; static;
+    class function R_InterpolationCalcFF(const prev, next: float): float; static;
+    class procedure R_InterpolationCalcI(const pi: Piitem_t); static;
+    class procedure R_InterpolationCalcI2(const pi: Piitem_t); static;
+    class procedure R_InterpolationCalcSI(const pi: Piitem_t); static;
+    class function R_InterpolationCalcB(const prev, next: byte): byte; static;
+    class function R_InterpolationCalcA(const prev, next: angle_t): angle_t; static;
+    class procedure R_InterpolationCalcF(const pi: Piitem_t); static;
+    class procedure R_InterpolationCalcPolyRotation(const pi: Piitem_t); static;
+    class procedure R_InterpolationCalcPolyMove(const pi: Piitem_t); static;
+    class procedure R_InterpolationCalcSector(const sec: Psector_t); static;
+    class procedure R_InterpolationCalcMobj(const mo: Pmobj_t); static;
+    class procedure R_AddInterpolationItem(const addr: pointer; const typ: itype; const istruct: Pistruct_t); static;
+    class procedure R_RestoreInterpolationPolyRotate(const po: Ppolyobj_t); static;
+    class procedure R_RestoreInterpolationPolyMove(const po: Ppolyobj_t); static;
+    class procedure R_RestoreInterpolationSector(const sec: Psector_t); static;
+    class procedure R_RestoreInterpolationMobj(mo: Pmobj_t); static;
+    class function R_RestoreInterpolationData_thr1(p: pointer): integer; stdcall; static;
+    class function R_RestoreInterpolationData_thr2(p: pointer): integer; stdcall; static;
+    class function R_RestoreInterpolationData_thr3(p: pointer): integer; stdcall; static;
+    class procedure R_RestoreInterpolationData_Single_Thread; static;
+    class function R_TotalInterpolationItems: integer; static;
+    class function R_DoInterpolate_thr1(p: pointer): integer; stdcall; static;
+    class function R_DoInterpolate_thr2(p: pointer): integer; stdcall; static;
+    class function R_DoInterpolate_thr3(p: pointer): integer; stdcall; static;
+  end;
+
 //==============================================================================
 //
 // CmdInterpolate
 //
 //==============================================================================
-procedure CmdInterpolate(const parm: string = '');
+class procedure TRendererInterpolationLocal.CmdInterpolate(const parm: string = '');
 var
   newval: boolean;
 begin
@@ -219,7 +263,7 @@ begin
   if newval <> interpolate then
   begin
     interpolate := newval;
-    R_SetInterpolateSkipTicks(1);
+    TRendererInterpolation.R_SetInterpolateSkipTicks(1);
   end;
 
   CmdInterpolate;
@@ -230,7 +274,7 @@ end;
 // CmdInterpolateOncapped
 //
 //==============================================================================
-procedure CmdInterpolateOncapped(const parm: string = '');
+class procedure TRendererInterpolationLocal.CmdInterpolateOncapped(const parm: string = '');
 var
   newval: boolean;
 begin
@@ -244,7 +288,7 @@ begin
   if newval <> interpolateoncapped then
   begin
     interpolateoncapped := newval;
-    R_SetInterpolateSkipTicks(1);
+    TRendererInterpolation.R_SetInterpolateSkipTicks(1);
   end;
 
   CmdInterpolateOncapped;
@@ -255,7 +299,7 @@ end;
 // R_InitInterpolations
 //
 //==============================================================================
-procedure R_InitInterpolations;
+class procedure TRendererInterpolation.R_InitInterpolations;
 var
   i: integer;
 begin
@@ -268,8 +312,8 @@ begin
   MT_ZeroMemory(@imobjs, SizeOf(imobjs));
   MT_ZeroMemory(@isectors, SizeOf(isectors));
   numismobjs := 0;
-  C_AddCmd('interpolate, interpolation, setinterpolation, r_interpolate', @CmdInterpolate);
-  C_AddCmd('interpolateoncapped, r_interpolateoncapped', @CmdInterpolateOncapped);
+  C_AddCmd('interpolate, interpolation, setinterpolation, r_interpolate', @TRendererInterpolationLocal.CmdInterpolate);
+  C_AddCmd('interpolateoncapped, r_interpolateoncapped', @TRendererInterpolationLocal.CmdInterpolateOncapped);
 end;
 
 //==============================================================================
@@ -277,7 +321,7 @@ end;
 // R_ResetInterpolationBuffer
 //
 //==============================================================================
-procedure R_ResetInterpolationBuffer;
+class procedure TRendererInterpolation.R_ResetInterpolationBuffer;
 var
   i: integer;
 begin
@@ -297,7 +341,7 @@ end;
 // R_InterpolationCalcIF
 //
 //==============================================================================
-function R_InterpolationCalcIF(const prev, next: fixed_t): fixed_t;
+class function TRendererInterpolationLocal.R_InterpolationCalcIF(const prev, next: fixed_t): fixed_t;
 begin
   if next = prev then
     result := prev
@@ -305,15 +349,12 @@ begin
     result := prev + round((next - prev) * ticfrac_f);
 end;
 
-const
-  II2MARGIN = 8 * FRACUNIT;
-
 //==============================================================================
 //
 // R_InterpolationCalcIF2
 //
 //==============================================================================
-function R_InterpolationCalcIF2(const prev, next: fixed_t): fixed_t;
+class function TRendererInterpolationLocal.R_InterpolationCalcIF2(const prev, next: fixed_t): fixed_t;
 var
   diff: integer;
 begin
@@ -339,7 +380,7 @@ end;
 // R_InterpolationCalcSIF
 //
 //==============================================================================
-function R_InterpolationCalcSIF(const prev, next: smallint): smallint;
+class function TRendererInterpolationLocal.R_InterpolationCalcSIF(const prev, next: smallint): smallint;
 begin
   if next = prev then
     result := prev
@@ -347,7 +388,7 @@ begin
     result := prev + round((next - prev) * ticfrac_f);
 end;
 
-function R_InterpolationCalcFF(const prev, next: float): float;
+class function TRendererInterpolationLocal.R_InterpolationCalcFF(const prev, next: float): float;
 begin
   if next = prev then
     result := prev
@@ -366,7 +407,7 @@ end;
 // R_InterpolationCalcI
 //
 //==============================================================================
-procedure R_InterpolationCalcI(const pi: Piitem_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcI(const pi: Piitem_t);
 begin
   if pi.inext = pi.iprev then
     exit;
@@ -379,7 +420,7 @@ end;
 // R_InterpolationCalcI2
 //
 //==============================================================================
-procedure R_InterpolationCalcI2(const pi: Piitem_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcI2(const pi: Piitem_t);
 var
   diff: integer;
 begin
@@ -403,7 +444,7 @@ end;
 // R_InterpolationCalcSI
 //
 //==============================================================================
-procedure R_InterpolationCalcSI(const pi: Piitem_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcSI(const pi: Piitem_t);
 begin
   if pi.sinext = pi.siprev then
     exit;
@@ -416,7 +457,7 @@ end;
 // R_InterpolationCalcB
 //
 //==============================================================================
-function R_InterpolationCalcB(const prev, next: byte): byte;
+class function TRendererInterpolationLocal.R_InterpolationCalcB(const prev, next: byte): byte;
 begin
   if next = prev then
     result := prev
@@ -433,7 +474,7 @@ end;
 // R_InterpolationCalcA
 //
 //==============================================================================
-function R_InterpolationCalcA(const prev, next: angle_t): angle_t;
+class function TRendererInterpolationLocal.R_InterpolationCalcA(const prev, next: angle_t): angle_t;
 {$IFDEF CPUX86}
 var
   prev_e, next_e, mid_e: float;
@@ -479,7 +520,7 @@ end;
 // R_InterpolationCalcF
 //
 //==============================================================================
-procedure R_InterpolationCalcF(const pi: Piitem_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcF(const pi: Piitem_t);
 begin
   if pi.fnext = pi.fprev then
     exit;
@@ -496,7 +537,7 @@ end;
 // R_InterpolationCalcPolyRotation
 //
 //==============================================================================
-procedure R_InterpolationCalcPolyRotation(const pi: Piitem_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcPolyRotation(const pi: Piitem_t);
 var
   po: Ppolyobj_t;
 begin
@@ -514,7 +555,7 @@ end;
 // R_InterpolationCalcPolyMove
 //
 //==============================================================================
-procedure R_InterpolationCalcPolyMove(const pi: Piitem_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcPolyMove(const pi: Piitem_t);
 var
   po: Ppolyobj_t;
 begin
@@ -534,7 +575,7 @@ end;
 // R_InterpolationCalcSector
 //
 //==============================================================================
-procedure R_InterpolationCalcSector(const sec: Psector_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcSector(const sec: Psector_t);
 begin
   sec.floorheight := R_InterpolationCalcIF2(sec.prev_floorheight, sec.next_floorheight);
   sec.ceilingheight := R_InterpolationCalcIF2(sec.prev_ceilingheight, sec.next_ceilingheight);
@@ -577,7 +618,7 @@ end;
 // R_InterpolationCalcMobj
 //
 //==============================================================================
-procedure R_InterpolationCalcMobj(const mo: Pmobj_t);
+class procedure TRendererInterpolationLocal.R_InterpolationCalcMobj(const mo: Pmobj_t);
 begin
   mo.x := R_InterpolationCalcIF(mo.prevx, mo.nextx);
   mo.y := R_InterpolationCalcIF(mo.prevy, mo.nexty);
@@ -590,7 +631,7 @@ end;
 // R_AddInterpolationItem
 //
 //==============================================================================
-procedure R_AddInterpolationItem(const addr: pointer; const typ: itype; const istruct: Pistruct_t);
+class procedure TRendererInterpolationLocal.R_AddInterpolationItem(const addr: pointer; const typ: itype; const istruct: Pistruct_t);
 var
   newrealsize: integer;
   pisector: Psectorinterpolatearray_t;
@@ -758,7 +799,7 @@ var
 // R_StoreInterpolationData
 //
 //==============================================================================
-procedure R_StoreInterpolationData(const tick: integer; const counts: integer);
+class procedure TRendererInterpolation.R_StoreInterpolationData(const tick: integer; const counts: integer);
 var
   sec: Psector_t;
   li: Pline_t;
@@ -786,19 +827,19 @@ begin
   // Interpolate player
   player := @TGameSession.Players[displayplayer];
 
-  R_AddInterpolationItem(@player.lookdir, iinteger, @istructs[IDS_PLAYER]);
-  R_AddInterpolationItem(@player.lookdir16, iinteger, @istructs[IDS_PLAYER]); // JVAL Smooth Look Up/Down
-  R_AddInterpolationItem(@player.lookdir2, ibyte, @istructs[IDS_PLAYER]);
-  R_AddInterpolationItem(@player.teleporttics, iinteger, @istructs[IDS_PLAYER]);
-  R_AddInterpolationItem(@player.quaketics, iinteger, @istructs[IDS_PLAYER]);
+  TRendererInterpolationLocal.R_AddInterpolationItem(@player.lookdir, iinteger, @istructs[IDS_PLAYER]);
+  TRendererInterpolationLocal.R_AddInterpolationItem(@player.lookdir16, iinteger, @istructs[IDS_PLAYER]); // JVAL Smooth Look Up/Down
+  TRendererInterpolationLocal.R_AddInterpolationItem(@player.lookdir2, ibyte, @istructs[IDS_PLAYER]);
+  TRendererInterpolationLocal.R_AddInterpolationItem(@player.teleporttics, iinteger, @istructs[IDS_PLAYER]);
+  TRendererInterpolationLocal.R_AddInterpolationItem(@player.quaketics, iinteger, @istructs[IDS_PLAYER]);
   for i := 0 to Ord(NUMPSPRITES) - 1 do
   begin
-    R_AddInterpolationItem(@player.psprites[i].sx, iinteger, @istructs[IDS_PLAYER]);
-    R_AddInterpolationItem(@player.psprites[i].sy, iinteger, @istructs[IDS_PLAYER]);
+    TRendererInterpolationLocal.R_AddInterpolationItem(@player.psprites[i].sx, iinteger, @istructs[IDS_PLAYER]);
+    TRendererInterpolationLocal.R_AddInterpolationItem(@player.psprites[i].sy, iinteger, @istructs[IDS_PLAYER]);
   end;
-  sec := R_PointInSubsector(viewx, viewy).sector;
+  sec := TRendererMain.R_PointInSubsector(viewx, viewy).sector;
   if sec.renderflags and SRF_NO_INTERPOLATE = 0 then
-    R_AddInterpolationItem(@player.viewz, iinteger, @istructs[IDS_PLAYER]);
+    TRendererInterpolationLocal.R_AddInterpolationItem(@player.viewz, iinteger, @istructs[IDS_PLAYER]);
 
   // Interpolate Sectors
   sec := @sectors[0];
@@ -807,7 +848,7 @@ begin
     if sec.rendervalidcount = rendervalidcount then
       if sec.renderflags and SRF_NO_INTERPOLATE = 0 then
       begin
-        R_AddInterpolationItem(sec, isector, nil);
+        TRendererInterpolationLocal.R_AddInterpolationItem(sec, isector, nil);
         inc(sec);
         Continue;
       end;
@@ -826,8 +867,8 @@ begin
         if li.sidenum[j] > -1 then
         begin
           si := @sides[li.sidenum[j]];
-          R_AddInterpolationItem(@si.textureoffset, iinteger2, @istructs[IDS_LINES]);
-          R_AddInterpolationItem(@si.rowoffset, iinteger2, @istructs[IDS_LINES]);
+          TRendererInterpolationLocal.R_AddInterpolationItem(@si.textureoffset, iinteger2, @istructs[IDS_LINES]);
+          TRendererInterpolationLocal.R_AddInterpolationItem(@si.rowoffset, iinteger2, @istructs[IDS_LINES]);
         end;
       end;
     inc(li);
@@ -842,9 +883,9 @@ begin
         begin
           if (@Ppolyevent_t(polyobjs[i].specialdata).thinker._function.acp1 = @TH_MovePoly) or
              ((@Ppolydoor_t(polyobjs[i].specialdata).thinker._function.acp1 = @TH_PolyDoor) and (Ppolydoor_t(polyobjs[i].specialdata)._type = PODOOR_SLIDE)) then
-            R_AddInterpolationItem(@polyobjs[i], ipolymove, @istructs[IDS_POLYS])
+            TRendererInterpolationLocal.R_AddInterpolationItem(@polyobjs[i], ipolymove, @istructs[IDS_POLYS])
           else
-            R_AddInterpolationItem(@polyobjs[i], ipolyrotate, @istructs[IDS_POLYS]);
+            TRendererInterpolationLocal.R_AddInterpolationItem(@polyobjs[i], ipolyrotate, @istructs[IDS_POLYS]);
           storedpolyinterpolations := true;
         end;
 
@@ -863,7 +904,7 @@ begin
       if (Pmobj_t(th).rendervalidcount = rendervalidcount) or (Pmobj_t(th).player <> nil) then
         if Pmobj_t(th).flags3_ex and MF3_EX_NORENDERINTERPOLATION = 0 then
         begin
-          R_AddInterpolationItem(th, imobj, nil);
+          TRendererInterpolationLocal.R_AddInterpolationItem(th, imobj, nil);
           th := th.next;
           Continue;
         end;
@@ -881,7 +922,7 @@ end;
 // R_RestoreInterpolationPolyRotate
 //
 //==============================================================================
-procedure R_RestoreInterpolationPolyRotate(const po: Ppolyobj_t);
+class procedure TRendererInterpolationLocal.R_RestoreInterpolationPolyRotate(const po: Ppolyobj_t);
 begin
   po.angle := po.nextangle;
   po.prevangle := po.nextangle;
@@ -894,7 +935,7 @@ end;
 // R_RestoreInterpolationPolyMove
 //
 //==============================================================================
-procedure R_RestoreInterpolationPolyMove(const po: Ppolyobj_t);
+class procedure TRendererInterpolationLocal.R_RestoreInterpolationPolyMove(const po: Ppolyobj_t);
 begin
   po.x := po.nextx;
   po.y := po.nexty;
@@ -909,7 +950,7 @@ end;
 // R_RestoreInterpolationSector
 //
 //==============================================================================
-procedure R_RestoreInterpolationSector(const sec: Psector_t);
+class procedure TRendererInterpolationLocal.R_RestoreInterpolationSector(const sec: Psector_t);
 begin
   sec.floorheight := sec.next_floorheight;
   sec.ceilingheight := sec.next_ceilingheight;
@@ -952,7 +993,7 @@ end;
 // R_RestoreInterpolationMobj
 //
 //==============================================================================
-procedure R_RestoreInterpolationMobj(mo: Pmobj_t);
+class procedure TRendererInterpolationLocal.R_RestoreInterpolationMobj(mo: Pmobj_t);
 begin
   mo.x := mo.nextx;
   mo.y := mo.nexty;
@@ -965,7 +1006,7 @@ end;
 // R_RestoreInterpolationData_thr1
 //
 //==============================================================================
-function R_RestoreInterpolationData_thr1(p: pointer): integer; stdcall;
+class function TRendererInterpolationLocal.R_RestoreInterpolationData_thr1(p: pointer): integer; stdcall;
 var
   i, j: integer;
   istruct: Pistruct_t;
@@ -998,7 +1039,7 @@ end;
 // R_RestoreInterpolationData_thr2
 //
 //==============================================================================
-function R_RestoreInterpolationData_thr2(p: pointer): integer; stdcall;
+class function TRendererInterpolationLocal.R_RestoreInterpolationData_thr2(p: pointer): integer; stdcall;
 var
   i, j: integer;
   sec: Psector_t;
@@ -1024,7 +1065,7 @@ end;
 // R_RestoreInterpolationData_thr3
 //
 //==============================================================================
-function R_RestoreInterpolationData_thr3(p: pointer): integer; stdcall;
+class function TRendererInterpolationLocal.R_RestoreInterpolationData_thr3(p: pointer): integer; stdcall;
 var
   i: integer;
   mo: Pmobj_t;
@@ -1043,7 +1084,7 @@ end;
 // R_RestoreInterpolationData_Single_Thread
 //
 //==============================================================================
-procedure R_RestoreInterpolationData_Single_Thread;
+class procedure TRendererInterpolationLocal.R_RestoreInterpolationData_Single_Thread;
 var
   i, j: integer;
   istruct: Pistruct_t;
@@ -1096,7 +1137,7 @@ end;
 // R_RestoreInterpolationPolys
 //
 //==============================================================================
-procedure R_RestoreInterpolationPolys;
+class procedure TRendererInterpolation.R_RestoreInterpolationPolys;
 var
   i: integer;
   pi: Piitem_t;
@@ -1108,8 +1149,8 @@ begin
   for i := 0 to istructs[IDS_POLYS].numitems - 1 do
   begin
     case pi._type of
-      ipolyrotate: R_RestoreInterpolationPolyRotate(Ppolyobj_t(pi.address));
-      ipolymove: R_RestoreInterpolationPolyMove(Ppolyobj_t(pi.address));
+      ipolyrotate: TRendererInterpolationLocal.R_RestoreInterpolationPolyRotate(Ppolyobj_t(pi.address));
+      ipolymove: TRendererInterpolationLocal.R_RestoreInterpolationPolyMove(Ppolyobj_t(pi.address));
     end;
     inc(pi);
   end;
@@ -1120,7 +1161,7 @@ end;
 // R_TotalInterpolationItems
 //
 //==============================================================================
-function R_TotalInterpolationItems: integer;
+class function TRendererInterpolationLocal.R_TotalInterpolationItems: integer;
 var
   i: integer;
 begin
@@ -1136,13 +1177,13 @@ end;
 // R_RestoreInterpolationData
 //
 //==============================================================================
-procedure R_RestoreInterpolationData;
+class procedure TRendererInterpolation.R_RestoreInterpolationData;
 var
   r1, r2, r3, r4: mt_range_t;
   cpus: integer;
 begin
   cpus := I_GetNumCPUs;
-  if usemultithread and (cpus >= 4) and (R_TotalInterpolationItems > 1024) then
+  if usemultithread and (cpus >= 4) and (TRendererInterpolationLocal.R_TotalInterpolationItems > 1024) then
   begin
     if cpus = 4 then
     begin
@@ -1151,10 +1192,10 @@ begin
       r2.start := IDS_SECTOR3;
       r2.finish := IDS_SECTOR4;
       MT_Execute4(
-        @R_RestoreInterpolationData_thr1, nil,
-        @R_RestoreInterpolationData_thr2, @r1,
-        @R_RestoreInterpolationData_thr2, @r2,
-        @R_RestoreInterpolationData_thr3, nil
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr1, nil,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr2, @r1,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr2, @r2,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr3, nil
       );
     end
     else
@@ -1168,17 +1209,17 @@ begin
       r4.start := IDS_SECTOR4;
       r4.finish := IDS_SECTOR4;
       MT_Execute6(
-        @R_RestoreInterpolationData_thr1, nil,
-        @R_RestoreInterpolationData_thr2, @r1,
-        @R_RestoreInterpolationData_thr2, @r2,
-        @R_RestoreInterpolationData_thr2, @r3,
-        @R_RestoreInterpolationData_thr2, @r4,
-        @R_RestoreInterpolationData_thr3, nil
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr1, nil,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr2, @r1,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr2, @r2,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr2, @r3,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr2, @r4,
+        @TRendererInterpolationLocal.R_RestoreInterpolationData_thr3, nil
       );
     end;
   end
   else
-    R_RestoreInterpolationData_Single_Thread;
+    TRendererInterpolationLocal.R_RestoreInterpolationData_Single_Thread;
 end;
 
 //==============================================================================
@@ -1186,7 +1227,7 @@ end;
 // R_DoInterpolate_thr1
 //
 //==============================================================================
-function R_DoInterpolate_thr1(p: pointer): integer; stdcall;
+class function TRendererInterpolationLocal.R_DoInterpolate_thr1(p: pointer): integer; stdcall;
 var
   i, j: integer;
   istruct: Pistruct_t;
@@ -1222,7 +1263,7 @@ end;
 // R_DoInterpolate_thr2
 //
 //==============================================================================
-function R_DoInterpolate_thr2(p: pointer): integer; stdcall;
+class function TRendererInterpolationLocal.R_DoInterpolate_thr2(p: pointer): integer; stdcall;
 var
   i, j: integer;
   sec: Psector_t;
@@ -1248,7 +1289,7 @@ end;
 // R_DoInterpolate_thr3
 //
 //==============================================================================
-function R_DoInterpolate_thr3(p: pointer): integer; stdcall;
+class function TRendererInterpolationLocal.R_DoInterpolate_thr3(p: pointer): integer; stdcall;
 var
   i: integer;
   mo: Pmobj_t;
@@ -1270,7 +1311,7 @@ var
 // R_Interpolate
 //
 //==============================================================================
-function R_Interpolate: boolean;
+class function TRendererInterpolation.R_Interpolate: boolean;
 var
   i, j: integer;
   istruct: Pistruct_t;
@@ -1315,7 +1356,7 @@ begin
     ticfrac_f := ticfrac / FRACUNIT;
 
     cpus := I_GetNumCPUs;
-    if usemultithread and (cpus >= 4) and (R_TotalInterpolationItems > 1024) then
+    if usemultithread and (cpus >= 4) and (TRendererInterpolationLocal.R_TotalInterpolationItems > 1024) then
     begin
       if cpus = 4 then
       begin
@@ -1324,10 +1365,10 @@ begin
         r2.start := IDS_SECTOR3;
         r2.finish := IDS_SECTOR4;
         MT_Execute4(
-          @R_DoInterpolate_thr1, nil,
-          @R_DoInterpolate_thr2, @r1,
-          @R_DoInterpolate_thr2, @r2,
-          @R_DoInterpolate_thr3, nil
+          @TRendererInterpolationLocal.R_DoInterpolate_thr1, nil,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr2, @r1,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr2, @r2,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr3, nil
         );
       end
       else
@@ -1341,12 +1382,12 @@ begin
         r4.start := IDS_SECTOR4;
         r4.finish := IDS_SECTOR4;
         MT_Execute6(
-          @R_DoInterpolate_thr1, nil,
-          @R_DoInterpolate_thr2, @r1,
-          @R_DoInterpolate_thr2, @r2,
-          @R_DoInterpolate_thr2, @r3,
-          @R_DoInterpolate_thr2, @r4,
-          @R_DoInterpolate_thr3, nil
+          @TRendererInterpolationLocal.R_DoInterpolate_thr1, nil,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr2, @r1,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr2, @r2,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr2, @r3,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr2, @r4,
+          @TRendererInterpolationLocal.R_DoInterpolate_thr3, nil
         );
       end;
     end
@@ -1361,13 +1402,13 @@ begin
           if pi.address = pi.lastaddress then
           begin
             case pi._type of
-              iinteger: R_InterpolationCalcI(pi);
-              iinteger2: R_InterpolationCalcI2(pi);
-              ismallint: R_InterpolationCalcSI(pi);
-              ibyte: PByte(pi.address)^ := R_InterpolationCalcB(pi.bprev, pi.bnext);
-              iangle: PAngle_t(pi.address)^ := R_InterpolationCalcA(pi.aprev, pi.anext);
-              ifloat: R_InterpolationCalcF(pi);
-              ipolyrotate: R_InterpolationCalcPolyRotation(pi);
+              iinteger: TRendererInterpolationLocal.R_InterpolationCalcI(pi);
+              iinteger2: TRendererInterpolationLocal.R_InterpolationCalcI2(pi);
+              ismallint: TRendererInterpolationLocal.R_InterpolationCalcSI(pi);
+              ibyte: PByte(pi.address)^ := TRendererInterpolationLocal.R_InterpolationCalcB(pi.bprev, pi.bnext);
+              iangle: PAngle_t(pi.address)^ := TRendererInterpolationLocal.R_InterpolationCalcA(pi.aprev, pi.anext);
+              ifloat: TRendererInterpolationLocal.R_InterpolationCalcF(pi);
+              ipolyrotate: TRendererInterpolationLocal.R_InterpolationCalcPolyRotation(pi);
             end;
           end;
           inc(pi);
@@ -1380,14 +1421,14 @@ begin
         begin
           sec := pisector.sectors[i];
           if sec.intrplcnt > 1 then
-            R_InterpolationCalcSector(sec);
+            TRendererInterpolationLocal.R_InterpolationCalcSector(sec);
         end;
       end;
       for i := 0 to numismobjs - 1 do
       begin
         mo := imobjs[i];
         if mo.intrplcnt > 1 then
-          R_InterpolationCalcMobj(mo);
+          TRendererInterpolationLocal.R_InterpolationCalcMobj(mo);
       end;
     end;
 
@@ -1400,7 +1441,7 @@ end;
 // R_InterpolateTicker
 //
 //==============================================================================
-procedure R_InterpolateTicker;
+class procedure TRendererInterpolation.R_InterpolateTicker;
 begin
   if skipinterpolationticks >= 0 then
     dec(skipinterpolationticks);
@@ -1411,7 +1452,7 @@ end;
 // R_SetInterpolateSkipTicks
 //
 //==============================================================================
-procedure R_SetInterpolateSkipTicks(const ticks: integer);
+class procedure TRendererInterpolation.R_SetInterpolateSkipTicks(const ticks: integer);
 begin
   skipinterpolationticks := ticks;
   frametime := 0;

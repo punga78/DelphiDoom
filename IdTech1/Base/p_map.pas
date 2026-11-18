@@ -516,7 +516,7 @@ begin
   P_SetThingPosition(thing);
 
   if thing.player = viewplayer then
-    R_SetInterpolateSkipTicks(1);
+    TRendererInterpolation.R_SetInterpolateSkipTicks(1);
 
   TMapGameRules.MarkJustAppeared(thing);
   thing.intrplcnt := 0;
@@ -1612,12 +1612,12 @@ begin
 
   side := P_PointOnLineSide(TMapSlide.Mobj.x, TMapSlide.Mobj.y, ld);
 
-  lineangle := R_PointToAngle2(0, 0, ld.dx, ld.dy);
+  lineangle := TRendererMain.R_PointToAngle2(0, 0, ld.dx, ld.dy);
 
   if side = 1 then
     lineangle := lineangle + ANG180;
 
-  moveangle := R_PointToAngle2(0, 0, TMapSlide.XMove, TMapSlide.YMove);
+  moveangle := TRendererMain.R_PointToAngle2(0, 0, TMapSlide.XMove, TMapSlide.YMove);
   deltaangle := moveangle - lineangle;
 
   if deltaangle > ANG180 then

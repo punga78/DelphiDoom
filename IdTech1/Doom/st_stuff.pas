@@ -1301,7 +1301,7 @@ begin
       else
       begin
         badguyangle :=
-          R_PointToAngle2(plyr.mo.x, plyr.mo.y, plyr.attacker.x, plyr.attacker.y);
+          TRendererMain.R_PointToAngle2(plyr.mo.x, plyr.mo.y, plyr.attacker.x, plyr.attacker.y);
 
         if badguyangle > plyr.mo.angle then
         begin
@@ -1548,7 +1548,7 @@ begin
     {$IFDEF OPENGL}
     gld_SetPalette(palette);
     {$ELSE}
-    R_SetPalette(palette);
+    TRendererHires.R_SetPalette(palette);
     {$ENDIF}
     p := W_CacheLumpNum(lu_palette, PU_STATIC);
     pal := PByteArray(NativeInt(p) + palette * 768);
@@ -1624,9 +1624,9 @@ end;
 class procedure TStatusBarLocalRoutines.ST_RefreshBackgroundSmall;
 begin
   if wide_stbar = 426 then
-    R_VideoBlanc(SCN_ST426, 0, ST_WIDTH426 * ST_HEIGHT)
+    TRendererDraw.R_VideoBlanc(SCN_ST426, 0, ST_WIDTH426 * ST_HEIGHT)
   else
-    R_VideoBlanc(SCN_ST, 0, ST_WIDTH * ST_HEIGHT);
+    TRendererDraw.R_VideoBlanc(SCN_ST, 0, ST_WIDTH * ST_HEIGHT);
 end;
 
 //==============================================================================

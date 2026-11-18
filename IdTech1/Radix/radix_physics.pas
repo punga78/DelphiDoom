@@ -264,7 +264,7 @@ begin
     dist := pmo.radius + rnd * 1024;
     x := pmo.x + FixedMul(dist, finecosine[an shr ANGLETOFINESHIFT]);
     y := pmo.y + FixedMul(dist, finesine[an shr ANGLETOFINESHIFT]);
-    sec := R_PointInSubsector(x, y).sector;
+    sec := TRendererMain.R_PointInSubsector(x, y).sector;
     if sec = psec then
     begin
       rnd := Sys_Random;

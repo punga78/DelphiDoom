@@ -1055,7 +1055,7 @@ begin
   if (inflictor <> nil) and (target.flags and MF_NOCLIP = 0) and
     ((source = nil) or (source.player = nil) or (Pplayer_t(source.player).readyweapon <> wp_chainsaw)) then
   begin
-    ang := R_PointToAngle2(inflictor.x, inflictor.y, target.x, target.y);
+    ang := TRendererMain.R_PointToAngle2(inflictor.x, inflictor.y, target.x, target.y);
 
     mass := target.mass;
     if mass = 0 then

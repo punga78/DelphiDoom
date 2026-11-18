@@ -169,7 +169,7 @@ begin
     exit;
 
   player.cmd.angleturn := 0;
-  angle := R_PointToAngle2(player.mo.x, player.mo.y, player.angletargetx, player.angletargety);
+  angle := TRendererMain.R_PointToAngle2(player.mo.x, player.mo.y, player.angletargetx, player.angletargety);
   diff := player.mo.angle - angle;
 
   ticks := player.angletargetticks;

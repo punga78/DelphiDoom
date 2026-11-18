@@ -2219,13 +2219,13 @@ begin
   Z_Free(savebuffer);
 
   if setsizeneeded then
-    R_ExecuteSetViewSize;
+    TRendererMain.R_ExecuteSetViewSize;
 
   P_LevelInfoChangeMusic;
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
-  R_FillBackScreen;
+  TRendererDraw.R_FillBackScreen;
 {$ENDIF}
 end;
 
@@ -2385,7 +2385,7 @@ begin
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
-  R_FillBackScreen;
+  TRendererDraw.R_FillBackScreen;
 {$ENDIF}
 end;
 
@@ -2530,7 +2530,7 @@ begin
   levelinf.musname := stringtochar8('');
   levelinf.skyflat := stringtochar8('');
 
-  R_ResetInterpolationBuffer;
+  TRendererInterpolation.R_ResetInterpolationBuffer;
 
   M_ClearRandom;
   PS_NewWorld;

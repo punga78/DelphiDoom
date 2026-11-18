@@ -42,7 +42,7 @@
         PLongWordArray(destl)[0] := precal32_ic[r1 + g1 + b1];
 {$ELSE}
 {$IFDEF TRANSPARENTFLAT}
-      PLongWordArray(destl)[0] := R_ColorMidAverage(c, destl^);
+      PLongWordArray(destl)[0] := TRendererHires.R_ColorMidAverage(c, destl^);
 {$ELSE}
       PLongWordArray(destl)[0] := bf_r[c and $FF] + bf_g[(c shr 8) and $FF] + bf_b[(c shr 16) and $FF];
 {$ENDIF}
@@ -96,7 +96,7 @@
         PLongWordArray(destl)[1] := precal32_ic[r1 + g1 + b1];
 {$ELSE}
 {$IFDEF TRANSPARENTFLAT}
-      PLongWordArray(destl)[1] := R_ColorMidAverage(c, destl^);
+      PLongWordArray(destl)[1] := TRendererHires.R_ColorMidAverage(c, destl^);
 {$ELSE}
       PLongWordArray(destl)[1] := bf_r[c and $FF] + bf_g[(c shr 8) and $FF] + bf_b[(c shr 16) and $FF];
 {$ENDIF}
@@ -150,7 +150,7 @@
         PLongWordArray(destl)[2] := precal32_ic[r1 + g1 + b1];
 {$ELSE}
 {$IFDEF TRANSPARENTFLAT}
-      PLongWordArray(destl)[2] := R_ColorMidAverage(c, destl^);
+      PLongWordArray(destl)[2] := TRendererHires.R_ColorMidAverage(c, destl^);
 {$ELSE}
       PLongWordArray(destl)[2] := bf_r[c and $FF] + bf_g[(c shr 8) and $FF] + bf_b[(c shr 16) and $FF];
 {$ENDIF}
@@ -204,7 +204,7 @@
         PLongWordArray(destl)[3] := precal32_ic[r1 + g1 + b1];
 {$ELSE}
 {$IFDEF TRANSPARENTFLAT}
-      PLongWordArray(destl)[3] := R_ColorMidAverage(c, destl^);
+      PLongWordArray(destl)[3] := TRendererHires.R_ColorMidAverage(c, destl^);
 {$ELSE}
       PLongWordArray(destl)[3] := bf_r[c and $FF] + bf_g[(c shr 8) and $FF] + bf_b[(c shr 16) and $FF];
 {$ENDIF}

@@ -1482,7 +1482,7 @@ begin
         UpdateSegBBox(segList^);
         segList^.linedef.validcount := validcount;
       end;
-      segList^.angle := R_PointToAngle2(segList^.v1.x, segList^.v1.y, segList^.v2.x, segList^.v2.y);
+      segList^.angle := TRendererMain.R_PointToAngle2(segList^.v1.x, segList^.v1.y, segList^.v2.x, segList^.v2.y);
     end;
     inc(segList);
     dec(count);
@@ -1853,7 +1853,7 @@ begin
   end;
   avg.x := avg.x div po.numsegs;
   avg.y := avg.y div po.numsegs;
-  sub := R_PointInSubsector(avg.x * FRACUNIT, avg.y * FRACUNIT);
+  sub := TRendererMain.R_PointInSubsector(avg.x * FRACUNIT, avg.y * FRACUNIT);
   if sub.poly <> nil then
     I_Error('PO_TranslateToStartSpot(): Multiple polyobjs in a single subsector.');
   sub.poly := po;

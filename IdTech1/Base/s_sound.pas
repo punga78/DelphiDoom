@@ -931,7 +931,7 @@ begin
   sound_attenuation.Attenuator := S_ATTENUATOR;
   sound_attenuation.NormalSeparation := NORM_SEP;
   sound_attenuation.StereoSwing := S_STEREO_SWING;
-  sound_attenuation.PointToAngle := @R_PointToAngle2;
+  sound_attenuation.PointToAngle := @TRendererMain.R_PointToAngle2;
   sound_attenuation.FineSine := PSfxSineTable(finesine);
 
   // Allocating the internal channels for mixing

@@ -54,12 +54,6 @@ uses
 // Retrieve column data for span blitting.
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_GetColumn
-//
-//==============================================================================
-function R_GetColumn(const tex: integer; col: integer): PByteArray;
 {$ENDIF}
 
 {$IFNDEF OPENGL}
@@ -325,6 +319,24 @@ procedure R_ChangeColormap(const lumpname: string);
   aprox_black: byte = 247;
   aprox_red: byte = 176;
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererData = class sealed
+  public
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_GetColumn
+    //
+    //==============================================================================
+    class function R_GetColumn(const tex: integer; col: integer): PByteArray; static;
+{$ENDIF}
+  end;
+
 
 implementation
 
@@ -717,7 +729,7 @@ const
 // R_GetColumn
 //
 //==============================================================================
-function R_GetColumn(const tex: integer; col: integer): PByteArray;
+class function TRendererData.R_GetColumn(const tex: integer; col: integer): PByteArray;
 var
   lump: integer;
   ofs: integer;
@@ -766,11 +778,11 @@ begin
   begin
     lump := R_GetLumpForFlat(flat);
     ds_source := W_CacheLumpNum(lump, PU_STATIC);
-    ds_scale := R_FlatScaleFromSize(flat, W_LumpLength(lump));
+    ds_scale := TRendererCacheFlats.R_FlatScaleFromSize(flat, W_LumpLength(lump));
     ds_size := flats[flats[flat].translation].size;
   end
   else
-    R_ReadDS32Cache(flat);
+    TRendererCacheFlats.R_ReadDS32Cache(flat);
 end;
 {$ENDIF}
 
@@ -794,9 +806,9 @@ end;
 procedure R_GetDCs(const tex: integer; const col: integer);
 begin
   if videomode = vm8bit then
-    dc_source := R_GetColumn(tex, col)
+    dc_source := TRendererData.R_GetColumn(tex, col)
   else
-    R_ReadDC32Cache(tex, col);
+    TRendererCacheWalls.R_ReadDC32Cache(tex, col);
 end;
 {$ENDIF}
 
@@ -1722,12 +1734,12 @@ begin
   memcpy(colormaps, @bytes[0], length);
   v_translation := colormaps;
   {$IFNDEF OPENGL}
-  R_SetRenderingFunctions;
-  R_SetPalette64;
+  TRendererMain.R_SetRenderingFunctions;
+  TRendererMain.R_SetPalette64;
   if usemultithread then
-    R_CalcHiResTables_MultiThread
+    TRendererHires.R_CalcHiResTables_MultiThread
   else
-    R_CalcHiResTables_SingleThread;
+    TRendererHires.R_CalcHiResTables_SingleThread;
   {$ENDIF}
 {$ENDIF}
 end;
@@ -1742,7 +1754,7 @@ end;
 //==============================================================================
 procedure R_InitData;
 begin
-  R_InitHiRes;
+  TRendererHires.R_InitHiRes;
 {$IFDEF STRIFE}
   if D_UseOldTexture1 then
     R_InitTexturesOld
@@ -2177,7 +2189,7 @@ begin
       W_CacheLumpNum(lump, PU_CACHE);
 {$ELSE}
       flat := W_CacheLumpNum(lump, PU_STATIC);
-      R_ReadDS32Cache(i);
+      TRendererCacheFlats.R_ReadDS32Cache(i);
       Z_ChangeTag(flat, PU_CACHE);
 {$ENDIF}
       flatmemory := flatmemory + W_LumpLength(lump);
@@ -2210,7 +2222,7 @@ begin
       W_CacheLumpNum(lump, PU_CACHE);
     end;
 {$IFNDEF OPENGL}
-    R_Precache32bittexture(i);
+    TRendererCacheWalls.R_Precache32bittexture(i);
 {$ENDIF}
   end;
   allocmemory := GetAllocMemSize - allocmemory;

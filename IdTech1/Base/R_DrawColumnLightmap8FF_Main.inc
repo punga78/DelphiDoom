@@ -5,7 +5,7 @@
     dls := source32[(LongWord(frac) shr FRACBITS) and (LIGHTTEXTURESIZE - 1)];
     if dls <> 0 then
     begin
-      db := R_ZBufferAt(x, y);
+      db := TRendererZBuffer.R_ZBufferAt(x, y);
       depth := db.depth;
       if (depth - dbmin) <= dbrange then
       begin
@@ -14,7 +14,7 @@
           sameseg := (seg = db.seg) and (seg <> nil);
           seg := db.seg;
           if seg <> nil then
-            skip := R_PointOnSegSide(parms.lightsourcex, parms.lightsourcey, seg)
+            skip := TRendererMain.R_PointOnSegSide(parms.lightsourcex, parms.lightsourcey, seg)
           else
             skip := false;
         end;

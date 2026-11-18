@@ -50,93 +50,11 @@ var
 
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_DrawMaskedColumn
-//
-//==============================================================================
-procedure R_DrawMaskedColumn(column: Pcolumn_t; const depthscale: fixed_t; const mo: Pmobj_t = nil;
-  baseclip: integer = -1; const renderflags: LongWord = 0);
-
-//==============================================================================
-//
-// R_DrawMaskedColumn2
-//
-//==============================================================================
-procedure R_DrawMaskedColumn2(const mc2h: integer; const depthscale: fixed_t); // Use dc_source32
 {$ENDIF}
 
-//==============================================================================
-//
-// R_AddSprites
-//
-//==============================================================================
-procedure R_AddSprites(sec: Psector_t);
-
-//==============================================================================
-//
-// R_InitSprites
-//
-//==============================================================================
-procedure R_InitSprites(namelist: PIntegerArray);
-
-//==============================================================================
-//
-// R_ConfigureSpriteDefs
-//
-//==============================================================================
-procedure R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs);
-
-//==============================================================================
-//
-// R_InitNegoArray
-//
-//==============================================================================
-procedure R_InitNegoArray;
-
-//==============================================================================
-//
-// R_ClearSprites
-//
-//==============================================================================
-procedure R_ClearSprites;
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_DrawMasked_SingleThread
-//
-//==============================================================================
-procedure R_DrawMasked_SingleThread;
-
-//==============================================================================
-//
-// R_DrawMasked_MultiThread
-//
-//==============================================================================
-procedure R_DrawMasked_MultiThread;
-
-//==============================================================================
-//
-// R_PrepareMasked
-//
-//==============================================================================
-procedure R_PrepareMasked;
-
-//==============================================================================
-//
-// R_SignalPrepareMasked
-//
-//==============================================================================
-procedure R_SignalPrepareMasked;
 {$ENDIF}
-
-//==============================================================================
-//
-// R_DrawPlayer
-//
-//==============================================================================
-procedure R_DrawPlayer;
 
 var
   pspritescale: fixed_t;
@@ -161,30 +79,9 @@ var
   sprites: Pspritedef_tArray;
   numspritespresent: integer;
 
-//==============================================================================
-//
-// R_ShutDownSprites
-//
-//==============================================================================
-procedure R_ShutDownSprites;
-
 const
   MINZ = FRACUNIT * 4;
   BASEYCENTER = 100;
-
-//==============================================================================
-//
-// R_NewVisSprite
-//
-//==============================================================================
-function R_NewVisSprite: Pvissprite_t;
-
-//==============================================================================
-//
-// R_ProjectAdditionalThings
-//
-//==============================================================================
-procedure R_ProjectAdditionalThings;
 
 var
   spritelights: PBytePArray;
@@ -235,13 +132,120 @@ type
   end;
   Pvisspritecache_t = ^visspritecache_t;
 
-//==============================================================================
-//
-// R_ExecuteSpriteCache
-//
-//==============================================================================
-procedure R_ExecuteSpriteCache(const cache: Pvisspritecache_t);
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererThings = class sealed
+  public
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_DrawMaskedColumn
+    //
+    //==============================================================================
+    class procedure R_DrawMaskedColumn(column: Pcolumn_t; const depthscale: fixed_t; const mo: Pmobj_t = nil;
+      baseclip: integer = -1; const renderflags: LongWord = 0); static;
+    //==============================================================================
+    //
+    // R_DrawMaskedColumn2
+    //
+    //==============================================================================
+    class procedure R_DrawMaskedColumn2(const mc2h: integer; const depthscale: fixed_t); static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_AddSprites
+    //
+    //==============================================================================
+    class procedure R_AddSprites(sec: Psector_t); static;
+    //==============================================================================
+    //
+    // R_InitSprites
+    //
+    //==============================================================================
+    class procedure R_InitSprites(namelist: PIntegerArray); static;
+    //==============================================================================
+    //
+    // R_ConfigureSpriteDefs
+    //
+    //==============================================================================
+    class procedure R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs); static;
+    //==============================================================================
+    //
+    // R_InitNegoArray
+    //
+    //==============================================================================
+    class procedure R_InitNegoArray; static;
+    //==============================================================================
+    //
+    // R_ClearSprites
+    //
+    //==============================================================================
+    class procedure R_ClearSprites; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_DrawMasked_SingleThread
+    //
+    //==============================================================================
+    class procedure R_DrawMasked_SingleThread; static;
+    //==============================================================================
+    //
+    // R_DrawMasked_MultiThread
+    //
+    //==============================================================================
+    class procedure R_DrawMasked_MultiThread; static;
+    //==============================================================================
+    //
+    // R_PrepareMasked
+    //
+    //==============================================================================
+    class procedure R_PrepareMasked; static;
+    //==============================================================================
+    //
+    // R_SignalPrepareMasked
+    //
+    //==============================================================================
+    class procedure R_SignalPrepareMasked; static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_DrawPlayer
+    //
+    //==============================================================================
+    class procedure R_DrawPlayer; static;
+    //==============================================================================
+    //
+    // R_ShutDownSprites
+    //
+    //==============================================================================
+    class procedure R_ShutDownSprites; static;
+    //==============================================================================
+    //
+    // R_NewVisSprite
+    //
+    //==============================================================================
+    class function R_NewVisSprite: Pvissprite_t; static;
+    //==============================================================================
+    //
+    // R_ProjectAdditionalThings
+    //
+    //==============================================================================
+    class procedure R_ProjectAdditionalThings; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_ExecuteSpriteCache
+    //
+    //==============================================================================
+    class procedure R_ExecuteSpriteCache(const cache: Pvisspritecache_t); static;
+{$ENDIF}
+  end;
+
 
 implementation
 
@@ -310,13 +314,57 @@ uses
 var
   sprite_defs: IRendererSpriteDefs;
 
+const
+  translaterotations: array[1..3] of array [0..31] of integer = (
+    ( 0,  1,  2,  3,  4,  5,  6,  7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
+    ( 0,  8,  1,  9,  2, 10,  3, 11,  4, 12,  5, 13,  6, 14,  7, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
+    ( 0, 16,  8, 17,  1, 18,  9, 19,  2, 20, 10, 21,  3, 22, 11, 23,  4, 24, 12, 25,  5, 26, 13, 27,  6, 28, 14, 29,  7, 30, 15, 31)
+  );
+
+
+const
+  MAXMODELRADIUS = 384 * FRACUNIT;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererThingsLocal = class sealed
+  public
+    class procedure R_InitSpriteDefs(namelist: PIntegerArray); static;
+{$IFNDEF OPENGL}
+    class procedure R_MaskedAdjustY(var yl: integer; const yh: integer); static;
+    class procedure R_DrawMaskedColumn_Batch(column: Pcolumn_t; mo: Pmobj_t; const depthscale: integer; baseclip: integer = -1; const renderflags: LongWord = 0); static;
+    class procedure R_FillSpriteInfo_MT(const parms: Pspriterenderinfo_t); static;
+    class procedure R_FillSpriteInfo_BatchMT(const parms: Pspriterenderinfo_t); static;
+    class procedure R_DrawMaskedColumn_BatchMT(column: Pcolumn_t; mo: Pmobj_t; const depthscale: integer; baseclip: integer = -1; const renderflags: LongWord = 0); static;
+    class procedure R_DrawMaskedColumnMT(column: Pcolumn_t; const depthscale: fixed_t; mo: Pmobj_t;
+      baseclip: integer = -1; const renderflags: LongWord = 0); static;
+    class procedure R_DrawVisSprite(vis: Pvissprite_t; const playerweapon: boolean = false); static;
+    class procedure R_DrawVisSpriteLight(vis: Pvissprite_t; x1: integer; x2: integer); static;
+{$ENDIF}
+    class procedure R_ProjectSprite(thing: Pmobj_t); static;
+    class procedure R_DrawPSprite(psp: Ppspdef_t); static;
+    class procedure R_DrawPlayerSprites; static;
+{$IFNDEF OPENGL}
+    class function R_PrepareSprite(const spr: Pvissprite_t; const islight: Boolean = False): boolean; static;
+    class procedure R_DrawSprite(spr: Pvissprite_t); static;
+    class procedure R_DrawSpriteLight(spr: Pvissprite_t); static;
+    class procedure R_MarkLights; static;
+    class procedure R_DoDrawMasked; static;
+{$ENDIF}
+    class function RIT_ProjectAdditionalThing(mo: Pmobj_t): boolean; static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigureSpriteDefs
 // The builder of the sprite definitions of IdTech1\Renderer, given by the composition root
 //
 //==============================================================================
-procedure R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs);
+class procedure TRendererThings.R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs);
 begin
   sprite_defs := ASpriteDefs;
 end;
@@ -341,7 +389,7 @@ end;
 //  tables of the zone memory that the renderer reads.
 //
 //==============================================================================
-procedure R_InitSpriteDefs(namelist: PIntegerArray);
+class procedure TRendererThingsLocal.R_InitSpriteDefs(namelist: PIntegerArray);
 var
   names: TArray<Integer>;
   defs: TArray<TRendererSpriteDefinition>;
@@ -405,7 +453,7 @@ var
 // R_InitNegoArray
 //
 //==============================================================================
-procedure R_InitNegoArray;
+class procedure TRendererThings.R_InitNegoArray;
 var
   i: integer;
 begin
@@ -427,13 +475,13 @@ var
 // Called at program start.
 //
 //==============================================================================
-procedure R_InitSprites(namelist: PIntegerArray);
+class procedure TRendererThings.R_InitSprites(namelist: PIntegerArray);
 begin
   R_InitNegoArray;
 
   funny_rotations := TDStringList.Create;
   wrong_frames := TDStringList.Create;
-  R_InitSpriteDefs(namelist);
+  TRendererThingsLocal.R_InitSpriteDefs(namelist);
 {$IFNDEF OPENGL}
   R_InitSpriteSort;
 {$ENDIF}
@@ -445,7 +493,7 @@ end;
 // Called at frame start.
 //
 //==============================================================================
-procedure R_ClearSprites;
+class procedure TRendererThings.R_ClearSprites;
 begin
   vissprite_p := 0;
 end;
@@ -457,7 +505,7 @@ end;
 // JVAL Now we allocate a new visprite dynamically
 //
 //==============================================================================
-function R_NewVisSprite: Pvissprite_t;
+class function TRendererThings.R_NewVisSprite: Pvissprite_t;
 begin
   if vissprite_p = visspritessize then
   begin
@@ -479,7 +527,7 @@ end;
 // R_ShutDownSprites
 //
 //==============================================================================
-procedure R_ShutDownSprites;
+class procedure TRendererThings.R_ShutDownSprites;
 begin
   realloc(pointer(vissprites), visspritessize * SizeOf(Pvissprite_t), 0);
 {$IFNDEF OPENGL}
@@ -496,7 +544,7 @@ end;
 // R_MaskedAdjustY
 //
 //==============================================================================
-procedure R_MaskedAdjustY(var yl: integer; const yh: integer);
+class procedure TRendererThingsLocal.R_MaskedAdjustY(var yl: integer; const yh: integer);
 var
   testfrac: fixed_t;
 begin
@@ -526,7 +574,7 @@ type
 // R_DrawMaskedColumn
 //
 //==============================================================================
-procedure R_DrawMaskedColumn(column: Pcolumn_t; const depthscale: fixed_t; const mo: Pmobj_t = nil;
+class procedure TRendererThings.R_DrawMaskedColumn(column: Pcolumn_t; const depthscale: fixed_t; const mo: Pmobj_t = nil;
   baseclip: integer = -1; const renderflags: LongWord = 0);
 var
   topscreen: int64;
@@ -573,7 +621,7 @@ begin
     begin
       dc_source := PByteArray(NativeInt(column) + 3);
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
-      R_MaskedAdjustY(dc_yl, dc_yh);
+      TRendererThingsLocal.R_MaskedAdjustY(dc_yl, dc_yh);
       // Drawn by either R_DrawColumn
       //  or (SHADOW) R_DrawFuzzColumn
       //  or R_DrawColumnAverage
@@ -581,16 +629,16 @@ begin
       if dodepthbuffer then // JVAL: 3d Floors
       begin
         if renderflags and VSF_TRANSPARENCY <> 0 then
-          R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
         else
-          R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
       end
       else
         colfunc;
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -613,7 +661,7 @@ end;
 // For Walls only
 //
 //==============================================================================
-procedure R_DrawMaskedColumn2(const mc2h: integer; const depthscale: fixed_t); // Use dc_source32
+class procedure TRendererThings.R_DrawMaskedColumn2(const mc2h: integer; const depthscale: fixed_t); // Use dc_source32
 var
   topscreen: int64;
   bottomscreen: int64;
@@ -643,12 +691,12 @@ begin
     //  or R_DrawColumnAverage
     //  or R_DrawTranslatedColumn
     if depthbufferactive then                   // JVAL: 3d Floors
-      R_DrawColumnWithDepthBufferCheckWrite(colfunc) // JVAL: 3d Floors
+      TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(colfunc) // JVAL: 3d Floors
     else
       colfunc;
 
     if domaskedzbuffer then
-      R_DrawMaskedColumnToZBuffer(nil, depthscale);
+      TRendererZBuffer.R_DrawMaskedColumnToZBuffer(nil, depthscale);
   end;
 
   dc_texturemid := basetexturemid;
@@ -663,7 +711,7 @@ type
 // R_DrawMaskedColumn_Batch
 //
 //==============================================================================
-procedure R_DrawMaskedColumn_Batch(column: Pcolumn_t; mo: Pmobj_t; const depthscale: integer; baseclip: integer = -1; const renderflags: LongWord = 0);
+class procedure TRendererThingsLocal.R_DrawMaskedColumn_Batch(column: Pcolumn_t; mo: Pmobj_t; const depthscale: integer; baseclip: integer = -1; const renderflags: LongWord = 0);
 var
   topscreen: int64;
   bottomscreen: int64;
@@ -716,7 +764,7 @@ begin
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -743,7 +791,7 @@ var
 // R_FillSpriteInfo_MT
 //
 //==============================================================================
-procedure R_FillSpriteInfo_MT(const parms: Pspriterenderinfo_t);
+class procedure TRendererThingsLocal.R_FillSpriteInfo_MT(const parms: Pspriterenderinfo_t);
 begin
   parms.dc_x := dc_x;
   parms.dc_yh := dc_yh;
@@ -764,7 +812,7 @@ end;
 // R_FillSpriteInfo_BatchMT
 //
 //==============================================================================
-procedure R_FillSpriteInfo_BatchMT(const parms: Pspriterenderinfo_t);
+class procedure TRendererThingsLocal.R_FillSpriteInfo_BatchMT(const parms: Pspriterenderinfo_t);
 begin
   parms.dc_x := dc_x;
   parms.dc_yh := dc_yh;
@@ -785,7 +833,7 @@ end;
 // R_DrawMaskedColumn_BatchMT
 //
 //==============================================================================
-procedure R_DrawMaskedColumn_BatchMT(column: Pcolumn_t; mo: Pmobj_t; const depthscale: integer; baseclip: integer = -1; const renderflags: LongWord = 0);
+class procedure TRendererThingsLocal.R_DrawMaskedColumn_BatchMT(column: Pcolumn_t; mo: Pmobj_t; const depthscale: integer; baseclip: integer = -1; const renderflags: LongWord = 0);
 var
   topscreen: int64;
   bottomscreen: int64;
@@ -831,11 +879,11 @@ begin
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
       R_MaskedAdjustY(dc_yl, dc_yh);
 
-      R_FillSpriteInfo_BatchMT(R_SpriteAddMTInfo);
+      R_FillSpriteInfo_BatchMT(TRendererSprite.R_SpriteAddMTInfo);
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawBatchMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -858,7 +906,7 @@ end;
 // R_DrawMaskedColumnMT
 //
 //==============================================================================
-procedure R_DrawMaskedColumnMT(column: Pcolumn_t; const depthscale: fixed_t; mo: Pmobj_t;
+class procedure TRendererThingsLocal.R_DrawMaskedColumnMT(column: Pcolumn_t; const depthscale: fixed_t; mo: Pmobj_t;
   baseclip: integer = -1; const renderflags: LongWord = 0);
 var
   topscreen: int64;
@@ -913,16 +961,16 @@ begin
       if dodepthbuffer then // JVAL: 3d Floors
       begin
         if renderflags and VSF_TRANSPARENCY <> 0 then
-          R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckOnly(colfunc, depthscale) // JVAL: 3d Floors
         else
-          R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
+          TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
       end
       else
-        R_FillSpriteInfo_MT(R_SpriteAddMTInfo);
+        R_FillSpriteInfo_MT(TRendererSprite.R_SpriteAddMTInfo);
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
-          R_DrawMaskedColumnToZBuffer(mo, depthscale);
+          TRendererZBuffer.R_DrawMaskedColumnToZBuffer(mo, depthscale);
     end;
     if not tallpatch then
     begin
@@ -951,7 +999,7 @@ const
 // R_DrawVisSprite
 //
 //==============================================================================
-procedure R_DrawVisSprite(vis: Pvissprite_t; const playerweapon: boolean = false);
+class procedure TRendererThingsLocal.R_DrawVisSprite(vis: Pvissprite_t; const playerweapon: boolean = false);
 var
   column: Pcolumn_t;
   texturecolumn: integer;
@@ -986,11 +1034,11 @@ begin
 
   if videomode = vm32bit then
   begin
-    dc_colormap32 := R_GetColormap32(dc_colormap);
+    dc_colormap32 := TRendererMain.R_GetColormap32(dc_colormap);
     if fixedcolormapnum = INVERSECOLORMAP then
       dc_lightlevel := -1
     else
-      dc_lightlevel := R_GetColormapLightLevel(dc_colormap);
+      dc_lightlevel := TRendererMain.R_GetColormapLightLevel(dc_colormap);
   end;
 
   if dc_colormap = nil then
@@ -1134,7 +1182,7 @@ begin
   if do_mt and Assigned(spritefunc_mt) then
     dmcproc := @R_DrawMaskedColumnMT
   else
-    dmcproc := @R_DrawMaskedColumn;
+    dmcproc := @TRendererThings.R_DrawMaskedColumn;
 
   if depthbufferactive or (xiscale > FRACUNIT div 2) or (xiscale < -FRACUNIT div 2) or not optimizedthingsrendering or not Assigned(batchcolfunc) then
   begin
@@ -1147,7 +1195,7 @@ begin
       frac := frac + xiscale;
       inc(dc_x);
     end;
-    R_SpriteRenderMT;
+    TRendererSprite.R_SpriteRenderMT;
   end
   else
   begin // JVAL: batch column drawing
@@ -1194,7 +1242,7 @@ begin
       else
         dmcproc(column, dbscale, vismo, baseclip, renderflags);
     end;
-    R_SpriteRenderMT;
+    TRendererSprite.R_SpriteRenderMT;
   end;
 
   Z_ChangeTag(patch, PU_CACHE);
@@ -1206,7 +1254,7 @@ end;
 // Used for sprites that emit light
 //
 //==============================================================================
-procedure R_DrawVisSpriteLight(vis: Pvissprite_t; x1: integer; x2: integer);
+class procedure TRendererThingsLocal.R_DrawVisSpriteLight(vis: Pvissprite_t; x1: integer; x2: integer);
 var
   texturecolumn: integer;
   frac: fixed_t;
@@ -1305,7 +1353,7 @@ begin
         if frac < 256 * FRACUNIT then
           if dc_yl <= dc_yh then
             if depthbufferactive then                             // JVAL: 3d Floors
-              R_DrawColumnWithDepthBufferCheckOnly(lightcolfunc)  // JVAL: 3d Floors
+              TRendererDepthBuffer.R_DrawColumnWithDepthBufferCheckOnly(lightcolfunc)  // JVAL: 3d Floors
             else
               lightcolfunc;
 
@@ -1384,13 +1432,6 @@ end;
 {$ENDIF}
 
 // JVAL: Up to 32 sprite rotations
-const
-  translaterotations: array[1..3] of array [0..31] of integer = (
-    ( 0,  1,  2,  3,  4,  5,  6,  7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
-    ( 0,  8,  1,  9,  2, 10,  3, 11,  4, 12,  5, 13,  6, 14,  7, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
-    ( 0, 16,  8, 17,  1, 18,  9, 19,  2, 20, 10, 21,  3, 22, 11, 23,  4, 24, 12, 25,  5, 26, 13, 27,  6, 28, 14, 29,  7, 30, 15, 31)
-  );
-
 //==============================================================================
 //
 // R_ProjectSprite
@@ -1398,7 +1439,7 @@ const
 //  if it might be visible.
 //
 //==============================================================================
-procedure R_ProjectSprite(thing: Pmobj_t);
+class procedure TRendererThingsLocal.R_ProjectSprite(thing: Pmobj_t);
 var
   tr_x: fixed_t;
   tr_y: fixed_t;
@@ -1547,7 +1588,7 @@ begin
   1:  // 8 angles
     begin
       // choose a different rotation based on player view
-      ang := R_PointToAngle(thing.x, thing.y);
+      ang := TRendererMain.R_PointToAngle(thing.x, thing.y);
       rot := (ang - thing.angle + LongWord(ANG45 div 2) * 9) shr 29;
       lump := sprframe.lump[rot];
       flip := sprframe.flip[rot];
@@ -1555,7 +1596,7 @@ begin
   2:  // 16 angles
     begin
       // choose a different rotation based on player view
-      ang := R_PointToAngle(thing.x, thing.y);
+      ang := TRendererMain.R_PointToAngle(thing.x, thing.y);
       rot := translaterotations[2, (ang - thing.angle + LongWord(ANG45 div 4) * 17) shr 28];
       lump := sprframe.lump[rot];
       flip := sprframe.flip[rot];
@@ -1563,7 +1604,7 @@ begin
   3:  // 32 angles
     begin
       // choose a different rotation based on player view
-      ang := R_PointToAngle(thing.x, thing.y);
+      ang := TRendererMain.R_PointToAngle(thing.x, thing.y);
       rot := translaterotations[3, (ang - thing.angle + LongWord(ANG45 div 8) * 33) shr 27];
       lump := sprframe.lump[rot];
       flip := sprframe.flip[rot];
@@ -1662,7 +1703,7 @@ begin
 {$ENDIF}
 
   // store information in a vissprite
-  vis := R_NewVisSprite;
+  vis := TRendererThings.R_NewVisSprite;
   vis.mobjflags := thing.flags;
   vis.mobjflags_ex := thing.flags_ex or (thing.state.flags_ex and MF_EX_STATE_MASK); // JVAL: extended flags passed to vis
   vis.mo := thing;
@@ -1830,7 +1871,7 @@ end;
 // During BSP traversal, this adds sprites by sector.
 //
 //==============================================================================
-procedure R_AddSprites(sec: Psector_t);
+class procedure TRendererThings.R_AddSprites(sec: Psector_t);
 var
   thing: Pmobj_t;
   lightnum: integer;
@@ -1909,7 +1950,7 @@ begin
   thing := sec.thinglist;
   while thing <> nil do
   begin
-    R_ProjectSprite(thing);
+    TRendererThingsLocal.R_ProjectSprite(thing);
     thing := thing.snext;
   end;
 end;
@@ -1947,7 +1988,7 @@ const
 // R_DrawPSprite
 //
 //==============================================================================
-procedure R_DrawPSprite(psp: Ppspdef_t);
+class procedure TRendererThingsLocal.R_DrawPSprite(psp: Ppspdef_t);
 var
   tx: fixed_t;
   x1: integer;
@@ -2100,7 +2141,7 @@ end;
 // R_DrawPlayerSprites
 //
 //==============================================================================
-procedure R_DrawPlayerSprites;
+class procedure TRendererThingsLocal.R_DrawPlayerSprites;
 var
   i: integer;
   lightnum: integer;
@@ -2152,7 +2193,7 @@ end;
 // R_SignalPrepareMasked;
 //
 //==============================================================================
-procedure R_SignalPrepareMasked;
+class procedure TRendererThings.R_SignalPrepareMasked;
 begin
   maskedpreparesignal := true;
 end;
@@ -2162,7 +2203,7 @@ end;
 // R_PrepareSprite
 //
 //==============================================================================
-function R_PrepareSprite(const spr: Pvissprite_t; const islight: Boolean = False): boolean;
+class function TRendererThingsLocal.R_PrepareSprite(const spr: Pvissprite_t; const islight: Boolean = False): boolean;
 var
   sx1: integer;
   sx2: integer;
@@ -2215,7 +2256,7 @@ begin
     sx2 := spr.x2;
   end;
 
-  R_GetDrawsegsForRange(sx1, sx2, cache.fdrawsegs, cache.fds_p);
+  TRendererSegs2.R_GetDrawsegsForRange(sx1, sx2, cache.fdrawsegs, cache.fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale
@@ -2246,7 +2287,7 @@ begin
     end;
 
     if (scale < spr.scale) or
-       ((lowscale < spr.scale) and not R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
+       ((lowscale < spr.scale) and not TRendererMain.R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
     begin
       if ds.x1 < sx1 then
         item.r1 := sx1
@@ -2325,7 +2366,7 @@ end;
 // R_ExecuteSpriteCache
 //
 //==============================================================================
-procedure R_ExecuteSpriteCache(const cache: Pvisspritecache_t);
+class procedure TRendererThings.R_ExecuteSpriteCache(const cache: Pvisspritecache_t);
 var
   i: integer;
   ds: Pdrawseg_t;
@@ -2338,16 +2379,16 @@ begin
     case item.operation of
       CACHE_OP_THICK:
         begin
-          R_RenderThickSideRange(item.ds, item.r1, item.r2);
+          TRenderer3dFloors.R_RenderThickSideRange(item.ds, item.r1, item.r2);
         end;
       CACHE_OP_MASKED:
         begin
-          R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
+          TRendererSegs.R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
         end;
       CACHE_OP_THICK_AND_MASKED:
         begin
-          R_RenderThickSideRange(item.ds, item.r1, item.r2);
-          R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
+          TRenderer3dFloors.R_RenderThickSideRange(item.ds, item.r1, item.r2);
+          TRendererSegs.R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
         end;
       CACHE_OP_SIL1:
         begin
@@ -2383,7 +2424,7 @@ end;
 // R_PrepareMaked
 //
 //==============================================================================
-procedure R_PrepareMasked;
+class procedure TRendererThings.R_PrepareMasked;
 var
   i: integer;
   spr: Pvissprite_t;
@@ -2398,9 +2439,9 @@ begin
     spr := vissprites[i];
     if dolight then
       if spr.mobjflags_ex and MF_EX_LIGHT <> 0 then
-        if not R_PrepareSprite(spr, True) then
+        if not TRendererThingsLocal.R_PrepareSprite(spr, True) then
           Break;
-    if not R_PrepareSprite(spr) then
+    if not TRendererThingsLocal.R_PrepareSprite(spr) then
       Break;
     if maskedpreparesignal then
       Break;
@@ -2412,7 +2453,7 @@ end;
 // R_DrawSprite
 //
 //==============================================================================
-procedure R_DrawSprite(spr: Pvissprite_t);
+class procedure TRendererThingsLocal.R_DrawSprite(spr: Pvissprite_t);
 var
   ds: Pdrawseg_t;
   x: integer;
@@ -2442,12 +2483,12 @@ begin
   if spr.cache <> nil then
   begin
     cache := spr.cache;
-    R_ExecuteSpriteCache(cache);
+    TRendererThings.R_ExecuteSpriteCache(cache);
     fdrawsegs := cache.fdrawsegs;
     fds_p := cache.fds_p;
   end
   else
-    R_GetDrawsegsForVissprite(spr, fdrawsegs, fds_p);
+    TRendererSegs2.R_GetDrawsegsForVissprite(spr, fdrawsegs, fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale
@@ -2474,7 +2515,7 @@ begin
     end;
 
     if (scale < spr.scale) or
-       ((lowscale < spr.scale) and not R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
+       ((lowscale < spr.scale) and not TRendererMain.R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
     begin
       if ds.x1 < sx1 then
         r1 := sx1
@@ -2487,9 +2528,9 @@ begin
 
       // masked mid texture?
       if ds.thicksidecol <> nil then        // JVAL: 3d Floors
-        R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
+        TRenderer3dFloors.R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
       if ds.maskedtexturecol <> nil then
-        R_RenderMaskedSegRange(ds, r1, r2);
+        TRendererSegs.R_RenderMaskedSegRange(ds, r1, r2);
       // seg is behind sprite
       continue;
     end;
@@ -2636,7 +2677,7 @@ end;
 // R_DrawSpriteLight
 //
 //==============================================================================
-procedure R_DrawSpriteLight(spr: Pvissprite_t);
+class procedure TRendererThingsLocal.R_DrawSpriteLight(spr: Pvissprite_t);
 var
   ds: Pdrawseg_t;
   x: integer;
@@ -2670,12 +2711,12 @@ begin
   if spr.lightcache <> nil then
   begin
     cache := spr.lightcache;
-    R_ExecuteSpriteCache(cache);
+    TRendererThings.R_ExecuteSpriteCache(cache);
     fdrawsegs := cache.fdrawsegs;
     fds_p := cache.fds_p;
   end
   else
-    R_GetDrawsegsForRange(x1, x2, fdrawsegs, fds_p);
+    TRendererSegs2.R_GetDrawsegsForRange(x1, x2, fdrawsegs, fds_p);
 
   // Scan drawsegs from end to start for obscuring segs.
   // The first drawseg that has a greater scale
@@ -2702,7 +2743,7 @@ begin
     end;
 
     if (scale < spr.scale) or
-       ((lowscale < spr.scale) and not R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
+       ((lowscale < spr.scale) and not TRendererMain.R_PointOnSegSide(spr.gx, spr.gy, ds.curline)) then
     begin
       if ds.x1 <= x1 then
         r1 := x1
@@ -2715,9 +2756,9 @@ begin
 
       // masked mid texture?
       if ds.thicksidecol <> nil then        // JVAL: 3d Floors
-        R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
+        TRenderer3dFloors.R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
       if ds.maskedtexturecol <> nil then
-        R_RenderMaskedSegRange(ds, r1, r2);
+        TRendererSegs.R_RenderMaskedSegRange(ds, r1, r2);
       // seg is behind sprite
       continue;
     end;
@@ -2794,15 +2835,15 @@ end;
 // R_MarkLights
 //
 //==============================================================================
-procedure R_MarkLights;
+class procedure TRendererThingsLocal.R_MarkLights;
 var
   i: integer;
 begin
   numdlitems := 0;
   vislight_p := 0;
   for i := 0 to vissprite_p - 1 do
-    R_MarkDLights(vissprites[i].mo);
-  R_AddAdditionalLights;
+    TRendererSoftLights.R_MarkDLights(vissprites[i].mo);
+  TRendererSoftLights.R_AddAdditionalLights;
 end;
 
 //==============================================================================
@@ -2811,7 +2852,7 @@ end;
 // R_DrawMasked
 //
 //==============================================================================
-procedure R_DoDrawMasked;
+class procedure TRendererThingsLocal.R_DoDrawMasked;
 var
   pds: Pdrawseg_t;
   spr: Pvissprite_t;
@@ -2831,7 +2872,7 @@ begin
         if spr.mobjflags_ex and MF_EX_LIGHT <> 0 then
           R_DrawSpriteLight(spr);
         if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2848,7 +2889,7 @@ begin
           Break;
         end
         else if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2857,7 +2898,7 @@ begin
       begin
         spr := vissprites[i];
         if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2868,7 +2909,7 @@ begin
       begin
         spr := vissprites[i];
         if spr.renderflags and VSF_VOXEL <> 0 then
-          R_DrawVoxel(spr)
+          TRendererVoxels.R_DrawVoxel(spr)
         else
           R_DrawSprite(spr);
       end;
@@ -2881,12 +2922,12 @@ begin
   begin
     pds := drawsegs[i];
     if pds.thicksidecol <> nil then                 // JVAL: 3d Floors
-      R_RenderThickSideRange(pds,  pds.x1, pds.x2); // JVAL: 3d Floors
+      TRenderer3dFloors.R_RenderThickSideRange(pds,  pds.x1, pds.x2); // JVAL: 3d Floors
     if pds.maskedtexturecol <> nil then
-      R_RenderMaskedSegRange(pds, pds.x1, pds.x2);
+      TRendererSegs.R_RenderMaskedSegRange(pds, pds.x1, pds.x2);
   end;
 
-  R_StopDepthBuffer;  // JVAL: 3d Floors
+  TRendererDepthBuffer.R_StopDepthBuffer;  // JVAL: 3d Floors
 end;
 
 //==============================================================================
@@ -2894,28 +2935,28 @@ end;
 // R_DrawMasked_SingleThread
 //
 //==============================================================================
-procedure R_DrawMasked_SingleThread;
+class procedure TRendererThings.R_DrawMasked_SingleThread;
 begin
   R_SortVisSprites;
   domaskedzbuffer := false;
   if r_uselightmaps then
   begin
-    R_MarkLights;
+    TRendererThingsLocal.R_MarkLights;
     if numdlitems > 0 then
     begin
       // Draw lights - First pass - only world
-      R_DrawLightsSingleThread(lp_solid);
+      TRendererSoftLights.R_DrawLightsSingleThread(lp_solid);
       domaskedzbuffer := r_lightmaponmasked;
-      R_DoDrawMasked;
+      TRendererThingsLocal.R_DoDrawMasked;
       // Draw lights - Second pass - masked
       if r_lightmaponmasked then
-        R_DrawLightsSingleThread(lp_masked);
+        TRendererSoftLights.R_DrawLightsSingleThread(lp_masked);
     end
     else
-      R_DoDrawMasked;
+      TRendererThingsLocal.R_DoDrawMasked;
   end
   else
-    R_DoDrawMasked;
+    TRendererThingsLocal.R_DoDrawMasked;
 end;
 
 //==============================================================================
@@ -2923,27 +2964,27 @@ end;
 // R_DrawMasked_MultiThread
 //
 //==============================================================================
-procedure R_DrawMasked_MultiThread;
+class procedure TRendererThings.R_DrawMasked_MultiThread;
 begin
   domaskedzbuffer := false;
   if r_uselightmaps then
   begin
-    R_MarkLights;
+    TRendererThingsLocal.R_MarkLights;
     if numdlitems > 0 then
     begin
       // Draw lights - First pass - only world
-      R_DrawLightsMultiThread(lp_solid);
+      TRendererSoftLights.R_DrawLightsMultiThread(lp_solid);
       domaskedzbuffer := r_lightmaponmasked;
-      R_DoDrawMasked;
+      TRendererThingsLocal.R_DoDrawMasked;
       // Draw lights - Second pass - masked
       if r_lightmaponmasked then
-        R_DrawLightsMultiThread(lp_masked);
+        TRendererSoftLights.R_DrawLightsMultiThread(lp_masked);
     end
     else
-      R_DoDrawMasked;
+      TRendererThingsLocal.R_DoDrawMasked;
   end
   else
-    R_DoDrawMasked;
+    TRendererThingsLocal.R_DoDrawMasked;
 end;
 {$ENDIF}
 
@@ -2952,7 +2993,7 @@ end;
 // RIT_ProjectAdditionalThing
 //
 //==============================================================================
-function RIT_ProjectAdditionalThing(mo: Pmobj_t): boolean;
+class function TRendererThingsLocal.RIT_ProjectAdditionalThing(mo: Pmobj_t): boolean;
 begin
   if (mo.state.voxels <> nil) {$IFDEF OPENGL} or (mo.state.models <> nil) {$ENDIF} then
     R_ProjectSprite(mo);
@@ -2960,15 +3001,12 @@ begin
   result := true;
 end;
 
-const
-  MAXMODELRADIUS = 384 * FRACUNIT;
-
 //==============================================================================
 //
 // R_ProjectAdditionalThings
 //
 //==============================================================================
-procedure R_ProjectAdditionalThings;
+class procedure TRendererThings.R_ProjectAdditionalThings;
 var
   x: integer;
   y: integer;
@@ -2994,7 +3032,7 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, RIT_ProjectAdditionalThing);
+      P_BlockThingsIterator(x, y, TRendererThingsLocal.RIT_ProjectAdditionalThing);
 end;
 
 //==============================================================================
@@ -3002,7 +3040,7 @@ end;
 // R_DrawPlayer
 //
 //==============================================================================
-procedure R_DrawPlayer;
+class procedure TRendererThings.R_DrawPlayer;
 var
   old_centery: fixed_t;
   old_centeryfrac: fixed_t;
@@ -3018,12 +3056,12 @@ begin
       old_centeryfrac := centeryfrac;
       centery := viewheight div 2;
       centeryfrac := centery * FRACUNIT;
-      R_DrawPlayerSprites;
+      TRendererThingsLocal.R_DrawPlayerSprites;
       centery := old_centery;
       centeryfrac := old_centeryfrac;
     end
     else
-      R_DrawPlayerSprites;
+      TRendererThingsLocal.R_DrawPlayerSprites;
   end;
 end;
 

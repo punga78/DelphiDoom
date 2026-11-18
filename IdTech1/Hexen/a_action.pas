@@ -490,7 +490,7 @@ begin
   if not TGameSession.NetGame then
   begin
     pmo := TGameSession.Players[TGameSession.ConsolePlayer].mo;
-    rp := R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
+    rp := TRendererMain.R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
     if rp > pmo.angle then
       check := rp - pmo.angle <= ANG45
     else
@@ -515,7 +515,7 @@ begin
         continue;
       end;
       pmo := TGameSession.Players[i].mo;
-      rp := R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
+      rp := TRendererMain.R_PointToAngle2(pmo.x, pmo.y, actor.x, actor.y);
       if rp > pmo.angle then
         check := rp - pmo.angle <= ANG45
       else

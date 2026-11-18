@@ -41,44 +41,6 @@ uses
 type
   lightmappass_t = (lp_solid, lp_masked);
 
-//==============================================================================
-//
-// R_ConfigureSoftLights
-//
-// The records of the lights (IdTech1\DynLights) that R_MarkDLights reads.
-// The composition root calls it
-//
-//==============================================================================
-procedure R_ConfigureSoftLights(const ACache: IDynLightRenderCache);
-
-//==============================================================================
-//
-// R_MarkDLights
-//
-//==============================================================================
-procedure R_MarkDLights(const mo: Pmobj_t);
-
-//==============================================================================
-//
-// R_AddAdditionalLights
-//
-//==============================================================================
-procedure R_AddAdditionalLights;
-
-//==============================================================================
-//
-// R_DrawLightsSingleThread
-//
-//==============================================================================
-procedure R_DrawLightsSingleThread(const pass: lightmappass_t);
-
-//==============================================================================
-//
-// R_DrawLightsMultiThread
-//
-//==============================================================================
-procedure R_DrawLightsMultiThread(const pass: lightmappass_t);
-
 var
   lightmapcolorintensity: integer = 128;
   lightwidthfactor: integer = 5;
@@ -105,19 +67,60 @@ const
   LIGHTMAPFADEOUT_SIGMOID = 4;
   NUMLIGHTMAPFADEOUTFUNCS = 5;
 
-//==============================================================================
-//
-// R_InitLightTexture
-//
-//==============================================================================
-procedure R_InitLightTexture;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSoftLights = class sealed
+  public
+    //==============================================================================
+    //
+    // R_ConfigureSoftLights
+    //
+    // The records of the lights (IdTech1\DynLights) that R_MarkDLights reads.
+    // The composition root calls it
+    //
+    //==============================================================================
+    class procedure R_ConfigureSoftLights(const ACache: IDynLightRenderCache); static;
+    //==============================================================================
+    //
+    // R_MarkDLights
+    //
+    //==============================================================================
+    class procedure R_MarkDLights(const mo: Pmobj_t); static;
+    //==============================================================================
+    //
+    // R_AddAdditionalLights
+    //
+    //==============================================================================
+    class procedure R_AddAdditionalLights; static;
+    //==============================================================================
+    //
+    // R_DrawLightsSingleThread
+    //
+    //==============================================================================
+    class procedure R_DrawLightsSingleThread(const pass: lightmappass_t); static;
+    //==============================================================================
+    //
+    // R_DrawLightsMultiThread
+    //
+    //==============================================================================
+    class procedure R_DrawLightsMultiThread(const pass: lightmappass_t); static;
+    //==============================================================================
+    //
+    // R_InitLightTexture
+    //
+    //==============================================================================
+    class procedure R_InitLightTexture; static;
+    //==============================================================================
+    //
+    // R_ShutDownLightTexture
+    //
+    //==============================================================================
+    class procedure R_ShutDownLightTexture; static;
+  end;
 
-//==============================================================================
-//
-// R_ShutDownLightTexture
-//
-//==============================================================================
-procedure R_ShutDownLightTexture;
 
 implementation
 
@@ -156,18 +159,111 @@ var
   // given by the composition root (R_ConfigureSoftLights)
   soft_dynlights: IDynLightRenderCache = nil;
 
+const
+  LIGHTTEXTURESIZE = 128;
+
+
+const
+  MAXLIGHTDISTANCE = 8192;
+  MAXSQRLIGHTDISTANCE = MAXLIGHTDISTANCE * MAXLIGHTDISTANCE;
+
+
+const
+  MAXLIGHTRADIUS = 256 * FRACUNIT;
+
+
+const
+  DEPTHBUFFER_NEAR = $3FFF * FRACUNIT;
+  DEPTHBUFFER_FAR = 256;
+
+
+type
+  lightparams_t = record
+    lightsourcex: fixed_t;
+    lightsourcey: fixed_t;
+    lightsourcemo: Pmobj_t;
+    lightplanez: fixed_t;
+    r, g, b: byte;
+    dl_iscale: fixed_t;
+    dl_scale: fixed_t;
+    dl_texturemid: fixed_t;
+    dl_x: integer;
+    dl_yl: integer;
+    dl_yh: integer;
+    centery: integer;
+    db_min: LongWord;
+    db_max: LongWord;
+    db_dmin: LongWord;
+    db_dmax: LongWord;
+    dl_fracstep: fixed_t;
+    dl_source32: PLongWordArray;
+  end;
+  Plightparams_t = ^lightparams_t;
+
+
+const
+  MAXLIGHTTHREADS = NUMEXECTHREADS;
+
+
+type
+  drawcolumnlightmap_t = procedure(const parms: Plightparams_t);
+
+
+type
+  precalc32op1_t = array[0..255] of integer;
+  precalc32op1_p = ^precalc32op1_t;
+
+
+type
+  fastzbuf_t = record
+    db: Pzbufferitem_t;
+    next: integer;
+  end;
+  Pfastzbuf_t = ^fastzbuf_t;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSoftLightsLocal = class sealed
+  public
+    class function RIT_AddAdditionalLights(mo: Pmobj_t): boolean; static;
+    class function R_GetVisLightProjection(const x, y, z: fixed_t; const radius: fixed_t;
+      const color: LongWord; mo: Pmobj_t): Pvislight_t; static;
+    class procedure R_SortDlights; static;
+    class procedure calc_precalc32op1; static;
+    class function R_FastZBufferAt(const x, y: integer; const pfdb: Pfastzbuf_t): Pzbufferitem_t; static;
+{$IFNDEF CPUX86}
+    class function ASM_CalcFactor(const a, b: LongWord): LongWord; static;
+{$ELSE}
+    class function ASM_CalcFactor(const a, b: LongWord): LongWord; static;
+{$ENDIF}
+    class procedure R_DrawColumnLightmap8(const parms: Plightparams_t); static;
+    class procedure R_DrawColumnLightmap8FF(const parms: Plightparams_t); static;
+    class procedure R_DrawColumnLightmap8Masked(const parms: Plightparams_t); static;
+    class procedure R_DrawColumnLightmap32(const parms: Plightparams_t); static;
+    class procedure R_DrawColumnLightmap32FF(const parms: Plightparams_t); static;
+    class procedure R_DrawColumnLightmap32Masked(const parms: Plightparams_t); static;
+    class procedure R_DrawVisLight(const psl: Pdlsortitem_t; const threadid, numlthreads: integer); static;
+    class procedure R_SetUpLightEffects(const pass: lightmappass_t); static;
+    class function f2b(const ff: float): byte; static;
+    class procedure R_GetVisLightProjections; static;
+    class procedure R_DrawLightSingleThread(const psl: Pdlsortitem_t); static;
+    class procedure R_DrawLightMultiThread(const psl: Pdlsortitem_t; const threadid, numlthreads: integer); static;
+    class function _DrawLightsMultiThread_thr(p: iterator_p): integer; stdcall; static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigureSoftLights
 //
 //==============================================================================
-procedure R_ConfigureSoftLights(const ACache: IDynLightRenderCache);
+class procedure TRendererSoftLights.R_ConfigureSoftLights(const ACache: IDynLightRenderCache);
 begin
   soft_dynlights := ACache;
 end;
-
-const
-  LIGHTTEXTURESIZE = 128;
 
 var
   lightexturelookup: array[0..LIGHTTEXTURESIZE - 1] of lpost_t;
@@ -178,7 +274,7 @@ var
 // R_InitLightTexture
 //
 //==============================================================================
-procedure R_InitLightTexture;
+class procedure TRendererSoftLights.R_InitLightTexture;
 var
   i, j: integer;
   dist: double;
@@ -239,22 +335,18 @@ end;
 // R_ShutDownLightTexture
 //
 //==============================================================================
-procedure R_ShutDownLightTexture;
+class procedure TRendererSoftLights.R_ShutDownLightTexture;
 begin
   if lighttexture <> nil then
     memfree(pointer(lighttexture), LIGHTTEXTURESIZE * LIGHTTEXTURESIZE * SizeOf(LongWord));
 end;
-
-const
-  MAXLIGHTDISTANCE = 8192;
-  MAXSQRLIGHTDISTANCE = MAXLIGHTDISTANCE * MAXLIGHTDISTANCE;
 
 //==============================================================================
 //
 // R_MarkDLights
 //
 //==============================================================================
-procedure R_MarkDLights(const mo: Pmobj_t);
+class procedure TRendererSoftLights.R_MarkDLights(const mo: Pmobj_t);
 var
   l: PGLDRenderLight;
   i: integer;
@@ -313,22 +405,19 @@ end;
 // RIT_AddAdditionalLights
 //
 //==============================================================================
-function RIT_AddAdditionalLights(mo: Pmobj_t): boolean;
+class function TRendererSoftLightsLocal.RIT_AddAdditionalLights(mo: Pmobj_t): boolean;
 begin
-  R_MarkDLights(mo);
+  TRendererSoftLights.R_MarkDLights(mo);
   // keep checking
   result := true;
 end;
-
-const
-  MAXLIGHTRADIUS = 256 * FRACUNIT;
 
 //==============================================================================
 //
 // R_AddAdditionalLights
 //
 //==============================================================================
-procedure R_AddAdditionalLights;
+class procedure TRendererSoftLights.R_AddAdditionalLights;
 var
   x: integer;
   y: integer;
@@ -354,19 +443,15 @@ begin
 
   for y := yl to yh do
     for x := xl to xh do
-      P_BlockThingsIterator(x, y, RIT_AddAdditionalLights);
+      P_BlockThingsIterator(x, y, TRendererSoftLightsLocal.RIT_AddAdditionalLights);
 end;
-
-const
-  DEPTHBUFFER_NEAR = $3FFF * FRACUNIT;
-  DEPTHBUFFER_FAR = 256;
 
 //==============================================================================
 //
 // R_GetVisLightProjection
 //
 //==============================================================================
-function R_GetVisLightProjection(const x, y, z: fixed_t; const radius: fixed_t;
+class function TRendererSoftLightsLocal.R_GetVisLightProjection(const x, y, z: fixed_t; const radius: fixed_t;
   const color: LongWord; mo: Pmobj_t): Pvislight_t;
 var
   tr_x: fixed_t;
@@ -424,7 +509,7 @@ begin
     exit;
 
   // OK, we have a valid vislight
-  result := R_NewVisLight;
+  result := TRendererVisLight.R_NewVisLight;
 
   // store information in a vissprite
   result.scale := FixedDiv(projectiony, tz); // JVAL For correct aspect
@@ -451,7 +536,7 @@ begin
     result.x2 := x2;
 
   // get depthbuffer range
-  an := R_PointToAngle(x, y);
+  an := TRendererMain.R_PointToAngle(x, y);
   an := an shr ANGLETOFINESHIFT;
   dx := FixedMul(radius, finecosine[an]);
   dy := FixedMul(radius, finesine[an]);
@@ -519,7 +604,7 @@ end;
 //        (note: closer light is first!)
 //
 //==============================================================================
-procedure R_SortDlights;
+class procedure TRendererSoftLightsLocal.R_SortDlights;
 
   procedure qsort(l, r: Integer);
   var
@@ -556,44 +641,11 @@ begin
     qsort(0, numdlitems - 1);
 end;
 
-type
-  lightparams_t = record
-    lightsourcex: fixed_t;
-    lightsourcey: fixed_t;
-    lightsourcemo: Pmobj_t;
-    lightplanez: fixed_t;
-    r, g, b: byte;
-    dl_iscale: fixed_t;
-    dl_scale: fixed_t;
-    dl_texturemid: fixed_t;
-    dl_x: integer;
-    dl_yl: integer;
-    dl_yh: integer;
-    centery: integer;
-    db_min: LongWord;
-    db_max: LongWord;
-    db_dmin: LongWord;
-    db_dmax: LongWord;
-    dl_fracstep: fixed_t;
-    dl_source32: PLongWordArray;
-  end;
-  Plightparams_t = ^lightparams_t;
-
-const
-  MAXLIGHTTHREADS = NUMEXECTHREADS;
-
 var
   lcolumns: array[0..MAXLIGHTTHREADS - 1] of lightparams_t;
 
-type
-  drawcolumnlightmap_t = procedure(const parms: Plightparams_t);
-
 var
   drawcolumnlightmap: drawcolumnlightmap_t;
-
-type
-  precalc32op1_t = array[0..255] of integer;
-  precalc32op1_p = ^precalc32op1_t;
 
 var
   precalc32op1A: array[0..255] of precalc32op1_p;
@@ -604,7 +656,7 @@ var
 // calc_precalc32op1
 //
 //==============================================================================
-procedure calc_precalc32op1;
+class procedure TRendererSoftLightsLocal.calc_precalc32op1;
 var
   i, j: integer;
 begin
@@ -622,26 +674,19 @@ begin
   precalc32op1_calced := true;
 end;
 
-type
-  fastzbuf_t = record
-    db: Pzbufferitem_t;
-    next: integer;
-  end;
-  Pfastzbuf_t = ^fastzbuf_t;
-
 //==============================================================================
 //
 // R_FastZBufferAt
 //
 //==============================================================================
-function R_FastZBufferAt(const x, y: integer; const pfdb: Pfastzbuf_t): Pzbufferitem_t;
+class function TRendererSoftLightsLocal.R_FastZBufferAt(const x, y: integer; const pfdb: Pfastzbuf_t): Pzbufferitem_t;
 begin
   if pfdb.next >= y then
   begin
     result := pfdb.db;
     exit;
   end;
-  result := R_ZBufferAt(x, y);
+  result := TRendererZBuffer.R_ZBufferAt(x, y);
   pfdb.db := result;
   if result.seg <> nil then
     pfdb.next := result.stop
@@ -656,12 +701,12 @@ end;
 //
 //==============================================================================
 {$IFNDEF CPUX86}
-function ASM_CalcFactor(const a, b: LongWord): LongWord;
+class function TRendererSoftLightsLocal.ASM_CalcFactor(const a, b: LongWord): LongWord;
 begin
   result := TFixedMath.OneMinusDivideUnsigned(a, b);
 end;
 {$ELSE}
-function ASM_CalcFactor(const a, b: LongWord): LongWord; assembler;
+class function TRendererSoftLightsLocal.ASM_CalcFactor(const a, b: LongWord): LongWord; assembler;
 asm
   push ebx
   mov ebx, eax
@@ -691,7 +736,7 @@ end;
 // R_DrawColumnLightmap8
 //
 //==============================================================================
-procedure R_DrawColumnLightmap8(const parms: Plightparams_t);
+class procedure TRendererSoftLightsLocal.R_DrawColumnLightmap8(const parms: Plightparams_t);
 var
   count, x, y: integer;
   frac: fixed_t;
@@ -808,7 +853,7 @@ end;
 // R_DrawColumnLightmap8FF
 //
 //==============================================================================
-procedure R_DrawColumnLightmap8FF(const parms: Plightparams_t);
+class procedure TRendererSoftLightsLocal.R_DrawColumnLightmap8FF(const parms: Plightparams_t);
 var
   count, x, y: integer;
   frac: fixed_t;
@@ -926,7 +971,7 @@ end;
 // R_DrawColumnLightmap8Masked
 //
 //==============================================================================
-procedure R_DrawColumnLightmap8Masked(const parms: Plightparams_t);
+class procedure TRendererSoftLightsLocal.R_DrawColumnLightmap8Masked(const parms: Plightparams_t);
 var
   count, x, y: integer;
   frac, frac2: fixed_t;
@@ -1007,7 +1052,7 @@ begin
   if yh < yl then
     exit;
 
-  R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
+  TRendererZBuffer.R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
 
   tbl_r := precalc32op1A[parms.r];
   tbl_g := precalc32op1A[parms.g];
@@ -1080,7 +1125,7 @@ end;
 // R_DrawColumnLightmap32
 //
 //==============================================================================
-procedure R_DrawColumnLightmap32(const parms: Plightparams_t);
+class procedure TRendererSoftLightsLocal.R_DrawColumnLightmap32(const parms: Plightparams_t);
 var
   count, x, y: integer;
   frac: fixed_t;
@@ -1195,7 +1240,7 @@ end;
 // R_DrawColumnLightmap32FF
 //
 //==============================================================================
-procedure R_DrawColumnLightmap32FF(const parms: Plightparams_t);
+class procedure TRendererSoftLightsLocal.R_DrawColumnLightmap32FF(const parms: Plightparams_t);
 var
   count, x, y: integer;
   frac: fixed_t;
@@ -1311,7 +1356,7 @@ end;
 // R_DrawColumnLightmap32Masked
 //
 //==============================================================================
-procedure R_DrawColumnLightmap32Masked(const parms: Plightparams_t);
+class procedure TRendererSoftLightsLocal.R_DrawColumnLightmap32Masked(const parms: Plightparams_t);
 var
   count, x, y: integer;
   frac, frac2: fixed_t;
@@ -1392,7 +1437,7 @@ begin
   if yh < yl then
     exit;
 
-  R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
+  TRendererZBuffer.R_CreateZColumnCache(dbmin, x, yl, yh, @cache);
 
   tbl_r := precalc32op1A[parms.r];
   tbl_g := precalc32op1A[parms.g];
@@ -1465,7 +1510,7 @@ end;
 // R_DrawVisLight
 //
 //==============================================================================
-procedure R_DrawVisLight(const psl: Pdlsortitem_t; const threadid, numlthreads: integer);
+class procedure TRendererSoftLightsLocal.R_DrawVisLight(const psl: Pdlsortitem_t; const threadid, numlthreads: integer);
 var
   frac: fixed_t;
   fracstep: fixed_t;
@@ -1550,7 +1595,7 @@ var
 // R_SetUpLightEffects
 //
 //==============================================================================
-procedure R_SetUpLightEffects(const pass: lightmappass_t);
+class procedure TRendererSoftLightsLocal.R_SetUpLightEffects(const pass: lightmappass_t);
 begin
   lightmapcolorintensity := ibetween(lightmapcolorintensity, MINLMCOLORSENSITIVITY, MAXLMCOLORSENSITIVITY);
   lightwidthfactor := ibetween(lightwidthfactor, MINLIGHTWIDTHFACTOR, MAXLIGHTWIDTHFACTOR);
@@ -1559,7 +1604,7 @@ begin
   begin
     old_lightmapcolorintensity := lightmapcolorintensity;
     old_lightmapfadeoutfunc := r_lightmapfadeoutfunc;
-    R_InitLightTexture;
+    TRendererSoftLights.R_InitLightTexture;
   end;
   calc_precalc32op1;
   if pass = lp_masked then
@@ -1593,7 +1638,7 @@ end;
 // f2b
 //
 //==============================================================================
-function f2b(const ff: float): byte;
+class function TRendererSoftLightsLocal.f2b(const ff: float): byte;
 var
   ii: integer;
 begin
@@ -1611,7 +1656,7 @@ end;
 // R_GetVisLightProjections
 //
 //==============================================================================
-procedure R_GetVisLightProjections;
+class procedure TRendererSoftLightsLocal.R_GetVisLightProjections;
 var
   i: integer;
   psl: Pdlsortitem_t;
@@ -1641,7 +1686,7 @@ end;
 // R_DrawLightSingleThread
 //
 //==============================================================================
-procedure R_DrawLightSingleThread(const psl: Pdlsortitem_t);
+class procedure TRendererSoftLightsLocal.R_DrawLightSingleThread(const psl: Pdlsortitem_t);
 begin
   if psl.vis <> nil then
     R_DrawVisLight(psl, 0, 1);
@@ -1652,15 +1697,15 @@ end;
 // R_DrawLightsSingleThread
 //
 //==============================================================================
-procedure R_DrawLightsSingleThread(const pass: lightmappass_t);
+class procedure TRendererSoftLights.R_DrawLightsSingleThread(const pass: lightmappass_t);
 var
   i: integer;
 begin
-  R_SetUpLightEffects(pass);
-  R_SortDlights;
-  R_GetVisLightProjections;
+  TRendererSoftLightsLocal.R_SetUpLightEffects(pass);
+  TRendererSoftLightsLocal.R_SortDlights;
+  TRendererSoftLightsLocal.R_GetVisLightProjections;
   for i := 0 to numdlitems - 1 do
-    R_DrawLightSingleThread(@dlbuffer[i]);
+    TRendererSoftLightsLocal.R_DrawLightSingleThread(@dlbuffer[i]);
 end;
 
 //==============================================================================
@@ -1668,7 +1713,7 @@ end;
 // R_DrawLightMultiThread
 //
 //==============================================================================
-procedure R_DrawLightMultiThread(const psl: Pdlsortitem_t; const threadid, numlthreads: integer);
+class procedure TRendererSoftLightsLocal.R_DrawLightMultiThread(const psl: Pdlsortitem_t; const threadid, numlthreads: integer);
 begin
   if psl.vis <> nil then
     R_DrawVisLight(psl, threadid, numlthreads);
@@ -1679,7 +1724,7 @@ end;
 // _DrawLightsMultiThread_thr
 //
 //==============================================================================
-function _DrawLightsMultiThread_thr(p: iterator_p): integer; stdcall;
+class function TRendererSoftLightsLocal._DrawLightsMultiThread_thr(p: iterator_p): integer; stdcall;
 var
   i: integer;
 begin
@@ -1693,12 +1738,12 @@ end;
 // R_DrawLightsMultiThread
 //
 //==============================================================================
-procedure R_DrawLightsMultiThread(const pass: lightmappass_t);
+class procedure TRendererSoftLights.R_DrawLightsMultiThread(const pass: lightmappass_t);
 begin
-  R_SetUpLightEffects(pass);
-  R_SortDlights;
-  R_GetVisLightProjections;
-  MT_Iterate(@_DrawLightsMultiThread_thr, nil);
+  TRendererSoftLightsLocal.R_SetUpLightEffects(pass);
+  TRendererSoftLightsLocal.R_SortDlights;
+  TRendererSoftLightsLocal.R_GetVisLightProjections;
+  MT_Iterate(@TRendererSoftLightsLocal._DrawLightsMultiThread_thr, nil);
 end;
 
 end.

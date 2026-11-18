@@ -68,113 +68,109 @@ var
 
 //==============================================================================
 //
-// R_DrawSpanToZBuffer
-//
-//==============================================================================
-procedure R_DrawSpanToZBuffer;
-
-//==============================================================================
-//
-// R_DrawSlopeToZBuffer
-//
-//==============================================================================
-procedure R_DrawSlopeToZBuffer;
-
-//==============================================================================
-//
-// R_DrawColumnToZBuffer
-//
-//==============================================================================
-procedure R_DrawColumnToZBuffer;
-
-//==============================================================================
-//
-// R_DrawMaskedColumnToZBuffer
-//
-//==============================================================================
-procedure R_DrawMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord);
-
-//==============================================================================
-//
-// R_DrawBatchMaskedColumnToZBuffer
-//
-//==============================================================================
-procedure R_DrawBatchMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord);
-
-//==============================================================================
-//
-// R_DrawVoxelPixelToZBuffer
-//
-//==============================================================================
-procedure R_DrawVoxelPixelToZBuffer(const depth: LongWord; const x, y: integer; const mo: Pmobj_t);
-
-//==============================================================================
-//
-// R_DrawVoxelColumnToZBuffer
-//
-//==============================================================================
-procedure R_DrawVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t);
-
-//==============================================================================
-//
-// R_DrawBatchVoxelColumnToZBuffer
-//
-//==============================================================================
-procedure R_DrawBatchVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t);
-
-//==============================================================================
-// R_ZBufferAt
-//
-// Returns the z buffer value at (x, y) or screen
-// Lower value means far away
-// no z-buffer is sky (or render glitch) - we do not write o zbuffer in skycolfunc
-//
-//==============================================================================
-function R_ZBufferAt(const x, y: integer): Pzbufferitem_t;
-
-//==============================================================================
-//
-// R_InitZBuffer
-//
-//==============================================================================
-procedure R_InitZBuffer;
-
-//==============================================================================
-//
-// R_ShutDownZBuffer
-//
-//==============================================================================
-procedure R_ShutDownZBuffer;
-
-//==============================================================================
-//
 // R_StartZBuffer
 //
 //==============================================================================
 
-//==============================================================================
-//
-// R_StopZBuffer
-//
-//==============================================================================
-procedure R_StopZBuffer;
-
-//==============================================================================
-//
-// R_ClearZBuffer
-//
-//==============================================================================
-procedure R_ClearZBuffer;
-
-//==============================================================================
-//
-// R_CreateZColumnCache
-//
-//==============================================================================
-procedure R_CreateZColumnCache(const dbmin: LongWord; const x: integer; const yl, yh: integer; const cache: Pzbuffercolumncache_t);
-
 var
   zbufferactive: boolean = true;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererZBuffer = class sealed
+  public
+    //==============================================================================
+    //
+    // R_DrawSpanToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawSpanToZBuffer; static;
+    //==============================================================================
+    //
+    // R_DrawSlopeToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawSlopeToZBuffer; static;
+    //==============================================================================
+    //
+    // R_DrawColumnToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawColumnToZBuffer; static;
+    //==============================================================================
+    //
+    // R_DrawMaskedColumnToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord); static;
+    //==============================================================================
+    //
+    // R_DrawBatchMaskedColumnToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawBatchMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord); static;
+    //==============================================================================
+    //
+    // R_DrawVoxelPixelToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawVoxelPixelToZBuffer(const depth: LongWord; const x, y: integer; const mo: Pmobj_t); static;
+    //==============================================================================
+    //
+    // R_DrawVoxelColumnToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t); static;
+    //==============================================================================
+    //
+    // R_DrawBatchVoxelColumnToZBuffer
+    //
+    //==============================================================================
+    class procedure R_DrawBatchVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t); static;
+    //==============================================================================
+    // R_ZBufferAt
+    //
+    // Returns the z buffer value at (x, y) or screen
+    // Lower value means far away
+    // no z-buffer is sky (or render glitch) - we do not write o zbuffer in skycolfunc
+    //
+    //==============================================================================
+    class function R_ZBufferAt(const x, y: integer): Pzbufferitem_t; static;
+    //==============================================================================
+    //
+    // R_InitZBuffer
+    //
+    //==============================================================================
+    class procedure R_InitZBuffer; static;
+    //==============================================================================
+    //
+    // R_ShutDownZBuffer
+    //
+    //==============================================================================
+    class procedure R_ShutDownZBuffer; static;
+    //==============================================================================
+    //
+    // R_StopZBuffer
+    //
+    //==============================================================================
+    class procedure R_StopZBuffer; static;
+    //==============================================================================
+    //
+    // R_ClearZBuffer
+    //
+    //==============================================================================
+    class procedure R_ClearZBuffer; static;
+    //==============================================================================
+    //
+    // R_CreateZColumnCache
+    //
+    //==============================================================================
+    class procedure R_CreateZColumnCache(const dbmin: LongWord; const x: integer; const yl, yh: integer; const cache: Pzbuffercolumncache_t); static;
+  end;
+
 
 implementation
 
@@ -195,12 +191,24 @@ uses
   r_main,
   DelphiDoom.Texture.PngFileWriter;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererZBufferLocal = class sealed
+  public
+    class function R_NewZBufferItem(const Z: Pzbuffer_t): Pzbufferitem_t; static;
+    class procedure CmdExportZBuffer(const fname: string); static;
+    class procedure DoExportZBuffer; static;
+  end;
+
 //==============================================================================
 //
 // R_NewZBufferItem
 //
 //==============================================================================
-function R_NewZBufferItem(const Z: Pzbuffer_t): Pzbufferitem_t;
+class function TRendererZBufferLocal.R_NewZBufferItem(const Z: Pzbuffer_t): Pzbufferitem_t;
 const
   GROWSTEP = 4;
 begin
@@ -218,7 +226,7 @@ end;
 // R_DrawSpanToZBuffer
 //
 //==============================================================================
-procedure R_DrawSpanToZBuffer;
+class procedure TRendererZBuffer.R_DrawSpanToZBuffer;
 var
   item: Pzbufferitem_t;
 begin
@@ -233,7 +241,7 @@ begin
     I_Warning('R_DrawSpanToZBuffer(): ds_x2=%d < ds_x1=%d'#13#10, [ds_x2, ds_x1]);
 {$ENDIF}
 
-  item := R_NewZBufferItem(@Zspans[ds_y]);
+  item := TRendererZBufferLocal.R_NewZBufferItem(@Zspans[ds_y]);
 
   if ds_y = centery then
     item.depth := 0
@@ -258,7 +266,7 @@ end;
 // R_DrawSlopeToZBuffer
 //
 //==============================================================================
-procedure R_DrawSlopeToZBuffer;
+class procedure TRendererZBuffer.R_DrawSlopeToZBuffer;
 var
   item: Pzbufferitem_t;
   ddy: integer;
@@ -274,7 +282,7 @@ begin
     I_Warning('R_DrawSlopeToZBuffer(): ds_x2=%d < ds_x1=%d'#13#10, [ds_x2, ds_x1]);
 {$ENDIF}
 
-  item := R_NewZBufferItem(@Zspans[ds_y]);
+  item := TRendererZBufferLocal.R_NewZBufferItem(@Zspans[ds_y]);
 
   ddy := abs(centery - ds_y);
 {$IFDEF CPUX86}
@@ -303,7 +311,7 @@ end;
 // R_DrawColumnToZBuffer
 //
 //==============================================================================
-procedure R_DrawColumnToZBuffer;
+class procedure TRendererZBuffer.R_DrawColumnToZBuffer;
 var
   item: Pzbufferitem_t;
 begin
@@ -318,7 +326,7 @@ begin
     I_Warning('R_DrawColumnToZBuffer(): dc_yh=%d < dc_yl=%d'#13#10, [dc_yh, dc_yl]);
 {$ENDIF}
 
-  item := R_NewZBufferItem(@Zcolumns[dc_x]);
+  item := TRendererZBufferLocal.R_NewZBufferItem(@Zcolumns[dc_x]);
 
 {$IFDEF CPUX86}
   item.depth := trunc((FRACUNIT / dc_iscale) * FRACUNIT);
@@ -338,7 +346,7 @@ end;
 // R_DrawMaskedColumnToZBuffer
 //
 //==============================================================================
-procedure R_DrawMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord);
+class procedure TRendererZBuffer.R_DrawMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord);
 var
   item: Pzbufferitem_t;
 begin
@@ -353,7 +361,7 @@ begin
     I_Warning('R_DrawMaskedColumnToZBuffer(): dc_yh=%d < dc_yl=%d'#13#10, [dc_yh, dc_yl]);
 {$ENDIF}
 
-  item := R_NewZBufferItem(@Zcolumns[dc_x]);
+  item := TRendererZBufferLocal.R_NewZBufferItem(@Zcolumns[dc_x]);
 
   item.depth := depth;
   item.seg := nil;
@@ -369,7 +377,7 @@ end;
 // R_DrawBatchMaskedColumnToZBuffer
 //
 //==============================================================================
-procedure R_DrawBatchMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord);
+class procedure TRendererZBuffer.R_DrawBatchMaskedColumnToZBuffer(const mo: Pmobj_t; const depth: LongWord);
 var
   item: Pzbufferitem_t;
   i: integer;
@@ -387,7 +395,7 @@ begin
 
   for i := dc_x to dc_x + num_batch_columns do
   begin
-    item := R_NewZBufferItem(@Zcolumns[i]);
+    item := TRendererZBufferLocal.R_NewZBufferItem(@Zcolumns[i]);
 
     item.depth := depth;
     item.seg := nil;
@@ -404,7 +412,7 @@ end;
 // R_DrawVoxelPixelToZBuffer
 //
 //==============================================================================
-procedure R_DrawVoxelPixelToZBuffer(const depth: LongWord; const x, y: integer; const mo: Pmobj_t);
+class procedure TRendererZBuffer.R_DrawVoxelPixelToZBuffer(const depth: LongWord; const x, y: integer; const mo: Pmobj_t);
 var
   item: Pzbufferitem_t;
 begin
@@ -415,7 +423,7 @@ begin
     I_Warning('R_DrawVoxelPixelToZBuffer(): ds_yl=%d not in range [0..viewheight(=%d) - 1]'#13#10, [y, viewheight]);
 {$ENDIF}
 
-  item := R_NewZBufferItem(@Zcolumns[x]);
+  item := TRendererZBufferLocal.R_NewZBufferItem(@Zcolumns[x]);
 
   item.depth := depth;
   item.seg := nil;
@@ -431,7 +439,7 @@ end;
 // R_DrawVoxelColumnToZBuffer
 //
 //==============================================================================
-procedure R_DrawVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t);
+class procedure TRendererZBuffer.R_DrawVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t);
 var
   Z: Pzbuffer_t;
   item: Pzbufferitem_t;
@@ -464,7 +472,7 @@ begin
             end;
   end;
 
-  item := R_NewZBufferItem(Z);
+  item := TRendererZBufferLocal.R_NewZBufferItem(Z);
 
   item.depth := depth;
   item.seg := nil;
@@ -480,7 +488,7 @@ end;
 // R_DrawBatchVoxelColumnToZBuffer
 //
 //==============================================================================
-procedure R_DrawBatchVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t);
+class procedure TRendererZBuffer.R_DrawBatchVoxelColumnToZBuffer(const depth: LongWord; const mo: Pmobj_t);
 var
   Z: Pzbuffer_t;
   item: Pzbufferitem_t;
@@ -563,7 +571,7 @@ begin
     if merged then
       Continue;
 
-    item := R_NewZBufferItem(Z);
+    item := TRendererZBufferLocal.R_NewZBufferItem(Z);
 
     item.depth := depth;
     item.seg := nil;
@@ -591,7 +599,7 @@ var
 // R_ZBufferAt
 //
 //==============================================================================
-function R_ZBufferAt(const x, y: integer): Pzbufferitem_t;
+class function TRendererZBuffer.R_ZBufferAt(const x, y: integer): Pzbufferitem_t;
 var
   Z: Pzbuffer_t;
   pi, pistop: Pzbufferitem_t;
@@ -644,7 +652,7 @@ var
 // CmdExportZBuffer
 //
 //==============================================================================
-procedure CmdExportZBuffer(const fname: string);
+class procedure TRendererZBufferLocal.CmdExportZBuffer(const fname: string);
 begin
   if fname = '' then
   begin
@@ -664,7 +672,7 @@ end;
 // DoExportZBuffer
 //
 //==============================================================================
-procedure DoExportZBuffer;
+class procedure TRendererZBufferLocal.DoExportZBuffer;
 var
   x, y: integer;
   z, maxz: LongWord;
@@ -681,7 +689,7 @@ begin
   for x := 0 to SCREENWIDTH - 1 do
     for y := 0 to SCREENHEIGHT - 1 do
     begin
-      z := R_ZBufferAt(x, y).depth;
+      z := TRendererZBuffer.R_ZBufferAt(x, y).depth;
       if z > maxz then
         maxz := z;
       depths[y * SCREENWIDTH + x] := z;
@@ -701,11 +709,11 @@ end;
 // R_InitZBuffer
 //
 //==============================================================================
-procedure R_InitZBuffer;
+class procedure TRendererZBuffer.R_InitZBuffer;
 begin
   ZeroMemory(@Zspans, SizeOf(Zspans));
   ZeroMemory(@Zcolumns, SizeOf(Zcolumns));
-  C_AddCmd('ExportZBuffer, ZBufferExport', @CmdExportZBuffer);
+  C_AddCmd('ExportZBuffer, ZBufferExport', @TRendererZBufferLocal.CmdExportZBuffer);
 end;
 
 //==============================================================================
@@ -713,7 +721,7 @@ end;
 // R_ShutDownZBuffer
 //
 //==============================================================================
-procedure R_ShutDownZBuffer;
+class procedure TRendererZBuffer.R_ShutDownZBuffer;
 var
   i: integer;
 begin
@@ -739,11 +747,11 @@ end;
 // R_StopZBuffer
 //
 //==============================================================================
-procedure R_StopZBuffer;
+class procedure TRendererZBuffer.R_StopZBuffer;
 begin
   if export_zbuffer then
   begin
-    DoExportZBuffer;
+    TRendererZBufferLocal.DoExportZBuffer;
     export_zbuffer := false;
   end;
 
@@ -755,7 +763,7 @@ end;
 // R_ClearZBuffer
 //
 //==============================================================================
-procedure R_ClearZBuffer;
+class procedure TRendererZBuffer.R_ClearZBuffer;
 var
   i: integer;
 begin
@@ -773,7 +781,7 @@ end;
 //  This gives a huge boost when applying lightmap on masked
 //
 //==============================================================================
-procedure R_CreateZColumnCache(const dbmin: LongWord; const x: integer; const yl, yh: integer; const cache: Pzbuffercolumncache_t);
+class procedure TRendererZBuffer.R_CreateZColumnCache(const dbmin: LongWord; const x: integer; const yl, yh: integer; const cache: Pzbuffercolumncache_t);
 var
   Z: Pzbuffer_t;
   pi, pistop: Pzbufferitem_t;

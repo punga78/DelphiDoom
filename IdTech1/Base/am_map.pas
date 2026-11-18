@@ -1526,8 +1526,8 @@ begin
     {$ENDIF}
     if texturedautomap then
     begin
-      AM_setSubSectorDrawFuncs;
-      AM_drawSubSectors(am_view.Window);
+      TAutomapTextured.AM_setSubSectorDrawFuncs;
+      TAutomapTextured.AM_drawSubSectors(am_view.Window);
     end;
   end;
   if automapgrid then
@@ -1553,7 +1553,7 @@ end;
 //==============================================================================
 procedure AM_Init;
 begin
-  AM_InitTextured;
+  TAutomapTextured.AM_InitTextured;
 
   // The line drawings are TAutomapShapes (IdTech1\Automap)
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
@@ -1593,7 +1593,7 @@ end;
 //==============================================================================
 procedure AM_ShutDown;
 begin
-  AM_ShutDownTextured;
+  TAutomapTextured.AM_ShutDownTextured;
 end;
 
 end.

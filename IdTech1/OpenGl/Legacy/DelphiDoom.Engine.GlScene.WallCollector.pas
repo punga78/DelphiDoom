@@ -476,7 +476,7 @@ begin
     Exit;
 
   {$IFDEF DOOM_OR_STRIFE}
-  LFrontSector := R_FakeFlat(ASeg.frontsector, @LFrontTemp, nil, nil, false); // for boom effects
+  LFrontSector := TRendererBsp.R_FakeFlat(ASeg.frontsector, @LFrontTemp, nil, nil, false); // for boom effects
   {$ELSE}
   LFrontSector := ASeg.frontsector;
   {$ENDIF}
@@ -613,7 +613,7 @@ begin
   else // twosided
   begin
     {$IFDEF DOOM_OR_STRIFE}
-    LBackSector := R_FakeFlat(ASeg.backsector, @LBackTemp, nil, nil, true); // for boom effects
+    LBackSector := TRendererBsp.R_FakeFlat(ASeg.backsector, @LBackTemp, nil, nil, true); // for boom effects
     {$ELSE}
     LBackSector := ASeg.backsector;
     {$ENDIF}

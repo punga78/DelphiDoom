@@ -43,29 +43,6 @@ const
   FLAT32CACHESIZE = 2048;
   CACHEFLATMASK = FLAT32CACHESIZE - 1;
 
-//==============================================================================
-//
-// R_ConfigureFlatCache
-// The grower of the 64x64 flats of Framework\Imaging, given by the composition root
-//
-//==============================================================================
-procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
-
-//==============================================================================
-//
-// R_ConfigureFlatTextures
-// The external textures (useexternaltextures), given by the composition root
-//
-//==============================================================================
-procedure R_ConfigureFlatTextures(const AFiles: IEngineTextureFiles);
-
-//==============================================================================
-//
-// R_ReadDS32Cache
-//
-//==============================================================================
-procedure R_ReadDS32Cache(const flat: integer);
-
 type
   ds32_t = array[0..4096 * 4096 - 1] of LongWord;
   Pds32_t = ^ds32_t;
@@ -80,47 +57,71 @@ type
   ds32cacheinfo_tArray = array[0..FLAT32CACHESIZE - 1] of ds32cacheinfo_t;
   ds32cacheinfo_tPArray = array[0..FLAT32CACHESIZE - 1] of Pds32cacheinfo_t;
 
-//==============================================================================
-//
-// R_Get_ds32
-//
-//==============================================================================
-function R_Get_ds32(p: Pds32cacheinfo_t): Pds32_t;
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererCacheFlats = class sealed
+  public
+    //==============================================================================
+    //
+    // R_ConfigureFlatCache
+    // The grower of the 64x64 flats of Framework\Imaging, given by the composition root
+    //
+    //==============================================================================
+    class procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower); static;
+    //==============================================================================
+    //
+    // R_ConfigureFlatTextures
+    // The external textures (useexternaltextures), given by the composition root
+    //
+    //==============================================================================
+    class procedure R_ConfigureFlatTextures(const AFiles: IEngineTextureFiles); static;
+    //==============================================================================
+    //
+    // R_ReadDS32Cache
+    //
+    //==============================================================================
+    class procedure R_ReadDS32Cache(const flat: integer); static;
+    //==============================================================================
+    //
+    // R_Get_ds32
+    //
+    //==============================================================================
+    class function R_Get_ds32(p: Pds32cacheinfo_t): Pds32_t; static;
+    //==============================================================================
+    //
+    // R_FlatScaleFromSize
+    //
+    //==============================================================================
+    class function R_FlatScaleFromSize(const flat, size: integer): dsscale_t; static;
+    //==============================================================================
+    //
+    // R_ClearDS32Cache
+    //
+    //==============================================================================
+    class procedure R_ClearDS32Cache; static;
+    //==============================================================================
+    //
+    // R_ResetDS32Cache
+    //
+    //==============================================================================
+    class procedure R_ResetDS32Cache; static;
+    //==============================================================================
+    //
+    // R_InitDS32Cache
+    //
+    //==============================================================================
+    class procedure R_InitDS32Cache; static;
+    //==============================================================================
+    //
+    // R_ShutDownDS32Cache
+    //
+    //==============================================================================
+    class procedure R_ShutDownDS32Cache; static;
+  end;
 
-//==============================================================================
-//
-// R_FlatScaleFromSize
-//
-//==============================================================================
-function R_FlatScaleFromSize(const flat, size: integer): dsscale_t;
-
-//==============================================================================
-//
-// R_ClearDS32Cache
-//
-//==============================================================================
-procedure R_ClearDS32Cache;
-
-//==============================================================================
-//
-// R_ResetDS32Cache
-//
-//==============================================================================
-procedure R_ResetDS32Cache;
-
-//==============================================================================
-//
-// R_InitDS32Cache
-//
-//==============================================================================
-procedure R_InitDS32Cache;
-
-//==============================================================================
-//
-// R_ShutDownDS32Cache
-//
-//==============================================================================
-procedure R_ShutDownDS32Cache;
 
 implementation
 
@@ -150,12 +151,22 @@ var
   span_grower: IImagingSpanGrower = nil;
   flat_texturefiles: IEngineTextureFiles = nil;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererCacheFlatsLocal = class sealed
+  public
+    class procedure R_GrowSpan(const p: Pds32cacheinfo_t; const newscale: dsscale_t); static;
+  end;
+
 //==============================================================================
 //
 // R_ConfigureFlatCache
 //
 //==============================================================================
-procedure R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
+class procedure TRendererCacheFlats.R_ConfigureFlatCache(const AGrower: IImagingSpanGrower);
 begin
   span_grower := AGrower;
 end;
@@ -165,7 +176,7 @@ end;
 // R_ConfigureFlatTextures
 //
 //==============================================================================
-procedure R_ConfigureFlatTextures(const AFiles: IEngineTextureFiles);
+class procedure TRendererCacheFlats.R_ConfigureFlatTextures(const AFiles: IEngineTextureFiles);
 begin
   flat_texturefiles := AFiles;
 end;
@@ -177,7 +188,7 @@ end;
 // bigger flat comes back in the same cache item (it was r_grow.pas)
 //
 //==============================================================================
-procedure R_GrowSpan(const p: Pds32cacheinfo_t; const newscale: dsscale_t);
+class procedure TRendererCacheFlatsLocal.R_GrowSpan(const p: Pds32cacheinfo_t; const newscale: dsscale_t);
 var
   source: TImagingPixels;
   grown: TImagingPixels;
@@ -189,7 +200,7 @@ begin
     exit;
 
   SetLength(source, 4096);
-  Move(R_Get_ds32(p)[0], source[0], 4096 * SizeOf(LongWord));
+  Move(TRendererCacheFlats.R_Get_ds32(p)[0], source[0], 4096 * SizeOf(LongWord));
 
   case newscale of
     ds128x128: grown := span_grower.Grow64to128(source);
@@ -199,7 +210,7 @@ begin
   end;
 
   p.scale := newscale;
-  Move(grown[0], R_Get_ds32(p)[0], Length(grown) * SizeOf(LongWord));
+  Move(grown[0], TRendererCacheFlats.R_Get_ds32(p)[0], Length(grown) * SizeOf(LongWord));
 end;
 
 //==============================================================================
@@ -207,7 +218,7 @@ end;
 // R_ReadDS32Cache
 //
 //==============================================================================
-procedure R_ReadDS32Cache(const flat: integer);
+class procedure TRendererCacheFlats.R_ReadDS32Cache(const flat: integer);
 var
   cachemiss: boolean;
   hash: integer;
@@ -516,11 +527,11 @@ begin
         if pds.size = 0 then
         begin
           if detailLevel = DL_ULTRARES then
-            R_GrowSpan(pds, ds512x512)
+            TRendererCacheFlatsLocal.R_GrowSpan(pds, ds512x512)
           else if detailLevel = DL_HIRES then
-            R_GrowSpan(pds, ds256x256)
+            TRendererCacheFlatsLocal.R_GrowSpan(pds, ds256x256)
           else
-            R_GrowSpan(pds, ds128x128);
+            TRendererCacheFlatsLocal.R_GrowSpan(pds, ds128x128);
         end;
       end
       else
@@ -528,9 +539,9 @@ begin
         if pds.size = 0 then
         begin
           if detailLevel = DL_ULTRARES then
-            R_GrowSpan(pds, ds256x256)
+            TRendererCacheFlatsLocal.R_GrowSpan(pds, ds256x256)
           else if detailLevel = DL_HIRES then
-            R_GrowSpan(pds, ds128x128);
+            TRendererCacheFlatsLocal.R_GrowSpan(pds, ds128x128);
         end;
       end;
       pds32 := R_Get_ds32(pds);
@@ -549,7 +560,7 @@ end;
 // R_Get_ds32
 //
 //==============================================================================
-function R_Get_ds32(p: Pds32cacheinfo_t): Pds32_t;
+class function TRendererCacheFlats.R_Get_ds32(p: Pds32cacheinfo_t): Pds32_t;
 begin
   result := p.ds32[MaxI(Ord(p.scale), p.size)];
   if result = nil then
@@ -564,7 +575,7 @@ end;
 // R_ResetDS32Cache
 //
 //==============================================================================
-procedure R_ResetDS32Cache;
+class procedure TRendererCacheFlats.R_ResetDS32Cache;
 var
   i: integer;
 begin
@@ -578,7 +589,7 @@ end;
 // R_ClearDS32Cache
 //
 //==============================================================================
-procedure R_ClearDS32Cache;
+class procedure TRendererCacheFlats.R_ClearDS32Cache;
 var
   i, j: integer;
 begin
@@ -604,7 +615,7 @@ end;
 // R_FlatScaleFromSize
 //
 //==============================================================================
-function R_FlatScaleFromSize(const flat, size: integer): dsscale_t;
+class function TRendererCacheFlats.R_FlatScaleFromSize(const flat, size: integer): dsscale_t;
 var
   i: integer;
 begin
@@ -626,7 +637,7 @@ end;
 // R_InitDS32Cache
 //
 //==============================================================================
-procedure R_InitDS32Cache;
+class procedure TRendererCacheFlats.R_InitDS32Cache;
 var
   i: integer;
 begin
@@ -639,7 +650,7 @@ end;
 // R_ShutDownDS32Cache
 //
 //==============================================================================
-procedure R_ShutDownDS32Cache;
+class procedure TRendererCacheFlats.R_ShutDownDS32Cache;
 var
   i: integer;
 begin

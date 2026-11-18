@@ -208,7 +208,7 @@ begin
       c1 := palL[j];
       for k := 0 to 255 do
       begin
-        c := R_ColorAverage(palL[k], c1, factor);
+        c := TRendererHires.R_ColorAverage(palL[k], c1, factor);
         ptrans8^ := V_FindAproxColorIndex(@palL, c) and $FF;
         inc(ptrans8);
       end;
@@ -255,7 +255,7 @@ begin
       c1 := r + g shl 8 + b shl 16;
       for k := 0 to 255 do
       begin
-        c := R_ColorAdd(palL[k], c1);
+        c := TRendererHires.R_ColorAdd(palL[k], c1);
         if (i = 0) or (i = 8) then
           ptrans8^ := V_FindAproxColorIndex(@palL, c) and $FF
         else
@@ -303,7 +303,7 @@ begin
       c1 := r + g shl 8 + b shl 16;
       for k := 0 to 255 do
       begin
-        c := R_ColorSubtract(palL[k], c1);
+        c := TRendererHires.R_ColorSubtract(palL[k], c1);
         if (i = 0) or (i = 8) then
           ptrans8^ := V_FindAproxColorIndex(@palL, c) and $FF
         else

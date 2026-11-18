@@ -334,7 +334,7 @@ begin
 
   if (speed > 0) and P_CheckSight(thing, tmpusher.source) then
   begin
-    pushangle := R_PointToAngle2(thing.x, thing.y, sx, sy);
+    pushangle := TRendererMain.R_PointToAngle2(thing.x, thing.y, sx, sy);
     if tmpusher.source._type = Ord(MT_PUSH) then
       pushangle := pushangle + ANG180;    // away
     pushangle := pushangle shr ANGLETOFINESHIFT;

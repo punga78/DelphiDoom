@@ -1671,7 +1671,7 @@ end;
 //==============================================================================
 function PS_R_PointInSector(const x: Integer; const y: Integer): Integer;
 begin
-  Result := R_PointInSubsector(x, y).sector.iSectorID;
+  Result := TRendererMain.R_PointInSubsector(x, y).sector.iSectorID;
 end;
 
 //==============================================================================
@@ -1681,7 +1681,7 @@ end;
 //==============================================================================
 function PS_R_PointInSubSector(const x: Integer; const y: Integer): Integer;
 begin
-  Result := pdiff(pointer(R_PointInSubsector(x, y)), subsectors, SizeOf(subsector_t));
+  Result := pdiff(pointer(TRendererMain.R_PointInSubsector(x, y)), subsectors, SizeOf(subsector_t));
 end;
 
 // -------------------------- VERTEXES -----------------------------------------

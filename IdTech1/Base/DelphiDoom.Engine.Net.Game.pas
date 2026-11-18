@@ -403,8 +403,8 @@ begin
         if interpolate then
         begin
           if not didinterpolations then
-            R_StoreInterpolationData(LEnterTime, LCounts * ticdup);
-          if R_Interpolate then
+            TRendererInterpolation.R_StoreInterpolationData(LEnterTime, LCounts * ticdup);
+          if TRendererInterpolation.R_Interpolate then
           begin
             didinterpolations := true;
             TMainRoutines.D_Display;
@@ -413,8 +413,8 @@ begin
         end
         else if interpolateoncapped and firstinterpolation then
         begin
-          R_StoreInterpolationData(LEnterTime, LCounts * ticdup);
-          if R_Interpolate then
+          TRendererInterpolation.R_StoreInterpolationData(LEnterTime, LCounts * ticdup);
+          if TRendererInterpolation.R_Interpolate then
           begin
             didinterpolations := true;
             TMainRoutines.D_Display;
@@ -425,9 +425,9 @@ begin
     until LReady;
 
     if didinterpolations then
-      R_RestoreInterpolationData
+      TRendererInterpolation.R_RestoreInterpolationData
     else if storedpolyinterpolations then
-      R_RestoreInterpolationPolys;
+      TRendererInterpolation.R_RestoreInterpolationPolys;
 
     ticfrac := 0;
 
@@ -441,7 +441,7 @@ begin
         FPlanner.VerifyCanRunTic;
         if advancedemo then
           TMainRoutines.D_DoAdvanceDemo;
-        R_Ticker;
+        TRendererMain.R_Ticker;
         FEndScreenTick;
         TMenuRoutines.M_Ticker;
         FConsole.Tick;
@@ -479,7 +479,7 @@ begin
     FSync.BuildSingleTic;
     if advancedemo then
       TMainRoutines.D_DoAdvanceDemo;
-    R_Ticker;
+    TRendererMain.R_Ticker;
     FEndScreenTick;
     TMenuRoutines.M_Ticker;
     FConsole.Tick;

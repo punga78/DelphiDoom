@@ -346,7 +346,7 @@ var
   s: Psubsector_t;
   sec: Psector_t;
 begin
-  s := R_PointInSubsector(x, y);
+  s := TRendererMain.R_PointInSubsector(x, y);
   if s.sector.midsec >= 0 then
   begin
     sec := @sectors[s.sector.midsec];

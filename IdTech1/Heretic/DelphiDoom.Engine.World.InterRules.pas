@@ -1396,7 +1396,7 @@ begin
     ((source = nil) or (source.player = nil) or (Pplayer_t(source.player).readyweapon <> wp_gauntlets)) and
     (inflictor.flags2 and MF2_NODMGTHRUST = 0) then
   begin
-    ang := R_PointToAngle2(inflictor.x, inflictor.y, target.x, target.y);
+    ang := TRendererMain.R_PointToAngle2(inflictor.x, inflictor.y, target.x, target.y);
 
     mass := target.mass;
     if mass = 0 then

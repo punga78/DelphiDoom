@@ -182,7 +182,7 @@ begin
   LFlat.sectornum := ASectorNum;
   LSector := @sectors[ASectorNum];
   {$IFDEF DOOM_OR_STRIFE}
-  LSector := R_FakeFlat(LSector, @LTempSector, nil, nil, false); // for boom effects
+  LSector := TRendererBsp.R_FakeFlat(LSector, @LTempSector, nil, nil, false); // for boom effects
   {$ENDIF}
   LFlat.ceiling := true;
 
@@ -247,7 +247,7 @@ begin
   LFlat.sectornum := ASectorNum;
   {$IFDEF DOOM_OR_STRIFE}
   LSector := @sectors[ASectorNum];
-  LSector := R_FakeFlat(LSector, @LTempSector, nil, nil, false); // for boom effects
+  LSector := TRendererBsp.R_FakeFlat(LSector, @LTempSector, nil, nil, false); // for boom effects
   {$ENDIF}
   LFlat.ceiling := true;
 
@@ -304,7 +304,7 @@ begin
   LFlat.sectornum := ASectorNum;
   LSector := @sectors[ASectorNum];
   {$IFDEF DOOM_OR_STRIFE}
-  LSector := R_FakeFlat(LSector, @LTempSector, nil, nil, false); // for boom effects
+  LSector := TRendererBsp.R_FakeFlat(LSector, @LTempSector, nil, nil, false); // for boom effects
   {$ENDIF}
   LFlat.ceiling := ACeiling;
   if ACeiling then

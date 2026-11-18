@@ -896,7 +896,7 @@ var
 {$ENDIF}
 begin
   // link into subsector
-  ss := R_PointInSubsector(thing.x, thing.y);
+  ss := TRendererMain.R_PointInSubsector(thing.x, thing.y);
   thing.subsector := ss;
 
   if thing.flags and MF_NOSECTOR = 0 then
@@ -1902,7 +1902,7 @@ begin
         if P_CheckSight(mo, mobj) then
         begin
           master := mo.target;
-          angle := R_PointToAngle2(master.x, master.y, mobj.x, mobj.y) - master.angle;
+          angle := TRendererMain.R_PointToAngle2(master.x, master.y, mobj.x, mobj.y) - master.angle;
           angle := angle shr 24;
           if (angle > 226) or (angle < 30) then
           begin

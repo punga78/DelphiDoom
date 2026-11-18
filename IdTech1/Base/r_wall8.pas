@@ -58,55 +58,6 @@ type
   batchwallrenderinfo8_tArray = array[0..$FFF] of batchwallrenderinfo8_t;
   Pbatchwallrenderinfo8_tArray = ^batchwallrenderinfo8_tArray;
 
-//==============================================================================
-//
-// R_StoreWallColumn8
-//
-//==============================================================================
-procedure R_StoreWallColumn8(const idx: PInteger);
-
-//==============================================================================
-//
-// R_FlashWallColumns8
-//
-//==============================================================================
-procedure R_FlashWallColumns8(const idx: PInteger);
-
-//==============================================================================
-//
-// R_InitWallsCache8
-//
-//==============================================================================
-procedure R_InitWallsCache8;
-
-//==============================================================================
-//
-// R_ShutDownWallsCache8
-//
-//==============================================================================
-procedure R_ShutDownWallsCache8;
-
-//==============================================================================
-//
-// R_ClearWallsCache8
-//
-//==============================================================================
-procedure R_ClearWallsCache8;
-
-//==============================================================================
-//
-// R_RenderMultiThreadWalls8
-//
-//==============================================================================
-procedure R_RenderMultiThreadWalls8;
-
-//==============================================================================
-//
-// R_WaitWallsCache8
-//
-//==============================================================================
-procedure R_WaitWallsCache8;
-
 var
   midwalls8: integer;
   lowerwalls8: integer;
@@ -118,6 +69,58 @@ var
 
 var
   force_numwallrenderingthreads_8bit: integer = 0;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererWall8 = class sealed
+  public
+    //==============================================================================
+    //
+    // R_StoreWallColumn8
+    //
+    //==============================================================================
+    class procedure R_StoreWallColumn8(const idx: PInteger); static;
+    //==============================================================================
+    //
+    // R_FlashWallColumns8
+    //
+    //==============================================================================
+    class procedure R_FlashWallColumns8(const idx: PInteger); static;
+    //==============================================================================
+    //
+    // R_InitWallsCache8
+    //
+    //==============================================================================
+    class procedure R_InitWallsCache8; static;
+    //==============================================================================
+    //
+    // R_ShutDownWallsCache8
+    //
+    //==============================================================================
+    class procedure R_ShutDownWallsCache8; static;
+    //==============================================================================
+    //
+    // R_ClearWallsCache8
+    //
+    //==============================================================================
+    class procedure R_ClearWallsCache8; static;
+    //==============================================================================
+    //
+    // R_RenderMultiThreadWalls8
+    //
+    //==============================================================================
+    class procedure R_RenderMultiThreadWalls8; static;
+    //==============================================================================
+    //
+    // R_WaitWallsCache8
+    //
+    //==============================================================================
+    class procedure R_WaitWallsCache8; static;
+  end;
+
 
 implementation
 
@@ -163,12 +166,37 @@ var
   wallcachesize: integer;
   wallcacherealsize: integer;
 
+const
+  MAXWALLTHREADS8 = 256;
+
+
+type
+  Pwallthreadparms8_t = ^wallthreadparms8_t;
+  wallthreadparms8_t = record
+    start, stop: integer;
+    next: Pwallthreadparms8_t;
+  end;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererWall8Local = class sealed
+  public
+    class procedure R_GrowWallsCache8; static;
+    class procedure R_AddWallsToCache8(const idx: PInteger); static;
+    class procedure R_RenderWall8(walls: Pbatchwallrenderinfo8_t); static;
+    class function _wall_thread_worker8(parms: Pwallthreadparms8_t): integer; stdcall; static;
+  end;
+
 //==============================================================================
 //
 // R_GrowWallsCache8
 //
 //==============================================================================
-procedure R_GrowWallsCache8;
+class procedure TRendererWall8Local.R_GrowWallsCache8;
 begin
   if wallcachesize >= wallcacherealsize then
   begin
@@ -182,7 +210,7 @@ end;
 // R_AddWallsToCache8
 //
 //==============================================================================
-procedure R_AddWallsToCache8(const idx: PInteger);
+class procedure TRendererWall8Local.R_AddWallsToCache8(const idx: PInteger);
 begin
   R_GrowWallsCache8;
   idx^ := wallcachesize;
@@ -195,7 +223,7 @@ end;
 // R_RenderWall8
 //
 //==============================================================================
-procedure R_RenderWall8(walls: Pbatchwallrenderinfo8_t);
+class procedure TRendererWall8Local.R_RenderWall8(walls: Pbatchwallrenderinfo8_t);
 var
   nwalls: integer;
   {$IFNDEF OPTIMIZE_FOR_SIZE}
@@ -392,7 +420,7 @@ end;
 // R_FlashWallColumns8
 //
 //==============================================================================
-procedure R_FlashWallColumns8(const idx: PInteger);
+class procedure TRendererWall8.R_FlashWallColumns8(const idx: PInteger);
 var
   walls: Pbatchwallrenderinfo8_t;
 begin
@@ -402,11 +430,11 @@ begin
 
   if usemultithread then
   begin
-    R_AddWallsToCache8(idx);
+    TRendererWall8Local.R_AddWallsToCache8(idx);
     exit;
   end;
 
-  R_RenderWall8(walls);
+  TRendererWall8Local.R_RenderWall8(walls);
 end;
 
 //==============================================================================
@@ -414,7 +442,7 @@ end;
 // R_StoreWallColumn8
 //
 //==============================================================================
-procedure R_StoreWallColumn8(const idx: PInteger);
+class procedure TRendererWall8.R_StoreWallColumn8(const idx: PInteger);
 var
   w: Pwallrenderinfo8_t;
   walls: Pbatchwallrenderinfo8_t;
@@ -445,7 +473,7 @@ begin
   if walls.numwalls = MAXBATCHWALLS then
   begin
     if usemultithread then
-      R_AddWallsToCache8(idx)
+      TRendererWall8Local.R_AddWallsToCache8(idx)
     else
     begin
       {$IFNDEF OPTIMIZE_FOR_SIZE}
@@ -462,26 +490,16 @@ begin
   end;
 end;
 
-const
-  MAXWALLTHREADS8 = 256;
-
 var
   wallthreads8: array[0..MAXWALLTHREADS8 - 1] of TDThread;
   numwallthreads8: Integer = 0;
-
-type
-  Pwallthreadparms8_t = ^wallthreadparms8_t;
-  wallthreadparms8_t = record
-    start, stop: integer;
-    next: Pwallthreadparms8_t;
-  end;
 
 //==============================================================================
 //
 // _wall_thread_worker8
 //
 //==============================================================================
-function _wall_thread_worker8(parms: Pwallthreadparms8_t): integer; stdcall;
+class function TRendererWall8Local._wall_thread_worker8(parms: Pwallthreadparms8_t): integer; stdcall;
 var
   start, stop, part: integer;
   i: integer;
@@ -520,14 +538,14 @@ var
 // R_InitWallsCache8
 //
 //==============================================================================
-procedure R_InitWallsCache8;
+class procedure TRendererWall8.R_InitWallsCache8;
 var
   i: integer;
 begin
   wallcache := nil;
   wallcachesize := 0;
   wallcacherealsize := 0;
-  R_GrowWallsCache8;
+  TRendererWall8Local.R_GrowWallsCache8;
   midwalls8 := 0;
   lowerwalls8 := 1;
   upperwalls8 := 2;
@@ -555,7 +573,7 @@ begin
 
   default_numwallrenderingthreads_8bit := numwallthreads8;
   for i := 0 to numwallthreads8 - 1 do
-    wallthreads8[i] := TDThread.Create(@_wall_thread_worker8);
+    wallthreads8[i] := TDThread.Create(@TRendererWall8Local._wall_thread_worker8);
 end;
 
 //==============================================================================
@@ -563,7 +581,7 @@ end;
 // R_ShutDownWallsCache8
 //
 //==============================================================================
-procedure R_ShutDownWallsCache8;
+class procedure TRendererWall8.R_ShutDownWallsCache8;
 var
   i: integer;
 begin
@@ -578,7 +596,7 @@ end;
 // R_ClearWallsCache8
 //
 //==============================================================================
-procedure R_ClearWallsCache8;
+class procedure TRendererWall8.R_ClearWallsCache8;
 begin
   midwalls8 := 0;
   lowerwalls8 := 1;
@@ -598,7 +616,7 @@ var
 // R_RenderMultiThreadWalls8
 //
 //==============================================================================
-procedure R_RenderMultiThreadWalls8;
+class procedure TRendererWall8.R_RenderMultiThreadWalls8;
 var
   i: integer;
   newnumthreads: integer;
@@ -631,7 +649,7 @@ begin
   if newnumthreads <> numwallthreads8 then
   begin
     for i := numwallthreads8 to newnumthreads - 1 do
-      wallthreads8[i] := TDThread.Create(@_wall_thread_worker8);
+      wallthreads8[i] := TDThread.Create(@TRendererWall8Local._wall_thread_worker8);
     for i := newnumthreads to numwallthreads8 - 1 do
       wallthreads8[i].Free;
     numwallthreads8 := newnumthreads;
@@ -659,7 +677,7 @@ end;
 // R_WaitWallsCache8
 //
 //==============================================================================
-procedure R_WaitWallsCache8;
+class procedure TRendererWall8.R_WaitWallsCache8;
 var
   i: integer;
 begin

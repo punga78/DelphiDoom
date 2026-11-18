@@ -1306,7 +1306,7 @@ begin
     gld_SkyDone;
     if gl_dynlights <> nil then
       gl_dynlights.Clear;
-    R_FreeDynamicLightItems;
+    TRendererDynLights.R_FreeDynamicLightItems;
     gld_DynamicShadowsDone;
     gld_ModelsDone;
     gld_VoxelsDone;

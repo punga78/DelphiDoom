@@ -1877,7 +1877,7 @@ begin
       dialogplayer.bonuscount := 0;
   end;
 
-  angle := R_PointToAngle2(dialogplayer.mo.x,
+  angle := TRendererMain.R_PointToAngle2(dialogplayer.mo.x,
                            dialogplayer.mo.y,
                            dialogtalker.x,
                            dialogtalker.y);
