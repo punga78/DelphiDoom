@@ -582,7 +582,7 @@ begin
   DEH_AddAction(@THexenWeaponActions.A_CStaffCheck, 'A_CStaffCheck()'); // 49
   DEH_AddAction(@THexenWeaponActions.A_CStaffCheckBlink, 'A_CStaffCheckBlink()'); // 50
   DEH_AddAction(@THexenWeaponActions.A_CStaffInitBlink, 'A_CStaffInitBlink()'); // 51
-  DEH_AddAction(@A_CStaffMissileSlither, 'A_CStaffMissileSlither()'); // 52
+  DEH_AddAction(@TCommonGameDependentActions.A_CStaffMissileSlither, 'A_CStaffMissileSlither()'); // 52
   DEH_AddAction(@THexenMonsterActions.A_DelayGib, 'A_DelayGib()'); // 53
   DEH_AddAction(@THexenMonsterActions.A_Demon2Death, 'A_Demon2Death()'); // 54
   DEH_AddAction(@THexenMonsterActions.A_DemonAttack1, 'A_DemonAttack1()'); // 55
@@ -923,7 +923,7 @@ begin
   DEH_AddAction(@TCommonStateBitActions.A_UnSetWallBounce, 'A_UnSetWallBounce()'); // 390
   DEH_AddAction(@TCommonAppearanceActions.A_GlowLight, 'A_GlowLight(color: string)'); // 391
   DEH_AddAction(@TCommonMovementActions.A_TraceNearestPlayer, 'A_TraceNearestPlayer(pct: integer, [maxturn: angle_t])'); // 392
-  DEH_AddAction(@A_ChangeFlag, 'A_ChangeFlag(flag: string, onoff: boolean)'); // 393
+  DEH_AddAction(@TCommonGameDependentActions.A_ChangeFlag, 'A_ChangeFlag(flag: string, onoff: boolean)'); // 393
   DEH_AddAction(@TCommonSearchActions.A_CheckCeiling, 'A_CheckCeiling(offset: integer)'); // 394
   DEH_AddAction(@TCommonSoundActions.A_StopSound, 'A_StopSound()'); // 395
   DEH_AddAction(@TCommonJumpActions.A_JumpIfTargetOutsideMeleeRange, 'A_JumpIfTargetOutsideMeleeRange(offset: integer)'); // 396
@@ -938,12 +938,12 @@ begin
   DEH_AddAction(@TCommonStateParamActions.A_CountdownArg, 'A_CountdownArg(arg: integer, offset: integer)'); // 405
   DEH_AddAction(@TCommonStateParamActions.A_SetArg, 'A_SetArg(arg: integer, value: integer)'); // 406
   DEH_AddAction(@TCommonStateParamActions.A_SetSpecial, 'A_SetSpecial(special: integer, [arg1, arg2, arg3, arg4, arg5: integer])'); // 407
-  DEH_AddAction(@A_CheckFlag, 'A_CheckFlag(flag: string, offset: integer, [aaprt: AAPTR])'); // 408
+  DEH_AddAction(@TCommonGameDependentActions.A_CheckFlag, 'A_CheckFlag(flag: string, offset: integer, [aaprt: AAPTR])'); // 408
   DEH_AddAction(@TCommonMovementActions.A_SetAngle, 'A_SetAngle(angle: integer, [flags: integer], [aaprt: AAPTR])'); // 409
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserVar, 'A_SetUserVar(varname: string, value: integer)'); // 410
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserArray, 'A_SetUserArray(varname: string, index: integer, value: integer)'); // 411
   DEH_AddAction(@TCommonStateParamActions.A_SetTics, 'A_SetTics(tics: integer)'); // 412
-  DEH_AddAction(@A_DropItem, 'A_DropItem(spawntype: string, amount: integer, chance: integer)'); // 413
+  DEH_AddAction(@TCommonGameDependentActions.A_DropItem, 'A_DropItem(spawntype: string, amount: integer, chance: integer)'); // 413
   DEH_AddAction(@TCommonDamageActions.A_DamageSelf, 'A_DamageSelf(actor: Pmobj_t)'); // 414
   DEH_AddAction(@TCommonDamageActions.A_DamageTarget, 'A_DamageTarget(const damage: integer)'); // 415
   DEH_AddAction(@TCommonDamageActions.A_DamageTracer, 'A_DamageTracer(const damage: integer)'); // 416
@@ -953,7 +953,7 @@ begin
   DEH_AddAction(@TCommonDamageActions.A_RemoveTracer, 'A_RemoveTracer([flags: integer])'); // 420
   DEH_AddAction(@TCommonDamageActions.A_Remove, 'A_Remove(aaprt: AAPTR, [flags: integer])'); // 421
   DEH_AddAction(@TCommonStateBitActions.A_SetFloatBobPhase, 'A_SetFloatBobPhase(bob: integer)'); // 422
-  DEH_AddAction(@A_Detonate, 'A_Detonate()'); // 423
+  DEH_AddAction(@TCommonGameDependentActions.A_Detonate, 'A_Detonate()'); // 423
   DEH_AddAction(@TCommonSpawnActions.A_Spawn, 'A_Spawn()'); // 424
   DEH_AddAction(@TCommonMovementActions.A_Face, 'A_Face()'); // 425
   DEH_AddAction(@TCommonAttackActions.A_Scratch, 'A_Scratch()'); // 426
@@ -973,7 +973,7 @@ begin
   DEH_AddAction(@TCommonStateBitActions.A_SetMasterMass, 'A_SetMasterMass(mass: integer)'); // 440
   DEH_AddAction(@TCommonDamageActions.A_KillMaster, 'A_KillMaster()'); // 441
   DEH_AddAction(@TCommonDamageActions.A_DamageMaster, 'A_DamageMaster(const damage: integer)'); // 442
-  DEH_AddAction(@A_HealThing, 'A_HealThing(amount: integer, max: integer)'); // 443
+  DEH_AddAction(@TCommonGameDependentActions.A_HealThing, 'A_HealThing(amount: integer, max: integer)'); // 443
   DEH_AddAction(@TCommonDamageActions.A_RemoveMaster, 'A_RemoveMaster([flags: integer])'); // 444
   DEH_AddAction(@TCommonAttackActions.A_BasicAttack, 'A_BasicAttack(MeleeDamage: integer, MeleeSound: integer, MissileType: integer, MissileHeight: float)'); // 445
   DEH_AddAction(@TCommonStateParamActions.A_SetMasterArg, 'A_SetMasterArg(arg: integer; value: integer)'); // 446
@@ -1007,8 +1007,8 @@ begin
   DEH_AddAction(@A_OverlayDrawCenterText, 'A_OverlayDrawCenterText(ticks: Integer; txt: string; x, y: Integer ;)'); // 474
   DEH_AddAction(@TCommonStateBitActions.A_SetFriction, 'A_SetFriction(newfriction: float)'); // 475
   DEH_AddAction(@TCommonDamageActions.A_PlayerHurtExplode, 'A_PlayerHurtExplode(damage: integer, radius: integer)'); // 476
-  DEH_AddAction(@A_SetPushable, 'A_SetPushable()'); // 477
-  DEH_AddAction(@A_UnSetPushable, 'A_UnSetPushable()'); // 478
+  DEH_AddAction(@TCommonGameDependentActions.A_SetPushable, 'A_SetPushable()'); // 477
+  DEH_AddAction(@TCommonGameDependentActions.A_UnSetPushable, 'A_UnSetPushable()'); // 478
   DEH_AddAction(@TCommonStateBitActions.A_SetPainChance, 'A_SetPainChance(newchance: integer)'); // 479
   DEH_AddAction(@TCommonAppearanceActions.A_SetSpriteDX, 'A_SetSpriteDX(dx: float)'); // 480
   DEH_AddAction(@TCommonAppearanceActions.A_SetSpriteDY, 'A_SetSpriteDY(dy: float)'); // 481
@@ -1066,14 +1066,14 @@ begin
   DEH_AddAction(@TCommonFlagActions.A_RemoveFlags, 'A_RemoveFlags(bits, mbf21bits: integer);', [0, 0]);
   DEH_AddAction(@TCommonSpawnActions.A_WeaponProjectile, 'A_WeaponProjectile(typ: integer; anglefixed_ang: integer; anglefixed_pitch: integer; offs_xy: fixed_t; offs_z: fixed_t);', [0, 0, 0, 0, 0]);
   DEH_AddAction(@TCommonAttackActions.A_WeaponBulletAttack, 'A_WeaponBulletAttack(anglefixed_hspread, anglefixed_vspread: integer; numbullets: integer; attackdamage, attackmod: integer);', [0, 0, 1, 5, 3]);
-  DEH_AddAction(@A_WeaponMeleeAttack, 'A_WeaponMeleeAttack(attackdamage, attackmod: integer; bersekdamagemul: fixed_t; sound: sound_t; range: fixed_t);', [2, 10, 1 * FRACUNIT, 0, 0]);
+  DEH_AddAction(@TCommonGameDependentActions.A_WeaponMeleeAttack, 'A_WeaponMeleeAttack(attackdamage, attackmod: integer; bersekdamagemul: fixed_t; sound: sound_t; range: fixed_t);', [2, 10, 1 * FRACUNIT, 0, 0]);
   DEH_AddAction(@TCommonSoundActions.A_WeaponSound, 'A_WeaponSound(sound: sound_t; fullvolume: integer);', [0, 0]);
   DEH_AddAction(@TCommonSearchActions.A_WeaponAlert, 'A_WeaponAlert();');
   DEH_AddAction(@TCommonJumpActions.A_WeaponJump, 'A_WeaponJump(statenum: integer; chance: integer);', [0, 0]);
-  DEH_AddAction(@A_ConsumeAmmo, 'A_ConsumeAmmo(ammo: integer);', [0]);
-  DEH_AddAction(@A_CheckAmmo, 'A_CheckAmmo(state: integer; minammo: integer);', [0, 0]);
+  DEH_AddAction(@TCommonGameDependentActions.A_ConsumeAmmo, 'A_ConsumeAmmo(ammo: integer);', [0]);
+  DEH_AddAction(@TCommonGameDependentActions.A_CheckAmmo, 'A_CheckAmmo(state: integer; minammo: integer);', [0, 0]);
   DEH_AddAction(@TCommonWeaponActions.A_RefireTo, 'A_RefireTo(state: integer; skipammo: integer);', [0, 0]);
-  DEH_AddAction(@A_GunFlashTo, 'A_GunFlashTo(state: integer; noplayerstatechange: integer);', [0, 0]);
+  DEH_AddAction(@TCommonGameDependentActions.A_GunFlashTo, 'A_GunFlashTo(state: integer; noplayerstatechange: integer);', [0, 0]);
   DEH_AddAction(@TCommonFriendActions.A_SetProjectileGroup, 'A_SetProjectileGroup(group: string);');
   DEH_AddAction(@TCommonFriendActions.A_SetInfightingGroup, 'A_SetInfightingGroup(group: string);');
   DEH_AddAction(@TCommonFriendActions.A_SetSplashGroup, 'A_SetSplashGroup(group: string);');

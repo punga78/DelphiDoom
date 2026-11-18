@@ -809,7 +809,7 @@ var
 begin
   damage := 1 + (P_Random and 3);
   angle := player.mo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -838,7 +838,7 @@ var
 begin
   damage := HITDICE(4);
   angle := player.mo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_BEAKPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -866,7 +866,7 @@ begin
   damage := 5 + (P_Random and 15);
   angle := player.mo.angle;
   angle := angle + LongWord((P_Random - P_Random) * $40000);
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_STAFFPUFF;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -896,7 +896,7 @@ begin
   damage := 18 + (P_Random and 63);
   angle := player.mo.angle;
   angle := angle + LongWord((P_Random - P_Random) * $40000);
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_STAFFPUFF2;
   P_LineAttack(player.mo, angle, mrange, slope, damage);
@@ -1735,14 +1735,14 @@ begin
   if player.powers[Ord(pw_weaponlevel2)] <> 0 then
   begin
     damage := HITDICE(2);
-    dist := 4 * P_GetPlayerMeleeRange(player);
+    dist := 4 * TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
     angle := angle + LongWord((P_Random - P_Random) * $20000);
     PuffType := MT_GAUNTLETPUFF2;
   end
   else
   begin
     damage := HITDICE(2);
-    dist := P_GetPlayerMeleeRange(player) + 1;
+    dist := TCommonGameDependentActions.P_GetPlayerMeleeRange(player) + 1;
     angle := angle + LongWord((P_Random - P_Random) * $40000);
     PuffType := MT_GAUNTLETPUFF1;
   end;

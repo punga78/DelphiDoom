@@ -25187,7 +25187,7 @@ begin
   // New states
   states[Ord(S_GRENADE)].action.acp1 := @A_Die; // S_GRENADE
   states[Ord(S_DETONATE)].action.acp1 := @TMonsterBaseActions.A_Scream; // S_DETONATE
-  states[Ord(S_DETONATE2)].action.acp1 := @A_Detonate; // S_DETONATE2
+  states[Ord(S_DETONATE2)].action.acp1 := @TCommonGameDependentActions.A_Detonate; // S_DETONATE2
   states[Ord(S_DOGS_STND)].action.acp1 := @TDoomMonsterActions.A_Look; // S_DOGS_STND
   states[Ord(S_DOGS_STND2)].action.acp1 := @TDoomMonsterActions.A_Look; // S_DOGS_STND2
   states[Ord(S_DOGS_RUN1)].action.acp1 := @TMonsterBaseActions.A_Chase; // S_DOGS_RUN1

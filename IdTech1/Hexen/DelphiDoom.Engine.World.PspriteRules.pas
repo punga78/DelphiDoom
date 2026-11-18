@@ -839,7 +839,7 @@ var
 begin
   damage := 3 + (P_Random and 3);
   angle := player.mo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(player.mo, angle, mrange);
   PuffType := MT_SNOUTPUFF;
   PuffSpawned := nil;
@@ -876,7 +876,7 @@ class function TWeaponLocalActions.HAMMER_RANGE(const p: Pplayer_t): fixed_t;
 var
   mrange: integer;
 begin
-  mrange := P_GetPlayerMeleeRange(p);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(p);
   result := (mrange + mrange div 2);
 end;
 
@@ -1458,7 +1458,7 @@ begin
   power := 2 * FRACUNIT;
   PuffType := MT_PUNCHPUFF;
   d_an := 0;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   for i := 0 to 15 do
   begin
     angle := pmo.angle + d_an;
@@ -1519,7 +1519,7 @@ class function TWeaponLocalActions.AXERANGE(const p: Pplayer_t): fixed_t;
 var
   mrange: integer;
 begin
-  mrange := P_GetPlayerMeleeRange(p);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(p);
   result := 10 * mrange div 4;
 end;
 
@@ -1600,7 +1600,7 @@ begin
   pmo.special1 := 0;
 
   angle := pmo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   slope := P_AimLineAttack(pmo, angle, mrange);
   P_LineAttack(pmo, angle, mrange, slope, damage);
 
@@ -1624,7 +1624,7 @@ begin
   damage := 25 + (P_Random and 15);
   PuffType := MT_HAMMERPUFF;
   d_an := 0;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   for i := 0 to 15 do
   begin
     angle := player.mo.angle + d_an;
@@ -1673,7 +1673,7 @@ begin
   damage := 20 + (P_Random and 15);
   PuffType := MT_CSTAFFPUFF;
   d_an := 0;
-  mrange := 3 * P_GetPlayerMeleeRange(player) div 2;
+  mrange := 3 * TCommonGameDependentActions.P_GetPlayerMeleeRange(player) div 2;
   for i := 0 to 2 do
   begin
     angle := pmo.angle + d_an;
@@ -2302,7 +2302,7 @@ begin
 
   damage := 90 + (P_Random and 15);
   angle := pmo.angle;
-  mrange := P_GetPlayerMeleeRange(player);
+  mrange := TCommonGameDependentActions.P_GetPlayerMeleeRange(player);
   for i := 0 to 15 do
   begin
     P_AimLineAttack(pmo, angle, mrange);

@@ -43,108 +43,9 @@ const
   CSP_AT_LEAST = 1;
   CSP_AT_MOST = 2;
 
-//==============================================================================
-//
-// A_CStaffMissileSlither
-//
-//==============================================================================
-procedure A_CStaffMissileSlither(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ChangeFlag
-//
-//==============================================================================
-procedure A_ChangeFlag(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_CheckFlag
-//
-//==============================================================================
-procedure A_CheckFlag(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DropItem
-//
-//==============================================================================
-procedure A_DropItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Detonate
-//
-//==============================================================================
-procedure A_Detonate(actor: Pmobj_t);
-
 {$IFNDEF HEXEN}
 
 {$ENDIF}
-
-//==============================================================================
-//
-// A_HealThing
-//
-//==============================================================================
-procedure A_HealThing(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetPushable
-//
-//==============================================================================
-procedure A_SetPushable(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_UnSetPushable
-//
-//==============================================================================
-procedure A_UnSetPushable(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_CheckCustomMeleeRange
-//
-//==============================================================================
-function P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean;
-
-//==============================================================================
-// P_ResolveMBF21Flags
-//
-// MBF21
-//
-//==============================================================================
-procedure P_ResolveMBF21Flags(const m: Pmobjinfo_t);
-
-//==============================================================================
-//
-// A_WeaponMeleeAttack
-//
-//==============================================================================
-procedure A_WeaponMeleeAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_ConsumeAmmo
-//
-//==============================================================================
-procedure A_ConsumeAmmo(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_CheckAmmo
-//
-//==============================================================================
-procedure A_CheckAmmo(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_GunFlashTo
-//
-//==============================================================================
-procedure A_GunFlashTo(player: Pplayer_t; psp: Ppspdef_t);
 
 const
   FLOATBOBSIZE = 64;
@@ -247,34 +148,6 @@ const
   AMF_TARGETEMITTER = 1;
   AMF_TARGETNONPLAYER = 2;
   AMF_EMITFROMTARGET = 4;
-
-//==============================================================================
-//
-// P_CopyFriendliness
-//
-//==============================================================================
-procedure P_CopyFriendliness(const originator, mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_RaiseActor
-//
-//==============================================================================
-function P_RaiseActor(const thing, raiser: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_CheckFlag
-//
-//==============================================================================
-function P_CheckFlag(const mo: Pmobj_t; const aflag: string): boolean;
-
-//==============================================================================
-//
-// P_GetPlayerMeleeRange
-//
-//==============================================================================
-function P_GetPlayerMeleeRange(const p: Pplayer_t): fixed_t;
 
 const
   xspeed: array[0..7] of fixed_t =
@@ -2480,6 +2353,141 @@ type
     //
     //==============================================================================
     class procedure A_Delayfire(player: Pplayer_t; psp: Ppspdef_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonGameDependentActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_CStaffMissileSlither
+    //
+    //==============================================================================
+    class procedure A_CStaffMissileSlither(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ChangeFlag
+    //
+    //==============================================================================
+    class procedure A_ChangeFlag(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckFlag
+    //
+    //==============================================================================
+    class procedure A_CheckFlag(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DropItem
+    //
+    //==============================================================================
+    class procedure A_DropItem(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Detonate
+    //
+    //==============================================================================
+    class procedure A_Detonate(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_HealThing
+    //
+    //==============================================================================
+    class procedure A_HealThing(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetPushable
+    //
+    //==============================================================================
+    class procedure A_SetPushable(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_UnSetPushable
+    //
+    //==============================================================================
+    class procedure A_UnSetPushable(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_CheckCustomMeleeRange
+    //
+    //==============================================================================
+    class function P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean; static;
+
+    //==============================================================================
+    // P_ResolveMBF21Flags
+    //
+    // MBF21
+    //
+    //==============================================================================
+    class procedure P_ResolveMBF21Flags(const m: Pmobjinfo_t); static;
+
+    //==============================================================================
+    //
+    // A_WeaponMeleeAttack
+    //
+    //==============================================================================
+    class procedure A_WeaponMeleeAttack(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_ConsumeAmmo
+    //
+    //==============================================================================
+    class procedure A_ConsumeAmmo(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_CheckAmmo
+    //
+    //==============================================================================
+    class procedure A_CheckAmmo(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // A_GunFlashTo
+    //
+    //==============================================================================
+    class procedure A_GunFlashTo(player: Pplayer_t; psp: Ppspdef_t); static;
+
+    //==============================================================================
+    //
+    // P_CopyFriendliness
+    //
+    //==============================================================================
+    class procedure P_CopyFriendliness(const originator, mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_RaiseActor
+    //
+    //==============================================================================
+    class function P_RaiseActor(const thing, raiser: Pmobj_t): boolean; static;
+
+    //==============================================================================
+    //
+    // P_CheckFlag
+    //
+    //==============================================================================
+    class function P_CheckFlag(const mo: Pmobj_t; const aflag: string): boolean; static;
+
+    //==============================================================================
+    //
+    // P_GetPlayerMeleeRange
+    //
+    //==============================================================================
+    class function P_GetPlayerMeleeRange(const p: Pplayer_t): fixed_t; static;
   end;
 
 
@@ -5294,12 +5302,26 @@ begin
     mo.angle := actor.angle;
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonGameDependentActionsLocal = class sealed
+  public
+    class function InitSpawnedItem(const self, mo: Pmobj_t; flags: integer): boolean; static;
+    class procedure P_TransferFriendliness(const src, dest: Pmobj_t); static;
+    class procedure P_SetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer); static;
+    class procedure P_UnSetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer); static;
+    class function P_CheckMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer): boolean; static;
+  end;
+
 //==============================================================================
 //
 // InitSpawnedItem
 //
 //==============================================================================
-function InitSpawnedItem(const self, mo: Pmobj_t; flags: integer): boolean;
+class function TCommonGameDependentActionsLocal.InitSpawnedItem(const self, mo: Pmobj_t; flags: integer): boolean;
 const
   MAXLOOP = 64;
 var
@@ -5364,7 +5386,7 @@ begin
       exit;
     end
     else if (originator <> nil) and (flags and SIXF_NOPOINTERS = 0) then
-      P_CopyFriendliness(originator, mo);
+      TCommonGameDependentActions.P_CopyFriendliness(originator, mo);
   end
   else if flags and SIXF_TRANSFERPOINTERS <> 0 then
   begin
@@ -5554,7 +5576,7 @@ begin
   if mo <> nil then
   begin
     mo.angle := ang1;
-    InitSpawnedItem(actor, mo, flags);
+    TCommonGameDependentActionsLocal.InitSpawnedItem(actor, mo, flags);
     if flags and SIXF_MULTIPLYSPEED <> 0 then
     begin
       if mo.info.speed < 64 then
@@ -5599,7 +5621,7 @@ end;
 // A_CStaffMissileSlither
 //
 //==============================================================================
-procedure A_CStaffMissileSlither(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_CStaffMissileSlither(actor: Pmobj_t);
 var
   newX, newY: fixed_t;
   weaveXY: integer;
@@ -7004,7 +7026,7 @@ end;
 // A_ChangeFlag
 //
 //==============================================================================
-procedure A_ChangeFlag(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_ChangeFlag(actor: Pmobj_t);
 var
   sflag: string;
   change: boolean;
@@ -7684,7 +7706,7 @@ end;
 // A_CheckFlag(flag: string; offset: integer; [aaprt: AAPTR]);
 //
 //==============================================================================
-procedure A_CheckFlag(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_CheckFlag(actor: Pmobj_t);
 var
   sflag: string;
   dojump: boolean;
@@ -7889,7 +7911,7 @@ end;
 // A_DropItem(spawntype: string; amount: integer; chance: integer);
 //
 //==============================================================================
-procedure A_DropItem(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_DropItem(actor: Pmobj_t);
 var
   mobj_no: integer;
   mo: Pmobj_t;
@@ -8170,7 +8192,7 @@ end;
 // killough 8/9/98: same as A_Explode, except that the damage is variable
 //
 //==============================================================================
-procedure A_Detonate(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_Detonate(actor: Pmobj_t);
 begin
   P_RadiusAttack(actor, actor.target, actor.info.damage{$IFDEF HEXEN}, actor.info.damage, true{$ENDIF});
 end;
@@ -8193,7 +8215,7 @@ end;
 // P_TransferFriendliness
 //
 //==============================================================================
-procedure P_TransferFriendliness(const src, dest: Pmobj_t);
+class procedure TCommonGameDependentActionsLocal.P_TransferFriendliness(const src, dest: Pmobj_t);
 begin
   {$IFDEF STRIFE}
   if src.flags and MF_ALLY <> 0 then
@@ -8225,7 +8247,7 @@ begin
   begin
     mo := P_SpawnMobj(actor.x, actor.y, actor.state.misc2 * FRACUNIT + actor.z, actor.state.misc1 - 1);
     if mo <> nil then
-      P_TransferFriendliness(actor, mo);
+      TCommonGameDependentActionsLocal.P_TransferFriendliness(actor, mo);
   end;
 end;
 
@@ -8631,7 +8653,7 @@ end;
 // P_CopyFriendliness
 //
 //==============================================================================
-procedure P_CopyFriendliness(const originator, mo: Pmobj_t);
+class procedure TCommonGameDependentActions.P_CopyFriendliness(const originator, mo: Pmobj_t);
 begin
   if Info_IsMonster(originator._type) then
   begin
@@ -8656,7 +8678,7 @@ end;
 // P_RaiseActor
 //
 //==============================================================================
-function P_RaiseActor(const thing, raiser: Pmobj_t): boolean;
+class function TCommonGameDependentActions.P_RaiseActor(const thing, raiser: Pmobj_t): boolean;
 var
   info: Pmobjinfo_t;
   oldheight: fixed_t;
@@ -8749,9 +8771,9 @@ begin
     copy := true;
 
   if copy then
-    P_RaiseActor(actor.master, actor)
+    TCommonGameDependentActions.P_RaiseActor(actor.master, actor)
   else
-    P_RaiseActor(actor.master, nil);
+    TCommonGameDependentActions.P_RaiseActor(actor.master, nil);
 end;
 
 //==============================================================================
@@ -8782,7 +8804,7 @@ begin
     begin
       mo := Pmobj_t(think);
       if mo.master = actor then
-        P_RaiseActor(Pmobj_t(think), friend);
+        TCommonGameDependentActions.P_RaiseActor(Pmobj_t(think), friend);
     end;
     think := think.next;
   end;
@@ -8820,7 +8842,7 @@ begin
       mo := Pmobj_t(think);
       if mo <> actor then
         if mo.master = actor.master then
-          P_RaiseActor(Pmobj_t(think), friend);
+          TCommonGameDependentActions.P_RaiseActor(Pmobj_t(think), friend);
     end;
     think := think.next;
   end;
@@ -8831,7 +8853,7 @@ end;
 // A_HealThing(amount: integer, max: integer)
 //
 //==============================================================================
-procedure A_HealThing(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_HealThing(actor: Pmobj_t);
 var
   ammount: integer;
   mx: integer;
@@ -9647,7 +9669,7 @@ end;
 // A_SetPushable
 //
 //==============================================================================
-procedure A_SetPushable(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_SetPushable(actor: Pmobj_t);
 begin
   {$IFDEF DOOM_OR_STRIFE}
   actor.flags2_ex := actor.flags2_ex or MF2_EX_PUSHABLE;
@@ -9663,7 +9685,7 @@ end;
 // A_SetPushable
 //
 //==============================================================================
-procedure A_UnSetPushable(actor: Pmobj_t);
+class procedure TCommonGameDependentActions.A_UnSetPushable(actor: Pmobj_t);
 begin
   {$IFDEF DOOM_OR_STRIFE}
   actor.flags2_ex := actor.flags2_ex and not MF2_EX_PUSHABLE;
@@ -9801,7 +9823,7 @@ end;
 // P_CheckFlag
 //
 //==============================================================================
-function P_CheckFlag(const mo: Pmobj_t; const aflag: string): boolean;
+class function TCommonGameDependentActions.P_CheckFlag(const mo: Pmobj_t; const aflag: string): boolean;
 var
   sflag: string;
   flg: LongWord;
@@ -9933,7 +9955,7 @@ end;
 // P_GetPlayerMeleeRange
 //
 //==============================================================================
-function P_GetPlayerMeleeRange(const p: Pplayer_t): fixed_t;
+class function TCommonGameDependentActions.P_GetPlayerMeleeRange(const p: Pplayer_t): fixed_t;
 begin
   if G_NeedsCompatibilityMode then
     result := {$IFDEF STRIFE}PLAYERMELEERANGE{$ELSE}MELEERANGE{$ENDIF}
@@ -9972,7 +9994,7 @@ end;
 // P_CheckCustomMeleeRange
 //
 //==============================================================================
-function P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean;
+class function TCommonGameDependentActions.P_CheckCustomMeleeRange(actor: Pmobj_t; mrange: integer): boolean;
 var
   mo: Pmobj_t;
   dist: fixed_t;
@@ -10323,7 +10345,7 @@ const
     Flags2ExFullVolumeSee: MF2_EX_FULLVOLSEE
   );
 
-procedure P_ResolveMBF21Flags(const m: Pmobjinfo_t);
+class procedure TCommonGameDependentActions.P_ResolveMBF21Flags(const m: Pmobjinfo_t);
 var
   words: TMbf21FlagWords;
 begin
@@ -10690,7 +10712,7 @@ begin
   range := range + actor.target.radius - 20 * FRACUNIT;
 
   A_FaceTarget(actor);
-  if not P_CheckCustomMeleeRange(actor, range) then
+  if not TCommonGameDependentActions.P_CheckCustomMeleeRange(actor, range) then
     exit;
 
   if hitsound > 0 then
@@ -11234,7 +11256,7 @@ const
 // P_SetMBF21Flags
 //
 //==============================================================================
-procedure P_SetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer);
+class procedure TCommonGameDependentActionsLocal.P_SetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer);
 var
   istransparent: boolean;
   isfriend: boolean;
@@ -11435,7 +11457,7 @@ end;
 // P_UnSetMBF21Flags
 //
 //==============================================================================
-procedure P_UnSetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer);
+class procedure TCommonGameDependentActionsLocal.P_UnSetMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer);
 var
   istransparent: boolean;
   isfriend: boolean;
@@ -11636,7 +11658,7 @@ end;
 // P_CheckMBF21Flags
 //
 //==============================================================================
-function P_CheckMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer): boolean;
+class function TCommonGameDependentActionsLocal.P_CheckMBF21Flags(const m: Pmobj_t; const bits, mbf21bits: integer): boolean;
 var
   istransparent: boolean;
   isfriend: boolean;
@@ -11922,7 +11944,7 @@ begin
   bits := actor.state.params.IntVal[1];
   mbf21bits := actor.state.params.IntVal[2];
 
-  if P_CheckMBF21Flags(actor, bits, mbf21bits) then
+  if TCommonGameDependentActionsLocal.P_CheckMBF21Flags(actor, bits, mbf21bits) then
   begin
     if not actor.state.params.IsComputed[0] then
     begin
@@ -11954,7 +11976,7 @@ begin
   bits := actor.state.params.IntVal[0];
   mbf21bits := actor.state.params.IntVal[1];
 
-  P_SetMBF21Flags(actor, bits, mbf21bits);
+  TCommonGameDependentActionsLocal.P_SetMBF21Flags(actor, bits, mbf21bits);
 end;
 
 //==============================================================================
@@ -11975,7 +11997,7 @@ begin
   bits := actor.state.params.IntVal[0];
   mbf21bits := actor.state.params.IntVal[1];
 
-  P_UnSetMBF21Flags(actor, bits, mbf21bits);
+  TCommonGameDependentActionsLocal.P_UnSetMBF21Flags(actor, bits, mbf21bits);
 end;
 
 //==============================================================================
@@ -12088,7 +12110,7 @@ end;
 //   args[4]: Range (fixed point); if not set, defaults to player mobj's melee range
 //
 //==============================================================================
-procedure A_WeaponMeleeAttack(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonGameDependentActions.A_WeaponMeleeAttack(player: Pplayer_t; psp: Ppspdef_t);
 var
   damagebase, damagemod, zerkfactor, hitsound, range: integer;
   angle: angle_t;
@@ -12257,7 +12279,7 @@ end;
 //   args[0]: Amount of ammo to consume. If zero, use the weapon's ammo-per-shot amount.
 //
 //==============================================================================
-procedure A_ConsumeAmmo(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonGameDependentActions.A_ConsumeAmmo(player: Pplayer_t; psp: Ppspdef_t);
 var
   amount: integer;
   typ: integer;
@@ -12347,7 +12369,7 @@ end;
 //   args[1]: Minimum required ammo to NOT jump. If zero, use the weapon's ammo-per-shot amount.
 //
 //==============================================================================
-procedure A_CheckAmmo(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonGameDependentActions.A_CheckAmmo(player: Pplayer_t; psp: Ppspdef_t);
 var
   amount: integer;
   typ: integer;
@@ -12453,7 +12475,7 @@ end;
 //   args[1]: If nonzero, don't change the player actor state
 //
 //==============================================================================
-procedure A_GunFlashTo(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonGameDependentActions.A_GunFlashTo(player: Pplayer_t; psp: Ppspdef_t);
 var
   pstate: integer;
 begin

@@ -66846,10 +66846,10 @@ begin
   states[Ord(S_CSTAFFUP)].action.acp1 := @A_Raise;
   states[Ord(S_CSTAFFATK_1)].action.acp1 := @THexenWeaponActions.A_CStaffCheck;
   states[Ord(S_CSTAFFATK_2)].action.acp1 := @THexenWeaponActions.A_CStaffAttack;
-  states[Ord(S_CSTAFF_MISSILE1)].action.acp1 := @A_CStaffMissileSlither;
-  states[Ord(S_CSTAFF_MISSILE2)].action.acp1 := @A_CStaffMissileSlither;
-  states[Ord(S_CSTAFF_MISSILE3)].action.acp1 := @A_CStaffMissileSlither;
-  states[Ord(S_CSTAFF_MISSILE4)].action.acp1 := @A_CStaffMissileSlither;
+  states[Ord(S_CSTAFF_MISSILE1)].action.acp1 := @TCommonGameDependentActions.A_CStaffMissileSlither;
+  states[Ord(S_CSTAFF_MISSILE2)].action.acp1 := @TCommonGameDependentActions.A_CStaffMissileSlither;
+  states[Ord(S_CSTAFF_MISSILE3)].action.acp1 := @TCommonGameDependentActions.A_CStaffMissileSlither;
+  states[Ord(S_CSTAFF_MISSILE4)].action.acp1 := @TCommonGameDependentActions.A_CStaffMissileSlither;
   states[Ord(S_CFLAMEREADY1)].action.acp1 := @THexenWeaponActions.A_WeaponReady;
   states[Ord(S_CFLAMEREADY2)].action.acp1 := @THexenWeaponActions.A_WeaponReady;
   states[Ord(S_CFLAMEREADY3)].action.acp1 := @THexenWeaponActions.A_WeaponReady;
