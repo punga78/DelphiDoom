@@ -879,7 +879,7 @@ begin
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
       R_MaskedAdjustY(dc_yl, dc_yh);
 
-      R_FillSpriteInfo_BatchMT(R_SpriteAddMTInfo);
+      R_FillSpriteInfo_BatchMT(TRendererSprite.R_SpriteAddMTInfo);
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
@@ -966,7 +966,7 @@ begin
           R_DrawColumnWithDepthBufferCheckWrite(colfunc, depthscale) // JVAL: 3d Floors
       end
       else
-        R_FillSpriteInfo_MT(R_SpriteAddMTInfo);
+        R_FillSpriteInfo_MT(TRendererSprite.R_SpriteAddMTInfo);
 
       if domaskedzbuffer then
         if renderflags and VSF_TRANSPARENCY = 0 then
@@ -1195,7 +1195,7 @@ begin
       frac := frac + xiscale;
       inc(dc_x);
     end;
-    R_SpriteRenderMT;
+    TRendererSprite.R_SpriteRenderMT;
   end
   else
   begin // JVAL: batch column drawing
@@ -1242,7 +1242,7 @@ begin
       else
         dmcproc(column, dbscale, vismo, baseclip, renderflags);
     end;
-    R_SpriteRenderMT;
+    TRendererSprite.R_SpriteRenderMT;
   end;
 
   Z_ChangeTag(patch, PU_CACHE);

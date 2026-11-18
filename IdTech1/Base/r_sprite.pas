@@ -60,20 +60,6 @@ type
 
 //==============================================================================
 //
-// R_SpriteAddMTInfo
-//
-//==============================================================================
-function R_SpriteAddMTInfo: Pspriterenderinfo_t;
-
-//==============================================================================
-//
-// R_SpriteRenderMT
-//
-//==============================================================================
-procedure R_SpriteRenderMT;
-
-//==============================================================================
-//
 // R_DrawColumnLowestMT
 //
 //==============================================================================
@@ -286,6 +272,28 @@ type
     class procedure R_DrawColumnSubtractHi_BatchMT(p: Pspriterenderinfo_t); static;
   end;
 
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSprite = class sealed
+  public
+    //==============================================================================
+    //
+    // R_SpriteAddMTInfo
+    //
+    //==============================================================================
+    class function R_SpriteAddMTInfo: Pspriterenderinfo_t; static;
+    //==============================================================================
+    //
+    // R_SpriteRenderMT
+    //
+    //==============================================================================
+    class procedure R_SpriteRenderMT; static;
+  end;
+
+
 implementation
 
 uses
@@ -302,6 +310,20 @@ uses
   {$ENDIF}
   v_video,
   z_zone;
+
+const
+  MAXSPRITETHREADS = 16;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSpriteLocal = class sealed
+  public
+    class function _sprite_render_thr(p: pointer): integer; stdcall; static;
+  end;
 
 //==============================================================================
 //
@@ -3031,7 +3053,7 @@ var
 // R_SpriteAddMTInfo
 //
 //==============================================================================
-function R_SpriteAddMTInfo: Pspriterenderinfo_t;
+class function TRendererSprite.R_SpriteAddMTInfo: Pspriterenderinfo_t;
 begin
   inc(numspritejobs);
   if numspritejobs >= maxspritejobs then
@@ -3041,9 +3063,6 @@ begin
   end;
   result := @spritejobs[numspritejobs - 1];
 end;
-
-const
-  MAXSPRITETHREADS = 16;
 
 var
   SPRIDS: array[0..MAXSPRITETHREADS - 1] of integer = (
@@ -3058,7 +3077,7 @@ var
 // _sprite_render_thr
 //
 //==============================================================================
-function _sprite_render_thr(p: pointer): integer; stdcall;
+class function TRendererSpriteLocal._sprite_render_thr(p: pointer): integer; stdcall;
 var
   i: integer;
 begin
@@ -3076,7 +3095,7 @@ end;
 // R_SpriteRenderMT
 //
 //==============================================================================
-procedure R_SpriteRenderMT;
+class procedure TRendererSprite.R_SpriteRenderMT;
 var
   ncpus: integer;
 begin
@@ -3091,171 +3110,171 @@ begin
     numspritethreads := ncpus;
 
   case numspritethreads of
-    1: _sprite_render_thr(@SPRIDS[0]);
+    1: TRendererSpriteLocal._sprite_render_thr(@SPRIDS[0]);
     2: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1]
         );
     3: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2]
         );
     4: MT_Execute4(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3]
         );
     5: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4]
         );
     6: MT_Execute6(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5]
         );
     7: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6]
         );
     8: MT_Execute8(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7]
         );
     9: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8]
         );
    10: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9]
         );
    11: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9],
-        @_sprite_render_thr, @SPRIDS[10]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[10]
         );
    12: MT_Execute12(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9],
-        @_sprite_render_thr, @SPRIDS[10],
-        @_sprite_render_thr, @SPRIDS[11]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[10],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[11]
         );
    13: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9],
-        @_sprite_render_thr, @SPRIDS[10],
-        @_sprite_render_thr, @SPRIDS[11],
-        @_sprite_render_thr, @SPRIDS[12]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[10],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[11],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[12]
         );
    14: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9],
-        @_sprite_render_thr, @SPRIDS[10],
-        @_sprite_render_thr, @SPRIDS[11],
-        @_sprite_render_thr, @SPRIDS[12],
-        @_sprite_render_thr, @SPRIDS[13]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[10],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[11],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[12],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[13]
         );
    15: MT_Execute(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9],
-        @_sprite_render_thr, @SPRIDS[10],
-        @_sprite_render_thr, @SPRIDS[11],
-        @_sprite_render_thr, @SPRIDS[12],
-        @_sprite_render_thr, @SPRIDS[13],
-        @_sprite_render_thr, @SPRIDS[14]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[10],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[11],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[12],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[13],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[14]
         );
   else MT_Execute16(
-        @_sprite_render_thr, @SPRIDS[0],
-        @_sprite_render_thr, @SPRIDS[1],
-        @_sprite_render_thr, @SPRIDS[2],
-        @_sprite_render_thr, @SPRIDS[3],
-        @_sprite_render_thr, @SPRIDS[4],
-        @_sprite_render_thr, @SPRIDS[5],
-        @_sprite_render_thr, @SPRIDS[6],
-        @_sprite_render_thr, @SPRIDS[7],
-        @_sprite_render_thr, @SPRIDS[8],
-        @_sprite_render_thr, @SPRIDS[9],
-        @_sprite_render_thr, @SPRIDS[10],
-        @_sprite_render_thr, @SPRIDS[11],
-        @_sprite_render_thr, @SPRIDS[12],
-        @_sprite_render_thr, @SPRIDS[13],
-        @_sprite_render_thr, @SPRIDS[14],
-        @_sprite_render_thr, @SPRIDS[15]
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[0],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[1],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[2],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[3],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[4],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[5],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[6],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[7],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[8],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[9],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[10],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[11],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[12],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[13],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[14],
+        @TRendererSpriteLocal._sprite_render_thr, @SPRIDS[15]
         );
   end;
 
