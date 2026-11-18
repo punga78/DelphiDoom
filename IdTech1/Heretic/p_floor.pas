@@ -286,7 +286,7 @@ begin
               side := getSide(secnum, i, 0);
               if pDiff(side.sector, @sectors[0], SizeOf(side.sector^)) = secnum then
               begin
-                sec := getSector(secnum, i, 1);
+                sec := TSpecRoutines.getSector(secnum, i, 1);
                 if sec.floorheight = floor.floordestheight then
                 begin
                   floor.texture := sec.floorpic;
@@ -296,7 +296,7 @@ begin
               end
               else
               begin
-                sec := getSector(secnum, i, 0);
+                sec := TSpecRoutines.getSector(secnum, i, 0);
                 if sec.floorheight = floor.floordestheight then
                 begin
                   floor.texture := sec.floorpic;

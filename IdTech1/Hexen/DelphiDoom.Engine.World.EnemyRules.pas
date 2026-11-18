@@ -6273,7 +6273,7 @@ begin
           PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), TMapUtilRoutines.P_PointOnLineSide(actor.x, actor.y, ld));
 
       // if the special isn't a door that can be opened, return false
-      if P_ActivateLine(ld, actor, 0, SPAC_USE) then
+      if TSpecRoutines.P_ActivateLine(ld, actor, 0, SPAC_USE) then
         good := true;
     end;
     result := good;

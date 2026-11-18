@@ -58,35 +58,12 @@ function P_FindSectorFromTag2(const tag: integer; var sec: integer): integer;
 
 //==============================================================================
 //
-// EVH_SectorSoundChange
-//
-//==============================================================================
-function EVH_SectorSoundChange(args: PByteArray): boolean;
-
-//==============================================================================
-//
-// CheckedLockedDoor
-//
-//==============================================================================
-function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean;
-
-//==============================================================================
-//
 // P_ExecuteLineSpecial
 //
 //==============================================================================
 function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
 
   side: integer; mo: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_ActivateLine
-//
-//==============================================================================
-function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer;
-
-  activationType: integer): boolean;
 
 //==============================================================================
 //
@@ -127,6 +104,24 @@ type
   /// </summary>
   TSpecRoutines = class sealed
   public
+    //==============================================================================
+    //
+    // EVH_SectorSoundChange
+    //
+    //==============================================================================
+    class function EVH_SectorSoundChange(args: PByteArray): boolean; static;
+    //==============================================================================
+    //
+    // CheckedLockedDoor
+    //
+    //==============================================================================
+    class function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean; static;
+    //==============================================================================
+    //
+    // P_ActivateLine
+    //
+    //==============================================================================
+    class function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean; static;
     //==============================================================================
     //
     // P_InitLava
@@ -271,7 +266,7 @@ var
 // EVH_SectorSoundChange
 //
 //==============================================================================
-function EVH_SectorSoundChange(args: PByteArray): boolean;
+class function TSpecRoutines.EVH_SectorSoundChange(args: PByteArray): boolean;
 var
   secNum: integer;
 begin
@@ -296,7 +291,7 @@ end;
 // CheckedLockedDoor
 //
 //==============================================================================
-function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean;
+class function TSpecRoutines.CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean;
 var
   LockedBuffer: string;
 begin
@@ -463,7 +458,7 @@ begin
 
     13: // Door Locked_Raise
       begin
-        if CheckedLockedDoor(mo, args[3]) then
+        if TSpecRoutines.CheckedLockedDoor(mo, args[3]) then
         begin
           if args[0] = 0 then
             result := EVH_VerticalDoor(line, mo)
@@ -858,7 +853,7 @@ begin
 
     140: // Sector_SoundChange
       begin
-        result := EVH_SectorSoundChange(args);
+        result := TSpecRoutines.EVH_SectorSoundChange(args);
       end;
 
     // Line specials only processed during level initialization
@@ -877,7 +872,7 @@ end;
 // P_ActivateLine
 //
 //==============================================================================
-function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean;
+class function TSpecRoutines.P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer; activationType: integer): boolean;
 var
   lineActivation: integer;
   dorepeat: boolean;

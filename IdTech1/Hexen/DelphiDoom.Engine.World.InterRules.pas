@@ -25,20 +25,6 @@ uses
   s_sound,
   d_player;
 
-//==============================================================================
-//
-// P_GiveArmor
-//
-//==============================================================================
-function P_GiveArmor(player: Pplayer_t; armortype: armortype_t; amount: integer): boolean;
-
-//==============================================================================
-//
-// P_SpawnDroppedMobj
-//
-//==============================================================================
-function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
-
 var
   p_maxmorphhealth: integer = 30;
   p_maxartifacts: integer = 25;
@@ -90,6 +76,18 @@ type
   /// </summary>
   TInterRoutines = class sealed
   public
+    //==============================================================================
+    //
+    // P_GiveArmor
+    //
+    //==============================================================================
+    class function P_GiveArmor(player: Pplayer_t; armortype: armortype_t; amount: integer): boolean; static;
+    //==============================================================================
+    //
+    // P_SpawnDroppedMobj
+    //
+    //==============================================================================
+    class function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t; static;
     //==============================================================================
     //
     // P_GiveMana
@@ -864,7 +862,7 @@ end;
 // Returns false if the armor is worse than the current armor.
 //
 //==============================================================================
-function P_GiveArmor(player: Pplayer_t; armortype: armortype_t; amount: integer): boolean;
+class function TInterRoutines.P_GiveArmor(player: Pplayer_t; armortype: armortype_t; amount: integer): boolean;
 var
   hits: integer;
   totalArmor: integer;
@@ -1080,7 +1078,7 @@ begin
 
     Ord(SPR_ARM1):
       begin
-        if not P_GiveArmor(player, ARMOR_ARMOR, -1) then
+        if not TInterRoutines.P_GiveArmor(player, ARMOR_ARMOR, -1) then
         begin
           exit;
         end;
@@ -1089,7 +1087,7 @@ begin
 
     Ord(SPR_ARM2):
       begin
-        if not P_GiveArmor(player, ARMOR_SHIELD, -1) then
+        if not TInterRoutines.P_GiveArmor(player, ARMOR_SHIELD, -1) then
         begin
           exit;
         end;
@@ -1098,7 +1096,7 @@ begin
 
     Ord(SPR_ARM3):
       begin
-        if not P_GiveArmor(player, ARMOR_HELMET, -1) then
+        if not TInterRoutines.P_GiveArmor(player, ARMOR_HELMET, -1) then
         begin
           exit;
         end;
@@ -1107,7 +1105,7 @@ begin
 
     Ord(SPR_ARM4):
       begin
-        if not P_GiveArmor(player, ARMOR_AMULET, -1) then
+        if not TInterRoutines.P_GiveArmor(player, ARMOR_AMULET, -1) then
         begin
           exit;
         end;
@@ -1508,7 +1506,7 @@ end;
 // P_SpawnDroppedMobj
 //
 //==============================================================================
-function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
+class function TInterRoutines.P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
 begin
   result := P_SpawnMobj(x, y, z, _type);
   // JVAL Dropped items fall down to floor.
@@ -1849,14 +1847,14 @@ begin
     Exit;
 
   if target.flags4_ex and MF4_EX_ABSOLUTEDROPITEMPOS <> 0 then
-    P_SpawnDroppedMobj(target.x, target.y, target.z, item)
+    TInterRoutines.P_SpawnDroppedMobj(target.x, target.y, target.z, item)
   else if Psubsector_t(target.subsector).sector.midsec >= 0 then // JVAL: 3d Floors
   begin
     zpos := T3dFloorRoutines.P_3dFloorHeight(target);
-    P_SpawnDroppedMobj(target.x, target.y, zpos, item)
+    TInterRoutines.P_SpawnDroppedMobj(target.x, target.y, zpos, item)
   end
   else
-    P_SpawnDroppedMobj(target.x, target.y, ONFLOORZ, item);
+    TInterRoutines.P_SpawnDroppedMobj(target.x, target.y, ONFLOORZ, item);
 end;
 
 //==============================================================================

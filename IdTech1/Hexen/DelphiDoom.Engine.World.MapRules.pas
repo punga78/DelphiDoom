@@ -441,7 +441,7 @@ begin
     exit;
   end;
 
-  P_ActivateLine(li, usething, 0, SPAC_USE);
+  TSpecRoutines.P_ActivateLine(li, usething, 0, SPAC_USE);
 
   result := false;  // can't use for than one special line in a row
 end;
@@ -707,15 +707,15 @@ class procedure TMapGameRules.CrossSpecialLine(ld: Pline_t; oldside: integer; th
 begin
   if thing.player <> nil then
   begin
-    P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
+    TSpecRoutines.P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
   end
   else if thing.flags2 and MF2_MCROSS <> 0 then
   begin
-    P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
+    TSpecRoutines.P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
   end
   else if thing.flags2 and MF2_PCROSS <> 0 then
   begin
-    P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
+    TSpecRoutines.P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
   end;
 end;
 
@@ -1103,7 +1103,7 @@ end;
 
 class procedure TMapGameRules.ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t);
 begin
-  P_ActivateLine(li, shootthing, 0, SPAC_IMPACT);
+  TSpecRoutines.P_ActivateLine(li, shootthing, 0, SPAC_IMPACT);
 end;
 
 class function TMapGameRules.ShotPassesThrough(th: Pmobj_t): boolean;
@@ -1148,9 +1148,9 @@ begin
   if line.special <> 0 then
   begin
     if mobj.flags2 and MF2_PUSHWALL <> 0 then
-      P_ActivateLine(line, mobj, side, SPAC_PUSH)
+      TSpecRoutines.P_ActivateLine(line, mobj, side, SPAC_PUSH)
     else if mobj.flags2 and MF2_IMPACT <> 0 then
-      P_ActivateLine(line, mobj, side, SPAC_IMPACT);
+      TSpecRoutines.P_ActivateLine(line, mobj, side, SPAC_IMPACT);
   end;
 end;
 
