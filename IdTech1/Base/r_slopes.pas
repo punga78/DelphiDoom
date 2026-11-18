@@ -989,7 +989,7 @@ var
   rw_scale_dbl2: Double;
   sec2: Psector_t;
 begin
-  pds := R_NewDrawSeg;
+  pds := TRendererSegs.R_NewDrawSeg;
   if pds = nil then
     exit;
   pds.curline := curline;
@@ -1047,7 +1047,7 @@ begin
     R_ScaleFromGlobalAngle(viewangle + xtoviewangle[stop], overflow);
   pds.use_double := overflow;
 
-  R_WiggleFix(frontsector);
+  TRendererSegs.R_WiggleFix(frontsector);
 
   rw_offset := R_CalcSegOffset(curline);
 

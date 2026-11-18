@@ -401,7 +401,7 @@ begin
     begin
       // Post is entirely visible (above start),
       //  so insert a new clippost.
-      R_StoreWallRange(first, last);
+      TRendererSegs.R_StoreWallRange(first, last);
       next := newend;
       inc(newend);
 
@@ -418,7 +418,7 @@ begin
     end;
 
     // There is a fragment above *start.
-    R_StoreWallRange(first, start.first - 1);
+    TRendererSegs.R_StoreWallRange(first, start.first - 1);
     // Now adjust the clip size.
     start.first := first;
   end;
@@ -433,7 +433,7 @@ begin
   while last >= tmp.first - 1 do
   begin
     // There is a fragment between two posts.
-    R_StoreWallRange(next.last + 1, tmp.first - 1);
+    TRendererSegs.R_StoreWallRange(next.last + 1, tmp.first - 1);
     inc(next);
     inc(tmp);
 
@@ -448,7 +448,7 @@ begin
   end;
 
   // There is a fragment after *next.
-  R_StoreWallRange(next.last + 1, last);
+  TRendererSegs.R_StoreWallRange(next.last + 1, last);
   // Adjust the clip size.
   start.last := last;
 
@@ -483,11 +483,11 @@ begin
     if last < start.first - 1 then
     begin
       // Post is entirely visible (above start).
-      R_StoreWallRange(first, last);
+      TRendererSegs.R_StoreWallRange(first, last);
       exit;
     end;
     // There is a fragment above *start.
-    R_StoreWallRange(first, start.first - 1);
+    TRendererSegs.R_StoreWallRange(first, start.first - 1);
   end;
 
   // Bottom contained in start?
@@ -499,7 +499,7 @@ begin
   while last >= tmp.first - 1 do
   begin
     // There is a fragment between two posts.
-    R_StoreWallRange(start.last + 1, tmp.first - 1);
+    TRendererSegs.R_StoreWallRange(start.last + 1, tmp.first - 1);
     inc(start);
     inc(tmp);
 
@@ -508,7 +508,7 @@ begin
   end;
 
   // There is a fragment after *next.
-  R_StoreWallRange(start.last + 1, last);
+  TRendererSegs.R_StoreWallRange(start.last + 1, last);
 end;
 
 //==============================================================================

@@ -2342,12 +2342,12 @@ begin
         end;
       CACHE_OP_MASKED:
         begin
-          R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
+          TRendererSegs.R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
         end;
       CACHE_OP_THICK_AND_MASKED:
         begin
           R_RenderThickSideRange(item.ds, item.r1, item.r2);
-          R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
+          TRendererSegs.R_RenderMaskedSegRange(item.ds, item.r1, item.r2);
         end;
       CACHE_OP_SIL1:
         begin
@@ -2489,7 +2489,7 @@ begin
       if ds.thicksidecol <> nil then        // JVAL: 3d Floors
         R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
       if ds.maskedtexturecol <> nil then
-        R_RenderMaskedSegRange(ds, r1, r2);
+        TRendererSegs.R_RenderMaskedSegRange(ds, r1, r2);
       // seg is behind sprite
       continue;
     end;
@@ -2717,7 +2717,7 @@ begin
       if ds.thicksidecol <> nil then        // JVAL: 3d Floors
         R_RenderThickSideRange(ds, r1, r2); // JVAL: 3d Floors
       if ds.maskedtexturecol <> nil then
-        R_RenderMaskedSegRange(ds, r1, r2);
+        TRendererSegs.R_RenderMaskedSegRange(ds, r1, r2);
       // seg is behind sprite
       continue;
     end;
@@ -2883,7 +2883,7 @@ begin
     if pds.thicksidecol <> nil then                 // JVAL: 3d Floors
       R_RenderThickSideRange(pds,  pds.x1, pds.x2); // JVAL: 3d Floors
     if pds.maskedtexturecol <> nil then
-      R_RenderMaskedSegRange(pds, pds.x1, pds.x2);
+      TRendererSegs.R_RenderMaskedSegRange(pds, pds.x1, pds.x2);
   end;
 
   R_StopDepthBuffer;  // JVAL: 3d Floors

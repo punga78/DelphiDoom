@@ -48,19 +48,6 @@ uses
 var
   solidcol: packed array[0..MAXWIDTH - 1] of Byte;
 
-//==============================================================================
-//
-// R_RenderMaskedSegRange
-//
-//==============================================================================
-procedure R_RenderMaskedSegRange(const ds: Pdrawseg_t; const x1, x2: integer);
-
-//==============================================================================
-//
-// R_StoreWallRange
-//
-//==============================================================================
-procedure R_StoreWallRange(start: integer; stop: integer);
 {$ENDIF}
 
 var
@@ -142,25 +129,50 @@ var
   midwallcolfunc: PProcedure;
 {$ENDIF}
 
-//==============================================================================
-//
-// R_NewDrawSeg
-//
-//==============================================================================
-function R_NewDrawSeg: Pdrawseg_t;
-
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_WiggleFix
-//
-//==============================================================================
-procedure R_WiggleFix(sec: Psector_t);
 {$ENDIF}
 
 var
   r_fakecontrast: boolean;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSegs = class sealed
+  public
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_RenderMaskedSegRange
+    //
+    //==============================================================================
+    class procedure R_RenderMaskedSegRange(const ds: Pdrawseg_t; const x1, x2: integer); static;
+    //==============================================================================
+    //
+    // R_StoreWallRange
+    //
+    //==============================================================================
+    class procedure R_StoreWallRange(start: integer; stop: integer); static;
+{$ENDIF}
+    //==============================================================================
+    //
+    // R_NewDrawSeg
+    //
+    //==============================================================================
+    class function R_NewDrawSeg: Pdrawseg_t; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_WiggleFix
+    //
+    //==============================================================================
+    class procedure R_WiggleFix(sec: Psector_t); static;
+{$ENDIF}
+  end;
+
 
 implementation
 
@@ -195,6 +207,28 @@ uses
   r_debug,
 {$ENDIF}
   z_zone;
+
+const
+  NUMDRAWSEGBUFFERS = 16;
+  DRAWSEGBUFFERSIZE = MAXDRAWSEGS div NUMDRAWSEGBUFFERS;
+
+
+type
+  drawsegbuffer_t = array[0..DRAWSEGBUFFERSIZE - 1] of drawseg_t;
+  Pdrawsegbuffer_t = ^drawsegbuffer_t;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererSegsLocal = class sealed
+  public
+{$IFNDEF OPENGL}
+    class procedure R_StoreWallRange_DBL(const pds: Pdrawseg_t; const start: integer; const stop: integer); static;
+{$ENDIF}
+  end;
 
 {$IFNDEF OPENGL}
 
@@ -264,7 +298,7 @@ var
 // R_WiggleFix
 //
 //==============================================================================
-procedure R_WiggleFix(sec: Psector_t);
+class procedure TRendererSegs.R_WiggleFix(sec: Psector_t);
 var
   height: integer;
 begin
@@ -310,7 +344,7 @@ end;
 // R_RenderMaskedSegRange
 //
 //==============================================================================
-procedure R_RenderMaskedSegRange(const ds: Pdrawseg_t; const x1, x2: integer);
+class procedure TRendererSegs.R_RenderMaskedSegRange(const ds: Pdrawseg_t; const x1, x2: integer);
 var
   index: integer;
   col: Pcolumn_t;
@@ -568,14 +602,6 @@ end;
 {$ENDIF}
 
 // JVAL: Drawseg buffers
-const
-  NUMDRAWSEGBUFFERS = 16;
-  DRAWSEGBUFFERSIZE = MAXDRAWSEGS div NUMDRAWSEGBUFFERS;
-
-type
-  drawsegbuffer_t = array[0..DRAWSEGBUFFERSIZE - 1] of drawseg_t;
-  Pdrawsegbuffer_t = ^drawsegbuffer_t;
-
 var
   drawsegbuffers: array[0..NUMDRAWSEGBUFFERS - 1] of Pdrawsegbuffer_t;
 
@@ -590,7 +616,7 @@ var
 // R_NewDrawSeg
 //
 //==============================================================================
-function R_NewDrawSeg: Pdrawseg_t;
+class function TRendererSegs.R_NewDrawSeg: Pdrawseg_t;
 var
   i, bufid: integer;
 begin
@@ -636,7 +662,7 @@ end;
 // R_StoreWallRange_DBL
 //
 //==============================================================================
-procedure R_StoreWallRange_DBL(const pds: Pdrawseg_t; const start: integer; const stop: integer);
+class procedure TRendererSegsLocal.R_StoreWallRange_DBL(const pds: Pdrawseg_t; const start: integer; const stop: integer);
 var
   vtop: fixed_t;
   lightnum: integer;
@@ -680,7 +706,7 @@ begin
   worldtop := frontsector.ceilingheight - viewz;
   worldbottom := frontsector.floorheight - viewz;
 
-  R_WiggleFix(frontsector);
+  TRendererSegs.R_WiggleFix(frontsector);
 
   midtexture := 0;
   toptexture := 0;
@@ -1306,7 +1332,7 @@ end;
 //  between start and stop pixels (inclusive).
 //
 //==============================================================================
-procedure R_StoreWallRange(start: integer; stop: integer);
+class procedure TRendererSegs.R_StoreWallRange(start: integer; stop: integer);
 var
   vtop: fixed_t;
   lightnum: integer;
@@ -1369,7 +1395,7 @@ begin
   // JVAL: 20200417 - Use double arithmetic for large segs
   if curline.map_length >= 1024 then
   begin
-    R_StoreWallRange_DBL(pds, start, stop);
+    TRendererSegsLocal.R_StoreWallRange_DBL(pds, start, stop);
     exit;
   end;
 
@@ -1377,7 +1403,7 @@ begin
   rw_scale := R_ScaleFromGlobalAngle(viewangle + xtoviewangle[start], overflow);
   if overflow or (precisescalefromglobalangle and (pds.midsec <> nil) and (rw_scale > 64 * FRACUNIT)) then
   begin
-    R_StoreWallRange_DBL(pds, start, stop);
+    TRendererSegsLocal.R_StoreWallRange_DBL(pds, start, stop);
     exit;
   end;
 
@@ -1388,7 +1414,7 @@ begin
     pds.scale2 := R_ScaleFromGlobalAngle(viewangle + xtoviewangle[stop], overflow);
     if overflow or (precisescalefromglobalangle and (pds.midsec <> nil) and (pds.scale2 > 64 * FRACUNIT)) then
     begin
-      R_StoreWallRange_DBL(pds, start, stop);
+      TRendererSegsLocal.R_StoreWallRange_DBL(pds, start, stop);
       exit;
     end;
     rw_scalestep := (pds.scale2 - rw_scale) div (stop - start);
