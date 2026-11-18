@@ -120,20 +120,6 @@ procedure P_ResolveMBF21Flags(const m: Pmobjinfo_t);
 
 //==============================================================================
 //
-// A_AddFlags
-//
-//==============================================================================
-procedure A_AddFlags(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RemoveFlags
-//
-//==============================================================================
-procedure A_RemoveFlags(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_WeaponMeleeAttack
 //
 //==============================================================================
@@ -2462,6 +2448,28 @@ type
     //
     //==============================================================================
     class function PlayerToId(const p: Pplayer_t): integer; static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonFlagActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_AddFlags
+    //
+    //==============================================================================
+    class procedure A_AddFlags(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RemoveFlags
+    //
+    //==============================================================================
+    class procedure A_RemoveFlags(actor: Pmobj_t); static;
   end;
 
 
@@ -11926,7 +11934,7 @@ end;
 //   args[1]: MBF21 Flag(s) to add
 //
 //==============================================================================
-procedure A_AddFlags(actor: Pmobj_t);
+class procedure TCommonFlagActions.A_AddFlags(actor: Pmobj_t);
 var
   bits, mbf21bits: integer;
 begin
@@ -11947,7 +11955,7 @@ end;
 //   args[1]: MBF21 Flag(s) to remove
 //
 //==============================================================================
-procedure A_RemoveFlags(actor: Pmobj_t);
+class procedure TCommonFlagActions.A_RemoveFlags(actor: Pmobj_t);
 var
   bits, mbf21bits: integer;
 begin
