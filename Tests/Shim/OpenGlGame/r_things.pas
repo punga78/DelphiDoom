@@ -10,14 +10,18 @@ unit r_things;
 
 interface
 
-procedure R_DrawPlayer;
+type
+  TRendererThings = class sealed
+  public
+    class procedure R_DrawPlayer; static;
+  end;
 
 implementation
 
 uses
   d_delphi;
 
-procedure R_DrawPlayer;
+class procedure TRendererThings.R_DrawPlayer;
 begin
   ShimEvent('R_DrawPlayer');
 end;
