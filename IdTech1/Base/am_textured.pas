@@ -150,9 +150,7 @@ type
     class procedure AM_DrawTexturedTriangle(const lst: seg_ap3; const lump: integer; const sec: Psector_t;
       const aminx, amaxx: integer; const {$IFDEF OPENGL}lightlevel: integer{$ELSE}amcolormap: pointer{$ENDIF};
       const window: TAutomapWindow); static;
-    class function AM_dodrawSubSectors(parms: dssparams_p): integer; {$IFNDEF OPENGL}stdcall;{$ENDIF}
-    var
-      i, j: integer; static;
+    class function AM_dodrawSubSectors(parms: dssparams_p): integer; static; {$IFNDEF OPENGL}stdcall;{$ENDIF}
   end;
 
 {$IFNDEF OPENGL}
