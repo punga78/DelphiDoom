@@ -1372,7 +1372,7 @@ begin
                 dc_mod := dc_texturemod;
               end;
               dc_x := x;
-              R_ReadDC32Cache(skytexture, angle);
+              TRendererCacheWalls.R_ReadDC32Cache(skytexture, angle);
             // JVAL
             //  Store columns to buffer
               R_StoreSkyColumn32;
@@ -1439,7 +1439,7 @@ begin
                 dc_mod := dc_texturemod;
               end;
               dc_x := x;
-              R_ReadDC32Cache(skytexture, angle);
+              TRendererCacheWalls.R_ReadDC32Cache(skytexture, angle);
               // JVAL
               //  Store columns to buffer
               R_StoreSkyColumn32;
@@ -1535,7 +1535,7 @@ begin
                 dc_mod := dc_texturemod;
               end;
               dc_x := x;
-              R_ReadDC32Cache(skytexture1, angle);
+              TRendererCacheWalls.R_ReadDC32Cache(skytexture1, angle);
               // JVAL
               //  Store columns to buffer
               R_StoreSkyColumn32;

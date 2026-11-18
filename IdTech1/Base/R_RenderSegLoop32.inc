@@ -240,7 +240,7 @@ begin
       // single sided line
       dc_texturemid := rw_midtexturemid;
       dc_height := rw_midtextureheight;
-      R_ReadDC32Cache(midtexture, texturecolumn);
+      TRendererCacheWalls.R_ReadDC32Cache(midtexture, texturecolumn);
 {$IFDEF FLOORS3DVIS}
       if pds.midvis <> nil then
       begin
@@ -344,9 +344,9 @@ begin
           {$IFDEF SPECIALOFFSETS}
           toptexturecolumn := rw_offset_top - tandist;
           toptexturecolumn := toptexturecolumn shr FRACBITS;
-          R_ReadDC32Cache(toptexture, toptexturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(toptexture, toptexturecolumn);
           {$ELSE}
-          R_ReadDC32Cache(toptexture, texturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(toptexture, texturecolumn);
           {$ENDIF}
 
     {$IFDEF FLOORS3DVIS}
@@ -490,9 +490,9 @@ begin
           {$IFDEF SPECIALOFFSETS}
           bottomtexturecolumn := rw_offset_bot - tandist;
           bottomtexturecolumn := bottomtexturecolumn shr FRACBITS;
-          R_ReadDC32Cache(bottomtexture, bottomtexturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(bottomtexture, bottomtexturecolumn);
           {$ELSE}
-          R_ReadDC32Cache(bottomtexture, texturecolumn);
+          TRendererCacheWalls.R_ReadDC32Cache(bottomtexture, texturecolumn);
           {$ENDIF}
 
     {$IFDEF FLOORS3DVIS}

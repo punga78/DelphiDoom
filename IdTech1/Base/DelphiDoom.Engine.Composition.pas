@@ -1259,7 +1259,7 @@ begin
   gld_ConfigureTextureFiles(LFiles);
 {$ELSE}
   R_ConfigureFlatTextures(LFiles);
-  R_ConfigureWallTextures(LFiles);
+  TRendererCacheWalls.R_ConfigureWallTextures(LFiles);
 {$ENDIF}
 end;
 

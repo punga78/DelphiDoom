@@ -808,7 +808,7 @@ begin
   if videomode = vm8bit then
     dc_source := TRendererData.R_GetColumn(tex, col)
   else
-    R_ReadDC32Cache(tex, col);
+    TRendererCacheWalls.R_ReadDC32Cache(tex, col);
 end;
 {$ENDIF}
 
@@ -2222,7 +2222,7 @@ begin
       W_CacheLumpNum(lump, PU_CACHE);
     end;
 {$IFNDEF OPENGL}
-    R_Precache32bittexture(i);
+    TRendererCacheWalls.R_Precache32bittexture(i);
 {$ENDIF}
   end;
   allocmemory := GetAllocMemSize - allocmemory;
