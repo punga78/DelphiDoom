@@ -2183,7 +2183,7 @@ begin
   printf('R_InitLightTables'#13#10);
   TRendererMainLocal.R_InitLightTables;
   printf('R_InitSkyMap'#13#10);
-  R_InitSkyMap;
+  TRendererSky.R_InitSkyMap;
   printf('R_InitTranslationsTables'#13#10);
   TRendererDraw.R_InitTranslationTables;
   printf('R_InitTranslations'#13#10);

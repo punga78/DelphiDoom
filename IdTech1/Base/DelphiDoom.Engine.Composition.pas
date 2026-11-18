@@ -1197,7 +1197,7 @@ begin
     I_Error('ComposeEngine(): the game %s has no profile of the renderer', [_GAME]);
   LProfile := TRendererProfiles.ForGame(LGame);
   R_ConfigurePrecache(TRendererFactory.CreatePrecachePlanner, LProfile);
-  R_ConfigureSky(LProfile.SkyTextureMid);
+  TRendererSky.R_ConfigureSky(LProfile.SkyTextureMid);
   R_ConfigureAspect(TRendererFactory.CreateMonitorAspect(
     TVideoFactory.CreateWindowsDisplayModeSource));
 {$IFNDEF OPENGL}

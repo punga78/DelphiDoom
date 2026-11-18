@@ -2043,7 +2043,7 @@ begin
   viewactive := true;
 
   // Initialize the sky
-  R_InitSky(map);
+  TRendererSky.R_InitSky(map);
 
   G_DoLoadLevel;
 end;
