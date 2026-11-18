@@ -45,20 +45,6 @@ uses
   r_defs,
   r_visplanes;  // JVAL: 3d Floors
 
-//==============================================================================
-//
-// R_InitPlanes
-//
-//==============================================================================
-procedure R_InitPlanes;
-
-//==============================================================================
-//
-// R_ClearPlanes
-//
-//==============================================================================
-procedure R_ClearPlanes;
-
 {$IFNDEF OPENGL}
 type
   mapplanefunc_t = procedure(const y: integer; const x1, x2: integer);
@@ -73,68 +59,18 @@ type
     class procedure R_MapPlaneAngle(const y: integer; const x1, x2: integer); static;
   end;
 
-//==============================================================================
-//
-// R_MakeSpans
-//
-//==============================================================================
-procedure R_MakeSpans(x, t1, b1, t2, b2: integer; const func: mapplanefunc_t);
-
-//==============================================================================
-//
-// R_DrawPlanes
-//
-//==============================================================================
-procedure R_DrawPlanes;
-
-//==============================================================================
-//
-// R_DoDrawPlane
-//
-//==============================================================================
-procedure R_DoDrawPlane(const pl: Pvisplane_t); // JVAL: 3d Floors
 {$ENDIF}
 
 //==============================================================================
 //
 {$IFDEF HEXEN}
-// R_CalcPlaneOffsets
-//
-//==============================================================================
-procedure R_CalcPlaneOffsets(const pl: Pvisplane_t);
 
 //==============================================================================
 //
 {$ENDIF}
-// R_FindPlane
-//
-//==============================================================================
-function R_FindPlane(height: fixed_t; picnum: integer; lightlevel: integer;
-{$IF DEFINED(HERETIC)}
-  flags: LongWord; const floor_or_ceiling: boolean;
-{$ELSEIF DEFINED(HEXEN)}
-  special: integer; flags: LongWord; const floor_or_ceiling: boolean;
-{$ELSE}
-  xoffs, yoffs: fixed_t; flags: LongWord; const floor_or_ceiling: boolean;
-{$ENDIF}
-  angle: angle_t; anglex, angley: fixed_t;
-  {$IFNDEF OPENGL}slope: Pvisslope_t; {$ENDIF} slopeSID: integer = -1): Pvisplane_t;
 
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_DupPlane
-//
-//==============================================================================
-function R_DupPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t;
-
-//==============================================================================
-//
-// R_CheckPlane
-//
-//==============================================================================
-function R_CheckPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t;
 {$ENDIF}
 
 {$IFNDEF OPENGL}
@@ -234,19 +170,6 @@ var
 
 {$IFNDEF OPENGL}
 
-//==============================================================================
-//
-// R_InitializeVisplanes
-//
-//==============================================================================
-procedure R_InitializeVisplanes;
-
-//==============================================================================
-//
-// R_ClearVisPlanes
-//
-//==============================================================================
-procedure R_ClearVisPlanes;
 {$ENDIF}
 
 {$IFDEF DOOM}
@@ -254,6 +177,96 @@ const
   PL_SKYFLAT = $80000000;
 
 {$ENDIF}
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #247,
+  ///   wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererPlane = class sealed
+  public
+    //==============================================================================
+    //
+    // R_InitPlanes
+    //
+    //==============================================================================
+    class procedure R_InitPlanes; static;
+    //==============================================================================
+    //
+    // R_ClearPlanes
+    //
+    //==============================================================================
+    class procedure R_ClearPlanes; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_MakeSpans
+    //
+    //==============================================================================
+    class procedure R_MakeSpans(x, t1, b1, t2, b2: integer; const func: mapplanefunc_t); static;
+    //==============================================================================
+    //
+    // R_DrawPlanes
+    //
+    //==============================================================================
+    class procedure R_DrawPlanes; static;
+    //==============================================================================
+    //
+    // R_DoDrawPlane
+    //
+    //==============================================================================
+    class procedure R_DoDrawPlane(const pl: Pvisplane_t); static;
+{$ENDIF}
+{$IFDEF HEXEN}
+    // R_CalcPlaneOffsets
+    //
+    //==============================================================================
+    class procedure R_CalcPlaneOffsets(const pl: Pvisplane_t); static;
+{$ENDIF}
+    // R_FindPlane
+    //
+    //==============================================================================
+    class function R_FindPlane(height: fixed_t; picnum: integer; lightlevel: integer;
+    {$IF DEFINED(HERETIC)}
+      flags: LongWord; const floor_or_ceiling: boolean;
+    {$ELSEIF DEFINED(HEXEN)}
+      special: integer; flags: LongWord; const floor_or_ceiling: boolean;
+    {$ELSE}
+      xoffs, yoffs: fixed_t; flags: LongWord; const floor_or_ceiling: boolean;
+    {$ENDIF}
+      angle: angle_t; anglex, angley: fixed_t;
+      {$IFNDEF OPENGL}slope: Pvisslope_t; {$ENDIF} slopeSID: integer = -1): Pvisplane_t; static;
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_DupPlane
+    //
+    //==============================================================================
+    class function R_DupPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t; static;
+    //==============================================================================
+    //
+    // R_CheckPlane
+    //
+    //==============================================================================
+    class function R_CheckPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t; static;
+{$ENDIF}
+{$IFNDEF OPENGL}
+    //==============================================================================
+    //
+    // R_InitializeVisplanes
+    //
+    //==============================================================================
+    class procedure R_InitializeVisplanes; static;
+    //==============================================================================
+    //
+    // R_ClearVisPlanes
+    //
+    //==============================================================================
+    class procedure R_ClearVisPlanes; static;
+{$ENDIF}
+  end;
+
+
 implementation
 
 uses
@@ -322,13 +335,37 @@ var
   cachedystep: array[0..MAXHEIGHT - 1] of fixed_t;
 {$ENDIF}
 
+const
+  VISPLANEHASHSIZE = MAXVISPLANES;
+  VISPLANEHASHOVER = 16;
+
+
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #247, wave 12): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TRendererPlaneLocal = class sealed
+  public
+    class function R_NewVisPlane: Pvisplane_t; static;
+    class function R_VisplaneHash(height: fixed_t; picnum: integer; lightlevel: integer;
+    {$IF DEFINED(HERETIC)}
+      angle: angle_t; anglex, angley: fixed_t;
+    {$ELSEIF DEFINED(HEXEN)}
+      special: integer; angle: angle_t; anglex, angley: fixed_t;
+    {$ELSE}
+      xoffs, yoffs: fixed_t; angle: angle_t; anglex, angley: fixed_t;
+    {$ENDIF}
+      flags: LongWord; slopeSID: integer): LongWord; static;
+  end;
+
 //==============================================================================
 //
 // R_InitPlanes
 // Only at game startup.
 //
 //==============================================================================
-procedure R_InitPlanes;
+class procedure TRendererPlane.R_InitPlanes;
 begin
   // Doh!
 end;
@@ -598,10 +635,6 @@ end;
 {$ENDIF}
 
 // JVAL: Visplane hash
-const
-  VISPLANEHASHSIZE = MAXVISPLANES;
-  VISPLANEHASHOVER = 16;
-
 var
   visplanehash: array[0..VISPLANEHASHSIZE + VISPLANEHASHOVER - 1] of LongWord;
 
@@ -611,7 +644,7 @@ var
 // At begining of frame.
 //
 //==============================================================================
-procedure R_ClearPlanes;
+class procedure TRendererPlane.R_ClearPlanes;
 {$IFNDEF OPENGL}
 type
   two_smallints_t = packed record
@@ -668,7 +701,7 @@ end;
 // R_ClearVisPlanes
 //
 //==============================================================================
-procedure R_ClearVisPlanes;
+class procedure TRendererPlane.R_ClearVisPlanes;
 var
   i: integer;
 begin
@@ -690,7 +723,7 @@ end;
 //   Uses zone memory to allocate top and bottom arrays
 //
 //==============================================================================
-function R_NewVisPlane: Pvisplane_t;
+class function TRendererPlaneLocal.R_NewVisPlane: Pvisplane_t;
 begin
   if lastvisplane > maxvisplane then
   begin
@@ -725,7 +758,7 @@ end;
 // R_VisplaneHash
 //
 //==============================================================================
-function R_VisplaneHash(height: fixed_t; picnum: integer; lightlevel: integer;
+class function TRendererPlaneLocal.R_VisplaneHash(height: fixed_t; picnum: integer; lightlevel: integer;
 {$IF DEFINED(HERETIC)}
   angle: angle_t; anglex, angley: fixed_t;
 {$ELSEIF DEFINED(HEXEN)}
@@ -775,7 +808,7 @@ end;
 // R_FindPlane
 //
 //==============================================================================
-function R_FindPlane(height: fixed_t; picnum: integer; lightlevel: integer;
+class function TRendererPlane.R_FindPlane(height: fixed_t; picnum: integer; lightlevel: integer;
 {$IF DEFINED(HERETIC)}
   flags: LongWord; const floor_or_ceiling: boolean;
 {$ELSEIF DEFINED(HEXEN)}
@@ -826,11 +859,11 @@ begin
   end;
 
 {$IF DEFINED(HERETIC)}
-  hash := R_VisplaneHash(height, picnum, lightlevel, angle, anglex, angley, flags, slopeSID);
+  hash := TRendererPlaneLocal.R_VisplaneHash(height, picnum, lightlevel, angle, anglex, angley, flags, slopeSID);
 {$ELSEIF DEFINED(HEXEN)}
-  hash := R_VisplaneHash(height, picnum, lightlevel, special, angle, anglex, angley, flags, slopeSID);
+  hash := TRendererPlaneLocal.R_VisplaneHash(height, picnum, lightlevel, special, angle, anglex, angley, flags, slopeSID);
 {$ELSE}
-  hash := R_VisplaneHash(height, picnum, lightlevel, xoffs, yoffs, angle, anglex, angley, flags, slopeSID);
+  hash := TRendererPlaneLocal.R_VisplaneHash(height, picnum, lightlevel, xoffs, yoffs, angle, anglex, angley, flags, slopeSID);
 {$ENDIF}
   check := hash;
   while check < hash + VISPLANEHASHOVER do
@@ -838,7 +871,7 @@ begin
     p := visplanehash[check];
     if p = 0 then
     begin
-      result := R_NewVisPlane;  // JVAL: 3d Floors
+      result := TRendererPlaneLocal.R_NewVisPlane;  // JVAL: 3d Floors
 
       result.height := height;
       result.picnum := picnum;
@@ -922,7 +955,7 @@ begin
   if lastvisplane = MAXVISPLANES then
     I_Error('R_FindPlane(): no more visplanes');
 
-  R_NewVisPlane;
+  TRendererPlaneLocal.R_NewVisPlane;
 
   result.height := height;
   result.picnum := picnum;
@@ -967,7 +1000,7 @@ end;
 // R_DupPlane
 //
 //==============================================================================
-function R_DupPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t;
+class function TRendererPlane.R_DupPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t;
 var
   pll: Pvisplane_t;
 begin
@@ -997,8 +1030,8 @@ begin
 
   pl := pll;
 
-  R_NewVisPlane;
-  visplanehash[R_VisplaneHash(pl.height, pl.picnum, pl.lightlevel,
+  TRendererPlaneLocal.R_NewVisPlane;
+  visplanehash[TRendererPlaneLocal.R_VisplaneHash(pl.height, pl.picnum, pl.lightlevel,
 {$IF DEFINED(HERETIC)}
     pl.angle, pl.anglex, pl.angley, pl.renderflags, pl.slopeSID)] := lastvisplane;
 {$ELSEIF DEFINED(HEXEN)}
@@ -1018,7 +1051,7 @@ end;
 // R_CheckPlane
 //
 //==============================================================================
-function R_CheckPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t;
+class function TRendererPlane.R_CheckPlane(pl: Pvisplane_t; start: integer; stop: integer): Pvisplane_t;
 var
   intrl: integer;
   intrh: integer;
@@ -1092,7 +1125,7 @@ end;
 // R_MakeSpans
 //
 //==============================================================================
-procedure R_MakeSpans(x, t1, b1, t2, b2: integer; const func: mapplanefunc_t);
+class procedure TRendererPlane.R_MakeSpans(x, t1, b1, t2, b2: integer; const func: mapplanefunc_t);
 var
   x1: integer;
 begin
@@ -1147,7 +1180,7 @@ end;
 // R_CalcPlaneOffsets
 //
 //==============================================================================
-procedure R_CalcPlaneOffsets(const pl: Pvisplane_t);
+class procedure TRendererPlane.R_CalcPlaneOffsets(const pl: Pvisplane_t);
 var
   scrollOffset: integer;
 begin
@@ -1239,7 +1272,7 @@ var
 // R_DrawPlanes
 //
 //==============================================================================
-procedure R_DrawPlanes; // JVAL: 3d Floors
+class procedure TRendererPlane.R_DrawPlanes; // JVAL: 3d Floors
 var
   i: integer;
   pl: Pvisplane_t;
@@ -1260,7 +1293,7 @@ end;
 // R_DoDrawPlane
 //
 //==============================================================================
-procedure R_DoDrawPlane(const pl: Pvisplane_t); // JVAL: 3d Floors
+class procedure TRendererPlane.R_DoDrawPlane(const pl: Pvisplane_t); // JVAL: 3d Floors
 var
 {$IFDEF HEXEN}
   k, sksize: integer;
@@ -1806,7 +1839,7 @@ end;
 // R_InitializeVisplanes
 //
 //==============================================================================
-procedure R_InitializeVisplanes;
+class procedure TRendererPlane.R_InitializeVisplanes;
 var
   i: integer;
 begin

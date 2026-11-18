@@ -1690,7 +1690,7 @@ begin
   begin
     pl := visplanes3d[i].vis;
     if pl.renderflags and SRF_DONOTDRAW = 0 then
-      R_DoDrawPlane(pl);
+      TRendererPlane.R_DoDrawPlane(pl);
   end;
 end;
 
@@ -1712,7 +1712,7 @@ begin
   begin
     pl := visplanes3d[i].vis;
     if pl.renderflags and SRF_DONOTDRAW = 0 then
-      R_DoDrawPlane(pl);
+      TRendererPlane.R_DoDrawPlane(pl);
   end;
   R_FlashSpansToDepthBufferMT;
 end;

@@ -1201,7 +1201,7 @@ begin
       floorrenderflags := frontsector.renderflags;
 
     if frontsector.renderflags and SRF_SLOPEFLOOR <> 0 then // JVAL: Slopes
-      floorplane := R_FindPlane(frontsector.floorheight,
+      floorplane := TRendererPlane.R_FindPlane(frontsector.floorheight,
 {$IF DEFINED(HERETIC)}
                                 frontsector.floorpic,
                                 floorlightlevel,  // JVAL: 3d Floors: Floor light level from mid sector
@@ -1230,7 +1230,7 @@ begin
                                 {$ENDIF}
                                 frontsector.iSectorID)  // JVAL: Slopes
     else
-      floorplane := R_FindPlane(frontsector.floorheight,
+      floorplane := TRendererPlane.R_FindPlane(frontsector.floorheight,
 {$IF DEFINED(HERETIC)}
                                 frontsector.floorpic,
                                 floorlightlevel,  // JVAL: 3d Floors: Floor light level from mid sector
@@ -1271,7 +1271,7 @@ begin
 {$ENDIF}
   begin
     if frontsector.renderflags and SRF_SLOPECEILING <> 0 then // JVAL: Slopes
-      ceilingplane := R_FindPlane(frontsector.ceilingheight,
+      ceilingplane := TRendererPlane.R_FindPlane(frontsector.ceilingheight,
 {$IF DEFINED(HERETIC)}
                                   frontsector.ceilingpic,
                                   frontsector.lightlevel,
@@ -1300,7 +1300,7 @@ begin
                                   {$ENDIF}
                                   frontsector.iSectorID)  // JVAL: Slopes
     else
-      ceilingplane := R_FindPlane(frontsector.ceilingheight,
+      ceilingplane := TRendererPlane.R_FindPlane(frontsector.ceilingheight,
 {$IF DEFINED(HERETIC)}
                                   frontsector.ceilingpic,
                                   frontsector.lightlevel,
@@ -1557,9 +1557,9 @@ begin
   end;
 {$IFDEF HEXEN}
   if floorplane <> nil then
-    R_CalcPlaneOffsets(floorplane);
+    TRendererPlane.R_CalcPlaneOffsets(floorplane);
   if ceilingplane <> nil then
-    R_CalcPlaneOffsets(ceilingplane);
+    TRendererPlane.R_CalcPlaneOffsets(ceilingplane);
 {$ENDIF}
   gld_AddPlane(num, floorplane, ceilingplane); // JVAL OPENGL
 {$ELSE}

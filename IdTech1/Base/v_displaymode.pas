@@ -138,7 +138,7 @@ function V_DoSetDisplayMode(const newwidth, newheight: integer): boolean;
 begin
   MT_WaitTasks;            // Wait for running tasks to stop
   R_ShutDownDepthBuffer;   // Shut down depthbuffer
-  R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
+  TRendererPlane.R_ClearVisPlanes;        // Clear visplanes (free ::top & ::bottom arrays)
   R_ClearVisSlopes;        // Clear vissplopes (free screenleft, screenright, ds_zleft & ds_zright arrays)
   R_ClearVisPlanes3d;      // Clear arrays
   R_ShutDownFake3D;        // Clear fake 3d planes

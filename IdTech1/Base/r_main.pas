@@ -2135,7 +2135,7 @@ begin
   // viewwidth / viewheight / detailLevel are set by the defaults
   R_SetViewSize;
   printf('R_InitPlanes'#13#10);
-  R_InitPlanes;
+  TRendererPlane.R_InitPlanes;
   printf('R_InitLightTables'#13#10);
   R_InitLightTables;
   printf('R_InitSkyMap'#13#10);
@@ -2655,7 +2655,7 @@ begin
   // Clear buffers.
   TRendererBsp.R_ClearClipSegs;
   TRendererBsp.R_ClearDrawSegs;
-  R_ClearPlanes;
+  TRendererPlane.R_ClearPlanes;
   R_Wait3DLookup;
   R_Fake3DAdjustPlanes(player);
   R_ClearSprites;
@@ -2683,7 +2683,7 @@ begin
 
   TRendererWall8.R_RenderMultiThreadWalls8;
 
-  R_DrawPlanes;
+  TRendererPlane.R_DrawPlanes;
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2717,7 +2717,7 @@ begin
   // Check for new console commands.
   R_NetGame.Update;
 
-  task_clearplanes := MT_ScheduleTask(@R_InitializeVisplanes);
+  task_clearplanes := MT_ScheduleTask(@TRendererPlane.R_InitializeVisplanes);
   MT_ExecutePendingTask(task_clearplanes);
 end;
 
@@ -2735,7 +2735,7 @@ begin
   // Clear buffers.
   TRendererBsp.R_ClearClipSegs;
   TRendererBsp.R_ClearDrawSegs;
-  R_ClearPlanes;
+  TRendererPlane.R_ClearPlanes;
   R_Wait3DLookup;
   R_Fake3DAdjustPlanes(player);
   R_ClearSprites;
@@ -2763,7 +2763,7 @@ begin
 
   TRendererWall32.R_RenderMultiThreadWalls32;
 
-  R_DrawPlanes;
+  TRendererPlane.R_DrawPlanes;
 
   // Check for completed thread tasks
   TestActiveThreads;
@@ -2796,7 +2796,7 @@ begin
   // Check for new console commands.
   R_NetGame.Update;
 
-  task_clearplanes := MT_ScheduleTask(@R_InitializeVisplanes);
+  task_clearplanes := MT_ScheduleTask(@TRendererPlane.R_InitializeVisplanes);
   MT_ExecutePendingTask(task_clearplanes);
 end;
 {$ENDIF}
@@ -2823,7 +2823,7 @@ begin
   TRendererBsp.R_ClearClipSegs;
   TRendererBsp.R_ClearDrawSegs;
 {$ENDIF}
-  R_ClearPlanes;
+  TRendererPlane.R_ClearPlanes;
 {$IFNDEF OPENGL}
   R_Fake3DAdjustPlanes(player);
 {$ENDIF}
@@ -2858,7 +2858,7 @@ begin
 {$ELSE}
   TRendererSegs2.R_SetUpDrawSegLists;
 
-  R_DrawPlanes;
+  TRendererPlane.R_DrawPlanes;
 
   // Check for new console commands.
   R_NetGame.Update;
@@ -2876,7 +2876,7 @@ begin
   R_NetGame.Update;
 
 {$IFNDEF OPENGL}
-  task_clearplanes := MT_ScheduleTask(@R_InitializeVisplanes);
+  task_clearplanes := MT_ScheduleTask(@TRendererPlane.R_InitializeVisplanes);
   MT_ExecutePendingTask(task_clearplanes);
 {$ENDIF}
 end;

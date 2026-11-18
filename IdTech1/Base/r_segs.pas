@@ -1169,7 +1169,7 @@ begin
   if markceiling then
   begin
     if ceilingplane <> nil then
-      ceilingplane := R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
+      ceilingplane := TRendererPlane.R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
     else
       markceiling := false;
   end;
@@ -1185,9 +1185,9 @@ begin
       // a possibility, otherwise the floor marking would overwrite the ceiling
       // marking, resulting in HOM.
       if markceiling and (ceilingplane = floorplane) then
-        floorplane := R_DupPlane(floorplane, rw_x, rw_stopx - 1)
+        floorplane := TRendererPlane.R_DupPlane(floorplane, rw_x, rw_stopx - 1)
       else
-        floorplane := R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
+        floorplane := TRendererPlane.R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
     end
     else
       markfloor := false;
@@ -1864,7 +1864,7 @@ begin
   if markceiling then
   begin
     if ceilingplane <> nil then
-      ceilingplane := R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
+      ceilingplane := TRendererPlane.R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
     else
       markceiling := false;
   end;
@@ -1880,9 +1880,9 @@ begin
       // a possibility, otherwise the floor marking would overwrite the ceiling
       // marking, resulting in HOM.
       if markceiling and (ceilingplane = floorplane) then
-        floorplane := R_DupPlane(floorplane, rw_x, rw_stopx - 1)
+        floorplane := TRendererPlane.R_DupPlane(floorplane, rw_x, rw_stopx - 1)
       else
-        floorplane := R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
+        floorplane := TRendererPlane.R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
     end
     else
       markfloor := false;

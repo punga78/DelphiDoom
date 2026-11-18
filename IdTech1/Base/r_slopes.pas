@@ -867,7 +867,7 @@ begin
       // JVAL: Render a small fraction, possible 1-2 pixels
       // This could happen because the clipper does not
       // return a solution (due to round errors)
-      R_DoDrawPlane(pl);
+      TRendererPlane.R_DoDrawPlane(pl);
       Exit;
     end;
   end;
@@ -898,7 +898,7 @@ begin
   yoffs := pl.yoffs;
   {$ENDIF}
   {$IFDEF HEXEN}
-  R_CalcPlaneOffsets(pl);
+  TRendererPlane.R_CalcPlaneOffsets(pl);
   {$ENDIF}
 
   if pl.renderflags and SRF_RIPPLE <> 0 then
@@ -943,7 +943,7 @@ begin
     // Slope with angle
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlopeAngle);
+      TRendererPlane.R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlopeAngle);
     end;
   end
   else if preciseslopedrawing then
@@ -951,7 +951,7 @@ begin
     // Slow but accurate lighting
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlopePerPixelLight);
+      TRendererPlane.R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlopePerPixelLight);
     end;
   end
   else
@@ -959,7 +959,7 @@ begin
     // Fast but the lighting is not that accurate
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlope);
+      TRendererPlane.R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapSlope);
     end;
   end;
 
@@ -1479,7 +1479,7 @@ begin
   if markceiling then
   begin
     if ceilingplane <> nil then
-      ceilingplane := R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
+      ceilingplane := TRendererPlane.R_CheckPlane(ceilingplane, rw_x, rw_stopx - 1)
     else
       markceiling := false;
   end;
@@ -1495,9 +1495,9 @@ begin
       // a possibility, otherwise the floor marking would overwrite the ceiling
       // marking, resulting in HOM.
       if markceiling and (ceilingplane = floorplane) then
-        floorplane := R_DupPlane(floorplane, rw_x, rw_stopx - 1)
+        floorplane := TRendererPlane.R_DupPlane(floorplane, rw_x, rw_stopx - 1)
       else
-        floorplane := R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
+        floorplane := TRendererPlane.R_CheckPlane(floorplane, rw_x, rw_stopx - 1);
     end
     else
       markfloor := false;
