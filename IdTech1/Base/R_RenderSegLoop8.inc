@@ -206,9 +206,9 @@ begin
           dc_colormap := PByteArray(r.lightlevel[0]);
 
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn8(@midwalls8);
+          TRendererWall8.R_StoreWallColumn8(@midwalls8);
           if totalclip then
-            R_FlashWallColumns8(@midwalls8);
+            TRendererWall8.R_FlashWallColumns8(@midwalls8);
           {$ELSE}
           midwallcolfunc;
           {$ENDIF}
@@ -221,9 +221,9 @@ begin
 
           {$IFDEF RENDERSEGOPTIMIZED}
           if totalclip then
-            R_FlashWallColumns8(@midwalls8b)
+            TRendererWall8.R_FlashWallColumns8(@midwalls8b)
           else
-            R_StoreWallColumn8(@midwalls8b);
+            TRendererWall8.R_StoreWallColumn8(@midwalls8b);
           {$ELSE}
           midwallcolfunc;
           {$ENDIF}
@@ -234,8 +234,8 @@ begin
         else
         begin
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_FlashWallColumns8(@midwalls8);
-          R_FlashWallColumns8(@midwalls8b);
+          TRendererWall8.R_FlashWallColumns8(@midwalls8);
+          TRendererWall8.R_FlashWallColumns8(@midwalls8b);
           {$ENDIF}
         end;
       end
@@ -252,7 +252,7 @@ begin
       begin
 {$ENDIF}
         {$IFDEF RENDERSEGOPTIMIZED}
-        R_StoreWallColumn8(@midwalls8);
+        TRendererWall8.R_StoreWallColumn8(@midwalls8);
         {$ELSE}
         midwallcolfunc;
         {$ENDIF}
@@ -315,9 +315,9 @@ begin
               dc_colormap := PByteArray(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_StoreWallColumn8(@upperwalls8);
+              TRendererWall8.R_StoreWallColumn8(@upperwalls8);
               if totalclip then
-                R_FlashWallColumns8(@upperwalls8);
+                TRendererWall8.R_FlashWallColumns8(@upperwalls8);
               {$ELSE}
               topwallcolfunc;
               {$ENDIF}
@@ -330,9 +330,9 @@ begin
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
-                R_FlashWallColumns8(@upperwalls8b)
+                TRendererWall8.R_FlashWallColumns8(@upperwalls8b)
               else
-                R_StoreWallColumn8(@upperwalls8b);
+                TRendererWall8.R_StoreWallColumn8(@upperwalls8b);
               {$ELSE}
               topwallcolfunc;
               {$ENDIF}
@@ -343,8 +343,8 @@ begin
             else
             begin
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_FlashWallColumns8(@upperwalls8);
-              R_FlashWallColumns8(@upperwalls8b);
+              TRendererWall8.R_FlashWallColumns8(@upperwalls8);
+              TRendererWall8.R_FlashWallColumns8(@upperwalls8b);
               {$ENDIF}
             end;
           end
@@ -355,7 +355,7 @@ begin
           dc_yl := yl;
           dc_yh := mid;
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn8(@upperwalls8);
+          TRendererWall8.R_StoreWallColumn8(@upperwalls8);
           {$ELSE}
           topwallcolfunc;
           {$ENDIF}
@@ -461,9 +461,9 @@ begin
               dc_colormap := PByteArray(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_StoreWallColumn8(@lowerwalls8);
+              TRendererWall8.R_StoreWallColumn8(@lowerwalls8);
               if totalclip then
-                R_FlashWallColumns8(@lowerwalls8);
+                TRendererWall8.R_FlashWallColumns8(@lowerwalls8);
               {$ELSE}
               bottomwallcolfunc;
               {$ENDIF}
@@ -476,9 +476,9 @@ begin
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
-                R_FlashWallColumns8(@lowerwalls8b)
+                TRendererWall8.R_FlashWallColumns8(@lowerwalls8b)
               else
-                R_StoreWallColumn8(@lowerwalls8b);
+                TRendererWall8.R_StoreWallColumn8(@lowerwalls8b);
               {$ELSE}
               bottomwallcolfunc;
               {$ENDIF}
@@ -489,8 +489,8 @@ begin
             else
             begin
               {$IFDEF RENDERSEGOPTIMIZED}
-              R_FlashWallColumns8(@lowerwalls8);
-              R_FlashWallColumns8(@lowerwalls8b);
+              TRendererWall8.R_FlashWallColumns8(@lowerwalls8);
+              TRendererWall8.R_FlashWallColumns8(@lowerwalls8b);
               {$ENDIF}
             end;
           end
@@ -500,7 +500,7 @@ begin
           dc_yl := mid;
           dc_yh := yh;
           {$IFDEF RENDERSEGOPTIMIZED}
-          R_StoreWallColumn8(@lowerwalls8);
+          TRendererWall8.R_StoreWallColumn8(@lowerwalls8);
           {$ELSE}
           bottomwallcolfunc;
           {$ENDIF}
@@ -591,14 +591,14 @@ begin
     inc(pfloorclip);
   end;
   {$IFDEF RENDERSEGOPTIMIZED}
-  R_FlashWallColumns8(@midwalls8);
-  R_FlashWallColumns8(@lowerwalls8);
-  R_FlashWallColumns8(@upperwalls8);
+  TRendererWall8.R_FlashWallColumns8(@midwalls8);
+  TRendererWall8.R_FlashWallColumns8(@lowerwalls8);
+  TRendererWall8.R_FlashWallColumns8(@upperwalls8);
   {$IFDEF FLOORS3DVIS}
   // JVAL: 3d Floors
-  R_FlashWallColumns8(@midwalls8b);
-  R_FlashWallColumns8(@lowerwalls8b);
-  R_FlashWallColumns8(@upperwalls8b);
+  TRendererWall8.R_FlashWallColumns8(@midwalls8b);
+  TRendererWall8.R_FlashWallColumns8(@lowerwalls8b);
+  TRendererWall8.R_FlashWallColumns8(@upperwalls8b);
   {$ENDIF}
   {$ENDIF}
 end;

@@ -2154,7 +2154,7 @@ begin
   printf('R_InitVoxels'#13#10);
   R_InitVoxels;
   printf('R_InitWallsCache8'#13#10);
-  R_InitWallsCache8;
+  TRendererWall8.R_InitWallsCache8;
   printf('R_InitWallsCache32'#13#10);
   R_InitWallsCache32;
   printf('R_InitFlatsCache8'#13#10);
@@ -2232,7 +2232,7 @@ begin
   R_ShutDownPrecalc;
 {$IFNDEF OPENGL}
   printf(#13#10 + 'R_ShutDownWallsCache8');
-  R_ShutDownWallsCache8;
+  TRendererWall8.R_ShutDownWallsCache8;
   printf(#13#10 + 'R_ShutDownWallsCache32');
   R_ShutDownWallsCache32;
   printf(#13#10 + 'R_ShutDownFlatsCache8');
@@ -2666,7 +2666,7 @@ begin
   // check for new console commands.
   R_NetGame.Update;
 
-  R_ClearWallsCache8;
+  TRendererWall8.R_ClearWallsCache8;
 
   // The head node is the last node output.
   R_RenderBSPNode(numnodes - 1);
@@ -2681,7 +2681,7 @@ begin
   task_maskedstuff := MT_ScheduleTask(@R_MaskedStuffMT);
   MT_ExecutePendingTask(task_maskedstuff);
 
-  R_RenderMultiThreadWalls8;
+  TRendererWall8.R_RenderMultiThreadWalls8;
 
   R_DrawPlanes;
 
@@ -2690,7 +2690,7 @@ begin
 
   R_RenderMultiThreadFlats8;
 
-  R_WaitWallsCache8;
+  TRendererWall8.R_WaitWallsCache8;
 
   R_DrawFFloorsMultiThread;  // JVAL: 3d Floors
 
