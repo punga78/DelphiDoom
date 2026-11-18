@@ -11,7 +11,7 @@ unit DelphiDoom.Dehacked.Games;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.Dehacked.Intf;
+  DelphiDoom.Logging.Intf, DelphiDoom.Dehacked.Intf, DelphiDoom.Dehacked.GameData;
 
 type
   TDehackedGame = (dgDoom, dgHeretic, dgHexen, dgStrife);
@@ -27,6 +27,8 @@ type
     class function NameOf(AGame: TDehackedGame): string; static;
     /// <summary>The game of a name, whatever the case of the letters; false if it is none of the four</summary>
     class function TryFromName(const AName: string; out AGame: TDehackedGame): Boolean; static;
+    /// <summary>The names of the fields and of the flags of a game: the one source of the tables of names of the patches (the engine fills deh_main from it)</summary>
+    class function DataOf(AGame: TDehackedGame): TDehackedGameData; static;
     /// <param name="ALog">May be nil</param>
     /// <param name="AExtraThingFields">
     ///   The fields of the things that only the game of the program has (a game that runs on the
@@ -39,7 +41,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Dehacked.Types, DelphiDoom.Dehacked.GameData,
+  System.SysUtils, DelphiDoom.Dehacked.Types,
   DelphiDoom.Dehacked.Data.Doom, DelphiDoom.Dehacked.Data.Heretic,
   DelphiDoom.Dehacked.Data.Hexen, DelphiDoom.Dehacked.Data.Strife,
   DelphiDoom.Dehacked.FieldTable, DelphiDoom.Dehacked.FieldKinds,
@@ -57,7 +59,7 @@ const
   WEAPON_COUNTS: array[TDehackedGame] of Integer = (9, 9, 4, 11);
   AMMO_COUNTS: array[TDehackedGame] of Integer = (4, 6, 0, 7);
 
-function DataOf(AGame: TDehackedGame): TDehackedGameData;
+class function TDehackedGames.DataOf(AGame: TDehackedGame): TDehackedGameData;
 begin
   case AGame of
     dgDoom: Result := TDehackedDoomData.Build;

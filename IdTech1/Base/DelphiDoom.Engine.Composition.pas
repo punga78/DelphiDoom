@@ -65,6 +65,7 @@ uses
   DelphiDoom.Engine.Dehacked.Applier,
   DelphiDoom.Engine.Dehacked.ThingFields,
   deh_base,
+  deh_main,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Iwad.Intf,
   DelphiDoom.Iwad.Games,
@@ -809,6 +810,8 @@ begin
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
   // TEngineDehackedApplier is the class of the game (one unit with this name in each folder).
   // AThingFields knows no field until a game with things of its own fills it (ComposeRadix)
+  // the names of the fields and of the flags: the library is their one source (DEH_Init fills the lists of deh_main)
+  TDehMainRoutines.DEH_ConfigureTokens(TDehackedGames.DataOf(LGame));
   DEH_ConfigureApplier(TEngineDehackedApplier.Create(TDehackedFactory.CreateParser(LGame, ALog, AThingFields),
     AEvaluator));
   DEH_ConfigureActions(TActionsFactory.CreateRegistry);
