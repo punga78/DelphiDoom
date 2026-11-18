@@ -599,21 +599,21 @@ begin
   DEH_AddAction(@TDoomMonsterActions.A_SpawnFly, 'A_SpawnFly()'); // 73
   DEH_AddAction(@TDoomMonsterActions.A_BrainExplode, 'A_BrainExplode()'); // 74
   // Custom actions
-  DEH_AddAction(@A_CustomSound1, 'A_CustomSound1()'); // 75
-  DEH_AddAction(@A_CustomSound2, 'A_CustomSound2()'); // 76
-  DEH_AddAction(@A_CustomSound3, 'A_CustomSound3()'); // 77
-  DEH_AddAction(@A_RandomPainSound, 'A_RandomPainSound()'); // 78
-  DEH_AddAction(@A_RandomSeeSound, 'A_RandomSeeSound()'); // 79
-  DEH_AddAction(@A_RandomAttackSound, 'A_RandomAttackSound()'); // 80
-  DEH_AddAction(@A_RandomDeathSound, 'A_RandomDeathSound()'); // 81
-  DEH_AddAction(@A_RandomActiveSound, 'A_RandomActiveSound()'); // 82
-  DEH_AddAction(@A_RandomCustomSound1, 'A_RandomCustomSound1()'); // 83
-  DEH_AddAction(@A_RandomCustomSound2, 'A_RandomCustomSound2()'); // 84
-  DEH_AddAction(@A_RandomCustomSound3, 'A_RandomCustomSound3()'); // 85
-  DEH_AddAction(@A_RandomCustomSound, 'A_RandomCustomSound()'); // 86
+  DEH_AddAction(@TCommonSoundActions.A_CustomSound1, 'A_CustomSound1()'); // 75
+  DEH_AddAction(@TCommonSoundActions.A_CustomSound2, 'A_CustomSound2()'); // 76
+  DEH_AddAction(@TCommonSoundActions.A_CustomSound3, 'A_CustomSound3()'); // 77
+  DEH_AddAction(@TCommonSoundActions.A_RandomPainSound, 'A_RandomPainSound()'); // 78
+  DEH_AddAction(@TCommonSoundActions.A_RandomSeeSound, 'A_RandomSeeSound()'); // 79
+  DEH_AddAction(@TCommonSoundActions.A_RandomAttackSound, 'A_RandomAttackSound()'); // 80
+  DEH_AddAction(@TCommonSoundActions.A_RandomDeathSound, 'A_RandomDeathSound()'); // 81
+  DEH_AddAction(@TCommonSoundActions.A_RandomActiveSound, 'A_RandomActiveSound()'); // 82
+  DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound1, 'A_RandomCustomSound1()'); // 83
+  DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound2, 'A_RandomCustomSound2()'); // 84
+  DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound3, 'A_RandomCustomSound3()'); // 85
+  DEH_AddAction(@TCommonSoundActions.A_RandomCustomSound, 'A_RandomCustomSound()'); // 86
   DEH_AddAction(@A_AnnihilatorAttack, 'A_AnnihilatorAttack()'); // 87
-  DEH_AddAction(@A_Playsound, 'A_Playsound(sound: string)'); // 88
-  DEH_AddAction(@A_RandomSound, 'A_RandomSound(sound1: string, [sound2: string], ...)'); // 89
+  DEH_AddAction(@TCommonSoundActions.A_Playsound, 'A_Playsound(sound: string)'); // 88
+  DEH_AddAction(@TCommonSoundActions.A_RandomSound, 'A_RandomSound(sound1: string, [sound2: string], ...)'); // 89
   DEH_AddAction(@A_Stop, 'A_Stop()'); // 90
   DEH_AddAction(@A_Jump, 'A_Jump(propability: random_t, offset1: integer, [offset2: integer], ...)'); // 91
   DEH_AddAction(@A_CustomMissile, 'A_CustomMissile(missiletype: string, [height: integer], [offset: integer], [angle: integer], [aimmode: integer], [pitch: integer])'); // 92
@@ -640,10 +640,10 @@ begin
   DEH_AddAction(@A_JumpIfCloser, 'A_JumpIfCloser(distancetotarget: float, offset: integer)'); // 113
   DEH_AddAction(@A_JumpIfHealthLower, 'A_JumpIfHealthLower(health: integer, offset: integer)'); // 114
   DEH_AddAction(@A_ScreamAndUnblock, 'A_ScreamAndUnblock()'); // 115
-  DEH_AddAction(@A_PlayWeaponsound, 'A_PlayWeaponsound(sound: string)'); // 116
+  DEH_AddAction(@TCommonSoundActions.A_PlayWeaponsound, 'A_PlayWeaponsound(sound: string)'); // 116
   DEH_AddAction(@A_SetInvulnerable, 'A_SetInvulnerable()'); // 117
   DEH_AddAction(@A_UnSetInvulnerable, 'A_UnSetInvulnerable()'); // 118
-  DEH_AddAction(@A_RandomMeleeSound, 'A_RandomMeleeSound()'); // 119
+  DEH_AddAction(@TCommonSoundActions.A_RandomMeleeSound, 'A_RandomMeleeSound()'); // 119
   DEH_AddAction(@A_FloatBob, 'A_FloatBob()'); // 120
   DEH_AddAction(@A_NoFloatBob, 'A_NoFloatBob()'); // 121
   DEH_AddAction(@TCommonStateBitActions.A_Missile, 'A_Missile()'); // 122
@@ -787,7 +787,7 @@ begin
   DEH_AddAction(@A_ChangeFlag, 'A_ChangeFlag(flag: string, onoff: boolean)'); // 260
   DEH_AddAction(@A_CheckFloor, 'A_CheckFloor(offset: integer)'); // 261
   DEH_AddAction(@A_CheckCeiling, 'A_CheckCeiling(offset: integer)'); // 262
-  DEH_AddAction(@A_StopSound, 'A_StopSound()'); // 263
+  DEH_AddAction(@TCommonSoundActions.A_StopSound, 'A_StopSound()'); // 263
   DEH_AddAction(@A_JumpIfTargetOutsideMeleeRange, 'A_JumpIfTargetOutsideMeleeRange(offset: integer)'); // 264
   DEH_AddAction(@A_JumpIfTargetInsideMeleeRange, 'A_JumpIfTargetInsideMeleeRange(offset: integer)'); // 265
   DEH_AddAction(@A_JumpIfTracerCloser, 'A_JumpIfTracerCloser(distancetotarget: float, offset: integer)'); // 266
@@ -923,14 +923,14 @@ begin
   DEH_AddAction(@A_JumpIfTargetCloser, 'A_JumpIfTargetCloser(state: state_t; distance: fixed_t)', [0, 0]);
   DEH_AddAction(@A_JumpIfTracerInSight, 'A_JumpIfTracerInSight(state: state_t; anglefixed_fov: integer)', [0, 0]);
   DEH_AddAction(@A_JumpIfTracerCloserMBF21, 'A_JumpIfTracerCloserMBF21(state: state_t; distance: fixed_t)', [0, 0]);
-  DEH_AddAction(@A_RandomRipSound, 'A_RandomRipSound();');
+  DEH_AddAction(@TCommonSoundActions.A_RandomRipSound, 'A_RandomRipSound();');
   DEH_AddAction(@A_JumpIfFlagsSet, 'A_JumpIfFlagsSet(state: state_t; bits, mbf21bits: integer);', [0, 0, 0]);
   DEH_AddAction(@A_AddFlags, 'A_AddFlags(bits, mbf21bits: integer);', [0, 0]);
   DEH_AddAction(@A_RemoveFlags, 'A_RemoveFlags(bits, mbf21bits: integer);', [0, 0]);
   DEH_AddAction(@A_WeaponProjectile, 'A_WeaponProjectile(typ: integer; anglefixed_ang: integer; anglefixed_pitch: integer; offs_xy: fixed_t; offs_z: fixed_t);', [0, 0, 0, 0, 0]);
   DEH_AddAction(@A_WeaponBulletAttack, 'A_WeaponBulletAttack(anglefixed_hspread, anglefixed_vspread: integer; numbullets: integer; attackdamage, attackmod: integer);', [0, 0, 1, 5, 3]);
   DEH_AddAction(@A_WeaponMeleeAttack, 'A_WeaponMeleeAttack(attackdamage, attackmod: integer; bersekdamagemul: fixed_t; sound: sound_t; range: fixed_t);', [2, 10, 1 * FRACUNIT, 0, 0]);
-  DEH_AddAction(@A_WeaponSound, 'A_WeaponSound(sound: sound_t; fullvolume: integer);', [0, 0]);
+  DEH_AddAction(@TCommonSoundActions.A_WeaponSound, 'A_WeaponSound(sound: sound_t; fullvolume: integer);', [0, 0]);
   DEH_AddAction(@A_WeaponAlert, 'A_WeaponAlert();');
   DEH_AddAction(@A_WeaponJump, 'A_WeaponJump(statenum: integer; chance: integer);', [0, 0]);
   DEH_AddAction(@A_ConsumeAmmo, 'A_ConsumeAmmo(ammo: integer);', [0]);

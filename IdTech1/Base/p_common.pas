@@ -591,132 +591,6 @@ procedure A_GoToIfWorldFloatGreater(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_CustomSound1
-//
-//==============================================================================
-procedure A_CustomSound1(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_CustomSound2
-//
-//==============================================================================
-procedure A_CustomSound2(mo: Pmobj_t);
-
-//==============================================================================
-//
-// A_CustomSound3
-//
-//==============================================================================
-procedure A_CustomSound3(mo: Pmobj_t);
-
-//==============================================================================
-//
-// P_RandomSound
-//
-//==============================================================================
-procedure P_RandomSound(const actor: Pmobj_t; const soundnum: integer);
-
-//==============================================================================
-//
-// A_RandomPainSound
-//
-//==============================================================================
-procedure A_RandomPainSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomSeeSound
-//
-//==============================================================================
-procedure A_RandomSeeSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomAttackSound
-//
-//==============================================================================
-procedure A_RandomAttackSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomDeathSound
-//
-//==============================================================================
-procedure A_RandomDeathSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomActiveSound
-//
-//==============================================================================
-procedure A_RandomActiveSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomRipSound
-//
-//==============================================================================
-procedure A_RandomRipSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomCustomSound1
-//
-//==============================================================================
-procedure A_RandomCustomSound1(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomCustomSound2
-//
-//==============================================================================
-procedure A_RandomCustomSound2(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomCustomSound3
-//
-//==============================================================================
-procedure A_RandomCustomSound3(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomCustomSound
-//
-//==============================================================================
-procedure A_RandomCustomSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomMeleeSound
-//
-//==============================================================================
-procedure A_RandomMeleeSound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Playsound
-//
-//==============================================================================
-procedure A_Playsound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PlayWeaponsound
-//
-//==============================================================================
-procedure A_PlayWeaponsound(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RandomSound
-//
-//==============================================================================
-procedure A_RandomSound(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_Stop
 //
 //==============================================================================
@@ -1015,13 +889,6 @@ procedure A_CheckFloor(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_CheckCeiling(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_StopSound
-//
-//==============================================================================
-procedure A_StopSound(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -1671,13 +1538,6 @@ procedure A_WeaponBulletAttack(player: Pplayer_t; psp: Ppspdef_t);
 //
 //==============================================================================
 procedure A_WeaponMeleeAttack(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_WeaponSound
-//
-//==============================================================================
-procedure A_WeaponSound(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -2381,6 +2241,154 @@ type
     //
     //==============================================================================
     class procedure A_SetBloodColor(actor: Pmobj_t); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonSoundActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_CustomSound1
+    //
+    //==============================================================================
+    class procedure A_CustomSound1(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CustomSound2
+    //
+    //==============================================================================
+    class procedure A_CustomSound2(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_CustomSound3
+    //
+    //==============================================================================
+    class procedure A_CustomSound3(mo: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_RandomSound
+    //
+    //==============================================================================
+    class procedure P_RandomSound(const actor: Pmobj_t; const soundnum: integer); static;
+
+    //==============================================================================
+    //
+    // A_RandomPainSound
+    //
+    //==============================================================================
+    class procedure A_RandomPainSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomSeeSound
+    //
+    //==============================================================================
+    class procedure A_RandomSeeSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomAttackSound
+    //
+    //==============================================================================
+    class procedure A_RandomAttackSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomDeathSound
+    //
+    //==============================================================================
+    class procedure A_RandomDeathSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomActiveSound
+    //
+    //==============================================================================
+    class procedure A_RandomActiveSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomRipSound
+    //
+    //==============================================================================
+    class procedure A_RandomRipSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomCustomSound1
+    //
+    //==============================================================================
+    class procedure A_RandomCustomSound1(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomCustomSound2
+    //
+    //==============================================================================
+    class procedure A_RandomCustomSound2(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomCustomSound3
+    //
+    //==============================================================================
+    class procedure A_RandomCustomSound3(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomCustomSound
+    //
+    //==============================================================================
+    class procedure A_RandomCustomSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomMeleeSound
+    //
+    //==============================================================================
+    class procedure A_RandomMeleeSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Playsound
+    //
+    //==============================================================================
+    class procedure A_Playsound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PlayWeaponsound
+    //
+    //==============================================================================
+    class procedure A_PlayWeaponsound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RandomSound
+    //
+    //==============================================================================
+    class procedure A_RandomSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_StopSound
+    //
+    //==============================================================================
+    class procedure A_StopSound(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_WeaponSound
+    //
+    //==============================================================================
+    class procedure A_WeaponSound(player: Pplayer_t; psp: Ppspdef_t); static;
   end;
 
 
@@ -4542,7 +4550,7 @@ end;
 // A_CustomSound1
 //
 //==============================================================================
-procedure A_CustomSound1(mo: Pmobj_t);
+class procedure TCommonSoundActions.A_CustomSound1(mo: Pmobj_t);
 begin
   if mo.info.customsound1 <> 0 then
   begin
@@ -4558,7 +4566,7 @@ end;
 // A_CustomSound2
 //
 //==============================================================================
-procedure A_CustomSound2(mo: Pmobj_t);
+class procedure TCommonSoundActions.A_CustomSound2(mo: Pmobj_t);
 begin
   if mo.info.customsound2 <> 0 then
   begin
@@ -4574,7 +4582,7 @@ end;
 // A_CustomSound3
 //
 //==============================================================================
-procedure A_CustomSound3(mo: Pmobj_t);
+class procedure TCommonSoundActions.A_CustomSound3(mo: Pmobj_t);
 begin
   if mo.info.customsound3 <> 0 then
   begin
@@ -4590,7 +4598,7 @@ end;
 // P_RandomSound
 //
 //==============================================================================
-procedure P_RandomSound(const actor: Pmobj_t; const soundnum: integer);
+class procedure TCommonSoundActions.P_RandomSound(const actor: Pmobj_t; const soundnum: integer);
 var
   randomlist: TDNumberList;
   rndidx: integer;
@@ -4617,7 +4625,7 @@ end;
 // A_RandomPainSound
 //
 //==============================================================================
-procedure A_RandomPainSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomPainSound(actor: Pmobj_t);
 begin
   if actor.flags2_ex and MF2_EX_FULLVOLPAIN <> 0 then
     P_RandomSound(nil, actor.info.painsound)
@@ -4630,7 +4638,7 @@ end;
 // A_RandomSeeSound
 //
 //==============================================================================
-procedure A_RandomSeeSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomSeeSound(actor: Pmobj_t);
 begin
   if actor.flags2_ex and MF2_EX_FULLVOLSEE <> 0 then
     P_RandomSound(nil, actor.info.seesound)
@@ -4643,7 +4651,7 @@ end;
 // A_RandomAttackSound
 //
 //==============================================================================
-procedure A_RandomAttackSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomAttackSound(actor: Pmobj_t);
 begin
   if actor.flags2_ex and MF2_EX_FULLVOLATTACK <> 0 then
     P_RandomSound(nil, actor.info.attacksound)
@@ -4656,7 +4664,7 @@ end;
 // A_RandomDeathSound
 //
 //==============================================================================
-procedure A_RandomDeathSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomDeathSound(actor: Pmobj_t);
 begin
   if actor.flags2_ex and MF2_EX_FULLVOLDEATH <> 0 then
     P_RandomSound(nil, actor.info.deathsound)
@@ -4669,7 +4677,7 @@ end;
 // A_RandomActiveSound
 //
 //==============================================================================
-procedure A_RandomActiveSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomActiveSound(actor: Pmobj_t);
 begin
   if actor.flags2_ex and MF2_EX_FULLVOLACTIVE <> 0 then
     P_RandomSound(nil, actor.info.activesound)
@@ -4682,7 +4690,7 @@ end;
 // A_RandomRipSound
 //
 //==============================================================================
-procedure A_RandomRipSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomRipSound(actor: Pmobj_t);
 begin
   if actor.flags4_ex and MF4_EX_FULLVOLRIP <> 0 then
     P_RandomSound(nil, actor.info.ripsound)
@@ -4695,7 +4703,7 @@ end;
 // A_RandomCustomSound1
 //
 //==============================================================================
-procedure A_RandomCustomSound1(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomCustomSound1(actor: Pmobj_t);
 begin
   P_RandomSound(actor, actor.info.customsound1);
 end;
@@ -4705,7 +4713,7 @@ end;
 // A_RandomCustomSound2
 //
 //==============================================================================
-procedure A_RandomCustomSound2(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomCustomSound2(actor: Pmobj_t);
 begin
   P_RandomSound(actor, actor.info.customsound2);
 end;
@@ -4715,7 +4723,7 @@ end;
 // A_RandomCustomSound3
 //
 //==============================================================================
-procedure A_RandomCustomSound3(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomCustomSound3(actor: Pmobj_t);
 begin
   P_RandomSound(actor, actor.info.customsound3);
 end;
@@ -4725,7 +4733,7 @@ end;
 // A_RandomCustomSound
 //
 //==============================================================================
-procedure A_RandomCustomSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomCustomSound(actor: Pmobj_t);
 var
   list: TDNumberList;
   rndidx: integer;
@@ -4753,7 +4761,7 @@ end;
 // A_RandomMeleeSound
 //
 //==============================================================================
-procedure A_RandomMeleeSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomMeleeSound(actor: Pmobj_t);
 begin
   P_RandomSound(actor, actor.info.meleesound);
 end;
@@ -4765,7 +4773,7 @@ end;
 // A_Playsound(soundname)
 //
 //==============================================================================
-procedure A_Playsound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_Playsound(actor: Pmobj_t);
 var
   sndidx: integer;
 begin
@@ -4799,7 +4807,7 @@ end;
 // A_PlayWeaponsound
 //
 //==============================================================================
-procedure A_PlayWeaponsound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_PlayWeaponsound(actor: Pmobj_t);
 begin
   A_Playsound(actor);
 end;
@@ -4811,7 +4819,7 @@ end;
 // A_RandomSound(sound1, sound2, ...)
 //
 //==============================================================================
-procedure A_RandomSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_RandomSound(actor: Pmobj_t);
 var
   sidxs: TDNumberList;
   sndidx: integer;
@@ -7027,7 +7035,7 @@ end;
 // A_StopSound
 //
 //==============================================================================
-procedure A_StopSound(actor: Pmobj_t);
+class procedure TCommonSoundActions.A_StopSound(actor: Pmobj_t);
 begin
   S_StopSound(actor);
 end;
@@ -12005,7 +12013,7 @@ end;
 //   args[1]: If 1, play sound at full volume (may be useful in DM?)
 //
 //==============================================================================
-procedure A_WeaponSound(player: Pplayer_t; psp: Ppspdef_t);
+class procedure TCommonSoundActions.A_WeaponSound(player: Pplayer_t; psp: Ppspdef_t);
 var
   sndid: integer;
   fullsound: boolean;

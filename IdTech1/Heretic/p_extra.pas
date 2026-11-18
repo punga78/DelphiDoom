@@ -237,7 +237,7 @@ begin
     if actor.info.meleesound > 0 then
     begin
       if actor.flags_ex and MF_EX_RANDOMMELEESOUND <> 0 then
-        P_RandomSound(actor, actor.info.meleesound)
+        TCommonSoundActions.P_RandomSound(actor, actor.info.meleesound)
       else
         S_StartSound(actor, actor.info.meleesound);
     end;
@@ -319,7 +319,7 @@ begin
   slope := P_AimLineAttack(actor, bangle, range);
 
   if actor.flags_ex and MF_EX_RANDOMATTACKSOUND <> 0 then
-    P_RandomSound(actor, actor.info.attacksound)
+    TCommonSoundActions.P_RandomSound(actor, actor.info.attacksound)
   else
     S_StartSound(actor, actor.info.attacksound);
 
@@ -436,7 +436,7 @@ begin
     if actor.info.meleesound > 0 then
     begin
       if actor.flags_ex and MF_EX_RANDOMMELEESOUND <> 0 then
-        P_RandomSound(actor, actor.info.meleesound)
+        TCommonSoundActions.P_RandomSound(actor, actor.info.meleesound)
       else
         S_StartSound(actor, actor.info.meleesound);
     end;
@@ -486,7 +486,7 @@ begin
   slope := P_AimLineAttack(actor, bangle, MISSILERANGE);
 
   if actor.flags_ex and MF_EX_RANDOMATTACKSOUND <> 0 then
-    P_RandomSound(actor, actor.info.attacksound)
+    TCommonSoundActions.P_RandomSound(actor, actor.info.attacksound)
   else
     S_StartSound(actor, actor.info.attacksound);
 

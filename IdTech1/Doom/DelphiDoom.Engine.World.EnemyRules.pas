@@ -921,9 +921,9 @@ begin
     begin
       if (actor._type = Ord(MT_SPIDER)) or (actor._type = Ord(MT_CYBORG)) or (actor.flags_ex and MF_EX_BOSS <> 0) then
         // full volume
-        P_RandomSound(nil, sound)
+        TCommonSoundActions.P_RandomSound(nil, sound)
       else
-        P_RandomSound(actor, sound)
+        TCommonSoundActions.P_RandomSound(actor, sound)
     end
     else
     begin

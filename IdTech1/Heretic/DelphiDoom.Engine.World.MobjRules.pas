@@ -1106,7 +1106,7 @@ begin
   if th.info.seesound <> 0 then
   begin
     if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(th, th.info.seesound)
+      TCommonSoundActions.P_RandomSound(th, th.info.seesound)
     else
       S_StartSound(th, th.info.seesound);
   end;
@@ -1189,7 +1189,7 @@ begin
     if MissileMobj.info.seesound <> 0 then
     begin
       if MissileMobj.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-        P_RandomSound(MissileMobj, MissileMobj.info.seesound)
+        TCommonSoundActions.P_RandomSound(MissileMobj, MissileMobj.info.seesound)
       else
         S_StartSound(MissileMobj, MissileMobj.info.seesound);
     end;
@@ -1382,7 +1382,7 @@ begin
   if mo.info.deathsound <> 0 then
   begin
     if mo.flags_ex and MF_EX_RANDOMDEATHSOUND <> 0 then
-      P_RandomSound(mo, mo.info.deathsound)
+      TCommonSoundActions.P_RandomSound(mo, mo.info.deathsound)
     else
       S_StartSound(mo, mo.info.deathsound);
   end;
@@ -1455,7 +1455,7 @@ begin
   if mo.info.seesound <> 0 then
   begin
     if mo.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(mo, mo.info.seesound)
+      TCommonSoundActions.P_RandomSound(mo, mo.info.seesound)
     else
       S_StartSound(mo, mo.info.seesound);
   end;
