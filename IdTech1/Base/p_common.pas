@@ -94,41 +94,6 @@ procedure A_MissileAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_ScreamAndUnblock
-//
-//==============================================================================
-procedure A_ScreamAndUnblock(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ResetHealth
-//
-//==============================================================================
-procedure A_ResetHealth(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetHealth
-//
-//==============================================================================
-procedure A_SetHealth(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_ResetTargetHealth
-//
-//==============================================================================
-procedure A_ResetTargetHealth(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_SetTargetHealth
-//
-//==============================================================================
-procedure A_SetTargetHealth(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_ChangeFlag
 //
 //==============================================================================
@@ -147,83 +112,6 @@ procedure A_CheckFlag(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_DropItem(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DamageSelf
-//
-//==============================================================================
-procedure A_DamageSelf(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DamageTarget
-//
-//==============================================================================
-procedure A_DamageTarget(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DamageTracer
-//
-//==============================================================================
-procedure A_DamageTracer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_DamageMaster
-//
-//==============================================================================
-procedure A_DamageMaster(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_KillTarget
-//
-//==============================================================================
-procedure A_KillTarget(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_KillTracer
-//
-//==============================================================================
-procedure A_KillTracer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_KillMaster
-//
-//==============================================================================
-procedure A_KillMaster(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RemoveTarget
-//
-//==============================================================================
-procedure A_RemoveTarget(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RemoveTracer
-//
-//==============================================================================
-procedure A_RemoveTracer(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RemoveMaster
-//
-//==============================================================================
-procedure A_RemoveMaster(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_Remove
-//
-//==============================================================================
-procedure A_Remove(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -266,27 +154,6 @@ procedure A_CustomComboAttack(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_RaiseMaster
-//
-//==============================================================================
-procedure A_RaiseMaster(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RaiseChildren
-//
-//==============================================================================
-procedure A_RaiseChildren(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RaiseSiblings
-//
-//==============================================================================
-procedure A_RaiseSiblings(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_HealThing
 //
 //==============================================================================
@@ -298,41 +165,6 @@ procedure A_HealThing(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_BasicAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RemoveChildren
-//
-//==============================================================================
-procedure A_RemoveChildren(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RemoveSiblings
-//
-//==============================================================================
-procedure A_RemoveSiblings(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_KillChildren
-//
-//==============================================================================
-procedure A_KillChildren(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_KillSiblings
-//
-//==============================================================================
-procedure A_KillSiblings(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_PlayerHurtExplode
-//
-//==============================================================================
-procedure A_PlayerHurtExplode(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -411,27 +243,6 @@ procedure A_MonsterBulletAttack(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_MonsterMeleeAttack(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_RadiusDamage
-//
-//==============================================================================
-procedure A_RadiusDamage(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_HealCorpse
-//
-//==============================================================================
-function P_HealCorpse(actor: Pmobj_t; radius: integer; healstate: integer; healsound: integer): boolean;
-
-//==============================================================================
-//
-// A_HealChase
-//
-//==============================================================================
-procedure A_HealChase(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -2430,6 +2241,203 @@ type
     //
     //==============================================================================
     class procedure P_SetMobjRelativeState(const mo: Pmobj_t; const offset: integer); static;
+  end;
+
+type
+  /// <summary>
+  ///   The routines of this unit as static methods with the text and the names of the old free routines (issue #185,
+  ///   wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonDamageActions = class sealed
+  public
+    //==============================================================================
+    //
+    // A_ScreamAndUnblock
+    //
+    //==============================================================================
+    class procedure A_ScreamAndUnblock(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ResetHealth
+    //
+    //==============================================================================
+    class procedure A_ResetHealth(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetHealth
+    //
+    //==============================================================================
+    class procedure A_SetHealth(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_ResetTargetHealth
+    //
+    //==============================================================================
+    class procedure A_ResetTargetHealth(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_SetTargetHealth
+    //
+    //==============================================================================
+    class procedure A_SetTargetHealth(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DamageSelf
+    //
+    //==============================================================================
+    class procedure A_DamageSelf(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DamageTarget
+    //
+    //==============================================================================
+    class procedure A_DamageTarget(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DamageTracer
+    //
+    //==============================================================================
+    class procedure A_DamageTracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_DamageMaster
+    //
+    //==============================================================================
+    class procedure A_DamageMaster(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_KillTarget
+    //
+    //==============================================================================
+    class procedure A_KillTarget(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_KillTracer
+    //
+    //==============================================================================
+    class procedure A_KillTracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_KillMaster
+    //
+    //==============================================================================
+    class procedure A_KillMaster(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RemoveTarget
+    //
+    //==============================================================================
+    class procedure A_RemoveTarget(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RemoveTracer
+    //
+    //==============================================================================
+    class procedure A_RemoveTracer(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RemoveMaster
+    //
+    //==============================================================================
+    class procedure A_RemoveMaster(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_Remove
+    //
+    //==============================================================================
+    class procedure A_Remove(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RaiseMaster
+    //
+    //==============================================================================
+    class procedure A_RaiseMaster(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RaiseChildren
+    //
+    //==============================================================================
+    class procedure A_RaiseChildren(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RaiseSiblings
+    //
+    //==============================================================================
+    class procedure A_RaiseSiblings(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RemoveChildren
+    //
+    //==============================================================================
+    class procedure A_RemoveChildren(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RemoveSiblings
+    //
+    //==============================================================================
+    class procedure A_RemoveSiblings(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_KillChildren
+    //
+    //==============================================================================
+    class procedure A_KillChildren(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_KillSiblings
+    //
+    //==============================================================================
+    class procedure A_KillSiblings(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_PlayerHurtExplode
+    //
+    //==============================================================================
+    class procedure A_PlayerHurtExplode(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // A_RadiusDamage
+    //
+    //==============================================================================
+    class procedure A_RadiusDamage(actor: Pmobj_t); static;
+
+    //==============================================================================
+    //
+    // P_HealCorpse
+    //
+    //==============================================================================
+    class function P_HealCorpse(actor: Pmobj_t; radius: integer; healstate: integer; healsound: integer): boolean; static;
+
+    //==============================================================================
+    //
+    // A_HealChase
+    //
+    //==============================================================================
+    class procedure A_HealChase(actor: Pmobj_t); static;
   end;
 
 
@@ -5964,7 +5972,7 @@ end;
 // A_ScreamAndUnblock
 //
 //==============================================================================
-procedure A_ScreamAndUnblock(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_ScreamAndUnblock(actor: Pmobj_t);
 begin
   TMonsterBaseActions.A_Scream(actor);
   A_NoBlocking(actor);
@@ -6426,12 +6434,25 @@ begin
   P_SetMobjState(actor, statenum_t(newstate));
 end;
 
+type
+  /// <summary>
+  ///   The routines that only this unit calls, as static methods with the text and the names of the old free routines
+  ///   (issue #185, wave 11): same unit, no virtual call and no interface, so the compiler produces the code it produced before
+  /// </summary>
+  TCommonDamageActionsLocal = class sealed
+  public
+    class procedure P_SetHealth(const mo: Pmobj_t; const h: integer); static;
+    class procedure P_DoDamage(const mo: Pmobj_t; const damage: integer); static;
+    class function P_DoRemoveThing(const mo: Pmobj_t; const flags: integer): boolean; static;
+    class function PIT_HealCheck(thing: Pmobj_t): boolean; static;
+  end;
+
 //==============================================================================
 //
 // P_SetHealth
 //
 //==============================================================================
-procedure P_SetHealth(const mo: Pmobj_t; const h: integer);
+class procedure TCommonDamageActionsLocal.P_SetHealth(const mo: Pmobj_t; const h: integer);
 var
   p: Pplayer_t;
 begin
@@ -6455,9 +6476,9 @@ end;
 // A_ResetHealth
 //
 //==============================================================================
-procedure A_ResetHealth(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_ResetHealth(actor: Pmobj_t);
 begin
-  P_SetHealth(actor, actor.info.spawnhealth);
+  TCommonDamageActionsLocal.P_SetHealth(actor, actor.info.spawnhealth);
 end;
 
 //==============================================================================
@@ -6465,12 +6486,12 @@ end;
 // A_SetHealth
 //
 //==============================================================================
-procedure A_SetHealth(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_SetHealth(actor: Pmobj_t);
 begin
   if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
-  P_SetHealth(actor, actor.state.params.IntVal[0]);
+  TCommonDamageActionsLocal.P_SetHealth(actor, actor.state.params.IntVal[0]);
 end;
 
 //==============================================================================
@@ -6478,10 +6499,10 @@ end;
 // A_ResetTargetHealth
 //
 //==============================================================================
-procedure A_ResetTargetHealth(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_ResetTargetHealth(actor: Pmobj_t);
 begin
   if actor.target <> nil then
-    P_SetHealth(actor.target, actor.target.info.spawnhealth);
+    TCommonDamageActionsLocal.P_SetHealth(actor.target, actor.target.info.spawnhealth);
 end;
 
 //==============================================================================
@@ -6489,7 +6510,7 @@ end;
 // A_SetTargetHealth
 //
 //==============================================================================
-procedure A_SetTargetHealth(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_SetTargetHealth(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -6497,7 +6518,7 @@ begin
   if not TCommonStateParamActions.P_CheckStateParams(actor, 1) then
     exit;
 
-  P_SetHealth(actor.target, actor.state.params.IntVal[0]);
+  TCommonDamageActionsLocal.P_SetHealth(actor.target, actor.state.params.IntVal[0]);
 end;
 
 //==============================================================================
@@ -7846,7 +7867,7 @@ end;
 // P_DoDamage
 //
 //==============================================================================
-procedure P_DoDamage(const mo: Pmobj_t; const damage: integer);
+class procedure TCommonDamageActionsLocal.P_DoDamage(const mo: Pmobj_t; const damage: integer);
 begin
   if damage > 0 then
     P_DamageMobj(mo, nil, nil, damage)
@@ -7860,7 +7881,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_DamageSelf(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_DamageSelf(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -7868,7 +7889,7 @@ begin
     exit;
 
   damage := actor.state.params.IntVal[0];
-  P_DoDamage(actor, damage);
+  TCommonDamageActionsLocal.P_DoDamage(actor, damage);
 end;
 
 //==============================================================================
@@ -7877,7 +7898,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_DamageTarget(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_DamageTarget(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -7888,7 +7909,7 @@ begin
     exit;
 
   damage := actor.state.params.IntVal[0];
-  P_DoDamage(actor.target, damage);
+  TCommonDamageActionsLocal.P_DoDamage(actor.target, damage);
 end;
 
 //==============================================================================
@@ -7897,7 +7918,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_DamageTracer(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_DamageTracer(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -7908,7 +7929,7 @@ begin
     exit;
 
   damage := actor.state.params.IntVal[0];
-  P_DoDamage(actor.tracer, damage);
+  TCommonDamageActionsLocal.P_DoDamage(actor.tracer, damage);
 end;
 
 //==============================================================================
@@ -7916,7 +7937,7 @@ end;
 // A_DamageMaster(const damage: integer);
 //
 //==============================================================================
-procedure A_DamageMaster(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_DamageMaster(actor: Pmobj_t);
 var
   damage: integer;
 begin
@@ -7927,7 +7948,7 @@ begin
     exit;
 
   damage := actor.state.params.IntVal[0];
-  P_DoDamage(actor.master, damage);
+  TCommonDamageActionsLocal.P_DoDamage(actor.master, damage);
 end;
 
 //==============================================================================
@@ -7936,7 +7957,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_KillTarget(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_KillTarget(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -7950,7 +7971,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_KillTracer(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_KillTracer(actor: Pmobj_t);
 begin
   if actor.tracer = nil then
     exit;
@@ -7963,7 +7984,7 @@ end;
 // A_KillMaster
 //
 //==============================================================================
-procedure A_KillMaster(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_KillMaster(actor: Pmobj_t);
 begin
   if actor.master = nil then
     exit;
@@ -7976,7 +7997,7 @@ end;
 // P_DoRemoveThing
 //
 //==============================================================================
-function P_DoRemoveThing(const mo: Pmobj_t; const flags: integer): boolean;
+class function TCommonDamageActionsLocal.P_DoRemoveThing(const mo: Pmobj_t; const flags: integer): boolean;
 begin
   result := true;
   if flags and RMVF_EVERYTHING <> 0 then
@@ -7997,7 +8018,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_RemoveTarget(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RemoveTarget(actor: Pmobj_t);
 begin
   if actor.target = nil then
     exit;
@@ -8005,7 +8026,7 @@ begin
   if actor.target.player <> nil then // No players
     exit;
 
-  P_DoRemoveThing(actor.target, actor.state.params.IntVal[0]);
+  TCommonDamageActionsLocal.P_DoRemoveThing(actor.target, actor.state.params.IntVal[0]);
 end;
 
 //==============================================================================
@@ -8014,7 +8035,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_RemoveTracer(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RemoveTracer(actor: Pmobj_t);
 begin
   if actor.tracer = nil then
     exit;
@@ -8022,7 +8043,7 @@ begin
   if actor.tracer.player <> nil then // No players
     exit;
 
-  P_DoRemoveThing(actor.tracer, actor.state.params.IntVal[0]);
+  TCommonDamageActionsLocal.P_DoRemoveThing(actor.tracer, actor.state.params.IntVal[0]);
 end;
 
 //==============================================================================
@@ -8031,7 +8052,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_RemoveMaster(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RemoveMaster(actor: Pmobj_t);
 begin
   if actor.master = nil then
     exit;
@@ -8039,7 +8060,7 @@ begin
   if actor.master.player <> nil then // No players
     exit;
 
-  P_DoRemoveThing(actor.master, actor.state.params.IntVal[0]);
+  TCommonDamageActionsLocal.P_DoRemoveThing(actor.master, actor.state.params.IntVal[0]);
 end;
 
 //==============================================================================
@@ -8048,7 +8069,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_Remove(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_Remove(actor: Pmobj_t);
 var
   mo: Pmobj_t;
 begin
@@ -8056,7 +8077,7 @@ begin
   if mo = nil then
     exit;
 
-  P_DoRemoveThing(mo, actor.state.params.IntVal[1]);
+  TCommonDamageActionsLocal.P_DoRemoveThing(mo, actor.state.params.IntVal[1]);
 end;
 
 //==============================================================================
@@ -8648,7 +8669,7 @@ end;
 // A_RaiseMaster(copyfriendliness: boolean)
 //
 //==============================================================================
-procedure A_RaiseMaster(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RaiseMaster(actor: Pmobj_t);
 var
   copy: boolean;
 begin
@@ -8671,7 +8692,7 @@ end;
 // A_RaiseChildren(copyfriendliness: boolean)
 //
 //==============================================================================
-procedure A_RaiseChildren(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RaiseChildren(actor: Pmobj_t);
 var
   copy: boolean;
   think: Pthinker_t;
@@ -8705,7 +8726,7 @@ end;
 // A_RaiseSiblings(copyfriendliness: boolean)
 //
 //==============================================================================
-procedure A_RaiseSiblings(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RaiseSiblings(actor: Pmobj_t);
 var
   copy: boolean;
   think: Pthinker_t;
@@ -9255,7 +9276,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_RemoveChildren(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RemoveChildren(actor: Pmobj_t);
 var
   flags: integer;
   think: Pthinker_t;
@@ -9273,7 +9294,7 @@ begin
     begin
       mo := Pmobj_t(think);
       if mo.master = actor then
-        P_DoRemoveThing(mo, flags);
+        TCommonDamageActionsLocal.P_DoRemoveThing(mo, flags);
     end;
     think := think.next;
   end;
@@ -9285,7 +9306,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_RemoveSiblings(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RemoveSiblings(actor: Pmobj_t);
 var
   flags: integer;
   think: Pthinker_t;
@@ -9307,7 +9328,7 @@ begin
       mo := Pmobj_t(think);
       if mo <> actor then
         if mo.master = actor.master then
-          P_DoRemoveThing(mo, flags);
+          TCommonDamageActionsLocal.P_DoRemoveThing(mo, flags);
     end;
     think := think.next;
   end;
@@ -9319,7 +9340,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_KillChildren(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_KillChildren(actor: Pmobj_t);
 var
   think: Pthinker_t;
   mo: Pmobj_t;
@@ -9343,7 +9364,7 @@ end;
 // JVAL: incomplete
 //
 //==============================================================================
-procedure A_KillSiblings(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_KillSiblings(actor: Pmobj_t);
 var
   think: Pthinker_t;
   mo: Pmobj_t;
@@ -9525,7 +9546,7 @@ end;
 //  A_PlayerHurtExplode(damage: integer; radius: integer);
 //
 //==============================================================================
-procedure A_PlayerHurtExplode(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_PlayerHurtExplode(actor: Pmobj_t);
 var
   damage: integer;
   radius: fixed_t;
@@ -10620,7 +10641,7 @@ end;
 //   args[1]: Radius (also int; no real need for fractional precision here)
 //
 //==============================================================================
-procedure A_RadiusDamage(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_RadiusDamage(actor: Pmobj_t);
 begin
   if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
@@ -10660,7 +10681,7 @@ var
 // PIT_HealCheck
 //
 //==============================================================================
-function PIT_HealCheck(thing: Pmobj_t): boolean;
+class function TCommonDamageActionsLocal.PIT_HealCheck(thing: Pmobj_t): boolean;
 var
   maxdist: integer;
   check: boolean;
@@ -10710,7 +10731,7 @@ end;
 // P_HealCorpse
 //
 //==============================================================================
-function P_HealCorpse(actor: Pmobj_t; radius: integer; healstate: integer; healsound: integer): boolean;
+class function TCommonDamageActions.P_HealCorpse(actor: Pmobj_t; radius: integer; healstate: integer; healsound: integer): boolean;
 var
   xl, xh: integer;
   yl, yh: integer;
@@ -10748,7 +10769,7 @@ begin
         // Call PIT_HealCheck to check
         // whether object is a corpse
         // that canbe raised.
-        if not P_BlockThingsIterator(bx, by, PIT_HealCheck) then
+        if not P_BlockThingsIterator(bx, by, TCommonDamageActionsLocal.PIT_HealCheck) then
         begin
           // got one!
           temp := actor.target;
@@ -10798,7 +10819,7 @@ end;
 //   args[1]: Sound to play when resurrecting a corpse
 //
 //==============================================================================
-procedure A_HealChase(actor: Pmobj_t);
+class procedure TCommonDamageActions.A_HealChase(actor: Pmobj_t);
 var
   state, sound: integer;
 begin

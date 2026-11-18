@@ -796,7 +796,7 @@ begin
   DEH_AddAction(@TCommonMovementActions.A_Turn, 'A_Turn(value: angle)'); // 263
   DEH_AddAction(@TCommonJumpActions.A_JumpIfCloser, 'A_JumpIfCloser(distancetotarget: float, offset: integer)'); // 264
   DEH_AddAction(@TCommonJumpActions.A_JumpIfHealthLower, 'A_JumpIfHealthLower(health: integer, offset: integer)'); // 265
-  DEH_AddAction(@A_ScreamAndUnblock, 'A_ScreamAndUnblock()'); // 266
+  DEH_AddAction(@TCommonDamageActions.A_ScreamAndUnblock, 'A_ScreamAndUnblock()'); // 266
   DEH_AddAction(@TCommonSoundActions.A_PlayWeaponsound, 'A_PlayWeaponsound(sound: string)'); // 267
   DEH_AddAction(@A_SetInvulnerable, 'A_SetInvulnerable()'); // 268
   DEH_AddAction(@A_UnSetInvulnerable, 'A_UnSetInvulnerable()'); // 269
@@ -899,15 +899,15 @@ begin
   DEH_AddAction(@TCommonCustomParamActions.A_SetMapFloat, 'A_SetMapFloat(mvar: string; value: float)'); // 366
   DEH_AddAction(@TCommonCustomParamActions.A_SetWorldFloat, 'A_SetWorldFloat(wvar: string; value: float)'); // 367
   DEH_AddAction(@TCommonJumpActions.A_RandomGoto, 'A_RandomGoto(state1: state_t; [state2: state_t],...)'); // 368
-  DEH_AddAction(@A_ResetHealth, 'A_ResetHealth()'); // 369
+  DEH_AddAction(@TCommonDamageActions.A_ResetHealth, 'A_ResetHealth()'); // 369
   DEH_AddAction(@TCommonMovementActions.A_Recoil, 'A_Recoil(xymom: float)'); // 370
   DEH_AddAction(@TCommonStateBitActions.A_SetSolid, 'A_SetSolid()'); // 371
   DEH_AddAction(@TCommonStateBitActions.A_UnSetSolid, 'A_UnSetSolid()'); // 372
   DEH_AddAction(@TCommonStateBitActions.A_SetFloat, 'A_SetFloat()'); // 373
   DEH_AddAction(@TCommonStateBitActions.A_UnSetFloat, 'A_UnSetFloat()'); // 374
-  DEH_AddAction(@A_SetHealth, 'A_SetHealth(h: integer)'); // 375
-  DEH_AddAction(@A_ResetTargetHealth, 'A_ResetTargetHealth()'); // 376
-  DEH_AddAction(@A_SetTargetHealth, 'A_SetTargetHealth(h: integer)'); // 377
+  DEH_AddAction(@TCommonDamageActions.A_SetHealth, 'A_SetHealth(h: integer)'); // 375
+  DEH_AddAction(@TCommonDamageActions.A_ResetTargetHealth, 'A_ResetTargetHealth()'); // 376
+  DEH_AddAction(@TCommonDamageActions.A_SetTargetHealth, 'A_SetTargetHealth(h: integer)'); // 377
   DEH_AddAction(@TCommonMovementActions.A_ScaleVelocity, 'A_ScaleVelocity(scale: float)'); // 378
   DEH_AddAction(@TCommonMovementActions.A_ChangeVelocity, 'A_ChangeVelocity(velx: float, vely: float, velz: float, flags: float)'); // 379
   DEH_AddAction(@TCommonJumpActions.A_JumpIf, 'A_JumpIf(propability: boolean, offset1: integer, [offset2: integer], ...)'); // 380
@@ -944,14 +944,14 @@ begin
   DEH_AddAction(@TCommonCustomParamActions.A_SetUserArray, 'A_SetUserArray(varname: string, index: integer, value: integer)'); // 411
   DEH_AddAction(@TCommonStateParamActions.A_SetTics, 'A_SetTics(tics: integer)'); // 412
   DEH_AddAction(@A_DropItem, 'A_DropItem(spawntype: string, amount: integer, chance: integer)'); // 413
-  DEH_AddAction(@A_DamageSelf, 'A_DamageSelf(actor: Pmobj_t)'); // 414
-  DEH_AddAction(@A_DamageTarget, 'A_DamageTarget(const damage: integer)'); // 415
-  DEH_AddAction(@A_DamageTracer, 'A_DamageTracer(const damage: integer)'); // 416
-  DEH_AddAction(@A_KillTarget, 'A_KillTarget()'); // 417
-  DEH_AddAction(@A_KillTracer, 'A_KillTracer()'); // 418
-  DEH_AddAction(@A_RemoveTarget, 'A_RemoveTarget([flags: integer])'); // 419
-  DEH_AddAction(@A_RemoveTracer, 'A_RemoveTracer([flags: integer])'); // 420
-  DEH_AddAction(@A_Remove, 'A_Remove(aaprt: AAPTR, [flags: integer])'); // 421
+  DEH_AddAction(@TCommonDamageActions.A_DamageSelf, 'A_DamageSelf(actor: Pmobj_t)'); // 414
+  DEH_AddAction(@TCommonDamageActions.A_DamageTarget, 'A_DamageTarget(const damage: integer)'); // 415
+  DEH_AddAction(@TCommonDamageActions.A_DamageTracer, 'A_DamageTracer(const damage: integer)'); // 416
+  DEH_AddAction(@TCommonDamageActions.A_KillTarget, 'A_KillTarget()'); // 417
+  DEH_AddAction(@TCommonDamageActions.A_KillTracer, 'A_KillTracer()'); // 418
+  DEH_AddAction(@TCommonDamageActions.A_RemoveTarget, 'A_RemoveTarget([flags: integer])'); // 419
+  DEH_AddAction(@TCommonDamageActions.A_RemoveTracer, 'A_RemoveTracer([flags: integer])'); // 420
+  DEH_AddAction(@TCommonDamageActions.A_Remove, 'A_Remove(aaprt: AAPTR, [flags: integer])'); // 421
   DEH_AddAction(@TCommonStateBitActions.A_SetFloatBobPhase, 'A_SetFloatBobPhase(bob: integer)'); // 422
   DEH_AddAction(@A_Detonate, 'A_Detonate()'); // 423
   DEH_AddAction(@A_Spawn, 'A_Spawn()'); // 424
@@ -967,14 +967,14 @@ begin
   DEH_AddAction(@TCommonAppearanceActions.A_SetRenderStyle, 'A_SetRenderStyle(style: renderstyle_t, alpha: float)'); // 434
   DEH_AddAction(@TCommonAppearanceActions.A_FadeTo, 'A_FadeTo(targ: integer, ammount: integer, flags: integer)'); // 435
   DEH_AddAction(@TCommonStateBitActions.A_SetSize, 'A_SetSize(newradius: integer, newheight: integer, testpos: boolean)'); // 436
-  DEH_AddAction(@A_RaiseMaster, 'A_RaiseMaster(copyfriendliness: boolean)'); // 437
-  DEH_AddAction(@A_RaiseChildren, 'A_RaiseChildren(copyfriendliness: boolean)'); // 438
-  DEH_AddAction(@A_RaiseSiblings, 'A_RaiseSiblings(copyfriendliness: boolean)'); // 439
+  DEH_AddAction(@TCommonDamageActions.A_RaiseMaster, 'A_RaiseMaster(copyfriendliness: boolean)'); // 437
+  DEH_AddAction(@TCommonDamageActions.A_RaiseChildren, 'A_RaiseChildren(copyfriendliness: boolean)'); // 438
+  DEH_AddAction(@TCommonDamageActions.A_RaiseSiblings, 'A_RaiseSiblings(copyfriendliness: boolean)'); // 439
   DEH_AddAction(@TCommonStateBitActions.A_SetMasterMass, 'A_SetMasterMass(mass: integer)'); // 440
-  DEH_AddAction(@A_KillMaster, 'A_KillMaster()'); // 441
-  DEH_AddAction(@A_DamageMaster, 'A_DamageMaster(const damage: integer)'); // 442
+  DEH_AddAction(@TCommonDamageActions.A_KillMaster, 'A_KillMaster()'); // 441
+  DEH_AddAction(@TCommonDamageActions.A_DamageMaster, 'A_DamageMaster(const damage: integer)'); // 442
   DEH_AddAction(@A_HealThing, 'A_HealThing(amount: integer, max: integer)'); // 443
-  DEH_AddAction(@A_RemoveMaster, 'A_RemoveMaster([flags: integer])'); // 444
+  DEH_AddAction(@TCommonDamageActions.A_RemoveMaster, 'A_RemoveMaster([flags: integer])'); // 444
   DEH_AddAction(@A_BasicAttack, 'A_BasicAttack(MeleeDamage: integer, MeleeSound: integer, MissileType: integer, MissileHeight: float)'); // 445
   DEH_AddAction(@TCommonStateParamActions.A_SetMasterArg, 'A_SetMasterArg(arg: integer; value: integer)'); // 446
   DEH_AddAction(@TCommonStateParamActions.A_SetTargetArg, 'A_SetTargetArg(arg: integer; value: integer)'); // 447
@@ -986,10 +986,10 @@ begin
   DEH_AddAction(@TCommonStateParamActions.A_TransferPointer, 'A_TransferPointer(ptr_source: integer, ptr_recipient: integer, ptr_sourcefield: integer, [ptr_recipientfield: integer], [flags: integer])'); // 453
   DEH_AddAction(@TCommonSearchActions.A_AlertMonsters, 'A_AlertMonsters(maxdist: integer, flags: integer)'); // 454
   DEH_AddAction(@TCommonSearchActions.A_LocalEarthQuake, 'A_LocalEarthQuake(tics: integer; [intensity: float = 1.0]; [maxdist: float = MAXINT] ;)'); // 455
-  DEH_AddAction(@A_RemoveChildren, 'A_RemoveChildren([flags: integer])'); // 456
-  DEH_AddAction(@A_RemoveSiblings, 'A_RemoveSiblings([flags: integer])'); // 457
-  DEH_AddAction(@A_KillChildren, 'A_KillChildren()'); // 458
-  DEH_AddAction(@A_KillSiblings, 'A_KillSiblings()'); // 459
+  DEH_AddAction(@TCommonDamageActions.A_RemoveChildren, 'A_RemoveChildren([flags: integer])'); // 456
+  DEH_AddAction(@TCommonDamageActions.A_RemoveSiblings, 'A_RemoveSiblings([flags: integer])'); // 457
+  DEH_AddAction(@TCommonDamageActions.A_KillChildren, 'A_KillChildren()'); // 458
+  DEH_AddAction(@TCommonDamageActions.A_KillSiblings, 'A_KillSiblings()'); // 459
   DEH_AddAction(@TCommonMovementActions.A_Weave, 'A_Weave(xyspeed: integer = 2, zspeed: integer = 2, xydist: float = 2.0, zdist: float = 1.0)'); // 460
   DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexXY, 'A_SetWeaveIndexXY(weavexy: integer)'); // 461
   DEH_AddAction(@TCommonMovementActions.A_SetWeaveIndexZ, 'A_SetWeaveIndexZ(weavez: integer)'); // 462
@@ -1006,7 +1006,7 @@ begin
   DEH_AddAction(@A_OverlayDrawRightText, 'A_OverlayDrawRightText(ticks: Integer; txt: string; x, y: Integer ;)'); // 473
   DEH_AddAction(@A_OverlayDrawCenterText, 'A_OverlayDrawCenterText(ticks: Integer; txt: string; x, y: Integer ;)'); // 474
   DEH_AddAction(@TCommonStateBitActions.A_SetFriction, 'A_SetFriction(newfriction: float)'); // 475
-  DEH_AddAction(@A_PlayerHurtExplode, 'A_PlayerHurtExplode(damage: integer, radius: integer)'); // 476
+  DEH_AddAction(@TCommonDamageActions.A_PlayerHurtExplode, 'A_PlayerHurtExplode(damage: integer, radius: integer)'); // 476
   DEH_AddAction(@A_SetPushable, 'A_SetPushable()'); // 477
   DEH_AddAction(@A_UnSetPushable, 'A_UnSetPushable()'); // 478
   DEH_AddAction(@TCommonStateBitActions.A_SetPainChance, 'A_SetPainChance(newchance: integer)'); // 479
@@ -1049,9 +1049,9 @@ begin
   DEH_AddAction(@A_MonsterProjectile, 'A_MonsterProjectile(dehackedtyp: integer; anglefixeddeg: integer; pitchfixeddeg: integer; xyoffs, zoffs: integer)', [0, 0, 0, 0, 0]);
   DEH_AddAction(@A_MonsterBulletAttack, 'A_MonsterBulletAttack(anglefixed_hspread, anglefixed_vspread: integer; nbullets: integer; basedamage: integer; damagemod: integer)', [0, 0, 1, 3, 5]);
   DEH_AddAction(@A_MonsterMeleeAttack, 'A_MonsterMeleeAttack(basedamage: integer; damagemod: integer; soundid: integer; fixxedrange: integer);', [3, 8, 0, 0]);
-  DEH_AddAction(@A_RadiusDamage, 'A_RadiusDamage(damage: integer; radius: integer);', [0, 0]);
+  DEH_AddAction(@TCommonDamageActions.A_RadiusDamage, 'A_RadiusDamage(damage: integer; radius: integer);', [0, 0]);
   DEH_AddAction(@TCommonSearchActions.A_NoiseAlert, 'A_NoiseAlert()');
-  DEH_AddAction(@A_HealChase, 'A_HealChase(state: state_t; sound: sound_t);', [0, 0]);
+  DEH_AddAction(@TCommonDamageActions.A_HealChase, 'A_HealChase(state: state_t; sound: sound_t);', [0, 0]);
   DEH_AddAction(@TCommonSearchActions.A_SeekTracer, 'A_SeekTracer(anglefixed_threshold: integer; anglefixed_maxturn: integer)', [0, 0]);
   DEH_AddAction(@TCommonSearchActions.A_FindTracer, 'A_FindTracer(anglefixed_fov: integer; mapblocks: integer);', [0, 10]);
   DEH_AddAction(@TCommonSearchActions.A_ClearTracer, 'A_ClearTracer();');
