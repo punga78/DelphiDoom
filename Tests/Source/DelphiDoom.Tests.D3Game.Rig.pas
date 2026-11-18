@@ -53,6 +53,7 @@ var
   LServices: TD3GameServices;
 begin
   inherited Create;
+  LServices := Default(TD3GameServices);
   FWorld := TD3GameFakeWorld.Create;
   FEvents := TDoomScriptEventRegistry.Create;
   FClasses := TD3ClassSystem.Create(FWorld, FEvents, FWorld);

@@ -148,6 +148,7 @@ var
   LCalls: TStringList;
 begin
   UnloadMap;
+  LServices := Default(TD3GameServices);
   LRig := TDoomScriptTestRig.Create;
   FRig := LRig;
   LFiles := LRig.Files;

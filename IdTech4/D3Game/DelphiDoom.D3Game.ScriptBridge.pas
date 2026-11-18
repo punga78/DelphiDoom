@@ -33,7 +33,7 @@ type
   ///   with the same names and superclasses and gives them the handlers of their <c>EVENT</c> lines).</para>
   /// </summary>
   TD3ScriptBridge = class(TObject, IInterface, ID3ScriptNames, ID3EntityObserver, ID3SpawnFunctions, ID3MapSteps,
-    ID3EventCanceller, ID3EventPoster)
+    ID3EventCanceller, ID3EventPoster, ID3EventQueue, ID3ScriptFunctions, ID3ScriptThreads)
   strict private
     FMachine: TDoomScriptMachine;
     FGame: TD3GameLocal;
@@ -41,6 +41,7 @@ type
     FObjectByTarget: TDictionary<TObject, TD3Class>;
     FTargetByObject: TDictionary<TObject, TDoomScriptEventTarget>;
     FTargetByNumber: TDictionary<Integer, TDoomScriptEventTarget>;
+    FRootBound: Boolean;
     function MakeHandler(const AHandler: TD3EventHandler): TDoomScriptEventHandler;
     function EnsureScriptClass(const AType: TD3TypeInfo): TDoomScriptClassInfo;
   protected
@@ -74,13 +75,28 @@ type
     { ID3EventCanceller }
     procedure CancelEvents(const AObject: TObject);
     { ID3EventPoster }
-    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer);
+    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer); overload;
+    { ID3EventQueue }
+    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer;
+      const AArgs: array of TDoomScriptEventArg); overload;
+    procedure PostEventSec(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ASeconds: Single;
+      const AArgs: array of TDoomScriptEventArg);
+    procedure CancelEvent(const AObject: TObject; const AEvent: TDoomScriptEventDef);
+    { ID3ScriptFunctions }
+    function HasFunction(const AName: AnsiString): Boolean;
+    { ID3ScriptThreads }
+    procedure ReturnFloat(const AValue: Single);
+    procedure ReturnInteger(const AValue: Integer);
+    procedure ReturnString(const AText: AnsiString);
+    procedure ReturnEntity(const AEntityNumber: Integer);
+    function CurrentThreadNum: Integer;
+    procedure ObjectMoveDone(const AThreadNum, AEntityNumber: Integer);
   end;
 
 implementation
 
 uses
-  DelphiDoom.DoomScript.Defs, DelphiDoom.D3Game.Entity;
+  DelphiDoom.DoomScript.Defs, DelphiDoom.DoomScript.Thread, DelphiDoom.D3Game.Entity;
 
 constructor TD3ScriptBridge.Create(const AMachine: TDoomScriptMachine);
 begin
@@ -144,7 +160,20 @@ var
 begin
   Result := FMachine.Classes.GetClass(AType.Name);
   if Assigned(Result) then
+  begin
+    // the machine has the root class already (idClass), empty: the game's idClass brings the events of every object
+    // (<immediateremove>, remove), which the entities inherit
+    if (not Assigned(AType.Super)) and (not FRootBound) then
+    begin
+      FRootBound := True;
+      for LIndex := 0 to AType.EventBindingCount - 1 do
+      begin
+        LBinding := AType.EventBindingAt(LIndex);
+        Result.AddEvent(LBinding.Event, MakeHandler(LBinding.Handler));
+      end;
+    end;
     Exit;
+  end;
   LSuperName := '';
   if Assigned(AType.Super) then
   begin
@@ -259,6 +288,68 @@ var
 begin
   if FTargetByObject.TryGetValue(AObject, LTarget) then
     FMachine.Queue.PostEventMS(LTarget, AEvent, ATime);
+end;
+
+procedure TD3ScriptBridge.PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef;
+  const ATime: Integer; const AArgs: array of TDoomScriptEventArg);
+var
+  LTarget: TDoomScriptEventTarget;
+begin
+  if FTargetByObject.TryGetValue(AObject, LTarget) then
+    FMachine.Queue.PostEventMS(LTarget, AEvent, ATime, AArgs);
+end;
+
+procedure TD3ScriptBridge.PostEventSec(const AObject: TObject; const AEvent: TDoomScriptEventDef;
+  const ASeconds: Single; const AArgs: array of TDoomScriptEventArg);
+var
+  LTarget: TDoomScriptEventTarget;
+begin
+  if FTargetByObject.TryGetValue(AObject, LTarget) then
+    FMachine.Queue.PostEventSec(LTarget, AEvent, ASeconds, AArgs);
+end;
+
+procedure TD3ScriptBridge.CancelEvent(const AObject: TObject; const AEvent: TDoomScriptEventDef);
+var
+  LTarget: TDoomScriptEventTarget;
+begin
+  if FTargetByObject.TryGetValue(AObject, LTarget) then
+    FMachine.Queue.CancelEvents(LTarget, AEvent);
+end;
+
+function TD3ScriptBridge.HasFunction(const AName: AnsiString): Boolean;
+begin
+  Result := Assigned(FMachine.ScriptProgram.FindFunction(AName));
+end;
+
+procedure TD3ScriptBridge.ReturnFloat(const AValue: Single);
+begin
+  FMachine.ScriptProgram.ReturnFloat(AValue);
+end;
+
+procedure TD3ScriptBridge.ReturnInteger(const AValue: Integer);
+begin
+  // idThread::ReturnInt writes a float: the language has no integers
+  FMachine.ScriptProgram.ReturnFloat(AValue);
+end;
+
+procedure TD3ScriptBridge.ReturnString(const AText: AnsiString);
+begin
+  FMachine.ScriptProgram.ReturnString(AText);
+end;
+
+procedure TD3ScriptBridge.ReturnEntity(const AEntityNumber: Integer);
+begin
+  FMachine.ScriptProgram.ReturnEntity(AEntityNumber);
+end;
+
+function TD3ScriptBridge.CurrentThreadNum: Integer;
+begin
+  Result := TDoomScriptThread.CurrentThreadNum(FMachine.Context);
+end;
+
+procedure TD3ScriptBridge.ObjectMoveDone(const AThreadNum, AEntityNumber: Integer);
+begin
+  TDoomScriptThread.ObjectMoveDone(FMachine.Context, AThreadNum, AEntityNumber);
 end;
 
 end.

@@ -46,6 +46,12 @@ const
   D3_TH_UPDATEVISUALS = 8;
   D3_TH_UPDATEPARTICLES = 16;
 
+  /// <summary>SIG_TRIGGER: the signal of an entity that is triggered</summary>
+  D3_SIG_TRIGGER = 0;
+
+  /// <summary>USERCMD_MSEC: the length of a physics frame (1000 / 60)</summary>
+  D3_USERCMD_MSEC = 1000 div 60;
+
   /// <summary>
   ///   <c>sizeof( eventCallback_t )</c>: the size of a pointer to a member function on the compiler that gave the
   ///   golden files (bcc32c, 8 bytes; Visual C++ 4). Only the "bytes for event callbacks" line of

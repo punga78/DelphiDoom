@@ -1,0 +1,57 @@
+# Doom 3 world harness scenario. Bounds of the entities: the "size" key (x y z: mins -x/2 -y/2 0, maxs x/2 y/2 z), written with \x20
+def info_recorder spawnclass idRecorder
+def func_door spawnclass idDoor
+def func_mover spawnclass idMover
+def trigger_multi spawnclass idTrigger_Multi
+def trigger_once spawnclass idTrigger_Multi wait -1
+def trigger_relay spawnclass idTrigger_Multi wait 0 noTouch 1
+def trigger_timer spawnclass idTrigger_Timer
+def trigger_count spawnclass idTrigger_Count
+def trigger_hurt spawnclass idTrigger_Hurt
+def trigger_fade spawnclass idTrigger_Fade
+def worldspawn spawnclass idWorldspawn
+func openSesame
+
+spawn classname info_recorder name r1
+spawn classname info_recorder name r2
+spawn classname trigger_multi name m1 target r1 target1 r2 wait 0.5 random 0.2
+dump 34
+event 34 activate -1
+event 34 activate 32
+dump 34
+frame 40
+event 34 activate 33
+event 34 activate 33
+frame 3
+queue
+spawn classname trigger_multi name m2 target r2 delay 0.1 random_delay 0.05 wait 0.3
+event 35 activate 32
+dump 35
+queue
+frame 10
+queue
+dump 35
+spawn classname trigger_multi name m3 target r1 triggerFirst 1 wait 0
+event 36 activate -1
+event 36 activate -1
+dump 36
+spawn classname trigger_multi name m4 target r1 call openSesame
+event 37 activate -1
+spawn classname trigger_multi name m5 call nothing origin 1\x202\x203
+spawn classname trigger_multi name m6 random 3 wait 1 delay 1 random_delay 2
+dump 39
+spawn classname trigger_multi name m7 target r1 wait 0 anyTouch 1
+touch 40 32
+spawn classname trigger_multi name m8 target r1 wait 0
+touch 41 32
+spawn classname trigger_relay name rl1 target r1 target1 r2
+event 42 activate 32
+dump 42
+frame 1
+spawn classname trigger_once name o1 target r1
+event 43 activate -1
+dump 43
+queue
+frame 2
+find o1
+event 43 activate -1

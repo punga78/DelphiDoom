@@ -120,6 +120,40 @@ type
     procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer);
   end;
 
+  /// <summary>
+  ///   <c>idEvent::Post</c> with arguments and <c>idClass::CancelEvents( ev )</c>: what the entity classes (triggers,
+  ///   movers) post to themselves. Entity arguments are entity numbers (-1: none); the queue resolves them by spawn id.
+  /// </summary>
+  ID3EventQueue = interface
+    ['{8E3B52A1-6C07-4D94-B1F8-2A5D90C3E746}']
+    procedure PostEventMS(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ATime: Integer;
+      const AArgs: array of TDoomScriptEventArg);
+    procedure PostEventSec(const AObject: TObject; const AEvent: TDoomScriptEventDef; const ASeconds: Single;
+      const AArgs: array of TDoomScriptEventArg);
+    /// <summary>Cancels the pending events of an object that are this event</summary>
+    procedure CancelEvent(const AObject: TObject; const AEvent: TDoomScriptEventDef);
+  end;
+
+  /// <summary><c>gameLocal.program.FindFunction( name )</c> (the call itself is <c>ID3SpawnFunctions</c>)</summary>
+  ID3ScriptFunctions = interface
+    ['{5A71D0C4-93E2-4B68-A7F5-C1E83B04D926}']
+    function HasFunction(const AName: AnsiString): Boolean;
+  end;
+
+  /// <summary>
+  ///   What an event handler reaches of the thread that called it: <c>idThread::ReturnFloat/Int/String/Entity</c>,
+  ///   <c>CurrentThreadNum</c> (0 if no thread) and <c>ObjectMoveDone</c>
+  /// </summary>
+  ID3ScriptThreads = interface
+    ['{C20F8B63-4E15-47A9-9D3C-70B6A1E5F284}']
+    procedure ReturnFloat(const AValue: Single);
+    procedure ReturnInteger(const AValue: Integer);
+    procedure ReturnString(const AText: AnsiString);
+    procedure ReturnEntity(const AEntityNumber: Integer);
+    function CurrentThreadNum: Integer;
+    procedure ObjectMoveDone(const AThreadNum, AEntityNumber: Integer);
+  end;
+
 implementation
 
 end.

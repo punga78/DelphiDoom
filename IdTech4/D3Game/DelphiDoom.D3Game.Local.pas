@@ -26,7 +26,8 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.IdLib.Containers.HashIndex,
   DelphiDoom.IdLib.Containers.LinkList, DelphiDoom.Scanner.IdDict, DelphiDoom.D3Game.Types,
-  DelphiDoom.D3Game.Intf, DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.ClassSystem, DelphiDoom.D3Game.Entity;
+  DelphiDoom.IdLib.Math.Random, DelphiDoom.D3Game.Intf, DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.ClassSystem,
+  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity;
 
 type
   /// <summary>The services a game needs (every one is an interface; none is owned by the game)</summary>
@@ -41,6 +42,14 @@ type
     EventCanceller: ID3EventCanceller;
     /// <summary>Told when an entity enters or leaves the table; may be nil</summary>
     EntityObserver: ID3EntityObserver;
+    /// <summary>The event definitions of the entity classes (not owned); may be nil for a game with no such classes</summary>
+    Events: TD3EntityEvents;
+    /// <summary>Where the entities post events; may be nil</summary>
+    EventQueue: ID3EventQueue;
+    /// <summary>The script functions the triggers call; may be nil</summary>
+    ScriptFunctions: ID3ScriptFunctions;
+    /// <summary>The thread that runs an event handler (return values, <c>waitFor</c>); may be nil</summary>
+    ScriptThreads: ID3ScriptThreads;
   end;
 
   /// <summary>
@@ -56,8 +65,10 @@ type
   ///   <c>ID3EntityWorld</c> without reference counting: it is owned by whoever created it and the entities hold it
   ///   as an interface only to ask.</para>
   /// </summary>
-  TD3GameLocal = class(TObject, ID3EntityWorld, ID3EventCanceller)
+  TD3GameLocal = class(TObject, ID3EntityWorld, ID3EventCanceller, ID3EntityGame)
   strict private
+    FRandom: TIdRandom;
+    FStartup: Boolean;
     FServices: TD3GameServices;
     FClasses: TD3ClassSystem;
     FMapSource: ID3MapSource;
@@ -162,10 +173,33 @@ type
     /// </summary>
     procedure RunFrameThink;
     /// <summary>
+    ///   The part of <c>idGameLocal::RunFrame</c> that this game has: <c>RunFrameThink</c> and then
+    ///   <c>idEvent::ServiceEvents()</c> (the events due at the new time: a door's <c>&lt;returntopos1&gt;</c>, a timer)
+    /// </summary>
+    procedure RunFrame;
+    /// <summary>
     ///   Deletes an entity of the table and frees the object (the <c>delete ent</c> of the original); false if the
     ///   number has no entity
     /// </summary>
     function RemoveEntity(const ANumber: Integer): Boolean;
+    { ID3EntityGame }
+    function GetTime: Integer;
+    function GetPreviousTime: Integer;
+    function GetEvents: TD3EntityEvents;
+    function IsStartup: Boolean;
+    function CRandomFloat: Single;
+    function GetEntityByNumber(const ANumber: Integer): TD3Entity;
+    function GetSpawnedEntities: TIdLinkList<TD3Entity>;
+    function GetEventQueue: ID3EventQueue;
+    function GetScriptFunctions: ID3ScriptFunctions;
+    function GetSpawnFunctions: ID3SpawnFunctions;
+    function GetScriptThreads: ID3ScriptThreads;
+    /// <summary>gamestate = GAMESTATE_ACTIVE: entities spawned from now on find their targets at once</summary>
+    procedure EndStartup;
+    /// <summary>gamestate = GAMESTATE_STARTUP</summary>
+    procedure BeginStartup;
+    /// <summary>gameLocal.random.SetSeed (the game starts a map with seed 0)</summary>
+    procedure SetRandomSeed(const ASeed: Integer);
     { ID3EntityWorld }
     function FindEntityDefByIndex(const AIndex: Integer): ID3EntityDef;
     procedure SetScriptEntity(const AName: AnsiString; const AEntityNumber: Integer);
@@ -310,8 +344,80 @@ begin
   raise ED3GameException.Create(string(AText));
 end;
 
+function TD3GameLocal.GetTime: Integer;
+begin
+  Result := FTime;
+end;
+
+function TD3GameLocal.GetPreviousTime: Integer;
+begin
+  Result := FPreviousTime;
+end;
+
+function TD3GameLocal.GetEvents: TD3EntityEvents;
+begin
+  Result := FServices.Events;
+end;
+
+function TD3GameLocal.IsStartup: Boolean;
+begin
+  Result := FStartup;
+end;
+
+function TD3GameLocal.CRandomFloat: Single;
+begin
+  Result := FRandom.CRandomFloat;
+end;
+
+procedure TD3GameLocal.BeginStartup;
+begin
+  FStartup := True;
+end;
+
+procedure TD3GameLocal.EndStartup;
+begin
+  FStartup := False;
+end;
+
+procedure TD3GameLocal.SetRandomSeed(const ASeed: Integer);
+begin
+  FRandom.SetSeed(ASeed);
+end;
+
+function TD3GameLocal.GetEntityByNumber(const ANumber: Integer): TD3Entity;
+begin
+  Result := GetEntity(ANumber);
+end;
+
+function TD3GameLocal.GetSpawnedEntities: TIdLinkList<TD3Entity>;
+begin
+  Result := FSpawnedEntities;
+end;
+
+function TD3GameLocal.GetEventQueue: ID3EventQueue;
+begin
+  Result := FServices.EventQueue;
+end;
+
+function TD3GameLocal.GetScriptFunctions: ID3ScriptFunctions;
+begin
+  Result := FServices.ScriptFunctions;
+end;
+
+function TD3GameLocal.GetSpawnFunctions: ID3SpawnFunctions;
+begin
+  Result := FServices.SpawnFunctions;
+end;
+
+function TD3GameLocal.GetScriptThreads: ID3ScriptThreads;
+begin
+  Result := FServices.ScriptThreads;
+end;
+
 procedure TD3GameLocal.NewMap;
 begin
+  FStartup := True;
+  FRandom.SetSeed(0);
   FillChar(FEntities, SizeOf(FEntities), 0);
   FillChar(FSpawnIds, SizeOf(FSpawnIds), $FF);
   FSpawnCount := D3_INITIAL_SPAWN_COUNT;
@@ -609,6 +715,8 @@ begin
   // before the physics are run so entities can bind correctly
   Printf(SProcessingEvents);
   FServices.MapSteps.ServiceEvents;
+  // InitFromNewMap: the map is up, gamestate = GAMESTATE_ACTIVE
+  FStartup := False;
 end;
 
 procedure TD3GameLocal.AddEntityToHash(const AName: AnsiString; const AEntity: TD3Entity);
@@ -720,6 +828,12 @@ begin
     end;
     FNumEntitiesToDeactivate := 0;
   end;
+end;
+
+procedure TD3GameLocal.RunFrame;
+begin
+  RunFrameThink;
+  FServices.MapSteps.ServiceEvents;
 end;
 
 function TD3GameLocal.RemoveEntity(const ANumber: Integer): Boolean;

@@ -1,0 +1,309 @@
+CMD def info_recorder spawnclass idRecorder
+CMD def func_door spawnclass idDoor
+CMD def func_mover spawnclass idMover
+CMD def trigger_multi spawnclass idTrigger_Multi
+CMD def trigger_once spawnclass idTrigger_Multi wait -1
+CMD def trigger_relay spawnclass idTrigger_Multi wait 0 noTouch 1
+CMD def trigger_timer spawnclass idTrigger_Timer
+CMD def trigger_count spawnclass idTrigger_Count
+CMD def trigger_hurt spawnclass idTrigger_Hurt
+CMD def trigger_fade spawnclass idTrigger_Fade
+CMD def worldspawn spawnclass idWorldspawn
+CMD func openSesame
+CMD spawn classname info_recorder name r1
+CALL program.SetEntity r1 32
+RET 1 ent=32
+CMD spawn classname info_recorder name r2
+CALL program.SetEntity r2 33
+RET 1 ent=33
+CMD spawn classname trigger_timer name t1 target r1 start_on 1 wait 0.5 random 0.1
+CALL program.SetEntity t1 34
+RET 1 ent=34
+CMD dump 34
+ENT 34 name=t1 class=idTrigger_Timer think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+TIMER on=1 random=3DCCCCCD wait=3F000000 delay=00000000
+CMD queue
+QUEUE  <timer>@0
+CMD frame 70
+ACTIVATE r1 by t1 t=16
+FRAME t=16 toDeactivate=0
+FRAME t=32 toDeactivate=0
+FRAME t=48 toDeactivate=0
+FRAME t=64 toDeactivate=0
+FRAME t=80 toDeactivate=0
+FRAME t=96 toDeactivate=0
+FRAME t=112 toDeactivate=0
+FRAME t=128 toDeactivate=0
+FRAME t=144 toDeactivate=0
+FRAME t=160 toDeactivate=0
+FRAME t=176 toDeactivate=0
+FRAME t=192 toDeactivate=0
+FRAME t=208 toDeactivate=0
+FRAME t=224 toDeactivate=0
+FRAME t=240 toDeactivate=0
+FRAME t=256 toDeactivate=0
+FRAME t=272 toDeactivate=0
+FRAME t=288 toDeactivate=0
+FRAME t=304 toDeactivate=0
+FRAME t=320 toDeactivate=0
+FRAME t=336 toDeactivate=0
+FRAME t=352 toDeactivate=0
+FRAME t=368 toDeactivate=0
+FRAME t=384 toDeactivate=0
+FRAME t=400 toDeactivate=0
+ACTIVATE r1 by t1 t=416
+FRAME t=416 toDeactivate=0
+FRAME t=432 toDeactivate=0
+FRAME t=448 toDeactivate=0
+FRAME t=464 toDeactivate=0
+FRAME t=480 toDeactivate=0
+FRAME t=496 toDeactivate=0
+FRAME t=512 toDeactivate=0
+FRAME t=528 toDeactivate=0
+FRAME t=544 toDeactivate=0
+FRAME t=560 toDeactivate=0
+FRAME t=576 toDeactivate=0
+FRAME t=592 toDeactivate=0
+FRAME t=608 toDeactivate=0
+FRAME t=624 toDeactivate=0
+FRAME t=640 toDeactivate=0
+FRAME t=656 toDeactivate=0
+FRAME t=672 toDeactivate=0
+FRAME t=688 toDeactivate=0
+FRAME t=704 toDeactivate=0
+FRAME t=720 toDeactivate=0
+FRAME t=736 toDeactivate=0
+FRAME t=752 toDeactivate=0
+FRAME t=768 toDeactivate=0
+FRAME t=784 toDeactivate=0
+FRAME t=800 toDeactivate=0
+FRAME t=816 toDeactivate=0
+FRAME t=832 toDeactivate=0
+ACTIVATE r1 by t1 t=848
+FRAME t=848 toDeactivate=0
+FRAME t=864 toDeactivate=0
+FRAME t=880 toDeactivate=0
+FRAME t=896 toDeactivate=0
+FRAME t=912 toDeactivate=0
+FRAME t=928 toDeactivate=0
+FRAME t=944 toDeactivate=0
+FRAME t=960 toDeactivate=0
+FRAME t=976 toDeactivate=0
+FRAME t=992 toDeactivate=0
+FRAME t=1008 toDeactivate=0
+FRAME t=1024 toDeactivate=0
+FRAME t=1040 toDeactivate=0
+FRAME t=1056 toDeactivate=0
+FRAME t=1072 toDeactivate=0
+FRAME t=1088 toDeactivate=0
+FRAME t=1104 toDeactivate=0
+FRAME t=1120 toDeactivate=0
+CMD dump 34
+ENT 34 name=t1 class=idTrigger_Timer think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+TIMER on=1 random=3DCCCCCD wait=3F000000 delay=00000000
+CMD event 34 disable
+PROCESSED 1
+CMD queue
+QUEUE 
+CMD frame 5
+FRAME t=1136 toDeactivate=0
+FRAME t=1152 toDeactivate=0
+FRAME t=1168 toDeactivate=0
+FRAME t=1184 toDeactivate=0
+FRAME t=1200 toDeactivate=0
+CMD event 34 enable
+PROCESSED 1
+CMD queue
+QUEUE  <timer>@1200
+CMD frame 2
+ACTIVATE r1 by t1 t=1216
+FRAME t=1216 toDeactivate=0
+FRAME t=1232 toDeactivate=0
+CMD spawn classname trigger_timer name t2 target r2
+CALL program.SetEntity t2 35
+WARNING idTrigger_Timer 't2' at (0 0 0) has random >= wait
+RET 1 ent=35
+CMD dump 35
+ENT 35 name=t2 class=idTrigger_Timer think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+TIMER on=0 random=3F7FBE77 wait=3F800000 delay=00000000
+CMD event 35 activate 32
+PROCESSED 1
+CMD queue
+QUEUE  <timer>@1232 <timer>@1703
+CMD frame 60
+ACTIVATE r2 by t2 t=1248
+FRAME t=1248 toDeactivate=0
+FRAME t=1264 toDeactivate=0
+FRAME t=1280 toDeactivate=0
+FRAME t=1296 toDeactivate=0
+FRAME t=1312 toDeactivate=0
+FRAME t=1328 toDeactivate=0
+FRAME t=1344 toDeactivate=0
+FRAME t=1360 toDeactivate=0
+FRAME t=1376 toDeactivate=0
+FRAME t=1392 toDeactivate=0
+FRAME t=1408 toDeactivate=0
+ACTIVATE r2 by t2 t=1424
+FRAME t=1424 toDeactivate=0
+FRAME t=1440 toDeactivate=0
+FRAME t=1456 toDeactivate=0
+FRAME t=1472 toDeactivate=0
+FRAME t=1488 toDeactivate=0
+FRAME t=1504 toDeactivate=0
+ACTIVATE r2 by t2 t=1520
+FRAME t=1520 toDeactivate=0
+FRAME t=1536 toDeactivate=0
+FRAME t=1552 toDeactivate=0
+FRAME t=1568 toDeactivate=0
+FRAME t=1584 toDeactivate=0
+FRAME t=1600 toDeactivate=0
+FRAME t=1616 toDeactivate=0
+FRAME t=1632 toDeactivate=0
+FRAME t=1648 toDeactivate=0
+FRAME t=1664 toDeactivate=0
+FRAME t=1680 toDeactivate=0
+FRAME t=1696 toDeactivate=0
+ACTIVATE r1 by t1 t=1712
+FRAME t=1712 toDeactivate=0
+FRAME t=1728 toDeactivate=0
+FRAME t=1744 toDeactivate=0
+FRAME t=1760 toDeactivate=0
+FRAME t=1776 toDeactivate=0
+FRAME t=1792 toDeactivate=0
+FRAME t=1808 toDeactivate=0
+FRAME t=1824 toDeactivate=0
+FRAME t=1840 toDeactivate=0
+ACTIVATE r2 by t2 t=1856
+FRAME t=1856 toDeactivate=0
+FRAME t=1872 toDeactivate=0
+FRAME t=1888 toDeactivate=0
+FRAME t=1904 toDeactivate=0
+FRAME t=1920 toDeactivate=0
+FRAME t=1936 toDeactivate=0
+FRAME t=1952 toDeactivate=0
+FRAME t=1968 toDeactivate=0
+FRAME t=1984 toDeactivate=0
+FRAME t=2000 toDeactivate=0
+FRAME t=2016 toDeactivate=0
+FRAME t=2032 toDeactivate=0
+FRAME t=2048 toDeactivate=0
+FRAME t=2064 toDeactivate=0
+FRAME t=2080 toDeactivate=0
+FRAME t=2096 toDeactivate=0
+FRAME t=2112 toDeactivate=0
+FRAME t=2128 toDeactivate=0
+FRAME t=2144 toDeactivate=0
+FRAME t=2160 toDeactivate=0
+FRAME t=2176 toDeactivate=0
+ACTIVATE r1 by t1 t=2192
+FRAME t=2192 toDeactivate=0
+CMD event 35 activate 32
+PROCESSED 1
+CMD queue
+QUEUE  <timer>@2751
+CMD spawn classname trigger_count name c2 target r2 count 2 repeat 1
+CALL program.SetEntity c2 36
+RET 1 ent=36
+CMD event 36 activate -1
+PROCESSED 1
+CMD event 36 activate -1
+PROCESSED 1
+CMD queue
+QUEUE  <triggerAction>@2192 <timer>@2751
+CMD frame 1
+ACTIVATE r2 by (none) t=2208
+FRAME t=2208 toDeactivate=0
+CMD dump 36
+ENT 36 name=c2 class=idTrigger_Count think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+COUNT goal=2 count=0 delay=00000000
+CMD spawn classname trigger_hurt name h1 delay 0.5
+CALL program.SetEntity h1 37
+RET 1 ent=37
+CMD dump 37
+ENT 37 name=h1 class=idTrigger_Hurt think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=0
+HURT on=1 delay=3F000000 nextTime=2208
+CMD touch 37 32
+DAMAGE r1 damage_painTrigger
+PROCESSED 1
+CMD touch 37 32
+PROCESSED 1
+CMD frame 40
+FRAME t=2224 toDeactivate=0
+FRAME t=2240 toDeactivate=0
+FRAME t=2256 toDeactivate=0
+FRAME t=2272 toDeactivate=0
+FRAME t=2288 toDeactivate=0
+FRAME t=2304 toDeactivate=0
+FRAME t=2320 toDeactivate=0
+FRAME t=2336 toDeactivate=0
+FRAME t=2352 toDeactivate=0
+FRAME t=2368 toDeactivate=0
+FRAME t=2384 toDeactivate=0
+FRAME t=2400 toDeactivate=0
+FRAME t=2416 toDeactivate=0
+FRAME t=2432 toDeactivate=0
+FRAME t=2448 toDeactivate=0
+FRAME t=2464 toDeactivate=0
+FRAME t=2480 toDeactivate=0
+FRAME t=2496 toDeactivate=0
+FRAME t=2512 toDeactivate=0
+FRAME t=2528 toDeactivate=0
+FRAME t=2544 toDeactivate=0
+FRAME t=2560 toDeactivate=0
+FRAME t=2576 toDeactivate=0
+FRAME t=2592 toDeactivate=0
+FRAME t=2608 toDeactivate=0
+FRAME t=2624 toDeactivate=0
+FRAME t=2640 toDeactivate=0
+FRAME t=2656 toDeactivate=0
+FRAME t=2672 toDeactivate=0
+FRAME t=2688 toDeactivate=0
+FRAME t=2704 toDeactivate=0
+FRAME t=2720 toDeactivate=0
+FRAME t=2736 toDeactivate=0
+ACTIVATE r1 by t1 t=2752
+FRAME t=2752 toDeactivate=0
+FRAME t=2768 toDeactivate=0
+FRAME t=2784 toDeactivate=0
+FRAME t=2800 toDeactivate=0
+FRAME t=2816 toDeactivate=0
+FRAME t=2832 toDeactivate=0
+FRAME t=2848 toDeactivate=0
+CMD touch 37 33
+DAMAGE r2 damage_painTrigger
+PROCESSED 1
+CMD event 37 activate -1
+PROCESSED 1
+CMD touch 37 32
+PROCESSED 1
+CMD dump 37
+ENT 37 name=h1 class=idTrigger_Hurt think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=0
+HURT on=0 delay=3F000000 nextTime=3348
+CMD spawn classname trigger_fade name f1 target r1
+CALL program.SetEntity f1 38
+RET 1 ent=38
+CMD event 38 activate -1
+PROCESSED 1
+CMD queue
+QUEUE  <timer>@3263
+CMD spawn classname trigger_count name c1 target r1 count 2 delay 0.05
+CALL program.SetEntity c1 39
+RET 1 ent=39
+CMD event 39 activate -1
+PROCESSED 1
+CMD dump 39
+ENT 39 name=c1 class=idTrigger_Count think=0 active=0 hidden=0 origin=00000000 00000000 00000000 targets=1
+COUNT goal=2 count=1 delay=3D4CCCCD
+CMD event 39 activate -1
+PROCESSED 1
+CMD queue
+QUEUE  <triggerAction>@2898 <timer>@3263
+CMD frame 5
+FRAME t=2864 toDeactivate=0
+FRAME t=2880 toDeactivate=0
+FRAME t=2896 toDeactivate=0
+ACTIVATE r1 by (none) t=2912
+FRAME t=2912 toDeactivate=0
+FRAME t=2928 toDeactivate=0
+CMD find c1
+FOUND -1

@@ -1,0 +1,29 @@
+# Doom 3 world harness scenario. Bounds of the entities: the "size" key (x y z: mins -x/2 -y/2 0, maxs x/2 y/2 z), written with \x20
+def info_recorder spawnclass idRecorder
+def func_door spawnclass idDoor
+def func_mover spawnclass idMover
+def trigger_multi spawnclass idTrigger_Multi
+def trigger_once spawnclass idTrigger_Multi wait -1
+def trigger_relay spawnclass idTrigger_Multi wait 0 noTouch 1
+def trigger_timer spawnclass idTrigger_Timer
+def trigger_count spawnclass idTrigger_Count
+def trigger_hurt spawnclass idTrigger_Hurt
+def trigger_fade spawnclass idTrigger_Fade
+def worldspawn spawnclass idWorldspawn
+func openSesame
+spawn classname func_door name a size 8\x2064\x20128 angle -1 team pair
+spawn classname func_door name b size 8\x2064\x20128 angle -1 team PAIR origin 50\x200\x200
+queue
+frame 1
+dump 32
+dump 33
+event 33 activate -1
+frame 30
+dump 32
+dump 33
+frame 3
+remove 32
+dump 33
+event 33 activate -1
+frame 2
+dump 33
