@@ -36,6 +36,13 @@ interface
 uses
   doomdef,
   d_event,
+{$IF DEFINED(HERETIC)}
+  h_strings,
+{$ELSEIF DEFINED(HEXEN)}
+  xn_strings,
+{$ELSE}
+  d_englsh,
+{$ENDIF}
   r_defs,
   DelphiDoom.Hud.Intf,
   DelphiDoom.Engine.Hud.Intf;
@@ -127,7 +134,19 @@ var
 {$IF DEFINED(HERETIC)}
 var
 // Heretic shareware/registered/extended names.
-  mapnames: array[0..44] of string;
+  mapnames: array[0..44] of string = (
+    HUSTR_E1M1, HUSTR_E1M2, HUSTR_E1M3, HUSTR_E1M4,
+    HUSTR_E1M5, HUSTR_E1M6, HUSTR_E1M7, HUSTR_E1M8,
+    HUSTR_E1M9, HUSTR_E2M1, HUSTR_E2M2, HUSTR_E2M3,
+    HUSTR_E2M4, HUSTR_E2M5, HUSTR_E2M6, HUSTR_E2M7,
+    HUSTR_E2M8, HUSTR_E2M9, HUSTR_E3M1, HUSTR_E3M2,
+    HUSTR_E3M3, HUSTR_E3M4, HUSTR_E3M5, HUSTR_E3M6,
+    HUSTR_E3M7, HUSTR_E3M8, HUSTR_E3M9, HUSTR_E4M1,
+    HUSTR_E4M2, HUSTR_E4M3, HUSTR_E4M4, HUSTR_E4M5,
+    HUSTR_E4M6, HUSTR_E4M7, HUSTR_E4M8, HUSTR_E4M9,
+    HUSTR_E5M1, HUSTR_E5M2, HUSTR_E5M3, HUSTR_E5M4,
+    HUSTR_E5M5, HUSTR_E5M6, HUSTR_E5M7, HUSTR_E5M8,
+    HUSTR_E5M9);
 
   player_names: array[0..3] of string;
 {$ELSEIF DEFINED(HEXEN)}
@@ -136,7 +155,16 @@ var
 {$ELSEIF DEFINED(STRIFE)}
 var
 // STRIFE MAP NAMES
-  mapnames: array[0..33] of string;
+  mapnames: array[0..33] of string = (
+    HUSTR_1, HUSTR_2, HUSTR_3, HUSTR_4,
+    HUSTR_5, HUSTR_6, HUSTR_7, HUSTR_8,
+    HUSTR_9, HUSTR_10, HUSTR_11, HUSTR_12,
+    HUSTR_13, HUSTR_14, HUSTR_15, HUSTR_16,
+    HUSTR_17, HUSTR_18, HUSTR_19, HUSTR_20,
+    HUSTR_21, HUSTR_22, HUSTR_23, HUSTR_24,
+    HUSTR_25, HUSTR_26, HUSTR_27, HUSTR_28,
+    HUSTR_29, HUSTR_30, HUSTR_31, HUSTR_32,
+    HUSTR_33, HUSTR_34);
 
   player_names: array[0..7] of string;
 {$ELSE}
@@ -148,26 +176,68 @@ const
 
 var
 // DOOM shareware/registered/retail (Ultimate) names.
-  mapnames: array[0..NUM_MAPNAMES - 1] of string;
+  mapnames: array[0..NUM_MAPNAMES - 1] of string = (
+    HUSTR_E1M1, HUSTR_E1M2, HUSTR_E1M3, HUSTR_E1M4,
+    HUSTR_E1M5, HUSTR_E1M6, HUSTR_E1M7, HUSTR_E1M8,
+    HUSTR_E1M9, HUSTR_E2M1, HUSTR_E2M2, HUSTR_E2M3,
+    HUSTR_E2M4, HUSTR_E2M5, HUSTR_E2M6, HUSTR_E2M7,
+    HUSTR_E2M8, HUSTR_E2M9, HUSTR_E3M1, HUSTR_E3M2,
+    HUSTR_E3M3, HUSTR_E3M4, HUSTR_E3M5, HUSTR_E3M6,
+    HUSTR_E3M7, HUSTR_E3M8, HUSTR_E3M9, HUSTR_E4M1,
+    HUSTR_E4M2, HUSTR_E4M3, HUSTR_E4M4, HUSTR_E4M5,
+    HUSTR_E4M6, HUSTR_E4M7, HUSTR_E4M8, HUSTR_E4M9,
+    'NEWLEVEL', 'NEWLEVEL', 'NEWLEVEL', 'NEWLEVEL',
+    'NEWLEVEL', 'NEWLEVEL', 'NEWLEVEL', 'NEWLEVEL',
+    'NEWLEVEL');
 
 // DOOM 2 map names.
-  mapnames2: array[0..NUM_MAPNAMES2 - 1] of string;
+  mapnames2: array[0..NUM_MAPNAMES2 - 1] of string = (
+    HUSTR_1, HUSTR_2, HUSTR_3, HUSTR_4,
+    HUSTR_5, HUSTR_6, HUSTR_7, HUSTR_8,
+    HUSTR_9, HUSTR_10, HUSTR_11, HUSTR_12,
+    HUSTR_13, HUSTR_14, HUSTR_15, HUSTR_16,
+    HUSTR_17, HUSTR_18, HUSTR_19, HUSTR_20,
+    HUSTR_21, HUSTR_22, HUSTR_23, HUSTR_24,
+    HUSTR_25, HUSTR_26, HUSTR_27, HUSTR_28,
+    HUSTR_29, HUSTR_30, HUSTR_31, HUSTR_32,
+    HUSTR_33);
 
 // Plutonia WAD map names.
-  mapnamesp: array[0..NUM_MAPNAMESP - 1] of string;
+  mapnamesp: array[0..NUM_MAPNAMESP - 1] of string = (
+    PHUSTR_1, PHUSTR_2, PHUSTR_3, PHUSTR_4,
+    PHUSTR_5, PHUSTR_6, PHUSTR_7, PHUSTR_8,
+    PHUSTR_9, PHUSTR_10, PHUSTR_11, PHUSTR_12,
+    PHUSTR_13, PHUSTR_14, PHUSTR_15, PHUSTR_16,
+    PHUSTR_17, PHUSTR_18, PHUSTR_19, PHUSTR_20,
+    PHUSTR_21, PHUSTR_22, PHUSTR_23, PHUSTR_24,
+    PHUSTR_25, PHUSTR_26, PHUSTR_27, PHUSTR_28,
+    PHUSTR_29, PHUSTR_30, PHUSTR_31, PHUSTR_32);
 
 // TNT WAD map names.
-  mapnamest: array[0..NUM_MAPNAMEST - 1] of string;
+  mapnamest: array[0..NUM_MAPNAMEST - 1] of string = (
+    THUSTR_1, THUSTR_2, THUSTR_3, THUSTR_4,
+    THUSTR_5, THUSTR_6, THUSTR_7, THUSTR_8,
+    THUSTR_9, THUSTR_10, THUSTR_11, THUSTR_12,
+    THUSTR_13, THUSTR_14, THUSTR_15, THUSTR_16,
+    THUSTR_17, THUSTR_18, THUSTR_19, THUSTR_20,
+    THUSTR_21, THUSTR_22, THUSTR_23, THUSTR_24,
+    THUSTR_25, THUSTR_26, THUSTR_27, THUSTR_28,
+    THUSTR_29, THUSTR_30, THUSTR_31, THUSTR_32);
 
   player_names: array[0..3] of string;
 {$ENDIF}
 
 var
-  chat_macros: array[0..9] of string;
+  chat_macros: array[0..9] of string = (
+    HUSTR_CHATMACRO0, HUSTR_CHATMACRO1, HUSTR_CHATMACRO2, HUSTR_CHATMACRO3,
+    HUSTR_CHATMACRO4, HUSTR_CHATMACRO5, HUSTR_CHATMACRO6, HUSTR_CHATMACRO7,
+    HUSTR_CHATMACRO8, HUSTR_CHATMACRO9);
 
 var
 {$IFDEF STRIFE}
-  key_multi_msgplayer: array[0..MAXPLAYERS - 1] of string;
+  key_multi_msgplayer: array[0..MAXPLAYERS - 1] of string = (
+    '1', '2', '3', '4',
+    '5', '6', '7', '8');
 {$ELSE}
   destination_keys: array[0..MAXPLAYERS - 1] of string;
 {$ENDIF}
@@ -294,7 +364,7 @@ type
     class function HU_TITLE: string; static;
   end;
 
-
+
 implementation
 
 uses
@@ -306,13 +376,6 @@ uses
 {$ENDIF}
   i_system,
   doomstat,
-{$IF DEFINED(HERETIC)}
-  h_strings,
-{$ELSEIF DEFINED(HEXEN)}
-  xn_strings,
-{$ELSE}
-  d_englsh,
-{$ENDIF}
   d_player,
 {$IFDEF STRIFE}
   d_main,
@@ -851,17 +914,9 @@ begin
 end;
 
 initialization
-  chat_macros[0] := HUSTR_CHATMACRO0;
-  chat_macros[1] := HUSTR_CHATMACRO1;
-  chat_macros[2] := HUSTR_CHATMACRO2;
-  chat_macros[3] := HUSTR_CHATMACRO3;
-  chat_macros[4] := HUSTR_CHATMACRO4;
-  chat_macros[5] := HUSTR_CHATMACRO5;
-  chat_macros[6] := HUSTR_CHATMACRO6;
-  chat_macros[7] := HUSTR_CHATMACRO7;
-  chat_macros[8] := HUSTR_CHATMACRO8;
-  chat_macros[9] := HUSTR_CHATMACRO9;
-
+  // the names of the maps, the chat macros and the keys of the players of Strife are initialized in the
+  // declarations above (issue #185, wave 12); what stays here are the typed constants, which are not constant
+  // expressions
 {$IFDEF STRIFE}
   player_names[0] := HUSTR_PLAYER1;
   player_names[1] := HUSTR_PLAYER2;
@@ -876,316 +931,6 @@ initialization
   player_names[1] := HUSTR_PLRINDIGO;
   player_names[2] := HUSTR_PLRBROWN;
   player_names[3] := HUSTR_PLRRED;
-{$ENDIF}
-
-{$IF DEFINED(HERETIC)}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// Builtin map names.
-// The actual names can be found in h_strings.pas
-//
-////////////////////////////////////////////////////////////////////////////////
-
-// DOOM shareware/registered/retail (Ultimate) names.
-
-  mapnames[0] := HUSTR_E1M1;
-  mapnames[1] := HUSTR_E1M2;
-  mapnames[2] := HUSTR_E1M3;
-  mapnames[3] := HUSTR_E1M4;
-  mapnames[4] := HUSTR_E1M5;
-  mapnames[5] := HUSTR_E1M6;
-  mapnames[6] := HUSTR_E1M7;
-  mapnames[7] := HUSTR_E1M8;
-  mapnames[8] := HUSTR_E1M9;
-
-  mapnames[9] := HUSTR_E2M1;
-  mapnames[10] := HUSTR_E2M2;
-  mapnames[11] := HUSTR_E2M3;
-  mapnames[12] := HUSTR_E2M4;
-  mapnames[13] := HUSTR_E2M5;
-  mapnames[14] := HUSTR_E2M6;
-  mapnames[15] := HUSTR_E2M7;
-  mapnames[16] := HUSTR_E2M8;
-  mapnames[17] := HUSTR_E2M9;
-
-  mapnames[18] := HUSTR_E3M1;
-  mapnames[19] := HUSTR_E3M2;
-  mapnames[20] := HUSTR_E3M3;
-  mapnames[21] := HUSTR_E3M4;
-  mapnames[22] := HUSTR_E3M5;
-  mapnames[23] := HUSTR_E3M6;
-  mapnames[24] := HUSTR_E3M7;
-  mapnames[25] := HUSTR_E3M8;
-  mapnames[26] := HUSTR_E3M9;
-
-  mapnames[27] := HUSTR_E4M1;
-  mapnames[28] := HUSTR_E4M2;
-  mapnames[29] := HUSTR_E4M3;
-  mapnames[30] := HUSTR_E4M4;
-  mapnames[31] := HUSTR_E4M5;
-  mapnames[32] := HUSTR_E4M6;
-  mapnames[33] := HUSTR_E4M7;
-  mapnames[34] := HUSTR_E4M8;
-  mapnames[35] := HUSTR_E4M9;
-
-  mapnames[36] := HUSTR_E5M1;
-  mapnames[37] := HUSTR_E5M2;
-  mapnames[38] := HUSTR_E5M3;
-  mapnames[39] := HUSTR_E5M4;
-  mapnames[40] := HUSTR_E5M5;
-  mapnames[41] := HUSTR_E5M6;
-  mapnames[42] := HUSTR_E5M7;
-  mapnames[43] := HUSTR_E5M8;
-  mapnames[44] := HUSTR_E5M9;
-
-////////////////////////////////////////////////////////////////////////////////
-
-  destination_keys[0] := HUSTR_KEYGREEN;
-  destination_keys[1] := HUSTR_KEYINDIGO;
-  destination_keys[2] := HUSTR_KEYBROWN;
-  destination_keys[3] := HUSTR_KEYRED;
-{$ELSEIF DEFINED(HEXEN)}
-  destination_keys[0] := HUSTR_KEYGREEN;
-  destination_keys[1] := HUSTR_KEYINDIGO;
-  destination_keys[2] := HUSTR_KEYBROWN;
-  destination_keys[3] := HUSTR_KEYRED;
-{$ELSEIF DEFINED(STRIFE)}
-////////////////////////////////////////////////////////////////////////////////
-//
-// Builtin map names.
-// The actual names can be found in DStrings.h.
-//
-////////////////////////////////////////////////////////////////////////////////
-
-// STRIFE map names.
-
-  mapnames[0] := HUSTR_1;
-  mapnames[1] := HUSTR_2;
-  mapnames[2] := HUSTR_3;
-  mapnames[3] := HUSTR_4;
-  mapnames[4] := HUSTR_5;
-  mapnames[5] := HUSTR_6;
-  mapnames[6] := HUSTR_7;
-  mapnames[7] := HUSTR_8;
-  mapnames[8] := HUSTR_9;
-  mapnames[9] := HUSTR_10;
-  mapnames[10] := HUSTR_11;
-
-  mapnames[11] := HUSTR_12;
-  mapnames[12] := HUSTR_13;
-  mapnames[13] := HUSTR_14;
-  mapnames[14] := HUSTR_15;
-  mapnames[15] := HUSTR_16;
-  mapnames[16] := HUSTR_17;
-  mapnames[17] := HUSTR_18;
-  mapnames[18] := HUSTR_19;
-  mapnames[19] := HUSTR_20;
-
-  mapnames[20] := HUSTR_21;
-  mapnames[21] := HUSTR_22;
-  mapnames[22] := HUSTR_23;
-  mapnames[23] := HUSTR_24;
-  mapnames[24] := HUSTR_25;
-  mapnames[25] := HUSTR_26;
-  mapnames[26] := HUSTR_27;
-  mapnames[27] := HUSTR_28;
-  mapnames[28] := HUSTR_29;
-  mapnames[29] := HUSTR_30;
-  mapnames[30] := HUSTR_31;
-  mapnames[31] := HUSTR_32;
-  mapnames[32] := HUSTR_33;
-  mapnames[33] := HUSTR_34;
-
-////////////////////////////////////////////////////////////////////////////////
-
-  key_multi_msgplayer[0] := '1';
-  key_multi_msgplayer[1] := '2';
-  key_multi_msgplayer[2] := '3';
-  key_multi_msgplayer[3] := '4';
-  key_multi_msgplayer[4] := '5';
-  key_multi_msgplayer[5] := '6';
-  key_multi_msgplayer[6] := '7';
-  key_multi_msgplayer[7] := '8';
-{$ELSE}
-////////////////////////////////////////////////////////////////////////////////
-//
-// Builtin map names.
-// The actual names can be found in DStrings.h.
-//
-////////////////////////////////////////////////////////////////////////////////
-
-// DOOM shareware/registered/retail (Ultimate) names.
-
-  mapnames[0] := HUSTR_E1M1;
-  mapnames[1] := HUSTR_E1M2;
-  mapnames[2] := HUSTR_E1M3;
-  mapnames[3] := HUSTR_E1M4;
-  mapnames[4] := HUSTR_E1M5;
-  mapnames[5] := HUSTR_E1M6;
-  mapnames[6] := HUSTR_E1M7;
-  mapnames[7] := HUSTR_E1M8;
-  mapnames[8] := HUSTR_E1M9;
-
-  mapnames[9] := HUSTR_E2M1;
-  mapnames[10] := HUSTR_E2M2;
-  mapnames[11] := HUSTR_E2M3;
-  mapnames[12] := HUSTR_E2M4;
-  mapnames[13] := HUSTR_E2M5;
-  mapnames[14] := HUSTR_E2M6;
-  mapnames[15] := HUSTR_E2M7;
-  mapnames[16] := HUSTR_E2M8;
-  mapnames[17] := HUSTR_E2M9;
-
-  mapnames[18] := HUSTR_E3M1;
-  mapnames[19] := HUSTR_E3M2;
-  mapnames[20] := HUSTR_E3M3;
-  mapnames[21] := HUSTR_E3M4;
-  mapnames[22] := HUSTR_E3M5;
-  mapnames[23] := HUSTR_E3M6;
-  mapnames[24] := HUSTR_E3M7;
-  mapnames[25] := HUSTR_E3M8;
-  mapnames[26] := HUSTR_E3M9;
-
-  mapnames[27] := HUSTR_E4M1;
-  mapnames[28] := HUSTR_E4M2;
-  mapnames[29] := HUSTR_E4M3;
-  mapnames[30] := HUSTR_E4M4;
-  mapnames[31] := HUSTR_E4M5;
-  mapnames[32] := HUSTR_E4M6;
-  mapnames[33] := HUSTR_E4M7;
-  mapnames[34] := HUSTR_E4M8;
-  mapnames[35] := HUSTR_E4M9;
-
-  mapnames[36] := 'NEWLEVEL';
-  mapnames[37] := mapnames[36];
-  mapnames[38] := mapnames[36];
-  mapnames[39] := mapnames[36];
-  mapnames[40] := mapnames[36];
-  mapnames[41] := mapnames[36];
-  mapnames[42] := mapnames[36];
-  mapnames[43] := mapnames[36];
-  mapnames[44] := mapnames[36];
-
-////////////////////////////////////////////////////////////////////////////////
-
-// DOOM 2 map names.
-
-  mapnames2[0] := HUSTR_1;
-  mapnames2[1] := HUSTR_2;
-  mapnames2[2] := HUSTR_3;
-  mapnames2[3] := HUSTR_4;
-  mapnames2[4] := HUSTR_5;
-  mapnames2[5] := HUSTR_6;
-  mapnames2[6] := HUSTR_7;
-  mapnames2[7] := HUSTR_8;
-  mapnames2[8] := HUSTR_9;
-  mapnames2[9] := HUSTR_10;
-  mapnames2[10] := HUSTR_11;
-
-  mapnames2[11] := HUSTR_12;
-  mapnames2[12] := HUSTR_13;
-  mapnames2[13] := HUSTR_14;
-  mapnames2[14] := HUSTR_15;
-  mapnames2[15] := HUSTR_16;
-  mapnames2[16] := HUSTR_17;
-  mapnames2[17] := HUSTR_18;
-  mapnames2[18] := HUSTR_19;
-  mapnames2[19] := HUSTR_20;
-
-  mapnames2[20] := HUSTR_21;
-  mapnames2[21] := HUSTR_22;
-  mapnames2[22] := HUSTR_23;
-  mapnames2[23] := HUSTR_24;
-  mapnames2[24] := HUSTR_25;
-  mapnames2[25] := HUSTR_26;
-  mapnames2[26] := HUSTR_27;
-  mapnames2[27] := HUSTR_28;
-  mapnames2[28] := HUSTR_29;
-  mapnames2[29] := HUSTR_30;
-  mapnames2[30] := HUSTR_31;
-  mapnames2[31] := HUSTR_32;
-  mapnames2[32] := HUSTR_33;
-
-////////////////////////////////////////////////////////////////////////////////
-
-// Plutonia WAD map names.
-
-  mapnamesp[0] := PHUSTR_1;
-  mapnamesp[1] := PHUSTR_2;
-  mapnamesp[2] := PHUSTR_3;
-  mapnamesp[3] := PHUSTR_4;
-  mapnamesp[4] := PHUSTR_5;
-  mapnamesp[5] := PHUSTR_6;
-  mapnamesp[6] := PHUSTR_7;
-  mapnamesp[7] := PHUSTR_8;
-  mapnamesp[8] := PHUSTR_9;
-  mapnamesp[9] := PHUSTR_10;
-  mapnamesp[10] := PHUSTR_11;
-
-  mapnamesp[11] := PHUSTR_12;
-  mapnamesp[12] := PHUSTR_13;
-  mapnamesp[13] := PHUSTR_14;
-  mapnamesp[14] := PHUSTR_15;
-  mapnamesp[15] := PHUSTR_16;
-  mapnamesp[16] := PHUSTR_17;
-  mapnamesp[17] := PHUSTR_18;
-  mapnamesp[18] := PHUSTR_19;
-  mapnamesp[19] := PHUSTR_20;
-
-  mapnamesp[20] := PHUSTR_21;
-  mapnamesp[21] := PHUSTR_22;
-  mapnamesp[22] := PHUSTR_23;
-  mapnamesp[23] := PHUSTR_24;
-  mapnamesp[24] := PHUSTR_25;
-  mapnamesp[25] := PHUSTR_26;
-  mapnamesp[26] := PHUSTR_27;
-  mapnamesp[27] := PHUSTR_28;
-  mapnamesp[28] := PHUSTR_29;
-  mapnamesp[29] := PHUSTR_30;
-  mapnamesp[30] := PHUSTR_31;
-  mapnamesp[31] := PHUSTR_32;
-
-////////////////////////////////////////////////////////////////////////////////
-
-// TNT WAD map names.
-
-  mapnamest[0] := THUSTR_1;
-  mapnamest[1] := THUSTR_2;
-  mapnamest[2] := THUSTR_3;
-  mapnamest[3] := THUSTR_4;
-  mapnamest[4] := THUSTR_5;
-  mapnamest[5] := THUSTR_6;
-  mapnamest[6] := THUSTR_7;
-  mapnamest[7] := THUSTR_8;
-  mapnamest[8] := THUSTR_9;
-  mapnamest[9] := THUSTR_10;
-  mapnamest[10] := THUSTR_11;
-
-  mapnamest[11] := THUSTR_12;
-  mapnamest[12] := THUSTR_13;
-  mapnamest[13] := THUSTR_14;
-  mapnamest[14] := THUSTR_15;
-  mapnamest[15] := THUSTR_16;
-  mapnamest[16] := THUSTR_17;
-  mapnamest[17] := THUSTR_18;
-  mapnamest[18] := THUSTR_19;
-  mapnamest[19] := THUSTR_20;
-
-  mapnamest[20] := THUSTR_21;
-  mapnamest[21] := THUSTR_22;
-  mapnamest[22] := THUSTR_23;
-  mapnamest[23] := THUSTR_24;
-  mapnamest[24] := THUSTR_25;
-  mapnamest[25] := THUSTR_26;
-  mapnamest[26] := THUSTR_27;
-  mapnamest[27] := THUSTR_28;
-  mapnamest[28] := THUSTR_29;
-  mapnamest[29] := THUSTR_30;
-  mapnamest[30] := THUSTR_31;
-  mapnamest[31] := THUSTR_32;
-
-////////////////////////////////////////////////////////////////////////////////
 
   destination_keys[0] := HUSTR_KEYGREEN;
   destination_keys[1] := HUSTR_KEYINDIGO;
@@ -1194,4 +939,3 @@ initialization
 {$ENDIF}
 
 end.
-
