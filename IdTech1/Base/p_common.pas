@@ -1988,12 +1988,14 @@ type
     //==============================================================================
     class procedure A_SetTics(actor: Pmobj_t); static;
 
+{$IFNDEF HEXEN}
     //==============================================================================
     //
     // A_LineEffect
     //
     //==============================================================================
     class procedure A_LineEffect(actor: Pmobj_t); static;
+{$ENDIF}
 
     //==============================================================================
     //
@@ -8930,7 +8932,7 @@ begin
 
   MissileHeight := actor.state.params.FixedVal[3];
 
-  P_Doattack(actor, MeleeDamage <> 0, MissileType <> -1, MeleeDamage, MeleeSound,
+  TCommonAttackActionsLocal.P_DoAttack(actor, MeleeDamage <> 0, MissileType <> -1, MeleeDamage, MeleeSound,
     MissileType, MissileHeight);
 end;
 
