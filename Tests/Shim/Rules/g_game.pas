@@ -24,6 +24,7 @@ type
     class var DemoRecording: boolean;
     class var GameState: gamestate_t;
     class var ConsolePlayer: integer;
+    class var GameSkill: skill_t;
     class var Players: array[0..MAXPLAYERS - 1] of player_t;
   end;
 

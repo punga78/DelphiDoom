@@ -19,13 +19,6 @@ uses
   d_player,
   tables;
 
-//==============================================================================
-//
-// A_NoBlocking
-//
-//==============================================================================
-procedure A_NoBlocking(actor: Pmobj_t);
-
 type
   /// <summary>
   ///   What Heretic does in the enemy code of p_enemy (issue #185, step 2f-4). The routines that
@@ -65,6 +58,13 @@ type
   /// </summary>
   THereticMonsterActions = class sealed
   public
+    //==============================================================================
+    //
+    // A_NoBlocking
+    //
+    //==============================================================================
+    class procedure A_NoBlocking(actor: Pmobj_t); static;
+
     //==============================================================================
     //
     // A_Fall
@@ -2507,7 +2507,7 @@ end;
 // PROC A_NoBlocking
 //
 //==============================================================================
-procedure A_NoBlocking(actor: Pmobj_t);
+class procedure THereticMonsterActions.A_NoBlocking(actor: Pmobj_t);
 begin
   actor.flags := actor.flags and not MF_SOLID;
   // Check for monsters dropping things

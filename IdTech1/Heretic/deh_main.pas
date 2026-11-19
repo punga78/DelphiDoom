@@ -372,7 +372,7 @@ begin
   DEH_AddAction(@THereticMonsterActions.A_MummyAttack2, 'A_MummyAttack2()'); // 77
   DEH_AddAction(@THereticMonsterActions.A_MummyFX1Seek, 'A_MummyFX1Seek()'); // 78
   DEH_AddAction(@THereticMonsterActions.A_MummySoul, 'A_MummySoul()'); // 79
-  DEH_AddAction(@A_NoBlocking, 'A_NoBlocking()'); // 80
+  DEH_AddAction(@THereticMonsterActions.A_NoBlocking, 'A_NoBlocking()'); // 80
   DEH_AddAction(@THereticMonsterActions.A_Pain, 'A_Pain()'); // 81
   DEH_AddAction(@THereticWeaponActions.A_PhoenixPuff, 'A_PhoenixPuff()'); // 82
   DEH_AddAction(@THereticMonsterActions.A_PodPain, 'A_PodPain()'); // 83
@@ -438,7 +438,7 @@ begin
   DEH_AddAction(@TCommonSpawnActions.A_CustomMissile, 'A_CustomMissile(missiletype: string, [height: integer], [offset: integer], [angle: integer], [aimmode: integer], [pitch: integer])'); // 143
   DEH_AddAction(@TExtraRoutines.A_NoGravity, 'A_NoGravity()'); // 144
   DEH_AddAction(@TExtraRoutines.A_Gravity, 'A_Gravity()'); // 145
-  DEH_AddAction(@A_NoBlocking, 'A_NoBlocking()'); // 146
+  DEH_AddAction(@THereticMonsterActions.A_NoBlocking, 'A_NoBlocking()'); // 146
   DEH_AddAction(@TExtraRoutines.A_MeleeAttack, 'A_MeleeAttack([mindamage: integer], [maxdamage: integer])'); // 147
   DEH_AddAction(@TCommonSpawnActions.A_SpawnItem, 'A_SpawnItem(type: string, [distance: float], [zheight: float], [angle: angle])'); // 148
   DEH_AddAction(@TCommonSpawnActions.A_SeekerMissile, 'A_SeekerMissile(threshold_angle: angle, [turnMax_angle: angle])'); // 149
