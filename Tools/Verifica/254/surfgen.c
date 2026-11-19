@@ -60,7 +60,21 @@ model_t *R_AllocModel(void) { return NULL; }
 static shader_t g_shaders[2];
 shader_t *R_FindShader(const char *name, int lightmapIndex, qboolean mipRawImage) { return &g_shaders[0]; }
 void R_AddDrawSurf(surfaceType_t *surface, shader_t *shader, int fogIndex, int dlightMap) {}
-void RB_StageIteratorGeneric(void) {}
+static void dump_batch(void);
+void RB_StageIteratorGeneric(void) { printf("generic\n"); dump_batch(); }
+long myftol(float f) { return (long)f; }
+/* Q_acos of qcommon/common.c, as it is (that file is the whole engine and is not linked) */
+float Q_acos(float c) {
+	float angle;
+	angle = acos(c);
+	if (angle > M_PI) {
+		return (float)M_PI;
+	}
+	if (angle < -M_PI) {
+		return (float)M_PI;
+	}
+	return angle;
+}
 shader_t *R_GetShaderByHandle(qhandle_t hShader) { return &g_shaders[0]; }
 skin_t *R_GetSkinByHandle(qhandle_t hSkin) { return NULL; }
 void R_SetupEntityLighting(const trRefdef_t *refdef, trRefEntity_t *ent) {}
@@ -68,7 +82,7 @@ void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const fl
 void R_TransformClipToWindow(const vec4_t clip, const viewParms_t *view, vec4_t normalized, vec4_t window) {}
 int R_CullLocalBox(vec3_t bounds[2]) { return 0; }
 int R_CullLocalPointAndRadius(vec3_t pt, float radius) { return 0; }
-void GL_Bind(image_t *image) { printf("gl bind\n"); }
+void GL_Bind(image_t *image) { if (image) printf("gl bind %d\n", image->texnum); else printf("gl bind\n"); }
 void GL_State(unsigned long stateBits) { printf("gl state %08lx\n", stateBits); }
 void RB_SurfaceAnim(md4Surface_t *surfType) {}
 void (APIENTRY *qglBegin)(GLenum mode);
@@ -99,7 +113,15 @@ static unsigned fnv_u32(unsigned h, unsigned v) { int i; for (i = 0; i < 4; i++)
 static void APIENTRY sh_begin(GLenum mode) { printf("gl begin %x\n", mode); }
 static void APIENTRY sh_end(void) { printf("gl end\n"); }
 static void APIENTRY sh_color3f(GLfloat r, GLfloat g, GLfloat b) { printf("gl color3f %08x %08x %08x\n", bits(r), bits(g), bits(b)); }
-static void APIENTRY sh_vertex3fv(const GLfloat *v) { printf("gl vertex3fv %08x %08x %08x\n", bits(v[0]), bits(v[1]), bits(v[2])); }
+static int g_quiet; static unsigned g_qhash = 2166136261u; static int g_qcount;
+static unsigned qfeed(unsigned h, unsigned v) { int i; for (i = 0; i < 4; i++) h = (h ^ ((v >> (8 * i)) & 255)) * 16777619u; return h; }
+static void APIENTRY sh_vertex3fv(const GLfloat *v) { if (g_quiet) { g_qhash = qfeed(qfeed(qfeed(g_qhash, bits(v[0])), bits(v[1])), bits(v[2])); g_qcount++; return; } printf("gl vertex3fv %08x %08x %08x\n", bits(v[0]), bits(v[1]), bits(v[2])); }
+static void APIENTRY sh_push(void) { printf("gl pushmatrix\n"); }
+static void APIENTRY sh_pop(void) { printf("gl popmatrix\n"); }
+static void APIENTRY sh_translate(GLfloat x, GLfloat y, GLfloat z) { printf("gl translatef %08x %08x %08x\n", bits(x), bits(y), bits(z)); }
+static void APIENTRY sh_texcoord2fv(const GLfloat *v) { if (g_quiet) { g_qhash = qfeed(qfeed(g_qhash, bits(v[0])), bits(v[1])); g_qcount++; return; } printf("gl texcoord2fv %08x %08x\n", bits(v[0]), bits(v[1])); }
+static void APIENTRY sh_depthrange(GLclampd a, GLclampd b) { printf("gl depthrange %g %g\n", (double)a, (double)b); }
+static void APIENTRY sh_loadmatrix(const GLfloat *m) { printf("gl loadmatrixf\n"); }
 
 /* the batch of tess, as it would go to the stage iterators */
 static void dump_batch(void) {
@@ -133,6 +155,8 @@ void RB_EndSurface(void) {
 }
 
 #include "tr_bsp.c"
+/* the whole sky file: its statics (the clip of the polygons, the boxes, the cloud tables) are read below */
+#include "tr_sky.c"
 
 static void set_axis(float axis[3][3], const float *angles) { AngleVectors(angles, axis[0], axis[1], axis[2]); }
 static void reset_tess(int needsNormal) {
@@ -293,6 +317,8 @@ int main(int argc, char **argv) {
 	ri.Malloc = ri_malloc;
 	ri.Hunk_Alloc = ri_hunk;
 	qglBegin = sh_begin; qglEnd = sh_end; qglColor3f = sh_color3f; qglVertex3fv = sh_vertex3fv;
+	qglPushMatrix = sh_push; qglPopMatrix = sh_pop; qglTranslatef = sh_translate; qglTexCoord2fv = sh_texcoord2fv;
+	qglDepthRange = sh_depthrange; qglLoadMatrixf = sh_loadmatrix;
 	for (i = 0; i < FUNCTABLE_SIZE; i++) {
 		tr.sinTable[i] = sin(DEG2RAD(i * 360.0f / ((float)(FUNCTABLE_SIZE - 1))));
 	}
@@ -363,6 +389,79 @@ int main(int argc, char **argv) {
 				&rot, &rgba[0], &rgba[1], &rgba[2], &rgba[3]);
 			reset_tess(0);
 			run_entity(type, o, oo, radius, rot, rgba);
+			RB_EndSurface();
+		} else if (!strcmp(word, "skyinit")) {
+			unsigned h1 = 2166136261u, h2 = 2166136261u;
+			int i2, t2, s2;
+			sscanf(line, "skyinit %f", &a[0]);
+			R_InitSkyTexCoords(a[0]);
+			for (i2 = 0; i2 < 6; i2++) for (t2 = 0; t2 <= SKY_SUBDIVISIONS; t2++) for (s2 = 0; s2 <= SKY_SUBDIVISIONS; s2++) {
+				h1 = fnv_u32(h1, cbits(s_cloudTexCoords[i2][t2][s2][0]));
+				h1 = fnv_u32(h1, cbits(s_cloudTexCoords[i2][t2][s2][1]));
+				h2 = fnv_u32(h2, cbits(s_cloudTexP[i2][t2][s2]));
+			}
+			printf("cloud %08x %08x\n", h1, h2);
+			/* a few of the numbers themselves */
+			printf("cloudsample %08x %08x %08x %08x\n", bits(s_cloudTexCoords[4][4][4][0]), bits(s_cloudTexCoords[4][4][4][1]),
+				bits(s_cloudTexCoords[0][2][7][0]), bits(s_cloudTexP[0][2][7]));
+		} else if (!strcmp(word, "sky")) {
+			static image_t images[12], defaultImage;
+			static shader_t skyShader;
+			static shaderStage_t stages[MAX_SHADER_STAGES];
+			static shaderStage_t *stagePointers[MAX_SHADER_STAGES + 1];
+			int outer, numStages, fast, show, count, seed, k, j, i2;
+			float identity, zfar, cloud;
+			sscanf(line, "sky %d %d %d %d %f %f %f %d %d", &outer, &numStages, &fast, &show, &identity, &zfar, &cloud, &count,
+				&seed);
+			for (i2 = 0; i2 < 12; i2++) images[i2].texnum = i2 + 1;
+			defaultImage.texnum = 99;
+			tr.defaultImage = &defaultImage;
+			memset(&skyShader, 0, sizeof(skyShader));
+			skyShader.isSky = qtrue;
+			skyShader.sky.cloudHeight = cloud;
+			for (i2 = 0; i2 < 6; i2++) skyShader.sky.outerbox[i2] = outer ? &images[i2] : NULL;
+			if (outer == 2) skyShader.sky.outerbox[0] = &defaultImage;
+			for (i2 = 0; i2 < numStages; i2++) stagePointers[i2] = &stages[i2];
+			stagePointers[numStages] = NULL;
+			reset_tess(0);
+			tess.shader = &skyShader;
+			tess.xstages = stagePointers;
+			backEnd.viewParms.zFar = zfar;
+			backEnd.skyRenderedThisView = qfalse;
+			r_fastsky->integer = fast;
+			r_showsky->integer = show;
+			tr.identityLight = identity;
+			for (k = 0; k < count; k++) {
+				for (j = 0; j < 3; j++) {
+					float *p = tess.xyz[k * 3 + j];
+					p[0] = backEnd.viewParms.or.origin[0] + (float)(((k * 37 + j * 53 + seed) % 201) - 100) * 20;
+					p[1] = backEnd.viewParms.or.origin[1] + (float)(((k * 91 + j * 17 + seed * 3) % 201) - 100) * 20;
+					p[2] = backEnd.viewParms.or.origin[2] + (float)(((k * 29 + j * 71 + seed * 7) % 201) - 100) * 20;
+					tess.indexes[k * 3 + j] = k * 3 + j;
+				}
+			}
+			tess.numVertexes = count * 3;
+			tess.numIndexes = count * 3;
+			g_quiet = 1; g_qhash = 2166136261u; g_qcount = 0;
+			RB_StageIteratorSky();
+			g_quiet = 0;
+			printf("skyverts %d %08x\n", g_qcount, g_qhash);
+			printf("skyrendered %d\n", backEnd.skyRenderedThisView);
+			for (i2 = 0; i2 < 6; i2++)
+				printf("skyside %d %08x %08x %08x %08x\n", i2, bits(sky_mins[0][i2]), bits(sky_mins[1][i2]), bits(sky_maxs[0][i2]),
+					bits(sky_maxs[1][i2]));
+			tess.numIndexes = 0;
+			tess.numVertexes = 0;
+		} else if (!strcmp(word, "sun")) {
+			float d[3], zfar2;
+			int rendered, draw;
+			sscanf(line, "sun %f %f %f %f %d %d", &d[0], &d[1], &d[2], &zfar2, &rendered, &draw);
+			tr.sunDirection[0] = d[0]; tr.sunDirection[1] = d[1]; tr.sunDirection[2] = d[2];
+			backEnd.skyRenderedThisView = rendered;
+			r_drawSun->integer = draw;
+			backEnd.viewParms.zFar = zfar2;
+			reset_tess(0);
+			RB_DrawSun();
 			RB_EndSurface();
 		} else if (!strcmp(word, "mesh")) {
 			int nv, nt, nf, frame, oldframe, seed, repeat;

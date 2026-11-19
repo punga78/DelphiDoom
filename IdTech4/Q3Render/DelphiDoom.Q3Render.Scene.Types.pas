@@ -229,6 +229,16 @@ type
     /// <summary>r_maxpolys and r_maxpolyverts</summary>
     MaxPolys: Integer;
     MaxPolyVerts: Integer;
+    /// <summary>r_fastsky (the sky is not drawn), r_showsky (the sky in front of everything), r_drawSun</summary>
+    FastSky: Boolean;
+    ShowSky: Boolean;
+    DrawSun: Boolean;
+    /// <summary>r_lodCurveError (the error that a grid of a patch may have, divided by the distance)</summary>
+    LodCurveError: Single;
+    /// <summary>r_railWidth, r_railCoreWidth and r_railSegmentLength</summary>
+    RailWidth: Integer;
+    RailCoreWidth: Integer;
+    RailSegmentLength: Single;
     class function Defaults: TQ3RenderSettings; static;
   end;
 
@@ -281,6 +291,10 @@ begin
   Result.Shadows := 1;
   Result.MaxPolys := Q3_MAX_POLYS;
   Result.MaxPolyVerts := Q3_MAX_POLYVERTS;
+  Result.LodCurveError := 250;
+  Result.RailWidth := 16;
+  Result.RailCoreWidth := 6;
+  Result.RailSegmentLength := 32;
 end;
 
 end.

@@ -77,3 +77,29 @@ mesh 300 500 2 1 0 0.75 5 5
 mesh 700 100 1 0 0 0 6 3
 mesh 999 20 1 0 0 0 7 1
 mesh 1 1 1 0 0 0 8 1
+# the sky: R_InitSkyTexCoords(cloudHeight), then sky <outerbox 0 none 1 images 2 default image> <stages> <fastsky> <showsky>
+#   <identityLight> <zFar> <cloudHeight> <triangles> <seed>   (triangles made from formulas around the viewer)
+skyinit 128
+view 0 0 0 0 0 0 0
+or 0 0 0 0 0 0
+sky 1 1 0 0 0.5 2048 128 12 1
+sky 1 2 0 0 0.5 2048 128 10 2
+sky 1 1 0 0 1 4096 128 60 3
+sky 0 1 0 0 0.5 2048 128 10 4
+sky 2 1 0 0 0.5 2048 128 10 5
+sky 1 0 0 0 0.5 2048 128 10 6
+sky 1 1 1 0 0.5 2048 128 10 7
+sky 1 1 0 1 0.5 2048 128 10 8
+sky 1 1 0 0 0.5 2048 0 10 9
+view 500 -300 200 10 45 0 0
+sky 1 1 0 0 0.5 2048 128 12 10
+view 0 0 0 80 0 0 0
+sky 1 1 0 0 0.5 1024 128 12 11
+view 100 100 -50 -60 200 10 1
+sky 1 2 0 0 0.25 3000 128 12 12
+skyinit 512
+sky 1 1 0 0 0.5 2048 512 12 13
+sun 0.6 0 0.8 2048 1 1
+sun 0 0.28 0.96 4096 1 1
+sun 0.6 0 0.8 2048 0 1
+sun 0.6 0 0.8 2048 1 0

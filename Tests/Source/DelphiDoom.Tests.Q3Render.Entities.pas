@@ -28,6 +28,8 @@ type
     procedure DovrebbeDisegnarePoligonoSpriteRaggiEModelli;
     [Test]
     procedure DovrebbeTenereIFotogrammiCheIlModelloHa;
+    [Test]
+    procedure DovrebbeDisegnareIlCieloDiUnaShaderSky;
   end;
 
 implementation
@@ -50,11 +52,12 @@ type
     FRenderer: TQ3Renderer;
     FModel: Integer;
     FWhite: Integer;
+    FSkyShader: Integer;
   public
     constructor Create;
     destructor Destroy; override;
     function Entity(AType: Integer): TQ3RefEntity;
-    procedure Draw(const AEntities: array of TQ3RefEntity; APolys: Boolean);
+    procedure Draw(const AEntities: array of TQ3RefEntity; APolys: Boolean; ASkyPoly: Boolean = False);
     function Calls: string;
     property Renderer: TQ3Renderer read FRenderer;
     property Model: Integer read FModel;
@@ -70,6 +73,8 @@ begin
   FFiles.Add('models/test.md3', TTestSupport.Md3Bytes('textures/test/surf'));
   FSystem := TTestSupport.BuildSystem(FFiles as IQ3RenderFiles,
     [TPair<string, string>.Create('scripts/test.shader', 'textures/test/poly' + sLineBreak + '{' + sLineBreak +
+      '{ map $whiteimage' + sLineBreak + 'blendFunc add }' + sLineBreak + '}' + sLineBreak +
+      'textures/test/sky' + sLineBreak + '{' + sLineBreak + 'skyParms env/test 512 -' + sLineBreak +
       '{ map $whiteimage' + sLineBreak + 'blendFunc add }' + sLineBreak + '}' + sLineBreak)]);
   FModel := FSystem.Models.Register('models/test.md3');
   LTable := TQ3ShaderTable.Create(FSystem.Shaders);
@@ -77,6 +82,8 @@ begin
   LTable.RegisterExternalShaders;
   FWhite := LTable.FindShader('textures/test/poly', LIGHTMAP_NONE);
   Assert.IsTrue(FWhite > 0, 'the shader of the polygon must be defined');
+  FSkyShader := LTable.FindShader('textures/test/sky', LIGHTMAP_NONE);
+  Assert.IsTrue(FSkyShader > 0, 'the shader of the sky must be defined');
   FStream := TMemoryStream.Create;
   FRecorder := TGlCallRecorder.Create(FStream);
   LIdentity :=
@@ -113,7 +120,7 @@ begin
   Result.ShaderRGBA[3] := 255;
 end;
 
-procedure TEntityScene.Draw(const AEntities: array of TQ3RefEntity; APolys: Boolean);
+procedure TEntityScene.Draw(const AEntities: array of TQ3RefEntity; APolys: Boolean; ASkyPoly: Boolean);
 var
   LRefDef: TQ3RefDef;
   LIndex: Integer;
@@ -133,7 +140,7 @@ begin
   FRenderer.ClearScene;
   for LIndex := 0 to High(AEntities) do
     FRenderer.AddRefEntity(AEntities[LIndex]);
-  if APolys then
+  if APolys or ASkyPoly then
   begin
     SetLength(LVerts, 3);
     for LIndex := 0 to 2 do
@@ -144,7 +151,10 @@ begin
       LVerts[LIndex].Modulate[3] := 255;
     end;
     // the null shader is refused (the C warns), so the polygon has the white one
-    FRenderer.AddPolys(FWhite, 3, LVerts, 1);
+    if ASkyPoly then
+      FRenderer.AddPolys(FSkyShader, 3, LVerts, 1)
+    else
+      FRenderer.AddPolys(FWhite, 3, LVerts, 1);
   end;
   FRenderer.RenderScene(LRefDef);
   FRenderer.EndFrame('entities');
@@ -225,6 +235,24 @@ begin
     LEntities[0].BackLerp := 0.25;
     LScene.Draw(LEntities, False);
     Assert.AreEqual<Integer>(1, LScene.Renderer.Backend.Stats.Md3Drawn);
+  finally
+    LScene.Free;
+  end;
+end;
+
+procedure TTestQ3Entities.DovrebbeDisegnareIlCieloDiUnaShaderSky;
+var
+  LScene: TEntityScene;
+  LEntities: array of TQ3RefEntity;
+begin
+  LScene := TEntityScene.Create;
+  try
+    SetLength(LEntities, 0);
+    // a polygon with a shader that has skyParms goes to the sky iterator: the box, the clouds, the depth ranges
+    LScene.Draw(LEntities, False, True);
+    Assert.AreEqual<Integer>(1, LScene.Renderer.Backend.Stats.SkiesDrawn, 'sky');
+    Assert.IsTrue(LScene.Calls.Contains('glDepthRange'), 'the sky draws at the farthest depth');
+    Assert.IsTrue(LScene.Calls.Contains('glTranslatef'), 'the box is moved to the viewer');
   finally
     LScene.Free;
   end;

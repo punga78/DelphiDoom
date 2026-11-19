@@ -22,7 +22,8 @@ uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.Types,
   DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.MathCore.Patch.Intf, DelphiDoom.Q3Render.Scene.Types,
   DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Scene.FrontEnd, DelphiDoom.Q3Render.Backend.Gl,
-  DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Frame.Commands;
+  DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Backend.Sky,
+  DelphiDoom.Q3Render.Frame.Commands;
 
 type
   /// <summary>What the backend drew and what it left out (a surface kind that is not ported draws nothing)</summary>
@@ -44,7 +45,7 @@ type
     AxisDrawn: Integer;
     SkippedFlares: Integer;
     SkippedMd3: Integer;
-    SkippedSky: Integer;
+    SkiesDrawn: Integer;
     SkippedDlightPasses: Integer;
     SkippedFogPasses: Integer;
   end;
@@ -82,6 +83,9 @@ type
     FWorld: IQ3RenderWorld;
     FGrids: TArray<IPatchGrid>;
     FTessellator: TQ3SurfaceTessellator;
+    FSky: TQ3SkyBox;
+    FSettings: TQ3RenderSettings;
+    FSkyRenderedThisView: Boolean;
     FDlightBits: Integer;
     FPolys: TArray<TQ3ScenePoly>;
     FDlights: TArray<TQ3DynamicLight>;
@@ -130,6 +134,7 @@ type
     procedure ComputeStage(const AStage: TQ3ShaderStage);
     procedure DrawMultitextured(const AStage: TQ3ShaderStage);
     procedure StageIteratorGeneric;
+    procedure StageIteratorSky;
     procedure StageIteratorVertexLitTexture;
     procedure StageIteratorLightmappedMultitexture;
     function IteratorKind(const AEntry: TQ3ShaderEntry): Integer;
@@ -155,6 +160,8 @@ type
     destructor Destroy; override;
     /// <summary>RE_LoadWorldMap: the surfaces the draw commands refer to (nil forgets them)</summary>
     procedure SetWorld(const AWorld: IQ3RenderWorld);
+    /// <summary>The cvars of the backend (r_fastsky, r_showsky, r_drawSun, r_lodCurveError and the rail ones)</summary>
+    procedure SetSettings(const ASettings: TQ3RenderSettings);
     /// <summary>RB_ExecuteRenderCommands</summary>
     procedure Execute(const ACommands: TQ3CommandList);
     property Stats: TQ3BackendStats read FStats;
@@ -203,6 +210,8 @@ begin
   FModelMapper := AModelMapper;
   FCalc := TQ3ShaderCalc.Create;
   FTessellator := TQ3SurfaceTessellator.Create(FlushSurface, RestartSurface, FCalc.Tables.SinTable);
+  FSky := TQ3SkyBox.Create;
+  FSettings := TQ3RenderSettings.Defaults;
   FVidWidth := AVidWidth;
   FVidHeight := AVidHeight;
   FNowMilliseconds := ANowMilliseconds;
@@ -222,6 +231,7 @@ end;
 destructor TQ3Backend.Destroy;
 begin
   FTextureIds.Free;
+  FSky.Free;
   FTessellator.Free;
   FCalc.Free;
   FState.Free;
@@ -235,6 +245,13 @@ begin
     FGrids := AWorld.GetGrids
   else
     FGrids := nil;
+end;
+
+procedure TQ3Backend.SetSettings(const ASettings: TQ3RenderSettings);
+begin
+  FSettings := ASettings;
+  FTessellator.SetLodCurveError(ASettings.LodCurveError);
+  FTessellator.SetRailSettings(ASettings.RailWidth, ASettings.RailCoreWidth, ASettings.RailSegmentLength);
 end;
 
 procedure TQ3Backend.FlushSurface;
@@ -497,7 +514,7 @@ begin
   FTess.RefDefTime := FRefDef.Time;
   case IteratorKind(FTessEntry) of
     1:
-      Inc(FStats.SkippedSky);
+      StageIteratorSky;
     2:
       StageIteratorVertexLitTexture;
     3:
@@ -637,6 +654,39 @@ begin
   FSink.Call('glUnlockArraysEXT', []);
   if FTessEntry.Data.PolygonOffset then
     FSink.Call('glDisable', [TQ3GlArg.FromEnum(GL_POLYGON_OFFSET_FILL)]);
+end;
+
+procedure TQ3Backend.StageIteratorSky;
+var
+  LStages, LStage: Integer;
+begin
+  LStages := 0;
+  for LStage := 0 to Q3_MAX_SHADER_STAGES - 1 do
+  begin
+    if not FTessEntry.Data.Stages[LStage].Active then
+      Break;
+    Inc(LStages);
+  end;
+  // the outer box is the images that the shader names: a sky with "-" for the box has none
+  if FSky.StageIterator(FTess, FView.Orientation.Origin, FView.ZFar, FSettings.FastSky, FSettings.ShowSky,
+    FTessEntry.Data.Sky.OuterBox[0] <> '', IdentityLight, FTessEntry.Data.Sky.CloudHeight, LStages, FSink,
+    procedure(AImage: Integer)
+    begin
+      BindImage(FTessEntry.Data.Sky.OuterBox[AImage], 0);
+    end,
+    procedure(AState: Cardinal)
+    begin
+      FState.State(AState);
+    end,
+    procedure
+    begin
+      StageIteratorGeneric;
+    end) then
+  begin
+    // note that sky was drawn so we will draw a sun later
+    FSkyRenderedThisView := True;
+    Inc(FStats.SkiesDrawn);
+  end;
 end;
 
 procedure TQ3Backend.StageIteratorVertexLitTexture;

@@ -47,13 +47,35 @@ uses
   DelphiDoom.IdLib.Math.Vec2, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Patch.Intf,
   DelphiDoom.MathCore.Patch.Types, DelphiDoom.MathCore.Patch.Factory, DelphiDoom.Models.Static.Md3.Types,
   DelphiDoom.Q3Render.Types, DelphiDoom.Q3Render.Scene.Types, DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Factory,
-  DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Golden,
+  DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Backend.Gl, DelphiDoom.Q3Render.Backend.Sky,
+  DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Golden,
   DelphiDoom.Tests.Q3Render.Support;
 
 const
   SHADER_MAX_VERTEXES = 1000;
 
 type
+  /// <summary>
+  ///   A sink that prints the calls as the qgl shims of surfgen.c do: the vertexes and the texture coordinates of the
+  ///   sky are only counted and hashed (Quiet), as "skyverts" of the C
+  /// </summary>
+  TLineSink = class(TInterfacedObject, IQ3GlSink)
+  strict private
+    FLines: TStringList;
+    FQuiet: Boolean;
+    FHash: Cardinal;
+    FCount: Integer;
+    procedure Feed(const AValue: Single);
+    function Bits(const AValue: Single): string;
+  public
+    constructor Create(const ALines: TStringList);
+    procedure StartQuiet;
+    procedure StopQuiet;
+    procedure Call(const AName: string; const AArguments: array of TQ3GlArg);
+    property Hash: Cardinal read FHash;
+    property Count: Integer read FCount;
+  end;
+
   /// <summary>Runs the commands of surfgen.c and writes the lines it prints</summary>
   TSurfaceCaseRunner = class
   strict private
@@ -63,6 +85,9 @@ type
     FTessellator: TQ3SurfaceTessellator;
     FFuncTables: TQ3FuncTables;
     FSubdivider: IPatchSubdivider;
+    FSky: TQ3SkyBox;
+    FSink: TLineSink;
+    FSinkKeeper: IQ3GlSink;
     FView: TQ3ViewOrientation;
     FEntity: TQ3ViewOrientation;
     FMirror: Boolean;
@@ -87,6 +112,9 @@ type
     procedure Poly(const AWords: TArray<string>);
     procedure EntityCase(const AWords: TArray<string>);
     procedure MeshCase(const AWords: TArray<string>);
+    procedure SkyInitCase(const AWords: TArray<string>);
+    procedure SkyCase(const AWords: TArray<string>);
+    procedure SunCase(const AWords: TArray<string>);
     function MakeMesh(ANumVerts, ANumTriangles, ANumFrames, ASeed: Integer): TMd3Surface;
   public
     constructor Create(const ALines: TStringList);
@@ -96,12 +124,99 @@ type
     procedure Run(const ACases: TStrings);
   end;
 
+{ TLineSink }
+
+constructor TLineSink.Create(const ALines: TStringList);
+begin
+  inherited Create;
+  FLines := ALines;
+end;
+
+function TLineSink.Bits(const AValue: Single): string;
+var
+  LCopy: Single;
+begin
+  LCopy := AValue;
+  Result := LowerCase(IntToHex(PCardinal(@LCopy)^, 8));
+end;
+
+procedure TLineSink.Feed(const AValue: Single);
+var
+  LCopy: Single;
+  LBits: Cardinal;
+  LIndex: Integer;
+begin
+  LCopy := AValue;
+  LBits := PCardinal(@LCopy)^;
+  for LIndex := 0 to 3 do
+    FHash := (FHash xor Byte(LBits shr (8 * LIndex))) * 16777619;
+end;
+
+procedure TLineSink.StartQuiet;
+begin
+  FQuiet := True;
+  FHash := 2166136261;
+  FCount := 0;
+end;
+
+procedure TLineSink.StopQuiet;
+begin
+  FQuiet := False;
+end;
+
+procedure TLineSink.Call(const AName: string; const AArguments: array of TQ3GlArg);
+var
+  LIndex: Integer;
+  LText: string;
+begin
+  if (AName = 'glVertex3fv') or (AName = 'glTexCoord2fv') then
+  begin
+    if FQuiet then
+    begin
+      for LIndex := 0 to High(AArguments) do
+        Feed(AArguments[LIndex].FloatValue);
+      Inc(FCount);
+      Exit;
+    end;
+    if AName = 'glVertex3fv' then
+      LText := 'gl vertex3fv'
+    else
+      LText := 'gl texcoord2fv';
+    for LIndex := 0 to High(AArguments) do
+      LText := LText + ' ' + Bits(AArguments[LIndex].FloatValue);
+    FLines.Add(LText);
+  end
+  else if AName = 'glColor3f' then
+    FLines.Add(Format('gl color3f %s %s %s', [Bits(AArguments[0].FloatValue), Bits(AArguments[1].FloatValue),
+      Bits(AArguments[2].FloatValue)]))
+  else if AName = 'glTranslatef' then
+    FLines.Add(Format('gl translatef %s %s %s', [Bits(AArguments[0].FloatValue), Bits(AArguments[1].FloatValue),
+      Bits(AArguments[2].FloatValue)]))
+  else if AName = 'glDepthRange' then
+    FLines.Add(Format('gl depthrange %d %d', [Trunc(AArguments[0].FloatValue), Trunc(AArguments[1].FloatValue)]))
+  else if AName = 'glBegin' then
+    FLines.Add('gl begin ' + LowerCase(IntToHex(AArguments[0].IntValue, 1)))
+  else if AName = 'glEnd' then
+    FLines.Add('gl end')
+  else if AName = 'glPushMatrix' then
+    FLines.Add('gl pushmatrix')
+  else if AName = 'glPopMatrix' then
+    FLines.Add('gl popmatrix')
+  else if AName = 'glLoadMatrixf' then
+    FLines.Add('gl loadmatrixf')
+  else
+    FLines.Add('gl ' + AName);
+end;
+
 { TSurfaceCaseRunner }
 
 constructor TSurfaceCaseRunner.Create(const ALines: TStringList);
 begin
   inherited Create;
   FLines := ALines;
+  FSky := TQ3SkyBox.Create;
+  FSink := TLineSink.Create(ALines);
+  FSinkKeeper := FSink;
   FInvariant := TFormatSettings.Invariant;
   FFuncTables := TQ3FuncTables.Create;
   FTessellator := TQ3SurfaceTessellator.Create(EndSurface, BeginSurface, FFuncTables.SinTable);
@@ -116,6 +231,7 @@ destructor TSurfaceCaseRunner.Destroy;
 begin
   FTessellator.Free;
   FFuncTables.Free;
+  FSky.Free;
   inherited Destroy;
 end;
 
@@ -428,6 +544,99 @@ begin
   EndSurface;
 end;
 
+procedure TSurfaceCaseRunner.SkyInitCase(const AWords: TArray<string>);
+var
+  LFace, LT, LS: Integer;
+  LH1, LH2: Cardinal;
+begin
+  FSky.InitTexCoords(Number(AWords[1]));
+  LH1 := 2166136261;
+  LH2 := 2166136261;
+  for LFace := 0 to 5 do
+    for LT := 0 to Q3_SKY_SUBDIVISIONS do
+      for LS := 0 to Q3_SKY_SUBDIVISIONS do
+      begin
+        LH1 := Fnv(LH1, Canonical(FSky.CloudTexCoord(LFace, LT, LS, 0)));
+        LH1 := Fnv(LH1, Canonical(FSky.CloudTexCoord(LFace, LT, LS, 1)));
+        LH2 := Fnv(LH2, Canonical(FSky.CloudTexP(LFace, LT, LS)));
+      end;
+  FLines.Add(Format('cloud %s %s', [LowerCase(IntToHex(LH1, 8)), LowerCase(IntToHex(LH2, 8))]));
+  FLines.Add(Format('cloudsample %s %s %s %s', [Bits(FSky.CloudTexCoord(4, 4, 4, 0)),
+    Bits(FSky.CloudTexCoord(4, 4, 4, 1)), Bits(FSky.CloudTexCoord(0, 2, 7, 0)), Bits(FSky.CloudTexP(0, 2, 7))]));
+end;
+
+procedure TSurfaceCaseRunner.SkyCase(const AWords: TArray<string>);
+var
+  LOuter, LStages, LFast, LShow, LCount, LSeed, LK, LJ, LFace: Integer;
+  LIdentity, LZFar, LCloud, LBase: Single;
+  LRendered: Boolean;
+begin
+  LOuter := StrToInt(AWords[1]);
+  LStages := StrToInt(AWords[2]);
+  LFast := StrToInt(AWords[3]);
+  LShow := StrToInt(AWords[4]);
+  LIdentity := Number(AWords[5]);
+  LZFar := Number(AWords[6]);
+  LCloud := Number(AWords[7]);
+  LCount := StrToInt(AWords[8]);
+  LSeed := StrToInt(AWords[9]);
+  ResetTess(False);
+  for LK := 0 to LCount - 1 do
+    for LJ := 0 to 2 do
+    begin
+      LBase := Single((LK * 37 + LJ * 53 + LSeed) mod 201 - 100) * 20;
+      FTess.Xyz[(LK * 3 + LJ) * 4] := FView.Origin[0] + LBase;
+      LBase := Single((LK * 91 + LJ * 17 + LSeed * 3) mod 201 - 100) * 20;
+      FTess.Xyz[(LK * 3 + LJ) * 4 + 1] := FView.Origin[1] + LBase;
+      LBase := Single((LK * 29 + LJ * 71 + LSeed * 7) mod 201 - 100) * 20;
+      FTess.Xyz[(LK * 3 + LJ) * 4 + 2] := FView.Origin[2] + LBase;
+      FTess.Indexes[LK * 3 + LJ] := LK * 3 + LJ;
+    end;
+  FTess.NumVertexes := LCount * 3;
+  FTess.NumIndexes := LCount * 3;
+  FSink.StartQuiet;
+  LRendered := FSky.StageIterator(FTess, FView.Origin, LZFar, LFast <> 0, LShow <> 0, LOuter = 1, LIdentity, LCloud,
+    LStages, FSinkKeeper,
+    procedure(AImage: Integer)
+    begin
+      // the images of the outer box are numbered 1 to 12 in the C
+      FLines.Add(Format('gl bind %d', [AImage + 1]));
+    end,
+    procedure(AState: Cardinal)
+    begin
+      FLines.Add('gl state ' + LowerCase(IntToHex(AState, 8)));
+    end,
+    procedure
+    begin
+      FLines.Add('generic');
+      DumpBatch;
+    end);
+  FSink.StopQuiet;
+  FLines.Add(Format('skyverts %d %s', [FSink.Count, LowerCase(IntToHex(FSink.Hash, 8))]));
+  FLines.Add(Format('skyrendered %d', [Ord(LRendered)]));
+  for LFace := 0 to 5 do
+    FLines.Add(Format('skyside %d %s %s %s %s', [LFace, Bits(FSky.SkyMin(0, LFace)), Bits(FSky.SkyMin(1, LFace)),
+      Bits(FSky.SkyMax(0, LFace)), Bits(FSky.SkyMax(1, LFace))]));
+  FTess.NumIndexes := 0;
+  FTess.NumVertexes := 0;
+end;
+
+procedure TSurfaceCaseRunner.SunCase(const AWords: TArray<string>);
+var
+  LDirection: TQ3Vec3;
+  LMatrix: array[0..15] of Single;
+  LIndex: Integer;
+begin
+  for LIndex := 0 to 2 do
+    LDirection[LIndex] := Number(AWords[1 + LIndex]);
+  for LIndex := 0 to 15 do
+    LMatrix[LIndex] := 0;
+  ResetTess(False);
+  TQ3SkyBox.DrawSun(FTess, LDirection, FView.Origin, Number(AWords[4]), LMatrix, StrToInt(AWords[5]) <> 0,
+    StrToInt(AWords[6]) <> 0, FSinkKeeper, BeginSurface, EndSurface);
+  EndSurface;
+end;
+
 procedure TSurfaceCaseRunner.Run(const ACases: TStrings);
 var
   LNumber: Integer;
@@ -473,6 +682,12 @@ begin
         Poly(LWords)
       else if LWord = 'mesh' then
         MeshCase(LWords)
+      else if LWord = 'skyinit' then
+        SkyInitCase(LWords)
+      else if LWord = 'sky' then
+        SkyCase(LWords)
+      else if LWord = 'sun' then
+        SunCase(LWords)
       else
         EntityCase(LWords);
     end;

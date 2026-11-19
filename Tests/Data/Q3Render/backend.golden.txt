@@ -6,6 +6,6 @@ FRAME view 4 calls=333 sum=f8fb9712f815b98c
 FRAME view 5 calls=643 sum=aba3b8b37aa9aa1f
 FRAME 2d only calls=21 sum=9783d46ceec4158c
 backend surfaces=570 batches=223 vertexes=6243 indexes=17562 faces=554 triangles=6 stretchpics=13
-drawn grids=0 polys=0 sprites=0 beams=0 rails=0 lightning=0 md3=0 axis=0
-not ported flares=10 md3=0 sky=0 fogpasses=6
+drawn grids=0 polys=0 sprites=0 beams=0 rails=0 lightning=0 md3=0 axis=0 sky=0
+not ported flares=10 md3=0 fogpasses=6
 textures=46
