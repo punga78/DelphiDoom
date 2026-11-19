@@ -39,7 +39,6 @@ type
   end;
   PGLSeg = ^TGLSeg;
   GLSegArray = array[0..$FFFF] of TGLSeg;
-  PGLSegArray = ^GLSegArray;
 
 const
   GLDWF_TOP = 1;

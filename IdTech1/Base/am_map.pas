@@ -113,14 +113,10 @@ const
   LINE_NEVERSEE = ML_DONTDRAW;
 
 type
-  fpoint_t = TAutomapFramePoint;
-  Pfpoint_t = PAutomapFramePoint;
 
   fline_t = TAutomapFrameLine;
   Pfline_t = PAutomapFrameLine;
 
-  mpoint_t = TAutomapPoint;
-  Pmpoint_t = PAutomapPoint;
 
   mline_t = TAutomapLine;
   Pmline_t = PAutomapLine;
@@ -131,7 +127,6 @@ type
     slp: fixed_t;
     islp: fixed_t;
   end;
-  Pislope_t = ^islope_t;
 
 //
 // The vector graphics for the automap.
@@ -347,7 +342,6 @@ uses
   v_video;
 
 const
-  AM_MIN_SCALE = 2048;
 // player radius
   PLAYERRADIUS = AUTOMAP_PLAYERRADIUS;
 

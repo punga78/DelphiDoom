@@ -252,7 +252,6 @@ type
     startname: array[0..8] of AnsiChar;
     speed: integer;
   end;
-  Pwad_animdef_t = ^wad_animdef_t;
   wad_animdef_tArray = array[0..$FFFF] of wad_animdef_t;
   Pwad_animdef_tArray = ^wad_animdef_tArray;
 

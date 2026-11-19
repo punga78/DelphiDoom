@@ -228,7 +228,6 @@ type
     teaser1: integer;
     teaser2: integer;
   end;
-  teaserxlat_p = ^teaserxlat_t;
 
 const
   TEASERXLATSIZE = 323;

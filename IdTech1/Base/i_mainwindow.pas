@@ -54,13 +54,6 @@ procedure I_GetWindowClientOffset(var dw, dh: integer);
 
 //==============================================================================
 //
-// I_GetWindowOffset
-//
-//==============================================================================
-procedure I_GetWindowOffset(var dw, dh: integer);
-
-//==============================================================================
-//
 // I_GetWindowPosition
 //
 //==============================================================================
@@ -81,23 +74,6 @@ begin
   GetWindowRect(hMainWnd, rw);
   dw := (rw.Right - rw.Left) - (rc.Right - rc.Left);
   dh := (rw.Bottom - rw.Top) - (rc.Bottom - rc.Top);
-end;
-
-//==============================================================================
-//
-// I_GetWindowOffset
-//
-//==============================================================================
-procedure I_GetWindowOffset(var dw, dh: integer);
-var
-  rw, rc: TRect;
-  border: integer;
-begin
-  GetClientRect(hMainWnd, rc);
-  GetWindowRect(hMainWnd, rw);
-  border := ((rw.Right - rw.Left) - (rc.Right - rc.Left)) div 2;
-  dw := rw.Right - rc.Right - border;
-  dh := rw.Bottom - rc.Bottom - border;
 end;
 
 //==============================================================================

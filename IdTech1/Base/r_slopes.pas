@@ -152,7 +152,6 @@ type
   end;
   Psspoint_t = ^sspoint_t;
   sspoint_tArray = array[0..MAXSUBSECTORPOINTS - 1] of sspoint_t;
-  ssPpoint_tArray = ^sspoint_tArray;
 
 
 const

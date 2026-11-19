@@ -141,7 +141,6 @@ type
     episode: smallint;
     sound: integer;
   end;
-  Pwad_switchlist_t = ^wad_switchlist_t;
   wad_switchlist_tArray = array[0..$FFFF] of wad_switchlist_t;
   Pwad_switchlist_tArray = ^wad_switchlist_tArray;
 

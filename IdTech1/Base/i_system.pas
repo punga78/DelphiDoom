@@ -267,13 +267,6 @@ procedure I_ProcessWindows;
 //==============================================================================
 procedure I_WaitVBL(const count: integer);
 
-//==============================================================================
-//
-// I_Sleep
-//
-//==============================================================================
-procedure I_Sleep(const msecs: integer);
-
 var
   zonesize: integer;
   mb_used: integer;
@@ -349,13 +342,6 @@ procedure I_DetectCPU;
 //
 //==============================================================================
 function I_GetNumCPUs: integer;
-
-//==============================================================================
-//
-// I_ClearInterface
-//
-//==============================================================================
-procedure I_ClearInterface(var Dest: IInterface);
 
 type
   process_t = function(p: pointer): LongInt; stdcall;
@@ -940,16 +926,6 @@ end;
 
 //==============================================================================
 //
-// I_Sleep
-//
-//==============================================================================
-procedure I_Sleep(const msecs: integer);
-begin
-  engine_clock.Sleep(msecs);
-end;
-
-//==============================================================================
-//
 // I_BeginDiskBusy
 //
 //==============================================================================
@@ -1114,25 +1090,6 @@ end;
 function I_GetNumCPUs: integer;
 begin
   result := numcpus;
-end;
-
-//==============================================================================
-//
-// I_ClearInterface
-//
-//==============================================================================
-procedure I_ClearInterface(var Dest: IInterface);
-var
-  P: Pointer;
-begin
-  if safemode then
-    exit;
-  if Dest <> nil then
-  begin
-    P := Pointer(Dest);
-    Pointer(Dest) := nil;
-    IInterface(P)._Release;
-  end;
 end;
 
 type

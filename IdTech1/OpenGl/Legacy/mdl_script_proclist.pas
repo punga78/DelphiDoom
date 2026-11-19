@@ -65,7 +65,6 @@ type
     procedure RegisterProcsExec(Sender: TPSExec); virtual;
     procedure Reset;
     function GetDeclarations: string;
-    function GetFunctionNames: string;
     property Count: integer read fNumItems;
   end;
 
@@ -242,20 +241,6 @@ begin
   Result := '';
   for i := 0 to fNumItems - 1 do
     Result := Result + flist[i].exportdecl.str + #13#10;
-end;
-
-//==============================================================================
-//
-// TMDLProcedureList.GetFunctionNames
-//
-//==============================================================================
-function TMDLProcedureList.GetFunctionNames: string;
-var
-  i: integer;
-begin
-  Result := '';
-  for i := 0 to fNumItems - 1 do
-    Result := Result + flist[i].name.str + #13#10;
 end;
 
 var

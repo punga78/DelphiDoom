@@ -54,11 +54,8 @@ const
   PU_STATIC = ZONE_TAG_STATIC;    // static entire execution time
   PU_SOUND = ZONE_TAG_SOUND;      // static while playing
   PU_MUSIC = ZONE_TAG_MUSIC;      // static while playing
-  PU_DAVE = ZONE_TAG_DAVE;        // anything else Dave wants static
   PU_LEVEL = ZONE_TAG_LEVEL;      // static until level exited
   PU_LEVSPEC = ZONE_TAG_LEVSPEC;  // a special thinker in a level
-  // Tags >= 100 are purgable whenever needed.
-  PU_PURGELEVEL = ZONE_TAG_PURGELEVEL;
   PU_CACHE = ZONE_TAG_CACHE;
   PU_HITAG = 101;
 

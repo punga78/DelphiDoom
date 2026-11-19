@@ -107,7 +107,6 @@ type
   end;
 
   drawtriangle_t = array[0..2] of drawpoint_t;
-  Pdrawtriangle_t = ^drawtriangle_t;
 
 {$IFNDEF OPENGL}
   drawsegfunc_t = procedure(const xx, yy, cc: integer; const amcolormap: pointer);

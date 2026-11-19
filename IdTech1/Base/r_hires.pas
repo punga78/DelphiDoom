@@ -102,7 +102,6 @@ const
 
 type
   hirestable_t = array[0..DC_HIRESFACTOR - 1, 0..255, 0..255] of LongWord;
-  Phirestable_t = ^hirestable_t;
   hiresmodtable_t = array[0..255, 0..255] of LongWord;
   Phiresmodtable_t = ^hiresmodtable_t;
 
@@ -225,18 +224,6 @@ type
     //
     //==============================================================================
     class function R_ColorLight(const c: LongWord; const lfactor: fixed_t): LongWord; static;
-    //==============================================================================
-    //
-    // R_ColorBoost
-    //
-    //==============================================================================
-    class function R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord; static;
-    //==============================================================================
-    //
-    // R_FuzzLight
-    //
-    //==============================================================================
-    class function R_FuzzLight(const c: LongWord): LongWord; static;
 {$IFNDEF OPENGL}
     //==============================================================================
     //
@@ -820,51 +807,6 @@ begin
   r := (r1 * lfactor) shr FRACBITS;
   g := (g1 * lfactor) shr FRACBITS;
   b := (b1 * lfactor) shr FRACBITS;
-  result := r + g shl 8 + b shl 16;
-end;
-
-//==============================================================================
-//
-// R_ColorBoost
-// Same as R_ColorLight but clip r, g, b values to allow lfactor greater than FRACUNIT
-//
-//==============================================================================
-class function TRendererHires.R_ColorBoost(const c: LongWord; const lfactor: fixed_t): LongWord;
-var
-  r1, g1, b1: byte;
-  r, g, b: LongWord;
-begin
-  r1 := c;
-  g1 := c shr 8;
-  b1 := c shr 16;
-  r := (r1 * lfactor) shr FRACBITS;
-  if r > 255 then
-    r := 255;
-  g := (g1 * lfactor) shr FRACBITS;
-  if g > 255 then
-    g := 255;
-  b := (b1 * lfactor) shr FRACBITS;
-  if b > 255 then
-    b := 255;
-  result := r + g shl 8 + b shl 16;
-end;
-
-//==============================================================================
-//
-// R_FuzzLight
-//
-//==============================================================================
-class function TRendererHires.R_FuzzLight(const c: LongWord): LongWord;
-var
-  r1, g1, b1: byte;
-  r, g, b: LongWord;
-begin
-  r1 := c;
-  g1 := c shr 8;
-  b1 := c shr 16;
-  r := r1 shr 3 * 7;
-  g := g1 shr 3 * 7;
-  b := b1 shr 3 * 7;
   result := r + g shl 8 + b shl 16;
 end;
 

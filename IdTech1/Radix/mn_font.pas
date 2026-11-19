@@ -100,13 +100,6 @@ function M_WriteSmallWhiteTextCenter(y: integer; const str: string; const scn: i
 
 //==============================================================================
 //
-// M_WriteSmallWhiteTextCenterNarrow
-//
-//==============================================================================
-function M_WriteSmallWhiteTextCenterNarrow(y: integer; const str: string; const scn: integer): menupos_t;
-
-//==============================================================================
-//
 // M_BigStringWidth
 //
 //==============================================================================
@@ -558,28 +551,6 @@ begin
     w := M_SmallStringWidth(lst.Strings[i]);
     x := (320 - w) div 2;
     M_WriteSmallWhiteText(x, y, lst.Strings[i], scn);
-    y := y + 14;
-  end;
-  lst.Free;
-end;
-
-//==============================================================================
-//
-// M_WriteSmallWhiteTextCenterNarrow
-//
-//==============================================================================
-function M_WriteSmallWhiteTextCenterNarrow(y: integer; const str: string; const scn: integer): menupos_t;
-var
-  i, x, w: integer;
-  lst: TDStringList;
-begin
-  lst := TDStringList.Create;
-  lst.Text := str;
-  for i := 0 to lst.Count - 1 do
-  begin
-    w := M_SmallStringWidthNarrow(lst.Strings[i]);
-    x := (320 - w) div 2;
-    M_WriteSmallWhiteTextNarrow(x, y, lst.Strings[i], scn);
     y := y + 14;
   end;
   lst.Free;

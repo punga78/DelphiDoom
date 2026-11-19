@@ -94,7 +94,6 @@ type
 
 type
   moreids_t = set of Byte;
-  Pmoreids_t = ^moreids_t;
 
 const
   UDMF_SF_CEILINGPLANE_A = DelphiDoom.Udmf.Types.UDMF_SF_CEILINGPLANE_A;
@@ -161,7 +160,6 @@ type
     x, y: fixed_t;
     zfloor, zceiling: fixed_t; // Absolute floor & ceiling height
   end;
-  Pextravertex_t = ^extravertex_t;
   extravertex_tArray = array[0..$FFFF] of extravertex_t;
   Pextravertex_tArray = ^extravertex_tArray;
 

@@ -64,11 +64,9 @@ const
   HU_FONTEND = '[';   // the last font characters
   HU_FONT4END = ']';   // the last font characters
   HU_CFONTEND = '_';  // the last console font character
-  HU_FONTCURSOR = 62; // Console cursor
 {$ELSEIF DEFINED(HEXEN)}
   HU_FONTEND = '[';   // the last font characters
   HU_CFONTEND = '_';  // the last console font character
-  HU_FONTCURSOR = 62; // Console cursor
 {$ELSEIF DEFINED(RADIX)}
   HU_FONTEND = 'z'; // the last font characters (Radix: FNTAnnn has the small letters too)
 {$ELSE}

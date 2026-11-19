@@ -116,13 +116,6 @@ procedure RX_SpawnLevelLogicThinker;
 
 //==============================================================================
 //
-// RX_RunTrigger
-//
-//==============================================================================
-procedure RX_RunTrigger(const trig_id: integer);
-
-//==============================================================================
-//
 // RX_ActivateAndRunTrigger
 // What a wall, a kill count or a moving surface do to a trigger
 //
@@ -246,17 +239,6 @@ begin
     on e: ERadixException do
       I_Warning('RX_ReadThingExtras(): %s'#13#10, [e.Message]);
   end;
-end;
-
-//==============================================================================
-//
-// RX_RunTrigger
-//
-//==============================================================================
-procedure RX_RunTrigger(const trig_id: integer);
-begin
-  if radixlogic <> nil then
-    radixlogic.RunTrigger(trig_id);
 end;
 
 //==============================================================================

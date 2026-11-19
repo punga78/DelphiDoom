@@ -50,9 +50,7 @@ const
   pm_full = TPakLookupMode.Full;            // Full pathname match
   pm_short = TPakLookupMode.Short;          // Filename only match
   pm_prefered = TPakLookupMode.Preferred;   // Filename match but specified prefered directories
-  pm_directory = TPakLookupMode.Directory;  // A dicectory will be provided
 
-  s_TEX_PATH = PAK_TEXTURE_PATH;
 
 type
   /// <summary>A file of the PAK file system given by PAK_Configure (see TPakFileStream)</summary>

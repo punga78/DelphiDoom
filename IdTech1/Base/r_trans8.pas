@@ -137,7 +137,6 @@ type
     palette: array[0..GAMMASIZE - 1] of array[0..255] of LongWord;
     table: array[0..GAMMASIZE - 1] of approxcolorindexarray_t;
   end;
-  Papproxcolorstructitem_t = ^approxcolorstructitem_t;
   approxcolorstructitem_tArray = array[0..$FF] of approxcolorstructitem_t;
   Papproxcolorstructitem_tArray = ^approxcolorstructitem_tArray;
 

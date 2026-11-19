@@ -1952,22 +1952,6 @@ end;
 
 //==============================================================================
 //
-// G_CheckSpot
-// Returns false if the player cannot be respawned
-// at the given mapthing_t spot
-// because something is occupying it
-//
-//==============================================================================
-function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
-var
-  host: ISpawnSpotHost;
-begin
-  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction);
-  result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
-end;
-
-//==============================================================================
-//
 // G_DeathMatchSpawnPlayer
 // Spawns a player at one of the random death match spots
 // called at level load and each death

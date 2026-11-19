@@ -41,7 +41,6 @@ type
     topdelta: integer;
     length: integer;   // length data bytes follows
   end;
-  Plpost_t = ^lpost_t;
 
 const
   LFACTORMIN = 16;

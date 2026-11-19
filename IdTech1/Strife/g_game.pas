@@ -1765,22 +1765,6 @@ end;
 
 //==============================================================================
 //
-// G_CheckSpot
-// Returns false if the player cannot be respawned
-// at the given mapthing_t spot
-// because something is occupying it
-//
-//==============================================================================
-function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
-var
-  host: ISpawnSpotHost;
-begin
-  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction, @G_NeedsCompatibilityMode, nil);
-  result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
-end;
-
-//==============================================================================
-//
 // G_LoadPath
 //
 // haleyjd 20101003: [STRIFE] New function

@@ -80,7 +80,6 @@ type
     numskies: integer;
     skies: array[0..MAXBATCHWALLS - 1] of skyrenderinfo8_t;
   end;
-  Pbatchskyrenderinfo8_t = ^batchskyrenderinfo8_t;
 
 var
   skies8: batchskyrenderinfo8_t = (numskies: 0);

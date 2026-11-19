@@ -328,31 +328,6 @@ end;
 
 //==============================================================================
 //
-// I_DisableAltTab
-//
-//==============================================================================
-procedure I_DisableAltTab;
-var
-  old: Boolean;
-begin
-  if s_alttab_disabled then
-    Exit;
-
-  if Win32Platform = VER_PLATFORM_WIN32_NT then
-  begin
-    if isLibrary then
-      RegisterHotKey(0, $C000, MOD_ALT, VK_TAB)
-    else
-      RegisterHotKey(0, 0, MOD_ALT, VK_TAB)
-  end
-  else
-    SystemParametersInfo(SPI_SCREENSAVERRUNNING, 1, @old, 0);
-
-  s_alttab_disabled := true;
-end;
-
-//==============================================================================
-//
 // I_EnableAltTab
 //
 //==============================================================================
@@ -543,16 +518,6 @@ end;
 procedure I_SetPalette(const palette: PByteArray);
 begin
   I_VideoServices.Palette.Convert(System.PByte(palette), System.PByte(@gammatable[usegamma]), System.PCardinal(@curpal[0]));
-end;
-
-//==============================================================================
-//
-// I_AdjustWindowMode
-//
-//==============================================================================
-function I_AdjustWindowMode: boolean;
-begin
-  result := I_VideoServices.SizeLimiter.Limit(SCREENWIDTH, SCREENHEIGHT);
 end;
 
 const

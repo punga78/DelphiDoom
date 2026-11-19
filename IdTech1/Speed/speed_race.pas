@@ -184,7 +184,6 @@ const
   CAR_OPTION = '-car';
   MANUAL_OPTION = '-manual';
   PRACTICE_OPTION = '-practice';
-  DEFAULT_LAPS = 2;
   DEFAULT_PLAYER_CAR = 1;
   GROUND_LUMP_FORMAT = 'FMAP%.2d';
   RECORDS_FILE = 'SPEED.REC';

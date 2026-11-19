@@ -48,7 +48,6 @@ type
   GLDRenderLight = TDynLightRender;
   PGLDRenderLight = PDynLightRender;
   GLDRenderLightArray = array[0..$FFF] of GLDRenderLight;
-  PGLDRenderLightArray = ^GLDRenderLightArray;
 
 var
   lightdeflumppresent: boolean = false;

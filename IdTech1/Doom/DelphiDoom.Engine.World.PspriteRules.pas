@@ -248,9 +248,6 @@ uses
 //
 // P_CalcSwing
 //
-var
-  swingx: fixed_t;
-  swingy: fixed_t;
 
 // The first set is where the weapon preferences from             // killough,
 // default.cfg are stored. These values represent the keys used   // phares

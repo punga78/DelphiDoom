@@ -383,7 +383,6 @@ type
     frontsector: Psector_t;
     status: sd_e;
   end;
-  slidedoor_p = ^slidedoor_t;
   Pslidedoor_t = ^slidedoor_t;
 
 // villsa [STRIFE] no front/back frames

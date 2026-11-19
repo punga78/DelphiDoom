@@ -169,7 +169,6 @@ type
     position: TGLVectorf3;
     rotation: TGLVectorf3;
   end;
-  Pgld_camera_t = ^gld_camera_t;
 
 var
   camera: gld_camera_t;
@@ -178,10 +177,6 @@ const
   MAP_COEFF = 128.0; // If this is changed, must be changed and to r_softgl
   MAP_SCALE = MAP_COEFF * FRACUNIT;
   FLATUVSCALE = FRACUNIT * 64.0;
-
-const
-  COORDMIN = -1.0E38;
-  COORDMAX =  1.0E38;
 
 const
   GLEPSILON = 0.000001;

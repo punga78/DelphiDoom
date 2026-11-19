@@ -140,7 +140,6 @@ type
   end;
   Pffpoint_t = ^ffpoint_t;
   ffpoint_tArray = array[0..MAXSUBSECTORPOINTS - 1] of ffpoint_t;
-  ffPpoint_tArray = ^ffpoint_tArray;
 
 
 type

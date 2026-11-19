@@ -54,7 +54,6 @@ type
     size: integer;
   end;
   Pds32cacheinfo_t = ^ds32cacheinfo_t;
-  ds32cacheinfo_tArray = array[0..FLAT32CACHESIZE - 1] of ds32cacheinfo_t;
   ds32cacheinfo_tPArray = array[0..FLAT32CACHESIZE - 1] of Pds32cacheinfo_t;
 
 type

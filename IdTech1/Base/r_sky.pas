@@ -48,8 +48,6 @@ const
   SKYFLATNAME = 'F_SKY1';
 {$ENDIF}
 
-// The sky map is 256*128*4 maps.
-  ANGLETOSKYSHIFT = 22;
   ANGLETOSKYUNIT = 1 shl 22;
 
 var
