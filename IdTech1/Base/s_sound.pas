@@ -1678,25 +1678,25 @@ begin
   begin
 {$IF DEFINED(HERETIC)}
     namebuf := TWadRoutines.stringtochar8('MUS_' + music.name);
-    music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
+    music.lumpnum := TWadRoutines.W_CheckNumForName(string(namebuf));
 {$ELSEIF DEFINED(HEXEN)}
     if Length(music.name) <= 4 then
     begin
       namebuf := TWadRoutines.stringtochar8('MUS_' + music.name);
-      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(string(namebuf));
     end;
 {$ELSE}
     namebuf := TWadRoutines.stringtochar8('d_' + music.name);
-    music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
+    music.lumpnum := TWadRoutines.W_CheckNumForName(string(namebuf));
 {$ENDIF}
     if music.lumpnum <= 0 then
     begin
 {$IF DEFINED(HERETIC)}
       namebuf := TWadRoutines.stringtochar8(music.name);
-      music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
+      music.lumpnum := TWadRoutines.W_GetNumForName(string(namebuf));
 {$ELSEIF DEFINED(HEXEN)}
       namebuf := TWadRoutines.stringtochar8(music.name);
-      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(string(namebuf));
     end;
     if music.lumpnum <= 0 then
     begin
@@ -1707,22 +1707,22 @@ begin
       if music.lumpnum <= 0 then
       begin
         namebuf :=  TWadRoutines.stringtochar8(music.name);
-        music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
+        music.lumpnum := TWadRoutines.W_GetNumForName(string(namebuf));
       end;
 {$ELSE}
       namebuf := TWadRoutines.stringtochar8('d_' + music.alias);
-      music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
+      music.lumpnum := TWadRoutines.W_CheckNumForName(string(namebuf));
       if music.lumpnum <= 0 then
       begin
         namebuf := TWadRoutines.stringtochar8(music.name);
-        music.lumpnum := TWadRoutines.W_CheckNumForName(namebuf);
+        music.lumpnum := TWadRoutines.W_CheckNumForName(string(namebuf));
       end;
     end;
 
     if music.lumpnum <= 0 then
     begin
       namebuf := TWadRoutines.stringtochar8(music.alias);
-      music.lumpnum := TWadRoutines.W_GetNumForName(namebuf);
+      music.lumpnum := TWadRoutines.W_GetNumForName(string(namebuf));
 {$ENDIF}
     end;
   end;

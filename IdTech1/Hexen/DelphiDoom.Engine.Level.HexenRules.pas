@@ -210,9 +210,9 @@ end;
 
 procedure THexenLevelRules.ReadSideTextures(AMapSide: Pmapsidedef_t; ASide: Pside_t);
 begin
-  ASide.toptexture := R_TextureNumForName(AMapSide.toptexture);
-  ASide.bottomtexture := R_TextureNumForName(AMapSide.bottomtexture);
-  ASide.midtexture := R_TextureNumForName(AMapSide.midtexture);
+  ASide.toptexture := R_TextureNumForName(string(AMapSide.toptexture));
+  ASide.bottomtexture := R_TextureNumForName(string(AMapSide.bottomtexture));
+  ASide.midtexture := R_TextureNumForName(string(AMapSide.midtexture));
 end;
 
 procedure THexenLevelRules.FixLineDefs(AData: Pointer; ALumpSize, ACount: Integer);

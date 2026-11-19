@@ -1341,8 +1341,8 @@ begin
   skytexture2 := -1;
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture <> '') then
   begin
-    skytexture := R_TextureNumForName(TGameSession.GameMapInfo.skytexture);
-    skytexture2 := R_TextureNumForName(TGameSession.GameMapInfo.skytexture2);
+    skytexture := R_TextureNumForName(string(TGameSession.GameMapInfo.skytexture));
+    skytexture2 := R_TextureNumForName(string(TGameSession.GameMapInfo.skytexture2));
   end;
   if skytexture < 0 then
   begin

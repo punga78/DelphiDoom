@@ -505,7 +505,7 @@ begin
     if finalestage = 0 then
       TFinaleLocalRoutines.F_TextWrite
     else
-      V_PageDrawer(TGameSession.GameMapInfo.endpic);
+      V_PageDrawer(string(TGameSession.GameMapInfo.endpic));
     exit;
   end;
 

@@ -374,27 +374,27 @@ begin
     if ianimdef.istexture then
     begin
       // different episode ?
-      if R_CheckTextureNumForName(ianimdef.startname) = -1 then
+      if R_CheckTextureNumForName(string(ianimdef.startname)) = -1 then
       begin
         inc(ianimdef);
         continue;
       end;
 
-      lanim.picnum := R_TextureNumForName(ianimdef.endname);
-      lanim.basepic := R_TextureNumForName(ianimdef.startname);
+      lanim.picnum := R_TextureNumForName(string(ianimdef.endname));
+      lanim.basepic := R_TextureNumForName(string(ianimdef.startname));
       lanim.istexture := true;
       lanim.numpics := lanim.picnum - lanim.basepic + 1;
     end
     else
     begin
-      if TWadRoutines.W_CheckNumForName(ianimdef.startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(string(ianimdef.startname)) = -1 then
       begin
         inc(ianimdef);
         continue;
       end;
 
-      lanim.picnum := R_FlatNumForName(ianimdef.endname);
-      lanim.basepic := R_FlatNumForName(ianimdef.startname);
+      lanim.picnum := R_FlatNumForName(string(ianimdef.endname));
+      lanim.basepic := R_FlatNumForName(string(ianimdef.startname));
       lanim.istexture := false;
       lanim.numpics := flats[lanim.picnum].lump - flats[lanim.basepic].lump + 1;
       // JVAL

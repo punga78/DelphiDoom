@@ -44,17 +44,17 @@ const
 
 class procedure TLevelColormapLines.ReadSideTextures(AMapSide: Pmapsidedef_t; ASide: Pside_t);
 begin
-  ASide.toptexture := R_SafeTextureNumForName(AMapSide.toptexture);
+  ASide.toptexture := R_SafeTextureNumForName(string(AMapSide.toptexture));
   if ASide.toptexture = 0 then
-    ASide.toptexture := -1 - R_CustomColorMapForName(AMapSide.toptexture);
+    ASide.toptexture := -1 - R_CustomColorMapForName(string(AMapSide.toptexture));
 
-  ASide.bottomtexture := R_SafeTextureNumForName(AMapSide.bottomtexture);
+  ASide.bottomtexture := R_SafeTextureNumForName(string(AMapSide.bottomtexture));
   if ASide.bottomtexture = 0 then
-    ASide.bottomtexture := -1 - R_CustomColorMapForName(AMapSide.bottomtexture);
+    ASide.bottomtexture := -1 - R_CustomColorMapForName(string(AMapSide.bottomtexture));
 
-  ASide.midtexture := R_SafeTextureNumForName(AMapSide.midtexture);
+  ASide.midtexture := R_SafeTextureNumForName(string(AMapSide.midtexture));
   if ASide.midtexture = 0 then
-    ASide.midtexture := -1 - R_CustomColorMapForName(AMapSide.midtexture);
+    ASide.midtexture := -1 - R_CustomColorMapForName(string(AMapSide.midtexture));
 end;
 
 class procedure TLevelColormapLines.ApplyToSectors;

@@ -241,7 +241,7 @@ begin
   if mo.translationname = '' then
     mo.translationtable := nil
   else
-    mo.translationtable := R_GetTranslationTable(mo.translationname);
+    mo.translationtable := R_GetTranslationTable(string(mo.translationname));
 end;
 
 //==============================================================================
@@ -252,7 +252,7 @@ end;
 procedure R_SetMobjBloodTranslation(const mo: Pmobj_t; const blood: integer);
 begin
   mo.translationname := ShortString(TTranslationBlood.NameOf(blood));
-  mo.translationtable := R_GetTranslationTable(mo.translationname);
+  mo.translationtable := R_GetTranslationTable(string(mo.translationname));
 end;
 
 end.

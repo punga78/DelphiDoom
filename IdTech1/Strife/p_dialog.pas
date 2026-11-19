@@ -2094,7 +2094,7 @@ begin
     itemOn := 0;
 
   // get backdrop
-  pic := TWadRoutines.W_CheckNumForName(currentdialog.backpic);
+  pic := TWadRoutines.W_CheckNumForName(string(currentdialog.backpic));
   dialogbgpiclumpnum := pic;
   if pic <> -1 then
     V_DrawPatch(0, 0, SCN_TMP, pic, false);

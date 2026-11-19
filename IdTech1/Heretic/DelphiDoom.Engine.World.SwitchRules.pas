@@ -138,9 +138,9 @@ begin
 
     if alphSwitchList[i].episode = 0 then
     begin
-      switchlist[index] := R_TextureNumForName(alphSwitchList[i].name1);
+      switchlist[index] := R_TextureNumForName(string(alphSwitchList[i].name1));
       inc(index);
-      switchlist[index] := R_TextureNumForName(alphSwitchList[i].name2);
+      switchlist[index] := R_TextureNumForName(string(alphSwitchList[i].name2));
       inc(index);
     end;
   end;

@@ -975,7 +975,7 @@ begin
     else if TGameSession.GameMapInfo.endpic = '$BUNNY' then
       TFinaleLocalRoutines.F_BunnyScroll
     else
-      V_PageDrawer(TGameSession.GameMapInfo.endpic);
+      V_PageDrawer(string(TGameSession.GameMapInfo.endpic));
     exit;
   end;
 
