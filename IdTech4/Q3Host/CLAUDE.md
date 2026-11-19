@@ -84,3 +84,7 @@ Unit nuove (una classe per unit): `Server.Intf` (`IQ3ServerOutput`: i messaggi d
 ## Renderer (fase 5, R0)
 
 Il renderer senza OpenGL e' in IdTech4\Q3Render (TQ3HostRendererAdapter decora TQ3RecordingRenderer senza cambiarne le risposte: i 210 test di questa libreria sono invariati). Vedi docs\Q3RENDER_CENSIMENTO.md.
+
+## Ondata 14: TQ3ServerSettings.EchoBroadcast
+
+Un solo cambio per il programma `IdTech4\Quake3`: `TQ3Server.SendServerCommand` (usato da `TGameCommands.Send` e da `DropClient`) manda il comando agli snapshot come prima e, se `EchoBroadcast` e' acceso, il client e' -1 e il testo comincia per `print`, scrive `broadcast: ...` (con i `\n` espansi) alla console come `SV_SendServerCommand` di un dedicato. Spento per default: `Tests.Q3Host` 210 invariati.

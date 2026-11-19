@@ -134,6 +134,7 @@
     'IdTech4\Qvm' = 'IdTech4'
     'IdTech4\Q3Host' = 'IdTech4'
     'IdTech4\Q3Render' = 'IdTech4'
+    'IdTech4\Quake3' = 'IdTech4'
     'IdTech4\D3Host' = 'IdTech4'
     'IdTech4\D3Game' = 'IdTech4'
     'IdTech4\Pmove' = 'IdTech4'

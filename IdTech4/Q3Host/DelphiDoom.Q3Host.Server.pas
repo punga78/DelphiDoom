@@ -58,6 +58,11 @@ type
     Protocol: Integer;
     /// <summary>com_cl_running: a client in the same process (the flood protection of the commands is off)</summary>
     ClientRunning: Boolean;
+    /// <summary>
+    ///   A dedicated server writes to its console the print commands that go to every client (the C: com_dedicated, "broadcast: ..."):
+    ///   the messages of the game like "X entered the game"
+    /// </summary>
+    EchoBroadcast: Boolean;
   end;
 
   /// <summary>
@@ -153,6 +158,7 @@ type
     procedure InitCVars;
     procedure Print(const AText: AnsiString);
     procedure ShutdownGameProgs;
+    procedure SendServerCommand(AClient: Integer; const AText: AnsiString);
     procedure InitGameVM(ARestart: Boolean);
     procedure BotFrame(ATime: Integer);
     procedure RunGameFrame;
@@ -286,7 +292,7 @@ end;
 
 procedure TQ3Server.TGameCommands.Send(AClient: Integer; const AText: AnsiString);
 begin
-  FServer.FSnaps.Send(AClient, AText);
+  FServer.SendServerCommand(AClient, AText);
 end;
 
 procedure TQ3Server.TGameCommands.Drop(AClient: Integer; const AReason: AnsiString);
@@ -493,6 +499,14 @@ end;
 function TQ3Server.ClientLastCommand(AClient: Integer): AnsiString;
 begin
   Result := FClients[AClient].LastClientCommandString;
+end;
+
+// SV_SendServerCommand: a dedicated server echoes the print commands for everybody (SV_ExpandNewlines: a new line is written \n)
+procedure TQ3Server.SendServerCommand(AClient: Integer; const AText: AnsiString);
+begin
+  FSnaps.Send(AClient, AText);
+  if FSettings.EchoBroadcast and (AClient < 0) and (Copy(AText, 1, 5) = 'print') then
+    Print('broadcast: ' + AnsiString(StringReplace(string(AText), #10, '\n', [rfReplaceAll])) + #10);
 end;
 
 // SV_ShutdownGameProgs
@@ -1027,7 +1041,7 @@ begin
   if FSnaps.Phase(AClient) = TQ3ServerClientPhase.Zombie then
     Exit;
   // tell everyone why they got dropped
-  FSnaps.Send(-1, AnsiString(Format('print "%s^7 %s'#10'"', [string(FClients[AClient].Name), string(AReason)])));
+  SendServerCommand(-1, AnsiString(Format('print "%s^7 %s'#10'"', [string(FClients[AClient].Name), string(AReason)])));
   FSnaps.Drop(AClient, AReason);
   // call the prog function for removing a client: this will remove the body, among other things
   if Assigned(FGame) then
