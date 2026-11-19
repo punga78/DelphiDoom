@@ -18,7 +18,7 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Logging.Intf, DelphiDoom.Qvm.Intf,
   DelphiDoom.Q3Host.Client.Types, DelphiDoom.Q3Host.Client.Intf, DelphiDoom.Q3Render.Types,
-  DelphiDoom.Q3Render.Intf;
+  DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Frame.Renderer;
 
 type
   /// <summary>
@@ -40,6 +40,10 @@ type
     FLog: ILog;
     FWorld: IQ3RenderWorld;
     FModelHandles: TDictionary<Integer, Integer>;
+    FHostShaders: TDictionary<Integer, Integer>;
+    FTable: IQ3ShaderTable;
+    FRenderer: TQ3Renderer;
+    procedure Warn(const AText: string);
   public
     constructor Create(const AInner: IQ3HostRenderer; const AShaders: IQ3ShaderRegistry;
       const AModels: IQ3ModelRegistry; const AWorldLoader: IQ3WorldLoader; const ALog: ILog = nil);
@@ -70,12 +74,27 @@ type
     function GlConfig: TBytes;
     /// <summary>The world of the last LoadWorld that found its file (nil before)</summary>
     property World: IQ3RenderWorld read FWorld;
+    /// <summary>
+    ///   R1: the adapter also builds the scene of the module into a TQ3Renderer (which it owns) and draws it into the
+    ///   recorder of GL calls between BeginFrame and EndFrame. The shader table is the one the renderer uses
+    /// </summary>
+    procedure AttachRenderer(const ATable: IQ3ShaderTable; const ARenderer: TQ3Renderer);
+    /// <summary>The index in the shader table of a shader handle of the module (0, the default shader, if unknown)</summary>
+    function HostShaderEntry(AHostHandle: Integer): Integer;
+    /// <summary>The handle in the model registry of a model handle of the module (0 if unknown)</summary>
+    function HostModelHandle(AHostHandle: Integer): Integer;
+    /// <summary>SCR_UpdateScreen starts a frame of the renderer (RE_BeginFrame)</summary>
+    procedure BeginFrame;
+    /// <summary>... and ends it (RE_EndFrame): the commands run and the frame of the recorder closes with the label</summary>
+    procedure EndFrame(const ALabel: string);
+    property Renderer: TQ3Renderer read FRenderer;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Q3Host.Arguments;
+  DelphiDoom.Collision.Q3.Types, DelphiDoom.Q3Host.Arguments, DelphiDoom.Q3Render.Scene.Types,
+  DelphiDoom.Q3Render.Scene.Reader;
 
 constructor TQ3HostRendererAdapter.Create(const AInner: IQ3HostRenderer; const AShaders: IQ3ShaderRegistry;
   const AModels: IQ3ModelRegistry; const AWorldLoader: IQ3WorldLoader; const ALog: ILog);
@@ -95,12 +114,53 @@ begin
   FWorldLoader := AWorldLoader;
   FLog := ALog;
   FModelHandles := TDictionary<Integer, Integer>.Create;
+  FHostShaders := TDictionary<Integer, Integer>.Create;
 end;
 
 destructor TQ3HostRendererAdapter.Destroy;
 begin
+  FRenderer.Free;
+  FHostShaders.Free;
   FModelHandles.Free;
   inherited Destroy;
+end;
+
+procedure TQ3HostRendererAdapter.Warn(const AText: string);
+begin
+  if Assigned(FLog) then
+    FLog.Warning(AText);
+end;
+
+procedure TQ3HostRendererAdapter.AttachRenderer(const ATable: IQ3ShaderTable; const ARenderer: TQ3Renderer);
+begin
+  FTable := ATable;
+  FRenderer := ARenderer;
+  if Assigned(FRenderer) and Assigned(FWorld) then
+    FRenderer.LoadWorld(FWorld);
+end;
+
+function TQ3HostRendererAdapter.HostShaderEntry(AHostHandle: Integer): Integer;
+begin
+  if not FHostShaders.TryGetValue(AHostHandle, Result) then
+    Result := 0;
+end;
+
+function TQ3HostRendererAdapter.HostModelHandle(AHostHandle: Integer): Integer;
+begin
+  if not FModelHandles.TryGetValue(AHostHandle, Result) then
+    Result := 0;
+end;
+
+procedure TQ3HostRendererAdapter.BeginFrame;
+begin
+  if Assigned(FRenderer) then
+    FRenderer.BeginFrame;
+end;
+
+procedure TQ3HostRendererAdapter.EndFrame(const ALabel: string);
+begin
+  if Assigned(FRenderer) then
+    FRenderer.EndFrame(ALabel);
 end;
 
 procedure TQ3HostRendererAdapter.LoadWorld(const AName: AnsiString);
@@ -117,6 +177,8 @@ begin
     end;
   end;
   FModels.SetWorld(FWorld);
+  if Assigned(FRenderer) then
+    FRenderer.LoadWorld(FWorld);
 end;
 
 function TQ3HostRendererAdapter.RegisterModel(const AName: AnsiString): Integer;
@@ -138,12 +200,17 @@ function TQ3HostRendererAdapter.RegisterShader(const AName: AnsiString): Integer
 begin
   Result := FInner.RegisterShader(AName);
   FShaders.Register(AName);
+  // RE_RegisterShader: R_FindShader(name, LIGHTMAP_2D); a defective shader is entry 0
+  if Assigned(FTable) then
+    FHostShaders.AddOrSetValue(Result, FTable.FindShader(AName, LIGHTMAP_2D));
 end;
 
 function TQ3HostRendererAdapter.RegisterShaderNoMip(const AName: AnsiString): Integer;
 begin
   Result := FInner.RegisterShaderNoMip(AName);
   FShaders.Register(AName);
+  if Assigned(FTable) then
+    FHostShaders.AddOrSetValue(Result, FTable.FindShader(AName, LIGHTMAP_2D));
 end;
 
 procedure TQ3HostRendererAdapter.RegisterFont(const AMemory: IQvmMemory; const AName: AnsiString;
@@ -155,39 +222,73 @@ end;
 procedure TQ3HostRendererAdapter.ClearScene;
 begin
   FInner.ClearScene;
+  if Assigned(FRenderer) then
+    FRenderer.ClearScene;
 end;
 
 procedure TQ3HostRendererAdapter.AddRefEntityToScene(const AMemory: IQvmMemory; AAddress: Integer);
 begin
   FInner.AddRefEntityToScene(AMemory, AAddress);
+  if not Assigned(FRenderer) then
+    Exit;
+  try
+    FRenderer.AddRefEntity(TQ3SceneReader.ReadRefEntity(AMemory, AAddress));
+  except
+    // ri.Error(ERR_DROP): the module's call is dropped, the program goes on
+    on E: EQ3RenderException do
+      Warn(E.Message);
+  end;
 end;
 
 procedure TQ3HostRendererAdapter.AddPolyToScene(const AMemory: IQvmMemory; AShader, ANumVerts, AVertsAddress,
   ANumPolys: Integer);
 begin
   FInner.AddPolyToScene(AMemory, AShader, ANumVerts, AVertsAddress, ANumPolys);
+  if Assigned(FRenderer) and (ANumVerts > 0) and (ANumPolys > 0) then
+    FRenderer.AddPolys(AShader, ANumVerts, TQ3SceneReader.ReadPolyVerts(AMemory, AVertsAddress,
+      ANumVerts * ANumPolys), ANumPolys);
 end;
 
 procedure TQ3HostRendererAdapter.AddLightToScene(const AOrigin: TQ3HostVec3; AIntensity, ARed, AGreen,
   ABlue: Single; AAdditive: Boolean);
+var
+  LOrigin: TQ3Vec3;
 begin
   FInner.AddLightToScene(AOrigin, AIntensity, ARed, AGreen, ABlue, AAdditive);
+  if not Assigned(FRenderer) then
+    Exit;
+  LOrigin[0] := AOrigin[0];
+  LOrigin[1] := AOrigin[1];
+  LOrigin[2] := AOrigin[2];
+  FRenderer.AddLight(LOrigin, AIntensity, ARed, AGreen, ABlue, AAdditive);
 end;
 
 procedure TQ3HostRendererAdapter.RenderScene(const AMemory: IQvmMemory; AAddress: Integer);
 begin
   FInner.RenderScene(AMemory, AAddress);
+  if not Assigned(FRenderer) then
+    Exit;
+  try
+    FRenderer.RenderScene(TQ3SceneReader.ReadRefDef(AMemory, AAddress));
+  except
+    on E: EQ3RenderException do
+      Warn(E.Message);
+  end;
 end;
 
 procedure TQ3HostRendererAdapter.SetColor(const AMemory: IQvmMemory; AAddress: Integer);
 begin
   FInner.SetColor(AMemory, AAddress);
+  if Assigned(FRenderer) then
+    FRenderer.SetColor(TQ3SceneReader.ReadColor(AMemory, AAddress));
 end;
 
 procedure TQ3HostRendererAdapter.DrawStretchPic(AX, AY, AWidth, AHeight, AS1, AT1, AS2, AT2: Single;
   AShader: Integer);
 begin
   FInner.DrawStretchPic(AX, AY, AWidth, AHeight, AS1, AT1, AS2, AT2, AShader);
+  if Assigned(FRenderer) then
+    FRenderer.StretchPic(AX, AY, AWidth, AHeight, AS1, AT1, AS2, AT2, AShader);
 end;
 
 procedure TQ3HostRendererAdapter.ModelBounds(const AMemory: IQvmMemory; AModel, AMinsAddress,

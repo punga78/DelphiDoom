@@ -31,6 +31,7 @@ uses
   DelphiDoom.Q3Render.Backend.Gl in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Backend.Gl.pas',
   DelphiDoom.Q3Render.Backend.State in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Backend.State.pas',
   DelphiDoom.Q3Render.Backend.Executor in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Backend.Executor.pas',
+  DelphiDoom.Q3Render.Scene.Reader in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Scene.Reader.pas',
   DelphiDoom.Q3Render.Frame.Renderer in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Frame.Renderer.pas',
   DelphiDoom.Q3Render.Files.GameFs in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Files.GameFs.pas',
   DelphiDoom.Q3Render.Image.TgaReader in '..\IdTech4\Q3Render\DelphiDoom.Q3Render.Image.TgaReader.pas',
@@ -51,6 +52,7 @@ uses
   DelphiDoom.Tests.Q3Render.World in 'Source\DelphiDoom.Tests.Q3Render.World.pas',
   DelphiDoom.Tests.Q3Render.Adapter in 'Source\DelphiDoom.Tests.Q3Render.Adapter.pas',
   DelphiDoom.Tests.Q3Render.Front in 'Source\DelphiDoom.Tests.Q3Render.Front.pas',
+  DelphiDoom.Tests.Q3Render.FrontPieces in 'Source\DelphiDoom.Tests.Q3Render.FrontPieces.pas',
   DelphiDoom.Tests.Q3Render.Backend in 'Source\DelphiDoom.Tests.Q3Render.Backend.pas',
   DelphiDoom.Tests.Q3Render.Reach in 'Source\DelphiDoom.Tests.Q3Render.Reach.pas';
 
