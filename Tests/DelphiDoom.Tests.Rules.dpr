@@ -22,7 +22,8 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Tests.Rules.MapUtil in 'Source\DelphiDoom.Tests.Rules.MapUtil.pas',
   DelphiDoom.Tests.Rules.Sight in 'Source\DelphiDoom.Tests.Rules.Sight.pas',
-  DelphiDoom.Tests.Rules.Inter in 'Source\DelphiDoom.Tests.Rules.Inter.pas';
+  DelphiDoom.Tests.Rules.Inter in 'Source\DelphiDoom.Tests.Rules.Inter.pas',
+  DelphiDoom.Tests.Rules.PickupGivers in 'Source\DelphiDoom.Tests.Rules.PickupGivers.pas';
 var
   Runner: ITestRunner;
   Results: IRunResults;

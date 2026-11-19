@@ -12,6 +12,7 @@ unit DelphiDoom.Engine.World.InterRules;
 interface
 
 uses
+  doomdef,
   d_player,
   p_mobj_h;
 
@@ -20,7 +21,20 @@ type
   public
     const
       OwnsGiveBody = False;
+      // the game of the project decides: Strife has the negative armor, Doom the old scatter version
+      {$IFDEF STRIFE}
+      AllowsNegativeArmor = True;
+      {$ELSE}
+      AllowsNegativeArmor = False;
+      {$ENDIF}
+      {$IFDEF DOOM}
+      DroppedScatterVersion = VERSION117;
+      {$ELSE}
+      DroppedScatterVersion = VERSION207;
+      {$ENDIF}
     class var ShimMaxHealth: integer;
+    class var ShimNeedsCompatibility: boolean;
+    class function NeedsCompatibility: boolean; static;
     class function MaxPlayerHealth(player: Pplayer_t): integer; static;
     class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
     class procedure TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t); static;
@@ -28,6 +42,11 @@ type
   end;
 
 implementation
+
+class function TInterGameRules.NeedsCompatibility: boolean;
+begin
+  result := ShimNeedsCompatibility;
+end;
 
 class function TInterGameRules.MaxPlayerHealth(player: Pplayer_t): integer;
 begin
