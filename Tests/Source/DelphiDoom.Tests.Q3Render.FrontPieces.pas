@@ -407,9 +407,34 @@ end;
 { TTestQ3SceneReader }
 
 procedure TTestQ3SceneReader.DovrebbeAvereLeDimensioniDelleStrutture;
+var
+  LEntity: TQ3RefEntity;
+  LVert: TQ3PolyVert;
+
+  function Offset(const AField; const ARecord): Integer;
+  begin
+    Result := NativeInt(@AField) - NativeInt(@ARecord);
+  end;
+
 begin
   Assert.AreEqual(Q3_REFENTITY_SIZE, SizeOf(TQ3RefEntity), 'refEntity_t');
   Assert.AreEqual(Q3_POLYVERT_SIZE, SizeOf(TQ3PolyVert), 'polyVert_t');
+  // the offsets that gcc gives for the real tr_types.h (Tools\Verifica\254\renderlayout.c, 32 bit)
+  Assert.AreEqual(12, Offset(LEntity.LightingOrigin, LEntity), 'lightingOrigin');
+  Assert.AreEqual(28, Offset(LEntity.Axis, LEntity), 'axis');
+  Assert.AreEqual(64, Offset(LEntity.NonNormalizedAxes, LEntity), 'nonNormalizedAxes');
+  Assert.AreEqual(68, Offset(LEntity.Origin, LEntity), 'origin');
+  Assert.AreEqual(80, Offset(LEntity.Frame, LEntity), 'frame');
+  Assert.AreEqual(84, Offset(LEntity.OldOrigin, LEntity), 'oldorigin');
+  Assert.AreEqual(96, Offset(LEntity.OldFrame, LEntity), 'oldframe');
+  Assert.AreEqual(104, Offset(LEntity.SkinNum, LEntity), 'skinNum');
+  Assert.AreEqual(112, Offset(LEntity.CustomShader, LEntity), 'customShader');
+  Assert.AreEqual(116, Offset(LEntity.ShaderRGBA, LEntity), 'shaderRGBA');
+  Assert.AreEqual(120, Offset(LEntity.ShaderTexCoord, LEntity), 'shaderTexCoord');
+  Assert.AreEqual(132, Offset(LEntity.Radius, LEntity), 'radius');
+  Assert.AreEqual(136, Offset(LEntity.Rotation, LEntity), 'rotation');
+  Assert.AreEqual(12, Offset(LVert.St, LVert), 'polyVert_t.st');
+  Assert.AreEqual(20, Offset(LVert.Modulate, LVert), 'polyVert_t.modulate');
 end;
 
 procedure TTestQ3SceneReader.DovrebbeLeggereUnRefdefDallaMemoria;

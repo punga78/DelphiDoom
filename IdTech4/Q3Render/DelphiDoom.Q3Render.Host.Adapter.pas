@@ -29,7 +29,9 @@ type
   ///   md3 (with its shaders), LoadWorld loads the BSP into surface lists. **Three answers change**, where the loaded
   ///   data give a real one in place of the neutral one of the recorder: ModelBounds of a model that loaded,
   ///   LerpTag of a tag that exists (the result is then 1), and InPVS once a world is loaded. Everything else (the
-  ///   scene, the 2D calls, fonts, skins, decals, LightForPoint, the glconfig) is the recorder's
+  ///   scene, the 2D calls, fonts, skins, decals, LightForPoint, the glconfig) is the recorder's. **R1 (AttachRenderer):**
+  ///   the scene and the 2D calls also go to a TQ3Renderer (front end and backend over a recorder of GL calls), with
+  ///   the frames opened by BeginFrame and closed by EndFrame; the answers to the module do not change
   /// </summary>
   TQ3HostRendererAdapter = class(TInterfacedObject, IQ3HostRenderer)
   strict private
@@ -93,7 +95,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Collision.Q3.Types, DelphiDoom.Q3Host.Arguments, DelphiDoom.Q3Render.Scene.Types,
+  DelphiDoom.Collision.Q3.Types, DelphiDoom.Models.Static.Md3.Intf, DelphiDoom.Q3Host.Arguments,
+  DelphiDoom.Q3Render.Scene.Types,
   DelphiDoom.Q3Render.Scene.Reader;
 
 constructor TQ3HostRendererAdapter.Create(const AInner: IQ3HostRenderer; const AShaders: IQ3ShaderRegistry;
@@ -183,12 +186,27 @@ end;
 
 function TQ3HostRendererAdapter.RegisterModel(const AName: AnsiString): Integer;
 var
-  LHandle: Integer;
+  LHandle, LSurface: Integer;
+  LModel: IMd3Model;
+  LName: AnsiString;
 begin
   Result := FInner.RegisterModel(AName);
   LHandle := FModels.Register(AName);
   if LHandle > 0 then
+  begin
     FModelHandles.AddOrSetValue(Result, LHandle);
+    // R_LoadMD3 registers the shaders of the surfaces with LIGHTMAP_NONE when the model is registered: the place
+    // of a shader in the sorted list depends on the order of registration
+    if Assigned(FTable) then
+    begin
+      LModel := FModels.GetModel(LHandle);
+      if Assigned(LModel) then
+        for LSurface := 0 to LModel.NumSurfaces - 1 do
+          for LName in LModel.Surfaces[LSurface].Shaders do
+            if LName <> '' then
+              FTable.FindShader(LName, LIGHTMAP_NONE);
+    end;
+  end;
 end;
 
 function TQ3HostRendererAdapter.RegisterSkin(const AName: AnsiString): Integer;
