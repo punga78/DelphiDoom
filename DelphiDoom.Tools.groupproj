@@ -28,6 +28,9 @@
         <Projects Include="IdTech1\Parity\ParityTool.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="IdTech4\Quake3\Quake3Server.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="IdTech1\Strife\ddc_strife.dproj">
             <Dependencies/>
         </Projects>
@@ -111,6 +114,15 @@
     <Target Name="ParityTool:Make">
         <MSBuild Projects="IdTech1\Parity\ParityTool.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Quake3Server">
+        <MSBuild Projects="IdTech4\Quake3\Quake3Server.dproj"/>
+    </Target>
+    <Target Name="Quake3Server:Clean">
+        <MSBuild Projects="IdTech4\Quake3\Quake3Server.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Quake3Server:Make">
+        <MSBuild Projects="IdTech4\Quake3\Quake3Server.dproj" Targets="Make"/>
+    </Target>
     <Target Name="ddc_strife">
         <MSBuild Projects="IdTech1\Strife\ddc_strife.dproj"/>
     </Target>
@@ -121,13 +133,13 @@
         <MSBuild Projects="IdTech1\Strife\ddc_strife.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="DD_IDE;DD_Tools;ddc_doom;ddc_heretic;ddc_hexen;Launcher;ddc;ParityTool;ddc_strife"/>
+        <CallTarget Targets="DD_IDE;DD_Tools;ddc_doom;ddc_heretic;ddc_hexen;Launcher;ddc;ParityTool;ddc_strife;Quake3Server"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="DD_IDE:Clean;DD_Tools:Clean;ddc_doom:Clean;ddc_heretic:Clean;ddc_hexen:Clean;Launcher:Clean;ddc:Clean;ParityTool:Clean;ddc_strife:Clean"/>
+        <CallTarget Targets="DD_IDE:Clean;DD_Tools:Clean;ddc_doom:Clean;ddc_heretic:Clean;ddc_hexen:Clean;Launcher:Clean;ddc:Clean;ParityTool:Clean;ddc_strife:Clean;Quake3Server:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="DD_IDE:Make;DD_Tools:Make;ddc_doom:Make;ddc_heretic:Make;ddc_hexen:Make;Launcher:Make;ddc:Make;ParityTool:Make;ddc_strife:Make"/>
+        <CallTarget Targets="DD_IDE:Make;DD_Tools:Make;ddc_doom:Make;ddc_heretic:Make;ddc_hexen:Make;Launcher:Make;ddc:Make;ParityTool:Make;ddc_strife:Make;Quake3Server:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
