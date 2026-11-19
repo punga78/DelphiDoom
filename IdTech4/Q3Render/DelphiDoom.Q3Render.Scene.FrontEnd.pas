@@ -28,7 +28,8 @@ type
 
   /// <summary>R_AddDrawSurfCmd: a view was sorted; the surfaces are a copy of its range of the list</summary>
   TQ3DrawSurfsEvent = reference to procedure(const AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef;
-    const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>);
+    const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>; const APolys: TArray<TQ3ScenePoly>;
+    const ADlights: TArray<TQ3DynamicLight>);
 
   /// <summary>What a view left: its parameters and where its sorted drawSurfs are in the list</summary>
   TQ3ViewResult = record
@@ -340,6 +341,7 @@ begin
   if LCull = CULL_OUT then
     Exit;
   LFog := ModelFogNumber(AEntity, AModel);
+  LReference := Default(TQ3SurfaceRef);
   LReference.Kind := skMd3;
   LReference.Index := AEntityNumber;
   for LSurface := 0 to AModel.NumSurfaces - 1 do
@@ -379,6 +381,7 @@ var
   LReference: TQ3SurfaceRef;
 begin
   FList.SetEntity(Q3_ENTITYNUM_WORLD);
+  LReference := Default(TQ3SurfaceRef);
   LReference.Kind := skPoly;
   LReference.Sub := 0;
   for LIndex := 0 to High(FPolys) do
@@ -399,6 +402,7 @@ var
 begin
   if not FSettings.DrawEntities then
     Exit;
+  LReference := Default(TQ3SurfaceRef);
   for LNumber := 0 to High(FEntities) do
   begin
     LEntity := FEntities[LNumber];
@@ -435,7 +439,12 @@ begin
               FAdder.AddBrushModelSurfaces(LBrush, LOrientation.ViewOrigin);
           end
           else if Assigned(LModel) then
-            AddMd3Surfaces(LNumber, LEntity, LModel, AView)
+          begin
+            AddMd3Surfaces(LNumber, LEntity, LModel, AView);
+            // the frames the model was given are kept in the entity, where the backend reads them
+            FEntities[LNumber].Frame := LEntity.Frame;
+            FEntities[LNumber].OldFrame := LEntity.OldFrame;
+          end
           else if not LNotDrawnInView then
           begin
             // MOD_BAD: the null model axis, with the default shader
@@ -527,7 +536,7 @@ begin
     SetLength(LSurfaces, FLastResult.NumDrawSurfs);
     for LIndex := 0 to High(LSurfaces) do
       LSurfaces[LIndex] := FList.Item(LFirst + LIndex);
-    FOnDrawSurfs(AParms, FRefDef, LSurfaces, FEntities);
+    FOnDrawSurfs(AParms, FRefDef, LSurfaces, FEntities, FPolys, FDlights);
   end;
 end;
 

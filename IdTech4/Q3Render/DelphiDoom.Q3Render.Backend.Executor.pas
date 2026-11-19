@@ -20,8 +20,9 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.Types,
-  DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.Q3Render.Scene.Types, DelphiDoom.Q3Render.Intf,
-  DelphiDoom.Q3Render.Backend.Gl, DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Frame.Commands;
+  DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.MathCore.Patch.Intf, DelphiDoom.Q3Render.Scene.Types,
+  DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Scene.FrontEnd, DelphiDoom.Q3Render.Backend.Gl,
+  DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Frame.Commands;
 
 type
   /// <summary>What the backend drew and what it left out (a surface kind that is not ported draws nothing)</summary>
@@ -33,10 +34,15 @@ type
     FacesDrawn: Integer;
     TrianglesDrawn: Integer;
     StretchPics: Integer;
-    SkippedGrids: Integer;
+    GridsDrawn: Integer;
+    PolysDrawn: Integer;
+    SpritesDrawn: Integer;
+    BeamsDrawn: Integer;
+    RailsDrawn: Integer;
+    LightningDrawn: Integer;
+    Md3Drawn: Integer;
+    AxisDrawn: Integer;
     SkippedFlares: Integer;
-    SkippedPolys: Integer;
-    SkippedEntities: Integer;
     SkippedMd3: Integer;
     SkippedSky: Integer;
     SkippedDlightPasses: Integer;
@@ -49,8 +55,9 @@ type
   ///   made up (1, 2, 3 ... in the order the images are first bound: no texture is ever created)
   /// </summary>
   /// <remarks>
-  ///   Not ported, and counted in the stats: the grids of patches, flares, the surfaces of polys, sprites, beams and
-  ///   md3 models, the sky, the dynamic light pass, the fog pass and the stencil shadows. The compiled vertex array
+  ///   Not ported, and counted in the stats: flares, the sky, the dynamic light pass, the fog pass and the stencil
+  ///   shadows (the grids of patches, the polygons, the sprites, the beams, the rails, the lightning and the md3
+  ///   models are drawn: Backend.Surfaces). The compiled vertex array
   ///   extension and two texture units are taken as there (glLockArraysEXT, the multitexture iterators), the colours
   ///   are those of overbright bits 1 (identity light 0.5)
   /// </remarks>
@@ -70,7 +77,14 @@ type
     FSink: IQ3GlSink;
     FState: TQ3GlState;
     FShaders: IQ3ShaderTable;
+    FModels: IQ3ModelRegistry;
+    FModelMapper: TQ3HandleMapper;
     FWorld: IQ3RenderWorld;
+    FGrids: TArray<IPatchGrid>;
+    FTessellator: TQ3SurfaceTessellator;
+    FDlightBits: Integer;
+    FPolys: TArray<TQ3ScenePoly>;
+    FDlights: TArray<TQ3DynamicLight>;
     FCalc: TQ3ShaderCalc;
     FVidWidth: Integer;
     FVidHeight: Integer;
@@ -121,6 +135,12 @@ type
     function IteratorKind(const AEntry: TQ3ShaderEntry): Integer;
     procedure SurfaceFace(AIndex: Integer);
     procedure SurfaceTriangles(AIndex: Integer);
+    procedure SurfaceEntity;
+    procedure SurfaceMesh(const ASurface: TQ3SurfaceRef);
+    procedure SurfaceBeam;
+    procedure SurfaceAxis;
+    procedure FlushSurface;
+    procedure RestartSurface;
     procedure SetGL2D;
     procedure BeginDrawingView;
     procedure RenderDrawSurfList(const ASurfaces: TArray<TQ3DrawSurf>);
@@ -129,8 +149,9 @@ type
     procedure MatrixCall(const AName: string; const AMatrix: array of Single);
     procedure PrepareTessEntity;
   public
-    constructor Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; AVidWidth, AVidHeight: Integer;
-      const ANowMilliseconds: TFunc<Integer>);
+    /// <param name="AModels">The md3 models the entities of the scene refer to (by the handle the mapper gives)</param>
+    constructor Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; const AModels: IQ3ModelRegistry;
+      const AModelMapper: TQ3HandleMapper; AVidWidth, AVidHeight: Integer; const ANowMilliseconds: TFunc<Integer>);
     destructor Destroy; override;
     /// <summary>RE_LoadWorldMap: the surfaces the draw commands refer to (nil forgets them)</summary>
     procedure SetWorld(const AWorld: IQ3RenderWorld);
@@ -144,7 +165,8 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.Collision.Q3.Types, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.Types,
+  System.Math, DelphiDoom.Decl.Q3Shader.Calc.FloatMask, DelphiDoom.Models.Static.Md3.Intf,
+  DelphiDoom.Collision.Q3.Types, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.Types,
   DelphiDoom.Decl.Q3Shader.Calc.StageColors, DelphiDoom.Decl.Q3Shader.Calc.LightCalc,
   DelphiDoom.Q3Render.View.Setup, DelphiDoom.Q3Render.Draw.List;
 
@@ -164,8 +186,8 @@ begin
     Move(AValues[0], Result[0], ACount * 4);
 end;
 
-constructor TQ3Backend.Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; AVidWidth,
-  AVidHeight: Integer; const ANowMilliseconds: TFunc<Integer>);
+constructor TQ3Backend.Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; const AModels: IQ3ModelRegistry;
+  const AModelMapper: TQ3HandleMapper; AVidWidth, AVidHeight: Integer; const ANowMilliseconds: TFunc<Integer>);
 var
   LIndex: Integer;
 begin
@@ -177,7 +199,10 @@ begin
   FSink := ASink;
   FState := TQ3GlState.Create(ASink);
   FShaders := AShaders;
+  FModels := AModels;
+  FModelMapper := AModelMapper;
   FCalc := TQ3ShaderCalc.Create;
+  FTessellator := TQ3SurfaceTessellator.Create(FlushSurface, RestartSurface, FCalc.Tables.SinTable);
   FVidWidth := AVidWidth;
   FVidHeight := AVidHeight;
   FNowMilliseconds := ANowMilliseconds;
@@ -197,6 +222,7 @@ end;
 destructor TQ3Backend.Destroy;
 begin
   FTextureIds.Free;
+  FTessellator.Free;
   FCalc.Free;
   FState.Free;
   inherited Destroy;
@@ -205,6 +231,20 @@ end;
 procedure TQ3Backend.SetWorld(const AWorld: IQ3RenderWorld);
 begin
   FWorld := AWorld;
+  if Assigned(AWorld) then
+    FGrids := AWorld.GetGrids
+  else
+    FGrids := nil;
+end;
+
+procedure TQ3Backend.FlushSurface;
+begin
+  EndSurface;
+end;
+
+procedure TQ3Backend.RestartSurface;
+begin
+  BeginSurface(FTessShader, FTessFog);
 end;
 
 function TQ3Backend.TextureCount: Integer;
@@ -407,6 +447,8 @@ procedure TQ3Backend.BeginSurface(AShader, AFogNumber: Integer);
 begin
   FTess.NumIndexes := 0;
   FTess.NumVertexes := 0;
+  // will be ORed in by the surface functions
+  FDlightBits := 0;
   FTessShader := AShader;
   FTessEntry := FShaders.GetEntry(AShader);
   FTessFog := AFogNumber;
@@ -706,6 +748,99 @@ begin
   Inc(FStats.TrianglesDrawn);
 end;
 
+procedure TQ3Backend.SurfaceEntity;
+begin
+  // RB_SurfaceEntity: the entities that have a single procedurally generated surface
+  case FCurrentEntity.ReType of
+    RT_SPRITE:
+      begin
+        FTessellator.Sprite(FTess, FCurrentEntity);
+        Inc(FStats.SpritesDrawn);
+      end;
+    RT_BEAM:
+      SurfaceBeam;
+    RT_RAIL_CORE:
+      begin
+        FTessellator.RailCore(FTess, FCurrentEntity);
+        Inc(FStats.RailsDrawn);
+      end;
+    RT_RAIL_RINGS:
+      begin
+        FTessellator.RailRings(FTess, FCurrentEntity);
+        Inc(FStats.RailsDrawn);
+      end;
+    RT_LIGHTNING:
+      begin
+        FTessellator.LightningBolt(FTess, FCurrentEntity);
+        Inc(FStats.LightningDrawn);
+      end;
+  else
+    SurfaceAxis;
+  end;
+end;
+
+procedure TQ3Backend.SurfaceBeam;
+var
+  LStrip: TArray<TQ3Vec3>;
+  LIndex: Integer;
+begin
+  LStrip := FTessellator.BeamStrip(FCurrentEntity);
+  if Length(LStrip) = 0 then
+    Exit;
+  // the beam is drawn straight with glBegin, not through tess
+  BindImage('$whiteimage', 0);
+  FState.State(GLS_SRCBLEND_ONE or GLS_DSTBLEND_ONE);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(1), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glBegin', [TQ3GlArg.FromEnum(GL_TRIANGLE_STRIP)]);
+  for LIndex := 0 to High(LStrip) do
+    FSink.Call('glVertex3fv', [TQ3GlArg.FromSingle(LStrip[LIndex][0]), TQ3GlArg.FromSingle(LStrip[LIndex][1]),
+      TQ3GlArg.FromSingle(LStrip[LIndex][2])]);
+  FSink.Call('glEnd', []);
+  Inc(FStats.BeamsDrawn);
+end;
+
+procedure TQ3Backend.SurfaceAxis;
+begin
+  // RB_SurfaceAxis: x/y/z lines from the origin for orientation debugging (the null model)
+  BindImage('$whiteimage', 0);
+  FSink.Call('glLineWidth', [TQ3GlArg.FromSingle(3)]);
+  FSink.Call('glBegin', [TQ3GlArg.FromEnum(GL_LINES)]);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(1), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(16), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(1), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(16), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(1)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(16)]);
+  FSink.Call('glEnd', []);
+  FSink.Call('glLineWidth', [TQ3GlArg.FromSingle(1)]);
+  Inc(FStats.AxisDrawn);
+end;
+
+procedure TQ3Backend.SurfaceMesh(const ASurface: TQ3SurfaceRef);
+var
+  LEntity: TQ3RefEntity;
+  LModel: IMd3Model;
+begin
+  // the surface of an md3 of the entity: the frames, the old frame and the back lerp are the entity's
+  LModel := nil;
+  if (ASurface.Index >= 0) and (ASurface.Index < Length(FEntities)) and Assigned(FModels) and
+    Assigned(FModelMapper) then
+  begin
+    LEntity := FEntities[ASurface.Index];
+    LModel := FModels.GetModel(FModelMapper(LEntity.HModel));
+  end;
+  if (not Assigned(LModel)) or (ASurface.Sub >= LModel.NumSurfaces) then
+  begin
+    Inc(FStats.SkippedMd3);
+    Exit;
+  end;
+  FTessellator.Mesh(FTess, LModel.Surfaces[ASurface.Sub], LEntity.Frame, LEntity.OldFrame, LEntity.BackLerp);
+  Inc(FStats.Md3Drawn);
+end;
+
 procedure TQ3Backend.SetGL2D;
 begin
   FProjection2D := True;
@@ -816,6 +951,8 @@ var
   LSurface: TQ3SurfaceRef;
 begin
   LOriginalTime := FFloatTime;
+  FTessellator.SetView(FView.Orientation, FView.IsMirror);
+  FTessellator.SetEntityOrientation(FView.World);
   BeginDrawingView;
   LOldEntity := -1;
   FCurrentEntityWorld := True;
@@ -875,6 +1012,7 @@ begin
           FOrientation := FView.World;
           FTessShaderTime := FFloatTime;
         end;
+        FTessellator.SetEntityOrientation(FOrientation);
         MatrixCall('glLoadMatrixf', FOrientation.ModelMatrix);
         if LOldDepthRange <> LDepthRange then
         begin
@@ -887,22 +1025,35 @@ begin
         LOldEntity := LEntity;
       end;
     end;
-    // the triangles of the surface
+    // the triangles of the surface (rb_surfaceTable)
     case LSurface.Kind of
       skFace:
-        SurfaceFace(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        begin
+          FDlightBits := FDlightBits or LSurface.DlightMask;
+          SurfaceFace(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        end;
       skTriangles:
-        SurfaceTriangles(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        begin
+          FDlightBits := FDlightBits or LSurface.DlightMask;
+          SurfaceTriangles(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        end;
       skGrid:
-        Inc(FStats.SkippedGrids);
+        begin
+          // the surface of the world that is a grid: needsNormal is always set
+          FTessellator.Grid(FTess, FDlightBits, True, FGrids[LSurface.Index], LSurface.DlightMask);
+          Inc(FStats.GridsDrawn);
+        end;
       skFlare:
         Inc(FStats.SkippedFlares);
       skPoly:
-        Inc(FStats.SkippedPolys);
+        begin
+          FTessellator.Polychain(FTess, FPolys[LSurface.Index]);
+          Inc(FStats.PolysDrawn);
+        end;
       skEntity:
-        Inc(FStats.SkippedEntities);
+        SurfaceEntity;
       skMd3:
-        Inc(FStats.SkippedMd3);
+        SurfaceMesh(LSurface);
     end;
   end;
   FFloatTime := LOriginalTime;
@@ -924,6 +1075,8 @@ begin
   FFloatTime := ACommand.FloatTime;
   FView := ACommand.View;
   FEntities := ACommand.Entities;
+  FPolys := ACommand.Polys;
+  FDlights := ACommand.Dlights;
   RenderDrawSurfList(ACommand.DrawSurfs);
 end;
 
@@ -932,7 +1085,10 @@ var
   LIndex, LChannel: Integer;
   LCommand: TQ3RenderCommand;
   LValue: Single;
+  LMask: IInterface;
 begin
+  // the C does not stop on a NaN or an infinity (a patch whose lightmap coordinates are junk has some)
+  LMask := TQ3FloatMask.Enter;
   for LIndex := 0 to ACommands.Count - 1 do
   begin
     LCommand := ACommands.Item(LIndex);

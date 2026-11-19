@@ -185,6 +185,11 @@ type
     Kind: TQ3SurfaceKind;
     Index: Integer;
     Sub: Integer;
+    /// <summary>
+    ///   The dlights that reach the surface (what R_DlightSurface keeps in the surface: dlightBits). The C keeps it in
+    ///   the surface itself, where it stays from frame to frame; here it belongs to the drawSurf of the frame
+    /// </summary>
+    DlightMask: Integer;
   end;
 
   /// <summary>drawSurf_t: the sort key packs the shader, the entity, the fog and the dlight bits</summary>

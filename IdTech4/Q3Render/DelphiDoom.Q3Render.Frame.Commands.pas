@@ -40,6 +40,10 @@ type
     FloatTime: Single;
     DrawSurfs: TArray<TQ3DrawSurf>;
     Entities: TArray<TQ3RefEntity>;
+    /// <summary>The polygons of the scene (srfPoly_t: a drawSurf of kind skPoly indexes them)</summary>
+    Polys: TArray<TQ3ScenePoly>;
+    /// <summary>refdef.dlights of the scene (what the dynamic light pass reads)</summary>
+    Dlights: TArray<TQ3DynamicLight>;
     /// <summary>The buffer of a draw buffer command: GL_BACK</summary>
     Buffer: Integer;
   end;
@@ -62,7 +66,8 @@ type
     procedure AddStretchPic(AShader: Integer; AX, AY, AWidth, AHeight, AS1, AT1, AS2, AT2: Single);
     /// <summary>R_AddDrawSurfCmd</summary>
     procedure AddDrawSurfs(const AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef;
-      const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>);
+      const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>;
+      const APolys: TArray<TQ3ScenePoly>; const ADlights: TArray<TQ3DynamicLight>);
     /// <summary>RE_EndFrame: the swap buffers command</summary>
     procedure AddSwapBuffers;
   end;
@@ -146,12 +151,15 @@ begin
 end;
 
 procedure TQ3CommandList.AddDrawSurfs(const AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef;
-  const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>);
+  const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>; const APolys: TArray<TQ3ScenePoly>;
+  const ADlights: TArray<TQ3DynamicLight>);
 var
   LCommand: TQ3RenderCommand;
 begin
   LCommand := Default(TQ3RenderCommand);
   LCommand.Kind := rcDrawSurfs;
+  LCommand.Polys := Copy(APolys);
+  LCommand.Dlights := Copy(ADlights);
   LCommand.View := AView;
   LCommand.RefDef := ARefDef;
   // refdef.floatTime = time * 0.001f

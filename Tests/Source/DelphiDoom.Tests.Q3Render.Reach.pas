@@ -130,12 +130,13 @@ begin
   LFront := AAdapter.Renderer.Front.Stats;
   LBackend := AAdapter.Renderer.Backend.Stats;
   Result := Format('%s render: scenes=%d drawsurfs(last scene)=%d world=%d polys=%d entities=%d portal=%d | ' +
-    'backend: surfaces=%d batches=%d faces=%d triangles=%d stretchpics=%d textures=%d | not ported: grids=%d ' +
-    'flares=%d polys=%d entities=%d md3=%d sky=%d fogpasses=%d',
+    'backend: surfaces=%d batches=%d faces=%d triangles=%d stretchpics=%d textures=%d | drawn: grids=%d polys=%d ' +
+    'sprites=%d beams=%d rails=%d lightning=%d md3=%d axis=%d | not ported: flares=%d md3=%d sky=%d fogpasses=%d',
     [ALabel, LFront.Scenes, LFront.DrawSurfs, LFront.WorldSurfaces, LFront.PolySurfaces, LFront.EntitySurfaces,
     LFront.PortalSurfaces, LBackend.Surfaces, LBackend.Batches, LBackend.FacesDrawn, LBackend.TrianglesDrawn,
-    LBackend.StretchPics, AAdapter.Renderer.Backend.TextureCount, LBackend.SkippedGrids, LBackend.SkippedFlares,
-    LBackend.SkippedPolys, LBackend.SkippedEntities, LBackend.SkippedMd3, LBackend.SkippedSky,
+    LBackend.StretchPics, AAdapter.Renderer.Backend.TextureCount, LBackend.GridsDrawn, LBackend.PolysDrawn,
+    LBackend.SpritesDrawn, LBackend.BeamsDrawn, LBackend.RailsDrawn, LBackend.LightningDrawn, LBackend.Md3Drawn,
+    LBackend.AxisDrawn, LBackend.SkippedFlares, LBackend.SkippedMd3, LBackend.SkippedSky,
     LBackend.SkippedFogPasses]);
 end;
 
