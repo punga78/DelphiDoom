@@ -21,7 +21,8 @@
 
   Non fa commit, non fa push, non scrive su GitHub. Il rapporto va committato da chi lo lancia.
 
-  Uso (dal checkout principale, su master, nessun altro programma aperto che compili o giochi):
+  Uso (da un TERMINALE normale, non da uno strumento in primo piano di Claude Code che dopo 10 minuti interrompe il comando;
+  dal checkout principale, su master, nessun altro programma aperto che compili o giochi):
     powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Misura-Finale.ps1 -DryRun       # solo il piano e le precondizioni
     powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Misura-Finale.ps1                # la misura vera
     powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Misura-Finale.ps1 -VecchioSw c6c8903c -VecchioGl 4282c434d `
@@ -76,6 +77,7 @@ $script:Avvisi = New-Object System.Collections.Generic.List[string]
 $script:Carico = New-Object System.Collections.Generic.List[string]
 $script:Gametic = ''
 $script:Mutex = $null
+$script:GlOk = $true
 $script:Fase = 'precondizioni'
 $tmp = Join-Path $env:TEMP "ddmisura_$marca"
 $logs = Join-Path $root 'logs'
@@ -102,13 +104,13 @@ function Convert-Numero {
 function Format-Percento {
   param($Valore)
   if ($null -eq $Valore) { return 'n.d.' }
-  ([double]$Valore).ToString('+0.00;-0.00;+0.00', [Globalization.CultureInfo]::InvariantCulture) + '%'
+  ([double]$Valore).ToString('+0.00;-0.00;+0.00', [Globalization.CultureInfo]::GetCultureInfo('it-IT')) + '%'
 }
 
 function Format-Numero {
   param($Valore)
   if ($null -eq $Valore) { return 'n.d.' }
-  ([double]$Valore).ToString('0.##', [Globalization.CultureInfo]::InvariantCulture)
+  ([double]$Valore).ToString('0.##', [Globalization.CultureInfo]::GetCultureInfo('it-IT'))
 }
 
 function Get-Git {
@@ -158,6 +160,8 @@ function Get-Precondizioni {
   $ramo = Get-Git @('rev-parse', '--abbrev-ref', 'HEAD')
   Add-Controllo 'checkout su master' ($ramo.Testo -eq 'master') ("ramo attuale: " + $ramo.Testo)
   $stato = Get-Git @('status', '--porcelain')
+  # i rapporti docs\MISURA_FINALE_* di un giro precedente non sporcano master (si puo' rilanciare con un'altra demo)
+  $stato.Testo = (($stato.Testo -split "`n") | Where-Object { $_ -and $_ -notmatch 'docs/MISURA_FINALE_' }) -join "`n"
   Add-Controllo 'master pulito (nessuna modifica, nessun file non tracciato)' ($stato.Codice -eq 0 -and $stato.Testo -eq '') ($(if ($stato.Testo -eq '') { 'pulito' } else { (($stato.Testo -split "`n") | Select-Object -First 5) -join '; ' }))
   if (-not $DryRun) { [void](Get-Git @('fetch', 'origin', 'master', '--quiet')) }
   $contr = Get-Git @('rev-list', '--left-right', '--count', 'HEAD...origin/master')
@@ -226,6 +230,16 @@ function Invoke-Comando {
 function Invoke-Ps {
   param([string]$Titolo, [string[]]$Argomenti, [string]$Cartella = $root)
   Invoke-Comando -Titolo $Titolo -Eseguibile 'powershell' -Argomenti (@('-NoProfile', '-ExecutionPolicy', 'Bypass') + $Argomenti) -Cartella $Cartella
+}
+
+# La stessa scelta di Compila.ps1 -Which Old: la patch dei ganci dipende da com'e' fatto l'albero.
+function Select-PatchGl {
+  param([string]$Albero)
+  if (Test-Path -LiteralPath (Join-Path $Albero 'Libs\OpenGlBinding')) {
+    if (Test-Path -LiteralPath (Join-Path $Albero 'Libs\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas')) { return 'hook-gl.pre226.patch' }
+    return 'hook-gl.pre-glcontext.patch'
+  }
+  'hook-gl.patch'
 }
 
 function New-Worktree {
@@ -356,7 +370,9 @@ function Register-Giro {
     $righe = $b.Righe.ToArray()
     $stat = Read-StatCoppie $righe
     $esito = ConvertTo-Esito $b.V
+    if ($esito -ne 'non affidabile' -and ($null -eq $stat.Vecchio -or $null -eq $stat.Nuovo -or $null -eq $stat.Delta -or ($righe -join ' ') -match 'esecuzione fallita')) { $esito = 'errore' }
     $nota = (($righe | Where-Object { $_ -match '^(Prima|Dopo):|misura non affidabile:|ATTENZIONE' }) -join ' / ')
+    if ($esito -eq 'errore') { $nota += ' / USCITA: ' + (($righe | Select-Object -First 4) -join ' | ') }
     foreach ($c in ($righe | Where-Object { $_ -match '^(Prima|Dopo):' })) { $script:Carico.Add(('SW {0} modo {1}: {2}' -f $b.P, $b.M, $c)) }
     Add-Riga 'Software' $b.P $b.M 'Doom32' $Tentativo $esito $stat $nota $Comando $Coppie
     $registrate += [pscustomobject]@{ P = $b.P; M = $b.M; Esito = $esito }
@@ -397,7 +413,8 @@ function Register-Gl {
   param([string]$Variante, [int]$Tentativo, $Risultato, [string]$Comando)
   $stat = Read-StatCoppie $Risultato.Righe
   $esito = switch ($Risultato.Codice) { 0 { 'entro il 5%' } 1 { 'oltre il 5%' } 3 { 'non affidabile' } default { 'errore' } }
-  $nota = (($Risultato.Righe | Where-Object { $_ -match 'MISURA NON AFFIDABILE|^coppia' }) -join ' / ')
+  if ($esito -ne 'non affidabile' -and ($null -eq $stat.Vecchio -or $null -eq $stat.Nuovo -or $null -eq $stat.Delta)) { $esito = 'errore' }
+  $nota = (($Risultato.Righe | Where-Object { $_ -match 'MISURA NON AFFIDABILE|^coppia|rror|ccezione' } | Select-Object -First 6) -join ' / ')
   Add-Riga 'OpenGL' 'Win32' 'GL software della VM' $Variante $Tentativo $esito $stat $nota $Comando $CoppieGl
   $esito
 }
@@ -603,15 +620,31 @@ try {
   Write-Log '--- 2. Worktree'
   if (-not $DryRun) { [void](Get-Git @('worktree', 'prune')) }
   if (-not $SaltaSw) { $script:Fase = 'worktree'; New-Worktree $CartellaVecchioSw $VecchioSw }
-  if (-not $SaltaGl) { New-Worktree $CartellaVecchioGl $VecchioGl; New-Worktree $CartellaNuovoGl 'HEAD' }
-
+  if (-not $SaltaGl) {
+    New-Worktree $CartellaVecchioGl $VecchioGl
+    New-Worktree $CartellaNuovoGl 'HEAD'
+    # fallire subito (e non dopo ore di build) se i ganci del registratore non applicano al vecchio o al nuovo
+    foreach ($c in @(@($CartellaVecchioGl, 'old'), @($CartellaNuovoGl, 'new'))) {
+      $nomePatch = if ($c[1] -eq 'old') { if ($DryRun) { '<scelta da Select-PatchGl sul vecchio>' } else { Select-PatchGl $c[0] } } else { 'hook-gl.patch' }
+      Write-Log ("[controllo patch] git -C {0} apply --check Tools\Verifica\opengl\{1}" -f $c[0], $nomePatch)
+      if (-not $DryRun) {
+        $e = Get-Git @('apply', '--check', (Join-Path $root "Tools\Verifica\opengl\$nomePatch")) $c[0]
+        if ($e.Codice -ne 0) {
+          $script:GlOk = $false
+          Write-Log "ATTENZIONE: $nomePatch non applica a $($c[0]): $($e.Testo). La parte OpenGL viene saltata; il software prosegue."
+          $script:Avvisi.Add("OpenGL NON misurato: $nomePatch non applica a $($c[0]) ($($e.Testo))")
+        }
+      }
+    }
+  }
   Write-Log '--- 3. Build'
   $script:Fase = 'build'
   if (-not $SaltaSw) {
     Build-Doom -Cartella $root -Etichetta 'nuovo (master)'
     Build-Doom -Cartella $CartellaVecchioSw -Etichetta "vecchio ($VecchioSw)"
   }
-  if (-not $SaltaGl) {
+  if (-not $SaltaGl -and $script:GlOk) {
+    try {
     $compila = Join-Path $CartellaNuovoGl 'Tools\Verifica\opengl\Compila.ps1'
     foreach ($v in @(@('Old', @('-OldTree', $CartellaVecchioGl)), @('New', @()))) {
       $r = Invoke-Ps -Titolo ("Compila.ps1 -Which {0} (GLDoom32 con registratore)" -f $v[0]) -Argomenti (@('-File', $compila, '-Which', $v[0], '-Game', 'GLDoom') + $v[1]) -Cartella $CartellaNuovoGl
@@ -619,6 +652,12 @@ try {
         $exe = Join-Path $CartellaNuovoGl ("harness_out\GLDoom_GL_{0}.exe" -f $v[0].ToUpper())
         if (-not (Test-Path -LiteralPath $exe)) { throw "Compila.ps1 -Which $($v[0]) non ha prodotto $exe" }
       }
+    }
+    }
+    catch {
+      $script:GlOk = $false
+      Write-Log ("ATTENZIONE: build OpenGL fallita, la parte OpenGL viene saltata: {0}" -f $_.Exception.Message)
+      $script:Avvisi.Add("OpenGL NON misurato: build fallita ({0})" -f $_.Exception.Message)
     }
   }
 
@@ -631,7 +670,7 @@ try {
   if (-not $SaltaSw) { Invoke-MisuraSoftware }
   Write-Log '--- 6. Misura OpenGL'
   $script:Fase = 'misura OpenGL'
-  if (-not $SaltaGl) {
+  if (-not $SaltaGl -and $script:GlOk) {
     if (-not $DryRun -and -not $SaltaSw) { Start-Sleep -Seconds 60 }
     Invoke-MisuraGl
   }
@@ -647,7 +686,7 @@ finally {
     Write-Log '--- 7. Rapporto e pulizia'
     if ($script:Righe.Count -gt 0) {
       try {
-        $stato = if ($script:Fase -eq 'fine') { 'COMPLETO' } else { "INCOMPLETO (fermato nella fase '$($script:Fase)')" }
+        $stato = if ($script:Fase -eq 'fine' -and $script:GlOk) { 'COMPLETO' } elseif ($script:Fase -eq 'fine') { 'INCOMPLETO (OpenGL non misurato: vedi Avvisi)' } else { "INCOMPLETO (fermato nella fase '$($script:Fase)')" }
         Write-Rapporto -Stato $stato -ShaNuovo $shaNuovo -OggettoNuovo $oggettoNuovo
       }
       catch { Write-Log "ERRORE scrivendo il rapporto: $($_.Exception.Message)" }
@@ -664,6 +703,7 @@ if ($codiceUscita -eq 0 -and -not $DryRun) {
   if (@($finali | Where-Object { $_.Esito -eq 'oltre il 5%' }).Count -gt 0) { $codiceUscita = 1 }
   elseif (@($finali | Where-Object { $_.Esito -ne 'entro il 5%' }).Count -gt 0) { $codiceUscita = 3 }
   if ($script:Righe.Count -eq 0) { $codiceUscita = 2 }
+  if (-not $SaltaGl -and -not $script:GlOk -and $codiceUscita -eq 0) { $codiceUscita = 2 }
 }
 Write-Log ("Uscita {0}" -f $codiceUscita)
 exit $codiceUscita

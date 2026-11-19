@@ -28,6 +28,10 @@ if ($Which -eq 'Old') {
   if (Test-Path (Join-Path $tree 'Libs\OpenGlBinding')) {
     $recorderFolder = 'Libs\OpenGlBinding\Recorder'
     $patch = Join-Path $PSScriptRoot 'hook-gl.pre226.patch'
+    # prima della fetta 7 della #177 (unit GlContext) i ganci stavano in gl_main.pas: patch del 2026-11-15 (f1865b58a), che applica a 4282c434d
+    if (-not (Test-Path (Join-Path $tree 'Libs\OpenGl\Legacy\DelphiDoom.Engine.GlContext.pas'))) {
+      $patch = Join-Path $PSScriptRoot 'hook-gl.pre-glcontext.patch'
+    }
   }
   New-Item -ItemType Directory -Force (Join-Path $tree $recorderFolder) | Out-Null
   New-Item -ItemType Directory -Force (Join-Path $tree 'Tools\Verifica\opengl') | Out-Null
