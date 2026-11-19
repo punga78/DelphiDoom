@@ -23,7 +23,13 @@ uses
   d_delphi in '..\IdTech1\Common\d_delphi.pas',
   DelphiDoom.Engine.Dehacked.TokenLists in '..\IdTech1\Base\DelphiDoom.Engine.Dehacked.TokenLists.pas',
   DelphiDoom.Tests.Common.Pos1 in 'Source\DelphiDoom.Tests.Common.Pos1.pas',
-  DelphiDoom.Tests.Common.DehackedTokenLists in 'Source\DelphiDoom.Tests.Common.DehackedTokenLists.pas';
+  DelphiDoom.Engine.Startup.TurboScale in '..\IdTech1\Base\DelphiDoom.Engine.Startup.TurboScale.pas',
+  DelphiDoom.Engine.Startup.DemoFileName in '..\IdTech1\Base\DelphiDoom.Engine.Startup.DemoFileName.pas',
+  DelphiDoom.Engine.Startup.ZoneSize in '..\IdTech1\Base\DelphiDoom.Engine.Startup.ZoneSize.pas',
+  DelphiDoom.Tests.Common.DehackedTokenLists in 'Source\DelphiDoom.Tests.Common.DehackedTokenLists.pas',
+  DelphiDoom.Tests.Common.StartupTurboScale in 'Source\DelphiDoom.Tests.Common.StartupTurboScale.pas',
+  DelphiDoom.Tests.Common.StartupDemoFileName in 'Source\DelphiDoom.Tests.Common.StartupDemoFileName.pas',
+  DelphiDoom.Tests.Common.StartupZoneSize in 'Source\DelphiDoom.Tests.Common.StartupZoneSize.pas';
 
 var
   Runner: ITestRunner;

@@ -41,6 +41,12 @@ type
     procedure TestNumbersAreSorted;
     [Test]
     procedure TestContains;
+    [Test]
+    procedure TestPlainProcedureRunsAndGivesItsResult;
+    [Test]
+    procedure TestPlainProcedureThatIsNilIsAnError;
+    [Test]
+    procedure TestPlainProcedureSameNumberTwiceIsAnError;
   end;
 
 implementation
@@ -164,7 +170,53 @@ begin
   Assert.WillRaise(
     procedure
     begin
-      FRegistry.Register(5, nil);
+      FRegistry.Register(5, TSpecialHandler(nil));
+    end, ESpecialRegistryException);
+end;
+
+function PlainSpecialArgs(const AContext: TSpecialContext): Boolean;
+begin
+  Result := AContext.Args^ = 7;
+end;
+
+function PlainSpecialSide(const AContext: TSpecialContext): Boolean;
+begin
+  Result := AContext.Side = 2;
+end;
+
+procedure TTestSpecialsRegistry.TestPlainProcedureRunsAndGivesItsResult;
+var
+  LArgs: array[0..4] of Byte;
+  LContext: TSpecialContext;
+begin
+  LArgs[0] := 7;
+  FRegistry.Register(40, PlainSpecialArgs);
+  FRegistry.Register(41, PlainSpecialSide);
+  LContext := ContextOf(40);
+  LContext.Args := @LArgs[0];
+  Assert.IsTrue(FRegistry.Execute(LContext), 'the plain procedure receives the context');
+  LContext := ContextOf(41);
+  LContext.Side := 1;
+  Assert.IsFalse(FRegistry.Execute(LContext), 'and its result is the result of the special');
+  Assert.IsTrue(FRegistry.Contains(40));
+end;
+
+procedure TTestSpecialsRegistry.TestPlainProcedureThatIsNilIsAnError;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      FRegistry.Register(5, TSpecialProc(nil));
+    end, ESpecialRegistryException);
+end;
+
+procedure TTestSpecialsRegistry.TestPlainProcedureSameNumberTwiceIsAnError;
+begin
+  FRegistry.Register(6, PlainSpecialSide);
+  Assert.WillRaise(
+    procedure
+    begin
+      FRegistry.Register(6, PlainSpecialArgs);
     end, ESpecialRegistryException);
 end;
 

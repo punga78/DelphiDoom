@@ -386,6 +386,9 @@ type
 implementation
 
 uses
+  DelphiDoom.Engine.Startup.TurboScale,
+  DelphiDoom.Engine.Startup.DemoFileName,
+  DelphiDoom.Engine.Startup.ZoneSize,
   DelphiDoom.Engine.Parity.Hooks,
   d_delphi,
   DelphiDoom.CommandLine.FileList,
@@ -2388,15 +2391,9 @@ begin
   if p <> 0 then
   begin
     if p < myargc - 1 then
-    begin
-      scale := atoi(myargv[p + 1], 200);
-      if scale < 10 then
-        scale := 10
-      else if scale > 200 then // 22/3/2012 (was 400)
-        scale := 200;          // 22/3/2012 (was 400)
-    end
+      scale := TStartupTurboScale.FromArgument(myargv[p + 1])
     else
-      scale := 200;
+      scale := TStartupTurboScale.DefaultScale;
     printf(' turbo scale: %d'#13#10, [scale]);
     // 22/3/2012
     forwardmove[0] := forwardmove[0] * scale div 100;
@@ -2441,10 +2438,7 @@ begin
   if (p <> 0) and (p < myargc - 1) then
   begin
     inc(p);
-    if CharPos('.', myargv[p]) > 0 then
-      filename := myargv[p]
-    else
-      sprintf(filename,'%s.lmp', [myargv[p]]);
+    filename := TStartupDemoFileName.FromArgument(myargv[p]);
     D_AddFile(filename);
     printf('Playing demo %s.'#13#10, [filename]);
   end;
@@ -2484,7 +2478,7 @@ begin
   TMainLocalRoutines.D_CheckCommonParams;
 
 // Try to guess minimum zone memory to allocate
-  mb_min := 6 + V_ScreensSize(SCN_FG) div (1024 * 1024);
+  mb_min := TStartupZoneSize.MinimumMegabytes(TStartupZoneSize.DefaultBaseMegabytes, V_ScreensSize(SCN_FG));
   if zonesize < mb_min then
     zonesize := mb_min;
 

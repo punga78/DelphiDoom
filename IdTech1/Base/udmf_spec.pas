@@ -193,10 +193,6 @@ uses
   udmf_telept,
   udmf_things;
 
-type
-  /// <summary>A special with the types of the engine</summary>
-  TLineSpecial = reference to function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean;
-
 var
   lineSpecials: ISpecialRegistry;
 
@@ -211,21 +207,90 @@ type
     class function CheckedLockedDoor(mo: Pmobj_t; lock: byte): boolean; static;
     class procedure P_LocalEarthQuakeEx(const actor: Pmobj_t; const tics: integer; const intensity: fixed_t; const maxtdist, maxddist: fixed_t); static;
     class function U_LocalQuake(args: PByteArray; actor: Pmobj_t): boolean; static;
+    class procedure P_RegisterLineSpecials(const ARegistry: ISpecialRegistry); static;
+    class function Special1(const AContext: TSpecialContext): boolean; static;
+    class function Special2(const AContext: TSpecialContext): boolean; static;
+    class function Special3(const AContext: TSpecialContext): boolean; static;
+    class function Special4(const AContext: TSpecialContext): boolean; static;
+    class function Special5(const AContext: TSpecialContext): boolean; static;
+    class function Special6(const AContext: TSpecialContext): boolean; static;
+    class function Special7(const AContext: TSpecialContext): boolean; static;
+    class function Special8(const AContext: TSpecialContext): boolean; static;
+    class function Special10(const AContext: TSpecialContext): boolean; static;
+    class function Special11(const AContext: TSpecialContext): boolean; static;
+    class function Special12(const AContext: TSpecialContext): boolean; static;
+    class function Special13(const AContext: TSpecialContext): boolean; static;
+    class function Special20(const AContext: TSpecialContext): boolean; static;
+    class function Special21(const AContext: TSpecialContext): boolean; static;
+    class function Special22(const AContext: TSpecialContext): boolean; static;
+    class function Special23(const AContext: TSpecialContext): boolean; static;
+    class function Special24(const AContext: TSpecialContext): boolean; static;
+    class function Special25(const AContext: TSpecialContext): boolean; static;
+    class function Special26(const AContext: TSpecialContext): boolean; static;
+    class function Special27(const AContext: TSpecialContext): boolean; static;
+    class function Special28(const AContext: TSpecialContext): boolean; static;
+    class function Special29(const AContext: TSpecialContext): boolean; static;
+    class function Special30(const AContext: TSpecialContext): boolean; static;
+    class function Special31(const AContext: TSpecialContext): boolean; static;
+    class function Special32(const AContext: TSpecialContext): boolean; static;
+    class function Special35(const AContext: TSpecialContext): boolean; static;
+    class function Special36(const AContext: TSpecialContext): boolean; static;
+    class function Special40(const AContext: TSpecialContext): boolean; static;
+    class function Special41(const AContext: TSpecialContext): boolean; static;
+    class function Special42(const AContext: TSpecialContext): boolean; static;
+    class function Special43(const AContext: TSpecialContext): boolean; static;
+    class function Special44(const AContext: TSpecialContext): boolean; static;
+    class function Special45(const AContext: TSpecialContext): boolean; static;
+    class function Special46(const AContext: TSpecialContext): boolean; static;
+    class function Special60(const AContext: TSpecialContext): boolean; static;
+    class function Special61(const AContext: TSpecialContext): boolean; static;
+    class function Special62(const AContext: TSpecialContext): boolean; static;
+    class function Special63(const AContext: TSpecialContext): boolean; static;
+    class function Special64(const AContext: TSpecialContext): boolean; static;
+    class function Special65(const AContext: TSpecialContext): boolean; static;
+    class function Special66(const AContext: TSpecialContext): boolean; static;
+    class function Special67(const AContext: TSpecialContext): boolean; static;
+    class function Special68(const AContext: TSpecialContext): boolean; static;
+    class function Special69(const AContext: TSpecialContext): boolean; static;
+    class function Special70(const AContext: TSpecialContext): boolean; static;
+    class function Special71(const AContext: TSpecialContext): boolean; static;
+    class function Special72(const AContext: TSpecialContext): boolean; static;
+    class function Special73(const AContext: TSpecialContext): boolean; static;
+{$IFDEF STRIFE}
+    class function Special74(const AContext: TSpecialContext): boolean; static;
+{$ENDIF}
+    class function Special75(const AContext: TSpecialContext): boolean; static;
+    class function Special80(const AContext: TSpecialContext): boolean; static;
+    class function Special81(const AContext: TSpecialContext): boolean; static;
+    class function Special82(const AContext: TSpecialContext): boolean; static;
+    class function Special83(const AContext: TSpecialContext): boolean; static;
+    class function Special90(const AContext: TSpecialContext): boolean; static;
+    class function Special91(const AContext: TSpecialContext): boolean; static;
+    class function Special92(const AContext: TSpecialContext): boolean; static;
+    class function Special93(const AContext: TSpecialContext): boolean; static;
+    class function Special94(const AContext: TSpecialContext): boolean; static;
+    class function Special95(const AContext: TSpecialContext): boolean; static;
+    class function Special96(const AContext: TSpecialContext): boolean; static;
+    class function Special109(const AContext: TSpecialContext): boolean; static;
+    class function Special110(const AContext: TSpecialContext): boolean; static;
+    class function Special111(const AContext: TSpecialContext): boolean; static;
+    class function Special112(const AContext: TSpecialContext): boolean; static;
+    class function Special113(const AContext: TSpecialContext): boolean; static;
+    class function Special114(const AContext: TSpecialContext): boolean; static;
+    class function Special115(const AContext: TSpecialContext): boolean; static;
+    class function Special116(const AContext: TSpecialContext): boolean; static;
+    class function Special120(const AContext: TSpecialContext): boolean; static;
+    class function Special130(const AContext: TSpecialContext): boolean; static;
+    class function Special131(const AContext: TSpecialContext): boolean; static;
+    class function Special132(const AContext: TSpecialContext): boolean; static;
+    class function Special133(const AContext: TSpecialContext): boolean; static;
+    class function Special134(const AContext: TSpecialContext): boolean; static;
+    class function Special135(const AContext: TSpecialContext): boolean; static;
+    class function Special136(const AContext: TSpecialContext): boolean; static;
+    class function Special137(const AContext: TSpecialContext): boolean; static;
+    class function Special138(const AContext: TSpecialContext): boolean; static;
+    class function Special140(const AContext: TSpecialContext): boolean; static;
   end;
-
-//==============================================================================
-//
-// RegisterLineSpecial
-//
-//==============================================================================
-procedure RegisterLineSpecial(const ARegistry: ISpecialRegistry; ANumber: integer; const AHandler: TLineSpecial);
-begin
-  ARegistry.Register(ANumber,
-    function(const AContext: TSpecialContext): Boolean
-    begin
-      result := AHandler(PByteArray(AContext.Args), Pline_t(AContext.Line), AContext.Side, Pmobj_t(AContext.Actor));
-    end);
-end;
 
 //==============================================================================
 //
@@ -627,697 +692,1336 @@ end;
 
 //==============================================================================
 //
+// Special 1 - Poly Start Line
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special1(const AContext: TSpecialContext): boolean;
+begin
+  result := false;
+end;
+
+//==============================================================================
+//
+// Special 2 - Poly Rotate Left
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special2(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, false);
+end;
+
+//==============================================================================
+//
+// Special 3 - Poly Rotate Right
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special3(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, false);
+end;
+
+//==============================================================================
+//
+// Special 4 - Poly Move
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special4(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_MovePoly(line, args, false, false);
+end;
+
+//==============================================================================
+//
+// Special 5 - Poly Explicit Line:  Only used in initialization
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special5(const AContext: TSpecialContext): boolean;
+begin
+  result := false;
+end;
+
+//==============================================================================
+//
+// Special 6 - Poly Move Times 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special6(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_MovePoly(line, args, true, false);
+end;
+
+//==============================================================================
+//
+// Special 7 - Poly Door Swing
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special7(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SWING);
+end;
+
+//==============================================================================
+//
+// Special 8 - Poly Door Slide
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special8(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
+end;
+
+//==============================================================================
+//
+// Special 10 - Door Close
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special10(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_CLOSE);
+end;
+
+//==============================================================================
+//
+// Special 11 - Door Open
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special11(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if args[0] = 0 then
+    result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
+  else
+    result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_OPEN);
+end;
+
+//==============================================================================
+//
+// Special 12 - Door Raise
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special12(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if args[0] = 0 then
+    result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
+  else
+    result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
+end;
+
+//==============================================================================
+//
+// Special 13 - Door Locked_Raise
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special13(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if TUdmfSpecLocalRoutines.CheckedLockedDoor(mo, args[3]) then
+  begin
+    if args[0] = 0 then
+      result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
+    else
+      result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
+  end;
+end;
+
+//==============================================================================
+//
+// Special 20 - Floor Lower by Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special20(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
+end;
+
+//==============================================================================
+//
+// Special 21 - Floor Lower to Lowest
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special21(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
+end;
+
+//==============================================================================
+//
+// Special 22 - Floor Lower to Nearest
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special22(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
+end;
+
+//==============================================================================
+//
+// Special 23 - Floor Raise by Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special23(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
+end;
+
+//==============================================================================
+//
+// Special 24 - Floor Raise to Highest
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special24(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
+end;
+
+//==============================================================================
+//
+// Special 25 - Floor Raise to Nearest
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special25(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
+end;
+
+//==============================================================================
+//
+// Special 26 - Stairs Build Down Normal
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special26(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
+end;
+
+//==============================================================================
+//
+// Special 27 - Build Stairs Up Normal
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special27(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
+end;
+
+//==============================================================================
+//
+// Special 28 - Floor Raise and Crush
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special28(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
+end;
+
+//==============================================================================
+//
+// Special 29 - Build Pillar (no crushing)
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special29(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, false);
+end;
+
+//==============================================================================
+//
+// Special 30 - Open Pillar
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special30(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_OpenPillar(line, args);
+end;
+
+//==============================================================================
+//
+// Special 31 - Stairs Build Down Sync
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special31(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
+end;
+
+//==============================================================================
+//
+// Special 32 - Build Stairs Up Sync
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special32(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
+end;
+
+//==============================================================================
+//
+// Special 35 - Raise Floor by Value Times 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special35(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
+end;
+
+//==============================================================================
+//
+// Special 36 - Lower Floor by Value Times 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special36(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
+end;
+
+//==============================================================================
+//
+// Special 40 - Ceiling Lower by Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special40(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+end;
+
+//==============================================================================
+//
+// Special 41 - Ceiling Raise by Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special41(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+end;
+
+//==============================================================================
+//
+// Special 42 - Ceiling Crush and Raise
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special42(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
+end;
+
+//==============================================================================
+//
+// Special 43 - Ceiling Lower and Crush
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special43(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
+end;
+
+//==============================================================================
+//
+// Special 44 - Ceiling Crush Stop
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special44(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_CeilingCrushStop(line, args);
+end;
+
+//==============================================================================
+//
+// Special 45 - Ceiling Crush Raise and Stay
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special45(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
+end;
+
+//==============================================================================
+//
+// Special 46 - Floor Crush Stop
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special46(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_FloorCrushStop(line, args);
+end;
+
+//==============================================================================
+//
+// Special 60 - Plat Perpetual Raise
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special60(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
+end;
+
+//==============================================================================
+//
+// Special 61 - Plat Stop
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special61(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := false;
+  TUdmfPlatRoutines.EVH_StopPlat(line, args);
+end;
+
+//==============================================================================
+//
+// Special 62 - Plat Down-Wait-Up-Stay
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special62(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
+end;
+
+//==============================================================================
+//
+// Special 63 - Plat Down-by-Value*8-Wait-Up-Stay
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special63(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
+end;
+
+//==============================================================================
+//
+// Special 64 - Plat Up-Wait-Down-Stay
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special64(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
+end;
+
+//==============================================================================
+//
+// Special 65 - Plat Up-by-Value*8-Wait-Down-Stay
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special65(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
+end;
+
+//==============================================================================
+//
+// Special 66 - Floor Lower Instant * 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special66(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
+end;
+
+//==============================================================================
+//
+// Special 67 - Floor Raise Instant * 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special67(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
+end;
+
+//==============================================================================
+//
+// Special 68 - Floor Move to Value * 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special68(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
+end;
+
+//==============================================================================
+//
+// Special 69 - Ceiling Move to Value * 8
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special69(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
+end;
+
+//==============================================================================
+//
+// Special 70 - Teleport
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special70(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if side = 0 then
+  begin // Only teleport when crossing the front side of a line
+    result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, true);
+  end;
+end;
+
+//==============================================================================
+//
+// Special 71 - Teleport, no fog
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special71(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if side = 0 then
+  begin // Only teleport when crossing the front side of a line
+    result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, false);
+  end;
+end;
+
+//==============================================================================
+//
+// Special 72 - Thrust Mobj
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special72(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if side = 0 then // Only thrust on side 0
+  begin
+    TCommonMovementActions.P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
+    result := true;
+  end;
+end;
+
+//==============================================================================
+//
+// Special 73 - Damage Mobj
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special73(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if args[0] <> 0 then
+    P_DamageMobj(mo, nil, nil, args[0])
+  else  // If arg1 is zero, then guarantee a kill
+    P_DamageMobj(mo, nil, nil, 10000);
+  result := true;
+end;
+
+{$IFDEF STRIFE}
+//==============================================================================
+//
+// Special 74 - Teleport_NewMap
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special74(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if side = 0 then
+  begin // Only teleport when crossing the front side of a line
+    if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
+    begin
+      result := true;
+      G_RiftExitLevel(args[0], args[1], args[2] * ANGLEMAX_DIV_256);
+    end;
+  end;
+end;
+{$ENDIF}
+
+//==============================================================================
+//
+// Special 75 - Teleport_EndGame
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special75(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := false;
+  if side = 0 then
+  begin // Only teleport when crossing the front side of a line
+    if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
+    begin
+      result := true;
+      G_ExitLevel{$IFDEF STRIFE}(args[0]){$ENDIF};
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// Special 80 - ACS_Execute
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special80(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := P_StartACS(args[0], args[1], @args[2], mo, line, side);
+end;
+
+//==============================================================================
+//
+// Special 81 - ACS_Suspend
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special81(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := P_SuspendACS(args[0], args[1]);
+end;
+
+//==============================================================================
+//
+// Special 82 - ACS_Terminate
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special82(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := P_TerminateACS(args[0], args[1]);
+end;
+
+//==============================================================================
+//
+// Special 83 - ACS_LockedExecute
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special83(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+  side: integer;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  side := AContext.Side;
+  mo := Pmobj_t(AContext.Actor);
+  result := P_StartLockedACS(line, args, mo, side);
+end;
+
+//==============================================================================
+//
+// Special 90 - Poly Rotate Left Override
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special90(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, true);
+end;
+
+//==============================================================================
+//
+// Special 91 - Poly Rotate Right Override
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special91(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, true);
+end;
+
+//==============================================================================
+//
+// Special 92 - Poly Move Override
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special92(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_MovePoly(line, args, false, true);
+end;
+
+//==============================================================================
+//
+// Special 93 - Poly Move Times 8 Override
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special93(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TPolyobjRoutines.EVH_MovePoly(line, args, true, true);
+end;
+
+//==============================================================================
+//
+// Special 94 - Build Pillar Crush
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special94(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, true);
+end;
+
+//==============================================================================
+//
+// Special 95 - Lower Floor and Ceiling
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special95(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, false);
+end;
+
+//==============================================================================
+//
+// Special 96 - Raise Floor and Ceiling
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special96(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, true);
+end;
+
+//==============================================================================
+//
+// Special 109 - Force Lightning
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special109(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := true;
+  TUdmfSpecRoutines.P_ForceLightning(args[0]);
+end;
+
+//==============================================================================
+//
+// Special 110 - Light Raise by Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special110(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
+end;
+
+//==============================================================================
+//
+// Special 111 - Light Lower by Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special111(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
+end;
+
+//==============================================================================
+//
+// Special 112 - Light Change to Value
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special112(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
+end;
+
+//==============================================================================
+//
+// Special 113 - Light Fade
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special113(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FADE);
+end;
+
+//==============================================================================
+//
+// Special 114 - Light Glow
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special114(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_GLOW);
+end;
+
+//==============================================================================
+//
+// Special 115 - Light Flicker
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special115(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FLICKER);
+end;
+
+//==============================================================================
+//
+// Special 116 - Light Strobe
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special116(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  line: Pline_t;
+begin
+  args := PByteArray(AContext.Args);
+  line := Pline_t(AContext.Line);
+  result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_STROBE);
+end;
+
+//==============================================================================
+//
+// Special 120 - Quake Tremor
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special120(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+  mo: Pmobj_t;
+begin
+  args := PByteArray(AContext.Args);
+  mo := Pmobj_t(AContext.Actor);
+  result := TUdmfSpecLocalRoutines.U_LocalQuake(args, mo);
+end;
+
+//==============================================================================
+//
+// Special 130 - Thing_Activate
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special130(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingActivate(args[0]);
+end;
+
+//==============================================================================
+//
+// Special 131 - Thing_Deactivate
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special131(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingDeactivate(args[0]);
+end;
+
+//==============================================================================
+//
+// Special 132 - Thing_Remove
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special132(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingRemove(args[0]);
+end;
+
+//==============================================================================
+//
+// Special 133 - Thing_Destroy
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special133(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingDestroy(args[0]);
+end;
+
+//==============================================================================
+//
+// Special 134 - Thing_Projectile
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special134(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingProjectile(args, false);
+end;
+
+//==============================================================================
+//
+// Special 135 - Thing_Spawn
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special135(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingSpawn(args, true);
+end;
+
+//==============================================================================
+//
+// Special 136 - Thing_ProjectileGravity
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special136(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingProjectile(args, true);
+end;
+
+//==============================================================================
+//
+// Special 137 - Thing_SpawnNoFog
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special137(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfThingRoutines.EVH_ThingSpawn(args, false);
+end;
+
+//==============================================================================
+//
+// Special 138 - Floor_Waggle
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special138(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfFloorRoutines.EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
+end;
+
+//==============================================================================
+//
+// Special 140 - Sector_SoundChange
+//
+//==============================================================================
+class function TUdmfSpecLocalRoutines.Special140(const AContext: TSpecialContext): boolean;
+var
+  args: PByteArray;
+begin
+  args := PByteArray(AContext.Args);
+  result := TUdmfSpecLocalRoutines.EVH_SectorSoundChange(args);
+end;
+
+//==============================================================================
+//
 // P_RegisterLineSpecials
 //
 //==============================================================================
-procedure P_RegisterLineSpecials(const ARegistry: ISpecialRegistry);
+class procedure TUdmfSpecLocalRoutines.P_RegisterLineSpecials(const ARegistry: ISpecialRegistry);
 begin
-
-  // Poly Start Line
-  RegisterLineSpecial(ARegistry, 1,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-    end);
-
-  // Poly Rotate Left
-  RegisterLineSpecial(ARegistry, 2,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, false);
-    end);
-
-  // Poly Rotate Right
-  RegisterLineSpecial(ARegistry, 3,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, false);
-    end);
-
-  // Poly Move
-  RegisterLineSpecial(ARegistry, 4,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_MovePoly(line, args, false, false);
-    end);
-
-  // Poly Explicit Line:  Only used in initialization
-  RegisterLineSpecial(ARegistry, 5,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-    end);
-
-  // Poly Move Times 8
-  RegisterLineSpecial(ARegistry, 6,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_MovePoly(line, args, true, false);
-    end);
-
-  // Poly Door Swing
-  RegisterLineSpecial(ARegistry, 7,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SWING);
-    end);
-
-  // Poly Door Slide
-  RegisterLineSpecial(ARegistry, 8,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_OpenPolyDoor(line, args, PODOOR_SLIDE);
-    end);
-
-  // Door Close
-  RegisterLineSpecial(ARegistry, 10,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_CLOSE);
-    end);
-
-  // Door Open
-  RegisterLineSpecial(ARegistry, 11,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if args[0] = 0 then
-        result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
-      else
-        result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_OPEN);
-    end);
-
-  // Door Raise
-  RegisterLineSpecial(ARegistry, 12,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if args[0] = 0 then
-        result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
-      else
-        result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
-    end);
-
-  // Door Locked_Raise
-  RegisterLineSpecial(ARegistry, 13,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if TUdmfSpecLocalRoutines.CheckedLockedDoor(mo, args[3]) then
-      begin
-        if args[0] = 0 then
-          result := TUdmfDoorRoutines.EVH_VerticalDoor(line, mo)
-        else
-          result := TUdmfDoorRoutines.EVH_DoDoor(line, args, DREV_NORMAL);
-      end;
-    end);
-
-  // Floor Lower by Value
-  RegisterLineSpecial(ARegistry, 20,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
-    end);
-
-  // Floor Lower to Lowest
-  RegisterLineSpecial(ARegistry, 21,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOORTOLOWEST);
-    end);
-
-  // Floor Lower to Nearest
-  RegisterLineSpecial(ARegistry, 22,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERFLOOR);
-    end);
-
-  // Floor Raise by Value
-  RegisterLineSpecial(ARegistry, 23,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
-    end);
-
-  // Floor Raise to Highest
-  RegisterLineSpecial(ARegistry, 24,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOOR);
-    end);
-
-  // Floor Raise to Nearest
-  RegisterLineSpecial(ARegistry, 25,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
-    end);
-
-  // Stairs Build Down Normal
-  RegisterLineSpecial(ARegistry, 26,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_NORMAL);
-    end);
-
-  // Build Stairs Up Normal
-  RegisterLineSpecial(ARegistry, 27,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_NORMAL);
-    end);
-
-  // Floor Raise and Crush
-  RegisterLineSpecial(ARegistry, 28,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
-    end);
-
-  // Build Pillar (no crushing)
-  RegisterLineSpecial(ARegistry, 29,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, false);
-    end);
-
-  // Open Pillar
-  RegisterLineSpecial(ARegistry, 30,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_OpenPillar(line, args);
-    end);
-
-  // Stairs Build Down Sync
-  RegisterLineSpecial(ARegistry, 31,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, -1, STAIRS_SYNC);
-    end);
-
-  // Build Stairs Up Sync
-  RegisterLineSpecial(ARegistry, 32,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_BuildStairs(line, args, 1, STAIRS_SYNC);
-    end);
-
-  // Raise Floor by Value Times 8
-  RegisterLineSpecial(ARegistry, 35,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
-    end);
-
-  // Lower Floor by Value Times 8
-  RegisterLineSpecial(ARegistry, 36,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
-    end);
-
-  // Ceiling Lower by Value
-  RegisterLineSpecial(ARegistry, 40,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERBYVALUE);
-    end);
-
-  // Ceiling Raise by Value
-  RegisterLineSpecial(ARegistry, 41,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_RAISEBYVALUE);
-    end);
-
-  // Ceiling Crush and Raise
-  RegisterLineSpecial(ARegistry, 42,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
-    end);
-
-  // Ceiling Lower and Crush
-  RegisterLineSpecial(ARegistry, 43,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
-    end);
-
-  // Ceiling Crush Stop
-  RegisterLineSpecial(ARegistry, 44,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_CeilingCrushStop(line, args);
-    end);
-
-  // Ceiling Crush Raise and Stay
-  RegisterLineSpecial(ARegistry, 45,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
-    end);
-
-  // Floor Crush Stop
-  RegisterLineSpecial(ARegistry, 46,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_FloorCrushStop(line, args);
-    end);
-
-  // Plat Perpetual Raise
-  RegisterLineSpecial(ARegistry, 60,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
-    end);
-
-  // Plat Stop
-  RegisterLineSpecial(ARegistry, 61,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      TUdmfPlatRoutines.EVH_StopPlat(line, args);
-    end);
-
-  // Plat Down-Wait-Up-Stay
-  RegisterLineSpecial(ARegistry, 62,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
-    end);
-
-  // Plat Down-by-Value*8-Wait-Up-Stay
-  RegisterLineSpecial(ARegistry, 63,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY, 0);
-    end);
-
-  // Plat Up-Wait-Down-Stay
-  RegisterLineSpecial(ARegistry, 64,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
-    end);
-
-  // Plat Up-by-Value*8-Wait-Down-Stay
-  RegisterLineSpecial(ARegistry, 65,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfPlatRoutines.EVH_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY, 0);
-    end);
-
-  // Floor Lower Instant * 8
-  RegisterLineSpecial(ARegistry, 66,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_LOWERTIMES8INSTANT);
-    end);
-
-  // Floor Raise Instant * 8
-  RegisterLineSpecial(ARegistry, 67,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_RAISETIMES8INSTANT);
-    end);
-
-  // Floor Move to Value * 8
-  RegisterLineSpecial(ARegistry, 68,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
-    end);
-
-  // Ceiling Move to Value * 8
-  RegisterLineSpecial(ARegistry, 69,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfCeilingRoutines.EVH_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
-    end);
-
-  // Teleport
-  RegisterLineSpecial(ARegistry, 70,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if side = 0 then
-      begin // Only teleport when crossing the front side of a line
-        result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, true);
-      end;
-    end);
-
-  // Teleport, no fog
-  RegisterLineSpecial(ARegistry, 71,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if side = 0 then
-      begin // Only teleport when crossing the front side of a line
-        result := TUdmfTeleportRoutines.EVH_Teleport(args[0], mo, false);
-      end;
-    end);
-
-  // Thrust Mobj
-  RegisterLineSpecial(ARegistry, 72,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if side = 0 then // Only thrust on side 0
-      begin
-        TCommonMovementActions.P_ThrustMobj(mo, args[0] * (ANG90 div 64), args[1] * FRACUNIT);
-        result := true;
-      end;
-    end);
-
-  // Damage Mobj
-  RegisterLineSpecial(ARegistry, 73,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if args[0] <> 0 then
-        P_DamageMobj(mo, nil, nil, args[0])
-      else  // If arg1 is zero, then guarantee a kill
-        P_DamageMobj(mo, nil, nil, 10000);
-      result := true;
-    end);
-
-  {$IFDEF STRIFE}
-  // Teleport_NewMap
-  RegisterLineSpecial(ARegistry, 74,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if side = 0 then
-      begin // Only teleport when crossing the front side of a line
-        if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
-        begin
-          result := true;
-          G_RiftExitLevel(args[0], args[1], args[2] * ANGLEMAX_DIV_256);
-        end;
-      end;
-    end);
-  {$ENDIF}
-
-  // Teleport_EndGame
-  RegisterLineSpecial(ARegistry, 75,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      if side = 0 then
-      begin // Only teleport when crossing the front side of a line
-        if not ((mo <> nil) and (mo.player <> nil) and (Pplayer_t(mo.player).playerstate = PST_DEAD)) then // Players must be alive to teleport
-        begin
-          result := true;
-          G_ExitLevel{$IFDEF STRIFE}(args[0]){$ENDIF};
-        end;
-      end;
-    end);
-
-  // ACS_Execute
-  RegisterLineSpecial(ARegistry, 80,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := P_StartACS(args[0], args[1], @args[2], mo, line, side);
-    end);
-
-  // ACS_Suspend
-  RegisterLineSpecial(ARegistry, 81,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := P_SuspendACS(args[0], args[1]);
-    end);
-
-  // ACS_Terminate
-  RegisterLineSpecial(ARegistry, 82,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := P_TerminateACS(args[0], args[1]);
-    end);
-
-  // ACS_LockedExecute
-  RegisterLineSpecial(ARegistry, 83,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := P_StartLockedACS(line, args, mo, side);
-    end);
-
-  // Poly Rotate Left Override
-  RegisterLineSpecial(ARegistry, 90,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_RotatePoly(line, args, 1, true);
-    end);
-
-  // Poly Rotate Right Override
-  RegisterLineSpecial(ARegistry, 91,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_RotatePoly(line, args, -1, true);
-    end);
-
-  // Poly Move Override
-  RegisterLineSpecial(ARegistry, 92,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_MovePoly(line, args, false, true);
-    end);
-
-  // Poly Move Times 8 Override
-  RegisterLineSpecial(ARegistry, 93,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TPolyobjRoutines.EVH_MovePoly(line, args, true, true);
-    end);
-
-  // Build Pillar Crush
-  RegisterLineSpecial(ARegistry, 94,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_BuildPillar(line, args, true);
-    end);
-
-  // Lower Floor and Ceiling
-  RegisterLineSpecial(ARegistry, 95,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, false);
-    end);
-
-  // Raise Floor and Ceiling
-  RegisterLineSpecial(ARegistry, 96,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_DoFloorAndCeiling(line, args, true);
-    end);
-
-  // Force Lightning
-  RegisterLineSpecial(ARegistry, 109,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := true;
-      TUdmfSpecRoutines.P_ForceLightning(args[0]);
-    end);
-
-  // Light Raise by Value
-  RegisterLineSpecial(ARegistry, 110,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_RAISEBYVALUE);
-    end);
-
-  // Light Lower by Value
-  RegisterLineSpecial(ARegistry, 111,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_LOWERBYVALUE);
-    end);
-
-  // Light Change to Value
-  RegisterLineSpecial(ARegistry, 112,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_CHANGETOVALUE);
-    end);
-
-  // Light Fade
-  RegisterLineSpecial(ARegistry, 113,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FADE);
-    end);
-
-  // Light Glow
-  RegisterLineSpecial(ARegistry, 114,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_GLOW);
-    end);
-
-  // Light Flicker
-  RegisterLineSpecial(ARegistry, 115,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_FLICKER);
-    end);
-
-  // Light Strobe
-  RegisterLineSpecial(ARegistry, 116,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfLightRoutines.EVH_SpawnLight(line, args, LITE_STROBE);
-    end);
-
-  // Quake Tremor
-  RegisterLineSpecial(ARegistry, 120,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfSpecLocalRoutines.U_LocalQuake(args, mo);
-    end);
-
-  {  129: // UsePuzzleItem
-      begin
-        result := TSpecRoutines.EVH_LineSearchForPuzzleItem(line, args, mo);
-      end;}
-
-  // Thing_Activate
-  RegisterLineSpecial(ARegistry, 130,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingActivate(args[0]);
-    end);
-
-  // Thing_Deactivate
-  RegisterLineSpecial(ARegistry, 131,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingDeactivate(args[0]);
-    end);
-
-  // Thing_Remove
-  RegisterLineSpecial(ARegistry, 132,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingRemove(args[0]);
-    end);
-
-  // Thing_Destroy
-  RegisterLineSpecial(ARegistry, 133,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingDestroy(args[0]);
-    end);
-
-  // Thing_Projectile
-  RegisterLineSpecial(ARegistry, 134,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingProjectile(args, false);
-    end);
-
-  // Thing_Spawn
-  RegisterLineSpecial(ARegistry, 135,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingSpawn(args, true);
-    end);
-
-  // Thing_ProjectileGravity
-  RegisterLineSpecial(ARegistry, 136,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingProjectile(args, true);
-    end);
-
-  // Thing_SpawnNoFog
-  RegisterLineSpecial(ARegistry, 137,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfThingRoutines.EVH_ThingSpawn(args, false);
-    end);
-
-  // Floor_Waggle
-  RegisterLineSpecial(ARegistry, 138,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfFloorRoutines.EVH_StartFloorWaggle(args[0], args[1], args[2], args[3], args[4]);
-    end);
-
-  // Sector_SoundChange
-  RegisterLineSpecial(ARegistry, 140,
-    function(args: PByteArray; line: Pline_t; side: integer; mo: Pmobj_t): boolean
-    begin
-      result := false;
-      result := TUdmfSpecLocalRoutines.EVH_SectorSoundChange(args);
-    end);
+  ARegistry.Register(1, Special1); // Poly Start Line
+  ARegistry.Register(2, Special2); // Poly Rotate Left
+  ARegistry.Register(3, Special3); // Poly Rotate Right
+  ARegistry.Register(4, Special4); // Poly Move
+  ARegistry.Register(5, Special5); // Poly Explicit Line:  Only used in initialization
+  ARegistry.Register(6, Special6); // Poly Move Times 8
+  ARegistry.Register(7, Special7); // Poly Door Swing
+  ARegistry.Register(8, Special8); // Poly Door Slide
+  ARegistry.Register(10, Special10); // Door Close
+  ARegistry.Register(11, Special11); // Door Open
+  ARegistry.Register(12, Special12); // Door Raise
+  ARegistry.Register(13, Special13); // Door Locked_Raise
+  ARegistry.Register(20, Special20); // Floor Lower by Value
+  ARegistry.Register(21, Special21); // Floor Lower to Lowest
+  ARegistry.Register(22, Special22); // Floor Lower to Nearest
+  ARegistry.Register(23, Special23); // Floor Raise by Value
+  ARegistry.Register(24, Special24); // Floor Raise to Highest
+  ARegistry.Register(25, Special25); // Floor Raise to Nearest
+  ARegistry.Register(26, Special26); // Stairs Build Down Normal
+  ARegistry.Register(27, Special27); // Build Stairs Up Normal
+  ARegistry.Register(28, Special28); // Floor Raise and Crush
+  ARegistry.Register(29, Special29); // Build Pillar (no crushing)
+  ARegistry.Register(30, Special30); // Open Pillar
+  ARegistry.Register(31, Special31); // Stairs Build Down Sync
+  ARegistry.Register(32, Special32); // Build Stairs Up Sync
+  ARegistry.Register(35, Special35); // Raise Floor by Value Times 8
+  ARegistry.Register(36, Special36); // Lower Floor by Value Times 8
+  ARegistry.Register(40, Special40); // Ceiling Lower by Value
+  ARegistry.Register(41, Special41); // Ceiling Raise by Value
+  ARegistry.Register(42, Special42); // Ceiling Crush and Raise
+  ARegistry.Register(43, Special43); // Ceiling Lower and Crush
+  ARegistry.Register(44, Special44); // Ceiling Crush Stop
+  ARegistry.Register(45, Special45); // Ceiling Crush Raise and Stay
+  ARegistry.Register(46, Special46); // Floor Crush Stop
+  ARegistry.Register(60, Special60); // Plat Perpetual Raise
+  ARegistry.Register(61, Special61); // Plat Stop
+  ARegistry.Register(62, Special62); // Plat Down-Wait-Up-Stay
+  ARegistry.Register(63, Special63); // Plat Down-by-Value*8-Wait-Up-Stay
+  ARegistry.Register(64, Special64); // Plat Up-Wait-Down-Stay
+  ARegistry.Register(65, Special65); // Plat Up-by-Value*8-Wait-Down-Stay
+  ARegistry.Register(66, Special66); // Floor Lower Instant * 8
+  ARegistry.Register(67, Special67); // Floor Raise Instant * 8
+  ARegistry.Register(68, Special68); // Floor Move to Value * 8
+  ARegistry.Register(69, Special69); // Ceiling Move to Value * 8
+  ARegistry.Register(70, Special70); // Teleport
+  ARegistry.Register(71, Special71); // Teleport, no fog
+  ARegistry.Register(72, Special72); // Thrust Mobj
+  ARegistry.Register(73, Special73); // Damage Mobj
+{$IFDEF STRIFE}
+  ARegistry.Register(74, Special74); // Teleport_NewMap
+{$ENDIF}
+  ARegistry.Register(75, Special75); // Teleport_EndGame
+  ARegistry.Register(80, Special80); // ACS_Execute
+  ARegistry.Register(81, Special81); // ACS_Suspend
+  ARegistry.Register(82, Special82); // ACS_Terminate
+  ARegistry.Register(83, Special83); // ACS_LockedExecute
+  ARegistry.Register(90, Special90); // Poly Rotate Left Override
+  ARegistry.Register(91, Special91); // Poly Rotate Right Override
+  ARegistry.Register(92, Special92); // Poly Move Override
+  ARegistry.Register(93, Special93); // Poly Move Times 8 Override
+  ARegistry.Register(94, Special94); // Build Pillar Crush
+  ARegistry.Register(95, Special95); // Lower Floor and Ceiling
+  ARegistry.Register(96, Special96); // Raise Floor and Ceiling
+  ARegistry.Register(109, Special109); // Force Lightning
+  ARegistry.Register(110, Special110); // Light Raise by Value
+  ARegistry.Register(111, Special111); // Light Lower by Value
+  ARegistry.Register(112, Special112); // Light Change to Value
+  ARegistry.Register(113, Special113); // Light Fade
+  ARegistry.Register(114, Special114); // Light Glow
+  ARegistry.Register(115, Special115); // Light Flicker
+  ARegistry.Register(116, Special116); // Light Strobe
+  ARegistry.Register(120, Special120); // Quake Tremor
+  ARegistry.Register(130, Special130); // Thing_Activate
+  ARegistry.Register(131, Special131); // Thing_Deactivate
+  ARegistry.Register(132, Special132); // Thing_Remove
+  ARegistry.Register(133, Special133); // Thing_Destroy
+  ARegistry.Register(134, Special134); // Thing_Projectile
+  ARegistry.Register(135, Special135); // Thing_Spawn
+  ARegistry.Register(136, Special136); // Thing_ProjectileGravity
+  ARegistry.Register(137, Special137); // Thing_SpawnNoFog
+  ARegistry.Register(138, Special138); // Floor_Waggle
+  ARegistry.Register(140, Special140); // Sector_SoundChange
+
+  // 129: UsePuzzleItem (TSpecRoutines.EVH_LineSearchForPuzzleItem) is not registered
 
   // Line specials only processed during level initialization
   // 100: Scroll_Texture_Left
@@ -1325,8 +2029,6 @@ begin
   // 102: Scroll_Texture_Up
   // 103: Scroll_Texture_Down
   // 121: Line_SetIdentification
-
-  // Inert Line specials
 end;
 
 //==============================================================================
@@ -1356,7 +2058,7 @@ end;
 //==============================================================================
 class procedure TUdmfSpecRoutines.P_ConfigureLineSpecials(const ARegistry: ISpecialRegistry);
 begin
-  P_RegisterLineSpecials(ARegistry);
+  TUdmfSpecLocalRoutines.P_RegisterLineSpecials(ARegistry);
   lineSpecials := ARegistry;
 end;
 

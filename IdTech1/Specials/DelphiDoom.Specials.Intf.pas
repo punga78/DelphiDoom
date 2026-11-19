@@ -30,13 +30,21 @@ type
   TSpecialHandler = reference to function(const AContext: TSpecialContext): Boolean;
 
   /// <summary>
+  ///   The code of a special as a plain procedure, e.g. a static method of a class: no closure is created
+  ///   by the caller, the registry wraps it
+  /// </summary>
+  TSpecialProc = function(const AContext: TSpecialContext): Boolean;
+
+  /// <summary>
   ///   The table that gives to each number of special the code that runs it: a new special is
   ///   a new registration, not a new branch of a big case
   /// </summary>
   ISpecialRegistry = interface
     ['{6C1B0E52-8F3A-4D7B-9A25-3E41D0B7C968}']
     /// <summary>Adds a special; a number that is already there is an error</summary>
-    procedure Register(ANumber: Integer; const AHandler: TSpecialHandler);
+    procedure Register(ANumber: Integer; const AHandler: TSpecialHandler); overload;
+    /// <summary>Adds a special given as a plain procedure; same rules as the overload with a method reference</summary>
+    procedure Register(ANumber: Integer; const AHandler: TSpecialProc); overload;
     /// <summary>True if the number has a handler</summary>
     function Contains(ANumber: Integer): Boolean;
     /// <summary>Runs the special of the context; a number that nobody registered does nothing and gives false</summary>
