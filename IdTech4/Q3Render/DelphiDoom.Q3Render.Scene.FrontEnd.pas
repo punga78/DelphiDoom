@@ -28,7 +28,8 @@ type
 
   /// <summary>R_AddDrawSurfCmd: a view was sorted; the surfaces are a copy of its range of the list</summary>
   TQ3DrawSurfsEvent = reference to procedure(const AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef;
-    const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>);
+    const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>; const APolys: TArray<TQ3ScenePoly>;
+    const ADlights: TArray<TQ3DynamicLight>);
 
   /// <summary>What a view left: its parameters and where its sorted drawSurfs are in the list</summary>
   TQ3ViewResult = record
@@ -76,8 +77,11 @@ type
     FOnDrawSurfs: TQ3DrawSurfsEvent;
     procedure AddPolygonSurfaces;
     procedure AddEntitySurfaces(const AView: TQ3FrontViewParms);
-    procedure AddMd3Surfaces(AEntityNumber: Integer; var AEntity: TQ3RefEntity; const AModel: IMd3Model;
-      const AView: TQ3FrontViewParms);
+    procedure AddMd3Surfaces(AEntityNumber: Integer; var AEntity: TQ3RefEntity; AHandle: Integer;
+      const AModel: IMd3Model; const AView: TQ3FrontViewParms);
+    function ProjectRadius(ARadius: Single; const ALocation: TQ3Vec3; const AView: TQ3FrontViewParms): Single;
+    function ComputeLod(const AEntity: TQ3RefEntity; const AModel: IMd3Model; ANumLods: Integer;
+      const AView: TQ3FrontViewParms): Integer;
     function CullModel(const AEntity: TQ3RefEntity; const AModel: IMd3Model): Integer;
     function SpriteFogNumber(const AEntity: TQ3RefEntity): Integer;
     function ModelFogNumber(const AEntity: TQ3RefEntity; const AModel: IMd3Model): Integer;
@@ -117,7 +121,8 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Models.Static.Md3.Types, DelphiDoom.Q3Render.Types,
+  System.Math, DelphiDoom.Collision.Q3.Math, DelphiDoom.Collision.Q3.VectorMath, DelphiDoom.Decl.Q3Shader.Types,
+  DelphiDoom.Decl.Q3Shader.Calc.Types, DelphiDoom.Models.Static.Md3.Types, DelphiDoom.Q3Render.Types,
   DelphiDoom.Q3Render.View.Setup;
 
 resourcestring
@@ -313,10 +318,104 @@ begin
   Result := FCuller.CullLocalBox(LMins, LMaxs);
 end;
 
-procedure TQ3FrontEnd.AddMd3Surfaces(AEntityNumber: Integer; var AEntity: TQ3RefEntity; const AModel: IMd3Model;
-  const AView: TQ3FrontViewParms);
+function TQ3FrontEnd.ProjectRadius(ARadius: Single; const ALocation: TQ3Vec3; const AView: TQ3FrontViewParms): Single;
+var
+  LC, LDistance, LTerm, LProjected, LW: Single;
+  LP: array[0..2] of Single;
+  LMatrix: array[0..15] of Single;
+begin
+  LC := TQ3Math.Dot(AView.Orientation.Axis[0], AView.Orientation.Origin);
+  LDistance := TQ3Math.Dot(AView.Orientation.Axis[0], ALocation);
+  LDistance := LDistance - LC;
+  if LDistance <= 0 then
+    Exit(0);
+  LP[0] := 0;
+  LP[1] := Abs(ARadius);
+  LP[2] := -LDistance;
+  Move(AView.ProjectionMatrix, LMatrix, SizeOf(LMatrix));
+  // projected[1] = p[0] * m[1] + p[1] * m[5] + p[2] * m[9] + m[13] and projected[3] likewise with 3, 7, 11, 15
+  LProjected := LP[0] * LMatrix[1];
+  LTerm := LP[1] * LMatrix[5];
+  LProjected := LProjected + LTerm;
+  LTerm := LP[2] * LMatrix[9];
+  LProjected := LProjected + LTerm;
+  LProjected := LProjected + LMatrix[13];
+  LW := LP[0] * LMatrix[3];
+  LTerm := LP[1] * LMatrix[7];
+  LW := LW + LTerm;
+  LTerm := LP[2] * LMatrix[11];
+  LW := LW + LTerm;
+  LW := LW + LMatrix[15];
+  Result := LProjected / LW;
+  if Result > 1.0 then
+    Result := 1.0;
+end;
+
+function TQ3FrontEnd.ComputeLod(const AEntity: TQ3RefEntity; const AModel: IMd3Model; ANumLods: Integer;
+  const AView: TQ3FrontViewParms): Integer;
+var
+  LFrame: TMd3Frame;
+  LCorner: TQ3Vec3;
+  LProjected, LLodScale, LFlod, LTerm, LA, LB: Single;
+  LLocation: TQ3Vec3;
+  LAxis: Integer;
+  LMins, LMaxs: TQ3Vec3;
+begin
+  if ANumLods < 2 then
+    // model has only 1 LOD level, skip computations and bias
+    Result := 0
+  else
+  begin
+    // multiple LODs exist, so compute projected bounding sphere and use that as a criteria for selecting LOD
+    LFrame := AModel.Frames[AEntity.Frame];
+    LMins[0] := LFrame.BoundsMin.X;
+    LMins[1] := LFrame.BoundsMin.Y;
+    LMins[2] := LFrame.BoundsMin.Z;
+    LMaxs[0] := LFrame.BoundsMax.X;
+    LMaxs[1] := LFrame.BoundsMax.Y;
+    LMaxs[2] := LFrame.BoundsMax.Z;
+    for LAxis := 0 to 2 do
+    begin
+      LA := Abs(LMins[LAxis]);
+      LB := Abs(LMaxs[LAxis]);
+      if LA > LB then
+        LCorner[LAxis] := LA
+      else
+        LCorner[LAxis] := LB;
+    end;
+    LLocation := AEntity.Origin;
+    LProjected := ProjectRadius(TQ3VectorMath.Length(LCorner), LLocation, AView);
+    if LProjected <> 0 then
+    begin
+      LLodScale := FSettings.LodScale;
+      if LLodScale > 20 then
+        LLodScale := 20;
+      LTerm := LProjected * LLodScale;
+      LFlod := 1.0 - LTerm;
+    end
+    else
+      // object intersects near view plane, e.g. view weapon
+      LFlod := 0;
+    LFlod := LFlod * ANumLods;
+    Result := TQ3CMath.FloatToInt(LFlod);
+    if Result < 0 then
+      Result := 0
+    else if Result >= ANumLods then
+      Result := ANumLods - 1;
+  end;
+  Inc(Result, FSettings.LodBias);
+  if Result >= ANumLods then
+    Result := ANumLods - 1;
+  if Result < 0 then
+    Result := 0;
+end;
+
+procedure TQ3FrontEnd.AddMd3Surfaces(AEntityNumber: Integer; var AEntity: TQ3RefEntity; AHandle: Integer;
+  const AModel: IMd3Model; const AView: TQ3FrontViewParms);
 var
   LPersonal: Boolean;
+  LHeader: IMd3Model;
+  LLod: Integer;
   LSurface, LCull, LFog, LShader, LIndex: Integer;
   LNames: TArray<AnsiString>;
   LReference: TQ3SurfaceRef;
@@ -335,17 +434,24 @@ begin
     AEntity.Frame := 0;
     AEntity.OldFrame := 0;
   end;
+  // compute LOD: the level of detail by the size of the model on the screen, and the md3 of that level
+  LLod := ComputeLod(AEntity, AModel, FModels.LodCount(AHandle), AView);
+  LHeader := FModels.GetModelLod(AHandle, LLod);
+  if not Assigned(LHeader) then
+    LHeader := AModel;
   // the whole model is culled if the box of both frames is outside the frustum
-  LCull := CullModel(AEntity, AModel);
+  LCull := CullModel(AEntity, LHeader);
   if LCull = CULL_OUT then
     Exit;
-  LFog := ModelFogNumber(AEntity, AModel);
+  LFog := ModelFogNumber(AEntity, LHeader);
+  LReference := Default(TQ3SurfaceRef);
   LReference.Kind := skMd3;
   LReference.Index := AEntityNumber;
-  for LSurface := 0 to AModel.NumSurfaces - 1 do
+  LReference.Lod := LLod;
+  for LSurface := 0 to LHeader.NumSurfaces - 1 do
   begin
     LReference.Sub := LSurface;
-    LNames := AModel.Surfaces[LSurface].Shaders;
+    LNames := LHeader.Surfaces[LSurface].Shaders;
     if AEntity.CustomShader <> 0 then
       LShader := FShaderMapper(AEntity.CustomShader)
     else if AEntity.CustomSkin > 0 then
@@ -379,6 +485,7 @@ var
   LReference: TQ3SurfaceRef;
 begin
   FList.SetEntity(Q3_ENTITYNUM_WORLD);
+  LReference := Default(TQ3SurfaceRef);
   LReference.Kind := skPoly;
   LReference.Sub := 0;
   for LIndex := 0 to High(FPolys) do
@@ -399,6 +506,7 @@ var
 begin
   if not FSettings.DrawEntities then
     Exit;
+  LReference := Default(TQ3SurfaceRef);
   for LNumber := 0 to High(FEntities) do
   begin
     LEntity := FEntities[LNumber];
@@ -435,7 +543,12 @@ begin
               FAdder.AddBrushModelSurfaces(LBrush, LOrientation.ViewOrigin);
           end
           else if Assigned(LModel) then
-            AddMd3Surfaces(LNumber, LEntity, LModel, AView)
+          begin
+            AddMd3Surfaces(LNumber, LEntity, LHandle, LModel, AView);
+            // the frames the model was given are kept in the entity, where the backend reads them
+            FEntities[LNumber].Frame := LEntity.Frame;
+            FEntities[LNumber].OldFrame := LEntity.OldFrame;
+          end
           else if not LNotDrawnInView then
           begin
             // MOD_BAD: the null model axis, with the default shader
@@ -527,7 +640,7 @@ begin
     SetLength(LSurfaces, FLastResult.NumDrawSurfs);
     for LIndex := 0 to High(LSurfaces) do
       LSurfaces[LIndex] := FList.Item(LFirst + LIndex);
-    FOnDrawSurfs(AParms, FRefDef, LSurfaces, FEntities);
+    FOnDrawSurfs(AParms, FRefDef, LSurfaces, FEntities, FPolys, FDlights);
   end;
 end;
 

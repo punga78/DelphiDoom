@@ -19,9 +19,12 @@ unit DelphiDoom.Q3Render.Backend.Executor;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.Types,
-  DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.Q3Render.Scene.Types, DelphiDoom.Q3Render.Intf,
-  DelphiDoom.Q3Render.Backend.Gl, DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Frame.Commands;
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Collision.Q3.Types, DelphiDoom.Decl.Q3Shader.Types,
+  DelphiDoom.Decl.Q3Shader.Calc.Types,
+  DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.MathCore.Patch.Intf, DelphiDoom.Q3Render.Scene.Types,
+  DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Scene.FrontEnd, DelphiDoom.Q3Render.Backend.Gl,
+  DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Backend.Sky,
+  DelphiDoom.Q3Render.Backend.Passes, DelphiDoom.Q3Render.Frame.Commands;
 
 type
   /// <summary>What the backend drew and what it left out (a surface kind that is not ported draws nothing)</summary>
@@ -33,14 +36,20 @@ type
     FacesDrawn: Integer;
     TrianglesDrawn: Integer;
     StretchPics: Integer;
-    SkippedGrids: Integer;
+    GridsDrawn: Integer;
+    PolysDrawn: Integer;
+    SpritesDrawn: Integer;
+    BeamsDrawn: Integer;
+    RailsDrawn: Integer;
+    LightningDrawn: Integer;
+    Md3Drawn: Integer;
+    AxisDrawn: Integer;
     SkippedFlares: Integer;
-    SkippedPolys: Integer;
-    SkippedEntities: Integer;
     SkippedMd3: Integer;
-    SkippedSky: Integer;
-    SkippedDlightPasses: Integer;
-    SkippedFogPasses: Integer;
+    SkiesDrawn: Integer;
+    /// <summary>The draws of the dynamic light pass (one for every light that reaches a batch) and of the fog pass</summary>
+    DlightDraws: Integer;
+    FogDraws: Integer;
   end;
 
   /// <summary>
@@ -49,8 +58,10 @@ type
   ///   made up (1, 2, 3 ... in the order the images are first bound: no texture is ever created)
   /// </summary>
   /// <remarks>
-  ///   Not ported, and counted in the stats: the grids of patches, flares, the surfaces of polys, sprites, beams and
-  ///   md3 models, the sky, the dynamic light pass, the fog pass and the stencil shadows. The compiled vertex array
+  ///   Not ported, and counted in the stats: flares (the original draws none with its defaults: r_flares is 0 and
+  ///   RB_AddDlightFlares is commented out) and the stencil shadows (the grids of patches, the polygons, the sprites,
+  ///   the beams, the rails, the lightning and the md3 models are drawn: Backend.Surfaces; the sky: Backend.Sky; the
+  ///   dynamic light pass and the fog pass: Backend.Passes). The compiled vertex array
   ///   extension and two texture units are taken as there (glLockArraysEXT, the multitexture iterators), the colours
   ///   are those of overbright bits 1 (identity light 0.5)
   /// </remarks>
@@ -66,11 +77,27 @@ type
       PTR_SV_TEXCOORDS1 = 5;
       PTR_SV_COLORS = 6;
       PTR_CONSTANT255 = 7;
+      PTR_PASS_TEXCOORDS = 8;
+      PTR_PASS_COLORS = 9;
   strict private
     FSink: IQ3GlSink;
     FState: TQ3GlState;
     FShaders: IQ3ShaderTable;
+    FModels: IQ3ModelRegistry;
+    FModelMapper: TQ3HandleMapper;
     FWorld: IQ3RenderWorld;
+    FGrids: TArray<IPatchGrid>;
+    FTessellator: TQ3SurfaceTessellator;
+    FSky: TQ3SkyBox;
+    FFogs: TArray<TQ3Fog>;
+    FTransformedDlights: TArray<TQ3Vec3>;
+    FPassTexCoords: TArray<Single>;
+    FPassColors: TBytes;
+    FSettings: TQ3RenderSettings;
+    FSkyRenderedThisView: Boolean;
+    FDlightBits: Integer;
+    FPolys: TArray<TQ3ScenePoly>;
+    FDlights: TArray<TQ3DynamicLight>;
     FCalc: TQ3ShaderCalc;
     FVidWidth: Integer;
     FVidHeight: Integer;
@@ -109,6 +136,11 @@ type
     procedure SetPointer(const AName: string; ASize: Integer; AStride: Integer; ASource: Integer);
     function ArrayBlock(ASource, AStride: Integer): TBytes;
     procedure DrawElements;
+    procedure DrawElementsFrom(const AIndexes: TArray<Integer>; ACount: Integer);
+    procedure DrawPass(const ADraw: TQ3PassDraw);
+    procedure ShadingPasses;
+    procedure BuildFogs;
+    procedure TransformDlights;
     procedure CheckOverflow(AVertexes, AIndexes: Integer);
     procedure BeginSurface(AShader, AFogNumber: Integer);
     procedure EndSurface;
@@ -116,11 +148,18 @@ type
     procedure ComputeStage(const AStage: TQ3ShaderStage);
     procedure DrawMultitextured(const AStage: TQ3ShaderStage);
     procedure StageIteratorGeneric;
+    procedure StageIteratorSky;
     procedure StageIteratorVertexLitTexture;
     procedure StageIteratorLightmappedMultitexture;
     function IteratorKind(const AEntry: TQ3ShaderEntry): Integer;
     procedure SurfaceFace(AIndex: Integer);
     procedure SurfaceTriangles(AIndex: Integer);
+    procedure SurfaceEntity;
+    procedure SurfaceMesh(const ASurface: TQ3SurfaceRef);
+    procedure SurfaceBeam;
+    procedure SurfaceAxis;
+    procedure FlushSurface;
+    procedure RestartSurface;
     procedure SetGL2D;
     procedure BeginDrawingView;
     procedure RenderDrawSurfList(const ASurfaces: TArray<TQ3DrawSurf>);
@@ -129,11 +168,14 @@ type
     procedure MatrixCall(const AName: string; const AMatrix: array of Single);
     procedure PrepareTessEntity;
   public
-    constructor Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; AVidWidth, AVidHeight: Integer;
-      const ANowMilliseconds: TFunc<Integer>);
+    /// <param name="AModels">The md3 models the entities of the scene refer to (by the handle the mapper gives)</param>
+    constructor Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; const AModels: IQ3ModelRegistry;
+      const AModelMapper: TQ3HandleMapper; AVidWidth, AVidHeight: Integer; const ANowMilliseconds: TFunc<Integer>);
     destructor Destroy; override;
     /// <summary>RE_LoadWorldMap: the surfaces the draw commands refer to (nil forgets them)</summary>
     procedure SetWorld(const AWorld: IQ3RenderWorld);
+    /// <summary>The cvars of the backend (r_fastsky, r_showsky, r_drawSun, r_lodCurveError and the rail ones)</summary>
+    procedure SetSettings(const ASettings: TQ3RenderSettings);
     /// <summary>RB_ExecuteRenderCommands</summary>
     procedure Execute(const ACommands: TQ3CommandList);
     property Stats: TQ3BackendStats read FStats;
@@ -144,7 +186,7 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.Collision.Q3.Types, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.Types,
+  System.Math, DelphiDoom.MapFile.Bsp.Intf, DelphiDoom.Decl.Q3Shader.Calc.FloatMask, DelphiDoom.Models.Static.Md3.Intf, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.Types,
   DelphiDoom.Decl.Q3Shader.Calc.StageColors, DelphiDoom.Decl.Q3Shader.Calc.LightCalc,
   DelphiDoom.Q3Render.View.Setup, DelphiDoom.Q3Render.Draw.List;
 
@@ -164,8 +206,8 @@ begin
     Move(AValues[0], Result[0], ACount * 4);
 end;
 
-constructor TQ3Backend.Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; AVidWidth,
-  AVidHeight: Integer; const ANowMilliseconds: TFunc<Integer>);
+constructor TQ3Backend.Create(const ASink: IQ3GlSink; const AShaders: IQ3ShaderTable; const AModels: IQ3ModelRegistry;
+  const AModelMapper: TQ3HandleMapper; AVidWidth, AVidHeight: Integer; const ANowMilliseconds: TFunc<Integer>);
 var
   LIndex: Integer;
 begin
@@ -177,7 +219,12 @@ begin
   FSink := ASink;
   FState := TQ3GlState.Create(ASink);
   FShaders := AShaders;
+  FModels := AModels;
+  FModelMapper := AModelMapper;
   FCalc := TQ3ShaderCalc.Create;
+  FTessellator := TQ3SurfaceTessellator.Create(FlushSurface, RestartSurface, FCalc.Tables.SinTable);
+  FSky := TQ3SkyBox.Create;
+  FSettings := TQ3RenderSettings.Defaults;
   FVidWidth := AVidWidth;
   FVidHeight := AVidHeight;
   FNowMilliseconds := ANowMilliseconds;
@@ -197,6 +244,8 @@ end;
 destructor TQ3Backend.Destroy;
 begin
   FTextureIds.Free;
+  FSky.Free;
+  FTessellator.Free;
   FCalc.Free;
   FState.Free;
   inherited Destroy;
@@ -205,6 +254,28 @@ end;
 procedure TQ3Backend.SetWorld(const AWorld: IQ3RenderWorld);
 begin
   FWorld := AWorld;
+  if Assigned(AWorld) then
+    FGrids := AWorld.GetGrids
+  else
+    FGrids := nil;
+  BuildFogs;
+end;
+
+procedure TQ3Backend.SetSettings(const ASettings: TQ3RenderSettings);
+begin
+  FSettings := ASettings;
+  FTessellator.SetLodCurveError(ASettings.LodCurveError);
+  FTessellator.SetRailSettings(ASettings.RailWidth, ASettings.RailCoreWidth, ASettings.RailSegmentLength);
+end;
+
+procedure TQ3Backend.FlushSurface;
+begin
+  EndSurface;
+end;
+
+procedure TQ3Backend.RestartSurface;
+begin
+  BeginSurface(FTessShader, FTessFog);
 end;
 
 function TQ3Backend.TextureCount: Integer;
@@ -319,6 +390,10 @@ begin
       Result := FloatBytes(FSvarTexCoords[ASource - PTR_SV_TEXCOORDS0], LCount * 2);
     PTR_SV_COLORS:
       Result := Copy(FSvarColors, 0, LCount * 4);
+    PTR_PASS_TEXCOORDS:
+      Result := FloatBytes(FPassTexCoords, LCount * 2);
+    PTR_PASS_COLORS:
+      Result := Copy(FPassColors, 0, LCount * 4);
     PTR_CONSTANT255:
       begin
         SetLength(Result, LCount * 4);
@@ -331,15 +406,20 @@ begin
 end;
 
 procedure TQ3Backend.DrawElements;
+begin
+  DrawElementsFrom(FTess.Indexes, FTess.NumIndexes);
+end;
+
+procedure TQ3Backend.DrawElementsFrom(const AIndexes: TArray<Integer>; ACount: Integer);
 var
   LIndexes: TBytes;
   LIndex: Integer;
   LTex0, LTex1, LColors: TBytes;
 begin
   // R_DrawElements with the compiled vertex arrays of the card: triangles
-  SetLength(LIndexes, FTess.NumIndexes * 4);
-  for LIndex := 0 to FTess.NumIndexes - 1 do
-    PCardinal(@LIndexes[LIndex * 4])^ := Cardinal(FTess.Indexes[LIndex]);
+  SetLength(LIndexes, ACount * 4);
+  for LIndex := 0 to ACount - 1 do
+    PCardinal(@LIndexes[LIndex * 4])^ := Cardinal(AIndexes[LIndex]);
   SetLength(LTex0, 0);
   SetLength(LTex1, 0);
   SetLength(LColors, 0);
@@ -350,7 +430,7 @@ begin
   if FColorArray then
     LColors := ArrayBlock(FColorPointer, 0);
   // what the card reads through the pointers is part of the call: the arrays follow the elements
-  FSink.Call('glDrawElements', [TQ3GlArg.FromEnum(GL_TRIANGLES), TQ3GlArg.FromInt(FTess.NumIndexes),
+  FSink.Call('glDrawElements', [TQ3GlArg.FromEnum(GL_TRIANGLES), TQ3GlArg.FromInt(ACount),
     TQ3GlArg.FromEnum(GL_UNSIGNED_INT), TQ3GlArg.FromBytes(LIndexes),
     TQ3GlArg.FromBytes(ArrayBlock(FVertexPointer, 16)), TQ3GlArg.FromBytes(LTex0), TQ3GlArg.FromBytes(LTex1),
     TQ3GlArg.FromBytes(LColors)]);
@@ -371,6 +451,7 @@ procedure TQ3Backend.PrepareTessEntity;
 var
   LAxis: Integer;
 begin
+  FTess.Fogs := FFogs;
   FTess.Entity := Default(TQ3EntityShading);
   FTess.Entity.Present := True;
   FTess.Entity.IsWorld := FCurrentEntityWorld;
@@ -407,6 +488,8 @@ procedure TQ3Backend.BeginSurface(AShader, AFogNumber: Integer);
 begin
   FTess.NumIndexes := 0;
   FTess.NumVertexes := 0;
+  // will be ORed in by the surface functions
+  FDlightBits := 0;
   FTessShader := AShader;
   FTessEntry := FShaders.GetEntry(AShader);
   FTessFog := AFogNumber;
@@ -455,7 +538,7 @@ begin
   FTess.RefDefTime := FRefDef.Time;
   case IteratorKind(FTessEntry) of
     1:
-      Inc(FStats.SkippedSky);
+      StageIteratorSky;
     2:
       StageIteratorVertexLitTexture;
     3:
@@ -498,8 +581,7 @@ begin
   LLighting.IdentityLight := IdentityLight;
   LLighting.IdentityLightByte := IdentityLightByte;
   LLighting.PortalRange := FTessEntry.Data.PortalRange;
-  // the fog pass and the fog colours are not ported: the surface is computed as if it were out of the fog
-  FTess.FogNumber := 0;
+  FTess.FogNumber := FTessFog;
   FCalc.StageColors.Compute(AStage, FTess, LLighting, FSvarColors);
   for LBundle := 0 to 1 do
   begin
@@ -589,18 +671,171 @@ begin
       DrawElements;
     end;
   end;
-  // the dynamic lights and the fog are not drawn
-  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
-    Inc(FStats.SkippedFogPasses);
+  // now do any dynamic lighting needed, then the fog
+  ShadingPasses;
   FSink.Call('glUnlockArraysEXT', []);
   if FTessEntry.Data.PolygonOffset then
     FSink.Call('glDisable', [TQ3GlArg.FromEnum(GL_POLYGON_OFFSET_FILL)]);
 end;
 
+procedure TQ3Backend.TransformDlights;
+var
+  LIndex: Integer;
+begin
+  // R_TransformDlights: the lights in the space of the entity (the world has the identity)
+  SetLength(FTransformedDlights, Length(FDlights));
+  for LIndex := 0 to High(FDlights) do
+    FTransformedDlights[LIndex] := TQ3ShadingPasses.TransformDlight(FDlights[LIndex].Origin, FOrientation.Origin,
+      FOrientation.Axis);
+end;
+
+procedure TQ3Backend.BuildFogs;
+var
+  LBsp: IBspFile;
+  LFogs: TArray<TBspFog>;
+  LSides: TArray<TBspBrushSide>;
+  LPlanes: TArray<TBspPlane>;
+  LIndex, LShader, LFirstSide, LPlane, LAxis, LColor: Integer;
+  LParms: TQ3FogParms;
+  LDepth, LValue: Single;
+  LEntry: TQ3ShaderEntry;
+  LFog: TQ3Fog;
+begin
+  // R_LoadFogs: the parts of fog_t that the passes read (the bounds are in the world); entry 0 is "no fog"
+  SetLength(FFogs, 1);
+  FFogs[0] := Default(TQ3Fog);
+  if not Assigned(FWorld) then
+    Exit;
+  LBsp := FWorld.GetBsp;
+  if not Assigned(LBsp) then
+    Exit;
+  LFogs := LBsp.Fogs;
+  LSides := LBsp.BrushSides;
+  LPlanes := LBsp.Planes;
+  SetLength(FFogs, Length(LFogs) + 1);
+  for LIndex := 0 to High(LFogs) do
+  begin
+    LFog := Default(TQ3Fog);
+    if (LFogs[LIndex].BrushNum >= 0) and (LFogs[LIndex].BrushNum < Length(LBsp.Brushes)) then
+    begin
+      // get information from the shader for fog parameters
+      LShader := FShaders.FindShader(LBsp.FogShaderName(LIndex), LIGHTMAP_NONE);
+      LEntry := FShaders.GetEntry(LShader);
+      LParms := LEntry.Data.FogParms;
+      LColor := 0;
+      for LAxis := 0 to 2 do
+      begin
+        // ColorBytes4( color * tr.identityLight ... ): the bytes are (byte)(r * 255)
+        LValue := LParms.Color[LAxis] * IdentityLight;
+        LValue := LValue * 255;
+        LColor := LColor or ((TQ3CMath.FloatToInt(LValue) and $FF) shl (LAxis * 8));
+      end;
+      LFog.ColorInt := Cardinal(LColor) or $FF000000;
+      LDepth := LParms.DepthForOpaque;
+      if LDepth < 1 then
+        LDepth := 1;
+      LValue := LDepth * 8;
+      LFog.TcScale := 1.0 / LValue;
+      // set the gradient vector
+      LFirstSide := LBsp.Brushes[LFogs[LIndex].BrushNum].FirstSide;
+      if LFogs[LIndex].VisibleSide = -1 then
+        LFog.HasSurface := False
+      else if (LFirstSide >= 0) and (LFirstSide + LFogs[LIndex].VisibleSide >= 0) and
+        (LFirstSide + LFogs[LIndex].VisibleSide < Length(LSides)) then
+      begin
+        LPlane := LSides[LFirstSide + LFogs[LIndex].VisibleSide].PlaneNum;
+        if (LPlane >= 0) and (LPlane < Length(LPlanes)) then
+        begin
+          LFog.HasSurface := True;
+          for LAxis := 0 to 2 do
+            LFog.Surface[LAxis] := 0 - LPlanes[LPlane].Normal[LAxis];
+          LFog.Surface[3] := 0 - LPlanes[LPlane].Dist;
+        end;
+      end;
+    end;
+    FFogs[LIndex + 1] := LFog;
+  end;
+end;
+
+procedure TQ3Backend.DrawPass(const ADraw: TQ3PassDraw);
+begin
+  if ADraw.Image = piDlight then
+    BindImage('*dlight', 0)
+  else
+    BindImage('*fog', 0);
+  ClientState(True, GL_TEXTURE_COORD_ARRAY);
+  FPassTexCoords := ADraw.TexCoords;
+  SetPointer('glTexCoordPointer', 2, 0, PTR_PASS_TEXCOORDS);
+  ClientState(True, GL_COLOR_ARRAY);
+  FPassColors := ADraw.Colors;
+  SetPointer('glColorPointer', 4, 0, PTR_PASS_COLORS);
+  FState.State(ADraw.StateBits);
+  DrawElementsFrom(ADraw.Indexes, Length(ADraw.Indexes));
+end;
+
+procedure TQ3Backend.ShadingPasses;
+var
+  LDraws: TArray<TQ3PassDraw>;
+  LIndex: Integer;
+begin
+  // now do any dynamic lighting needed
+  if (FDlightBits <> 0) and (FTessEntry.Data.Sort <= SS_OPAQUE) and
+    ((FTessEntry.Data.SurfaceFlags and (SURF_NODLIGHT or SURF_SKY)) = 0) then
+  begin
+    LDraws := TQ3ShadingPasses.ProjectDlights(FTess, FDlightBits, FDlights, FTransformedDlights);
+    for LIndex := 0 to High(LDraws) do
+    begin
+      DrawPass(LDraws[LIndex]);
+      Inc(FStats.DlightDraws);
+    end;
+  end;
+  // now do fog
+  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
+  begin
+    FTess.Fogs := FFogs;
+    FTess.FogNumber := FTessFog;
+    DrawPass(TQ3ShadingPasses.FogPass(FTess, FTessEntry.Data.FogPass, FCalc.Fog));
+    Inc(FStats.FogDraws);
+  end;
+end;
+
+procedure TQ3Backend.StageIteratorSky;
+var
+  LStages, LStage: Integer;
+begin
+  LStages := 0;
+  for LStage := 0 to Q3_MAX_SHADER_STAGES - 1 do
+  begin
+    if not FTessEntry.Data.Stages[LStage].Active then
+      Break;
+    Inc(LStages);
+  end;
+  // the outer box is the images that the shader names: a sky with "-" for the box has none
+  if FSky.StageIterator(FTess, FView.Orientation.Origin, FView.ZFar, FSettings.FastSky, FSettings.ShowSky,
+    FTessEntry.Data.Sky.OuterBox[0] <> '', IdentityLight, FTessEntry.Data.Sky.CloudHeight, LStages, FSink,
+    procedure(AImage: Integer)
+    begin
+      BindImage(FTessEntry.Data.Sky.OuterBox[AImage], 0);
+    end,
+    procedure(AState: Cardinal)
+    begin
+      FState.State(AState);
+    end,
+    procedure
+    begin
+      StageIteratorGeneric;
+    end) then
+  begin
+    // note that sky was drawn so we will draw a sun later
+    FSkyRenderedThisView := True;
+    Inc(FStats.SkiesDrawn);
+  end;
+end;
+
 procedure TQ3Backend.StageIteratorVertexLitTexture;
 begin
   // RB_CalcDiffuseColor into the colours of the stage
-  FTess.FogNumber := 0;
+  FTess.FogNumber := FTessFog;
   TQ3LightCalc.CalcDiffuseColor(FTess, FSvarColors);
   FState.Cull(Ord(FTessEntry.Data.CullType), FView.IsMirror);
   ClientState(True, GL_COLOR_ARRAY);
@@ -612,8 +847,7 @@ begin
   BindAnimatedImage(FTessEntry.Data.Stages[0].Bundle);
   FState.State(FTessEntry.Data.Stages[0].StateBits);
   DrawElements;
-  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
-    Inc(FStats.SkippedFogPasses);
+  ShadingPasses;
   FSink.Call('glUnlockArraysEXT', []);
 end;
 
@@ -642,8 +876,7 @@ begin
   FSink.Call('glDisable', [TQ3GlArg.FromEnum(GL_TEXTURE_2D)]);
   ClientState(False, GL_TEXTURE_COORD_ARRAY);
   FState.SelectTexture(0);
-  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
-    Inc(FStats.SkippedFogPasses);
+  ShadingPasses;
   FSink.Call('glUnlockArraysEXT', []);
 end;
 
@@ -704,6 +937,100 @@ begin
   end;
   Inc(FTess.NumVertexes, Length(LSurface.Verts));
   Inc(FStats.TrianglesDrawn);
+end;
+
+procedure TQ3Backend.SurfaceEntity;
+begin
+  // RB_SurfaceEntity: the entities that have a single procedurally generated surface
+  case FCurrentEntity.ReType of
+    RT_SPRITE:
+      begin
+        FTessellator.Sprite(FTess, FCurrentEntity);
+        Inc(FStats.SpritesDrawn);
+      end;
+    RT_BEAM:
+      SurfaceBeam;
+    RT_RAIL_CORE:
+      begin
+        FTessellator.RailCore(FTess, FCurrentEntity);
+        Inc(FStats.RailsDrawn);
+      end;
+    RT_RAIL_RINGS:
+      begin
+        FTessellator.RailRings(FTess, FCurrentEntity);
+        Inc(FStats.RailsDrawn);
+      end;
+    RT_LIGHTNING:
+      begin
+        FTessellator.LightningBolt(FTess, FCurrentEntity);
+        Inc(FStats.LightningDrawn);
+      end;
+  else
+    SurfaceAxis;
+  end;
+end;
+
+procedure TQ3Backend.SurfaceBeam;
+var
+  LStrip: TArray<TQ3Vec3>;
+  LIndex: Integer;
+begin
+  LStrip := FTessellator.BeamStrip(FCurrentEntity);
+  if Length(LStrip) = 0 then
+    Exit;
+  // the beam is drawn straight with glBegin, not through tess
+  BindImage('$whiteimage', 0);
+  FState.State(GLS_SRCBLEND_ONE or GLS_DSTBLEND_ONE);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(1), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glBegin', [TQ3GlArg.FromEnum(GL_TRIANGLE_STRIP)]);
+  for LIndex := 0 to High(LStrip) do
+    FSink.Call('glVertex3fv', [TQ3GlArg.FromSingle(LStrip[LIndex][0]), TQ3GlArg.FromSingle(LStrip[LIndex][1]),
+      TQ3GlArg.FromSingle(LStrip[LIndex][2])]);
+  FSink.Call('glEnd', []);
+  Inc(FStats.BeamsDrawn);
+end;
+
+procedure TQ3Backend.SurfaceAxis;
+begin
+  // RB_SurfaceAxis: x/y/z lines from the origin for orientation debugging (the null model)
+  BindImage('$whiteimage', 0);
+  FSink.Call('glLineWidth', [TQ3GlArg.FromSingle(3)]);
+  FSink.Call('glBegin', [TQ3GlArg.FromEnum(GL_LINES)]);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(1), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(16), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(1), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(16), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glColor3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(1)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0)]);
+  FSink.Call('glVertex3f', [TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(0), TQ3GlArg.FromSingle(16)]);
+  FSink.Call('glEnd', []);
+  FSink.Call('glLineWidth', [TQ3GlArg.FromSingle(1)]);
+  Inc(FStats.AxisDrawn);
+end;
+
+procedure TQ3Backend.SurfaceMesh(const ASurface: TQ3SurfaceRef);
+var
+  LEntity: TQ3RefEntity;
+  LModel: IMd3Model;
+begin
+  // the surface of an md3 of the entity: the frames, the old frame and the back lerp are the entity's
+  LModel := nil;
+  if (ASurface.Index >= 0) and (ASurface.Index < Length(FEntities)) and Assigned(FModels) and
+    Assigned(FModelMapper) then
+  begin
+    LEntity := FEntities[ASurface.Index];
+    // the level of detail that the front end chose for the entity
+    LModel := FModels.GetModelLod(FModelMapper(LEntity.HModel), ASurface.Lod);
+  end;
+  if (not Assigned(LModel)) or (ASurface.Sub >= LModel.NumSurfaces) then
+  begin
+    Inc(FStats.SkippedMd3);
+    Exit;
+  end;
+  FTessellator.Mesh(FTess, LModel.Surfaces[ASurface.Sub], LEntity.Frame, LEntity.OldFrame, LEntity.BackLerp);
+  Inc(FStats.Md3Drawn);
 end;
 
 procedure TQ3Backend.SetGL2D;
@@ -816,6 +1143,8 @@ var
   LSurface: TQ3SurfaceRef;
 begin
   LOriginalTime := FFloatTime;
+  FTessellator.SetView(FView.Orientation, FView.IsMirror);
+  FTessellator.SetEntityOrientation(FView.World);
   BeginDrawingView;
   LOldEntity := -1;
   FCurrentEntityWorld := True;
@@ -875,6 +1204,8 @@ begin
           FOrientation := FView.World;
           FTessShaderTime := FFloatTime;
         end;
+        FTessellator.SetEntityOrientation(FOrientation);
+        TransformDlights;
         MatrixCall('glLoadMatrixf', FOrientation.ModelMatrix);
         if LOldDepthRange <> LDepthRange then
         begin
@@ -887,22 +1218,35 @@ begin
         LOldEntity := LEntity;
       end;
     end;
-    // the triangles of the surface
+    // the triangles of the surface (rb_surfaceTable)
     case LSurface.Kind of
       skFace:
-        SurfaceFace(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        begin
+          FDlightBits := FDlightBits or LSurface.DlightMask;
+          SurfaceFace(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        end;
       skTriangles:
-        SurfaceTriangles(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        begin
+          FDlightBits := FDlightBits or LSurface.DlightMask;
+          SurfaceTriangles(FWorld.GetSurfaces[LSurface.Index].DataIndex);
+        end;
       skGrid:
-        Inc(FStats.SkippedGrids);
+        begin
+          // the surface of the world that is a grid: needsNormal is always set
+          FTessellator.Grid(FTess, FDlightBits, True, FGrids[LSurface.Index], LSurface.DlightMask);
+          Inc(FStats.GridsDrawn);
+        end;
       skFlare:
         Inc(FStats.SkippedFlares);
       skPoly:
-        Inc(FStats.SkippedPolys);
+        begin
+          FTessellator.Polychain(FTess, FPolys[LSurface.Index]);
+          Inc(FStats.PolysDrawn);
+        end;
       skEntity:
-        Inc(FStats.SkippedEntities);
+        SurfaceEntity;
       skMd3:
-        Inc(FStats.SkippedMd3);
+        SurfaceMesh(LSurface);
     end;
   end;
   FFloatTime := LOriginalTime;
@@ -924,6 +1268,8 @@ begin
   FFloatTime := ACommand.FloatTime;
   FView := ACommand.View;
   FEntities := ACommand.Entities;
+  FPolys := ACommand.Polys;
+  FDlights := ACommand.Dlights;
   RenderDrawSurfList(ACommand.DrawSurfs);
 end;
 
@@ -932,7 +1278,10 @@ var
   LIndex, LChannel: Integer;
   LCommand: TQ3RenderCommand;
   LValue: Single;
+  LMask: IInterface;
 begin
+  // the C does not stop on a NaN or an infinity (a patch whose lightmap coordinates are junk has some)
+  LMask := TQ3FloatMask.Enter;
   for LIndex := 0 to ACommands.Count - 1 do
   begin
     LCommand := ACommands.Item(LIndex);

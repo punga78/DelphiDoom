@@ -185,6 +185,13 @@ type
     Kind: TQ3SurfaceKind;
     Index: Integer;
     Sub: Integer;
+    /// <summary>
+    ///   The dlights that reach the surface (what R_DlightSurface keeps in the surface: dlightBits). The C keeps it in
+    ///   the surface itself, where it stays from frame to frame; here it belongs to the drawSurf of the frame
+    /// </summary>
+    DlightMask: Integer;
+    /// <summary>The level of detail of the md3 that the surface of kind skMd3 is of (R_ComputeLOD)</summary>
+    Lod: Integer;
   end;
 
   /// <summary>drawSurf_t: the sort key packs the shader, the entity, the fog and the dlight bits</summary>
@@ -224,6 +231,19 @@ type
     /// <summary>r_maxpolys and r_maxpolyverts</summary>
     MaxPolys: Integer;
     MaxPolyVerts: Integer;
+    /// <summary>r_fastsky (the sky is not drawn), r_showsky (the sky in front of everything), r_drawSun</summary>
+    FastSky: Boolean;
+    ShowSky: Boolean;
+    DrawSun: Boolean;
+    /// <summary>r_lodCurveError (the error that a grid of a patch may have, divided by the distance)</summary>
+    LodCurveError: Single;
+    /// <summary>r_railWidth, r_railCoreWidth and r_railSegmentLength</summary>
+    RailWidth: Integer;
+    RailCoreWidth: Integer;
+    RailSegmentLength: Single;
+    /// <summary>r_lodscale and r_lodbias (the level of detail of the md3 models)</summary>
+    LodScale: Single;
+    LodBias: Integer;
     class function Defaults: TQ3RenderSettings; static;
   end;
 
@@ -276,6 +296,11 @@ begin
   Result.Shadows := 1;
   Result.MaxPolys := Q3_MAX_POLYS;
   Result.MaxPolyVerts := Q3_MAX_POLYVERTS;
+  Result.LodCurveError := 250;
+  Result.RailWidth := 16;
+  Result.RailCoreWidth := 6;
+  Result.RailSegmentLength := 32;
+  Result.LodScale := 5;
 end;
 
 end.

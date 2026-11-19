@@ -234,7 +234,7 @@ var
   LIdentity: TQ3HandleMapper;
   LWords: TArray<string>;
   LRefDef: TQ3RefDef;
-  LAngles: TQ3Vec3;
+  LAngles, LLight: TQ3Vec3;
   LColor: TArray<Single>;
   LInvariant: TFormatSettings;
   LStats: TQ3BackendStats;
@@ -294,6 +294,21 @@ begin
         TQ3Math.AngleVectors(LAngles, LRefDef.ViewAxis[0], LRefDef.ViewAxis[1], LRefDef.ViewAxis[2]);
         LRenderer.BeginFrame;
         LRenderer.ClearScene;
+        // the lights of the view: "dlight x y z radius" (white, not additive) light the surfaces they reach
+        LIndex := 9;
+        while LIndex + 4 < Length(LWords) + 0 do
+        begin
+          if LWords[LIndex] = 'dlight' then
+          begin
+            LLight[0] := StrToFloat(LWords[LIndex + 1], LInvariant);
+            LLight[1] := StrToFloat(LWords[LIndex + 2], LInvariant);
+            LLight[2] := StrToFloat(LWords[LIndex + 3], LInvariant);
+            LRenderer.AddLight(LLight, StrToFloat(LWords[LIndex + 4], LInvariant), 1, 1, 1, False);
+            Inc(LIndex, 5);
+          end
+          else
+            Inc(LIndex);
+        end;
         LRenderer.RenderScene(LRefDef);
         // a crosshair and a coloured rectangle on top of the view
         SetLength(LColor, 4);
@@ -326,9 +341,11 @@ begin
     LActual.Add(Format('backend surfaces=%d batches=%d vertexes=%d indexes=%d faces=%d triangles=%d stretchpics=%d',
       [LStats.Surfaces, LStats.Batches, LStats.Vertexes, LStats.Indexes, LStats.FacesDrawn, LStats.TrianglesDrawn,
       LStats.StretchPics]));
-    LActual.Add(Format('not ported grids=%d flares=%d polys=%d entities=%d md3=%d sky=%d fogpasses=%d',
-      [LStats.SkippedGrids, LStats.SkippedFlares, LStats.SkippedPolys, LStats.SkippedEntities, LStats.SkippedMd3,
-      LStats.SkippedSky, LStats.SkippedFogPasses]));
+    LActual.Add(Format('drawn grids=%d polys=%d sprites=%d beams=%d rails=%d lightning=%d md3=%d axis=%d sky=%d dlights=%d fog=%d',
+      [LStats.GridsDrawn, LStats.PolysDrawn, LStats.SpritesDrawn, LStats.BeamsDrawn, LStats.RailsDrawn,
+      LStats.LightningDrawn, LStats.Md3Drawn, LStats.AxisDrawn, LStats.SkiesDrawn, LStats.DlightDraws,
+      LStats.FogDraws]));
+    LActual.Add(Format('not ported flares=%d md3=%d', [LStats.SkippedFlares, LStats.SkippedMd3]));
     LActual.Add(Format('textures=%d', [LTextures]));
     if GetEnvironmentVariable('DELPHIDOOM_Q3RENDER_BACKEND_OUT') <> '' then
     begin

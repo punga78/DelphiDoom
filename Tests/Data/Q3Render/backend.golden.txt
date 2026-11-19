@@ -1,10 +1,11 @@
-FRAME view 0 calls=1329 sum=91fe1fa7fbfaf51a
-FRAME view 1 calls=875 sum=9f2352138ab105b1
-FRAME view 2 calls=893 sum=058fef8c30cd4e3d
-FRAME view 3 calls=580 sum=898850e858702e81
-FRAME view 4 calls=333 sum=f8fb9712f815b98c
-FRAME view 5 calls=643 sum=aba3b8b37aa9aa1f
+FRAME view 0 calls=1408 sum=b7581386355d8c21
+FRAME view 1 calls=875 sum=5116a8747d0d8306
+FRAME view 2 calls=1197 sum=baa2b95f55b9f8bb
+FRAME view 3 calls=580 sum=baab881ad84344b6
+FRAME view 4 calls=333 sum=03291fc6bad288a6
+FRAME view 5 calls=643 sum=6e7061b33313e6c5
 FRAME 2d only calls=21 sum=9783d46ceec4158c
-backend surfaces=570 batches=223 vertexes=6243 indexes=17562 faces=554 triangles=6 stretchpics=13
-not ported grids=0 flares=10 polys=0 entities=0 md3=0 sky=0 fogpasses=6
-textures=46
+backend surfaces=570 batches=230 vertexes=6243 indexes=17562 faces=554 triangles=6 stretchpics=13
+drawn grids=0 polys=0 sprites=0 beams=0 rails=0 lightning=0 md3=0 axis=0 sky=0 dlights=18 fog=6
+not ported flares=10 md3=0
+textures=48

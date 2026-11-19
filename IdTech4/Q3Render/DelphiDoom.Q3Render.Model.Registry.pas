@@ -36,6 +36,9 @@ type
       TEntry = record
         Model: IMd3Model;
         BrushIndex: Integer;
+        /// <summary>mod->md3[lod]: the levels of detail that were loaded, nil where the files had none</summary>
+        Lods: array[0..Q3_RENDER_MD3_MAX_LODS - 1] of IMd3Model;
+        NumLods: Integer;
       end;
   strict private
     FFiles: IQ3RenderFiles;
@@ -55,6 +58,8 @@ type
     function Register(const AName: AnsiString): Integer;
     procedure SetWorld(const AWorld: IQ3RenderWorld);
     function GetModel(AHandle: Integer): IMd3Model;
+    function LodCount(AHandle: Integer): Integer;
+    function GetModelLod(AHandle, ALod: Integer): IMd3Model;
     function LoadedCount: Integer;
     function MissingNames: TArray<string>;
     function BrushIndex(AHandle: Integer): Integer;
@@ -174,13 +179,13 @@ begin
         LFileName := Copy(AName, 1, LDot - 1);
       LFileName := LFileName + AnsiString(Format('_%d.md3', [LLod]));
     end;
-    if LLod = 0 then
+    if LoadFile(LFileName, AName, LModel) then
     begin
-      if LoadFile(LFileName, AName, LModel) then
+      LEntry.Lods[LLod] := LModel;
+      Inc(LEntry.NumLods);
+      if LLod = 0 then
         LEntry.Model := LModel;
-    end
-    else
-      LoadFile(LFileName, AName, LModel);
+    end;
   end;
   LIndex := 0;
   if not Assigned(LEntry.Model) then
@@ -200,6 +205,34 @@ begin
     Result := FEntries[AHandle - 1].Model
   else
     Result := nil;
+end;
+
+function TQ3ModelRegistry.LodCount(AHandle: Integer): Integer;
+begin
+  if (AHandle >= 1) and (AHandle <= FEntries.Count) then
+    Result := FEntries[AHandle - 1].NumLods
+  else
+    Result := 0;
+end;
+
+function TQ3ModelRegistry.GetModelLod(AHandle, ALod: Integer): IMd3Model;
+var
+  LEntry: TEntry;
+  LLod: Integer;
+begin
+  Result := nil;
+  if (AHandle < 1) or (AHandle > FEntries.Count) then
+    Exit;
+  LEntry := FEntries[AHandle - 1];
+  if ALod < 0 then
+    ALod := 0;
+  if ALod > High(LEntry.Lods) then
+    ALod := High(LEntry.Lods);
+  // a level that was not loaded is the next lower one (more detailed) that was
+  for LLod := ALod downto 0 do
+    if Assigned(LEntry.Lods[LLod]) then
+      Exit(LEntry.Lods[LLod]);
+  Result := LEntry.Model;
 end;
 
 function TQ3ModelRegistry.LoadedCount: Integer;

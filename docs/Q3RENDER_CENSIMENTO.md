@@ -54,9 +54,32 @@ Codice, mappa C -> Delphi e differenze in `IdTech4\Q3Render` (README, sezione "R
 - **Backend senza oracolo**: `GL_State`, `GL_Bind`, `GL_Cull`, `GL_TexEnv`, `RB_BeginSurface`/`RB_EndSurface`, i tre iteratori di stage (generico, vertex lit, lightmapped multitexture), `DrawMultitextured`, `RB_SurfaceFace`/`RB_SurfaceTriangles`, `RB_StretchPic`, `RB_SetGL2D`, `RB_DrawSurfs`/`RB_RenderDrawSurfList`/`RB_BeginDrawingView` scrivono le chiamate GL come testo nel registratore. Il C disegna in un contesto vero: **non c'e' un oracolo**, il golden (`backend.golden.txt`) e' di regressione, Win32 = Win64.
 - **Collegamento a `Q3Host`**: `TQ3HostRendererAdapter` costruisce anche la scena di cgame nel fronte (`AttachRenderer`, `CreateRenderingHostRenderer`); `BeginFrame`/`EndFrame` dell'adattatore sono il `SCR_UpdateScreen`. `IQ3HostRenderer` e il registratore di `Q3Host` non sono cambiati (`Tests.Q3Host` 210 su 210).
 - **Misura**: il primo fotogramma di cgame di OpenArena su `oa_dm1` (stesso pilota della R0, uno snapshot finto) fa **1 scena e 57 drawSurf**, tutte facce del mondo, in 37 batch di backend e 53 `StretchPic`; `CG_INIT` non fa scene. La ui fa 3 scene in piu' (9 superfici md3 col mondo spento) e 897 `StretchPic`. Il mondo ha 0 patch: le griglie non sono state messe alla prova su una mappa.
-- **Non fatto in R1**: viste in specchio e portale (contate), LOD e skin dei md3, `R_SetupEntityLighting`, griglie delle patch, flare, superfici di poligoni/sprite/raggi/md3 nel backend, cielo (`tr_sky.c`), passo dei dlight, passo della nebbia, ombre, `R_LightForPoint`, `RE_MarkFragments`, `RE_RegisterFont`.
+- **Non fatto in R1** (e fatto in R1b, vedi sotto): viste in specchio e portale (contate), LOD e skin dei md3 (LOD: R1b), `R_SetupEntityLighting`, griglie delle patch (R1b), flare (R1b: non portati, dead code nel C), superfici di poligoni/sprite/raggi/md3 nel backend (R1b), cielo (`tr_sky.c`, R1b), passo dei dlight (R1b), passo della nebbia (R1b), ombre, `R_LightForPoint`, `RE_MarkFragments`, `RE_RegisterFont`.
 
-### Cosa manca per R2 (e per un programma che si vede)
+## 4b. Cosa ha fatto R1b (ondata 14, 2026-11-19, tag `ondata14-254r-1`..`-7`): le superfici, il cielo e i passi sul registratore
+
+Codice, mappa C -> Delphi, differenze volute e difetti conservati in `IdTech4\Q3Render\README.md` (sezione "R1b"). Il metodo e' quello della R1 portato piu' avanti: **il C vero si compila e gira** (`Tools\Verifica\254\surfgen.c`, `build-surf.sh`: `tr_surface.c`, `tr_curve.c`, `tr_shade_calc.c`, `tr_noise.c` come sono, e inclusi `tr_bsp.c`, `tr_sky.c`, `tr_shade.c` per le loro funzioni `static`), il resto del renderer sono stub che stampano.
+
+| Punto | Esito |
+|---|---|
+| (1) griglie delle patch | `RB_SurfaceGrid` con `LodErrorForVolume` e le passate multiple di `tess`: **parita'** sul C vero con patch sintetiche (3x3 .. 65x65, cvar e orientamenti diversi) e sulle **42 patch di `oa_ctf2`** (le griglie dopo `R_StitchAllPatches` e `R_FixSharedVertexLodError` del C vero), a Win32 e a Win64. `R_SubdividePatchToGrid` non e' stata riportata: e' in `Framework\MathCore` (#117). `oa_dm1` ha 0 patch: la misura sul primo fotogramma non cambia |
+| (2) poligoni, sprite, raggi | `RB_SurfacePolychain`, `RB_SurfaceSprite`, `RB_SurfaceBeam` (vertici), `RB_SurfaceRailCore`, `RB_SurfaceRailRings`, `RB_SurfaceLightningBolt`, `RB_SurfaceAxis`: **parita'** sul C vero (l'asse del modello nullo: test sul comportamento) |
+| (3) cielo | `R_InitSkyTexCoords`, `RB_ClipSkyPolygons`, `DrawSkyBox`, `R_BuildCloudData`, `RB_StageIteratorSky`, `RB_DrawSun`: **parita'** sul C vero (impronte delle tabelle, facce, strisce, nuvole, sole); il sole nel C non e' mai chiamato (`#if 0`) |
+| (4) flare | **non portati**: nel C con i default non disegnano nulla (`r_flares` 0, `RB_AddDlightFlares` commentata, `RB_SurfaceFlare` vuota); la lettura del depth buffer non serve a nulla. Le superfici flare del mondo restano contate |
+| (5) dlight e nebbia | `ProjectDlightTexture` e `RB_FogPass` come draw (texture, stato, indici, array): **parita'** sul C vero di `tr_shade.c`; il collegamento (le nebbie del mondo `R_LoadFogs`, le maschere per superficie, `R_TransformDlights`) e' provato dal golden del backend e da test, senza oracolo |
+| (6) md3 | `RB_SurfaceMesh` e `LerpMeshVertexes`: **parita'** sul C vero (frame, frame vecchio, `backlerp`, normali con la tabella dei seni); il LOD (`R_ComputeLOD`, `ProjectRadius`, i livelli di `RE_RegisterModel`, il livello nel cull e nei fog): test sul comportamento, **senza oracolo** |
+
+Misure: primo fotogramma di cgame su `oa_dm1` invariato (57 drawSurf, 37 batch); la ui disegna ora 9 superfici md3 (erano contate); i 6 fotogrammi del golden del backend, con le luci delle viste, fanno 18 draw dei dlight e 6 della nebbia. `Tests.Q3Render` **79** (72 + 7), Win32 e Win64; `Tests.Q3Host` 210/210 a Win32.
+
+### Cosa resta per R2 (aggiornato)
+
+1. Contesto WGL vero e un `IQ3GlSink` su `dglOpenGL` (come in R1).
+2. Texture (`R_CreateImage`, mipmap, gamma, `glTexImage2D`); oggi i numeri sono i primi `glBindTexture` e le texture del renderer (`*dlight`, `*fog`, `$whiteimage`, le lightmap) sono nomi.
+3. **Ancora senza chiamata GL**: ombre con lo stencil (`tr_shadows.c`), viste in specchio e portale, `RB_Hyperspace`, `RB_ShowImages`, video map, skin dei md3, `R_SetupEntityLighting` (il colore delle entita' e' quello di `shaderRGBA`), `R_LightForPoint`, `RE_MarkFragments`, `RE_RegisterFont`.
+4. Finestra, input, suono, menu: il composition root `Quake3` (fase 7 di `docs\QUAKE3_CENSIMENTO.md`).
+5. Una prova a occhio (non si fa senza finestra).
+
+### Cosa mancava per R2 alla fine della R1 (superato dal punto 4b: vedi "Cosa resta per R2 (aggiornato)")
 
 1. **Contesto WGL vero** (`Framework\GameHost` ha la finestra GDI e OpenGL dei giochi di Doom): `IQ3GlSink` e' il punto in cui il backend chiama GL; un sink su `dglOpenGL` al posto del registratore e' la parte piccola.
 2. **Texture**: `R_CreateImage` (mipmap con `r_picmip`, gamma, `glTexImage2D`), la lightmap come texture, `$whiteimage` e le immagini interne; i numeri di texture del backend oggi sono finti (primo bind).

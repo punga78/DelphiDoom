@@ -153,6 +153,13 @@ type
     procedure SetWorld(const AWorld: IQ3RenderWorld);
     /// <summary>The md3 of a handle (lod 0), nil for a brush model or a missing one</summary>
     function GetModel(AHandle: Integer): IMd3Model;
+    /// <summary>The levels of detail of a model that were loaded (mod->numLods): 1 to 3, 0 for a handle without an md3</summary>
+    function LodCount(AHandle: Integer): Integer;
+    /// <summary>
+    ///   mod->md3[lod]: the md3 of a level of detail (0 the most detailed). A level the files do not have is the next
+    ///   lower one that is there (the C leaves it NULL and crashes); a level past the last is the last
+    /// </summary>
+    function GetModelLod(AHandle, ALod: Integer): IMd3Model;
     function LoadedCount: Integer;
     function MissingNames: TArray<string>;
     /// <summary>The number N of a brush model "*N" of the world, -1 for a mesh and for a handle that is no model</summary>

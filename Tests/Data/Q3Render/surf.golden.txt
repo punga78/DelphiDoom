@@ -1,0 +1,1479 @@
+case 15
+grid 5 3
+batch 15 48 0 dec29e63 907cef97 3f1192d2 1a143174 49c203cd
+case 16
+grid 9 5
+batch 45 192 5 a0679bf6 3be3e1f5 413c3c45 9d4df8aa f5dc6f85
+case 17
+grid 17 17
+batch 289 1536 ff ca022bd9 67890abf d6328dc5 f81b84f0 175a993a
+case 18
+grid 17 17
+batch 289 1536 ff ca022bd9 67890abf d6328dc5 f81b84f0 175a993a
+case 19
+grid 9 5
+batch 45 192 3 1f7ba092 d1a8c4c8 3ec3b445 a10718ca f5dc6f85
+case 20
+grid 33 17
+batch 561 3072 7 a83f143b 23eead7d d0d36485 7a6bc308 bf44cecf
+case 22
+grid 17 17
+batch 25 96 1 ca23a1b6 7c82b7f1 782eafa5 e8fa6630 6db034fd
+case 24
+grid 17 17
+batch 25 96 1 ca23a1b6 7c82b7f1 782eafa5 e8fa6630 6db034fd
+case 26
+grid 17 17
+batch 289 1536 1 ca022bd9 67890abf d6328dc5 f81b84f0 175a993a
+case 29
+grid 65 65
+batch 910 4992 9 8a7b678b f1d4374c 73460af5 c92a2172 2290b904
+batch 910 4992 0 1f65c2d7 5cdb357b 6ad51575 5a54745c 2290b904
+batch 910 4992 0 6fb2407c 04281895 d2f94485 c699d325 2290b904
+batch 910 4992 0 71e2370b 75e595ed 75d7db5d 2f893bbc 2290b904
+batch 845 4608 0 828a83c6 7c99139f e127f9fd dd349d0e b59db704
+case 30
+grid 65 65
+batch 910 4992 9 77c8edfe fad069e5 9e64eb01 e6a6a3b5 2290b904
+batch 910 4992 0 4d72e089 fad069e5 ceeecea3 a786540d 2290b904
+batch 910 4992 0 1d2ab46d fad069e5 023528f4 26a73abd 2290b904
+batch 910 4992 0 ac43ae5f fad069e5 69cbeaa0 733ef60b 2290b904
+batch 845 4608 0 07c3f47b ca161ff5 13814b75 e7aa457e b59db704
+case 33
+grid 17 17
+batch 289 1536 1 ca022bd9 67890abf d6328dc5 f81b84f0 175a993a
+case 34
+grid 33 17
+batch 561 3072 7 a83f143b 23eead7d d0d36485 7a6bc308 bf44cecf
+case 36
+grid 17 17
+batch 49 216 1 83b5f7e8 8a1abd92 0a7d51d5 c3dc8264 11ac4235
+case 39
+grid 17 17
+batch 289 1536 1 ca022bd9 67890abf d6328dc5 f81b84f0 175a993a
+case 42
+grid 9 9
+batch 81 384 2 e672cbb5 6ae76aca c5518f45 08a61fc0 8e17a6f5
+case 45
+batch 3 3 0 0a8055fa 17e22395 ef18556e adae337e 253381b6
+case 46
+batch 8 12 0 e1648345 3ad73145 ae46a6e5 4e9dffb5 96e19905
+case 47
+batch 35 75 0 6864b5c5 6ea5d195 7fd3d891 0343eb92 73e0a15e
+case 48
+batch 960 2736 0 3b28b825 ece6c1c5 11bd8985 d24939c5 c8f5a1a0
+batch 240 684 0 7a098e2d fe63a6c5 9cd249f5 2e3e44c5 d8b3b045
+case 49
+batch 960 2790 0 192dabb0 ece6c1c5 8dfa3bdc 89eef84d 81aaf7ff
+batch 320 930 0 174e2468 bdbaa9c5 af63170c 9db30b9d f6b0da1f
+case 50
+batch 4 6 0 1422b9d5 82976ea5 b98db4e5 360779f5 509382c7
+case 51
+batch 4 6 0 79fcb42c 82976ea5 b98db4e5 01fc9325 509382c7
+case 53
+batch 4 6 0 a6cdfa81 e8c0a965 b98db4e5 41c6dda5 509382c7
+case 54
+batch 4 6 0 28476ced e8c0a965 b98db4e5 41c6dda5 509382c7
+case 56
+case 57
+gl bind
+gl state 00000022
+gl color3f 3f800000 00000000 00000000
+gl begin 5
+gl vertex3fv 40800000 00000000 00000000
+gl vertex3fv 40800000 42c80000 42480000
+gl vertex3fv 3fffffff 3fc64bf8 c0464bf8
+gl vertex3fv 3fffffff 42cb1930 423b9b40
+gl vertex3fv c0000001 3fc64bf7 c0464bf7
+gl vertex3fv c0000001 42cb1930 423b9b41
+gl vertex3fv c0800000 b427eb3a 34a7eb3a
+gl vertex3fv c0800000 42c80000 42480000
+gl vertex3fv bffffffd bfc64bf8 40464bf8
+gl vertex3fv bffffffd 42c4e6d0 425464c0
+gl vertex3fv 40000006 bfc64bf5 40464bf5
+gl vertex3fv 40000006 42c4e6d0 425464bf
+gl vertex3fv 40800000 00000000 00000000
+gl vertex3fv 40800000 42c80000 42480000
+gl end
+case 58
+gl bind
+gl state 00000022
+gl color3f 3f800000 00000000 00000000
+gl begin 5
+gl vertex3fv bf0b0845 3ee427d5 407c0556
+gl vertex3fv 43c2ba7c c39fc6f6 42bbe02b
+gl vertex3fv c01e0236 c01d21f0 3ffc0556
+gl vertex3fv 43c1c3fc c3a13a44 42b7f015
+gl vertex3fv bff68045 c039a6ea bffc0557
+gl vertex3fv 43c20980 c3a1734e 42b00feb
+gl vertex3fv 3f0b084b bee427ce c07c0556
+gl vertex3fv 43c34584 c3a0390a 42ac1fd5
+gl vertex3fv 401e0235 401d21f0 bffc0552
+gl vertex3fv 43c43c04 c39ec5bc 42b00feb
+gl vertex3fv 3ff68040 4039a6e8 3ffc0562
+gl vertex3fv 43c3f680 c39e8cb2 42b7f016
+gl vertex3fv bf0b0845 3ee427d5 407c0556
+gl vertex3fv 43c2ba7c c39fc6f6 42bbe02b
+gl end
+case 59
+batch 4 6 0 3581fdd5 c655ff85 665c2f05 4a7416b5 9f9831a6
+case 60
+batch 4 6 0 c655ff85 c655ff85 53924845 4a7416b5 9f9831a6
+case 61
+batch 24 36 0 9af59817 cb5a1845 a78dd4c5 9d025885 46666985
+case 62
+batch 368 552 0 d97c68c7 47cadec5 408693c5 b3799645 799be0c5
+case 63
+batch 4 6 0 c655ff85 c655ff85 5e7ce345 4ca9c125 509382c7
+case 65
+batch 84 126 0 43ed4167 93724285 fe864545 24ac83b5 384712e7
+case 66
+batch 996 1494 0 4ffd8729 457f7185 163c6f45 91bd2e75 89f47197
+batch 996 1494 0 8eed7c5d 457f7185 163c6f45 91bd2e75 89f47197
+batch 772 1158 0 fff62dc9 774d4f85 4ce3c345 1f4663f5 ae66a697
+case 68
+batch 16 24 0 873e4cc5 75a104c5 44fc9355 0608ff45 bf5ebd85
+case 70
+batch 16 24 0 23139ed7 75a104c5 0e98b415 32c3dd1d bf5ebd85
+case 71
+batch 40 180 0 3573a247 91efa13d da3393e0 02187e45 29cb3989
+case 72
+batch 40 180 0 f0aa639d 2edbdfe4 da3393e0 02187e45 485ff1b5
+case 73
+batch 40 180 0 8af5c977 90579a47 da3393e0 02187e45 03ed9eb9
+case 74
+batch 40 180 0 75b93ea9 b8856406 da3393e0 02187e45 cdec055d
+case 75
+batch 40 180 0 cea14414 da3c6767 da3393e0 02187e45 ec0279c1
+case 76
+batch 900 4500 0 36e45476 ed1e2a82 b8c3421f 4207f105 aba044fa
+batch 600 3000 0 86252e7d b5857e4d 7ca3ed59 7ab40545 907237ba
+case 77
+batch 700 300 0 faa7e08f 5776bfa7 3f362e51 cd33ae85 0f8a0778
+batch 700 300 0 faa7e08f 5776bfa7 3f362e51 cd33ae85 0f8a0778
+batch 700 300 0 faa7e08f 5776bfa7 3f362e51 cd33ae85 0f8a0778
+case 78
+batch 999 60 0 61e000c1 38525701 e50489ce ca373ff5 a37f9945
+case 79
+batch 1 3 0 10579328 9f1f5b32 69691905 4b95f515 e23c62b5
+case 82
+cloud 93473801 fdf154b7
+cloudsample 3fc90fdb 3fc90fdb 3f7055bf 40887696
+case 85
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 405 1920 0 67e572c5 ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 1728 4495cd95
+skyrendered 1
+skyside 0 bf800000 bf800000 3fa00000 3fa00000
+skyside 1 bf800000 bfa00000 3f800000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3f800000
+skyside 3 bfa00000 bfa00000 3fa00000 3f800000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3fa00000
+case 86
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 810 1920 0 b376f7c5 cbbad625 beb21665 803d51e5 be8179be
+gl depthrange 0 1
+skyverts 1728 4495cd95
+skyrendered 1
+skyside 0 bf800000 bf800000 3fa00000 3fa00000
+skyside 1 bf800000 bf800000 3fa00000 3f800000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bf800000 bfa00000 3fa00000 3f800000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3fa00000
+case 87
+gl depthrange 1 1
+gl color3f 3f800000 3f800000 3f800000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 405 1920 0 2e87722a ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 1728 64464c35
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 1 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3fa00000
+case 88
+gl depthrange 1 1
+generic
+batch 405 1920 0 67e572c5 ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 0 811c9dc5
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 1 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3f800000 3f800000
+skyside 3 bfa00000 bf800000 3f800000 3fa00000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bf800001 bf800000 3f800001 3f800000
+case 89
+gl depthrange 1 1
+generic
+batch 405 1920 0 67e572c5 ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 0 811c9dc5
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 1 bf800000 bf800000 3f800000 3fa00000
+skyside 2 bfa00000 bf800000 3fa00000 3fa00000
+skyside 3 bfa00000 bf800000 3fa00000 3fa00000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bf800001 bf800003 3f800001 3f800000
+case 90
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 0 0 0 811c9dc5 811c9dc5 811c9dc5 811c9dc5 811c9dc5
+gl depthrange 0 1
+skyverts 1728 4495cd95
+skyrendered 1
+skyside 0 bfa00000 bf800000 3fa00000 3f800000
+skyside 1 bfa00000 bf800000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bfa00000 bf800000 3fa00000 3f800000
+skyside 4 bf800000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3f800000
+case 91
+skyverts 0 811c9dc5
+skyrendered 0
+skyside 0 bfa00000 bf800000 3fa00000 3f800000
+skyside 1 bfa00000 bf800000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bfa00000 bf800000 3fa00000 3f800000
+skyside 4 bf800000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3f800000
+case 92
+gl depthrange 0 0
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 405 1920 0 67e572c5 ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 1632 336e6d8c
+skyrendered 1
+skyside 0 bf800000 bfa00000 3f800000 3fa00000
+skyside 1 bf800000 bf800000 3f800000 3fa00000
+skyside 2 bfa00000 bf800000 3fa00000 3fa00000
+skyside 3 bf800000 bf800000 3fa00000 3fa00000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3e800000 3fa00000
+case 93
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 0 0 0 811c9dc5 811c9dc5 811c9dc5 811c9dc5 811c9dc5
+gl depthrange 0 1
+skyverts 1728 4495cd95
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3f800000 3fa00000
+skyside 1 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bfa00000 bfa00000 3f800000 3f800000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bf800000 3f800000 3fa00000
+case 95
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 43fa0000 c3960000 43480000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 405 1920 0 865d8244 ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 1728 4495cd95
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 1 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bf800000 bfa00000 3f800000 3f800000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bf800000 3fa00000 3fa00000
+case 97
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 00000000 00000000 00000000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 405 1920 0 24ae97d5 ae0a3775 5474ea75 f7927955 be8179be
+gl depthrange 0 1
+skyverts 1728 46e1c895
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 1 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 2 bfa00000 bf800000 3f800000 3fa00000
+skyside 3 bfa00000 bfa00000 3f800000 3fa00000
+skyside 4 bfa00000 bf800000 3f800000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3fa00000
+case 99
+gl depthrange 1 1
+gl color3f 3e800000 3e800000 3e800000
+gl pushmatrix
+gl state 00000000
+gl translatef 42c80000 42c80000 c2480000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 810 1920 0 f2dffc31 cbbad625 beb21665 803d51e5 be8179be
+gl depthrange 0 1
+skyverts 1728 74c0d36d
+skyrendered 1
+skyside 0 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 1 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 2 bf800000 bfa00000 3f800000 3fa00000
+skyside 3 bf800000 bfa00000 3f800000 3fa00000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bf800000 3fa00000 3fa00000
+case 100
+cloud 37ce34d9 0f11e9f1
+cloudsample 3fc90fdb 3fc90fdb 3f58021d 40a77d5b
+case 101
+gl depthrange 1 1
+gl color3f 3f000000 3f000000 3f000000
+gl pushmatrix
+gl state 00000000
+gl translatef 42c80000 42c80000 c2480000
+gl bind 1
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 3
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 2
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 4
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 5
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl bind 6
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl begin 5
+gl end
+gl popmatrix
+generic
+batch 405 1920 0 7f70cd33 ae0a3775 facbfe7d f7927955 be8179be
+gl depthrange 0 1
+skyverts 1728 4495cd95
+skyrendered 1
+skyside 0 bf800000 bfa00000 3fa00000 3fa00000
+skyside 1 bf800000 bf800000 3fa00000 3fa00000
+skyside 2 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 3 bf800000 bfa00000 3fa00000 3fa00000
+skyside 4 bfa00000 bfa00000 3fa00000 3fa00000
+skyside 5 bfa00000 bfa00000 3fa00000 3fa00000
+case 102
+gl loadmatrixf
+gl translatef 42c80000 42c80000 c2480000
+gl depthrange 1 1
+batch 4 6 0 4d5e9d21 c655ff85 c9ac3be5 0beebee5 cee572c7
+gl depthrange 0 1
+case 103
+gl loadmatrixf
+gl translatef 42c80000 42c80000 c2480000
+gl depthrange 1 1
+batch 4 6 0 3ae25d41 c655ff85 c9ac3be5 0beebee5 cee572c7
+gl depthrange 0 1
+case 104
+case 105
+case 109
+gl bind 50
+gl state 00020023
+drawelements 72 24 99009525 8449e64b 40c83865
+case 110
+gl bind 50
+gl state 00020023
+drawelements 108 70 0b6a61d5 c3f8c18a a047e4ad
+gl bind 50
+gl state 00020022
+drawelements 210 63 3e7dd469 91b28967 9d4a38a2
+gl bind 50
+gl state 00020023
+drawelements 270 66 9ff95f51 59beaef8 3c5e6051
+case 111
+gl bind 50
+gl state 00020022
+drawelements 108 70 0b6a61d5 c3f8c18a a047e4ad
+gl bind 50
+gl state 00020022
+drawelements 270 66 9ff95f51 59beaef8 3c5e6051
+case 112
+gl bind 50
+gl state 00020022
+drawelements 108 130 c76b8419 a9ed838e 4e1ff6bd
+gl bind 50
+gl state 00020023
+drawelements 210 113 86392f87 bc7177a7 ec8734be
+gl bind 50
+gl state 00020022
+drawelements 300 117 cf794249 a1afb074 275ee03b
+gl bind 50
+gl state 00020023
+drawelements 264 100 da19b9d5 4fcc0f66 c58f0d9d
+case 113
+case 114
+gl bind 50
+gl state 00020023
+drawelements 6 4 7befce06 45a4f8b9 578fa935
+gl bind 50
+gl state 00020023
+drawelements 6 4 7befce06 5eb88539 128394fd
+case 115
+gl bind 50
+gl state 00020022
+drawelements 108 190 c6191055 0e7e82b2 ac7d4e4d
+case 120
+gl bind 51
+gl state 00020065
+drawelements 96 25 6db034fd d86a48a5 34e69b18
+case 121
+gl bind 51
+gl state 00000065
+drawelements 180 42 08e44935 bc9cf14f 81558995
+case 122
+gl bind 51
+gl state 00000065
+drawelements 180 42 08e44935 f53c28f3 81558995
+case 125
+gl bind 51
+gl state 00020065
+drawelements 384 81 8e17a6f5 5970ac67 d4613345
+case 126
+gl bind 51
+gl state 00000065
+drawelements 2400 441 0ad38b4a 27b7d491 0d554851

@@ -78,13 +78,15 @@ begin
   FFront := TQ3FrontEnd.Create(AShaders, AModels, AShaderMapper, AModelMapper, ASettings);
   FFront.VidHeight := AVidHeight;
   FCommands := TQ3CommandList.Create;
-  FBackend := TQ3Backend.Create(TQ3GlRecordingSink.Create(ARecorder), AShaders, AVidWidth, AVidHeight,
-    ANowMilliseconds);
+  FBackend := TQ3Backend.Create(TQ3GlRecordingSink.Create(ARecorder), AShaders, AModels, AModelMapper, AVidWidth,
+    AVidHeight, ANowMilliseconds);
+  FBackend.SetSettings(ASettings);
   FFront.OnDrawSurfs :=
     procedure(const AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef; const ASurfaces: TArray<TQ3DrawSurf>;
-      const AEntities: TArray<TQ3RefEntity>)
+      const AEntities: TArray<TQ3RefEntity>; const APolys: TArray<TQ3ScenePoly>;
+      const ADlights: TArray<TQ3DynamicLight>)
     begin
-      FCommands.AddDrawSurfs(AView, ARefDef, ASurfaces, AEntities);
+      FCommands.AddDrawSurfs(AView, ARefDef, ASurfaces, AEntities, APolys, ADlights);
     end;
 end;
 

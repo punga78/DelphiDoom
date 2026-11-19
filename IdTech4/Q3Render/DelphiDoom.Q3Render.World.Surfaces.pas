@@ -458,9 +458,12 @@ begin
   // try to cull before dlighting or adding
   if CullSurface(ASurface) then
     Exit;
+  LReference := Default(TQ3SurfaceRef);
   if ADlightBits <> 0 then
   begin
     ADlightBits := DlightSurface(ASurface, ADlightBits);
+    // R_DlightSurface keeps the mask in the surface: the dlight pass of the backend reads it
+    LReference.DlightMask := ADlightBits;
     if ADlightBits <> 0 then
       ADlightBits := 1;
   end;
