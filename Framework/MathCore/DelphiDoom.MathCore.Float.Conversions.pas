@@ -89,7 +89,7 @@ class function TIdRotationConversions.MatToAngles(const AMatrix: TIdMat3): TIdAn
 var
   LTheta, LCosPitch: Double;
   LSinPitch: Single;
-  LRadians: Double;
+  LAngle: Single;
 begin
   LSinPitch := AMatrix.Rows[0].Z;
   // cap the sine so that the arc sine cannot give a NaN
@@ -97,21 +97,23 @@ begin
     LSinPitch := 1.0
   else if LSinPitch < -1.0 then
     LSinPitch := -1.0;
-  LTheta := -ArcSin(Double(LSinPitch));
+  // asin( float ) and atan2( float, float ) are the float overloads of the C++ math library: their results are
+  // rounded to float (before the multiplication by the degrees per radian)
+  LTheta := -Double(Single(ArcSin(Double(LSinPitch))));
   LCosPitch := Cos(LTheta);
   if LCosPitch > 8192.0 * ID_FLT_EPSILON then
   begin
     Result.Pitch := LTheta * Double(ID_RAD2DEG);
-    LRadians := ArcTan2(Double(AMatrix.Rows[0].Y), Double(AMatrix.Rows[0].X));
-    Result.Yaw := LRadians * Double(ID_RAD2DEG);
-    LRadians := ArcTan2(Double(AMatrix.Rows[1].Z), Double(AMatrix.Rows[2].Z));
-    Result.Roll := LRadians * Double(ID_RAD2DEG);
+    LAngle := ArcTan2(Double(AMatrix.Rows[0].Y), Double(AMatrix.Rows[0].X));
+    Result.Yaw := LAngle * ID_RAD2DEG;
+    LAngle := ArcTan2(Double(AMatrix.Rows[1].Z), Double(AMatrix.Rows[2].Z));
+    Result.Roll := LAngle * ID_RAD2DEG;
   end
   else
   begin
     Result.Pitch := LTheta * Double(ID_RAD2DEG);
-    LRadians := -ArcTan2(Double(AMatrix.Rows[1].X), Double(AMatrix.Rows[1].Y));
-    Result.Yaw := LRadians * Double(ID_RAD2DEG);
+    LAngle := -Single(ArcTan2(Double(AMatrix.Rows[1].X), Double(AMatrix.Rows[1].Y)));
+    Result.Yaw := LAngle * ID_RAD2DEG;
     Result.Roll := 0;
   end;
 end;

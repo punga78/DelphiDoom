@@ -11,7 +11,10 @@
 #                                  InitDefaultPhysics, Spawn reduced) and of idGameLocal (GetTargets, RequirementMet)
 #   world\physics.inc              the REAL bodies of idPhysics_Parametric (linear motion) and idPhysics::SnapTimeToPhysicsFrame
 #   world\trigger.inc              the REAL bodies of idTrigger, idTrigger_Multi, _Timer, _Count, _Hurt, _Fade
-#   world\mover.inc                the REAL bodies of idMover_Binary, idDoor and idMover (linear movement)
+#   world\mover.inc                the REAL bodies of idMover_Binary, idDoor and idMover (linear movement and rotation)
+# Ondata 14: the entity bodies are now whole (RunPhysics, BecomeActive/BecomeInactive with the physics teams, Bind, Unbind, RemoveBinds,
+# JoinTeam, QuitTeam, GetMasterPosition, SetPhysics, SetOrigin, SetAxis, Event_SpawnBind, idGameLocal::SortActiveEntityList), idPhysics_Static
+# is real, idPhysics_Parametric has SetMaster, idTrigger_EntityName is real, and idMath::SinCos is rebuilt as sinl/cosl (see below).
 # and compiles them with bcc32c (32 bit, x87, -DNDEBUG) with harness_world.cpp (fakes of the engine: the entity and physics classes
 # are declared there with the members the real bodies use; what the original asks of render, sound, clip and script is a stub that
 # does nothing). Scenarios Tests\Data\D3World\scenarios\<name>.scn give Tests\Data\D3World\golden\<name>.golden.txt.
@@ -22,7 +25,9 @@ param(
 	[string]$Work = (Join-Path $env:TEMP 'dd255harness'),
 	[string]$Compiler = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe',
 	[string]$Only = '',
-	[switch]$NoBuild
+	[switch]$NoBuild,
+	# do not rebuild the game harness (which only prepares the shared extracts gamefw\*.inc): for the next runs in the same $Work
+	[switch]$SkipGame
 )
 
 $ErrorActionPreference = 'Continue'
@@ -39,6 +44,11 @@ function Get-Member($text, $class, $name) {
 	# the line of the definition ends in "{" (the comment above it names the function too)
 	$m = [regex]::Match($text, "(?m)^(?:[A-Za-z_][^\n]*?)?$([regex]::Escape($class))::$([regex]::Escape($name))\([^\n]*\{[ \t]*\n.*?\n\}\n", 'Singleline')
 	if (-not $m.Success) { throw "function not found: ${class}::${name}" }
+	return $m.Value
+}
+function Get-Match($text, $pattern, $what) {
+	$m = [regex]::Match($text, $pattern, 'Singleline')
+	if (-not $m.Success) { throw "not found: $what" }
 	return $m.Value
 }
 function Get-Between($text, $from, $to) {
@@ -58,7 +68,9 @@ $exe = Join-Path $Work 'harness_world.exe'
 if (-not $NoBuild) {
 	$fw = Join-Path $Work 'gamefw'; $inc = Join-Path $Work 'gameinc'; $w = Join-Path $Work 'world'
 	# the game harness builds the shared extracts (gamefw\*.inc) first; it runs no scenario
-	& (Join-Path $here 'Build-Harness-Game.ps1') -Reference $Reference -Work $Work -Only '__none__' | Out-Null
+	if (-not ($SkipGame -and (Test-Path (Join-Path $fw 'think_extract.inc')))) {
+		& (Join-Path $here 'Build-Harness-Game.ps1') -Reference $Reference -Work $Work -Only '__none__' | Out-Null
+	}
 	New-Item -ItemType Directory -Force $fw, $inc, $w | Out-Null
 	foreach ($h in 'Class.h', 'Event.h') { Copy-Item (Join-Path $neo "game\gamesys\$h") $fw -Force }
 	Copy-Item (Join-Path $neo 'game\Trigger.h') $w -Force
@@ -81,6 +93,8 @@ if (-not $NoBuild) {
 	$ph = Read-Text (Join-Path $neo 'game\physics\Physics_Parametric.cpp')
 	$ps = Read-Text (Join-Path $neo 'game\physics\Physics.cpp')
 	$phh = Read-Text (Join-Path $neo 'game\physics\Physics_Parametric.h')
+	$pst = Read-Text (Join-Path $neo 'game\physics\Physics_Static.cpp')
+	$psh = Read-Text (Join-Path $neo 'game\physics\Physics_Static.h')
 
 	# idEntityPtr, the template of Game_local.h without the save game members (the save game classes are not here)
 	$m = [regex]::Match($gh, '(?s)template< class type >\nclass idEntityPtr \{.*?\n\};\n')
@@ -93,6 +107,10 @@ if (-not $NoBuild) {
 	$m = [regex]::Match($phh, '(?s)typedef struct parametricPState_s \{.*?\} parametricPState_t;')
 	if (-not $m.Success) { throw 'parametricPState_t not found' }
 	Write-Text (Join-Path $w 'pstate.inc') $m.Value
+	# the state of the static physics
+	$m = [regex]::Match($psh, '(?s)typedef struct staticPState_s \{.*?\} staticPState_t;')
+	if (-not $m.Success) { throw 'staticPState_t not found' }
+	Write-Text (Join-Path $w 'sstate.inc') $m.Value
 
 	# the event queue
 	$sb = New-Object System.Text.StringBuilder
@@ -107,16 +125,34 @@ if (-not $NoBuild) {
 	$sb = New-Object System.Text.StringBuilder
 	foreach ($n in 'GetEntityDefName', 'SetName', 'GetName', 'IsActive') { [void]$sb.Append((Get-Member $en 'idEntity' $n)).Append("`n") }
 	foreach ($n in 'BecomeActive', 'BecomeInactive') {
+		# whole, with the team rules (the physics of a body is asked whether it is a parametric one: IsType( idPhysics_Parametric::Type ), and
+		# no body here is an actor)
 		$body = Get-Member $en 'idEntity' $n
-		# the physics-team blocks: there are no teams here
-		$body = [regex]::Replace($body, "(?s)\n\tif \( \( flags & TH_PHYSICS \) \) \{\n.*?\n\t\}\n", "`n")
+		$body = $body.Replace('physics->IsType( idPhysics_Parametric::Type ) || physics->IsType( idPhysics_Actor::Type )', 'physics->IsParametric()')
 		[void]$sb.Append($body).Append("`n")
 	}
 	[void]$sb.Append((Get-Members $gl 'idGameLocal' @('RegisterEntity', 'UnregisterEntity', 'SpawnEntityDef', 'FindEntityDef', 'AddEntityToHash', 'RemoveEntityFromHash', 'FindEntity')))
+	# idGameLocal::SortActiveEntityList: the physics team masters and the pushers go to the front of the list of the entities that think
+	$sort = Get-Member $gl 'idGameLocal' 'SortActiveEntityList'
+	$sort = $sort.Replace('part->GetPhysics()->IsType( idPhysics_Actor::Type )', 'false').Replace('part->GetPhysics()->IsType( idPhysics_Parametric::Type )', 'part->GetPhysics()->IsParametric()')
+	[void]$sb.Append($sort).Append("`n")
 	Write-Text (Join-Path $w 'game2.inc') $sb.ToString()
-	# the constructor and the destructor of the entity of the game harness (the statements of the real ones that this phase ports)
-	$er = Read-Text (Join-Path $fw 'entity_reduced.inc')
-	Write-Text (Join-Path $w 'entity_ctor.inc') $er.Substring(0, $er.IndexOf('void idEntity::Spawn( void ) {'))
+	# the constructor and the destructor of the entity (the statements of the real ones that this phase ports, in order)
+	function Get-Lines($text, $pattern) { return ([regex]::Matches($text, $pattern) | ForEach-Object { $_.Value }) -join '' }
+	$ctor = Get-Member $en 'idEntity' 'idEntity'
+	$dtor = Get-Member $en 'idEntity' '~idEntity'
+	$sb = New-Object System.Text.StringBuilder
+	[void]$sb.Append("idEntity::idEntity() {`n")
+	[void]$sb.Append((Get-Lines $ctor '(?m)^\t(entityNumber|entityDefNumber|thinkFlags|cinematic|health|physics|bindMaster|bindJoint|bindBody|teamMaster|teamChain)\s*= [^\n]*\n'))
+	[void]$sb.Append((Get-Lines $ctor '(?m)^\t(spawn|active)Node\.SetOwner\( this \);\n'))
+	[void]$sb.Append((Get-Lines $ctor '(?m)^\tmemset\( &(fl|renderEntity), 0, sizeof\( (fl|renderEntity) \) \);\n'))
+	[void]$sb.Append("}`n`n")
+	[void]$sb.Append("idEntity::~idEntity( void ) {`n")
+	[void]$sb.Append((Get-Match $dtor '\tif \( thinkFlags \) \{\n.*?\n\t\}\n\tactiveNode\.Remove\(\);\n' 'think flags and activeNode'))
+	[void]$sb.Append((Get-Lines $dtor '(?m)^\t(Signal\( SIG_REMOVED \)|SetPhysics\( NULL \)|RemoveBinds\(\)|Unbind\(\)|QuitTeam\(\));\n'))
+	[void]$sb.Append((Get-Lines $dtor '(?m)^\tgameLocal\.(RemoveEntityFromHash|UnregisterEntity)\([^\n]*\n'))
+	[void]$sb.Append("}`n`n")
+	Write-Text (Join-Path $w 'entity_ctor.inc') $sb.ToString()
 
 	# the event definitions of Entity.cpp
 	$evdefs = New-Object System.Text.StringBuilder
@@ -125,8 +161,27 @@ if (-not $NoBuild) {
 
 	# idEntity and idGameLocal
 	$sb = New-Object System.Text.StringBuilder
-	foreach ($n in 'Think', 'IsHidden', 'Hide', 'Show', 'FindTargets', 'RemoveNullTargets', 'InitDefaultPhysics', 'GetLocalCoordinates', 'GetWorldVector',
-		'Event_FindTargets', 'Event_ActivateTargets', 'Event_Hide', 'Event_Show') { [void]$sb.Append((Get-Member $en 'idEntity' $n)).Append("`n") }
+	foreach ($n in 'Think', 'IsHidden', 'Hide', 'Show', 'FindTargets', 'RemoveNullTargets', 'InitDefaultPhysics', 'GetLocalVector', 'GetLocalCoordinates', 'GetWorldVector', 'GetWorldCoordinates',
+		'GetMasterPosition', 'InitBind', 'FinishBind', 'Bind', 'BindToJoint', 'BindToBody', 'Unbind', 'RemoveBinds', 'IsBound', 'IsBoundTo', 'GetBindMaster', 'GetBindJoint',
+		'GetBindBody', 'GetTeamMaster', 'GetNextTeamEntity', 'JoinTeam', 'QuitTeam', 'IsAtRest', 'SetPhysics', 'SetOrigin', 'SetAngles', 'UpdateModelTransform',
+		'Event_Bind', 'Event_BindPosition', 'Event_Unbind', 'Event_RemoveBinds', 'Event_SpawnBind',
+		'Event_FindTargets', 'Event_ActivateTargets', 'Event_Hide', 'Event_Show') {
+		$body = Get-Member $en 'idEntity' $n
+		# there is no articulated figure here (idAFEntity_Base): its bind constraints are not added or removed
+		$body = [regex]::Replace($body, "(?s)\n\tif \( master && IsType\( idAFEntity_Base::Type \) \) \{\n.*?\n\t\}\n", "`n")
+		$body = [regex]::Replace($body, "(?s)\n\t// remove any bind constraints from an articulated figure\n\tif \( IsType\( idAFEntity_Base::Type \) \) \{\n.*?\n\t\}\n", "`n")
+		[void]$sb.Append($body).Append("`n")
+	}
+	# idEntity::SetAxis: no body here is an actor (idPhysics_Actor, which keeps the view axis)
+	$sa = Get-Member $en 'idEntity' 'SetAxis'
+	$sa = [regex]::Replace($sa, "(?s)\tif \( GetPhysics\(\)->IsType\( idPhysics_Actor::Type \) \) \{\n.*?\n\t\} else \{\n\t\tGetPhysics\(\)->SetAxis\( axis \);\n\t\}\n", "`tGetPhysics()->SetAxis( axis );`n")
+	[void]$sb.Append($sa).Append("`n")
+	# idEntity::UpdateFromPhysics without the actor block (the master delta angles of an idActor)
+	$uf = Get-Member $en 'idEntity' 'UpdateFromPhysics'
+	$uf = [regex]::Replace($uf, "(?s)\n\tif \( IsType\( idActor::Type \) \) \{\n.*?\n\t\}\n\n", "`n")
+	[void]$sb.Append($uf).Append("`n")
+	# idEntity::RunPhysics, whole: the team, the pushers (idPush is a stub that never blocks), the reached events
+	[void]$sb.Append((Get-Member $en 'idEntity' 'RunPhysics')).Append("`n")
 	$act = Get-Member $en 'idEntity' 'ActivateTargets'
 	# the gui triggers of the target: there is no render entity here
 	$act = [regex]::Replace($act, "(?s)\t\tfor \( j = 0; j < MAX_RENDERENTITY_GUI; j\+\+ \) \{.*?\n\t\t\}\n", '')
@@ -135,48 +190,43 @@ if (-not $NoBuild) {
 	Write-Text (Join-Path $w 'entity.inc') $sb.ToString()
 	# idEntity::Spawn reduced to the statements this phase ports (cut from the real function, in order)
 	$spawn = Get-Member $en 'idEntity' 'Spawn'
-	function Get-Match($text, $pattern, $what) {
-		$m = [regex]::Match($text, $pattern, 'Singleline')
-		if (-not $m.Success) { throw "not found in Entity.cpp: $what" }
-		return $m.Value
-	}
 	$sb = New-Object System.Text.StringBuilder
 	[void]$sb.Append((Get-Match $spawn '\tgameLocal\.RegisterEntity\( this \);.*?\n\t\}\n' 'RegisterEntity to the entityDef')).Append("`n")
+	# idGameEdit::ParseSpawnArgsToRenderEntity (the origin and the axis: "rotation", or "angle") comes after RegisterEntity has given the
+	# entity its spawn arguments
+	$pr = Get-Member $en 'idGameEdit' 'ParseSpawnArgsToRenderEntity'
+	$po = Get-Match $pr '\targs->GetVector\( "origin", "0 0 0", renderEntity->origin \);\n.*?\t\t\}\n\t\}\n' 'origin and axis'
+	[void]$sb.Append($po.Replace('args->', 'spawnArgs.').Replace('renderEntity->', 'renderEntity.')).Append("`n")
+	[void]$sb.Append((Get-Match $spawn '\torigin = renderEntity\.origin;\n\taxis = renderEntity\.axis;\n' 'origin and axis')).Append("`n")
+	[void]$sb.Append((Get-Match $spawn '\tfl\.solidForTeam = [^\n]*\n' 'solidForTeam')).Append("`n")
 	[void]$sb.Append((Get-Match $spawn '\tfl\.hidden = [^\n]*\n\tif \( fl\.hidden \) \{.*?\n\t\}\n' 'hidden')).Append("`n")
 	[void]$sb.Append((Get-Match $spawn '\tcinematic = [^\n]*\n' 'cinematic')).Append("`n")
 	[void]$sb.Append((Get-Match $spawn '\t// every object will have a unique name\n.*?\tSetName\( temp \);\n' 'the name')).Append("`n")
 	[void]$sb.Append((Get-Match $spawn '\t// if we have targets, wait until all entities are spawned to get them\n.*?\n\t\}\n\n' 'targets')).Append("`n")
 	[void]$sb.Append((Get-Match $spawn '\thealth = [^\n]*\n' 'health')).Append("`n")
-	# idEntity::ParseSpawnArgsToRenderEntity (the origin) comes after RegisterEntity has given the entity its spawn arguments
-	[void]$sb.Append("`tspawnArgs.GetVector( `"origin`", `"0 0 0`", origin );`n`taxis.Identity();`n")
-	[void]$sb.Append("`tInitDefaultPhysics( origin, axis );`n")
+	[void]$sb.Append((Get-Match $spawn '\tInitDefaultPhysics\( origin, axis \);\n\n\tSetOrigin\( origin \);\n\tSetAxis\( axis \);\n' 'physics, origin and axis')).Append("`n")
+	[void]$sb.Append((Get-Match $spawn '\tif \( spawnArgs\.GetString\( "bind", "", &temp \) \) \{\n.*?\n\t\}\n' 'bind')).Append("`n")
 	Write-Text (Join-Path $w 'spawn.inc') $sb.ToString()
-	# RunPhysics reduced: no team, no push, no network (the statements are the real ones)
-	$run = Get-Member $en 'idEntity' 'RunPhysics'
-	$sb = New-Object System.Text.StringBuilder
-	[void]$sb.Append((Get-Match $run '\t// don.t run physics if not enabled\n.*?\n\t\}\n' 'physics enabled')).Append("`n")
-	[void]$sb.Append((Get-Match $run '\tstartTime = gameLocal\.previousTime;\n\tendTime = gameLocal\.time;\n' 'times')).Append("`n")
-	$ev1 = (Get-Match $run '\t\t\t// run physics\n\t\t\tmoved = part->physics->Evaluate\([^\n]*\n' 'evaluate').Replace('part->physics', 'physics').Replace("`t`t`t", "`t")
-	[void]$sb.Append($ev1).Append("`n")
-	$rp = Get-Match $run '\t// post reached event if the current time is at or past the end point of the motion\n.*?\n\t\}\n\n\treturn true;\n' 'reached'
-	$rp = $rp.Replace('part->physics', 'physics').Replace('part->ProcessEvent', 'ProcessEvent')
-	$rp = [regex]::Replace($rp, "\tfor \( part = this; part != NULL; part = part->teamChain \) \{\n+\t\tif \( physics \) \{\n", "`t{`n`t`tif ( physics ) {`n")
-	[void]$sb.Append($rp)
-	Write-Text (Join-Path $w 'runphysics.inc') $sb.ToString()
 
 	# the parametric physics: the linear path and the accessors the movers use
 	$sb = New-Object System.Text.StringBuilder
 	[void]$sb.Append((Get-Members $ph 'idPhysics_Parametric' @('Activate', 'TestIfAtRest', 'Rest', 'idPhysics_Parametric', '~idPhysics_Parametric', 'SetPusher', 'IsPusher', 'SetLinearExtrapolation',
 		'SetAngularExtrapolation', 'GetLinearExtrapolationType', 'GetAngularExtrapolationType', 'SetLinearInterpolation', 'SetAngularInterpolation', 'GetLocalOrigin', 'GetLocalAngles',
 		'SetClipModel', 'GetClipModel', 'SetContents', 'GetContents', 'GetBounds', 'GetAbsBounds', 'Evaluate', 'UpdateTime', 'GetTime', 'IsAtRest', 'SaveState', 'RestoreState', 'SetOrigin',
-		'SetAxis', 'GetOrigin', 'GetAxis', 'DisableClip', 'EnableClip', 'GetBlockingEntity', 'GetLinearEndTime', 'GetAngularEndTime')))
+		'SetAxis', 'GetOrigin', 'GetAxis', 'DisableClip', 'EnableClip', 'GetBlockingEntity', 'GetLinearEndTime', 'GetAngularEndTime', 'SetMaster')))
 	[void]$sb.Append((Get-Member $ps 'idPhysics' 'SnapTimeToPhysicsFrame')).Append("`n")
+	# idPhysics_Static: whole bodies (the destructor without the forces of the articulated figures, which are not here)
+	$stat = Get-Members $pst 'idPhysics_Static' @('idPhysics_Static', '~idPhysics_Static', 'SetClipModel', 'SetContents', 'GetContents', 'GetAbsBounds', 'Evaluate', 'SetOrigin', 'SetAxis', 'GetOrigin',
+		'GetAxis', 'DisableClip', 'EnableClip', 'SetMaster')
+	$stat = $stat.Replace("`tidForce::DeletePhysics( this );`n", '')
+	[void]$sb.Append($stat)
 	Write-Text (Join-Path $w 'physics.inc') $sb.ToString()
 
 	# the triggers (no Save and Restore: the save game classes are not here; no DrawDebugInfo, EntityName and Touch)
 	$sb = New-Object System.Text.StringBuilder
 	[void]$sb.Append((Get-Members $tr 'idTrigger' @('Enable', 'Disable', 'CallScript', 'GetScriptFunction', 'Event_Enable', 'Event_Disable', 'idTrigger', 'Spawn')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Multi' @('idTrigger_Multi', 'Spawn', 'CheckFacing', 'TriggerAction', 'Event_TriggerAction', 'Event_Trigger', 'Event_Touch')))
+	[void]$sb.Append((Get-Members $tr 'idTrigger_EntityName' @('idTrigger_EntityName', 'Spawn', 'TriggerAction', 'Event_TriggerAction', 'Event_Trigger', 'Event_Touch')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Timer' @('idTrigger_Timer', 'Spawn', 'Enable', 'Disable', 'Event_Timer', 'Event_Use')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Count' @('idTrigger_Count', 'Spawn', 'Event_Trigger', 'Event_TriggerAction')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Hurt' @('idTrigger_Hurt', 'Spawn', 'Event_Touch', 'Event_Toggle')))
@@ -186,25 +236,41 @@ if (-not $NoBuild) {
 	$decl = ($tr -split "(?m)^CLASS_DECLARATION")[0]
 	$evdefs = New-Object System.Text.StringBuilder
 	foreach ($mm in [regex]::Matches($tr, '(?m)^const idEventDef \w+\(.*\);\n')) { [void]$evdefs.Append($mm.Value) }
-	foreach ($mm in [regex]::Matches($tr, '(?s)(CLASS_DECLARATION\( idEntity, idTrigger \).*?END_CLASS\n|CLASS_DECLARATION\( idTrigger, idTrigger_(Multi|Timer|Count|Hurt|Fade) \).*?END_CLASS\n)')) { [void]$evdefs.Append($mm.Value) }
+	foreach ($mm in [regex]::Matches($tr, '(?s)(CLASS_DECLARATION\( idEntity, idTrigger \).*?END_CLASS\n|CLASS_DECLARATION\( idTrigger, idTrigger_(Multi|EntityName|Timer|Count|Hurt|Fade) \).*?END_CLASS\n)')) { [void]$evdefs.Append($mm.Value) }
 	Write-Text (Join-Path $w 'trigger_decl.inc') $evdefs.ToString()
 
 	# the movers: whole bodies, the event lines of the classes of the harness are written in harness_world.cpp
 	$sb = New-Object System.Text.StringBuilder
 	[void]$sb.Append((Get-Members $mv 'idMover_Binary' @('idMover_Binary', '~idMover_Binary', 'Spawn', 'GetMovedir', 'Event_SetCallback', 'UpdateMoverSound', 'SetMoverState', 'MatchActivateTeam',
 		'Enable', 'Event_MatchActivateTeam', 'JoinActivateTeam', 'Event_Enable', 'Event_Disable', 'Event_ReturnToPos1', 'Event_Reached_BinaryMover', 'GotoPosition1', 'GotoPosition2',
-		'UpdateBuddies', 'SetGuiStates', 'Use_BinaryMover', 'Event_Use_BinaryMover', 'InitSpeed', 'InitTime', 'SetBlocked', 'IsBlocked', 'GetActivator')))
+		'UpdateBuddies', 'SetGuiStates', 'Use_BinaryMover', 'Event_Use_BinaryMover', 'InitSpeed', 'InitTime', 'SetBlocked', 'IsBlocked', 'GetActivator', 'PreBind', 'PostBind')))
 	[void]$sb.Append((Get-Members $mv 'idDoor' @('idDoor', '~idDoor', 'Think', 'Spawn', 'Open', 'Close', 'Lock', 'IsLocked', 'IsOpen', 'IsNoTouch', 'CalcTriggerBounds', 'Event_StartOpen', 'Event_SpawnDoorTrigger',
-		'Event_Reached_BinaryMover', 'Event_Activate', 'Event_Open', 'Event_Close', 'Event_Lock', 'Event_IsOpen', 'Event_Locked')))
+		'Event_Reached_BinaryMover', 'Event_Activate', 'Event_Open', 'Event_Close', 'Event_Lock', 'Event_IsOpen', 'Event_Locked', 'PreBind', 'PostBind')))
 	[void]$sb.Append((Get-Members $mv 'idMover' @('idMover', 'Spawn', 'Event_SetCallback', 'Event_StopMoving', 'DoneMoving', 'UpdateMoveSound', 'Event_UpdateMove', 'BeginMove', 'Event_SetMoveSpeed',
-		'Event_SetMoveTime', 'Event_SetAccellerationTime', 'Event_SetDecelerationTime', 'Event_MoveTo', 'MoveToPos', 'Event_MoveToPos', 'VectorForDir', 'Event_MoveDir', 'Event_IsMoving')))
+		'Event_SetMoveTime', 'Event_SetAccellerationTime', 'Event_SetDecelerationTime', 'Event_MoveTo', 'MoveToPos', 'Event_MoveToPos', 'VectorForDir', 'Event_MoveDir', 'Event_IsMoving',
+		'Event_StopRotating', 'DoneRotating', 'UpdateRotationSound', 'Event_UpdateRotation', 'BeginRotation', 'Event_RotateDownTo', 'Event_RotateUpTo', 'Event_RotateTo', 'Event_Rotate',
+		'Event_RotateOnce', 'Event_IsRotating')))
 	Write-Text (Join-Path $w 'mover.inc') $sb.ToString()
 	$evdefs = New-Object System.Text.StringBuilder
 	foreach ($mm in [regex]::Matches($mv, '(?m)^const idEventDef \w+\(.*\);\n')) { [void]$evdefs.Append($mm.Value) }
 	Write-Text (Join-Path $w 'mover_events.inc') $evdefs.ToString()
 
+	# idMath::SinCos: the original is x87 code (fsincos: the sine and the cosine in extended precision, stored as float); the inline
+	# assembly of the original does not run under bcc32c, and the fallback of the idlib copy (sinf, cosf of the C runtime) is not as
+	# exact. The rotation of a body needs the same bits as the original, so SinCos is computed in long double and rounded to float
+	# (what fsincos and fstp give). The users of SinCos in idlib are rebuilt (Angles.cpp, Rotation.cpp).
+	$mh = Join-Path $Work 'idlib\math\Math.h'
+	$mt = Read-Text $mh
+	if ($mt.Contains("`ts = sinf( a );`n`tc = cosf( a );")) {
+		Write-Text $mh $mt.Replace("`ts = sinf( a );`n`tc = cosf( a );", "`ts = (float)sinl( (long double)a );`n`tc = (float)cosl( (long double)a );")
+	}
 	Push-Location $Work
 	try {
+		foreach ($s in 'math\Angles', 'math\Rotation') {
+			$o = 'obj\idlib_' + ($s -replace '\\', '_') + '.o'
+			$log = & $Compiler -c -w- -DNDEBUG -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -Iidlib "idlib\$s.cpp" -o $o 2>&1
+			if ($LASTEXITCODE -ne 0) { $log | Select-Object -First 20 | ForEach-Object { Write-Host $_ }; throw "compilation failed: $s" }
+		}
 		$o = 'obj\harness_harness_world.o'
 		$log = & $Compiler -c -w- -DNDEBUG -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -Iidlib 'harness\harness_world.cpp' -o $o 2>&1
 		if ($LASTEXITCODE -ne 0) {

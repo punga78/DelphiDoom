@@ -185,11 +185,38 @@ public:
 	void Disable( void ) { enabled = false; }
 };
 struct refSound_t { idVec3 origin; struct { int soundShaderFlags; } parms; };
-struct renderEntity_t { void *hModel; float shaderParms[12]; };
+struct renderEntity_t { void *hModel; float shaderParms[12]; idVec3 origin; idMat3 axis; idBounds bounds; idJointMat *joints; int numJoints; };
 class idRenderWorldFake { public: int FindPortal( const idBounds &b ) { return 0; } };
 static idRenderWorldFake g_renderWorld;
 static idRenderWorldFake *gameRenderWorld = &g_renderWorld;
-class idPushFake { public: void ClipPush( trace_t &results, idEntity *pusher, int flags, const idVec3 &oldOrigin, const idMat3 &oldAxis, const idVec3 &newOrigin, const idMat3 &newAxis ) { results.fraction = 1.0f; } };
+// idPush: nothing is ever pushed or blocked (idPush::ClipPush is not in this harness)
+class idPushFake {
+public:
+	void ClipPush( trace_t &results, idEntity *pusher, int flags, const idVec3 &oldOrigin, const idMat3 &oldAxis, const idVec3 &newOrigin, const idMat3 &newAxis ) { results.fraction = 1.0f; }
+	void InitSavingPushedEntityPositions( void ) {}
+	void RestorePushedEntityPositions( void ) {}
+	int GetNumPushedEntities( void ) const { return 0; }
+	idEntity *GetPushedEntity( int index ) const { return NULL; }
+};
+// the animation system (no model has a skeleton here: GetAnimator() is NULL, the code that uses the animator is never reached
+// but compiles)
+class idAnim { public: const void *MD5Anim( int num ) const { return NULL; } };
+class idDeclModelDefFake { public: idVec3 GetVisualOffset( void ) const { return vec3_zero; } };
+class idAnimator {
+public:
+	int GetJointHandle( const char *name ) const { return INVALID_JOINT; }
+	int GetAnim( const char *name ) const { return 0; }
+	const idAnim *GetAnim( int num ) const { return NULL; }
+	void CreateFrame( int currentTime, bool force ) {}
+	void ForceUpdate( void ) {}
+	const void *ModelHandle( void ) const { return NULL; }
+	const idDeclModelDefFake *ModelDef( void ) const { return NULL; }
+	bool RemoveOrigin( void ) const { return false; }
+	void GetJointTransform( jointHandle_t jointHandle, int currentTime, idVec3 &offset, idMat3 &axis ) {}
+};
+class idGameEditFake { public: void ANIM_CreateAnimFrame( const void *model, const void *anim, int numJoints, idJointMat *frame, int frameNum, const idVec3 &modelOffset, bool removeOriginOffset ) {} };
+static idGameEditFake g_gameEdit;
+static idGameEditFake *gameEdit = &g_gameEdit;
 class idPlayerView { public: void Fade( const idVec4 &color, int time ) { out( "CALL playerView.Fade" ); } };
 
 // ---------------------------------------------------------------- idEntityPtr (real) and the physics classes of the harness
@@ -223,6 +250,14 @@ public:
 	virtual int GetAngularEndTime( void ) const { return 0; }
 	virtual void SaveState( void ) {}
 	virtual void RestoreState( void ) {}
+	// what the real entity code asks of the physics of the bodies that are not here (the real bodies of the two classes below
+	// override the ones that matter)
+	virtual void Activate( void ) {}
+	virtual void SetMaster( idEntity *master, const bool orientated = true ) {}
+	virtual void ClearContacts( void ) {}
+	virtual void SetPushed( int deltaTime ) {}
+	// idEntity::BecomeActive and idGameLocal::SortActiveEntityList ask IsType( idPhysics_Parametric::Type ) and IsType( idPhysics_Actor::Type )
+	virtual bool IsParametric( void ) const { return false; }
 };
 class idPhysics_Base : public idPhysics {
 public:
@@ -230,25 +265,38 @@ public:
 	const idBounds &GetBounds( int id = -1 ) const { return bounds; }
 	const idBounds &GetAbsBounds( int id = -1 ) const { return absBounds; }
 };
+#include "../world/sstate.inc"
 class idPhysics_Static : public idPhysics {
 public:
-	idClipModel *clipModel; idVec3 origin; idMat3 axis; idBounds absBounds; int contents; int time;
-	idPhysics_Static() : clipModel( NULL ), contents( 0 ), time( 0 ) { origin.Zero(); axis.Identity(); }
-	void SetClipModel( idClipModel *model, float density, int id = 0, bool freeOld = true ) { clipModel = model; }
+	idPhysics_Static( void );
+	virtual ~idPhysics_Static( void );
+	void SetClipModel( idClipModel *model, float density, int id = 0, bool freeOld = true );
 	idClipModel *GetClipModel( int id = 0 ) const { return clipModel; }
-	void SetContents( int c, int id = -1 ) { contents = c; }
-	int GetContents( int id = -1 ) const { return contents; }
-	const idBounds &GetAbsBounds( int id = -1 ) const { idPhysics_Static *p = const_cast<idPhysics_Static *>( this ); if ( clipModel ) { p->clipModel->Link( *(idClip *)0, NULL, 0, origin, axis ); p->absBounds = clipModel->GetAbsBounds(); } else { p->absBounds[0] = p->absBounds[1] = origin; } return absBounds; }
-	bool Evaluate( int timeStepMSec, int endTimeMSec ) { time = endTimeMSec; return false; }
-	void UpdateTime( int endTimeMSec ) { time = endTimeMSec; }
-	int GetTime( void ) const { return time; }
+	void SetContents( int contents, int id = -1 );
+	int GetContents( int id = -1 ) const;
+	const idBounds &GetAbsBounds( int id = -1 ) const;
+	bool Evaluate( int timeStepMSec, int endTimeMSec );
+	// the bodies of these are empty or a single return in the original
+	void UpdateTime( int endTimeMSec ) {}
+	int GetTime( void ) const { return 0; }
+	void Activate( void ) {}
 	bool IsAtRest( void ) const { return true; }
-	void SetOrigin( const idVec3 &o, int id = -1 ) { origin = o; }
-	void SetAxis( const idMat3 &a, int id = -1 ) { axis = a; }
-	const idVec3 &GetOrigin( int id = 0 ) const { return origin; }
-	const idMat3 &GetAxis( int id = 0 ) const { return axis; }
-	void DisableClip( void ) {}
-	void EnableClip( void ) {}
+	void SetOrigin( const idVec3 &newOrigin, int id = -1 );
+	void SetAxis( const idMat3 &newAxis, int id = -1 );
+	const idVec3 &GetOrigin( int id = 0 ) const;
+	const idMat3 &GetAxis( int id = 0 ) const;
+	void DisableClip( void );
+	void EnableClip( void );
+	void SetMaster( idEntity *master, const bool orientated = true );
+	void SaveState( void ) {}
+	void RestoreState( void ) {}
+	void SetPushed( int deltaTime ) {}
+	void ClearContacts( void ) {}
+private:
+	staticPState_t current;
+	idClipModel *clipModel;
+	bool hasMaster;
+	bool isOrientated;
 };
 #include "../world/pstate.inc"
 class idPhysics_Parametric : public idPhysics_Base {
@@ -290,6 +338,10 @@ public:
 	int GetAngularEndTime( void ) const;
 	void SetClipMask( int mask ) {}
 	idClipModel *GetClipModel() { return clipModel; }
+	void SetMaster( idEntity *master, const bool orientated = true );
+	bool IsParametric( void ) const { return true; }
+	void SetPushed( int deltaTime ) {}
+	void GetAngles( idAngles &curAngles ) const { curAngles = current.angles; }
 private:
 	parametricPState_t current;
 	parametricPState_t saved;
@@ -319,10 +371,14 @@ public:
 	idLinkList<idEntity>	spawnNode;
 	idLinkList<idEntity>	activeNode;
 	idList< idEntityPtr<idEntity> >	targets;
-	struct { bool hidden; bool takedamage; bool solidForTeam; bool networkSync; bool forcePhysicsUpdate; } fl;
+	struct { bool hidden; bool takedamage; bool solidForTeam; bool networkSync; bool forcePhysicsUpdate; bool bindOrientated; } fl;
 	idPhysics *				physics;
 	idPhysics_Static		defaultPhysicsObj;
 	idEntity *				bindMaster;
+	jointHandle_t			bindJoint;
+	int						bindBody;
+	idEntity *				teamMaster;
+	idEntity *				teamChain;
 	refSound_t				refSound;
 	renderEntity_t			renderEntity;
 
@@ -334,6 +390,7 @@ public:
 	void					SetName( const char *name );
 	const char *			GetName( void ) const;
 	bool					IsActive( void ) const;
+	bool					IsAtRest( void ) const;
 	void					BecomeActive( int flags );
 	void					BecomeInactive( int flags );
 	virtual bool			IsHidden( void ) const;
@@ -344,19 +401,49 @@ public:
 	void					ActivateTargets( idEntity *activator ) const;
 	bool					RunPhysics( void );
 	idPhysics *				GetPhysics( void ) const { return physics; }
-	void					SetPhysics( idPhysics *phys ) { physics = phys ? phys : &defaultPhysicsObj; }
-	void					SetOrigin( const idVec3 &org ) { GetPhysics()->SetOrigin( org ); UpdateVisuals(); }
-	void					SetAxis( const idMat3 &axis ) { GetPhysics()->SetAxis( axis ); UpdateVisuals(); }
-	void					SetAngles( const idAngles &ang ) { SetAxis( ang.ToMat3() ); }
+	void					SetPhysics( idPhysics *phys );
+	void					SetOrigin( const idVec3 &org );
+	void					SetAxis( const idMat3 &axis );
+	void					SetAngles( const idAngles &ang );
 	void					InitDefaultPhysics( const idVec3 &origin, const idMat3 &axis );
+	idVec3					GetLocalVector( const idVec3 &vec ) const;
 	idVec3					GetLocalCoordinates( const idVec3 &vec ) const;
 	idVec3					GetWorldVector( const idVec3 &vec ) const;
-	bool					GetMasterPosition( idVec3 &masterOrigin, idMat3 &masterAxis ) const { return false; }
-	void					JoinTeam( idEntity *teammember ) {}
-	void					Bind( idEntity *master, bool orientated ) {}
+	idVec3					GetWorldCoordinates( const idVec3 &vec ) const;
+	bool					GetMasterPosition( idVec3 &masterOrigin, idMat3 &masterAxis ) const;
+	// binding and the physics teams
+	virtual void			PreBind( void );
+	virtual void			PostBind( void );
+	virtual void			PreUnbind( void ) {}
+	virtual void			PostUnbind( void ) {}
+	bool					InitBind( idEntity *master );
+	void					FinishBind( void );
+	void					Bind( idEntity *master, bool orientated );
+	void					BindToJoint( idEntity *master, const char *jointname, bool orientated );
+	void					BindToBody( idEntity *master, int bodyId, bool orientated );
+	void					Unbind( void );
+	void					RemoveBinds( void );
+	bool					IsBound( void ) const;
+	bool					IsBoundTo( idEntity *master ) const;
+	idEntity *				GetBindMaster( void ) const;
+	jointHandle_t			GetBindJoint( void ) const;
+	int						GetBindBody( void ) const;
+	idEntity *				GetTeamMaster( void ) const;
+	idEntity *				GetNextTeamEntity( void ) const;
+	void					JoinTeam( idEntity *teammember );
+	void					QuitTeam( void );
+	idAnimator *			GetAnimator( void ) { return NULL; }
+	void					UpdateFromPhysics( bool moveBack );
+	void					UpdateModelTransform( void );
+	bool					GetPhysicsToVisualTransform( idVec3 &origin, idMat3 &axis ) { return false; }
+	void					Event_Bind( idEntity *master );
+	void					Event_BindPosition( idEntity *master );
+	void					Event_Unbind( void );
+	void					Event_RemoveBinds( void );
+	void					Event_SpawnBind( void );
 	bool					HasSignal( int signalnum ) const { return false; }
 	void					Signal( int signalnum ) {}
-	void					UpdateVisuals( void ) {}
+	void					UpdateVisuals( void );
 	void					FreeModelDef( void ) {}
 	void					Present( void ) {}
 	bool					UpdateAnimationControllers( void ) { return false; }
@@ -364,8 +451,6 @@ public:
 	bool					StartSound( const char *soundName, const s_channelType channel, int soundShaderFlags, bool broadcast, int *length ) { return false; }
 	void					StopSound( const s_channelType channel, bool broadcast ) {}
 	virtual void			Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir, const char *damageDefName, const float damageScale, const int location ) {}
-	virtual void			PreBind( void ) {}
-	virtual void			PostBind( void ) {}
 	void					Event_FindTargets( void );
 	void					Event_ActivateTargets( idEntity *activator );
 	void					Event_Hide( void );
@@ -378,8 +463,15 @@ public:
 	bool spectating;
 	idAngles viewAngles;
 	idPlayerView playerView;
-	idDict *FindInventoryItem( const char *name ) { return NULL; }
-	void RemoveInventoryItem( idDict *item ) {}
+	// the inventory: one dictionary per item, named by "inv_name" (idPlayer::inventory is far larger: only what RequirementMet asks)
+	std::vector<idDict *> items;
+	idDict *FindInventoryItem( const char *name ) {
+		for ( size_t i = 0; i < items.size(); i++ ) if ( idStr::Icmp( items[i]->GetString( "inv_name" ), name ) == 0 ) return items[i];
+		return NULL;
+	}
+	void RemoveInventoryItem( idDict *item ) {
+		for ( size_t i = 0; i < items.size(); i++ ) if ( items[i] == item ) { items.erase( items.begin() + i ); return; }
+	}
 };
 
 class idEditEntities { public: void RemoveSelectedEntity( idEntity *ent ) {} };
@@ -404,6 +496,7 @@ public:
 	bool					isClient;
 	bool					inCinematic;
 	idEditEntities *		editEntities;
+	idEntity *				world;
 	idProgramFake			program;
 	int						time, previousTime, msec, framenum, realClientTime;
 	idRandom				random;
@@ -426,6 +519,7 @@ public:
 	bool					RequirementMet( idEntity *activator, const idStr &requires, int removeItem );
 	idPlayer *				GetLocalPlayer( void ) const { return NULL; }
 	void					RunFrameThink( void );
+	void					SortActiveEntityList( void );
 	void					NewMap( void );
 };
 static idGameLocal gameLocal;
@@ -477,7 +571,7 @@ public:
 class idWorldspawn : public idEntity {
 public:
 	CLASS_PROTOTYPE( idWorldspawn );
-	void Spawn( void ) {}
+	void Spawn( void ) { gameLocal.world = this; }
 };
 
 // the order of the declarations is the order of the static initialization
@@ -486,6 +580,11 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_ActivateTargets,		idEntity::Event_ActivateTargets )
 	EVENT( EV_Hide,					idEntity::Event_Hide )
 	EVENT( EV_Show,					idEntity::Event_Show )
+	EVENT( EV_RemoveBinds,			idEntity::Event_RemoveBinds )
+	EVENT( EV_Bind,					idEntity::Event_Bind )
+	EVENT( EV_BindPosition,			idEntity::Event_BindPosition )
+	EVENT( EV_Unbind,				idEntity::Event_Unbind )
+	EVENT( EV_SpawnBind,			idEntity::Event_SpawnBind )
 END_CLASS
 CLASS_DECLARATION( idEntity, idPlayer )
 END_CLASS
@@ -527,6 +626,14 @@ CLASS_DECLARATION( idEntity, idMover )
 	EVENT( EV_MoveToPos,			idMover::Event_MoveToPos )
 	EVENT( EV_Move,					idMover::Event_MoveDir )
 	EVENT( EV_IsMoving,				idMover::Event_IsMoving )
+	EVENT( EV_ReachedAng,			idMover::Event_UpdateRotation )
+	EVENT( EV_StopRotating,			idMover::Event_StopRotating )
+	EVENT( EV_RotateDownTo,			idMover::Event_RotateDownTo )
+	EVENT( EV_RotateUpTo,			idMover::Event_RotateUpTo )
+	EVENT( EV_RotateTo,				idMover::Event_RotateTo )
+	EVENT( EV_Rotate,				idMover::Event_Rotate )
+	EVENT( EV_RotateOnce,			idMover::Event_RotateOnce )
+	EVENT( EV_IsRotating,			idMover::Event_IsRotating )
 END_CLASS
 
 // ---------------------------------------------------------------- the real bodies
@@ -537,13 +644,15 @@ void idEntity::Spawn( void ) {
 	const char *classname;
 	idVec3 origin;
 	idMat3 axis;
+	float angle;
 #include "../world/spawn.inc"
 }
-bool idEntity::RunPhysics( void ) {
-	int reachedTime, startTime, endTime;
-	bool moved;
-#include "../world/runphysics.inc"
-}
+// idEntity::UpdateVisuals is UpdateModel and UpdateSound; here only the part that gives the render entity its position (the
+// TH_UPDATEVISUALS flag that UpdateModel sets and Present clears is not ported, see D3Game\CLAUDE.md)
+void idEntity::UpdateVisuals( void ) { UpdateModelTransform(); }
+// empty in the original
+void idEntity::PreBind( void ) {}
+void idEntity::PostBind( void ) {}
 #include "../world/entity.inc"
 #include "../world/physics.inc"
 #include "../world/trigger.inc"
@@ -553,14 +662,13 @@ void idRecorder::Event_Activate( idEntity *activator ) { out( "ACTIVATE %s by %s
 // the save game members (no save games here) and what the real bodies leave to others
 void idTrigger::Save( idSaveGame *savefile ) const {} void idTrigger::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Multi::Save( idSaveGame *savefile ) const {} void idTrigger_Multi::Restore( idRestoreGame *savefile ) {}
+void idTrigger_EntityName::Save( idSaveGame *savefile ) const {} void idTrigger_EntityName::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Timer::Save( idSaveGame *savefile ) const {} void idTrigger_Timer::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Count::Save( idSaveGame *savefile ) const {} void idTrigger_Count::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Hurt::Save( idSaveGame *savefile ) const {} void idTrigger_Hurt::Restore( idRestoreGame *savefile ) {}
 void idMover_Binary::Save( idSaveGame *savefile ) const {} void idMover_Binary::Restore( idRestoreGame *savefile ) {}
 void idDoor::Save( idSaveGame *savefile ) const {} void idDoor::Restore( idRestoreGame *savefile ) {}
 void idMover::Save( idSaveGame *savefile ) const {} void idMover::Restore( idRestoreGame *savefile ) {}
-void idMover::DoneRotating( void ) {}
-void idMover::BeginRotation( idThread *thread, bool stopwhendone ) {}
 void idMover::FindGuiTargets( void ) {}
 void idMover::Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location ) {}
 void idMover::WriteToSnapshot( idBitMsgDelta &msg ) const {}
@@ -569,8 +677,6 @@ void idMover::Hide( void ) { idEntity::Hide(); }
 void idMover::Show( void ) { idEntity::Show(); }
 void idMover::Event_FindGuiTargets( void ) {}
 void idMover::Event_InitGuiTargets( void ) {}
-void idMover_Binary::PreBind( void ) {}
-void idMover_Binary::PostBind( void ) {}
 void idMover_Binary::WriteToSnapshot( idBitMsgDelta &msg ) const {}
 void idMover_Binary::ReadFromSnapshot( const idBitMsgDelta &msg ) {}
 void idMover_Binary::FindGuiTargets( void ) {}
@@ -580,8 +686,6 @@ void idMover_Binary::SetGuiState( const char *key, const char *val ) const {}
 void idMover_Binary::SetPortalState( bool open ) {}
 void idMover_Binary::Event_OpenPortal( void ) {}
 void idMover_Binary::Event_ClosePortal( void ) {}
-void idDoor::PreBind( void ) {}
-void idDoor::PostBind( void ) {}
 void idDoor::Hide( void ) { idEntity::Hide(); }
 void idDoor::Show( void ) { idEntity::Show(); }
 void idDoor::SetAASAreaState( bool closed ) {}
@@ -608,6 +712,8 @@ void idGameLocal::RunFrameThink( void ) {
 	float		ms;
 	idTimer		timer_singlethink;
 #include "../gamefw/frame_head.inc"
+	// sort the active entity list (the real call of idGameLocal::RunFrame, between the time update and the think loop)
+	SortActiveEntityList();
 #include "../gamefw/think_extract.inc"
 }
 
@@ -627,6 +733,10 @@ static void dumpEntity( idEntity *e ) {
 	if ( e->IsType( idTrigger_Multi::Type ) ) {
 		idTrigger_Multi *t = static_cast<idTrigger_Multi *>( e );
 		out( "MULTI wait=%08X random=%08X delay=%08X random_delay=%08X next=%d triggerFirst=%d", fb( t->wait ), fb( t->random ), fb( t->delay ), fb( t->random_delay ), t->nextTriggerTime, t->triggerFirst ? 1 : 0 );
+	}
+	if ( e->IsType( idTrigger_EntityName::Type ) ) {
+		idTrigger_EntityName *t = static_cast<idTrigger_EntityName *>( e );
+		out( "ENAME wait=%08X random=%08X delay=%08X random_delay=%08X next=%d triggerFirst=%d entityName=%s", fb( t->wait ), fb( t->random ), fb( t->delay ), fb( t->random_delay ), t->nextTriggerTime, t->triggerFirst ? 1 : 0, t->entityName.c_str() );
 	}
 	if ( e->IsType( idTrigger_Timer::Type ) ) {
 		idTrigger_Timer *t = static_cast<idTrigger_Timer *>( e );
@@ -650,6 +760,43 @@ static void dumpEntity( idEntity *e ) {
 		out( "MOVE stage=%d accel=%d movetime=%d decel=%d dir=%s dest=%s speed=%08X time=%d acceltime=%d deceltime=%d last=%d thread=%d", (int)m->move.stage, m->move.acceleration, m->move.movetime, m->move.deceleration,
 			vecs( m->move.dir ).c_str(), vecs( m->dest_position ).c_str(), fb( m->move_speed ), m->move_time, m->acceltime, m->deceltime, (int)m->lastCommand, m->move_thread );
 	}
+}
+static std::string angs( const idAngles &a ) { char b[64]; sprintf( b, "%08X %08X %08X", fb( a.pitch ), fb( a.yaw ), fb( a.roll ) ); return b; }
+static std::string mats( const idMat3 &m ) {
+	std::string s;
+	for ( int i = 0; i < 3; i++ ) { if ( i ) s += " "; s += vecs( m[i] ); }
+	return s;
+}
+static int entNum( const idEntity *e ) { return e ? e->entityNumber : -1; }
+// the binding and the team of an entity, its physics and its visual position
+static void dumpBind( idEntity *e ) {
+	out( "BIND %d bindMaster=%d joint=%d body=%d oriented=%d teamMaster=%d teamChain=%d think=%d origin=%s axis=%s render=%s %s", e->entityNumber, entNum( e->bindMaster ), (int)e->bindJoint, e->bindBody,
+		e->fl.bindOrientated ? 1 : 0, entNum( e->teamMaster ), entNum( e->teamChain ), e->thinkFlags, vecs( e->GetPhysics()->GetOrigin() ).c_str(), mats( e->GetPhysics()->GetAxis() ).c_str(),
+		vecs( e->renderEntity.origin ).c_str(), mats( e->renderEntity.axis ).c_str() );
+}
+// the angular state of a parametric physics
+static void dumpRot( idEntity *e ) {
+	idPhysics *p = e->GetPhysics();
+	if ( !p->IsParametric() ) { out( "ROT %d static axis=%s", e->entityNumber, mats( p->GetAxis() ).c_str() ); return; }
+	idPhysics_Parametric *pp = static_cast<idPhysics_Parametric *>( p );
+	idAngles local, world;
+	pp->GetLocalAngles( local ); pp->GetAngles( world );
+	// the world angles are idMat3::ToAngles of the axis (atan2 and asin of the C runtime: a few ULP from the x87 of Delphi, tested with a
+	// tolerance in the unit tests): only whether they are the local angles to 1/1000 degree is written
+	idAngles d = world - local; d.Normalize180();
+	bool same = idMath::Fabs( d.pitch ) < 0.001f && idMath::Fabs( d.yaw ) < 0.001f && idMath::Fabs( d.roll ) < 0.001f;
+	out( "ROT %d local=%s anglesSame=%d axis=%s type=%d end=%d", e->entityNumber, angs( local ).c_str(), same ? 1 : 0, mats( p->GetAxis() ).c_str(), (int)pp->GetAngularExtrapolationType(), pp->GetAngularEndTime() );
+}
+// the local angles and the axis in ten thousandths: after SetAxis the local angles come from idMat3::ToAngles, whose atan2 and asin (float
+// overloads of the C runtime) are not the x87 ones of Delphi in the last bit
+static int q4( float v ) { return (int)floor( v * 10000.0f + 0.5f ); }
+static void dumpRotQ( idEntity *e ) {
+	idPhysics *p = e->GetPhysics();
+	if ( !p->IsParametric() ) { out( "ROTQ %d static", e->entityNumber ); return; }
+	idAngles local; static_cast<idPhysics_Parametric *>( p )->GetLocalAngles( local );
+	const idMat3 &a = p->GetAxis();
+	out( "ROTQ %d local=%d %d %d axis=%d %d %d %d %d %d %d %d %d", e->entityNumber, q4( local.pitch ), q4( local.yaw ), q4( local.roll ),
+		q4( a[0][0] ), q4( a[0][1] ), q4( a[0][2] ), q4( a[1][0] ), q4( a[1][1] ), q4( a[1][2] ), q4( a[2][0] ), q4( a[2][1] ), q4( a[2][2] ) );
 }
 static void dumpQueue() {
 	std::string s;
@@ -736,6 +883,19 @@ static void runCommand( const std::string &cmd, const std::string &rest ) {
 	else if ( cmd == "startup" ) gameLocal.gamestate = atoi( w[0].c_str() ) ? GAMESTATE_STARTUP : GAMESTATE_ACTIVE;
 	else if ( cmd == "remove" ) { idEntity *e = entityAt( w[0] ); if ( e ) { delete e; out( "REMOVED %s", w[0].c_str() ); } else out( "NOTFOUND" ); }
 	else if ( cmd == "find" ) { idEntity *e = gameLocal.FindEntity( w.empty() ? "" : w[0].c_str() ); out( "FOUND %d", e ? e->entityNumber : -1 ); }
+	else if ( cmd == "bind" ) { idEntity *e = entityAt( w[0] ), *m = entityAt( w[1] ); if ( !e ) { out( "NOTFOUND" ); return; } e->Bind( m, w.size() < 3 || atoi( w[2].c_str() ) != 0 ); out( "BOUND" ); }
+	else if ( cmd == "unbind" ) { idEntity *e = entityAt( w[0] ); if ( !e ) { out( "NOTFOUND" ); return; } e->Unbind(); out( "UNBOUND" ); }
+	else if ( cmd == "removebinds" ) { idEntity *e = entityAt( w[0] ); if ( !e ) { out( "NOTFOUND" ); return; } e->RemoveBinds(); out( "BINDSREMOVED" ); }
+	else if ( cmd == "bindstate" ) { idEntity *e = entityAt( w[0] ); if ( e ) dumpBind( e ); else out( "NOTFOUND" ); }
+	else if ( cmd == "rot" ) { idEntity *e = entityAt( w[0] ); if ( e ) dumpRot( e ); else out( "NOTFOUND" ); }
+	else if ( cmd == "give" ) { idEntity *e = entityAt( w[0] ); if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } idDict *d = new idDict; d->Set( "inv_name", w[1].c_str() ); static_cast<idPlayer *>( e )->items.push_back( d ); out( "GIVEN" ); }
+	else if ( cmd == "spectate" ) { idEntity *e = entityAt( w[0] ); if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } static_cast<idPlayer *>( e )->spectating = atoi( w[1].c_str() ) != 0; out( "SPECTATING" ); }
+	else if ( cmd == "viewangles" ) { idEntity *e = entityAt( w[0] ); float a = 0, b = 0, c = 0; if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } sscanf( w[1].c_str(), "%f,%f,%f", &a, &b, &c ); static_cast<idPlayer *>( e )->viewAngles = idAngles( a, b, c ); out( "VIEWANGLES" ); }
+	else if ( cmd == "items" ) { idEntity *e = entityAt( w[0] ); if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } idPlayer *p = static_cast<idPlayer *>( e ); std::string s; for ( size_t i = 0; i < p->items.size(); i++ ) { s += " "; s += p->items[i]->GetString( "inv_name" ); } outs( "ITEMS", s ); }
+	else if ( cmd == "rotq" ) { idEntity *e = entityAt( w[0] ); if ( e ) dumpRotQ( e ); else out( "NOTFOUND" ); }
+	else if ( cmd == "setorigin" ) { idEntity *e = entityAt( w[0] ); float a = 0, b = 0, c = 0; if ( !e ) { out( "NOTFOUND" ); return; } sscanf( w[1].c_str(), "%f,%f,%f", &a, &b, &c ); e->SetOrigin( idVec3( a, b, c ) ); out( "ORIGINSET" ); }
+	else if ( cmd == "setangles" ) { idEntity *e = entityAt( w[0] ); float a = 0, b = 0, c = 0; if ( !e ) { out( "NOTFOUND" ); return; } sscanf( w[1].c_str(), "%f,%f,%f", &a, &b, &c ); e->SetAngles( idAngles( a, b, c ) ); out( "ANGLESSET" ); }
+	else if ( cmd == "world" ) { out( "WORLD %d", entNum( gameLocal.world ) ); }
 	else out( "UNKNOWN %s", cmd.c_str() );
 }
 
@@ -754,7 +914,7 @@ int main( int argc, char **argv ) {
 	memset( gameLocal.entities, 0, sizeof( gameLocal.entities ) );
 	memset( gameLocal.spawnIds, -1, sizeof( gameLocal.spawnIds ) );
 	gameLocal.firstFreeIndex = 0; gameLocal.num_entities = 0; gameLocal.numEntitiesToDeactivate = 0;
-	gameLocal.sortPushers = false; gameLocal.sortTeamMasters = false; gameLocal.editEntities = NULL; gameLocal.entityHash.Clear( 1024, MAX_GENTITIES );
+	gameLocal.sortPushers = false; gameLocal.sortTeamMasters = false; gameLocal.editEntities = NULL; gameLocal.world = NULL; gameLocal.entityHash.Clear( 1024, MAX_GENTITIES );
 	gameLocal.inCinematic = false; gameLocal.framenum = 0; gameLocal.previousTime = 0; gameLocal.time = 0; gameLocal.msec = 16; gameLocal.isMultiplayer = false; gameLocal.isClient = false;
 	gameLocal.spawnCount = idGameLocal::INITIAL_SPAWN_COUNT; gameLocal.mapSpawnCount = 0;
 	gameLocal.spawnedEntities.Clear(); gameLocal.activeEntities.Clear();

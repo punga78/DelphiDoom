@@ -25,6 +25,8 @@ uses
 const
   /// <summary>MAX_CLIENTS: the first entity numbers are always the clients</summary>
   D3_MAX_CLIENTS = 32;
+  /// <summary>CM_BOX_EPSILON of the collision model: the extra size of a clip box</summary>
+  D3_CM_BOX_EPSILON = 1.0;
   /// <summary>GENTITYNUM_BITS</summary>
   D3_GENTITYNUM_BITS = 12;
   /// <summary>MAX_GENTITIES</summary>

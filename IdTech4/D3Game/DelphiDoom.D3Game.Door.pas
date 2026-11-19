@@ -77,7 +77,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Scanner.IdDict, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Mat3, DelphiDoom.Geometry.TraceModel,
+  DelphiDoom.Scanner.IdDict, DelphiDoom.MathCore.Float.Angles, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Mat3, DelphiDoom.Geometry.TraceModel,
   DelphiDoom.Collision.Types, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.Clip, DelphiDoom.D3Game.ClipConvert;
 
 function IntArg(const AValue: Integer): TDoomScriptEventArg;
@@ -104,13 +104,18 @@ var
   LPos1: TIdVec3;
   LPos2: TIdVec3;
   LLocked: Integer;
+  LZeroAngles: TIdAngles;
 begin
   LSelf := TD3Door(AInstance);
 
   // get the direction to move
   if not LSelf.SpawnArgs.GetFloat('movedir', '0', LDir) then
+  begin
     // no movedir, so angle defines movement direction and not orientation, a la oldschool Quake
+    LZeroAngles.Zero;
+    LSelf.SetAngles(LZeroAngles);
     LSelf.SpawnArgs.GetFloat('angle', '0', LDir);
+  end;
   LMovedir := GetMovedir(LDir);
 
   // default speed of 400

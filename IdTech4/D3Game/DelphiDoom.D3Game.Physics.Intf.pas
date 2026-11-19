@@ -13,9 +13,26 @@ unit DelphiDoom.D3Game.Physics.Intf;
 interface
 
 uses
-  DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.D3Game.ClipModel;
+  System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.D3Game.ClipModel;
 
 type
+  /// <summary>idEntity::GetMasterPosition: false (and the identity) for an entity that is not bound</summary>
+  TD3MasterPositionFunc = reference to function(out AOrigin: TIdVec3; out AAxis: TIdMat3): Boolean;
+
+  /// <summary>
+  ///   What a physics object asks of the game and of its entity: the time, the think flags and the position of the
+  ///   master the entity is bound to (<c>self->GetMasterPosition</c>). <c>GetMasterPosition</c> may be nil: no master.
+  /// </summary>
+  TD3PhysicsHost = record
+    /// <summary>gameLocal.time</summary>
+    GetTime: TFunc<Integer>;
+    /// <summary>self->BecomeActive( flags )</summary>
+    BecomeActive: TProc<Integer>;
+    /// <summary>self->BecomeInactive( flags )</summary>
+    BecomeInactive: TProc<Integer>;
+    GetMasterPosition: TD3MasterPositionFunc;
+  end;
+
   /// <summary>
   ///   idPhysics reduced to what <c>idEntity::RunPhysics</c> and the movers use. There is no clipping, no team, no
   ///   pushing and no angle in this phase: <c>Evaluate</c> says if the body moved.
@@ -58,6 +75,18 @@ type
     procedure LinkClip;
     /// <summary>idPhysics::ClipContents: the contents of the clip model of the physics in a clip model (nil: in the world)</summary>
     function ClipContents(const AModel: TD3ClipModel): Integer;
+    /// <summary>idPhysics::Activate (the parametric physics wakes up and thinks; the static one does nothing)</summary>
+    procedure Activate;
+    /// <summary>
+    ///   idPhysics::SetMaster: the body follows (or stops following) the position of the master of its entity; the
+    ///   position comes from the host's <c>GetMasterPosition</c>. The master itself is the entity's business.
+    /// </summary>
+    procedure SetMaster(const AHasMaster, AOrientated: Boolean);
+    /// <summary>
+    ///   <c>IsType( idPhysics_Parametric::Type )</c>: <c>idEntity::BecomeActive</c> and
+    ///   <c>idGameLocal::SortActiveEntityList</c> put such an entity before the others
+    /// </summary>
+    function IsParametric: Boolean;
   end;
 
 implementation

@@ -44,6 +44,7 @@ type
     FTouchOther: Boolean;
     FTriggerFirst: Boolean;
     FTriggerWithSelf: Boolean;
+    function CheckFacing(const AActivator: TD3Entity): Boolean;
     procedure TriggerAction(const AActivator: TD3Entity);
     procedure EventTrigger(const AActivator: TD3Entity);
     procedure EventTouch(const AOther: TD3Entity);
@@ -60,6 +61,9 @@ type
   end;
 
 implementation
+
+uses
+  DelphiDoom.IdLib.Math.Vec3, DelphiDoom.IdLib.Math.Math, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.D3Game.Player;
 
 const
   SRandomWait = 'idTrigger_Multi ''%s'' at (%s) has random >= wait';
@@ -140,6 +144,23 @@ begin
     end);
 end;
 
+function TD3TriggerMulti.CheckFacing(const AActivator: TD3Entity): Boolean;
+var
+  LDot: Single;
+  LAngle: Single;
+begin
+  if SpawnArgs.GetBool('facing') then
+  begin
+    if (not Assigned(AActivator)) or (not AActivator.IsPlayer) then
+      Exit(True);
+    LDot := TD3Player(AActivator).ViewAngles.ToForward * GetPhysics.GetAxis.Rows[0];
+    LAngle := TIdMath.ACos(LDot) * ID_RAD2DEG;
+    if LAngle > SpawnArgs.GetFloat('angleLimit', '30') then
+      Exit(False);
+  end;
+  Result := True;
+end;
+
 procedure TD3TriggerMulti.TriggerAction(const AActivator: TD3Entity);
 var
   LTime: Single;
@@ -176,7 +197,8 @@ begin
   if not RequirementMet(AActivator, FRequires, FRemoveItem) then
     Exit;
 
-  // CheckFacing: only a player can face the wrong way, and there is none
+  if not CheckFacing(AActivator) then
+    Exit;
 
   if FTriggerFirst then
   begin
@@ -205,8 +227,15 @@ begin
   if FTriggerFirst then
     Exit;
 
-  // the original tells a player from the others; with no player type everything touching is "other"
-  if not FTouchOther then
+  // (the original dereferences a null entity here: it is "other")
+  if Assigned(AOther) and AOther.IsPlayer then
+  begin
+    if not FTouchClient then
+      Exit;
+    if TD3Player(AOther).Spectating then
+      Exit;
+  end
+  else if not FTouchOther then
     Exit;
 
   if FNextTriggerTime > Game.GetTime then
@@ -215,6 +244,9 @@ begin
 
   // see if this trigger requires an item
   if not RequirementMet(AOther, FRequires, FRemoveItem) then
+    Exit;
+
+  if not CheckFacing(AOther) then
     Exit;
 
   if SpawnArgs.GetBool('toggleTriggerFirst') then

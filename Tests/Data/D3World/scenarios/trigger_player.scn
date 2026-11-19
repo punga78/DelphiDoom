@@ -1,0 +1,72 @@
+# Doom 3 world harness scenario (ondata 14): what idTrigger_Multi asks of a player (touchClient, spectating, requires and the inventory, facing).
+def info_recorder spawnclass idRecorder
+def player spawnclass idPlayer
+def trigger_multi spawnclass idTrigger_Multi
+def worldspawn spawnclass idWorldspawn
+spawn classname info_recorder name target1
+spawn classname player name p1
+spawn classname info_recorder name thing
+# by default only the player touches (touchClient)
+spawn classname trigger_multi name m1 target target1 wait 0.2
+touch 35 34
+touch 35 33
+frame 20
+dump 35
+# noClient: the others touch, the player does not
+spawn classname trigger_multi name m2 target target1 wait 0.2 noClient 1
+touch 36 33
+touch 36 34
+dump 36
+frame 20
+# a spectator does not touch
+spawn classname trigger_multi name m3 target target1 wait 0.2
+spectate 33 1
+touch 37 33
+spectate 33 0
+touch 37 33
+frame 20
+# requires an item of the inventory: refused without it, met with it (and taken with removeItem)
+spawn classname trigger_multi name m4 target target1 wait 0.2 anyTouch 1 requires key1 removeItem 1
+touch 38 33
+give 33 key1
+items 33
+touch 38 33
+items 33
+frame 20
+touch 38 33
+# an item that is not removed; the requirement does not apply to others
+spawn classname trigger_multi name m5 target target1 wait 0.2 anyTouch 1 requires key2
+touch 39 34
+give 33 key2
+touch 39 33
+items 33
+frame 20
+event 39 activate 33
+event 39 activate 34
+frame 20
+# facing: the view of the player against the axis of the trigger, within angleLimit degrees
+spawn classname trigger_multi name m6 target target1 wait 0.2 facing 1 anyTouch 1
+viewangles 33 0,0,0
+touch 40 33
+frame 20
+viewangles 33 0,90,0
+touch 40 33
+event 40 activate 33
+frame 20
+viewangles 33 0,20,0
+touch 40 33
+frame 20
+viewangles 33 0,180,0
+event 40 activate 33
+touch 40 34
+frame 20
+spawn classname trigger_multi name m7 target target1 wait 0.2 facing 1 angleLimit 100 anyTouch 1
+viewangles 33 0,90,0
+touch 41 33
+# toggleTriggerFirst
+spawn classname trigger_multi name m8 target target1 wait 0.2 toggleTriggerFirst 1 anyTouch 1
+touch 42 33
+dump 42
+frame 20
+touch 42 33
+dump 42

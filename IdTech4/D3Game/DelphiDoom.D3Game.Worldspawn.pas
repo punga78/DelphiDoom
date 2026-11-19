@@ -22,13 +22,20 @@ unit DelphiDoom.D3Game.Worldspawn;
 interface
 
 uses
-  DelphiDoom.D3Game.Entity;
+  DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.Entity;
 
 type
-  /// <summary>idWorldspawn without its spawn function (see the unit)</summary>
+  /// <summary>idWorldspawn: the spawn function only makes it the world entity (<c>gameLocal.world</c>)</summary>
   TD3Worldspawn = class(TD3Entity)
+  public
+    class procedure SpawnClass(const AInstance: TD3Class); static;
   end;
 
 implementation
+
+class procedure TD3Worldspawn.SpawnClass(const AInstance: TD3Class);
+begin
+  TD3Worldspawn(AInstance).World.SetWorldEntity(TD3Worldspawn(AInstance));
+end;
 
 end.
