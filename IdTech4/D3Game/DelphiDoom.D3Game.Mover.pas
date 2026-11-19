@@ -23,7 +23,7 @@ unit DelphiDoom.D3Game.Mover;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef,
+  System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Angles, DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef,
   DelphiDoom.D3Game.Intf, DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity,
   DelphiDoom.D3Game.PhysicsParametric;
 
@@ -31,8 +31,17 @@ type
   /// <summary>moveStage_t</summary>
   TD3MoveStage = (mvAcceleration, mvLinear, mvDeceleration, mvFinished);
 
-  /// <summary>moverCommand_t (only mcNone and mcMoving are used: no rotation and no spline here)</summary>
+  /// <summary>moverCommand_t (<c>mcSpline</c> is never used: no spline here)</summary>
   TD3MoverCommand = (mcNone, mcRotating, mcMoving, mcSpline);
+
+  /// <summary>The rotation in progress (<c>idMover::rot</c>): the stage, the times of the next ones and the angular velocity</summary>
+  TD3RotationState = record
+    Stage: TD3MoveStage;
+    Acceleration: Integer;
+    MoveTime: Integer;
+    Deceleration: Integer;
+    Rot: TIdAngles;
+  end;
 
   /// <summary>The movement in progress (<c>idMover::move</c>): the stage and the times of the next ones</summary>
   TD3MoveState = record
@@ -61,6 +70,19 @@ type
     FAccelTime: Integer;
     FLastCommand: TD3MoverCommand;
     FPhysicsObj: TD3PhysicsParametric;
+    FRot: TD3RotationState;
+    FRotateThread: Integer;
+    FDestAngles: TIdAngles;
+    FAngleDelta: TIdAngles;
+    FStopRotation: Boolean;
+    procedure EventUpdateRotation;
+    procedure EventStopRotating;
+    procedure EventRotateTo(const AAngles: TIdAngles);
+    procedure EventRotate(const AAngles: TIdAngles);
+    procedure EventRotateOnce(const AAngles: TIdAngles);
+    procedure EventRotateAxisTo(const AAxis: Integer; const AAngle: Single; const AUp: Boolean);
+    procedure EventIsRotating;
+    procedure DoneRotating;
     procedure EventSetCallback;
     procedure EventUpdateMove;
     procedure EventStopMoving;
@@ -79,8 +101,17 @@ type
     class procedure DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents); static;
     /// <summary>idMover::BeginMove: plans the stages from the destination, the speed or time, and the accel/decel times</summary>
     procedure BeginMove;
-    /// <summary>idMover::MoveToPos: the position is in world coordinates (no binding: the same as local ones)</summary>
+    /// <summary>
+    ///   idMover::BeginRotation: plans the stages from the destination angles (<c>dest_angles</c>); the rotation uses the
+    ///   move time of the mover, so that it takes as long as a move started before it
+    /// </summary>
+    procedure BeginRotation(const AStopWhenDone: Boolean);
+    /// <summary>idMover::MoveToPos: the position is in world coordinates (converted to the master's space)</summary>
     procedure MoveToPos(const APos: TIdVec3);
+    property Rot: TD3RotationState read FRot;
+    property DestAngles: TIdAngles read FDestAngles;
+    property RotateThread: Integer read FRotateThread;
+    property StopRotation: Boolean read FStopRotation;
     property Move: TD3MoveState read FMove;
     property DestPosition: TIdVec3 read FDestPosition;
     property MoveTime: Integer read FMoveTime;
@@ -95,7 +126,7 @@ type
 implementation
 
 uses
-  DelphiDoom.MathCore.Float.Angles, DelphiDoom.MathCore.Float.Extrapolate, DelphiDoom.D3Game.Types,
+  DelphiDoom.MathCore.Float.Conversions, DelphiDoom.MathCore.Float.Extrapolate, DelphiDoom.D3Game.Types,
   DelphiDoom.D3Game.Physics.Intf, DelphiDoom.D3Game.PhysicsTime;
 
 const
@@ -114,10 +145,13 @@ var
   LMins: TIdVec3;
   LMaxs: TIdVec3;
   LZero: TIdVec3;
+  LZeroAngles: TIdAngles;
 begin
   LSelf := TD3Mover(AInstance);
   LGame := LSelf.Game;
   LSelf.FMoveThread := 0;
+  LSelf.FRotateThread := 0;
+  LSelf.FStopRotation := False;
   LSelf.FLastCommand := mcNone;
   LSelf.FAccelTime := Trunc(Single(1000.0) * LSelf.SpawnArgs.GetFloat('accel_time', '0'));
   LSelf.FDecelTime := Trunc(Single(1000.0) * LSelf.SpawnArgs.GetFloat('decel_time', '0'));
@@ -128,28 +162,20 @@ begin
   LSelf.FDestPosition := LOrigin;
   LMins := LSelf.GetPhysics.GetAbsBoundsMin - LOrigin;
   LMaxs := LSelf.GetPhysics.GetAbsBoundsMax - LOrigin;
-  LHost.GetTime :=
-    function: Integer
-    begin
-      Result := LGame.GetTime;
-    end;
-  LHost.BecomeActive :=
-    procedure(AFlags: Integer)
-    begin
-      LSelf.BecomeActive(AFlags);
-    end;
-  LHost.BecomeInactive :=
-    procedure(AFlags: Integer)
-    begin
-      LSelf.BecomeInactive(AFlags);
-    end;
+  LSelf.FDestAngles := TIdRotationConversions.MatToAngles(LSelf.GetPhysics.GetAxis);
+  LHost := LSelf.CreatePhysicsHost;
   LSelf.FPhysicsObj := TD3PhysicsParametric.CreateMoverPhysics(LHost, LSelf.GetPhysics, LMins, LMaxs,
     LGame.GetClip, LSelf);
   LSelf.FPhysicsObj.SetOrigin(LOrigin);
+  LSelf.FPhysicsObj.SetAxis(LSelf.GetPhysics.GetAxis);
   if not LSelf.SpawnArgs.GetBool('solid', '1') then
     LSelf.FPhysicsObj.SetContents(0);
+  // a mover with no render model is a pusher
+  LSelf.FPhysicsObj.SetPusher;
   LZero.Zero;
+  LZeroAngles.Zero;
   LSelf.FPhysicsObj.SetLinearExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, LSelf.FDestPosition, LZero, LZero);
+  LSelf.FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, LSelf.FDestAngles, LZeroAngles, LZeroAngles);
   LSelf.SetPhysics(LSelf.FPhysicsObj);
 end;
 
@@ -210,6 +236,46 @@ begin
     begin
       TD3Mover(ATarget).EventIsMoving;
     end);
+  AType.AddEvent(AEvents.ReachedAng,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventUpdateRotation;
+    end);
+  AType.AddEvent(AEvents.StopRotating,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventStopRotating;
+    end);
+  AType.AddEvent(AEvents.RotateDownTo,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventRotateAxisTo(AArgs[0].IntValue, AArgs[1].FloatValue, False);
+    end);
+  AType.AddEvent(AEvents.RotateUpTo,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventRotateAxisTo(AArgs[0].IntValue, AArgs[1].FloatValue, True);
+    end);
+  AType.AddEvent(AEvents.RotateTo,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventRotateTo(TIdAngles.FromVec3(AArgs[0].VectorValue));
+    end);
+  AType.AddEvent(AEvents.Rotate,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventRotate(TIdAngles.FromVec3(AArgs[0].VectorValue));
+    end);
+  AType.AddEvent(AEvents.RotateOnce,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventRotateOnce(TIdAngles.FromVec3(AArgs[0].VectorValue));
+    end);
+  AType.AddEvent(AEvents.IsRotating,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Mover(ATarget).EventIsRotating;
+    end);
   AType.AddEvent(AEvents.Activate,
     procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
     begin
@@ -225,7 +291,13 @@ begin
   LThreads := Game.GetScriptThreads;
   if not Assigned(LThreads) then
     Exit;
-  if (FLastCommand = mcMoving) and (FMoveThread = 0) then
+  if (FLastCommand = mcRotating) and (FRotateThread = 0) then
+  begin
+    FLastCommand := mcNone;
+    FRotateThread := LThreads.CurrentThreadNum;
+    LThreads.ReturnInteger(1);
+  end
+  else if ((FLastCommand = mcMoving) or (FLastCommand = mcSpline)) and (FMoveThread = 0) then
   begin
     FLastCommand := mcNone;
     FMoveThread := LThreads.CurrentThreadNum;
@@ -233,6 +305,204 @@ begin
   end
   else
     LThreads.ReturnInteger(0);
+end;
+
+procedure TD3Mover.EventStopRotating;
+var
+  LZero: TIdAngles;
+begin
+  FDestAngles := FPhysicsObj.GetLocalAngles;
+  LZero.Zero;
+  FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, FDestAngles, LZero, LZero);
+  DoneRotating;
+end;
+
+procedure TD3Mover.DoneRotating;
+var
+  LThreads: ID3ScriptThreads;
+begin
+  FLastCommand := mcNone;
+  LThreads := Game.GetScriptThreads;
+  if Assigned(LThreads) and (FRotateThread <> 0) then
+    LThreads.ObjectMoveDone(FRotateThread, EntityNumber);
+  FRotateThread := 0;
+end;
+
+procedure TD3Mover.EventUpdateRotation;
+var
+  LAngles: TIdAngles;
+  LZero: TIdAngles;
+begin
+  LAngles := FPhysicsObj.GetLocalAngles;
+  LZero.Zero;
+  case FRot.Stage of
+    mvAcceleration:
+      begin
+        FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_ACCELLINEAR, Game.GetTime, FRot.Acceleration, LAngles,
+          FRot.Rot, LZero);
+        if FRot.MoveTime > 0 then
+          FRot.Stage := mvLinear
+        else if FRot.Deceleration > 0 then
+          FRot.Stage := mvDeceleration
+        else
+          FRot.Stage := mvFinished;
+      end;
+    mvLinear:
+      begin
+        if (not FStopRotation) and (FRot.Deceleration = 0) then
+          FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_LINEAR or ID_EXTRAPOLATION_NOSTOP, Game.GetTime,
+            FRot.MoveTime, LAngles, FRot.Rot, LZero)
+        else
+          FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_LINEAR, Game.GetTime, FRot.MoveTime, LAngles,
+            FRot.Rot, LZero);
+        if FRot.Deceleration <> 0 then
+          FRot.Stage := mvDeceleration
+        else
+          FRot.Stage := mvFinished;
+      end;
+    mvDeceleration:
+      begin
+        FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_DECELLINEAR, Game.GetTime, FRot.Deceleration, LAngles,
+          FRot.Rot, LZero);
+        FRot.Stage := mvFinished;
+      end;
+    mvFinished:
+      begin
+        FLastCommand := mcNone;
+        if FStopRotation then
+        begin
+          // set our final angles so that we get rid of any numerical inaccuracy
+          FDestAngles.Normalize360;
+          FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, FDestAngles, LZero, LZero);
+          FStopRotation := False;
+        end
+        else if FPhysicsObj.GetAngularExtrapolationType = ID_EXTRAPOLATION_ACCELLINEAR then
+          // keep our angular velocity constant
+          FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_LINEAR or ID_EXTRAPOLATION_NOSTOP, Game.GetTime, 0,
+            LAngles, FRot.Rot, LZero);
+        DoneRotating;
+      end;
+  end;
+end;
+
+procedure TD3Mover.BeginRotation(const AStopWhenDone: Boolean);
+var
+  LStage: TD3MoveStage;
+  LAngles: TIdAngles;
+  LZero: TIdAngles;
+  LAt: Integer;
+  LDt: Integer;
+begin
+  FLastCommand := mcRotating;
+  FRotateThread := 0;
+
+  // rotation always uses move_time so that if a move was started before the rotation, the rotation will take the same
+  // amount of time as the move. If no move has been started and no time is set, the rotation takes 1 second.
+  if FMoveTime = 0 then
+    FMoveTime := 1;
+
+  LAngles := FPhysicsObj.GetLocalAngles;
+  FAngleDelta := FDestAngles - LAngles;
+  LZero.Zero;
+  if FAngleDelta = LZero then
+  begin
+    // set our final angles so that we get rid of any numerical inaccuracy
+    FDestAngles.Normalize360;
+    FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, FDestAngles, LZero, LZero);
+    FStopRotation := False;
+    DoneRotating;
+    Exit;
+  end;
+
+  // scale times up to whole physics frames
+  LAt := TD3PhysicsTime.SnapToFrame(FAccelTime);
+  Inc(FMoveTime, LAt - FAccelTime);
+  FAccelTime := LAt;
+  LDt := TD3PhysicsTime.SnapToFrame(FDecelTime);
+  Inc(FMoveTime, LDt - FDecelTime);
+  FDecelTime := LDt;
+  FMoveTime := TD3PhysicsTime.SnapToFrame(FMoveTime);
+
+  if FAccelTime <> 0 then
+    LStage := mvAcceleration
+  else if FMoveTime <= FDecelTime then
+    LStage := mvDeceleration
+  else
+    LStage := mvLinear;
+
+  LAt := FAccelTime;
+  LDt := FDecelTime;
+  if LAt + LDt > FMoveTime then
+  begin
+    // there's no real correct way to handle this, so we just scale the times to fit into the move time in the same
+    // proportions
+    LAt := TD3PhysicsTime.SnapToFrame(LAt * FMoveTime div (LAt + LDt));
+    LDt := FMoveTime - LAt;
+  end;
+
+  FAngleDelta := FAngleDelta * (Single(1000.0) / (Single(FMoveTime) - (LAt + LDt) * Single(0.5)));
+
+  FStopRotation := AStopWhenDone or (LDt <> 0);
+
+  FRot.Stage := LStage;
+  FRot.Acceleration := LAt;
+  FRot.MoveTime := FMoveTime - LAt - LDt;
+  FRot.Deceleration := LDt;
+  FRot.Rot := FAngleDelta;
+
+  ProcessEvent(Game.GetEvents.ReachedAng);
+end;
+
+procedure TD3Mover.EventRotateTo(const AAngles: TIdAngles);
+begin
+  FDestAngles := AAngles;
+  BeginRotation(True);
+end;
+
+procedure TD3Mover.EventRotate(const AAngles: TIdAngles);
+var
+  LAngles: TIdAngles;
+begin
+  if FRotateThread <> 0 then
+    DoneRotating;
+  LAngles := FPhysicsObj.GetLocalAngles;
+  FDestAngles := LAngles + AAngles * (FMoveTime - (FAccelTime + FDecelTime) div 2) * Single(0.001);
+  BeginRotation(False);
+end;
+
+procedure TD3Mover.EventRotateOnce(const AAngles: TIdAngles);
+begin
+  if FRotateThread <> 0 then
+    DoneRotating;
+  FDestAngles := FPhysicsObj.GetLocalAngles + AAngles;
+  BeginRotation(True);
+end;
+
+procedure TD3Mover.EventRotateAxisTo(const AAxis: Integer; const AAngle: Single; const AUp: Boolean);
+var
+  LAngles: TIdAngles;
+begin
+  if (AAxis < 0) or (AAxis > 2) then
+    World.Error('Invalid axis');
+  LAngles := FPhysicsObj.GetLocalAngles;
+  FDestAngles[AAxis] := AAngle;
+  if AUp then
+  begin
+    if FDestAngles[AAxis] < LAngles[AAxis] then
+      FDestAngles[AAxis] := FDestAngles[AAxis] + 360;
+  end
+  else if FDestAngles[AAxis] > LAngles[AAxis] then
+    FDestAngles[AAxis] := FDestAngles[AAxis] - 360;
+  BeginRotation(True);
+end;
+
+procedure TD3Mover.EventIsRotating;
+var
+  LThreads: ID3ScriptThreads;
+begin
+  LThreads := Game.GetScriptThreads;
+  if Assigned(LThreads) then
+    LThreads.ReturnInteger(Ord(FPhysicsObj.GetAngularExtrapolationType <> ID_EXTRAPOLATION_NONE));
 end;
 
 procedure TD3Mover.EventStopMoving;
@@ -374,7 +644,7 @@ end;
 
 procedure TD3Mover.MoveToPos(const APos: TIdVec3);
 begin
-  FDestPosition := APos;
+  FDestPosition := GetLocalCoordinates(APos);
   BeginMove;
 end;
 
@@ -386,25 +656,46 @@ begin
     Game.Warning(SEntityNotFound);
     Exit;
   end;
-  FDestPosition := AEntity.GetPhysics.GetOrigin;
+  FDestPosition := GetLocalCoordinates(AEntity.GetPhysics.GetOrigin);
   BeginMove;
 end;
 
 function TD3Mover.VectorForDir(const AAngle: Single): TIdVec3;
+var
+  LAngles: TIdAngles;
+  LForward: TIdVec3;
+  LRight: TIdVec3;
+  LUp: TIdVec3;
 begin
-  // no angular motion in this phase: the local angles are zero
   case Trunc(AAngle) of
     -1, -7: Result.SetValues(0, 0, 1);
     -2, -8: Result.SetValues(0, 0, -1);
-    -3: Result := TIdAngles.Create(0, 90, 0).ToForward;
-    -4: Result := TIdAngles.Create(0, -90, 0).ToForward;
-    -5, -11: Result := TIdAngles.Create(0, 0, 0).ToForward;
-    -6: Result := TIdAngles.Create(0, 180, 0).ToForward;
-    -9: Result.SetValues(0, 1, 0);
-    -10: Result.SetValues(0, -1, 0);
-    -12: Result := TIdAngles.Create(0, 0, 0).ToForward * Single(-1);
+    -3, -4, -5, -6:
+      begin
+        // left, right, forward and back: the yaw of the local angles
+        LAngles := FPhysicsObj.GetLocalAngles;
+        LAngles.Pitch := 0;
+        LAngles.Roll := 0;
+        case Trunc(AAngle) of
+          -3: LAngles.Yaw := LAngles.Yaw + 90;
+          -4: LAngles.Yaw := LAngles.Yaw - 90;
+          -6: LAngles.Yaw := LAngles.Yaw + 180;
+        end;
+        Result := LAngles.ToForward;
+      end;
+    -9, -10:
+      begin
+        LAngles := FPhysicsObj.GetLocalAngles;
+        LAngles.ToVectors(LForward, LRight, LUp);
+        if Trunc(AAngle) = -9 then
+          Result := LRight * Single(-1)
+        else
+          Result := LRight;
+      end;
+    -11: Result := FPhysicsObj.GetLocalAngles.ToForward;
+    -12: Result := FPhysicsObj.GetLocalAngles.ToForward * Single(-1);
   else
-    Result := TIdAngles.Create(0, AAngle, 0).ToForward;
+    Result := GetWorldVector(TIdAngles.Create(0, AAngle, 0).ToForward);
   end;
 end;
 

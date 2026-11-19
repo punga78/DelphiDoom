@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.DoomScript.EventDef, DelphiDoom.D3Game.Entity,
-  DelphiDoom.Tests.D3Game.WorldRig;
+  DelphiDoom.MathCore.Float.Angles, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.Tests.D3Game.WorldRig;
 
 type
   /// <summary>
@@ -33,6 +33,13 @@ type
     procedure DumpEntity(const AEntity: TD3Entity);
     procedure DumpQueue;
     procedure DumpFrame;
+    function AnglesText(const AAngles: TIdAngles): string;
+    function MatrixText(const AMatrix: TIdMat3): string;
+    function NumberOf(const AEntity: TD3Entity): Integer;
+    procedure DumpBind(const AEntity: TD3Entity);
+    procedure DumpRot(const AEntity: TD3Entity);
+    function Quarter(const AValue: Single): Integer;
+    procedure DumpRotQ(const AEntity: TD3Entity);
     procedure CallEvent(const AEntity: TD3Entity; const AEvent: TDoomScriptEventDef; const AFrom, ATime: Integer;
       const APost: Boolean);
     procedure RunCommand(const ACommand, ARest: string);
@@ -44,7 +51,8 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Types, DelphiDoom.Scanner.IdDict, DelphiDoom.D3Game.Types,
+  System.Math, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Types, DelphiDoom.Scanner.IdDict,
+  DelphiDoom.D3Game.Types, DelphiDoom.D3Game.PhysicsParametric,
   DelphiDoom.D3Game.Trigger.Multi, DelphiDoom.D3Game.Trigger.Timer, DelphiDoom.D3Game.Trigger.Count,
   DelphiDoom.D3Game.Trigger.Hurt, DelphiDoom.D3Game.MoverBinary, DelphiDoom.D3Game.Mover,
   DelphiDoom.Tests.D3Game.World;
@@ -290,6 +298,8 @@ var
   LKeys: TArray<AnsiString>;
   LTouch: TDoomScriptEventArgs;
   LResult: Boolean;
+  LParts: TArray<string>;
+  LTriple: array[0..2] of Single;
 begin
   Split(ARest);
   if ACommand = 'def' then
@@ -398,8 +408,179 @@ begin
     else
       Line('FOUND -1');
   end
+  else if ACommand = 'bind' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if not Assigned(LEntity) then
+      Line('NOTFOUND')
+    else
+    begin
+      LEntity.Bind(EntityAt(Word(1)), (Length(FWords) < 3) or (StrToIntDef(Word(2), 1) <> 0));
+      Line('BOUND');
+    end;
+  end
+  else if ACommand = 'unbind' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if not Assigned(LEntity) then
+      Line('NOTFOUND')
+    else
+    begin
+      LEntity.Unbind;
+      Line('UNBOUND');
+    end;
+  end
+  else if ACommand = 'removebinds' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if not Assigned(LEntity) then
+      Line('NOTFOUND')
+    else
+    begin
+      LEntity.RemoveBinds;
+      Line('BINDSREMOVED');
+    end;
+  end
+  else if ACommand = 'bindstate' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if Assigned(LEntity) then
+      DumpBind(LEntity)
+    else
+      Line('NOTFOUND');
+  end
+  else if ACommand = 'rot' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if Assigned(LEntity) then
+      DumpRot(LEntity)
+    else
+      Line('NOTFOUND');
+  end
+  else if ACommand = 'rotq' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if Assigned(LEntity) then
+      DumpRotQ(LEntity)
+    else
+      Line('NOTFOUND');
+  end
+  else if (ACommand = 'setorigin') or (ACommand = 'setangles') then
+  begin
+    LEntity := EntityAt(Word(0));
+    if not Assigned(LEntity) then
+      Line('NOTFOUND')
+    else
+    begin
+      LParts := Word(1).Split([',']);
+      LTriple[0] := 0;
+      LTriple[1] := 0;
+      LTriple[2] := 0;
+      for LIndex := 0 to Min(2, High(LParts)) do
+        LTriple[LIndex] := StrToFloatDef(LParts[LIndex], 0, TFormatSettings.Invariant);
+      if ACommand = 'setorigin' then
+      begin
+        LEntity.SetOrigin(TIdVec3.Create(LTriple[0], LTriple[1], LTriple[2]));
+        Line('ORIGINSET');
+      end
+      else
+      begin
+        LEntity.SetAngles(TIdAngles.Create(LTriple[0], LTriple[1], LTriple[2]));
+        Line('ANGLESSET');
+      end;
+    end;
+  end
+  else if ACommand = 'world' then
+  begin
+    LEntity := FRig.Game.GetWorldEntity;
+    if Assigned(LEntity) then
+      Line('WORLD ' + IntToStr(LEntity.EntityNumber))
+    else
+      Line('WORLD -1');
+  end
   else
     Line('UNKNOWN ' + ACommand);
+end;
+
+function TD3WorldScenarioRunner.AnglesText(const AAngles: TIdAngles): string;
+begin
+  Result := Bits(AAngles.Pitch) + ' ' + Bits(AAngles.Yaw) + ' ' + Bits(AAngles.Roll);
+end;
+
+function TD3WorldScenarioRunner.MatrixText(const AMatrix: TIdMat3): string;
+begin
+  Result := VectorText(AMatrix.Rows[0].X, AMatrix.Rows[0].Y, AMatrix.Rows[0].Z) + ' ' +
+    VectorText(AMatrix.Rows[1].X, AMatrix.Rows[1].Y, AMatrix.Rows[1].Z) + ' ' +
+    VectorText(AMatrix.Rows[2].X, AMatrix.Rows[2].Y, AMatrix.Rows[2].Z);
+end;
+
+function TD3WorldScenarioRunner.NumberOf(const AEntity: TD3Entity): Integer;
+begin
+  if Assigned(AEntity) then
+    Result := AEntity.EntityNumber
+  else
+    Result := -1;
+end;
+
+procedure TD3WorldScenarioRunner.DumpBind(const AEntity: TD3Entity);
+var
+  LOrigin: TIdVec3;
+begin
+  LOrigin := AEntity.GetPhysics.GetOrigin;
+  Line(Format('BIND %d bindMaster=%d joint=%d body=%d oriented=%d teamMaster=%d teamChain=%d think=%d origin=%s ' +
+    'axis=%s render=%s %s', [AEntity.EntityNumber, NumberOf(AEntity.GetBindMaster), -1, AEntity.BindBody,
+    Ord(AEntity.BindOrientated), NumberOf(AEntity.GetTeamMaster), NumberOf(AEntity.GetNextTeamEntity),
+    AEntity.ThinkFlags, VectorText(LOrigin.X, LOrigin.Y, LOrigin.Z), MatrixText(AEntity.GetPhysics.GetAxis),
+    VectorText(AEntity.RenderOrigin.X, AEntity.RenderOrigin.Y, AEntity.RenderOrigin.Z),
+    MatrixText(AEntity.RenderAxis)]));
+end;
+
+function TD3WorldScenarioRunner.Quarter(const AValue: Single): Integer;
+begin
+  // floor( v * 10000 + 0.5 ) in Single, as the harness
+  Result := Floor(AValue * Single(10000.0) + Single(0.5));
+end;
+
+procedure TD3WorldScenarioRunner.DumpRotQ(const AEntity: TD3Entity);
+var
+  LPhysics: TD3PhysicsParametric;
+  LAngles: TIdAngles;
+  LAxis: TIdMat3;
+begin
+  if not AEntity.GetPhysics.IsParametric then
+  begin
+    Line(Format('ROTQ %d static', [AEntity.EntityNumber]));
+    Exit;
+  end;
+  LPhysics := TD3PhysicsParametric(AEntity.GetPhysics as TObject);
+  LAngles := LPhysics.GetLocalAngles;
+  LAxis := LPhysics.GetAxis;
+  Line(Format('ROTQ %d local=%d %d %d axis=%d %d %d %d %d %d %d %d %d', [AEntity.EntityNumber, Quarter(LAngles.Pitch),
+    Quarter(LAngles.Yaw), Quarter(LAngles.Roll), Quarter(LAxis.Rows[0].X), Quarter(LAxis.Rows[0].Y),
+    Quarter(LAxis.Rows[0].Z), Quarter(LAxis.Rows[1].X), Quarter(LAxis.Rows[1].Y), Quarter(LAxis.Rows[1].Z),
+    Quarter(LAxis.Rows[2].X), Quarter(LAxis.Rows[2].Y), Quarter(LAxis.Rows[2].Z)]));
+end;
+
+procedure TD3WorldScenarioRunner.DumpRot(const AEntity: TD3Entity);
+var
+  LPhysics: TD3PhysicsParametric;
+  LDelta: TIdAngles;
+  LSame: Boolean;
+begin
+  if not AEntity.GetPhysics.IsParametric then
+  begin
+    Line(Format('ROT %d static axis=%s', [AEntity.EntityNumber, MatrixText(AEntity.GetPhysics.GetAxis)]));
+    Exit;
+  end;
+  LPhysics := TD3PhysicsParametric(AEntity.GetPhysics as TObject);
+  // the world angles come from the axis (atan2 and asin: a few ULP from the C runtime): only whether they are the local
+  // angles to 1/1000 degree is written, as the harness does
+  LDelta := LPhysics.GetAngles - LPhysics.GetLocalAngles;
+  LDelta.Normalize180;
+  LSame := (Abs(LDelta.Pitch) < 0.001) and (Abs(LDelta.Yaw) < 0.001) and (Abs(LDelta.Roll) < 0.001);
+  Line(Format('ROT %d local=%s anglesSame=%d axis=%s type=%d end=%d', [AEntity.EntityNumber,
+    AnglesText(LPhysics.GetLocalAngles), Ord(LSame), MatrixText(LPhysics.GetAxis),
+    LPhysics.GetAngularExtrapolationType, LPhysics.GetAngularEndTime]));
 end;
 
 procedure TD3WorldScenarioRunner.Run(const ALines: TStrings);

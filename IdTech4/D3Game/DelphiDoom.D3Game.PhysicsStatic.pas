@@ -39,13 +39,22 @@ type
     FMaxs: TIdVec3;
     FTime: Integer;
     FClip: TD3PhysicsClip;
+    FLocalOrigin: TIdVec3;
+    FLocalAxis: TIdMat3;
+    FHasMaster: Boolean;
+    FOrientated: Boolean;
+    FMasterPosition: TD3MasterPositionFunc;
   public
     /// <param name="AMins">the bounds relative to the origin (zero for no clip model)</param>
     /// <param name="AClip">the game's clip, nil for none</param>
     /// <param name="ASelf">the entity the physics belongs to</param>
+    /// <param name="AMasterPosition">idEntity::GetMasterPosition of the entity; nil for a body that is never bound</param>
     constructor Create(const AOrigin, AMins, AMaxs: TIdVec3; const AClip: TD3Clip = nil;
-      const ASelf: TObject = nil);
+      const ASelf: TObject = nil; const AMasterPosition: TD3MasterPositionFunc = nil);
     destructor Destroy; override;
+    procedure Activate;
+    procedure SetMaster(const AHasMaster, AOrientated: Boolean);
+    function IsParametric: Boolean;
     function GetOrigin: TIdVec3;
     procedure SetOrigin(const AOrigin: TIdVec3);
     function GetAxis: TIdMat3;
@@ -76,11 +85,14 @@ type
 implementation
 
 constructor TD3PhysicsStatic.Create(const AOrigin, AMins, AMaxs: TIdVec3; const AClip: TD3Clip;
-  const ASelf: TObject);
+  const ASelf: TObject; const AMasterPosition: TD3MasterPositionFunc);
 begin
   inherited Create;
   FOrigin := AOrigin;
+  FLocalOrigin.Zero;
   FAxis := TIdMat3.Identity;
+  FLocalAxis := TIdMat3.Identity;
+  FMasterPosition := AMasterPosition;
   FMins := AMins;
   FMaxs := AMaxs;
   FClip := TD3PhysicsClip.Create(AClip, ASelf);
@@ -97,10 +109,53 @@ begin
   Result := FOrigin;
 end;
 
-procedure TD3PhysicsStatic.SetOrigin(const AOrigin: TIdVec3);
+procedure TD3PhysicsStatic.Activate;
 begin
-  FOrigin := AOrigin;
+end;
+
+function TD3PhysicsStatic.IsParametric: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TD3PhysicsStatic.SetOrigin(const AOrigin: TIdVec3);
+var
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
+begin
+  FLocalOrigin := AOrigin;
+  if FHasMaster and Assigned(FMasterPosition) then
+  begin
+    FMasterPosition(LMasterOrigin, LMasterAxis);
+    FOrigin := LMasterOrigin + AOrigin * LMasterAxis;
+  end
+  else
+    FOrigin := AOrigin;
   FClip.LinkClip(FOrigin, FAxis);
+end;
+
+procedure TD3PhysicsStatic.SetMaster(const AHasMaster, AOrientated: Boolean);
+var
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
+begin
+  if AHasMaster then
+  begin
+    if not FHasMaster then
+    begin
+      // transform from world space to master space
+      FMasterPosition(LMasterOrigin, LMasterAxis);
+      FLocalOrigin := (FOrigin - LMasterOrigin) * LMasterAxis.Transpose;
+      if AOrientated then
+        FLocalAxis := FAxis * LMasterAxis.Transpose
+      else
+        FLocalAxis := FAxis;
+      FHasMaster := True;
+      FOrientated := AOrientated;
+    end;
+  end
+  else if FHasMaster then
+    FHasMaster := False;
 end;
 
 function TD3PhysicsStatic.GetAxis: TIdMat3;
@@ -109,8 +164,18 @@ begin
 end;
 
 procedure TD3PhysicsStatic.SetAxis(const AAxis: TIdMat3);
+var
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
 begin
-  FAxis := AAxis;
+  FLocalAxis := AAxis;
+  if FHasMaster and FOrientated then
+  begin
+    FMasterPosition(LMasterOrigin, LMasterAxis);
+    FAxis := AAxis * LMasterAxis;
+  end
+  else
+    FAxis := AAxis;
   FClip.LinkClip(FOrigin, FAxis);
 end;
 
@@ -147,9 +212,27 @@ begin
 end;
 
 function TD3PhysicsStatic.Evaluate(const ATimeStepMSec, AEndTimeMSec: Integer): Boolean;
+var
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
+  LOldOrigin: TIdVec3;
+  LOldAxis: TIdMat3;
 begin
   FTime := AEndTimeMSec;
   Result := False;
+  if FHasMaster then
+  begin
+    LOldOrigin := FOrigin;
+    LOldAxis := FAxis;
+    FMasterPosition(LMasterOrigin, LMasterAxis);
+    FOrigin := LMasterOrigin + FLocalOrigin * LMasterAxis;
+    if FOrientated then
+      FAxis := FLocalAxis * LMasterAxis
+    else
+      FAxis := FLocalAxis;
+    FClip.LinkClip(FOrigin, FAxis);
+    Result := (FOrigin <> LOldOrigin) or (FAxis <> LOldAxis);
+  end;
 end;
 
 procedure TD3PhysicsStatic.UpdateTime(const AEndTimeMSec: Integer);

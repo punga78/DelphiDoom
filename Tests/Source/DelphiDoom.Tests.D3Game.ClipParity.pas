@@ -239,10 +239,12 @@ begin
   Assert.AreEqual(255, LDoor.Trigger.Id);
   Assert.AreEqual(CONTENTS_TRIGGER, LDoor.Trigger.Contents);
   Assert.IsTrue(LDoor.Trigger.IsLinked);
-  // the thinnest axis of the door (x: 8 + 2 of the epsilon) is the one the trigger grows along: 120 each way
+  // the thinnest axis of the door (x: 8 + 2 of the epsilon) is the one the trigger grows along: 120 each way. The
+  // "angle" of the entity turns the door by -1 degree (idGameEdit::ParseSpawnArgsToRenderEntity: the axis of the yaw),
+  // so its absolute bounds are 5 * cos(1) + 32 * sin(1) = 5.5578 on x
   Assert.AreEqual(0, LDoor.NormalAxisIndex);
-  Assert.AreEqual<Single>(-125.0, LDoor.Trigger.Bounds.Mins.X);
-  Assert.AreEqual<Single>(125.0, LDoor.Trigger.Bounds.Maxs.X);
+  Assert.AreEqual(-125.5578, Double(LDoor.Trigger.Bounds.Mins.X), 0.001);
+  Assert.AreEqual(125.5578, Double(LDoor.Trigger.Bounds.Maxs.X), 0.001);
 end;
 
 procedure TTestD3GameClipEntities.UnaPortaDovrebbeAprirsiQuandoUnaEntitaEntraNelSuoTrigger;

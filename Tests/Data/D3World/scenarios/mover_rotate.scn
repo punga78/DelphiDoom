@@ -1,0 +1,76 @@
+# Doom 3 world harness scenario (ondata 14): the rotation of idMover (rotateOnce, rotate, rotateTo, rotateUpTo, rotateDownTo, stopRotating, isRotating), the
+# angular part of the parametric physics, and the angles and the axis of the bodies (spawn "angle", "rotation", setangles). Angles are given as "pitch,yaw,roll".
+def info_recorder spawnclass idRecorder
+def func_door spawnclass idDoor
+def func_mover spawnclass idMover
+def worldspawn spawnclass idWorldspawn
+spawn classname func_mover name m1 move_time 2 accel_time 0.5 decel_time 0.5
+rot 32
+event 32 rotateOnce 0,90,0
+rot 32
+dump 32
+queue
+thread 7
+event 32 <script_setcallback>
+frame 20
+rot 32
+frame 120
+rot 32
+dump 32
+event 32 isRotating
+event 32 <script_setcallback>
+# a rotation of the three axes: the result is the matrix of the angles
+event 32 rotateOnce 10,20,30
+frame 140
+rot 32
+# the speed of a continuous rotation is angles per second
+spawn classname func_mover name m2 move_time 1
+event 33 rotate 0,0,45
+rot 33
+frame 30
+rot 33
+event 33 isRotating
+event 33 stopRotating
+frame 2
+rot 33
+event 33 isRotating
+# to an absolute angle, up and down, on every axis
+spawn classname func_mover name m3 move_time 1 accel_time 0.25
+event 34 rotateTo 0,0,180
+frame 70
+rot 34
+event 34 rotateUpTo 1 90
+frame 70
+rot 34
+event 34 rotateDownTo 1 -90
+frame 70
+rot 34
+event 34 rotateDownTo 3 0
+rot 34
+# the spawn angle and the spawn rotation, and the angles that a script sets
+spawn classname func_mover name m4 angle 45
+rot 35
+dump 35
+spawn classname func_mover name m5 rotation 0\x201\x200\x20-1\x200\x200\x200\x200\x201
+rot 36
+spawn classname func_mover name m6
+setangles 37 0,0,0
+event 37 rotateOnce 0,0,0
+rotq 37
+setangles 37 30,60,90
+rotq 37
+event 37 rotateOnce 0,720,0
+frame 10
+rotq 37
+frame 200
+rotq 37
+# a mover that moves and rotates at the same time (one move time for both)
+spawn classname func_mover name m7 move_time 2
+event 38 moveToPos 100,0,0
+event 38 rotateOnce 0,0,90
+frame 60
+dump 38
+rot 38
+frame 80
+dump 38
+rot 38

@@ -23,25 +23,17 @@ unit DelphiDoom.D3Game.PhysicsParametric;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Extrapolate,
+  System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Angles, DelphiDoom.MathCore.Float.Extrapolate,
   DelphiDoom.MathCore.Float.Interpolate.AccelDecelLinear, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.D3Game.Physics.Intf,
   DelphiDoom.D3Game.Clip, DelphiDoom.D3Game.ClipModel, DelphiDoom.D3Game.PhysicsClip;
 
 type
-  /// <summary>What the physics asks of the game and of its entity: the time and the think flags</summary>
-  TD3PhysicsHost = record
-    /// <summary>gameLocal.time</summary>
-    GetTime: TFunc<Integer>;
-    /// <summary>self->BecomeActive( flags )</summary>
-    BecomeActive: TProc<Integer>;
-    /// <summary>self->BecomeInactive( flags )</summary>
-    BecomeInactive: TProc<Integer>;
-  end;
-
   /// <summary>
-  ///   idPhysics_Parametric (linear motion): the position follows an extrapolation or an interpolation with
-  ///   acceleration and deceleration over time, set by the owner (doors, movers). When the motion is over the body rests:
-  ///   the entity stops thinking about physics.
+  ///   idPhysics_Parametric: the position and the angles follow an extrapolation or an interpolation with acceleration
+  ///   and deceleration over time, set by the owner (doors, movers). When the motion is over the body rests: the
+  ///   entity stops thinking about physics. A body bound to a master (<c>SetMaster</c>) moves in the master's space:
+  ///   the local origin and angles are the ones that the curves give. No spline and no pushing (idPush is not ported:
+  ///   a pusher is never blocked).
   /// </summary>
   TD3PhysicsParametric = class(TInterfacedObject, ID3Physics)
   strict private
@@ -56,6 +48,13 @@ type
     FClip: TD3PhysicsClip;
     FLinearExtrapolation: TIdExtrapolate<TIdVec3>;
     FLinearInterpolation: TIdInterpolateAccelDecelLinear<TIdVec3>;
+    FAngles: TIdAngles;
+    FLocalAngles: TIdAngles;
+    FAngularExtrapolation: TIdExtrapolate<TIdAngles>;
+    FAngularInterpolation: TIdInterpolateAccelDecelLinear<TIdAngles>;
+    FHasMaster: Boolean;
+    FOrientated: Boolean;
+    FIsPusher: Boolean;
     function TestIfAtRest: Boolean;
     procedure Rest;
   public
@@ -85,6 +84,21 @@ type
     procedure SetLinearInterpolation(const ATime, AAccelTime, ADecelTime, ADuration: Integer;
       const AStartPos, AEndPos: TIdVec3);
     function GetLinearExtrapolationType: Integer;
+    /// <summary>idPhysics_Parametric::SetAngularExtrapolation</summary>
+    procedure SetAngularExtrapolation(const AType, ATime, ADuration: Integer; const ABase, ASpeed,
+      ABaseSpeed: TIdAngles);
+    /// <summary>idPhysics_Parametric::SetAngularInterpolation</summary>
+    procedure SetAngularInterpolation(const ATime, AAccelTime, ADecelTime, ADuration: Integer;
+      const AStartAng, AEndAng: TIdAngles);
+    function GetAngularExtrapolationType: Integer;
+    /// <summary>idPhysics_Parametric::GetLocalAngles</summary>
+    function GetLocalAngles: TIdAngles;
+    /// <summary>idPhysics_Parametric::GetAngles: the world angles (those of the axis for a pusher)</summary>
+    function GetAngles: TIdAngles;
+    /// <summary>idPhysics_Parametric::SetPusher: a pusher's angles are those of its axis (nothing is ever pushed here)</summary>
+    procedure SetPusher;
+    procedure SetMaster(const AHasMaster, AOrientated: Boolean);
+    function IsParametric: Boolean;
     /// <summary>idPhysics_Parametric::GetLocalOrigin</summary>
     function GetLocalOrigin: TIdVec3;
     function GetOrigin: TIdVec3;
@@ -112,7 +126,8 @@ type
 implementation
 
 uses
-  DelphiDoom.MathCore.Float.Curve.Arithmetic.Vec3, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.ClipConvert;
+  DelphiDoom.MathCore.Float.Conversions, DelphiDoom.MathCore.Float.Curve.Arithmetic.Vec3,
+  DelphiDoom.MathCore.Float.Curve.Arithmetic.Angles, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.ClipConvert;
 
 constructor TD3PhysicsParametric.Create(const AHost: TD3PhysicsHost; const AMins, AMaxs: TIdVec3;
   const AClip: TD3Clip; const ASelf: TObject);
@@ -132,10 +147,19 @@ begin
     ID_EXTRAPOLATION_NONE);
   FLinearInterpolation := TIdInterpolateAccelDecelLinear<TIdVec3>.Create(TIdCurveVec3Arithmetic.Create);
   FLinearInterpolation.Init(0, 0, 0, 0, TIdVec3.Create(0, 0, 0), TIdVec3.Create(0, 0, 0));
+  FAngles.Zero;
+  FLocalAngles.Zero;
+  FAngularExtrapolation := TIdExtrapolate<TIdAngles>.Create(TIdCurveAnglesArithmetic.Create);
+  FAngularExtrapolation.Init(0, 0, TIdAngles.Create(0, 0, 0), TIdAngles.Create(0, 0, 0), TIdAngles.Create(0, 0, 0),
+    ID_EXTRAPOLATION_NONE);
+  FAngularInterpolation := TIdInterpolateAccelDecelLinear<TIdAngles>.Create(TIdCurveAnglesArithmetic.Create);
+  FAngularInterpolation.Init(0, 0, 0, 0, TIdAngles.Create(0, 0, 0), TIdAngles.Create(0, 0, 0));
 end;
 
 destructor TD3PhysicsParametric.Destroy;
 begin
+  FAngularInterpolation.Free;
+  FAngularExtrapolation.Free;
   FClip.Free;
   FLinearInterpolation.Free;
   FLinearExtrapolation.Free;
@@ -151,11 +175,16 @@ end;
 function TD3PhysicsParametric.TestIfAtRest: Boolean;
 begin
   if ((FLinearExtrapolation.GetExtrapolationType and not ID_EXTRAPOLATION_NOSTOP) = ID_EXTRAPOLATION_NONE) and
-    (FLinearInterpolation.GetDuration = 0) then
+    ((FAngularExtrapolation.GetExtrapolationType and not ID_EXTRAPOLATION_NOSTOP) = ID_EXTRAPOLATION_NONE) and
+    (FLinearInterpolation.GetDuration = 0) and (FAngularInterpolation.GetDuration = 0) then
     Exit(True);
   if not FLinearExtrapolation.IsDone(FTime) then
     Exit(False);
+  if not FAngularExtrapolation.IsDone(FTime) then
+    Exit(False);
   if not FLinearInterpolation.IsDone(FTime) then
+    Exit(False);
+  if not FAngularInterpolation.IsDone(FTime) then
     Exit(False);
   Result := True;
 end;
@@ -189,6 +218,86 @@ begin
   Result := FLinearExtrapolation.GetExtrapolationType;
 end;
 
+procedure TD3PhysicsParametric.SetAngularExtrapolation(const AType, ATime, ADuration: Integer; const ABase, ASpeed,
+  ABaseSpeed: TIdAngles);
+begin
+  FTime := FHost.GetTime();
+  FAngularExtrapolation.Init(ATime, ADuration, ABase, ABaseSpeed, ASpeed, AType);
+  FLocalAngles := ABase;
+  Activate;
+end;
+
+procedure TD3PhysicsParametric.SetAngularInterpolation(const ATime, AAccelTime, ADecelTime, ADuration: Integer;
+  const AStartAng, AEndAng: TIdAngles);
+begin
+  FTime := FHost.GetTime();
+  FAngularInterpolation.Init(ATime, AAccelTime, ADecelTime, ADuration, AStartAng, AEndAng);
+  FLocalAngles := AStartAng;
+  Activate;
+end;
+
+function TD3PhysicsParametric.GetAngularExtrapolationType: Integer;
+begin
+  Result := FAngularExtrapolation.GetExtrapolationType;
+end;
+
+function TD3PhysicsParametric.GetLocalAngles: TIdAngles;
+begin
+  Result := FLocalAngles;
+end;
+
+function TD3PhysicsParametric.GetAngles: TIdAngles;
+begin
+  Result := FAngles;
+end;
+
+procedure TD3PhysicsParametric.SetPusher;
+begin
+  FIsPusher := True;
+end;
+
+function TD3PhysicsParametric.IsParametric: Boolean;
+begin
+  Result := True;
+end;
+
+procedure TD3PhysicsParametric.SetMaster(const AHasMaster, AOrientated: Boolean);
+var
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
+  LZero: TIdVec3;
+  LZeroAngles: TIdAngles;
+begin
+  if AHasMaster then
+  begin
+    if not FHasMaster then
+    begin
+      // transform from world space to master space
+      FHost.GetMasterPosition(LMasterOrigin, LMasterAxis);
+      FLocalOrigin := (FOrigin - LMasterOrigin) * LMasterAxis.Transpose;
+      if AOrientated then
+        FLocalAngles := TIdRotationConversions.MatToAngles(FAxis * LMasterAxis.Transpose)
+      else
+        FLocalAngles := TIdRotationConversions.MatToAngles(FAxis);
+      FLinearExtrapolation.SetStartValue(FLocalOrigin);
+      FAngularExtrapolation.SetStartValue(FLocalAngles);
+      FHasMaster := True;
+      FOrientated := AOrientated;
+    end;
+  end
+  else if FHasMaster then
+  begin
+    // transform from master space to world space
+    FLocalOrigin := FOrigin;
+    FLocalAngles := FAngles;
+    LZero.Zero;
+    LZeroAngles.Zero;
+    SetLinearExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, FOrigin, LZero, LZero);
+    SetAngularExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, FAngles, LZeroAngles, LZeroAngles);
+    FHasMaster := False;
+  end;
+end;
+
 function TD3PhysicsParametric.GetLocalOrigin: TIdVec3;
 begin
   Result := FLocalOrigin;
@@ -200,12 +309,20 @@ begin
 end;
 
 procedure TD3PhysicsParametric.SetOrigin(const AOrigin: TIdVec3);
+var
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
 begin
   FLinearExtrapolation.SetStartValue(AOrigin);
   FLinearInterpolation.SetStartValue(AOrigin);
   FLocalOrigin := FLinearExtrapolation.GetCurrentValue(FTime);
-  // no master: the origin is the local origin
-  FOrigin := FLocalOrigin;
+  if FHasMaster then
+  begin
+    FHost.GetMasterPosition(LMasterOrigin, LMasterAxis);
+    FOrigin := LMasterOrigin + FLocalOrigin * LMasterAxis;
+  end
+  else
+    FOrigin := FLocalOrigin;
   FClip.LinkClip(FOrigin, FAxis);
   Activate;
 end;
@@ -238,9 +355,27 @@ begin
 end;
 
 procedure TD3PhysicsParametric.SetAxis(const AAxis: TIdMat3);
+var
+  LMasterAxis: TIdMat3;
+  LMasterOrigin: TIdVec3;
 begin
-  FAxis := AAxis;
+  FLocalAngles := TIdRotationConversions.MatToAngles(AAxis);
+  FAngularExtrapolation.SetStartValue(FLocalAngles);
+  FAngularInterpolation.SetStartValue(FLocalAngles);
+  FLocalAngles := FAngularExtrapolation.GetCurrentValue(FTime);
+  if FHasMaster and FOrientated then
+  begin
+    FHost.GetMasterPosition(LMasterOrigin, LMasterAxis);
+    FAxis := TIdRotationConversions.AnglesToMat(FLocalAngles) * LMasterAxis;
+    FAngles := TIdRotationConversions.MatToAngles(FAxis);
+  end
+  else
+  begin
+    FAxis := TIdRotationConversions.AnglesToMat(FLocalAngles);
+    FAngles := FLocalAngles;
+  end;
   FClip.LinkClip(FOrigin, FAxis);
+  Activate;
 end;
 
 procedure TD3PhysicsParametric.SetClipModel(const AModel: TD3ClipModel);
@@ -320,20 +455,49 @@ end;
 function TD3PhysicsParametric.Evaluate(const ATimeStepMSec, AEndTimeMSec: Integer): Boolean;
 var
   LOldOrigin: TIdVec3;
+  LOldAxis: TIdMat3;
+  LMasterOrigin: TIdVec3;
+  LMasterAxis: TIdMat3;
 begin
   LOldOrigin := FOrigin;
+  LOldAxis := FAxis;
   FLocalOrigin.Zero;
+  FLocalAngles.Zero;
   if FLinearInterpolation.GetDuration <> 0 then
     FLocalOrigin := FLocalOrigin + FLinearInterpolation.GetCurrentValue(AEndTimeMSec)
   else
     FLocalOrigin := FLocalOrigin + FLinearExtrapolation.GetCurrentValue(AEndTimeMSec);
+  if FAngularInterpolation.GetDuration <> 0 then
+    FLocalAngles := FLocalAngles + FAngularInterpolation.GetCurrentValue(AEndTimeMSec)
+  else
+    FLocalAngles := FLocalAngles + FAngularExtrapolation.GetCurrentValue(AEndTimeMSec);
+  FLocalAngles.Normalize360;
   FOrigin := FLocalOrigin;
+  FAngles := FLocalAngles;
+  FAxis := TIdRotationConversions.AnglesToMat(FLocalAngles);
+  if FHasMaster then
+  begin
+    FHost.GetMasterPosition(LMasterOrigin, LMasterAxis);
+    if LMasterAxis.IsRotated then
+    begin
+      FOrigin := FOrigin * LMasterAxis + LMasterOrigin;
+      if FOrientated then
+      begin
+        FAxis := FAxis * LMasterAxis;
+        FAngles := TIdRotationConversions.MatToAngles(FAxis);
+      end;
+    end
+    else
+      FOrigin := FOrigin + LMasterOrigin;
+  end;
   // a pusher would be clipped against what is in the way here (idPush::ClipPush is not ported: it never is)
+  if FIsPusher then
+    FAngles := TIdRotationConversions.MatToAngles(FAxis);
   FClip.LinkClip(FOrigin, FAxis);
   FTime := AEndTimeMSec;
   if TestIfAtRest then
     Rest;
-  Result := FOrigin <> LOldOrigin;
+  Result := (FOrigin <> LOldOrigin) or (FAxis <> LOldAxis);
 end;
 
 procedure TD3PhysicsParametric.UpdateTime(const AEndTimeMSec: Integer);
@@ -345,6 +509,8 @@ begin
   // move the trajectory start times to sync the trajectory with the current endTime
   FLinearExtrapolation.SetStartTime(FLinearExtrapolation.GetStartTime + LLeap);
   FLinearInterpolation.SetStartTime(FLinearInterpolation.GetStartTime + LLeap);
+  FAngularExtrapolation.SetStartTime(FAngularExtrapolation.GetStartTime + LLeap);
+  FAngularInterpolation.SetStartTime(FAngularInterpolation.GetStartTime + LLeap);
 end;
 
 function TD3PhysicsParametric.GetTime: Integer;
@@ -362,8 +528,10 @@ end;
 
 function TD3PhysicsParametric.GetAngularEndTime: Integer;
 begin
-  // the angular motion is always an extrapolation of type NONE with no duration
-  Result := 0;
+  if FAngularInterpolation.GetDuration <> 0 then
+    Result := Trunc(FAngularInterpolation.GetEndTime)
+  else
+    Result := Trunc(FAngularExtrapolation.GetEndTime);
 end;
 
 function TD3PhysicsParametric.IsAtRest: Boolean;

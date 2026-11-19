@@ -85,6 +85,9 @@ type
     FSpawnedEntities: TIdLinkList<TD3Entity>;
     FActiveEntities: TIdLinkList<TD3Entity>;
     FNumEntitiesToDeactivate: Integer;
+    FSortPushers: Boolean;
+    FSortTeamMasters: Boolean;
+    FWorldEntity: TD3Entity;
     FFirstFreeIndex: Integer;
     FSpawnCount: Integer;
     FMapSpawnCount: Integer;
@@ -217,6 +220,16 @@ type
     function GetActiveEntities: TIdLinkList<TD3Entity>;
     function GetNumEntitiesToDeactivate: Integer;
     procedure SetNumEntitiesToDeactivate(const AValue: Integer);
+    procedure SetSortTeamMasters(const AValue: Boolean);
+    procedure SetSortPushers(const AValue: Boolean);
+    function GetWorldEntity: TD3Entity;
+    procedure SetWorldEntity(const AEntity: TD3Entity);
+    /// <summary>
+    ///   idGameLocal::SortActiveEntityList: the physics team masters and then the entities that move a team with a
+    ///   parametric body (the pushers) go to the front of the list of the entities that think, so that they move before
+    ///   what they carry
+    /// </summary>
+    procedure SortActiveEntityList;
     property Entities[const ANumber: Integer]: TD3Entity read GetEntity;
     /// <summary>gameLocal.spawnIds: the serial number of the entity of that number; -1 if none was ever spawned there</summary>
     property SpawnIds[const ANumber: Integer]: Integer read GetSpawnId;
@@ -460,6 +473,9 @@ begin
   FSpawnedEntities.Clear;
   FActiveEntities.Clear;
   FNumEntitiesToDeactivate := 0;
+  FSortTeamMasters := False;
+  FSortPushers := False;
+  FWorldEntity := nil;
 
   // always leave room for the max number of clients,
   // even if they aren't all used, so numbers inside that
@@ -827,6 +843,9 @@ begin
   FPreviousTime := FTime;
   Inc(FTime, FMsec);
 
+  // sort the active entity list
+  SortActiveEntityList;
+
   // let entities think
   if FInCinematic then
   begin
@@ -904,6 +923,84 @@ end;
 procedure TD3GameLocal.SetNumEntitiesToDeactivate(const AValue: Integer);
 begin
   FNumEntitiesToDeactivate := AValue;
+end;
+
+procedure TD3GameLocal.SetSortTeamMasters(const AValue: Boolean);
+begin
+  FSortTeamMasters := AValue;
+end;
+
+procedure TD3GameLocal.SetSortPushers(const AValue: Boolean);
+begin
+  FSortPushers := AValue;
+end;
+
+function TD3GameLocal.GetWorldEntity: TD3Entity;
+begin
+  Result := FWorldEntity;
+end;
+
+procedure TD3GameLocal.SetWorldEntity(const AEntity: TD3Entity);
+begin
+  FWorldEntity := AEntity;
+end;
+
+procedure TD3GameLocal.SortActiveEntityList;
+var
+  LEntity: TD3Entity;
+  LNext: TD3Entity;
+  LMaster: TD3Entity;
+  LPart: TD3Entity;
+begin
+  // if the active entity list needs to be reordered to place physics team masters at the front
+  if FSortTeamMasters then
+  begin
+    LEntity := FActiveEntities.Next;
+    while Assigned(LEntity) do
+    begin
+      LNext := LEntity.ActiveNode.Next;
+      LMaster := LEntity.GetTeamMaster;
+      if Assigned(LMaster) and (LMaster = LEntity) then
+      begin
+        LEntity.ActiveNode.Remove;
+        LEntity.ActiveNode.AddToFront(FActiveEntities);
+      end;
+      LEntity := LNext;
+    end;
+  end;
+
+  // if the active entity list needs to be reordered to place pushers at the front (no body is an actor here: only the
+  // second pass of the original)
+  if FSortPushers then
+  begin
+    LEntity := FActiveEntities.Next;
+    while Assigned(LEntity) do
+    begin
+      LNext := LEntity.ActiveNode.Next;
+      LMaster := LEntity.GetTeamMaster;
+      if (not Assigned(LMaster)) or (LMaster = LEntity) then
+      begin
+        // check if there is an entity on the team using parametric physics
+        LPart := LEntity;
+        while Assigned(LPart) do
+        begin
+          if LPart.GetPhysics.IsParametric then
+            Break;
+          LPart := LPart.GetNextTeamEntity;
+        end;
+        // if there is an entity on the team using parametric physics
+        if Assigned(LPart) then
+        begin
+          LEntity.ActiveNode.Remove;
+          LEntity.ActiveNode.AddToFront(FActiveEntities);
+        end;
+      end;
+      LEntity := LNext;
+    end;
+  end;
+
+  FSortTeamMasters := False;
+  FSortPushers := False;
 end;
 
 end.

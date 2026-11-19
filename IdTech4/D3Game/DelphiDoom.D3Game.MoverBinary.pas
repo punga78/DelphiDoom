@@ -56,6 +56,10 @@ type
     FPhysicsObj: TD3PhysicsParametric;
     procedure EventSetCallback;
   protected
+    /// <summary>idMover_Binary::PreBind: the two positions go from the master's space to the world's</summary>
+    procedure PreBind; override;
+    /// <summary>idMover_Binary::PostBind: and back into the (new) master's space</summary>
+    procedure PostBind; override;
     procedure EventReachedBinaryMover; virtual;
     procedure EventUse(const AActivator: TD3Entity); virtual;
   public
@@ -102,7 +106,8 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Text.Strings, DelphiDoom.Scanner.IdDict, DelphiDoom.MathCore.Float.Angles, DelphiDoom.MathCore.Float.Extrapolate,
+  DelphiDoom.IdLib.Text.Strings, DelphiDoom.Scanner.IdDict, DelphiDoom.MathCore.Float.Angles,
+  DelphiDoom.MathCore.Float.Conversions, DelphiDoom.MathCore.Float.Extrapolate,
   DelphiDoom.D3Game.Types, DelphiDoom.D3Game.Physics.Intf, DelphiDoom.D3Game.PhysicsTime;
 
 const
@@ -150,6 +155,7 @@ var
   LMins: TIdVec3;
   LMaxs: TIdVec3;
   LNeverMoves: TIdVec3;
+  LNeverAngles: TIdAngles;
 begin
   LSelf := TD3MoverBinary(AInstance);
   LGame := LSelf.Game;
@@ -181,28 +187,20 @@ begin
   LOrigin := LSelf.GetPhysics.GetOrigin;
   LMins := LSelf.GetPhysics.GetAbsBoundsMin - LOrigin;
   LMaxs := LSelf.GetPhysics.GetAbsBoundsMax - LOrigin;
-  LHost.GetTime :=
-    function: Integer
-    begin
-      Result := LGame.GetTime;
-    end;
-  LHost.BecomeActive :=
-    procedure(AFlags: Integer)
-    begin
-      LSelf.BecomeActive(AFlags);
-    end;
-  LHost.BecomeInactive :=
-    procedure(AFlags: Integer)
-    begin
-      LSelf.BecomeInactive(AFlags);
-    end;
+  LHost := LSelf.CreatePhysicsHost;
   LSelf.FPhysicsObj := TD3PhysicsParametric.CreateMoverPhysics(LHost, LSelf.GetPhysics, LMins, LMaxs,
     LGame.GetClip, LSelf);
   LSelf.FPhysicsObj.SetOrigin(LOrigin);
+  LSelf.FPhysicsObj.SetAxis(LSelf.GetPhysics.GetAxis);
   if not LSelf.SpawnArgs.GetBool('solid', '1') then
     LSelf.FPhysicsObj.SetContents(0);
+  // a mover with no render model is a pusher
+  LSelf.FPhysicsObj.SetPusher;
   LNeverMoves.Zero;
+  LNeverAngles.Zero;
   LSelf.FPhysicsObj.SetLinearExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, LOrigin, LNeverMoves, LNeverMoves);
+  LSelf.FPhysicsObj.SetAngularExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0,
+    TIdRotationConversions.MatToAngles(LSelf.GetPhysics.GetAxis), LNeverAngles, LNeverAngles);
   LSelf.SetPhysics(LSelf.FPhysicsObj);
 
   if LSelf.FMoveMaster <> LSelf then
@@ -261,6 +259,18 @@ begin
         LSlave := LSlave.FActivateChain;
       end;
     end);
+end;
+
+procedure TD3MoverBinary.PreBind;
+begin
+  FPos1 := GetWorldCoordinates(FPos1);
+  FPos2 := GetWorldCoordinates(FPos2);
+end;
+
+procedure TD3MoverBinary.PostBind;
+begin
+  FPos1 := GetLocalCoordinates(FPos1);
+  FPos2 := GetLocalCoordinates(FPos2);
 end;
 
 class function TD3MoverBinary.GetMovedir(const AAngle: Single): TIdVec3;

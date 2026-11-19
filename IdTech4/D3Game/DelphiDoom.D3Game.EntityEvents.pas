@@ -41,7 +41,10 @@ type
     // idMover, idMover_Binary, idDoor
     ReachedPos, ReachedAng, ReturnToPos1, MatchTeam, StartOpen, SpawnDoorTrigger, DoorOpen, DoorClose, DoorLock,
     DoorIsOpen, DoorIsLocked, StopMoving, Speed, Time, AccelTime, DecelTime, MoveTo, MoveToPos, Move,
-    IsMoving, SetCallback: TDoomScriptEventDef;
+    IsMoving, SetCallback,
+    // idEntity (binding) and idMover (rotation)
+    Bind, BindPosition, Unbind, RemoveBinds, SpawnBind, StopRotating, RotateDownTo, RotateUpTo, RotateTo, Rotate,
+    RotateOnce, IsRotating: TDoomScriptEventDef;
     constructor Create(const AEvents: TDoomScriptEventRegistry);
   end;
 
@@ -87,6 +90,18 @@ begin
   Move := AEvents.Define('move', 'ff');
   IsMoving := AEvents.Define('isMoving', '', 'd');
   SetCallback := AEvents.Define('<script_setcallback>');
+  Bind := AEvents.Define('bind', 'e');
+  BindPosition := AEvents.Define('bindPosition', 'e');
+  Unbind := AEvents.Define('unbind');
+  RemoveBinds := AEvents.Define('removeBinds');
+  SpawnBind := AEvents.Define('<spawnbind>');
+  StopRotating := AEvents.Define('stopRotating');
+  RotateDownTo := AEvents.Define('rotateDownTo', 'df');
+  RotateUpTo := AEvents.Define('rotateUpTo', 'df');
+  RotateTo := AEvents.Define('rotateTo', 'v');
+  Rotate := AEvents.Define('rotate', 'v');
+  RotateOnce := AEvents.Define('rotateOnce', 'v');
+  IsRotating := AEvents.Define('isRotating', '', 'd');
 end;
 
 end.
