@@ -43,7 +43,6 @@ type
   statesArray_t = packed array[0..$FFFF] of state_t;
   PstatesArray_t = ^statesArray_t;
 
-  sprnamesArray_t = packed array[0..Ord(DO_NUMSPRITES) - 1] of string[4];
 
   mobjinfoArray_t = packed array[0..Ord(DO_NUMMOBJTYPES) - 1] of mobjinfo_t;
   PmobjinfoArray_t = ^mobjinfoArray_t;

@@ -40,7 +40,6 @@ implementation
 
 uses
   d_delphi,
-  doomstat,
   d_player,
   doomdef,
   tables,

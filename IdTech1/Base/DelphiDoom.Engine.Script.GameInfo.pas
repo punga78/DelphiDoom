@@ -35,7 +35,6 @@ implementation
 
 uses
   doomdef,
-  d_player,
   g_game,
   m_base,
   m_fixed,

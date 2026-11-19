@@ -64,7 +64,6 @@ implementation
 uses
   d_delphi,
   i_system,
-  d_player,
   g_game,
   r_defs,
   p_params,

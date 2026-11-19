@@ -38,7 +38,6 @@ type
     backsector: Psector_t;
   end;
   PGLSeg = ^TGLSeg;
-  GLSegArray = array[0..$FFFF] of TGLSeg;
 
 const
   GLDWF_TOP = 1;

@@ -77,7 +77,6 @@ uses
   i_system,
   DelphiDoom.Renderer.Types,
   p_setup,
-  r_main,
   z_zone;
 
 //

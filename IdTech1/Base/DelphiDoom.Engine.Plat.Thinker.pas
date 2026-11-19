@@ -13,7 +13,6 @@ interface
 
 uses
   p_spec_h,
-  p_spec,
   DelphiDoom.Thinkers.Platform.Types;
 
 //==============================================================================

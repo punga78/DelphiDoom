@@ -39,17 +39,13 @@ implementation
 
 uses
   d_delphi,
-  doomstat,
   doomdef,
-  tables,
   m_fixed,
   info_h,
   r_defs,
   g_game,
   m_rnd,
   p_local,
-  p_params,
-  p_3dfloors,
   p_mobj,
   s_sound,
   sounddata,

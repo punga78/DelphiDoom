@@ -123,11 +123,6 @@ type
   mline_tArray = packed array[0..$FFFF] of mline_t;
   Pmline_tArray = ^mline_tArray;
 
-  islope_t = record
-    slp: fixed_t;
-    islp: fixed_t;
-  end;
-
 //
 // The vector graphics for the automap.
 //  A line drawing of the player pointing right,

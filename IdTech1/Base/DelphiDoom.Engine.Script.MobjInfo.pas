@@ -33,7 +33,6 @@ implementation
 
 uses
   info_common,
-  info_h,
   info,
   psi_game,
   sounds;

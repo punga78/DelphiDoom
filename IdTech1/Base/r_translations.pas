@@ -42,7 +42,6 @@ uses
 type
   translationtable_t = array[0..255] of byte;
   Ptranslationtable_t = ^translationtable_t;
-  translationtable_tArray = array[0..$FF] of translationtable_t;
 
 //==============================================================================
 //

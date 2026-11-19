@@ -81,8 +81,6 @@ implementation
 uses
   d_delphi,
   d_player,
-  doomdata,
-  doomdef,
   m_fixed,
   info_h,
   DelphiDoom.MathCore.Types,
@@ -93,7 +91,6 @@ uses
   p_setup,
   p_maputl,
   p_map,
-  p_mobj,
   p_sight,
   p_tick,
   p_spec,

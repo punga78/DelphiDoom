@@ -299,7 +299,6 @@ type
   sector_tArray = packed array[0..$FFFF] of sector_t;
   Psector_tArray = ^sector_tArray;
 {$IF DEFINED(DOOM)}
-  sector_tPArray = packed array[0..$FFFF] of Psector_t;
 
   msecnode_t = record
     m_sector: Psector_t;  // a sector containing this object
@@ -668,7 +667,6 @@ type
     // the [0] is &columnofs[width]
   end;
   Ppatch_t = ^patch_t;
-  patch_tArray = packed array[0..$FFFF] of patch_t; // JVAL: DO NOT USE
   patch_tPArray = packed array[0..$FFFF] of Ppatch_t;
   Ppatch_tPArray = ^patch_tPArray;
 

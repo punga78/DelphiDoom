@@ -51,7 +51,6 @@ implementation
 
 uses
   doomdef,
-  p_mobj_h,
   g_game,
   sb_bar,
   DelphiDoom.Engine.World.UserRules;

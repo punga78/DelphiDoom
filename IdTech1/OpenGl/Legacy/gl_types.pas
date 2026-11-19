@@ -46,7 +46,6 @@ type
   PGLVertex = ^GLVertex;
   GLVertexArray = array[0..$FFFF] of GLVertex;
   PGLVertexArray = ^GLVertexArray;
-  GLVertexArraysP = array[0..$FFFF] of PGLVertexArray;
 
   GLTexcoord = record
     u: TGLfloat;
