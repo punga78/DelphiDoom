@@ -13,7 +13,7 @@ unit DelphiDoom.D3Game.Physics.Intf;
 interface
 
 uses
-  DelphiDoom.IdLib.Math.Vec3;
+  DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.D3Game.ClipModel;
 
 type
   /// <summary>
@@ -35,6 +35,29 @@ type
     function GetLinearEndTime: Integer;
     function GetAngularEndTime: Integer;
     function IsAtRest: Boolean;
+    /// <summary>idPhysics::GetAxis</summary>
+    function GetAxis: TIdMat3;
+    /// <summary>idPhysics::SetAxis: relinks the clip model</summary>
+    procedure SetAxis(const AAxis: TIdMat3);
+    /// <summary>
+    ///   idPhysics::SetClipModel: the physics owns the model and links it at its origin and axis. A game with no clip
+    ///   gives the model back to nobody: the model is freed.
+    /// </summary>
+    procedure SetClipModel(const AModel: TD3ClipModel);
+    /// <summary>
+    ///   idPhysics::GetClipModel: nil if there is none (the original gives the default clip model; a caller checks
+    ///   <c>GetNumClipModels</c> first, as <c>idClip::GetTraceClipModels</c> does)
+    /// </summary>
+    function GetClipModel: TD3ClipModel;
+    function GetNumClipModels: Integer;
+    procedure SetContents(const AContents: Integer);
+    function GetContents: Integer;
+    procedure DisableClip;
+    procedure EnableClip;
+    procedure UnlinkClip;
+    procedure LinkClip;
+    /// <summary>idPhysics::ClipContents: the contents of the clip model of the physics in a clip model (nil: in the world)</summary>
+    function ClipContents(const AModel: TD3ClipModel): Integer;
   end;
 
 implementation

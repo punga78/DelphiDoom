@@ -22,7 +22,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef, DelphiDoom.D3Game.ClassBase,
-  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity, DelphiDoom.D3Game.Trigger;
+  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity, DelphiDoom.D3Game.Trigger, DelphiDoom.Collision.Types;
 
 type
   /// <summary>
@@ -114,6 +114,11 @@ begin
   end;
 
   LSelf.FNextTriggerTime := 0;
+
+  if LSelf.SpawnArgs.GetBool('flashlight_trigger') then
+    LSelf.GetPhysics.SetContents(CONTENTS_FLASHLIGHT_TRIGGER)
+  else
+    LSelf.GetPhysics.SetContents(CONTENTS_TRIGGER);
 end;
 
 class procedure TD3TriggerMulti.DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents);

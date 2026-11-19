@@ -22,7 +22,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef, DelphiDoom.D3Game.ClassBase,
-  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity;
+  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity, DelphiDoom.Collision.Types;
 
 type
   /// <summary>
@@ -62,6 +62,7 @@ var
   LFunctionName: AnsiString;
 begin
   LTrigger := TD3Trigger(AInstance);
+  LTrigger.GetPhysics.SetContents(CONTENTS_TRIGGER);
   LFunctionName := LTrigger.SpawnArgs.GetString('call', '');
   LTrigger.FScriptFunction := '';
   if Length(LFunctionName) > 0 then
@@ -91,10 +92,15 @@ end;
 
 procedure TD3Trigger.Enable;
 begin
+  GetPhysics.SetContents(CONTENTS_TRIGGER);
+  GetPhysics.EnableClip;
 end;
 
 procedure TD3Trigger.Disable;
 begin
+  // we may be relinked if we're bound to another entity, so unlink ourselves here
+  GetPhysics.SetContents(0);
+  GetPhysics.DisableClip;
 end;
 
 function TD3Trigger.GetScriptFunction: AnsiString;

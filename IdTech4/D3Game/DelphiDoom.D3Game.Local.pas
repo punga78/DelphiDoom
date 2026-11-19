@@ -27,7 +27,7 @@ uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.IdLib.Containers.HashIndex,
   DelphiDoom.IdLib.Containers.LinkList, DelphiDoom.Scanner.IdDict, DelphiDoom.D3Game.Types,
   DelphiDoom.IdLib.Math.Random, DelphiDoom.D3Game.Intf, DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.ClassSystem,
-  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity;
+  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity, DelphiDoom.D3Game.Clip;
 
 type
   /// <summary>The services a game needs (every one is an interface; none is owned by the game)</summary>
@@ -50,6 +50,11 @@ type
     ScriptFunctions: ID3ScriptFunctions;
     /// <summary>The thread that runs an event handler (return values, <c>waitFor</c>); may be nil</summary>
     ScriptThreads: ID3ScriptThreads;
+    /// <summary>
+    ///   gameLocal.clip (not owned; built on the collision manager by the composition root and initialised with the
+    ///   world by the caller); nil for a game with no clipping. The game becomes its <c>ID3ClipEntities</c>.
+    /// </summary>
+    Clip: TD3Clip;
   end;
 
   /// <summary>
@@ -65,7 +70,7 @@ type
   ///   <c>ID3EntityWorld</c> without reference counting: it is owned by whoever created it and the entities hold it
   ///   as an interface only to ask.</para>
   /// </summary>
-  TD3GameLocal = class(TObject, ID3EntityWorld, ID3EventCanceller, ID3EntityGame)
+  TD3GameLocal = class(TObject, ID3EntityWorld, ID3EventCanceller, ID3EntityGame, ID3ClipEntities)
   strict private
     FRandom: TIdRandom;
     FStartup: Boolean;
@@ -194,6 +199,11 @@ type
     function GetScriptFunctions: ID3ScriptFunctions;
     function GetSpawnFunctions: ID3SpawnFunctions;
     function GetScriptThreads: ID3ScriptThreads;
+    function GetClip: TD3Clip;
+    { ID3ClipEntities }
+    function GetEntityNumber(const AEntity: TObject): Integer;
+    function GetEntityName(const AEntity: TObject): AnsiString;
+    function GetPassOwner(const AEntity: TObject): TObject;
     /// <summary>gamestate = GAMESTATE_ACTIVE: entities spawned from now on find their targets at once</summary>
     procedure EndStartup;
     /// <summary>gamestate = GAMESTATE_STARTUP</summary>
@@ -255,6 +265,8 @@ begin
   inherited Create;
   FServices := AServices;
   FClasses := AClasses;
+  if Assigned(FServices.Clip) then
+    FServices.Clip.Entities := Self;
   FEntityHash := TIdHashIndex.Create;
   FSpawnArgs := TIdDict.Create;
   FSpawnedEntities := TIdLinkList<TD3Entity>.Create;
@@ -412,6 +424,29 @@ end;
 function TD3GameLocal.GetScriptThreads: ID3ScriptThreads;
 begin
   Result := FServices.ScriptThreads;
+end;
+
+function TD3GameLocal.GetClip: TD3Clip;
+begin
+  Result := FServices.Clip;
+end;
+
+function TD3GameLocal.GetEntityNumber(const AEntity: TObject): Integer;
+begin
+  Result := TD3Entity(AEntity).EntityNumber;
+end;
+
+function TD3GameLocal.GetEntityName(const AEntity: TObject): AnsiString;
+begin
+  Result := TD3Entity(AEntity).GetName;
+end;
+
+function TD3GameLocal.GetPassOwner(const AEntity: TObject): TObject;
+begin
+  // the owner of the first clip model of the physics of the pass entity (nil if it has none)
+  Result := nil;
+  if TD3Entity(AEntity).GetPhysics.GetNumClipModels > 0 then
+    Result := TD3Entity(AEntity).GetPhysics.GetClipModel.Owner;
 end;
 
 procedure TD3GameLocal.NewMap;

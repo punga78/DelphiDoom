@@ -24,7 +24,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef,
   DelphiDoom.D3Game.Intf, DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Entity,
-  DelphiDoom.D3Game.MoverBinary;
+  DelphiDoom.D3Game.MoverBinary, DelphiDoom.Geometry.Bounds, DelphiDoom.D3Game.ClipModel;
 
 type
   /// <summary>
@@ -42,6 +42,11 @@ type
     FSyncLock: AnsiString;
     FRequires: AnsiString;
     FRemoveItem: Integer;
+    FTrigger: TD3ClipModel;
+    FNormalAxisIndex: Integer;
+    procedure CalcTriggerBounds(const ASize: Single; out ABounds: TGeoBounds);
+    procedure EventTouch(const AOther: TD3Entity);
+    procedure Use(const AOther, AActivator: TD3Entity);
     procedure EventActivate(const AActivator: TD3Entity);
     procedure EventStartOpen;
     procedure EventSpawnDoorTrigger;
@@ -49,6 +54,7 @@ type
   protected
     procedure EventReachedBinaryMover; override;
   public
+    destructor Destroy; override;
     /// <summary>idDoor::Spawn</summary>
     class procedure SpawnClass(const AInstance: TD3Class); static;
     class procedure DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents); static;
@@ -62,12 +68,17 @@ type
     /// <summary>idDoor::IsOpen: anything but resting at pos1</summary>
     function IsOpen: Boolean;
     function IsNoTouch: Boolean;
+    /// <summary>The clip model of the trigger of the door (<c>Event_SpawnDoorTrigger</c>), nil before it exists or without a clip</summary>
+    property Trigger: TD3ClipModel read FTrigger;
+    /// <summary>The axis the trigger was expanded along (the thinnest of the team's bounds)</summary>
+    property NormalAxisIndex: Integer read FNormalAxisIndex;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Scanner.IdDict, DelphiDoom.D3Game.Types;
+  DelphiDoom.Scanner.IdDict, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Mat3, DelphiDoom.Geometry.TraceModel,
+  DelphiDoom.Collision.Types, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.Clip, DelphiDoom.D3Game.ClipConvert;
 
 function IntArg(const AValue: Integer): TDoomScriptEventArg;
 begin
@@ -163,8 +174,20 @@ begin
   LSelf.Enabled := True;
 end;
 
+destructor TD3Door.Destroy;
+begin
+  // the trigger clip model unlinks itself
+  FTrigger.Free;
+  inherited Destroy;
+end;
+
 class procedure TD3Door.DeclareEvents(const AType: TD3TypeInfo; const AEvents: TD3EntityEvents);
 begin
+  AType.AddEvent(AEvents.Touch,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    begin
+      TD3Door(ATarget).EventTouch(TD3Door(ATarget).EntityFromArg(AArgs[0]));
+    end);
   AType.AddEvent(AEvents.Activate,
     procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
     begin
@@ -256,6 +279,84 @@ begin
   Result := FNoTouch;
 end;
 
+procedure TD3Door.CalcTriggerBounds(const ASize: Single; out ABounds: TGeoBounds);
+var
+  LOther: TD3MoverBinary;
+  LOtherBounds: TGeoBounds;
+  LIndex: Integer;
+  LBest: Integer;
+  LThickness: Single;
+  LBestThickness: Single;
+  LOrigin: TGeoVec3;
+begin
+  // find the bounds of everything on the team
+  ABounds.Mins := TD3ClipConvert.ToGeo(GetPhysics.GetAbsBoundsMin);
+  ABounds.Maxs := TD3ClipConvert.ToGeo(GetPhysics.GetAbsBoundsMax);
+
+  TakeDamage := True;
+  LOther := ActivateChain;
+  while Assigned(LOther) do
+  begin
+    if LOther is TD3Door then
+    begin
+      // find the bounds of everything on the team
+      LOtherBounds.Mins := TD3ClipConvert.ToGeo(LOther.GetPhysics.GetAbsBoundsMin);
+      LOtherBounds.Maxs := TD3ClipConvert.ToGeo(LOther.GetPhysics.GetAbsBoundsMax);
+      ABounds.AddBounds(LOtherBounds);
+
+      // set all of the slaves as shootable
+      LOther.TakeDamage := True;
+    end;
+    LOther := LOther.ActivateChain;
+  end;
+
+  // find the thinnest axis, which will be the one we expand
+  LBest := 0;
+  for LIndex := 1 to 2 do
+  begin
+    LThickness := ABounds.Maxs[LIndex] - ABounds.Mins[LIndex];
+    LBestThickness := ABounds.Maxs[LBest] - ABounds.Mins[LBest];
+    if LThickness < LBestThickness then
+      LBest := LIndex;
+  end;
+  FNormalAxisIndex := LBest;
+  ABounds.Mins[LBest] := ABounds.Mins[LBest] - ASize;
+  ABounds.Maxs[LBest] := ABounds.Maxs[LBest] + ASize;
+  LOrigin := TD3ClipConvert.ToGeo(GetPhysics.GetOrigin);
+  ABounds.Mins := ABounds.Mins - LOrigin;
+  ABounds.Maxs := ABounds.Maxs - LOrigin;
+end;
+
+procedure TD3Door.EventTouch(const AOther: TD3Entity);
+begin
+  if not Enabled then
+    Exit;
+
+  if Assigned(FTrigger) and (TouchTrace.C.Id = FTrigger.Id) then
+  begin
+    if not IsNoTouch and (IsLocked = 0) and (MoverState <> ms1To2) then
+      Use(Self, AOther);
+  end;
+  // the sound trigger (a locked door's sound) is not ported
+end;
+
+procedure TD3Door.Use(const AOther, AActivator: TD3Entity);
+var
+  LSync: TD3Entity;
+begin
+  if RequirementMet(AActivator, FRequires, FRemoveItem) then
+  begin
+    if Length(FSyncLock) > 0 then
+    begin
+      LSync := Game.FindEntity(FSyncLock);
+      if Assigned(LSync) and (LSync is TD3Door) and TD3Door(LSync).IsOpen then
+        Exit;
+    end;
+    ActivateTargets(AActivator);
+    UseBinaryMover(AActivator);
+  end;
+end;
+
 procedure TD3Door.EventActivate(const AActivator: TD3Entity);
 var
   LOldLock: Integer;
@@ -304,7 +405,14 @@ procedure TD3Door.EventSpawnDoorTrigger;
 var
   LOther: TD3MoverBinary;
   LToggle: Boolean;
+  LBounds: TGeoBounds;
+  LTraceModel: TTraceModel;
+  LClip: TD3Clip;
 begin
+  if Assigned(FTrigger) then
+    // already have a trigger, so don't spawn a new one.
+    Exit;
+
   // check if any of the doors are marked as toggled
   LToggle := False;
   LOther := MoveMaster;
@@ -332,7 +440,27 @@ begin
     Exit;
   end;
 
-  // the trigger clip model is not ported
+  // the sound trigger of a locked door with snd_locked (Event_SpawnSoundTrigger) is not ported: no sound
+
+  LClip := Game.GetClip;
+  if Assigned(LClip) then
+  begin
+    CalcTriggerBounds(FTriggerSize, LBounds);
+
+    // create a trigger clip model
+    LTraceModel := TTraceModel.CreateBox(LBounds);
+    try
+      FTrigger := TD3ClipModel.Create(LClip.Manager, LTraceModel);
+    finally
+      LTraceModel.Free;
+    end;
+    LClip.Link(FTrigger, Self, 255, TD3ClipConvert.ToGeo(GetPhysics.GetOrigin), TGeoMat3.Identity);
+    FTrigger.Contents := CONTENTS_TRIGGER;
+  end
+  else
+    // with no clip there is nothing to touch, but the bounds still set the doors of the team shootable
+    CalcTriggerBounds(FTriggerSize, LBounds);
+
   MatchActivateTeam(MoverState, Game.GetTime);
 end;
 

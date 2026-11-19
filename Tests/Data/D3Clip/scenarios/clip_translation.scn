@@ -1,0 +1,72 @@
+# idClip: sectors, links, Translation, TracePoint, TraceBounds, pass entities and owners, ties, enabled and contents
+init
+ent 1
+ent 2
+ent 3
+ent 4
+ent 4094
+box 1 1 0 1 -16 -16 0 16 16 64
+link 1 100 0 0 0 0 0
+box 2 2 0 1 -16 -16 0 16 16 64
+link 2 200 0 0 0 0 0
+box 3 3 7 256 -8 -8 0 8 8 32
+link 3 150 0 100 0 0 0
+box 4 4 0 1 -16 -16 0 16 16 64
+link 4 100 0 0 0 0 0
+touching -512 -512 0 512 512 256 1
+touching -512 -512 0 512 512 256 256
+touching 80 -4 0 120 4 10 -1
+entities -512 -512 0 512 512 256 -1
+tracepoint 0 0 32 300 0 32 1 -
+tracepoint 0 0 32 300 0 32 1 1
+tracepoint 0 0 32 300 0 32 1 4
+tracepoint 0 0 32 300 0 32 257 -
+tracepoint 0 0 32 300 0 32 1 4094
+tracepoint 0 0 200 0 0 -50 1 -
+tracepoint 0 0 128 0 0 -300 1 -
+tracepoint -300 -300 128 400 400 128 1 -
+tracebounds 0 0 40 300 0 40 -4 -4 -4 4 4 4 1 -
+tracebounds 0 0 40 300 0 40 -40 -40 -4 40 40 4 1 -
+trans 3 150 0 120 150 0 -10 0 0 0 256 -
+trans 3 150 0 120 150 0 -10 0 0 0 256 3
+trans 3 150 0 120 150 0 -10 0 0 0 257 -
+trans 3 150 0 20 150 0 200 0 0 0 256 -
+trans 3 0 100 5 300 100 5 0 0 0 257 -
+trans 3 0 100 5 300 100 5 0 45 0 257 -
+trans 3 0 100 5 300 100 5 0 30 20 257 3
+transents 3 0 100 5 300 100 5 0 0 0 257 -
+transents 3 0 0 32 300 0 32 0 0 0 257 -
+transents 3 0 0 32 300 0 32 0 0 0 257 1
+disable 1
+tracepoint 0 0 32 300 0 32 1 -
+enable 1
+tracepoint 0 0 32 300 0 32 1 -
+contents 1 0
+tracepoint 0 0 32 300 0 32 1 -
+contents 1 1
+unlink 1
+touching -512 -512 0 512 512 256 1
+tracepoint 0 0 32 300 0 32 1 -
+link 1 100 0 0 0 0 0
+link 1 100 0 0 0 45 0
+touching 80 -4 0 120 4 10 -1
+tracepoint 0 3 32 300 3 32 1 -
+link 1 100 0 0 0 90 0
+tracepoint 0 3 32 300 3 32 1 -
+link 1 100 0 0 0 0 0
+owner 1 2
+tracepoint 0 0 32 300 0 32 1 2
+trans 3 0 0 32 300 0 32 0 0 0 257 2
+trans 3 0 100 5 300 100 5 0 0 0 257 -
+trans 3 0 0 32 20000 0 32 0 0 0 257 -
+trans 3 0 0 32 2000 0 32 0 0 0 257 3
+tracepoint 0 0 32 20000 0 32 1 -
+contentsat 3 100 0 10 0 0 0 257 -
+contentsat 3 100 0 10 0 0 0 257 1
+contentsat 3 100 0 10 0 0 0 1 1
+contentsat 3 150 0 100 0 0 0 257 -
+contentsat 3 150 0 100 0 0 0 257 3
+contentsat 3 150 0 -4 0 0 0 257 -
+contentsat 3 150 0 -4 0 0 0 257 4094
+contentsat - 100 0 10 0 0 0 257 -
+contentsat 3 100 0 10 0 45 0 257 -

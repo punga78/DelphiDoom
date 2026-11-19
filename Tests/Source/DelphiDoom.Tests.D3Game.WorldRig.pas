@@ -15,7 +15,7 @@ uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Scanner.IdDict,
   DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef, DelphiDoom.DoomScript.EventRegistry,
   DelphiDoom.D3Game.Intf, DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.ClassSystem, DelphiDoom.D3Game.Entity,
-  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Local, DelphiDoom.Tests.D3Game.World;
+  DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Local, DelphiDoom.D3Game.Clip, DelphiDoom.Tests.D3Game.World;
 
 type
   /// <summary>An event waiting in the fake queue</summary>
@@ -108,7 +108,8 @@ type
     FLog: TStringList;
     procedure DeclareRecorder;
   public
-    constructor Create;
+    /// <param name="AClip">the clip of the game (not owned: free it after the rig); nil for a game with no clipping</param>
+    constructor Create(const AClip: TD3Clip = nil);
     destructor Destroy; override;
     /// <summary>What the entities of class idRecorder wrote down</summary>
     property Log: TStringList read FLog;
@@ -130,7 +131,7 @@ type
 implementation
 
 uses
-  DelphiDoom.D3Game.Types, DelphiDoom.D3Game.WorldClasses;
+  DelphiDoom.Collision.Types, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.WorldClasses;
 
 { TD3FakeEventQueue }
 
@@ -334,12 +335,13 @@ end;
 
 { TD3WorldRig }
 
-constructor TD3WorldRig.Create;
+constructor TD3WorldRig.Create(const AClip: TD3Clip);
 var
   LServices: TD3GameServices;
 begin
   inherited Create;
   LServices := Default(TD3GameServices);
+  LServices.Clip := AClip;
   FWorld := TD3GameFakeWorld.Create;
   FWorld.Quiet := True;
   FEvents := TDoomScriptEventRegistry.Create;
@@ -404,6 +406,7 @@ var
   LWorld: TD3GameFakeWorld;
   LSink: TProc<string>;
   LType: TD3TypeInfo;
+  LTouchType: TD3TypeInfo;
 begin
   LGame := FGame;
   LLog := FLog;
@@ -413,6 +416,55 @@ begin
     begin
       LWorld.Line(AText);
     end;
+  // entities that take damage (the health goes down) and that do not (fl.takedamage is false by default)
+  FClasses.Declare('idDamageable', 'idEntity',
+    function: TD3Class
+    begin
+      Result := TD3Entity.Create(LGame, LGame);
+      TD3Entity(Result).TakeDamage := True;
+    end, TD3Entity.SpawnClass);
+  FClasses.Declare('idPlainBody', 'idEntity',
+    function: TD3Class
+    begin
+      Result := TD3Entity.Create(LGame, LGame);
+    end, TD3Entity.SpawnClass);
+  // an entity that answers <touch> and writes down what touched it and with which trace (the line of the clip harness)
+  LTouchType := FClasses.Declare('idTouchRecorder', 'idEntity',
+    function: TD3Class
+    begin
+      Result := TD3RecorderEntity.Create(LGame, LGame);
+      TD3RecorderEntity(Result).Log := LLog;
+      TD3RecorderEntity(Result).Sink := LSink;
+    end, TD3Entity.SpawnClass);
+  LTouchType.AddEvent(FEntityEvents.Touch,
+    procedure(const ATarget: TD3Class; const AEvent: TDoomScriptEventDef; const AArgs: TDoomScriptEventArgs)
+    var
+      LEntity: TD3Entity;
+      LOther: TD3Entity;
+      LTrace: TCollisionTrace;
+      LText: string;
+      LRow: Integer;
+      LColumn: Integer;
+      function Bits(const AValue: Single): string;
+      var
+        LValue: Single;
+      begin
+        LValue := AValue;
+        Result := IntToHex(PCardinal(@LValue)^, 8);
+      end;
+    begin
+      LEntity := TD3Entity(ATarget);
+      LOther := LEntity.EntityFromArg(AArgs[0]);
+      LTrace := LEntity.TouchTrace;
+      LText := Format('TOUCH ent=%d by=%d contents=%d entityNum=%d id=%d endpos %s %s %s',
+        [LEntity.EntityNumber, LOther.EntityNumber, LTrace.C.Contents, LTrace.C.EntityNum, LTrace.C.Id,
+        Bits(LTrace.EndPos.X), Bits(LTrace.EndPos.Y), Bits(LTrace.EndPos.Z)]);
+      for LRow := 0 to 2 do
+        for LColumn := 0 to 2 do
+          LText := LText + ' ' + Bits(LTrace.EndAxis.Rows[LRow][LColumn]);
+      LLog.Add(LText);
+      LWorld.Line(LText);
+    end);
   LType := FClasses.Declare('idRecorder', 'idEntity',
     function: TD3Class
     begin
