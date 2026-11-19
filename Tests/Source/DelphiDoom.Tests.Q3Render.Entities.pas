@@ -29,6 +29,8 @@ type
     [Test]
     procedure DovrebbeTenereIFotogrammiCheIlModelloHa;
     [Test]
+    procedure DovrebbeScegliereIlLivelloDiDettaglioDalladistanza;
+    [Test]
     procedure DovrebbeDisegnareIlCieloDiUnaShaderSky;
   end;
 
@@ -51,6 +53,7 @@ type
     FRecorder: IGlCallRecorder;
     FRenderer: TQ3Renderer;
     FModel: Integer;
+    FLodModel: Integer;
     FWhite: Integer;
     FSkyShader: Integer;
   public
@@ -61,6 +64,8 @@ type
     function Calls: string;
     property Renderer: TQ3Renderer read FRenderer;
     property Model: Integer read FModel;
+    property LodModel: Integer read FLodModel;
+    function LodCount: Integer;
   end;
 
 constructor TEntityScene.Create;
@@ -71,12 +76,17 @@ begin
   inherited Create;
   FFiles := TMemoryFiles.Create;
   FFiles.Add('models/test.md3', TTestSupport.Md3Bytes('textures/test/surf'));
+  // three levels of detail: lodtest.md3, lodtest_1.md3 and lodtest_2.md3
+  FFiles.Add('models/lodtest.md3', TTestSupport.Md3Bytes('textures/test/lod0'));
+  FFiles.Add('models/lodtest_1.md3', TTestSupport.Md3Bytes('textures/test/lod1'));
+  FFiles.Add('models/lodtest_2.md3', TTestSupport.Md3Bytes('textures/test/lod2'));
   FSystem := TTestSupport.BuildSystem(FFiles as IQ3RenderFiles,
     [TPair<string, string>.Create('scripts/test.shader', 'textures/test/poly' + sLineBreak + '{' + sLineBreak +
       '{ map $whiteimage' + sLineBreak + 'blendFunc add }' + sLineBreak + '}' + sLineBreak +
       'textures/test/sky' + sLineBreak + '{' + sLineBreak + 'skyParms env/test 512 -' + sLineBreak +
       '{ map $whiteimage' + sLineBreak + 'blendFunc add }' + sLineBreak + '}' + sLineBreak)]);
   FModel := FSystem.Models.Register('models/test.md3');
+  FLodModel := FSystem.Models.Register('models/lodtest.md3');
   LTable := TQ3ShaderTable.Create(FSystem.Shaders);
   FTableKeeper := LTable;
   LTable.RegisterExternalShaders;
@@ -104,6 +114,11 @@ begin
   FRenderer.Free;
   FStream.Free;
   inherited Destroy;
+end;
+
+function TEntityScene.LodCount: Integer;
+begin
+  Result := FSystem.Models.LodCount(FLodModel);
 end;
 
 function TEntityScene.Entity(AType: Integer): TQ3RefEntity;
@@ -235,6 +250,44 @@ begin
     LEntities[0].BackLerp := 0.25;
     LScene.Draw(LEntities, False);
     Assert.AreEqual<Integer>(1, LScene.Renderer.Backend.Stats.Md3Drawn);
+  finally
+    LScene.Free;
+  end;
+end;
+
+procedure TTestQ3Entities.DovrebbeScegliereIlLivelloDiDettaglioDalladistanza;
+var
+  LScene: TEntityScene;
+  LEntities: array of TQ3RefEntity;
+  LIndex, LFirst, LNear, LFar: Integer;
+  LItem: TQ3DrawSurf;
+begin
+  LScene := TEntityScene.Create;
+  try
+    SetLength(LEntities, 2);
+    // the same model near the viewer and far away (the view looks along +x)
+    LEntities[0] := LScene.Entity(RT_MODEL);
+    LEntities[0].HModel := LScene.LodModel;
+    LEntities[0].Origin[0] := 30;
+    LEntities[1] := LScene.Entity(RT_MODEL);
+    LEntities[1].HModel := LScene.LodModel;
+    LEntities[1].Origin[0] := 5000;
+    LScene.Draw(LEntities, False);
+    LNear := -1;
+    LFar := -1;
+    LFirst := LScene.Renderer.Front.LastResult.FirstDrawSurf;
+    for LIndex := LFirst to LFirst + LScene.Renderer.Front.LastResult.NumDrawSurfs - 1 do
+    begin
+      LItem := LScene.Renderer.Front.DrawList.Item(LIndex);
+      if LItem.Surface.Kind = skMd3 then
+        if LItem.Surface.Index = 0 then
+          LNear := LItem.Surface.Lod
+        else
+          LFar := LItem.Surface.Lod;
+    end;
+    Assert.AreEqual<Integer>(0, LNear, 'near: the most detailed level');
+    Assert.AreEqual<Integer>(2, LFar, 'far: the lowest level');
+    Assert.AreEqual<Integer>(3, LScene.LodCount);
   finally
     LScene.Free;
   end;

@@ -190,6 +190,8 @@ type
     ///   the surface itself, where it stays from frame to frame; here it belongs to the drawSurf of the frame
     /// </summary>
     DlightMask: Integer;
+    /// <summary>The level of detail of the md3 that the surface of kind skMd3 is of (R_ComputeLOD)</summary>
+    Lod: Integer;
   end;
 
   /// <summary>drawSurf_t: the sort key packs the shader, the entity, the fog and the dlight bits</summary>
@@ -239,6 +241,9 @@ type
     RailWidth: Integer;
     RailCoreWidth: Integer;
     RailSegmentLength: Single;
+    /// <summary>r_lodscale and r_lodbias (the level of detail of the md3 models)</summary>
+    LodScale: Single;
+    LodBias: Integer;
     class function Defaults: TQ3RenderSettings; static;
   end;
 
@@ -295,6 +300,7 @@ begin
   Result.RailWidth := 16;
   Result.RailCoreWidth := 6;
   Result.RailSegmentLength := 32;
+  Result.LodScale := 5;
 end;
 
 end.

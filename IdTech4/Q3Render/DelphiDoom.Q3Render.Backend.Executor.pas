@@ -1021,7 +1021,8 @@ begin
     Assigned(FModelMapper) then
   begin
     LEntity := FEntities[ASurface.Index];
-    LModel := FModels.GetModel(FModelMapper(LEntity.HModel));
+    // the level of detail that the front end chose for the entity
+    LModel := FModels.GetModelLod(FModelMapper(LEntity.HModel), ASurface.Lod);
   end;
   if (not Assigned(LModel)) or (ASurface.Sub >= LModel.NumSurfaces) then
   begin
