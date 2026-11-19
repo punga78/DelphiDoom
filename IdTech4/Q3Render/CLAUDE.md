@@ -29,6 +29,23 @@ $env:DELPHIDOOM_Q3RENDER_DUMP='<cartella>'; <exe dei test>   # i pixel dei JPEG 
 - Il visibility lump del BSP di prova ha righe senza il bit del proprio cluster: un punto non vede se' stesso (e' coerente col C): i test pongono le righe a mano.
 - Win64: `Assert.AreEqual(n, Length(x))` non compila (`AreEqual<Integer>`); la libreria non ha altro che sia diverso a 64 bit.
 
-## Numeri (2026-11-18)
+## R1 (ondata 13, 2026-11-19, tag `ondata13-254-1`..`-4`): lista di disegno e backend sul registratore
 
-`Tests\DelphiDoom.Tests.Q3Render` (`Tools\build.bat Tests\DelphiDoom.Tests.Q3Render Release [Win64]`): **44 test**, tutti verdi a Win32 e a Win64, 0 avvisi dalle unit della libreria; 2 dei test (immagini di OpenArena e portata sui `.qvm`) sono saltati senza `Reference\openarena`. `Tests.Q3Host` 210 su 210 a Win32. `Tools\build.bat strati`: 0 violazioni nuove.
+Cosa e' fatto e cosa no, per funzione C: README, sezione "R1". **Unit nuove** (`DelphiDoom.Q3Render.*`): `Scene.Types` (record, costanti, `TQ3RenderSettings` con i default delle cvar), `Scene.Reader`, `Scene.Buffers`, `Scene.FrontEnd` (`TQ3FrontEnd`: il fronte, con `OnDrawSurfs` = `R_AddDrawSurfCmd`), `View.Setup`, `View.Culler`, `Draw.Sorter`, `Draw.List`, `World.Surfaces`, `Shader.Table` (`IQ3ShaderTable`: R_FindShader per nome e indice di lightmap, ordine per `sort`), `Frame.Commands`, `Frame.Renderer` (`TQ3Renderer`: fronte + comandi + backend + frame del registratore), `Backend.Gl` (`IQ3GlSink`, `TQ3GlRecordingSink`), `Backend.State` (`GL_State` & c.), `Backend.Executor` (`TQ3Backend`). Cambiati: `IQ3RenderWorld` (tabella `msurface_t`, griglie, fog, numero di lightmap), `IQ3ModelRegistry.BrushIndex`, l'adattatore (`AttachRenderer`, `BeginFrame`, `EndFrame`, `HostShaderEntry`), `TQ3RenderFactory.CreateRenderingHostRenderer`. Il progetto di test cerca anche `Framework\OpenGlBinding\Recorder` (riga nel `.dproj`).
+
+**Come si rifanno i dati (R1)**
+
+```
+# front.golden.txt (il C vero: tr_main.c e tr_world.c di Quake III + q_math.c, gcc 32 bit SSE)
+# serve maps/oa_dm1.bsp estratto da Reference\openarena\...\baseoa\pak1-maps.pk3 (percorso con "/" o cygpath -m)
+sh Tools/Verifica/254/build-front.sh <cartella di lavoro> <oa_dm1.bsp> <Tests/Data/Q3Render/front.views.txt, assoluto> > front.golden.txt
+$env:DELPHIDOOM_Q3RENDER_FRONT_OUT='<file>';   <exe dei test>   # scrive la versione Delphi (confronto riga per riga)
+$env:DELPHIDOOM_Q3RENDER_BACKEND_OUT='<file>'; <exe dei test>   # scrive il flusso intero e <file>.golden (= backend.golden.txt)
+$env:DELPHIDOOM_Q3RENDER_RENDER_OUT='<file>';  <exe dei test>   # scrive reach.render.golden.txt
+```
+
+**Trappole viste in R1**: (1) **`M_PI` e' un `double` col math.h di mingw** (che ridefinisce la macro dopo `q_shared.h`) e un `float` in MSVC: senza `-D__STRICT_ANSI__` il frustum e la proiezione del "C vero" cambiano di un bit (`2 * zNear / height` dava `3faaaaac` invece di `3faaaaab`) e il confronto con Delphi non torna; il porting segue MSVC (float). (2) `sin`, `cos`, `tan` e `sqrt` del C lavorano in `double` e il risultato torna in `float`: in Pascal passano da una variabile `Double` (`TQ3ViewSetup.RoundedSin` & c.), altrimenti l'x87 arrotonda una volta sola. Ogni somma di prodotti passa da variabili `Single` (come `TQ3Math`). (3) `build-front.sh` va chiamato con percorsi assoluti (fa `cd` nella cartella di lavoro). (4) La shell del sandbox rifiuta i comandi con "Source" e "MapFile" nel percorso e i here-document: per quelle cartelle usare gli strumenti `Read`/`Edit`. (5) `Assert.AreEqual(n, Length(x))` non compila a 64 bit: `AreEqual<Integer>`. (6) `SetLength(a, n)` tiene i valori vecchi di un array che cresce: azzerare prima nei test. (7) Un `TQ3Orientation` e un `TQ3ViewParms` esistono anche in `IdTech4\Decl` (`Q3Shader.Calc.Types`): i tipi del fronte si chiamano `TQ3ViewOrientation` e `TQ3FrontViewParms`.
+
+## Numeri (2026-11-19)
+
+`Tests\DelphiDoom.Tests.Q3Render` (`Tools\build.bat Tests\DelphiDoom.Tests.Q3Render Release [Win64]`): **72 test**, tutti verdi a Win32 e a Win64 (44 della R0, 28 della R1: `TTestQ3Front` col C vero, `TTestQ3Backend` e `TTestQ3GlState`, `TTestQ3RenderReach` con la modalita' di disegno, e i pezzi in `FrontPieces`); i test su OpenArena sono saltati senza `Reference\openarena`. `Tests.Q3Host` 210 su 210 a Win32; Doom32 Release Win32 compila; `Tools\build.bat strati`: 0 violazioni nuove. Primo fotogramma di cgame su `oa_dm1`: **57 drawSurf** (una scena, solo mondo), 37 batch, 53 `StretchPic`.

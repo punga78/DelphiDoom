@@ -13,7 +13,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Models.Static.Md3.Intf, DelphiDoom.MapFile.Bsp.Intf,
-  DelphiDoom.MapFile.Bsp.Types, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.Q3Render.Types;
+  DelphiDoom.MapFile.Bsp.Types, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MathCore.Patch.Intf,
+  DelphiDoom.Q3Render.Types, DelphiDoom.Q3Render.Scene.Types;
 
 type
   /// <summary>Where the renderer reads its files from: ri.FS_ReadFile (a path with '/' relative to the paks)</summary>
@@ -61,6 +62,41 @@ type
     function DefectiveNames: TArray<string>;
   end;
 
+  /// <summary>One shader_t of tr.shaders: the data of the shader as it is for a lightmap index</summary>
+  TQ3ShaderEntry = record
+    Name: AnsiString;
+    Data: TQ3ShaderData;
+    /// <summary>shader.lightmapIndex after FinishShader</summary>
+    LightmapIndex: Integer;
+    /// <summary>shader.defaultShader: the one of tr.defaultShader</summary>
+    IsDefault: Boolean;
+    /// <summary>shader.sortedIndex: the place in the list sorted by sort (it moves when a shader is added)</summary>
+    SortedIndex: Integer;
+  end;
+
+  /// <summary>
+  ///   The shaders as the renderer keeps them (R_FindShader, tr.shaders and tr.sortedShaders): one entry for every
+  ///   name and lightmap index, in the order they were asked for. Entry 0 is tr.defaultShader, 1 the stencil shadow
+  ///   marker. A shader that cannot be loaded is not an entry of its own: it is entry 0 (the C makes a shader of the
+  ///   defective one and answers 0 to RE_RegisterShader: the same drawing, only the sorted index of the others moves)
+  /// </summary>
+  IQ3ShaderTable = interface
+    ['{D3A7B5E9-0C42-4F18-96B7-2E81C4F05A63}']
+    /// <summary>R_FindShader: the index of the entry; 0 for an empty name and for a shader that is defective</summary>
+    function FindShader(const AName: AnsiString; ALightmapIndex: Integer): Integer;
+    /// <summary>R_GetShaderByHandle: an index that is not in the table is the default shader</summary>
+    function GetEntry(AIndex: Integer): TQ3ShaderEntry;
+    function SortedIndexOf(AIndex: Integer): Integer;
+    /// <summary>tr.sortedShaders[ASortedIndex]: the entry that has this place in the list sorted by sort</summary>
+    function GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
+    /// <summary>The table index of the shader that has this place in the sorted list</summary>
+    function GetSortedShader(ASortedIndex: Integer): Integer;
+    function Count: Integer;
+    /// <summary>tr.numLightmaps: R_FindShader turns a lightmap that is not there into LIGHTMAP_BY_VERTEX</summary>
+    procedure SetLightmapCount(ACount: Integer);
+    function GetLightmapCount: Integer;
+  end;
+
   /// <summary>The surfaces of a world as the renderer keeps them: the lists, not the OpenGL objects</summary>
   IQ3RenderWorld = interface
     ['{5F08B2C4-73E1-4D96-A8C3-E1946B07D5F2}']
@@ -86,6 +122,17 @@ type
     function InPvs(const APoint1, APoint2: TQ3RenderVec3): Boolean;
     /// <summary>The bounds of model "*AIndex", False if there is no such submodel</summary>
     function SubmodelBounds(AIndex: Integer; out AMins, AMaxs: TQ3RenderVec3): Boolean;
+    /// <summary>The msurface_t table (R1): one entry per surface of the BSP, in the order of the lump</summary>
+    function GetSurfaces: TArray<TQ3WorldSurface>;
+    /// <summary>The grid of every surface that is a drawn patch (nil for any other surface)</summary>
+    function GetGrids: TArray<IPatchGrid>;
+    /// <summary>
+    ///   world_t.fogs: the entry 0 is "no fog" and the fogs of the BSP follow (numfogs is the length). A fog whose
+    ///   brush is not in the lumps gets an empty box that nothing is inside (the C stops with an error)
+    /// </summary>
+    function GetFogs: TArray<TQ3WorldFog>;
+    /// <summary>tr.numLightmaps</summary>
+    function GetLightmapCount: Integer;
   end;
 
   /// <summary>RE_LoadWorldMap</summary>
@@ -108,6 +155,8 @@ type
     function GetModel(AHandle: Integer): IMd3Model;
     function LoadedCount: Integer;
     function MissingNames: TArray<string>;
+    /// <summary>The number N of a brush model "*N" of the world, -1 for a mesh and for a handle that is no model</summary>
+    function BrushIndex(AHandle: Integer): Integer;
     /// <summary>R_ModelBounds: False when the handle is not a model with bounds</summary>
     function ModelBounds(AHandle: Integer; out AMins, AMaxs: TQ3RenderVec3): Boolean;
     /// <summary>R_LerpTag: False when the model or the tag is not there (the origin and axis are cleared)</summary>

@@ -27,6 +27,8 @@ type
   public
     [Test]
     procedure CgameEUiDovrebberoCaricareLeCoseVereDiOpenArena;
+    [Test]
+    procedure CgameEUiDovrebberoDisegnareConIlRendererSenzaGl;
   end;
 
 implementation
@@ -43,7 +45,8 @@ uses
   DelphiDoom.Q3Host.ClientScriptLog, DelphiDoom.Tests.Q3Host.Support, DelphiDoom.Tests.Q3Host.Services,
   DelphiDoom.Tests.Q3Host.ClientSupport, DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Golden,
   DelphiDoom.Q3Host.Opcodes, DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Factory,
-  DelphiDoom.Q3Render.Host.Adapter, DelphiDoom.Tests.Q3Render.Support;
+  DelphiDoom.Q3Render.Host.Adapter, DelphiDoom.Q3Render.Backend.Executor, DelphiDoom.Q3Render.Scene.Types,
+  DelphiDoom.OpenGl.Recorder.Intf, DelphiDoom.OpenGl.Recorder.CallRecorder, DelphiDoom.Tests.Q3Render.Support;
 
 const
   UIMENU_MAIN = 1;
@@ -119,9 +122,29 @@ begin
     Result := Result + ' | world: none';
 end;
 
-function Measure(const AFiles: IGameFileSystem; const AMap: AnsiString; ALines, ADetails: TStrings;
-  const AGame: string): string;
+function RenderStats(const ALabel: string; const AAdapter: TQ3HostRendererAdapter): string;
 var
+  LFront: TQ3FrontEndStats;
+  LBackend: TQ3BackendStats;
+begin
+  LFront := AAdapter.Renderer.Front.Stats;
+  LBackend := AAdapter.Renderer.Backend.Stats;
+  Result := Format('%s render: scenes=%d drawsurfs(last scene)=%d world=%d polys=%d entities=%d portal=%d | ' +
+    'backend: surfaces=%d batches=%d faces=%d triangles=%d stretchpics=%d textures=%d | not ported: grids=%d ' +
+    'flares=%d polys=%d entities=%d md3=%d sky=%d fogpasses=%d',
+    [ALabel, LFront.Scenes, LFront.DrawSurfs, LFront.WorldSurfaces, LFront.PolySurfaces, LFront.EntitySurfaces,
+    LFront.PortalSurfaces, LBackend.Surfaces, LBackend.Batches, LBackend.FacesDrawn, LBackend.TrianglesDrawn,
+    LBackend.StretchPics, AAdapter.Renderer.Backend.TextureCount, LBackend.SkippedGrids, LBackend.SkippedFlares,
+    LBackend.SkippedPolys, LBackend.SkippedEntities, LBackend.SkippedMd3, LBackend.SkippedSky,
+    LBackend.SkippedFogPasses]);
+end;
+
+function Measure(const AFiles: IGameFileSystem; const AMap: AnsiString; ALines, ADetails: TStrings;
+  const AGame: string; ARender: Boolean = False): string;
+var
+  LGlStream: TMemoryStream;
+  LGl: IGlCallRecorder;
+  LAdapter: TQ3HostRendererAdapter;
   LConsole: TQ3Console;
   LClipMap: IQ3HostClipMap;
   LServerState: TQ3HostServerState;
@@ -162,7 +185,21 @@ begin
     LRecorder := TQ3RecordingRenderer.Create;
     LInner := LRecorder;
     LSystem := TQ3RenderFactory.CreateSystem(AFiles);
-    LRenderer := TQ3RenderFactory.CreateHostRenderer(LInner, LSystem);
+    LGlStream := nil;
+    LAdapter := nil;
+    if ARender then
+    begin
+      LGlStream := TMemoryStream.Create;
+      LGl := TGlCallRecorder.Create(LGlStream);
+      LRenderer := TQ3RenderFactory.CreateRenderingHostRenderer(LInner, LSystem, LGl, nil,
+        function: Integer
+        begin
+          Result := 0;
+        end);
+      LAdapter := LRenderer as TQ3HostRendererAdapter;
+    end
+    else
+      LRenderer := TQ3RenderFactory.CreateHostRenderer(LInner, LSystem);
     LSound := TQ3FakeSound.Create;
     LConnection := TQ3FakeConnection.Create;
     LKeys := TQ3ClientKeys.Create(LConsole.CVars);
@@ -229,7 +266,15 @@ begin
       LMachine := TQvmFactory.CreateMachine('cgame', LData, LKeeper);
       LStage := 'init';
       try
+        // the screen updates of the loading screens of CG_INIT are one frame of the renderer
+        if ARender then
+          LAdapter.BeginFrame;
         LMachine.Call(0, [0, 0, 0]);
+        if ARender then
+        begin
+          LAdapter.EndFrame('cgame init');
+          ALines.Add(RenderStats(AGame + '/cgame after CG_INIT', LAdapter));
+        end;
         LStage := 'frame';
         LSnapshot := Default(TQ3ClientSnapshot);
         LSnapshot.MessageNum := 1;
@@ -243,7 +288,14 @@ begin
           PInteger(@LCommand[0])^ := 1300 + 8 * LIndex;
           LClient.AddUserCommand(LCommand);
         end;
+        if ARender then
+          LAdapter.BeginFrame;
         LMachine.Call(3, [1400, 0, 0]);
+        if ARender then
+        begin
+          LAdapter.EndFrame('cgame frame');
+          ALines.Add(RenderStats(AGame + '/cgame after the first frame', LAdapter));
+        end;
         LResult := Format('served=%d finished', [LFingerprint.Count]);
       except
         on E: Exception do
@@ -280,7 +332,15 @@ begin
         LMachine.Call(UI_SET_ACTIVE_MENU, [UIMENU_MAIN]);
         LStage := 'refresh';
         for LFrame := 1 to 3 do
+        begin
+          if ARender then
+            LAdapter.BeginFrame;
           LMachine.Call(5, [6000 + 20 * LFrame]);
+          if ARender then
+            LAdapter.EndFrame('ui refresh ' + IntToStr(LFrame));
+        end;
+        if ARender then
+          ALines.Add(RenderStats(AGame + '/ui after three refreshes (cumulative)', LAdapter));
         LResult := Format('served=%d finished', [LFingerprint.Count]);
       except
         on E: Exception do
@@ -300,6 +360,7 @@ begin
       LSources.Free;
       LGlobals.Free;
       LCdKey.Free;
+      LGlStream.Free;
     end;
   finally
     LConsole.Free;
@@ -337,6 +398,38 @@ begin
       finally
         LGolden.Free;
       end;
+    end;
+  finally
+    LActual.Free;
+    LDetails.Free;
+  end;
+end;
+
+procedure TTestQ3RenderReach.CgameEUiDovrebberoDisegnareConIlRendererSenzaGl;
+var
+  LFolder, LOut, LGoldenFile: string;
+  LFiles: IGameFileSystem;
+  LActual, LDetails, LGolden: TStringList;
+begin
+  LFolder := TTestSupport.OpenArenaFolder;
+  LActual := TStringList.Create;
+  LDetails := TStringList.Create;
+  try
+    // the same run as above with the renderer of phase R1 behind the adapter: the scene that cgame builds goes
+    // through the front end, and the frames through the backend into a recorder of GL calls (no GL context)
+    LFiles := TTestSupport.OpenArenaFiles(LFolder, 'baseoa');
+    Measure(LFiles, MapOf(LFiles), LActual, LDetails, 'baseoa', True);
+    LFiles.Shutdown;
+    LOut := GetEnvironmentVariable('DELPHIDOOM_Q3RENDER_RENDER_OUT');
+    if LOut <> '' then
+      LActual.SaveToFile(LOut);
+    LGoldenFile := TTestFiles.FindFileUp('Tests\Data\Q3Render\reach.render.golden.txt');
+    Assert.IsTrue(LGoldenFile <> '', 'reach.render.golden.txt must be there');
+    LGolden := TTestFiles.Lines(LGoldenFile);
+    try
+      TTestGolden.AssertSameLines(LGolden, LActual);
+    finally
+      LGolden.Free;
     end;
   finally
     LActual.Free;

@@ -1,0 +1,8 @@
+# views of maps/oa_dm1.bsp (OpenArena 0.8.8, pak1-maps.pk3) for frontgen.c and TTestQ3Front: a viewer 26 units above
+# the spawn points of the map; the fields are origin, yaw, pitch, roll, fov x and fov y (640 x 480), and the dlights
+view 280 1416 -94 180 0 0 90 73.739795
+view 1128 1424 98 225 10 0 90 73.739795
+view 104 1392 50 90 -15 0 90 73.739795 dlight 100 1300 60 150 dlight 220 1350 40 300
+view -656 976 50 0 0 0 110 91.484
+view -656 976 50 135 0 0 90 73.739795
+view -432 1596 50 270 5 0 75 58.715

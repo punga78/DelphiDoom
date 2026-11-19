@@ -10,7 +10,8 @@ unit DelphiDoom.Q3Render.Factory;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.Wad.Fs.Intf, DelphiDoom.Q3Host.Client.Intf, DelphiDoom.Q3Render.Intf;
+  System.SysUtils, DelphiDoom.Logging.Intf, DelphiDoom.Wad.Fs.Intf, DelphiDoom.OpenGl.Recorder.Intf,
+  DelphiDoom.Q3Host.Client.Intf, DelphiDoom.Q3Render.Intf;
 
 type
   /// <summary>The only place that knows the classes of the library</summary>
@@ -36,15 +37,25 @@ type
     /// </summary>
     class function CreateHostRenderer(const AInner: IQ3HostRenderer; const ASystem: IQ3RenderSystem;
       const ALog: ILog = nil): IQ3HostRenderer; static;
+    /// <summary>
+    ///   R1: the same adapter, and the scene that cgame builds also goes through the front end (the list of drawSurfs)
+    ///   and, between BeginFrame and EndFrame of the adapter, through the backend into ARecorder (a recorder of GL
+    ///   calls: no context is made). The object behind the interface is a TQ3HostRendererAdapter, which has the
+    ///   frame calls and the renderer with its numbers
+    /// </summary>
+    class function CreateRenderingHostRenderer(const AInner: IQ3HostRenderer; const ASystem: IQ3RenderSystem;
+      const ARecorder: IGlCallRecorder; const ALog: ILog = nil;
+      const ANowMilliseconds: TFunc<Integer> = nil): IQ3HostRenderer; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Decl.Factory, DelphiDoom.Models.Static.Factory, DelphiDoom.Models.Q3Player.Factory,
+  System.Classes, DelphiDoom.Decl.Factory, DelphiDoom.Models.Static.Factory, DelphiDoom.Models.Q3Player.Factory,
   DelphiDoom.MapFile.Bsp.Factory, DelphiDoom.Q3Render.Files.GameFs, DelphiDoom.Q3Render.Image.Loader,
   DelphiDoom.Q3Render.Image.Catalog, DelphiDoom.Q3Render.Shader.Registry, DelphiDoom.Q3Render.Model.Registry,
-  DelphiDoom.Q3Render.World.Loader, DelphiDoom.Q3Render.System, DelphiDoom.Q3Render.Host.Adapter;
+  DelphiDoom.Q3Render.World.Loader, DelphiDoom.Q3Render.System, DelphiDoom.Q3Render.Host.Adapter,
+  DelphiDoom.Q3Render.Shader.Table, DelphiDoom.Q3Render.Frame.Renderer, DelphiDoom.Q3Render.Scene.Types;
 
 class function TQ3RenderFactory.CreateFiles(const AFileSystem: IGameFileSystem): IQ3RenderFiles;
 begin
@@ -83,6 +94,41 @@ class function TQ3RenderFactory.CreateHostRenderer(const AInner: IQ3HostRenderer
   const ALog: ILog): IQ3HostRenderer;
 begin
   Result := TQ3HostRendererAdapter.Create(AInner, ASystem.Shaders, ASystem.Models, ASystem.WorldLoader, ALog);
+end;
+
+class function TQ3RenderFactory.CreateRenderingHostRenderer(const AInner: IQ3HostRenderer;
+  const ASystem: IQ3RenderSystem; const ARecorder: IGlCallRecorder; const ALog: ILog;
+  const ANowMilliseconds: TFunc<Integer>): IQ3HostRenderer;
+var
+  LAdapter: TQ3HostRendererAdapter;
+  LTable: TQ3ShaderTable;
+  LTableKeeper: IQ3ShaderTable;
+  LNow: TFunc<Integer>;
+begin
+  LTable := TQ3ShaderTable.Create(ASystem.Shaders);
+  LTableKeeper := LTable;
+  LTable.RegisterExternalShaders;
+  LAdapter := TQ3HostRendererAdapter.Create(AInner, ASystem.Shaders, ASystem.Models, ASystem.WorldLoader, ALog);
+  Result := LAdapter;
+  LNow := ANowMilliseconds;
+  if not Assigned(LNow) then
+    LNow :=
+      function: Integer
+      begin
+        Result := Integer(TThread.GetTickCount64 and $7FFFFFFF);
+      end;
+  // the renderer is owned by the adapter, which the closures point at without owning
+  LAdapter.AttachRenderer(LTableKeeper,
+    TQ3Renderer.Create(ARecorder, LTableKeeper, ASystem.Models,
+      function(AHostHandle: Integer): Integer
+      begin
+        Result := LAdapter.HostShaderEntry(AHostHandle);
+      end,
+      function(AHostHandle: Integer): Integer
+      begin
+        Result := LAdapter.HostModelHandle(AHostHandle);
+      end,
+      TQ3RenderSettings.Defaults, 640, 480, LNow));
 end;
 
 end.

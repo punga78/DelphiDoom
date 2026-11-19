@@ -53,7 +53,56 @@ implementation
 uses
   System.Generics.Collections, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Bounds, DelphiDoom.MapFile.Bsp.Types,
   DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.GridSizeReader, DelphiDoom.MathCore.Patch.Intf,
-  DelphiDoom.Q3Render.World.Data;
+  DelphiDoom.Collision.Q3.Types, DelphiDoom.Q3Render.Scene.Types, DelphiDoom.Q3Render.World.Data;
+
+function EmptyFog: TQ3WorldFog;
+var
+  LAxis: Integer;
+begin
+  Result := Default(TQ3WorldFog);
+  // a box with the minimum above the maximum: no point is inside it
+  for LAxis := 0 to 2 do
+  begin
+    Result.Mins[LAxis] := 1.0E9;
+    Result.Maxs[LAxis] := -1.0E9;
+  end;
+end;
+
+// R_LoadFogs: the bounds from the six axial sides at the start of the brush (the minimum of an axis is minus the
+// distance of the plane of the first side)
+function FogOf(const ABsp: IBspFile; AFogIndex: Integer): TQ3WorldFog;
+var
+  LSides: TArray<TBspBrushSide>;
+  LPlanes: TArray<TBspPlane>;
+  LFirstSide, LAxis: Integer;
+  LFog: TBspFog;
+
+  function SideDistance(ASide: Integer): Single;
+  begin
+    Result := LPlanes[LSides[LFirstSide + ASide].PlaneNum].Dist;
+  end;
+
+begin
+  Result := EmptyFog;
+  LFog := ABsp.Fogs[AFogIndex];
+  if (LFog.BrushNum < 0) or (LFog.BrushNum >= Length(ABsp.Brushes)) then
+    Exit;
+  LSides := ABsp.BrushSides;
+  LPlanes := ABsp.Planes;
+  LFirstSide := ABsp.Brushes[LFog.BrushNum].FirstSide;
+  if (LFirstSide < 0) or (LFirstSide + 5 >= Length(LSides)) then
+    Exit;
+  for LAxis := 0 to 5 do
+    if (LSides[LFirstSide + LAxis].PlaneNum < 0) or (LSides[LFirstSide + LAxis].PlaneNum >= Length(LPlanes)) then
+      Exit;
+  Result.Mins[0] := -SideDistance(0);
+  Result.Maxs[0] := SideDistance(1);
+  Result.Mins[1] := -SideDistance(2);
+  Result.Maxs[1] := SideDistance(3);
+  Result.Mins[2] := -SideDistance(4);
+  Result.Maxs[2] := SideDistance(5);
+  Result.ShaderName := ABsp.FogShaderName(AFogIndex);
+end;
 
 constructor TQ3WorldLoader.Create(const AFiles: IQ3RenderFiles; const AReader: IBspReader;
   const ATreeLoader: IBspTreeLoader; const AVisibilityLoader: IBspVisibilityLoader;
@@ -91,6 +140,9 @@ var
   LSurfaces: TArray<TBspSurface>;
   LNames: TArray<AnsiString>;
   LSurface: TBspSurface;
+  LFace: TBspFaceSurface;
+  LTable: TArray<TQ3WorldSurface>;
+  LFogTable: TArray<TQ3WorldFog>;
   LWorldBounds: TGeoBounds;
   LGridSize: TGeoVec3;
   LIndex, LShaderCount, LPatches, LRefused, LFogs: Integer;
@@ -125,20 +177,51 @@ begin
   try
     LPatches := 0;
     LRefused := 0;
+    SetLength(LTable, Length(LSurfaces));
     for LIndex := 0 to High(LSurfaces) do
     begin
       LSurface := LSurfaces[LIndex];
+      LTable[LIndex] := Default(TQ3WorldSurface);
+      LTable[LIndex].Kind := skBad;
+      LTable[LIndex].ShaderNum := LSurface.ShaderNum;
+      LTable[LIndex].FogIndex := LSurface.FogNum + 1;
+      LTable[LIndex].LightmapNum := LIGHTMAP_BY_VERTEX;
       try
         case LSurface.SurfaceType of
           MST_PLANAR:
-            LFaces.Add(FFaceLoader.Parse(LSurface, LBsp.DrawVerts, LBsp.DrawIndexes, LShaderCount));
+            begin
+              LFace := FFaceLoader.Parse(LSurface, LBsp.DrawVerts, LBsp.DrawIndexes, LShaderCount);
+              LTable[LIndex].Kind := skFace;
+              LTable[LIndex].DataIndex := LFaces.Count;
+              LTable[LIndex].LightmapNum := LSurface.LightmapNum;
+              LTable[LIndex].UsesDefaultShader := LFace.UsesDefaultShader;
+              LFaces.Add(LFace);
+            end;
           MST_TRIANGLE_SOUP:
-            LTriangles.Add(FTriangleLoader.Parse(LSurface, LBsp.DrawVerts, LBsp.DrawIndexes, LShaderCount));
+            begin
+              LTriangles.Add(FTriangleLoader.Parse(LSurface, LBsp.DrawVerts, LBsp.DrawIndexes, LShaderCount));
+              LTable[LIndex].Kind := skTriangles;
+              LTable[LIndex].DataIndex := LTriangles.Count - 1;
+            end;
           MST_FLARE:
-            LFlares.Add(FFlareLoader.Parse(LSurface, LShaderCount));
+            begin
+              LFlares.Add(FFlareLoader.Parse(LSurface, LShaderCount));
+              LTable[LIndex].Kind := skFlare;
+              LTable[LIndex].DataIndex := LFlares.Count - 1;
+            end;
           MST_PATCH:
-            if (LIndex < Length(LGrids)) and Assigned(LGrids[LIndex]) then
-              Inc(LPatches);
+            begin
+              LTable[LIndex].LightmapNum := LSurface.LightmapNum;
+              // a patch with SURF_NODRAW has no grid: the surface is a skip surface (it stays for the clipping)
+              if (LIndex < Length(LGrids)) and Assigned(LGrids[LIndex]) then
+              begin
+                Inc(LPatches);
+                LTable[LIndex].Kind := skGrid;
+                LTable[LIndex].DataIndex := LIndex;
+              end
+              else
+                LTable[LIndex].Kind := skSkip;
+            end;
         else
           Inc(LRefused);
         end;
@@ -146,21 +229,29 @@ begin
         on E: EBspFileException do
         begin
           Inc(LRefused);
+          LTable[LIndex].Kind := skBad;
           if Assigned(FLog) then
             FLog.Warning(Format('R_LoadSurfaces: surface %d: %s', [LIndex, E.Message]));
         end;
       end;
     end;
-    // R_LoadFogs: a fog whose brush is not in the lump is skipped with a warning
+    // R_LoadFogs: a fog whose brush is not in the lumps is skipped with a warning; the table keeps its place with
+    // a box that nothing is inside, so the fog numbers of the surfaces stay right
     LFogs := 0;
+    SetLength(LFogTable, Length(LBsp.Fogs) + 1);
+    LFogTable[0] := EmptyFog;
     for LIndex := 0 to High(LBsp.Fogs) do
+    begin
+      LFogTable[LIndex + 1] := FogOf(LBsp, LIndex);
       if (LBsp.Fogs[LIndex].BrushNum >= 0) and (LBsp.Fogs[LIndex].BrushNum < Length(LBsp.Brushes)) then
         Inc(LFogs);
+    end;
     SetLength(LNames, LShaderCount);
     for LIndex := 0 to LShaderCount - 1 do
       LNames[LIndex] := LBsp.ShaderName(LIndex);
     Result := TQ3RenderWorld.Create(LBsp, LTree, LVisibility, LLightGrid, LLightmaps, LFaces.ToArray,
-      LTriangles.ToArray, LFlares.ToArray, LPatches, LRefused, LFogs, LNames);
+      LTriangles.ToArray, LFlares.ToArray, LPatches, LRefused, LFogs, LNames, LTable, LGrids, LFogTable,
+      Length(LLightmaps));
   finally
     LFaces.Free;
     LTriangles.Free;

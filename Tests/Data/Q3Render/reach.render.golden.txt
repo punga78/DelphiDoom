@@ -1,0 +1,9 @@
+baseoa/cgame after CG_INIT render: scenes=0 drawsurfs(last scene)=0 world=0 polys=0 entities=0 portal=0 | backend: surfaces=0 batches=0 faces=0 triangles=0 stretchpics=0 textures=0 | not ported: grids=0 flares=0 polys=0 entities=0 md3=0 sky=0 fogpasses=0
+baseoa/cgame after the first frame render: scenes=1 drawsurfs(last scene)=57 world=57 polys=0 entities=0 portal=0 | backend: surfaces=57 batches=37 faces=57 triangles=0 stretchpics=53 textures=24 | not ported: grids=0 flares=0 polys=0 entities=0 md3=0 sky=0 fogpasses=0
+baseoa/cgame served=1293 finished | recorder shaders=235 models=87
+baseoa/cgame asked by the module: asked shaders=235 loaded=142 defective=93 | asked models=87 loaded=73 missing=14
+baseoa/cgame tables (with the shaders of the md3 surfaces): shaders=264 defined=228 implicit=36 defective=98 | images=286 missing=98 | models=73 missing=14 | world: surfaces=902 faces=882 triangles=10 flares=10 patches=0 refused=0 fogs=1 lightmaps=14 submodels=9 clusters=422 lightgrid=22800 bytes
+baseoa/ui after three refreshes (cumulative) render: scenes=4 drawsurfs(last scene)=3 world=57 polys=0 entities=9 portal=0 | backend: surfaces=66 batches=55 faces=57 triangles=0 stretchpics=950 textures=30 | not ported: grids=0 flares=0 polys=0 entities=0 md3=9 sky=0 fogpasses=0
+baseoa/ui served=2210 finished | recorder shaders=243
+baseoa/ui (cumulative with cgame) asked by the modules: asked shaders=243 loaded=150 defective=93 | asked models=88 loaded=74 missing=14
+baseoa/ui (cumulative) tables: shaders=275 defined=233 implicit=42 defective=98 | images=297 missing=98 | models=74 missing=14 | world: surfaces=902 faces=882 triangles=10 flares=10 patches=0 refused=0 fogs=1 lightmaps=14 submodels=9 clusters=422 lightgrid=22800 bytes
