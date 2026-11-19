@@ -234,7 +234,7 @@ var
   LIdentity: TQ3HandleMapper;
   LWords: TArray<string>;
   LRefDef: TQ3RefDef;
-  LAngles: TQ3Vec3;
+  LAngles, LLight: TQ3Vec3;
   LColor: TArray<Single>;
   LInvariant: TFormatSettings;
   LStats: TQ3BackendStats;
@@ -294,6 +294,21 @@ begin
         TQ3Math.AngleVectors(LAngles, LRefDef.ViewAxis[0], LRefDef.ViewAxis[1], LRefDef.ViewAxis[2]);
         LRenderer.BeginFrame;
         LRenderer.ClearScene;
+        // the lights of the view: "dlight x y z radius" (white, not additive) light the surfaces they reach
+        LIndex := 9;
+        while LIndex + 4 < Length(LWords) + 0 do
+        begin
+          if LWords[LIndex] = 'dlight' then
+          begin
+            LLight[0] := StrToFloat(LWords[LIndex + 1], LInvariant);
+            LLight[1] := StrToFloat(LWords[LIndex + 2], LInvariant);
+            LLight[2] := StrToFloat(LWords[LIndex + 3], LInvariant);
+            LRenderer.AddLight(LLight, StrToFloat(LWords[LIndex + 4], LInvariant), 1, 1, 1, False);
+            Inc(LIndex, 5);
+          end
+          else
+            Inc(LIndex);
+        end;
         LRenderer.RenderScene(LRefDef);
         // a crosshair and a coloured rectangle on top of the view
         SetLength(LColor, 4);
