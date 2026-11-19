@@ -45,6 +45,7 @@ uses
   DelphiDoom.Tests.Q3Render.Model in 'Source\DelphiDoom.Tests.Q3Render.Model.pas',
   DelphiDoom.Tests.Q3Render.World in 'Source\DelphiDoom.Tests.Q3Render.World.pas',
   DelphiDoom.Tests.Q3Render.Adapter in 'Source\DelphiDoom.Tests.Q3Render.Adapter.pas',
+  DelphiDoom.Tests.Q3Render.Front in 'Source\DelphiDoom.Tests.Q3Render.Front.pas',
   DelphiDoom.Tests.Q3Render.Reach in 'Source\DelphiDoom.Tests.Q3Render.Reach.pas';
 
 var

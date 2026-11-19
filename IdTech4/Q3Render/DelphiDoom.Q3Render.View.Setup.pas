@@ -23,6 +23,10 @@ type
   /// <summary>The set up of a view: the modelview matrix, the frustum and the projection</summary>
   TQ3ViewSetup = class sealed
   strict private
+    class function RoundedSin(const AAngle: Single): Single; static;
+    class function RoundedCos(const AAngle: Single): Single; static;
+    class function RoundedSqrt(const AValue: Single): Single; static;
+    class function ScaledTan(const AScale, AAngle: Single): Single; static;
     class function Sum4(const A0, B0, A1, B1, A2, B2, A3, B3: Single): Single; static;
     class function Sum3(const A0, B0, A1, B1, A2, B2: Single): Single; static;
     class procedure SetFarClip(var AView: TQ3FrontViewParms; ARdFlags: Integer); static;
@@ -57,6 +61,42 @@ const
   // s_flipMatrix: from the system of the game (looking down X) to the one of OpenGL (looking down -Z)
   ViewPi: Single = 3.14159265358979323846;
   FlipMatrix: array[0..15] of Single = (0, 0, -1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+
+// sin, cos, tan and sqrt of the C library work on a double: the result is a double that is then stored in a float.
+// A double local makes the 32 bit x87 code round to a double first, as the C does
+class function TQ3ViewSetup.RoundedSin(const AAngle: Single): Single;
+var
+  LValue: Double;
+begin
+  LValue := Sin(Double(AAngle));
+  Result := LValue;
+end;
+
+class function TQ3ViewSetup.RoundedCos(const AAngle: Single): Single;
+var
+  LValue: Double;
+begin
+  LValue := Cos(Double(AAngle));
+  Result := LValue;
+end;
+
+class function TQ3ViewSetup.RoundedSqrt(const AValue: Single): Single;
+var
+  LValue: Double;
+begin
+  LValue := Sqrt(Double(AValue));
+  Result := LValue;
+end;
+
+class function TQ3ViewSetup.ScaledTan(const AScale, AAngle: Single): Single;
+var
+  LTangent, LProduct: Double;
+begin
+  // zNear * tan(angle): a float times a double is a double, then it goes to a float
+  LTangent := Tan(Double(AAngle));
+  LProduct := AScale * LTangent;
+  Result := LProduct;
+end;
 
 class function TQ3ViewSetup.Sum4(const A0, B0, A1, B1, A2, B2, A3, B3: Single): Single;
 var
@@ -177,7 +217,7 @@ begin
     // VectorLength: sqrt of the sum of the squares
     LSquared := Sum3(AEntity.Axis[0][0], AEntity.Axis[0][0], AEntity.Axis[0][1], AEntity.Axis[0][1],
       AEntity.Axis[0][2], AEntity.Axis[0][2]);
-    LAxisLength := Sqrt(LSquared);
+    LAxisLength := RoundedSqrt(LSquared);
     if LAxisLength = 0 then
       LAxisLength := 0
     else
@@ -223,16 +263,16 @@ begin
   LAngle := AView.FovX / 180;
   LAngle := LAngle * ViewPi;
   LAngle := LAngle * LHalf;
-  LSine := Sin(LAngle);
-  LCosine := Cos(LAngle);
+  LSine := RoundedSin(LAngle);
+  LCosine := RoundedCos(LAngle);
   MakePlane(0, 1, 1);
   MakePlane(1, 1, -1);
 
   LAngle := AView.FovY / 180;
   LAngle := LAngle * ViewPi;
   LAngle := LAngle * LHalf;
-  LSine := Sin(LAngle);
-  LCosine := Cos(LAngle);
+  LSine := RoundedSin(LAngle);
+  LCosine := RoundedCos(LAngle);
   MakePlane(2, 2, 1);
   MakePlane(3, 2, -1);
 
@@ -272,7 +312,7 @@ begin
     if LDistance > LFarthest then
       LFarthest := LDistance;
   end;
-  AView.ZFar := Sqrt(Double(LFarthest));
+  AView.ZFar := RoundedSqrt(LFarthest);
 end;
 
 class procedure TQ3ViewSetup.SetupProjection(var AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef; AZNear: Single);
@@ -286,11 +326,11 @@ begin
 
   LAngle := ARefDef.FovY * ViewPi;
   LAngle := LAngle / LHalf;
-  LYMax := AZNear * Tan(Double(LAngle));
+  LYMax := ScaledTan(AZNear, LAngle);
   LYMin := -LYMax;
   LAngle := ARefDef.FovX * ViewPi;
   LAngle := LAngle / LHalf;
-  LXMax := AZNear * Tan(Double(LAngle));
+  LXMax := ScaledTan(AZNear, LAngle);
   LXMin := -LXMax;
 
   LWidth := LXMax - LXMin;
