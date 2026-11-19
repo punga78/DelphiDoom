@@ -37,6 +37,7 @@ type
     [TestCase('SquadraDiPorte', 'door_team')]
     [TestCase('MoverMoveToPosAccelDecel', 'mover')]
     [TestCase('MoverRotazione', 'mover_rotate')]
+    [TestCase('BindESquadreFisiche', 'bind')]
     procedure LoScenarioDovrebbeDareLeRigheDelC(const AScenario: string);
   end;
 

@@ -1,0 +1,125 @@
+# Doom 3 world harness scenario (ondata 14): binding (idEntity::Bind, Unbind, RemoveBinds, the "bind" key), the physics teams (JoinTeam, QuitTeam,
+# RunPhysics of the whole team, SortActiveEntityList) and the physics that follow a master (idPhysics_Static, idPhysics_Parametric).
+# Entities are numbered from 32 in the order of the spawn commands.
+def info_recorder spawnclass idRecorder
+def func_door spawnclass idDoor
+def func_mover spawnclass idMover
+def worldspawn spawnclass idWorldspawn
+# a static entity bound to a static entity: it follows the render position of the master
+spawn classname info_recorder name parent origin 100\x200\x200
+spawn classname info_recorder name child origin 110\x200\x200
+bindstate 33
+bind 33 32 1
+bindstate 33
+bindstate 32
+frame 2
+setorigin 32 200,0,0
+frame 2
+bindstate 33
+setangles 32 0,90,0
+frame 2
+bindstate 33
+unbind 33
+bindstate 33
+bindstate 32
+frame 2
+# bound without orientation: the master turns, the child keeps its axis
+bind 33 32 0
+setangles 32 0,180,0
+frame 2
+bindstate 33
+setorigin 32 0,0,0
+frame 2
+bindstate 33
+unbind 33
+# a mover that turns carries what is bound to it
+spawn classname func_mover name pm move_time 2
+spawn classname info_recorder name c2 origin 50\x200\x200
+spawn classname info_recorder name c3 origin 0\x2050\x200
+bind 34 32 1
+bind 35 34 1
+bind 36 34 0
+bindstate 34
+bindstate 35
+bindstate 36
+event 34 rotateOnce 0,90,0
+frame 50
+bindstate 35
+bindstate 36
+frame 100
+bindstate 34
+bindstate 35
+bindstate 36
+dump 34
+queue
+# the team chain: a bound entity joins the team of its master, after the ones bound to it
+spawn classname info_recorder name c4 origin 1\x200\x200
+bind 37 35 1
+bindstate 35
+bindstate 37
+bindstate 34
+# unbind the middle of a chain
+unbind 35
+bindstate 34
+bindstate 35
+bindstate 36
+bindstate 37
+frame 2
+# binding errors, binding to nothing and to the world
+bind 33 33 1
+bind 33 -1 1
+bindstate 33
+spawn classname worldspawn name world
+world
+bind 33 38 1
+bindstate 33
+bind 38 33 1
+bind 33 32 1
+bindstate 32
+# a mover bound to a mover moves in the space of its master (moveToPos gives world coordinates)
+spawn classname func_mover name bm origin 10\x200\x200 move_time 1
+bind 39 34 1
+event 39 moveToPos 100,0,0
+dump 39
+frame 80
+bindstate 39
+# the "bind" key: the entity is bound by the <spawnbind> event of its first frame
+spawn classname info_recorder name k1 bind pm bindOrientated 0
+spawn classname info_recorder name k2 bind world
+spawn classname info_recorder name k3 bind nobody
+frame 1
+bindstate 40
+bindstate 41
+bindstate 42
+spawn classname info_recorder name k4 bind pm bindToJoint head
+frame 1
+spawn classname info_recorder name k5 bind pm bindToBody 3
+frame 1
+bindstate 43
+# the events of the script
+event 40 unbind
+event 40 bind 34
+event 40 bindPosition 34
+bindstate 40
+event 40 removeBinds
+# a door bound to a mover: pos1 and pos2 follow
+spawn classname func_door name d1 size 8\x2064\x20128 angle -1 origin 0\x200\x200
+rot 45
+bindstate 45
+bind 45 34 1
+bindstate 45
+dump 45
+event 45 open
+frame 80
+dump 45
+bindstate 45
+# removeBinds: what is bound to the entity is unbound and removed; then the master itself is removed
+bind 35 34 1
+removebinds 34
+queue
+frame 2
+dump 35
+remove 34
+frame 2
+bindstate 40
+dump 45

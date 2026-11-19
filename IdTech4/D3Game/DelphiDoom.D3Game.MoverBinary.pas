@@ -184,6 +184,10 @@ begin
   end;
   LSelf.FMoveMaster := TD3MoverBinary(LEntity);
 
+  // create a physics team for the binary mover parts
+  if LEntity <> LSelf then
+    LSelf.JoinTeam(LEntity);
+
   LOrigin := LSelf.GetPhysics.GetOrigin;
   LMins := LSelf.GetPhysics.GetAbsBoundsMin - LOrigin;
   LMaxs := LSelf.GetPhysics.GetAbsBoundsMax - LOrigin;
@@ -194,8 +198,8 @@ begin
   LSelf.FPhysicsObj.SetAxis(LSelf.GetPhysics.GetAxis);
   if not LSelf.SpawnArgs.GetBool('solid', '1') then
     LSelf.FPhysicsObj.SetContents(0);
-  // a mover with no render model is a pusher
-  LSelf.FPhysicsObj.SetPusher;
+  if not LSelf.SpawnArgs.GetBool('nopush') then
+    LSelf.FPhysicsObj.SetPusher;
   LNeverMoves.Zero;
   LNeverAngles.Zero;
   LSelf.FPhysicsObj.SetLinearExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, LOrigin, LNeverMoves, LNeverMoves);
