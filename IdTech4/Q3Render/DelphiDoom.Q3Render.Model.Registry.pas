@@ -57,6 +57,7 @@ type
     function GetModel(AHandle: Integer): IMd3Model;
     function LoadedCount: Integer;
     function MissingNames: TArray<string>;
+    function BrushIndex(AHandle: Integer): Integer;
     function ModelBounds(AHandle: Integer; out AMins, AMaxs: TQ3RenderVec3): Boolean;
     function LerpTag(AHandle, AStartFrame, AEndFrame: Integer; AFraction: Single; const ATagName: AnsiString;
       out AOrigin: TQ3RenderVec3; out AAxis: TQ3RenderAxis): Boolean;
@@ -209,6 +210,14 @@ end;
 function TQ3ModelRegistry.MissingNames: TArray<string>;
 begin
   Result := FMissing.ToArray;
+end;
+
+function TQ3ModelRegistry.BrushIndex(AHandle: Integer): Integer;
+begin
+  if (AHandle >= 1) and (AHandle <= FEntries.Count) then
+    Result := FEntries[AHandle - 1].BrushIndex
+  else
+    Result := -1;
 end;
 
 function TQ3ModelRegistry.ModelBounds(AHandle: Integer; out AMins, AMaxs: TQ3RenderVec3): Boolean;

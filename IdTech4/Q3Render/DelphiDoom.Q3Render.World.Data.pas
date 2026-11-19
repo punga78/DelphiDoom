@@ -16,7 +16,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.MapFile.Bsp.Types, DelphiDoom.MapFile.Bsp.Intf, DelphiDoom.MapFile.Bsp.RenderTypes,
-  DelphiDoom.Q3Render.Types, DelphiDoom.Q3Render.Intf;
+  DelphiDoom.MathCore.Patch.Intf, DelphiDoom.Q3Render.Types, DelphiDoom.Q3Render.Scene.Types, DelphiDoom.Q3Render.Intf;
 
 type
   /// <summary>
@@ -37,12 +37,17 @@ type
     FRefused: Integer;
     FFogCount: Integer;
     FShaderNames: TArray<AnsiString>;
+    FSurfaces: TArray<TQ3WorldSurface>;
+    FGrids: TArray<IPatchGrid>;
+    FFogs: TArray<TQ3WorldFog>;
+    FLightmapCount: Integer;
     function PointInLeaf(const APoint: TQ3RenderVec3): Integer;
   public
     constructor Create(const ABsp: IBspFile; const ATree: TBspRenderTree; const AVisibility: TBspVisibility;
       const ALightGrid: TBspLightGrid; const ALightmaps: TArray<TBytes>; const AFaces: TArray<TBspFaceSurface>;
       const ATriangles: TArray<TBspTriangleSurface>; const AFlares: TArray<TBspFlareSurface>; APatchCount,
-      ARefused, AFogCount: Integer; const AShaderNames: TArray<AnsiString>);
+      ARefused, AFogCount: Integer; const AShaderNames: TArray<AnsiString>; const ASurfaces: TArray<TQ3WorldSurface>;
+      const AGrids: TArray<IPatchGrid>; const AFogs: TArray<TQ3WorldFog>; ALightmapCount: Integer);
     function GetBsp: IBspFile;
     function GetTree: TBspRenderTree;
     function GetVisibility: TBspVisibility;
@@ -59,6 +64,10 @@ type
     function ShaderNames: TArray<AnsiString>;
     function InPvs(const APoint1, APoint2: TQ3RenderVec3): Boolean;
     function SubmodelBounds(AIndex: Integer; out AMins, AMaxs: TQ3RenderVec3): Boolean;
+    function GetSurfaces: TArray<TQ3WorldSurface>;
+    function GetGrids: TArray<IPatchGrid>;
+    function GetFogs: TArray<TQ3WorldFog>;
+    function GetLightmapCount: Integer;
   end;
 
 implementation
@@ -67,7 +76,8 @@ constructor TQ3RenderWorld.Create(const ABsp: IBspFile; const ATree: TBspRenderT
   const AVisibility: TBspVisibility; const ALightGrid: TBspLightGrid; const ALightmaps: TArray<TBytes>;
   const AFaces: TArray<TBspFaceSurface>; const ATriangles: TArray<TBspTriangleSurface>;
   const AFlares: TArray<TBspFlareSurface>; APatchCount, ARefused, AFogCount: Integer;
-  const AShaderNames: TArray<AnsiString>);
+  const AShaderNames: TArray<AnsiString>; const ASurfaces: TArray<TQ3WorldSurface>;
+  const AGrids: TArray<IPatchGrid>; const AFogs: TArray<TQ3WorldFog>; ALightmapCount: Integer);
 begin
   inherited Create;
   FBsp := ABsp;
@@ -82,6 +92,10 @@ begin
   FRefused := ARefused;
   FFogCount := AFogCount;
   FShaderNames := AShaderNames;
+  FSurfaces := ASurfaces;
+  FGrids := AGrids;
+  FFogs := AFogs;
+  FLightmapCount := ALightmapCount;
 end;
 
 function TQ3RenderWorld.GetBsp: IBspFile;
@@ -226,6 +240,26 @@ begin
     AMins[LAxis] := LModels[AIndex].Mins[LAxis];
     AMaxs[LAxis] := LModels[AIndex].Maxs[LAxis];
   end;
+end;
+
+function TQ3RenderWorld.GetSurfaces: TArray<TQ3WorldSurface>;
+begin
+  Result := FSurfaces;
+end;
+
+function TQ3RenderWorld.GetGrids: TArray<IPatchGrid>;
+begin
+  Result := FGrids;
+end;
+
+function TQ3RenderWorld.GetFogs: TArray<TQ3WorldFog>;
+begin
+  Result := FFogs;
+end;
+
+function TQ3RenderWorld.GetLightmapCount: Integer;
+begin
+  Result := FLightmapCount;
 end;
 
 end.
