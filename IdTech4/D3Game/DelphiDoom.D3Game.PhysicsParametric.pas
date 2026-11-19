@@ -24,7 +24,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Extrapolate,
-  DelphiDoom.MathCore.Float.Interpolate.AccelDecelLinear, DelphiDoom.D3Game.Physics.Intf;
+  DelphiDoom.MathCore.Float.Interpolate.AccelDecelLinear, DelphiDoom.MathCore.Float.Mat3, DelphiDoom.D3Game.Physics.Intf,
+  DelphiDoom.D3Game.Clip, DelphiDoom.D3Game.ClipModel, DelphiDoom.D3Game.PhysicsClip;
 
 type
   /// <summary>What the physics asks of the game and of its entity: the time and the think flags</summary>
@@ -48,17 +49,34 @@ type
     FTime: Integer;
     FAtRest: Integer;
     FOrigin: TIdVec3;
+    FAxis: TIdMat3;
     FLocalOrigin: TIdVec3;
     FMins: TIdVec3;
     FMaxs: TIdVec3;
+    FClip: TD3PhysicsClip;
     FLinearExtrapolation: TIdExtrapolate<TIdVec3>;
     FLinearInterpolation: TIdInterpolateAccelDecelLinear<TIdVec3>;
     function TestIfAtRest: Boolean;
     procedure Rest;
   public
     /// <param name="AMins">the bounds of the body relative to its origin (the clip model's)</param>
-    constructor Create(const AHost: TD3PhysicsHost; const AMins, AMaxs: TIdVec3);
+    /// <param name="AClip">the game's clip, nil for none (the bounds are then given)</param>
+    /// <param name="ASelf">the entity the physics belongs to</param>
+    constructor Create(const AHost: TD3PhysicsHost; const AMins, AMaxs: TIdVec3; const AClip: TD3Clip = nil;
+      const ASelf: TObject = nil);
     destructor Destroy; override;
+    function GetAxis: TIdMat3;
+    procedure SetAxis(const AAxis: TIdMat3);
+    procedure SetClipModel(const AModel: TD3ClipModel);
+    function GetClipModel: TD3ClipModel;
+    function GetNumClipModels: Integer;
+    procedure SetContents(const AContents: Integer);
+    function GetContents: Integer;
+    procedure DisableClip;
+    procedure EnableClip;
+    procedure UnlinkClip;
+    procedure LinkClip;
+    function ClipContents(const AModel: TD3ClipModel): Integer;
     /// <summary>idPhysics_Parametric::Activate</summary>
     procedure Activate;
     /// <summary>idPhysics_Parametric::SetLinearExtrapolation (the type is an ID_EXTRAPOLATION_ constant)</summary>
@@ -81,16 +99,27 @@ type
     function IsAtRest: Boolean;
     /// <summary>idPhysics_Parametric::GetRestStartTime</summary>
     function GetRestStartTime: Integer;
+    /// <summary>
+    ///   The physics a mover makes in its spawn function: <c>physicsObj.SetClipModel( new idClipModel( GetPhysics()->
+    ///   GetClipModel() ), 1.0f )</c>. With a clip, the clip model is a copy of the one of the current physics (the
+    ///   default clip model of the game if it has none, as the original's <c>GetClipModel</c> gives) and the bounds
+    ///   are its own; with no clip the bounds are the given ones. The caller sets the origin next.
+    /// </summary>
+    class function CreateMoverPhysics(const AHost: TD3PhysicsHost; const ACurrent: ID3Physics; const AMins,
+      AMaxs: TIdVec3; const AClip: TD3Clip; const ASelf: TObject): TD3PhysicsParametric; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.MathCore.Float.Curve.Arithmetic.Vec3, DelphiDoom.D3Game.Types;
+  DelphiDoom.MathCore.Float.Curve.Arithmetic.Vec3, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.ClipConvert;
 
-constructor TD3PhysicsParametric.Create(const AHost: TD3PhysicsHost; const AMins, AMaxs: TIdVec3);
+constructor TD3PhysicsParametric.Create(const AHost: TD3PhysicsHost; const AMins, AMaxs: TIdVec3;
+  const AClip: TD3Clip; const ASelf: TObject);
 begin
   inherited Create;
+  FClip := TD3PhysicsClip.Create(AClip, ASelf);
+  FAxis := TIdMat3.Identity;
   FHost := AHost;
   FMins := AMins;
   FMaxs := AMaxs;
@@ -107,6 +136,7 @@ end;
 
 destructor TD3PhysicsParametric.Destroy;
 begin
+  FClip.Free;
   FLinearInterpolation.Free;
   FLinearExtrapolation.Free;
   inherited Destroy;
@@ -176,17 +206,115 @@ begin
   FLocalOrigin := FLinearExtrapolation.GetCurrentValue(FTime);
   // no master: the origin is the local origin
   FOrigin := FLocalOrigin;
+  FClip.LinkClip(FOrigin, FAxis);
   Activate;
 end;
 
 function TD3PhysicsParametric.GetAbsBoundsMin: TIdVec3;
+var
+  LMins: TIdVec3;
+  LMaxs: TIdVec3;
 begin
-  Result := FMins + FOrigin;
+  if FClip.GetAbsBounds(LMins, LMaxs) then
+    Result := LMins
+  else
+    Result := FMins + FOrigin;
 end;
 
 function TD3PhysicsParametric.GetAbsBoundsMax: TIdVec3;
+var
+  LMins: TIdVec3;
+  LMaxs: TIdVec3;
 begin
-  Result := FMaxs + FOrigin;
+  if FClip.GetAbsBounds(LMins, LMaxs) then
+    Result := LMaxs
+  else
+    Result := FMaxs + FOrigin;
+end;
+
+function TD3PhysicsParametric.GetAxis: TIdMat3;
+begin
+  Result := FAxis;
+end;
+
+procedure TD3PhysicsParametric.SetAxis(const AAxis: TIdMat3);
+begin
+  FAxis := AAxis;
+  FClip.LinkClip(FOrigin, FAxis);
+end;
+
+procedure TD3PhysicsParametric.SetClipModel(const AModel: TD3ClipModel);
+begin
+  FClip.SetClipModel(AModel, FOrigin, FAxis);
+end;
+
+function TD3PhysicsParametric.GetClipModel: TD3ClipModel;
+begin
+  Result := FClip.GetClipModel;
+end;
+
+function TD3PhysicsParametric.GetNumClipModels: Integer;
+begin
+  Result := FClip.GetNumClipModels;
+end;
+
+procedure TD3PhysicsParametric.SetContents(const AContents: Integer);
+begin
+  FClip.SetContents(AContents);
+end;
+
+function TD3PhysicsParametric.GetContents: Integer;
+begin
+  Result := FClip.GetContents;
+end;
+
+procedure TD3PhysicsParametric.DisableClip;
+begin
+  FClip.DisableClip;
+end;
+
+procedure TD3PhysicsParametric.EnableClip;
+begin
+  FClip.EnableClip;
+end;
+
+procedure TD3PhysicsParametric.UnlinkClip;
+begin
+  FClip.UnlinkClip;
+end;
+
+procedure TD3PhysicsParametric.LinkClip;
+begin
+  FClip.LinkClip(FOrigin, FAxis);
+end;
+
+function TD3PhysicsParametric.ClipContents(const AModel: TD3ClipModel): Integer;
+begin
+  Result := FClip.ClipContents(AModel);
+end;
+
+class function TD3PhysicsParametric.CreateMoverPhysics(const AHost: TD3PhysicsHost; const ACurrent: ID3Physics;
+  const AMins, AMaxs: TIdVec3; const AClip: TD3Clip; const ASelf: TObject): TD3PhysicsParametric;
+var
+  LSource: TD3ClipModel;
+  LMins: TIdVec3;
+  LMaxs: TIdVec3;
+begin
+  LMins := AMins;
+  LMaxs := AMaxs;
+  LSource := nil;
+  if Assigned(AClip) then
+  begin
+    if ACurrent.GetNumClipModels > 0 then
+      LSource := ACurrent.GetClipModel
+    else
+      LSource := AClip.DefaultClipModel;
+    LMins := TD3ClipConvert.ToId(LSource.Bounds.Mins);
+    LMaxs := TD3ClipConvert.ToId(LSource.Bounds.Maxs);
+  end;
+  Result := TD3PhysicsParametric.Create(AHost, LMins, LMaxs, AClip, ASelf);
+  if Assigned(LSource) then
+    Result.SetClipModel(TD3ClipModel.Create(LSource));
 end;
 
 function TD3PhysicsParametric.Evaluate(const ATimeStepMSec, AEndTimeMSec: Integer): Boolean;
@@ -200,6 +328,8 @@ begin
   else
     FLocalOrigin := FLocalOrigin + FLinearExtrapolation.GetCurrentValue(AEndTimeMSec);
   FOrigin := FLocalOrigin;
+  // a pusher would be clipped against what is in the way here (idPush::ClipPush is not ported: it never is)
+  FClip.LinkClip(FOrigin, FAxis);
   FTime := AEndTimeMSec;
   if TestIfAtRest then
     Rest;

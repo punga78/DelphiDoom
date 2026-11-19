@@ -196,8 +196,11 @@ begin
     begin
       LSelf.BecomeInactive(AFlags);
     end;
-  LSelf.FPhysicsObj := TD3PhysicsParametric.Create(LHost, LMins, LMaxs);
+  LSelf.FPhysicsObj := TD3PhysicsParametric.CreateMoverPhysics(LHost, LSelf.GetPhysics, LMins, LMaxs,
+    LGame.GetClip, LSelf);
   LSelf.FPhysicsObj.SetOrigin(LOrigin);
+  if not LSelf.SpawnArgs.GetBool('solid', '1') then
+    LSelf.FPhysicsObj.SetContents(0);
   LNeverMoves.Zero;
   LSelf.FPhysicsObj.SetLinearExtrapolation(ID_EXTRAPOLATION_NONE, 0, 0, LOrigin, LNeverMoves, LNeverMoves);
   LSelf.SetPhysics(LSelf.FPhysicsObj);

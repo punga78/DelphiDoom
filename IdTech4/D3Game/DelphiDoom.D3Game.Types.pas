@@ -46,8 +46,10 @@ const
   D3_TH_UPDATEVISUALS = 8;
   D3_TH_UPDATEPARTICLES = 16;
 
-  /// <summary>SIG_TRIGGER: the signal of an entity that is triggered</summary>
-  D3_SIG_TRIGGER = 0;
+  /// <summary>SIG_TOUCH: the signal of an entity that is touched (the first of the signals of Entity.h)</summary>
+  D3_SIG_TOUCH = 0;
+  /// <summary>SIG_TRIGGER: the signal of an entity that is triggered (it was 0 here by mistake: signals are not ported)</summary>
+  D3_SIG_TRIGGER = 2;
 
   /// <summary>USERCMD_MSEC: the length of a physics frame (1000 / 60)</summary>
   D3_USERCMD_MSEC = 1000 div 60;

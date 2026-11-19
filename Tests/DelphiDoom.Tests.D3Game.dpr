@@ -35,7 +35,10 @@ uses
   DelphiDoom.Tests.D3Game.Triggers in 'Source\DelphiDoom.Tests.D3Game.Triggers.pas',
   DelphiDoom.Tests.D3Game.Movers in 'Source\DelphiDoom.Tests.D3Game.Movers.pas',
   DelphiDoom.Tests.D3Game.WorldScenario in 'Source\DelphiDoom.Tests.D3Game.WorldScenario.pas',
-  DelphiDoom.Tests.D3Game.WorldParity in 'Source\DelphiDoom.Tests.D3Game.WorldParity.pas';
+  DelphiDoom.Tests.D3Game.WorldParity in 'Source\DelphiDoom.Tests.D3Game.WorldParity.pas',
+  DelphiDoom.Tests.D3Game.ClipRig in 'Source\DelphiDoom.Tests.D3Game.ClipRig.pas',
+  DelphiDoom.Tests.D3Game.ClipScenario in 'Source\DelphiDoom.Tests.D3Game.ClipScenario.pas',
+  DelphiDoom.Tests.D3Game.ClipParity in 'Source\DelphiDoom.Tests.D3Game.ClipParity.pas';
 
 var
   Runner: ITestRunner;

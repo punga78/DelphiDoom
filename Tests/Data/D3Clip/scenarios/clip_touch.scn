@@ -1,0 +1,43 @@
+# idEntity::TouchTriggers: an entity with a clip model in a physics touches the trigger clip models around it
+init
+ent 5
+ent 6 touch
+ent 7 touch
+ent 8
+ent 9 touch
+box 1 5 0 256 -16 -16 0 16 16 72
+physclip 5 1
+physorigin 5 0 0 0 0 0 0
+box 2 6 0 4096 -32 -32 0 32 32 128
+link 2 200 0 0 0 0 0
+box 3 7 3 4096 -32 -32 0 32 32 128
+link 3 200 100 0 0 0 0
+box 4 8 0 4096 -32 -32 0 32 32 128
+link 4 200 -100 0 0 0 0
+box 5 9 0 4096 -64 -64 0 64 64 128
+link 5 0 0 0 0 0 0
+touchtriggers 5
+physorigin 5 190 0 0 0 0 0
+touchtriggers 5
+physorigin 5 190 60 0 0 0 0
+touchtriggers 5
+physorigin 5 190 90 0 0 0 0
+touchtriggers 5
+physorigin 5 190 90 0 0 90 0
+touchtriggers 5
+physorigin 5 190 -100 0 0 0 0
+touchtriggers 5
+owner 5 5
+physorigin 5 0 0 0 0 0 0
+touchtriggers 5
+disable 5
+touchtriggers 5
+enable 5
+contents 3 0
+physorigin 5 190 90 0 0 0 0
+touchtriggers 5
+contents 3 4096
+physorigin 5 -400 400 0 0 0 0
+touchtriggers 5
+touching -500 -500 0 500 500 300 4096
+entities -500 -500 0 500 500 300 4096

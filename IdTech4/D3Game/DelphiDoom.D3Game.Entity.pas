@@ -24,7 +24,8 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.IdLib.Containers.LinkList, DelphiDoom.IdLib.Math.Vec3,
   DelphiDoom.Scanner.IdDict, DelphiDoom.DoomScript.Types, DelphiDoom.DoomScript.EventDef, DelphiDoom.D3Game.Intf,
-  DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Physics.Intf;
+  DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.EntityEvents, DelphiDoom.D3Game.Physics.Intf,
+  DelphiDoom.D3Game.Clip, DelphiDoom.Collision.Types;
 
 type
   TD3Entity = class;
@@ -51,12 +52,16 @@ type
     function GetSpawnId(const ANumber: Integer): Integer;
     /// <summary>gameLocal.Warning</summary>
     procedure Warning(const AText: AnsiString);
+    /// <summary>gameLocal.Printf (the text ends in a line feed where the original's does)</summary>
+    procedure Printf(const AText: AnsiString);
     function GetSpawnedEntities: TIdLinkList<TD3Entity>;
     /// <summary>The services of the scripts; each may be nil (the game has no script machine)</summary>
     function GetEventQueue: ID3EventQueue;
     function GetScriptFunctions: ID3ScriptFunctions;
     function GetSpawnFunctions: ID3SpawnFunctions;
     function GetScriptThreads: ID3ScriptThreads;
+    /// <summary>gameLocal.clip; nil for a game with no clipping (the entities then have no clip models)</summary>
+    function GetClip: TD3Clip;
   end;
 
   /// <summary>
@@ -117,6 +122,7 @@ type
     FThinkFlags: Integer;
     FCinematic: Boolean;
     FHealth: Integer;
+    FTakeDamage: Boolean;
     FName: AnsiString;
     FSpawnArgs: TIdDict;
     FSpawnNode: TIdLinkList<TD3Entity>;
@@ -125,6 +131,7 @@ type
     FHidden: Boolean;
     FTargets: TList<TD3EntityPtr>;
     FPhysics: ID3Physics;
+    FTouchTrace: TCollisionTrace;
     procedure SpawnEntity;
     procedure InitDefaultPhysics(const AOrigin: TIdVec3);
   protected
@@ -229,11 +236,29 @@ type
     procedure SetPhysics(const APhysics: ID3Physics);
     /// <summary>idEntity::SetOrigin</summary>
     procedure SetOrigin(const AOrigin: TIdVec3);
+    /// <summary>
+    ///   idEntity::TouchTriggers: sends <c>&lt;touch&gt;</c> to every trigger (an entity whose clip model has the
+    ///   contents <c>CONTENTS_TRIGGER</c>) that the clip model of this entity is in, at its current position. The
+    ///   game calls it from the think function of the entities that walk (<c>idPlayer</c>, <c>idAI</c>): nothing in
+    ///   the original calls it for a mover. True if some trigger was touched.
+    /// </summary>
+    function TouchTriggers: Boolean;
+    /// <summary>
+    ///   The trace the entity is being touched with: valid while a <c>&lt;touch&gt;</c> event is processed (the
+    ///   second argument of <c>Event_Touch( idEntity *other, trace_t *trace )</c>)
+    /// </summary>
+    property TouchTrace: TCollisionTrace read FTouchTrace;
     property EntityNumber: Integer read FEntityNumber write FEntityNumber;
     property EntityDefNumber: Integer read FEntityDefNumber;
     property ThinkFlags: Integer read FThinkFlags;
     property Cinematic: Boolean read FCinematic;
     property Health: Integer read FHealth;
+    /// <summary>fl.takedamage: an entity that does not take damage ignores <c>Damage</c> (false until a class sets it)</summary>
+    property TakeDamage: Boolean read FTakeDamage write FTakeDamage;
+    /// <summary>idEntity::Pain: the entity took damage and is alive; false (it has no pain animation)</summary>
+    function Pain(const ADamage: Integer): Boolean; virtual;
+    /// <summary>idEntity::Killed: the entity's health went to zero or below; nothing in the base</summary>
+    procedure Killed(const ADamage: Integer); virtual;
     property SpawnArgs: TIdDict read FSpawnArgs;
     /// <summary>The node of the list of all the spawned entities (<c>gameLocal.spawnedEntities</c>)</summary>
     property SpawnNode: TIdLinkList<TD3Entity> read FSpawnNode;
@@ -244,7 +269,9 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Text.Strings, DelphiDoom.D3Game.Types, DelphiDoom.D3Game.PhysicsStatic;
+  DelphiDoom.IdLib.Text.Strings, DelphiDoom.Geometry.Bounds, DelphiDoom.Geometry.TraceModel,
+  DelphiDoom.D3Game.Types, DelphiDoom.D3Game.PhysicsStatic, DelphiDoom.D3Game.ClipModel,
+  DelphiDoom.D3Game.ClipConvert;
 
 const
   SSelfTarget = 'Entity ''%s'' is targeting itself';
@@ -252,6 +279,7 @@ const
   SInvalidSize = 'Invalid size ''%s'' on entity ''%s''';
   SReservedName = 'Cannot name entity ''%s''.  ''%s'' is reserved for script.';
   SUnknownDef = '*unknown*';
+  SUnknownDamageDef = 'Unknown damageDef ''%s''' + #10;
 
 constructor TD3Entity.Create(const AWorld: ID3EntityWorld; const AEventCanceller: ID3EventCanceller);
 begin
@@ -334,14 +362,21 @@ var
   LMins: TIdVec3;
   LMaxs: TIdVec3;
   LSize: TIdVec3;
+  LHasBounds: Boolean;
+  LClip: TD3Clip;
+  LNumSides: Integer;
+  LTraceModel: TTraceModel;
+  LBounds: TGeoBounds;
 begin
   LMins.Zero;
   LMaxs.Zero;
+  LHasBounds := False;
   if not FSpawnArgs.GetBool('noclipmodel', '0') then
   begin
     // check if mins/maxs or size key/value pairs are set
     if FSpawnArgs.GetVector('mins', '', LMins) and FSpawnArgs.GetVector('maxs', '', LMaxs) then
     begin
+      LHasBounds := True;
       if (LMins.X > LMaxs.X) or (LMins.Y > LMaxs.Y) or (LMins.Z > LMaxs.Z) then
         FWorld.Error(AnsiString(Format(SInvalidBounds, [string(LMins.ToString), string(LMaxs.ToString),
           string(FName)])));
@@ -352,6 +387,7 @@ begin
         FWorld.Error(AnsiString(Format(SInvalidSize, [string(LSize.ToString), string(FName)])));
       LMins.SetValues(LSize.X * -0.5, LSize.Y * -0.5, 0);
       LMaxs.SetValues(LSize.X * 0.5, LSize.Y * 0.5, LSize.Z);
+      LHasBounds := True;
     end
     else
     begin
@@ -359,7 +395,110 @@ begin
       LMaxs.Zero;
     end;
   end;
-  FPhysics := TD3PhysicsStatic.Create(AOrigin, LMins, LMaxs);
+
+  LClip := nil;
+  if Assigned(FGame) then
+    LClip := FGame.GetClip;
+  FPhysics := TD3PhysicsStatic.Create(AOrigin, LMins, LMaxs, LClip, Self);
+
+  // the clip model of the bounds (the clipmodel and model keys, which name a collision model, are not ported)
+  if Assigned(LClip) and LHasBounds then
+  begin
+    LBounds := TGeoBounds.Make(TD3ClipConvert.ToGeo(LMins), TD3ClipConvert.ToGeo(LMaxs));
+    LTraceModel := TTraceModel.Create;
+    try
+      LNumSides := FSpawnArgs.GetInt('cylinder', '0');
+      if LNumSides > 0 then
+      begin
+        if LNumSides < 3 then
+          LNumSides := 3;
+        LTraceModel.SetupCylinder(LBounds, LNumSides);
+      end
+      else
+      begin
+        LNumSides := FSpawnArgs.GetInt('cone', '0');
+        if LNumSides > 0 then
+        begin
+          if LNumSides < 3 then
+            LNumSides := 3;
+          LTraceModel.SetupCone(LBounds, LNumSides);
+        end
+        else
+          LTraceModel.SetupBox(LBounds);
+      end;
+      FPhysics.SetClipModel(TD3ClipModel.Create(LClip.Manager, LTraceModel));
+    finally
+      LTraceModel.Free;
+    end;
+  end;
+end;
+
+function TD3Entity.TouchTriggers: Boolean;
+var
+  LClip: TD3Clip;
+  LModels: TList<TD3ClipModel>;
+  LModel: TD3ClipModel;
+  LEntity: TD3Entity;
+  LTrace: TCollisionTrace;
+  LBounds: TGeoBounds;
+  LIndex: Integer;
+  LNumEntities: Integer;
+begin
+  Result := False;
+  if not Assigned(FGame) then
+    Exit;
+  LClip := FGame.GetClip;
+  if not Assigned(LClip) then
+    Exit;
+
+  LTrace := Default(TCollisionTrace);
+  LTrace.EndPos := TD3ClipConvert.ToGeo(GetPhysics.GetOrigin);
+  LTrace.EndAxis := TD3ClipConvert.ToGeo(GetPhysics.GetAxis);
+
+  LBounds.Mins := TD3ClipConvert.ToGeo(GetPhysics.GetAbsBoundsMin);
+  LBounds.Maxs := TD3ClipConvert.ToGeo(GetPhysics.GetAbsBoundsMax);
+
+  LNumEntities := 0;
+  LModels := TList<TD3ClipModel>.Create;
+  try
+    LClip.ClipModelsTouchingBounds(LBounds, CONTENTS_TRIGGER, LModels, D3_MAX_GENTITIES);
+    for LIndex := 0 to LModels.Count - 1 do
+    begin
+      LModel := LModels[LIndex];
+
+      // don't touch it if we're the owner
+      if LModel.Owner = Self then
+        Continue;
+
+      LEntity := TD3Entity(LModel.Entity);
+
+      if not (LEntity.RespondsTo(FGame.GetEvents.Touch) or LEntity.HasSignal(D3_SIG_TOUCH)) then
+        Continue;
+
+      if GetPhysics.ClipContents(LModel) = 0 then
+        Continue;
+
+      Inc(LNumEntities);
+
+      LTrace.C.Contents := LModel.Contents;
+      LTrace.C.EntityNum := LEntity.EntityNumber;
+      LTrace.C.Id := LModel.Id;
+
+      LEntity.Signal(D3_SIG_TOUCH);
+      LEntity.FTouchTrace := LTrace;
+      LEntity.ProcessEntityEvent(FGame.GetEvents.Touch, Self);
+
+      if FGame.GetEntityByNumber(FEntityNumber) = nil then
+      begin
+        FGame.Printf('entity was removed while touching triggers' + #10);
+        Result := True;
+        Exit;
+      end;
+    end;
+  finally
+    LModels.Free;
+  end;
+  Result := LNumEntities <> 0;
 end;
 
 class function TD3EntityPtr.Make(const AGame: ID3EntityGame; const AEntity: TD3Entity): TD3EntityPtr;
@@ -500,6 +639,41 @@ begin
 end;
 
 procedure TD3Entity.Damage(const ADamageDefName: AnsiString; const AScale: Single);
+var
+  LDef: ID3EntityDef;
+  LDamage: Integer;
+begin
+  if not FTakeDamage then
+    Exit;
+
+  LDef := FWorld.FindEntityDef(ADamageDefName);
+  if not Assigned(LDef) then
+    FWorld.Error(AnsiString(Format(SUnknownDamageDef, [string(ADamageDefName)])));
+
+  LDamage := LDef.GetDict.GetInt('damage');
+
+  // the original informs the attacker (DamageFeedback, implemented in subclasses): there is no attacker here
+  if LDamage <> 0 then
+  begin
+    // do the damage
+    Dec(FHealth, LDamage);
+    if FHealth <= 0 then
+    begin
+      if FHealth < -999 then
+        FHealth := -999;
+      Killed(LDamage);
+    end
+    else
+      Pain(LDamage);
+  end;
+end;
+
+function TD3Entity.Pain(const ADamage: Integer): Boolean;
+begin
+  Result := False;
+end;
+
+procedure TD3Entity.Killed(const ADamage: Integer);
 begin
 end;
 
