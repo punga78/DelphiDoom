@@ -213,7 +213,7 @@ end;
 
 function TEngineExportSettings.StringName(AIndex: Integer): string;
 begin
-  Result := deh_strings._array[AIndex].name;
+  Result := string(deh_strings._array[AIndex].name);
 end;
 
 function TEngineExportSettings.StringValue(AIndex: Integer): string;

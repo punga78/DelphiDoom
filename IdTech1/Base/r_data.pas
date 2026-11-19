@@ -1477,7 +1477,7 @@ begin
     flat := malloc(SizeOf(flat_t));
     flat.name := TWadRoutines.W_GetNameForNum(firstflat + i);
     flat.translation := i;
-    flat.lump := TWadRoutines.W_GetNumForName(flat.name);
+    flat.lump := TWadRoutines.W_GetNumForName(string(flat.name));
     {$IFNDEF OPENGL}
     flat.flat32 := nil;
     {$ENDIF}

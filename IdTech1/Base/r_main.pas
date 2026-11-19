@@ -75,11 +75,9 @@ const
   LIGHTZSHIFT = 20;
 
   HLL_MAXLIGHTZ = MAXLIGHTZ * 64; // Hi resolution light level for z depth
-  HLL_LIGHTZSHIFT = 12;
   HLL_LIGHTSCALESHIFT = 3;
   HLL_ZDISTANCESHIFT = 14;
 
-  LIGHTDISTANCESHIFT = 12;
 
 // Colormap constants
 // Number of diminishing brightness levels.
@@ -89,11 +87,6 @@ const
 
   DISTMAP = 2;
 
-{$IFDEF HEXEN}
-// Fog base ( < FRACUNIT ) for FOGMAP calculation
-  FOGBASE = 55000;
-
-{$ENDIF}
 var
   forcecolormaps: boolean;
 {$IF DEFINED(HEXEN)}

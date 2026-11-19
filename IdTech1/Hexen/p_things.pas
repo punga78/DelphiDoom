@@ -193,7 +193,6 @@ function EVH_ThingSpawn(args: PByteArray; fog: boolean): boolean;
 implementation
 
 uses
-  d_main,
   g_game,
   a_action,
   info,

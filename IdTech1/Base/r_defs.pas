@@ -299,8 +299,6 @@ type
   sector_tArray = packed array[0..$FFFF] of sector_t;
   Psector_tArray = ^sector_tArray;
 {$IF DEFINED(DOOM)}
-  sector_tPArray = packed array[0..$FFFF] of Psector_t;
-  Psector_tPArray = ^sector_tPArray;
 
   msecnode_t = record
     m_sector: Psector_t;  // a sector containing this object
@@ -428,7 +426,6 @@ type
     rendervalidcount: integer;  // JVAL: 20220309 - Speed optimization
     {$ENDIF}
   end;
-  PPline_t = ^Pline_t;
   line_tArray = packed array[0..$FFFF] of line_t;
   line_tPArray = packed array[0..$FFFF] of Pline_t;
 
@@ -604,7 +601,6 @@ type
     topdelta: byte; // -1 is the last post in a column
     length: byte;   // length data bytes follows
   end;
-  Ppost_t = ^post_t;
 
 // column_t is a list of 0 or more post_t, (byte)-1 terminated
   column_t = post_t;
@@ -671,8 +667,6 @@ type
     // the [0] is &columnofs[width]
   end;
   Ppatch_t = ^patch_t;
-  patch_tArray = packed array[0..$FFFF] of patch_t; // JVAL: DO NOT USE
-  Ppatch_tArray = ^patch_tArray;
   patch_tPArray = packed array[0..$FFFF] of Ppatch_t;
   Ppatch_tPArray = ^patch_tPArray;
 

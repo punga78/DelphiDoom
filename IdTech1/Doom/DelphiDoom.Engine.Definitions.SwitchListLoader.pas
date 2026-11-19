@@ -42,7 +42,6 @@ uses
   doomdef,
   doomstat,
   DelphiDoom.Engine.World.SwitchRules,
-  p_switch,
   w_wad,
   z_zone;
 

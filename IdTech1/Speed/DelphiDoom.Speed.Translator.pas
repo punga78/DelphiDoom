@@ -68,7 +68,6 @@ const
   SKY_COUNT = 7;
   /// <summary>The flats are shown 2 x 64 units wide: the size that FLATSIZE says</summary>
   FLAT_UNITS = SPEED_LEVEL_SCALE * SPEED_TILE_SIZE;
-  CHAMPIONSHIP_TILE = 'FLAT';
 
 type
   /// <summary>What one translation keeps while it runs</summary>

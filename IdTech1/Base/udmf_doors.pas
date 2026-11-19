@@ -36,12 +36,10 @@ interface
 uses
   d_delphi,
   z_zone,
-  doomdef,
   m_fixed,
   p_mobj_h,
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
-  p_spec,
   r_defs;
 
 type

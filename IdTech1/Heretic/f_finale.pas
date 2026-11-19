@@ -192,7 +192,7 @@ begin
       finaletext := TEngineMapInfoRecords.BigStringToString(TGameSession.GameMapInfo.intertext);
 
     if TGameSession.GameMapInfo.interbackdrop <> '' then
-      finaleflat := TGameSession.GameMapInfo.interbackdrop;
+      finaleflat := string(TGameSession.GameMapInfo.interbackdrop);
 
     if finaleflat = '' then
       finaleflat := bgflatE1; // use a single fallback for all maps.
@@ -505,7 +505,7 @@ begin
     if finalestage = 0 then
       TFinaleLocalRoutines.F_TextWrite
     else
-      V_PageDrawer(TGameSession.GameMapInfo.endpic);
+      V_PageDrawer(string(TGameSession.GameMapInfo.endpic));
     exit;
   end;
 

@@ -49,7 +49,6 @@ uses
   deh_base,
   d_main,
   d_items,
-  d_englsh,
   dstrings,
   f_finale,
   g_game,
@@ -58,17 +57,12 @@ uses
   info,
   info_common,
   m_argv,
-  p_mobj,
   p_mobj_h,
-  p_enemy,
-  DelphiDoom.Engine.World.EnemyRules,
-  p_extra,
   p_common,
   p_gender,
   DelphiDoom.Obituary.Genders,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
-  p_inter,
   DelphiDoom.Engine.World.InterRules,
   r_renderstyle,
   DelphiDoom.Palette.TranslationBlood,
@@ -678,7 +672,7 @@ var
       if IsIntegerInRange(sprite_val, 0, Ord(DO_NUMSPRITES) - 1) then
       begin
         sprite_idx := sprite_val;
-        token1 := DO_sprnames[sprite_idx];
+        token1 := string(DO_sprnames[sprite_idx]);
       end
       else if (numsprites >= Ord(DO_NUMSPRITES)) and IsIntegerInRange(sprite_val, Ord(DO_NUMSPRITES), numsprites) then
       begin

@@ -268,7 +268,7 @@ class procedure TIntermissionLocalRoutines.IN_CheckCustomPics;
 begin
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.exitpic <> '') then
   begin
-    exitpic := wbs.lastmapinfo.exitpic;
+    exitpic := string(wbs.lastmapinfo.exitpic);
     if exitpic = '-' then
       exitpic := ''
     else if TWadRoutines.W_CheckNumForName(exitpic) < 0 then
@@ -279,7 +279,7 @@ begin
 
   if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.enterpic <> '') then
   begin
-    enterpic := wbs.nextmapinfo.enterpic;
+    enterpic := string(wbs.nextmapinfo.enterpic);
     if enterpic = '-' then
       enterpic := ''
     else if TWadRoutines.W_CheckNumForName(enterpic) < 0 then
@@ -780,7 +780,7 @@ begin
   end
   else if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelpic <> '') then
   begin
-    lpic := TWadRoutines.W_CacheLumpName(wbs.lastmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(string(wbs.lastmapinfo.levelpic), PU_CACHE);
 
     V_DrawPatch((320 - lpic.width) div 2, y, SCN_TMP, lpic, false);
 
@@ -820,7 +820,7 @@ begin
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
   begin
-    lpic := TWadRoutines.W_CacheLumpName(wbs.nextmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(string(wbs.nextmapinfo.levelpic), PU_CACHE);
 
     V_DrawPatch((320 - lpic.width) div 2, y + 10, SCN_TMP, lpic, false);
   end

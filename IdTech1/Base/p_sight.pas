@@ -89,15 +89,6 @@ type
 {$ELSE}
     class function P_CheckCameraSight(const camx, camy, camz: fixed_t; const mo: Pmobj_t): boolean; static;
 {$ENDIF}
-{$IFDEF HEXEN}
-{$ELSE}
-    //==============================================================================
-    //
-    // P_CheckVisibility
-    //
-    //==============================================================================
-    class function P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean; static;
-{$ENDIF}
   end;
 
 
@@ -1920,58 +1911,6 @@ begin
 
   // the head node is the last node output
   result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
-end;
-
-//==============================================================================
-//
-// P_CheckVisibility
-//
-// JVAL: General visibility check
-// Checks if an object at (atx, aty, atz) with radious = atradious can be
-// possibly visible
-//
-//==============================================================================
-class function TSightRoutines.P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
-var
-  los: los_t;
-begin
-  inc(validcount);
-
-  los.sightzstart := viewz + atradious - (atradious div 4);
-  los.topslope := (atz + atradious) - los.sightzstart;
-  los.bottomslope := atz - los.sightzstart;
-
-  los.strace.x := viewx;
-  los.strace.y := viewy;
-  los.t2x := atx;
-  los.t2y := aty;
-  los.strace.dx := atx - viewx;
-  los.strace.dy := aty - viewy;
-
-  if viewx > atx then
-  begin
-    los.bbox[BOX_RIGHT] := viewx;
-    los.bbox[BOX_LEFT] := atx;
-  end
-  else
-  begin
-    los.bbox[BOX_RIGHT] := atx;
-    los.bbox[BOX_LEFT] := viewx;
-  end;
-
-  if viewy > aty then
-  begin
-    los.bbox[BOX_TOP] := viewy;
-    los.bbox[BOX_BOTTOM] := aty;
-  end
-  else
-  begin
-    los.bbox[BOX_TOP] := aty;
-    los.bbox[BOX_BOTTOM] := viewy;
-  end;
-
-  // the head node is the last node output
-  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 {$ELSEIF DEFINED(HEXEN)}
   Result := P_CheckCameraSight(x, y, z, t2);
 end;
@@ -2000,58 +1939,6 @@ begin
   result := P_SightPathTraverse(camx, camy, mo.x, mo.y);
 {$ELSE}
   Result := P_CheckCameraSight(x, y, z, t2);
-end;
-
-//==============================================================================
-//
-// P_CheckVisibility
-//
-// JVAL: General visibility check
-// Checks if an object at (atx, aty, atz) with radious = atradious can be
-// possibly visible
-//
-//==============================================================================
-class function TSightRoutines.P_CheckVisibility(const atx, aty, atz: fixed_t; const atradious: fixed_t): boolean;
-var
-  los: los_t;
-begin
-  inc(validcount);
-
-  los.sightzstart := viewz + atradious - (atradious div 4);
-  los.topslope := (atz + atradious) - los.sightzstart;
-  los.bottomslope := atz - los.sightzstart;
-
-  los.strace.x := viewx;
-  los.strace.y := viewy;
-  los.t2x := atx;
-  los.t2y := aty;
-  los.strace.dx := atx - viewx;
-  los.strace.dy := aty - viewy;
-
-  if viewx > atx then
-  begin
-    los.bbox[BOX_RIGHT] := viewx;
-    los.bbox[BOX_LEFT] := atx;
-  end
-  else
-  begin
-    los.bbox[BOX_RIGHT] := atx;
-    los.bbox[BOX_LEFT] := viewx;
-  end;
-
-  if viewy > aty then
-  begin
-    los.bbox[BOX_TOP] := viewy;
-    los.bbox[BOX_BOTTOM] := aty;
-  end
-  else
-  begin
-    los.bbox[BOX_TOP] := aty;
-    los.bbox[BOX_BOTTOM] := viewy;
-  end;
-
-  // the head node is the last node output
-  result := TSightLocalRoutines.P_CrossBSPNode(numnodes - 1, @los);
 {$ENDIF}
 end;
 

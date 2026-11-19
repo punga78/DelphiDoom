@@ -180,18 +180,15 @@ uses
   DelphiDoom.Acs.Machine.Types,
   p_maputl,
   p_spec_h,
-  p_spec,
   udmf_plats,
   udmf_ceilng,
   udmf_lights,
   udmf_doors,
   p_pspr_h,
-  p_inter,
   DelphiDoom.Engine.World.InterRules,
   p_tick,
   p_mobj,
   p_mobjlist,
-  p_enemy,
   DelphiDoom.Engine.World.EnemyRules,
   p_map,
   p_params,
@@ -1224,8 +1221,8 @@ begin
     end
     else
     begin
-      sec.floorpic := R_FlatNumForName(GET_CHAR8T);
-      sec.ceilingpic := R_FlatNumForName(GET_CHAR8T);
+      sec.floorpic := R_FlatNumForName(string(GET_CHAR8T));
+      sec.ceilingpic := R_FlatNumForName(string(GET_CHAR8T));
     end;
     sec.lightlevel := GET_WORD;
     sec.special := GET_WORD;
@@ -1325,9 +1322,9 @@ begin
       end
       else
       begin
-        si.toptexture := R_SafeTextureNumForName(GET_CHAR8T);
-        si.bottomtexture := R_SafeTextureNumForName(GET_CHAR8T);
-        si.midtexture := R_SafeTextureNumForName(GET_CHAR8T);
+        si.toptexture := R_SafeTextureNumForName(string(GET_CHAR8T));
+        si.bottomtexture := R_SafeTextureNumForName(string(GET_CHAR8T));
+        si.midtexture := R_SafeTextureNumForName(string(GET_CHAR8T));
       end;
 
       si.toptextureoffset := 0;
@@ -1373,8 +1370,8 @@ begin
   begin
     incp(saveptr, SectorSerializer.LoadFromMem(saveptr, sec, $FFFF));
 
-    sec.floorpic := R_FlatNumForName(GET_CHAR8T);
-    sec.ceilingpic := R_FlatNumForName(GET_CHAR8T);
+    sec.floorpic := R_FlatNumForName(string(GET_CHAR8T));
+    sec.ceilingpic := R_FlatNumForName(string(GET_CHAR8T));
 
     sec.saffectees := Z_Realloc(sec.saffectees, sec.num_saffectees * SizeOf(integer), PU_LEVEL, nil);
     for j := 0 to sec.num_saffectees - 1 do
@@ -1400,9 +1397,9 @@ begin
   begin
     incp(saveptr, SideSerializer.LoadFromMem(saveptr, si, $FFFF));
 
-    si.toptexture := R_SafeTextureNumForName(GET_CHAR8T);
-    si.bottomtexture := R_SafeTextureNumForName(GET_CHAR8T);
-    si.midtexture := R_SafeTextureNumForName(GET_CHAR8T);
+    si.toptexture := R_SafeTextureNumForName(string(GET_CHAR8T));
+    si.bottomtexture := R_SafeTextureNumForName(string(GET_CHAR8T));
+    si.midtexture := R_SafeTextureNumForName(string(GET_CHAR8T));
 
     inc(si);
   end;

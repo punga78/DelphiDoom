@@ -1,5 +1,7 @@
 # Facciate storiche e chiamanti (issue #130, aggiornato dopo le ondate 3 e 4)
 
+Aggiornato dalla #185 (ondata 13, 2026-11-19): tolte `I_Sleep` e `I_ClearInterface` (le sole funzioni delle tabelle senza alcun riferimento) e le routine, gli alias e i tipi senza riferimenti elencati nel par. 11.35 del piano; **le righe a 0 chiamate non sono codice morto** (il conteggio non conta la unit stessa e dopo le ondate 7-12 molti chiamanti stanno dentro le classi). I conteggi non sono stati rigenerati.
+
 Aggiornato dalla #163: tolte le routine senza alcun riferimento (13 righe delle tabelle e le voci corrispondenti delle sezioni in fondo); il resto e invariato.
 
 Aggiornato dalla #185 (passo 2c-1): `p_map` e in copia unica in `IdTech1\Base\p_map.pas`; cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.MapRules.pas` (`TMapGameRules` e le routine proprie) e le liste dei settori toccati in `IdTech1\Base\p_secnodes.pas`. Dove le tabelle dicono `IdTech1\Doom\p_map`, `IdTech1\Heretic\p_map`, `IdTech1\Hexen\p_map` o `IdTech1\Strife\p_map` si legga una di queste unit: i conteggi non sono stati rigenerati.
@@ -1257,7 +1259,6 @@ Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
-| `I_Sleep` | 0 | - [test: 1] |
 | `I_DetectOS` | 0 | - |
 | `I_ConfigureInput` | 1 | DelphiDoom.Engine.Composition |
 | `I_ConfigureLog` | 1 | DelphiDoom.Engine.Composition |
@@ -1276,7 +1277,6 @@ Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I
 | `I_BaseTiccmd` | 4 | IdTech1\Doom\g_game, IdTech1\Heretic\g_game, IdTech1\Hexen\g_game, IdTech1\Strife\g_game |
 | `I_SetCriticalCPUPriority` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
 | `I_SetNormalCPUPriority` | 4 | IdTech1\Doom\d_main, IdTech1\Heretic\d_main, IdTech1\Hexen\d_main, IdTech1\Strife\d_main |
-| `I_ClearInterface` | 4 | i_video (4) |
 | `I_GoToWebPage` | 4 | c_utils, Launcher_main, Launcher_utils (2) |
 | `I_SetDPIAwareness` | 4 | gl_main, i_main, Launcher_utils (2) |
 | `I_GetWindowDPI` | 4 | i_video (2), Launcher_utils (2) |

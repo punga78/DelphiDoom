@@ -43,8 +43,6 @@ type
   statesArray_t = packed array[0..$FFFF] of state_t;
   PstatesArray_t = ^statesArray_t;
 
-  sprnamesArray_t = packed array[0..Ord(DO_NUMSPRITES) - 1] of string[4];
-  PsprnamesArray_t = ^sprnamesArray_t;
 
   mobjinfoArray_t = packed array[0..Ord(DO_NUMMOBJTYPES) - 1] of mobjinfo_t;
   PmobjinfoArray_t = ^mobjinfoArray_t;
@@ -104,11 +102,9 @@ uses
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
   p_mobj_h,
-  p_inter,
   DelphiDoom.Engine.World.SpecialRespawn,
   p_common,
   p_spec_h,
-  p_spec,
   info_common,
   info_export,
   r_renderstyle,

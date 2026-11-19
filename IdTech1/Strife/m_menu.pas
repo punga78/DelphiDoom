@@ -3974,7 +3974,7 @@ begin
   if showMessages = 0 then
     TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGOFF
   else
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := MSGON;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(MSGON);
 
   message_dontfuckwithme := true;
 
@@ -4224,17 +4224,17 @@ begin
 
   case detailLevel of
     DL_LOWEST:
-      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOWEST;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(DETAILLOWEST);
     DL_LOW:
-      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILLOW;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(DETAILLOW);
     DL_MEDIUM:
-      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILMED;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(DETAILMED);
     DL_NORMAL:
-      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILNORM;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(DETAILNORM);
     DL_HIRES:
-      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILHI;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(DETAILHI);
     DL_ULTRARES:
-      TGameSession.Players[TGameSession.ConsolePlayer]._message := DETAILULTRA;
+      TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(DETAILULTRA);
   end;
 
 end;
@@ -4668,7 +4668,7 @@ begin
           inc(usegamma);
           if usegamma >= GAMMASIZE then
             usegamma := 0;
-          TGameSession.Players[TGameSession.ConsolePlayer]._message := gammamsg[usegamma];
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(gammamsg[usegamma]);
           palette := V_ReadPalette(PU_STATIC);
           I_SetPalette(palette);
           V_SetPalette(palette);
@@ -5179,7 +5179,7 @@ begin
     if currentMenu.lefttext = '' then
       lstr := '<<'
     else
-      lstr := currentMenu.lefttext;
+      lstr := string(currentMenu.lefttext);
     TMenuLocalRoutines.M_WriteWhiteText(5, 158, lstr);
   end;
 
@@ -5188,7 +5188,7 @@ begin
     if currentMenu.righttext = '' then
       rstr := '>>'
     else
-      rstr := currentMenu.righttext;
+      rstr := string(currentMenu.righttext);
     rlen := M_StringWidth(rstr);
     TMenuLocalRoutines.M_WriteWhiteText(315 - rlen, 158, rstr);
   end;

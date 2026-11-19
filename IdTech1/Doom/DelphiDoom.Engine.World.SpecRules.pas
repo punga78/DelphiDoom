@@ -41,7 +41,6 @@ uses
   doomdef,
   m_fixed,
   d_player,
-  d_think,
   p_local,
   p_mobj_h,
   r_defs,
@@ -254,7 +253,6 @@ type
     startname: array[0..8] of AnsiChar;
     speed: integer;
   end;
-  Pwad_animdef_t = ^wad_animdef_t;
   wad_animdef_tArray = array[0..$FFFF] of wad_animdef_t;
   Pwad_animdef_tArray = ^wad_animdef_tArray;
 
@@ -376,27 +374,27 @@ begin
     if ianimdef.istexture then
     begin
       // different episode ?
-      if R_CheckTextureNumForName(ianimdef.startname) = -1 then
+      if R_CheckTextureNumForName(string(ianimdef.startname)) = -1 then
       begin
         inc(ianimdef);
         continue;
       end;
 
-      lanim.picnum := R_TextureNumForName(ianimdef.endname);
-      lanim.basepic := R_TextureNumForName(ianimdef.startname);
+      lanim.picnum := R_TextureNumForName(string(ianimdef.endname));
+      lanim.basepic := R_TextureNumForName(string(ianimdef.startname));
       lanim.istexture := true;
       lanim.numpics := lanim.picnum - lanim.basepic + 1;
     end
     else
     begin
-      if TWadRoutines.W_CheckNumForName(ianimdef.startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(string(ianimdef.startname)) = -1 then
       begin
         inc(ianimdef);
         continue;
       end;
 
-      lanim.picnum := R_FlatNumForName(ianimdef.endname);
-      lanim.basepic := R_FlatNumForName(ianimdef.startname);
+      lanim.picnum := R_FlatNumForName(string(ianimdef.endname));
+      lanim.basepic := R_FlatNumForName(string(ianimdef.startname));
       lanim.istexture := false;
       lanim.numpics := flats[lanim.picnum].lump - flats[lanim.basepic].lump + 1;
       // JVAL
@@ -450,7 +448,7 @@ begin
            not player.cards[Ord(it_yellowcard)] and
            not player.cards[Ord(it_yellowskull)] then
         begin
-          player._message := PD_ANY; // Ty 03/27/98 - externalized
+          player._message := ShortString(PD_ANY); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -465,7 +463,7 @@ begin
           if skulliscard then
             player._message := PD_REDK
           else
-            player._message := PD_REDC; // Ty 03/27/98 - externalized
+            player._message := ShortString(PD_REDC); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -480,7 +478,7 @@ begin
           if skulliscard then
             player._message := PD_BLUEK
           else
-            player._message := PD_BLUEC; // Ty 03/27/98 - externalized
+            player._message := ShortString(PD_BLUEC); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -495,7 +493,7 @@ begin
           if skulliscard then
             player._message := PD_YELLOWK
           else
-            player._message := PD_YELLOWC; // Ty 03/27/98 - externalized
+            player._message := ShortString(PD_YELLOWC); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -510,7 +508,7 @@ begin
           if skulliscard then
             player._message := PD_REDK
           else
-            player._message := PD_REDS; // Ty 03/27/98 - externalized
+            player._message := ShortString(PD_REDS); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -525,7 +523,7 @@ begin
           if skulliscard then
             player._message := PD_BLUEK
           else
-            player._message := PD_BLUES; // Ty 03/27/98 - externalized
+            player._message := ShortString(PD_BLUES); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -540,7 +538,7 @@ begin
           if skulliscard then
             player._message := PD_YELLOWK
           else
-            player._message := PD_YELLOWS; // Ty 03/27/98 - externalized
+            player._message := ShortString(PD_YELLOWS); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -557,7 +555,7 @@ begin
            not player.cards[Ord(it_yellowcard)] or
            not player.cards[Ord(it_yellowskull)]) then
         begin
-          player._message := PD_ALL6; // Ty 03/27/98 - externalized
+          player._message := ShortString(PD_ALL6); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -570,7 +568,7 @@ begin
           (not player.cards[Ord(it_yellowcard)] and
            not player.cards[Ord(it_yellowskull)])) then
         begin
-          player._message := PD_ALL3; // Ty 03/27/98 - externalized
+          player._message := ShortString(PD_ALL3); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -1916,7 +1914,7 @@ begin
       begin
         // SECRET SECTOR
         inc(player.secretcount);
-        player._message := MSGSECRETSECTOR;
+        player._message := ShortString(MSGSECRETSECTOR);
         sector.special := 0;
       end;
 
@@ -2007,7 +2005,7 @@ begin
     if sector.special and SECRET_MASK <> 0 then
     begin
       inc(player.secretcount);
-      player._message := MSGSECRETSECTOR;
+      player._message := ShortString(MSGSECRETSECTOR);
       sector.special := sector.special and not SECRET_MASK;
       if sector.special < 32 then // if all extended bits clear,
         sector.special := 0;    // sector is not special anymore

@@ -1375,7 +1375,7 @@ begin
 
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture <> '') then
   begin
-    skytexture := R_TextureNumForName(TGameSession.GameMapInfo.skytexture);
+    skytexture := R_TextureNumForName(string(TGameSession.GameMapInfo.skytexture));
     if skytexture < 0 then
       skytexture := R_TextureNumForName('SKY1');
   end
@@ -1409,7 +1409,7 @@ begin
   skytexture1 := skytexture;
   skytexture2 := -1;
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture2 <> '') then
-    skytexture2 := R_TextureNumForName(TGameSession.GameMapInfo.skytexture2);
+    skytexture2 := R_TextureNumForName(string(TGameSession.GameMapInfo.skytexture2));
   if skytexture2 < 0 then
     skytexture2 := skytexture;
 
@@ -1698,7 +1698,7 @@ begin
          (((_SHR(TGameSession.GameTic, 5)) and 3) = i) then
       begin
         sprintf(msg, '%s is turbo!', [player_names[i]]);
-        TGameSession.Players[TGameSession.ConsolePlayer]._message := msg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(msg);
       end;
 
       if TGameSession.NetGame and not TGameSession.NetDemo and (TGameSession.GameTic mod ticdup = 0) then
@@ -1897,22 +1897,6 @@ end;
 
 //==============================================================================
 //
-// G_CheckSpot
-// Returns false if the player cannot be respawned
-// at the given mapthing_t spot
-// because something is occupying it
-//
-//==============================================================================
-function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
-var
-  host: ISpawnSpotHost;
-begin
-  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction, @G_PlayingEngineVersion);
-  result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
-end;
-
-//==============================================================================
-//
 // G_DeathMatchSpawnPlayer
 // Spawns a player at one of the random death match spots
 // called at level load and each death
@@ -2034,8 +2018,8 @@ begin
   begin
     request.HasEndPicture := (TGameSession.GameMapInfo.endpic <> '') and (TGameSession.GameMapInfo.endpic <> '-');
     request.NoIntermission := TGameSession.GameMapInfo.nointermission;
-    request.NextSecret := TGameSession.GameMapInfo.nextsecret;
-    request.NextMap := TGameSession.GameMapInfo.nextmap;
+    request.NextSecret := string(TGameSession.GameMapInfo.nextsecret);
+    request.NextMap := string(TGameSession.GameMapInfo.nextmap);
     request.MapInfoPartime := TGameSession.GameMapInfo.partime;
   end;
   request.Rules := TMapName.DoomRules;
@@ -2429,7 +2413,7 @@ begin
   TGameSession.GameAction := ga_nothing;
   savedescription := '';
 
-  TGameSession.Players[TGameSession.ConsolePlayer]._message := GGSAVED;
+  TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(GGSAVED);
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
@@ -2541,7 +2525,7 @@ begin
 
   if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
   begin
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(STSTR_CLEV);
     G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
     C_ExecuteCmd('closeconsole', '1');
   end
@@ -2577,7 +2561,7 @@ begin
 
   if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
   begin
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(STSTR_CLEV);
     G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
     C_ExecuteCmd('closeconsole', '1');
   end

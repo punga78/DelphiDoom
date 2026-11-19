@@ -56,7 +56,6 @@ var
   speed_laps: integer = 2;
   speed_transmission: integer = 0; // 0 automatic, 1 manual
   speed_gametype: integer = SH_GAME_SINGLERACE;
-  speed_pilotname: string = 'PILOT';
 
 //==============================================================================
 //

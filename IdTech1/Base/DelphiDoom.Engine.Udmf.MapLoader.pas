@@ -76,7 +76,6 @@ implementation
 
 uses
   d_delphi,
-  doomdef,
   doomdata,
   acs,
   m_base,

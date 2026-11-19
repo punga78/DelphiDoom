@@ -44,8 +44,7 @@ uses
   r_defs,
   p_mobj_h,
   p_spec_h,
-  DelphiDoom.Engine.World.SpecRules,
-  p_spec;
+  DelphiDoom.Engine.World.SpecRules;
 
 type
   /// <summary>
@@ -141,7 +140,6 @@ type
     episode: smallint;
     sound: integer;
   end;
-  Pwad_switchlist_t = ^wad_switchlist_t;
   wad_switchlist_tArray = array[0..$FFFF] of wad_switchlist_t;
   Pwad_switchlist_tArray = ^wad_switchlist_tArray;
 
@@ -283,10 +281,10 @@ begin
   begin
     if alphSwitchList[i].episode <= episode then
     begin
-      tex1 := R_CheckTextureNumForName(alphSwitchList[i].name1);
+      tex1 := R_CheckTextureNumForName(string(alphSwitchList[i].name1));
       if tex1 < 0 then
         I_Warning('P_InitSwitchList(): Unknown texture "%s"'#13#10, [alphSwitchList[i].name1]);
-      tex2 := R_CheckTextureNumForName(alphSwitchList[i].name2);
+      tex2 := R_CheckTextureNumForName(string(alphSwitchList[i].name2));
       if tex2 < 0 then
         I_Warning('P_InitSwitchList(): Unknown texture "%s"'#13#10, [alphSwitchList[i].name2]);
       if (tex1 >= 0) and (tex2 >= 0) then

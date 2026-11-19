@@ -780,11 +780,9 @@ uses
   deh_main,
   d_items,
   d_think,
-  d_main,
   g_game,
   m_fixed,
   tables,
-  i_system,
   info_h,
   info,
   f_finale,
@@ -797,7 +795,6 @@ uses
   p_maputl,
   p_setup,
   p_sight,
-  p_switch,
   p_tick,
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
@@ -808,9 +805,6 @@ uses
   DelphiDoom.Engine.World.InterRules,
   p_sounds,
   p_dialog,
-  p_udmf,
-  udmf_spec,
-  ps_main,
   r_defs,
   r_main,
   r_translations;
@@ -3251,7 +3245,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST13);
-    TGameSession.Players[i]._message := msg;
+    TGameSession.Players[i]._message := ShortString(msg);
   end;
 end;
 
@@ -3276,7 +3270,7 @@ begin
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST25);
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
-    TGameSession.Players[i]._message := msg;
+    TGameSession.Players[i]._message := ShortString(msg);
   end;
 end;
 
@@ -3302,7 +3296,7 @@ begin
   quest := _SHLW(1, actor.info.speed - 1);
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    TGameSession.Players[i]._message := name;
+    TGameSession.Players[i]._message := ShortString(name);
     TGameSession.Players[i].questflags := TGameSession.Players[i].questflags or quest;
   end;
 end;

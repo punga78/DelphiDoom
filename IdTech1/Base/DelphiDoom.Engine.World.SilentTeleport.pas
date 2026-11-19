@@ -61,29 +61,22 @@ implementation
 
 uses
   d_delphi,
-  doomdef,
-  doomstat,
   d_think,
   d_player,
   info_h,
   g_game,
-  p_3dfloors,
   p_setup,
   p_tick,
   p_mobj,
   p_map,
   DelphiDoom.Engine.World.SectorSearch,
-  p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_user,
   r_main,
-  sounddata,
-  udmf_telept,
   tables,
   DelphiDoom.Thinkers.Teleport.Geometry,
   DelphiDoom.Thinkers.Teleport.LineExit,
-  DelphiDoom.Engine.Teleport.Services,
   DelphiDoom.Engine.Teleport.LineSide;
 
 //==============================================================================

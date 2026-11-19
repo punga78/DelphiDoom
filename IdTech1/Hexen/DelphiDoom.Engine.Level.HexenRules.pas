@@ -69,7 +69,6 @@ uses
   System.SysUtils,
   d_delphi,
   doomdef,
-  d_player,
   g_game,
   i_system,
   info_h,
@@ -78,12 +77,8 @@ uses
   p_mobj,
   p_tick,
   p_setup,
-  p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
-  p_spec,
   DelphiDoom.Engine.World.SwitchRules,
-  p_switch,
-  p_enemy,
   DelphiDoom.Engine.World.EnemyRules,
   p_mapinfo,
   p_anim,
@@ -215,9 +210,9 @@ end;
 
 procedure THexenLevelRules.ReadSideTextures(AMapSide: Pmapsidedef_t; ASide: Pside_t);
 begin
-  ASide.toptexture := R_TextureNumForName(AMapSide.toptexture);
-  ASide.bottomtexture := R_TextureNumForName(AMapSide.bottomtexture);
-  ASide.midtexture := R_TextureNumForName(AMapSide.midtexture);
+  ASide.toptexture := R_TextureNumForName(string(AMapSide.toptexture));
+  ASide.bottomtexture := R_TextureNumForName(string(AMapSide.bottomtexture));
+  ASide.midtexture := R_TextureNumForName(string(AMapSide.midtexture));
 end;
 
 procedure THexenLevelRules.FixLineDefs(AData: Pointer; ALumpSize, ACount: Integer);

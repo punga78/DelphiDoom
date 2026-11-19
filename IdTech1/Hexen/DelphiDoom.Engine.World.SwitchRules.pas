@@ -33,9 +33,7 @@ interface
 
 uses
   r_defs,
-  p_mobj_h,
-  p_spec_h,
-  p_spec;
+  p_spec_h;
 
 type
   /// <summary>
@@ -127,9 +125,9 @@ begin
       break;
     end;
 
-    switchlist[index] := R_CheckTextureNumForName(alphSwitchList[i].name1); // JVAL: was R_TextureNumForName
+    switchlist[index] := R_CheckTextureNumForName(string(alphSwitchList[i].name1)); // JVAL: was R_TextureNumForName
     inc(index);
-    switchlist[index] := R_CheckTextureNumForName(alphSwitchList[i].name2); // JVAL: was R_TextureNumForName
+    switchlist[index] := R_CheckTextureNumForName(string(alphSwitchList[i].name2)); // JVAL: was R_TextureNumForName
     inc(index);
   end;
 end;

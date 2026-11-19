@@ -78,7 +78,6 @@ implementation
 uses
   d_delphi,
   i_system,
-  m_fixed,
   p_mobj_h,
   r_defs,
   r_things,

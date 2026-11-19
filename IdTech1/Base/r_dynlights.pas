@@ -47,8 +47,6 @@ type
   // The record of a light: IdTech1\DynLights fills it (r, g, b, radius, x, y, z, shadow)
   GLDRenderLight = TDynLightRender;
   PGLDRenderLight = PDynLightRender;
-  GLDRenderLightArray = array[0..$FFF] of GLDRenderLight;
-  PGLDRenderLightArray = ^GLDRenderLightArray;
 
 var
   lightdeflumppresent: boolean = false;

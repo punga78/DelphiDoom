@@ -45,7 +45,6 @@ uses
   p_mobj_h,
   DelphiDoom.Engine.World.SectorSearch,
   p_spec_h,
-  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   r_defs,
   s_sound,
@@ -149,8 +148,6 @@ uses
   info_h,
   r_data,
   p_dialog,
-  p_genlin,
-  p_lights,
   p_tick,
   p_setup,
   p_floor,
@@ -215,7 +212,7 @@ begin
       begin
         if not p.cards[Ord(key_IDCard)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You need an id card');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You need an id card'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -227,7 +224,7 @@ begin
       begin
         if not p.cards[Ord(key_IDBadge)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You need an id badge');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You need an id badge'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -239,7 +236,7 @@ begin
       begin
         if not p.cards[Ord(key_Passcard)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You need a pass card');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You need a pass card'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -251,7 +248,7 @@ begin
       begin
         if not p.cards[Ord(key_GoldKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You need a gold key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You need a gold key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -263,7 +260,7 @@ begin
       begin
         if not p.cards[Ord(key_SilverKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You need a silver key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You need a silver key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -275,7 +272,7 @@ begin
       begin
         if not p.cards[Ord(key_BrassKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You need a brass key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You need a brass key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -287,7 +284,7 @@ begin
       begin
         if not p.cards[Ord(key_SeveredHand)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('Hand print not on file');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('Hand print not on file'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -298,7 +295,7 @@ begin
       begin
         if not p.cards[Ord(key_PrisonKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key to the prison');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key to the prison'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -309,7 +306,7 @@ begin
       begin
         if not p.cards[Ord(key_Power1Key)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -320,7 +317,7 @@ begin
       begin
         if not p.cards[Ord(key_Power2Key)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -331,7 +328,7 @@ begin
       begin
         if not p.cards[Ord(key_Power3Key)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -342,7 +339,7 @@ begin
       begin
         if not p.cards[Ord(key_OracleKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -353,7 +350,7 @@ begin
       begin
         if not p.cards[Ord(key_MilitaryID)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -364,7 +361,7 @@ begin
       begin
         if not p.cards[Ord(key_WarehouseKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -375,7 +372,7 @@ begin
       begin
         if not p.cards[Ord(key_MineKey)] then
         begin
-          p._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          p._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -598,7 +595,7 @@ begin
 
         if not player.cards[Ord(key_IDCard)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need an id card to open this door');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need an id card to open this door'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -612,7 +609,7 @@ begin
 
         if not player.cards[Ord(key_Passcard)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need a pass card key to open this door');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need a pass card key to open this door'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -626,7 +623,7 @@ begin
 
         if not player.cards[Ord(key_IDBadge)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need an id badge to open this door');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need an id badge to open this door'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -637,7 +634,7 @@ begin
       begin
         if not player.cards[Ord(key_BrassKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need a brass key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need a brass key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -648,7 +645,7 @@ begin
       begin
         if not player.cards[Ord(key_SilverKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need a silver key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need a silver key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -659,7 +656,7 @@ begin
       begin
         if not player.cards[Ord(key_GoldKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need a gold key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need a gold key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -668,7 +665,7 @@ begin
    // villsa [STRIFE] added 09/15/10
    165:
       begin
-        player._message := TDehMainRoutines.DEH_GetString('That doesn''t seem to work');
+        player._message := ShortString(TDehMainRoutines.DEH_GetString('That doesn''t seem to work'));
         TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
         exit;
       end;
@@ -677,7 +674,7 @@ begin
       begin
         if not player.cards[Ord(key_SeveredHand)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('Hand print not on file');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('Hand print not on file'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -687,7 +684,7 @@ begin
       begin
         if not player.cards[Ord(key_BaseKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -697,7 +694,7 @@ begin
       begin
         if not player.cards[Ord(key_GovsKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -707,7 +704,7 @@ begin
       begin
         if not player.cards[Ord(key_OrderKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -715,7 +712,7 @@ begin
 
    205: // DR "Only in retail"
       begin
-        player._message := TDehMainRoutines.DEH_GetString('THIS AREA IS ONLY AVAILABLE IN THE RETAIL VERSION OF STRIFE');
+        player._message := ShortString(TDehMainRoutines.DEH_GetString('THIS AREA IS ONLY AVAILABLE IN THE RETAIL VERSION OF STRIFE'));
         TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
         exit;
       end;
@@ -724,7 +721,7 @@ begin
       begin
         if P_PlayerHasItem(player, MT_INV_CHALICE) = 0 then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need the chalice!');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need the chalice!'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -734,7 +731,7 @@ begin
       begin
         if not player.cards[Ord(key_CoreKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -744,7 +741,7 @@ begin
       begin
         if not player.cards[Ord(key_MaulerKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -754,7 +751,7 @@ begin
       begin
         if not player.cards[Ord(key_ChapelKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -764,7 +761,7 @@ begin
       begin
         if not player.cards[Ord(key_CatacombKey)] then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You don''t have the key');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You don''t have the key'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;
@@ -774,7 +771,7 @@ begin
       begin
         if player.questflags and QF_QUEST18 = 0 then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('You need the Oracle Pass!');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('You need the Oracle Pass!'));
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           exit;
         end;

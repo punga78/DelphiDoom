@@ -340,7 +340,6 @@ uses
   p_setup,
   DelphiDoom.Engine.World.SectorSearch,
   p_spec_h,
-  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_tick,
   sounddata,

@@ -247,10 +247,10 @@ begin
         CPlayer.mo.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
 
       CPlayer.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
-      CPlayer._message := TXT_CHEATGODON;
+      CPlayer._message := ShortString(TXT_CHEATGODON);
     end
     else
-      CPlayer._message := TXT_CHEATGODOFF;
+      CPlayer._message := ShortString(TXT_CHEATGODOFF);
   end
   else
   begin
@@ -290,7 +290,7 @@ begin
   if CPlayer.cheats and CF_LOWGRAVITY <> 0 then
     CPlayer._message := STSTR_LGON
   else
-    CPlayer._message := STSTR_LGOFF;
+    CPlayer._message := ShortString(STSTR_LGOFF);
 end;
 
 //==============================================================================
@@ -321,7 +321,7 @@ begin
   for i := 0 to Ord(NUMAMMO) - 1 do
     CPlayer.ammo[i] := CPlayer.maxammo[i];
 
-  CPlayer._message := STSTR_FAADDED;
+  CPlayer._message := ShortString(STSTR_FAADDED);
 end;
 
 //==============================================================================
@@ -356,7 +356,7 @@ begin
      CPlayer.keys[i] := true;
    playerkeys := 7; // Key refresh flags
 
-   CPlayer._message := TXT_CHEATWEAPONS;
+   CPlayer._message := ShortString(TXT_CHEATWEAPONS);
 end;
 
 //==============================================================================
@@ -375,7 +375,7 @@ begin
     CPlayer.keys[i] := true;
 
   playerkeys := 7; // Key refresh flags
-  CPlayer._message := TXT_CHEATKEYS;
+  CPlayer._message := ShortString(TXT_CHEATKEYS);
 end;
 
 //==============================================================================
@@ -406,7 +406,7 @@ begin
   if CPlayer.cheats and CF_NOCLIP <> 0 then
     CPlayer._message := STSTR_NCON
   else
-    CPlayer._message := STSTR_NCOFF;
+    CPlayer._message := ShortString(STSTR_NCOFF);
 end;
 
 //==============================================================================
@@ -420,7 +420,7 @@ begin
     exit;
 
   THereticMonsterActions.P_Massacre;
-  CPlayer._message := TXT_CHEATMASSACRE;
+  CPlayer._message := ShortString(TXT_CHEATMASSACRE);
 end;
 
 //==============================================================================
@@ -1784,7 +1784,7 @@ begin
       // 'mus' cheat for changing music
       else if check_cheat(@cheat_mus, Chr(ev.data1)) then
       begin
-        CPlayer._message := STSTR_MUS;
+        CPlayer._message := ShortString(STSTR_MUS);
         cht_GetParam(@cheat_mus, buf);
 
         musnum := Ord(mus_e1m1) + (Ord(buf[1]) - Ord('1')) * 9 + Ord(buf[2]) - Ord('1');
@@ -1794,7 +1794,7 @@ begin
              ((musnum < 10) and (gamemode = shareware))) then
           TSoundRoutines.S_ChangeMusic(musnum, true)
         else
-          CPlayer._message := STSTR_NOMUS;
+          CPlayer._message := ShortString(STSTR_NOMUS);
       end
       // Simplified, accepting "kitty", "noclip" and "idspispopd".
       // no clipping mode cheat
@@ -1815,7 +1815,7 @@ begin
           CPlayer.mo.x div FRACUNIT,
           CPlayer.mo.y div FRACUNIT,
           CPlayer.mo.z div FRACUNIT]);
-        CPlayer._message := buf;
+        CPlayer._message := ShortString(buf);
       end;
     end;
 
@@ -1824,7 +1824,7 @@ begin
     begin
       cht_GetParam(@cheat_clev, buf);
 
-      CPlayer._message := STSTR_WLEV;
+      CPlayer._message := ShortString(STSTR_WLEV);
 
       epsd := Ord(buf[1]) - Ord('0');
       map := Ord(buf[2]) - Ord('0');
@@ -1844,7 +1844,7 @@ begin
       if entry <> nil then
         if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
         begin
-          CPlayer._message := STSTR_CLEV;
+          CPlayer._message := ShortString(STSTR_CLEV);
           G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
           result := result or ateit;
           exit;
@@ -1863,7 +1863,7 @@ begin
       // So be it.
       if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
       begin
-        CPlayer._message := STSTR_CLEV;
+        CPlayer._message := ShortString(STSTR_CLEV);
         G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
       end;
     end;

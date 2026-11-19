@@ -659,7 +659,6 @@ type
 implementation
 
 uses
-  d_main,
   g_game,
   d_think,
   info,

@@ -158,7 +158,6 @@ uses
   d_delphi,
   doomdef,
   g_game,
-  info_h,
   info,
   m_rnd,
   p_enemy,

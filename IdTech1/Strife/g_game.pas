@@ -1341,8 +1341,8 @@ begin
   skytexture2 := -1;
   if (TGameSession.GameMapInfo <> nil) and (TGameSession.GameMapInfo.skytexture <> '') then
   begin
-    skytexture := R_TextureNumForName(TGameSession.GameMapInfo.skytexture);
-    skytexture2 := R_TextureNumForName(TGameSession.GameMapInfo.skytexture2);
+    skytexture := R_TextureNumForName(string(TGameSession.GameMapInfo.skytexture));
+    skytexture2 := R_TextureNumForName(string(TGameSession.GameMapInfo.skytexture2));
   end;
   if skytexture < 0 then
   begin
@@ -1638,7 +1638,7 @@ begin
          (((_SHR(TGameSession.GameTic, 5)) and 3) = i) then
       begin
         sprintf(msg, '%s is turbo!', [player_names[i]]);
-        TGameSession.Players[TGameSession.ConsolePlayer]._message := msg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(msg);
       end;
 
       if TGameSession.NetGame and not TGameSession.NetDemo and (TGameSession.GameTic mod ticdup = 0) then
@@ -1761,22 +1761,6 @@ begin
 
   // villsa [STRIFE]: Default objective
   mission_objective := TDehMainRoutines.DEH_GetString('Find help');
-end;
-
-//==============================================================================
-//
-// G_CheckSpot
-// Returns false if the player cannot be respawned
-// at the given mapthing_t spot
-// because something is occupying it
-//
-//==============================================================================
-function G_CheckSpot(playernum: integer; mthing: Pmapthing_t): boolean;
-var
-  host: ISpawnSpotHost;
-begin
-  host := TPlayerRespawnHost.Create(@TGameSession.ConsolePlayer, @TGameSession.GameAction, @G_NeedsCompatibilityMode, nil);
-  result := TSpawnSpot.Check(host, playernum, mthing.x * FRACUNIT, mthing.y * FRACUNIT, mthing.angle);
 end;
 
 //==============================================================================
@@ -2381,7 +2365,7 @@ begin
 
   // [STRIFE]: custom message logic
   if path <> savepath then
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := GGSAVED;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(GGSAVED);
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
@@ -2473,7 +2457,7 @@ begin
 
   if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(STSTR_CLEV);
     G_DeferedInitNew(TGameSession.GameSkill, map);
     C_ExecuteCmd('closeconsole', '1');
   end

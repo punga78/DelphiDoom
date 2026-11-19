@@ -62,8 +62,6 @@ implementation
 
 uses
   d_delphi,
-  doomdef,
-  info_h,
   info,
   info_common,
   System.SysUtils,

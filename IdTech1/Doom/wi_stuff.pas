@@ -558,7 +558,7 @@ begin
   end
   else if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.levelpic <> '') then
   begin
-    lpic := TWadRoutines.W_CacheLumpName(wbs.lastmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(string(wbs.lastmapinfo.levelpic), PU_CACHE);
 
     WI_DrawPatch((320 - lpic.width) div 2, y, lpic);
 
@@ -602,7 +602,7 @@ begin
   end
   else if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.levelpic <> '') then
   begin
-    lpic := TWadRoutines.W_CacheLumpName(wbs.nextmapinfo.levelpic, PU_CACHE);
+    lpic := TWadRoutines.W_CacheLumpName(string(wbs.nextmapinfo.levelpic), PU_CACHE);
 
     y := y + (5 * lpic.height) div 4;
 

@@ -99,7 +99,7 @@ begin
   if (inflictor = attacker) or (attacker.info.hitobituary = '') then
     messagefmt := attacker.info.obituary
   else
-    messagefmt := attacker.info.hitobituary;
+    messagefmt := string(attacker.info.hitobituary);
 
   if messagefmt = '' then
     exit;
@@ -135,13 +135,13 @@ begin
   if pa <> nil then
     aname := 'Player ' + itoa(TCommonFriendActions.PlayerToId(pa))
   else
-    aname := attacker.info.name;
+    aname := string(attacker.info.name);
 
   // the placeholders and the pronouns: TObituaryFormatter of IdTech1\Obituary, without state
   messagefmt := TObituaryFormatter.ComposeMessage(messagefmt, vname, aname,
     TObituaryGender(victim.info.gender), TObituaryGender(attacker.info.gender));
 
-  pv._message := messagefmt;
+  pv._message := ShortString(messagefmt);
 end;
 
 end.

@@ -100,13 +100,6 @@ function M_WriteSmallWhiteTextCenter(y: integer; const str: string; const scn: i
 
 //==============================================================================
 //
-// M_WriteSmallWhiteTextCenterNarrow
-//
-//==============================================================================
-function M_WriteSmallWhiteTextCenterNarrow(y: integer; const str: string; const scn: integer): menupos_t;
-
-//==============================================================================
-//
 // M_BigStringWidth
 //
 //==============================================================================
@@ -471,78 +464,6 @@ end;
 
 //==============================================================================
 //
-// M_WriteSmallWhiteTextNarrow
-//
-//==============================================================================
-function M_WriteSmallWhiteTextNarrow(x, y: integer; const str: string; const scn: integer): menupos_t;
-var
-  w: integer;
-  ch: integer;
-  c: integer;
-  cx: integer;
-  cy: integer;
-  len: integer;
-  oldtranslation: PByteArray;
-begin
-  len := Length(str);
-  if len = 0 then
-  begin
-    result.x := x;
-    result.y := y;
-    exit;
-  end;
-
-  ch := 1;
-  cx := x;
-  cy := y;
-
-  oldtranslation := v_translation;
-  v_translation := TWadRoutines.W_CacheLumpName('TRN_MENU', PU_STATIC);
-  while true do
-  begin
-    if ch > len then
-      break;
-
-    c := Ord(str[ch]);
-    inc(ch);
-
-    if c = 0 then
-      break;
-
-    if c = 10 then
-    begin
-      cx := x;
-      continue;
-    end;
-
-    if c = 13 then
-    begin
-      cy := cy + 12;
-      continue;
-    end;
-
-    c := Ord(toupper(Chr(c))) - Ord(HU_FONTSTART);
-    if (c < 0) or (c >= HU_FONTSIZE) then
-    begin
-      cx := cx + 3;
-      continue;
-    end;
-
-    w := hu_font[c].width;
-    if (cx + w) > 320 then
-      break;
-    V_DrawPatch(cx, cy, scn, hu_font[c], false);
-    cx := cx + w;
-  end;
-  Z_ChangeTag(v_translation, PU_CACHE);
-  v_translation := oldtranslation;
-
-  result.x := cx;
-  result.y := cy;
-end;
-
-//==============================================================================
-//
 // M_WriteSmallWhiteTextCenter
 //
 //==============================================================================
@@ -558,28 +479,6 @@ begin
     w := M_SmallStringWidth(lst.Strings[i]);
     x := (320 - w) div 2;
     M_WriteSmallWhiteText(x, y, lst.Strings[i], scn);
-    y := y + 14;
-  end;
-  lst.Free;
-end;
-
-//==============================================================================
-//
-// M_WriteSmallWhiteTextCenterNarrow
-//
-//==============================================================================
-function M_WriteSmallWhiteTextCenterNarrow(y: integer; const str: string; const scn: integer): menupos_t;
-var
-  i, x, w: integer;
-  lst: TDStringList;
-begin
-  lst := TDStringList.Create;
-  lst.Text := str;
-  for i := 0 to lst.Count - 1 do
-  begin
-    w := M_SmallStringWidthNarrow(lst.Strings[i]);
-    x := (320 - w) div 2;
-    M_WriteSmallWhiteTextNarrow(x, y, lst.Strings[i], scn);
     y := y + 14;
   end;
   lst.Free;

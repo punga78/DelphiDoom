@@ -67,7 +67,6 @@ implementation
 
 uses
   d_delphi,
-  doomdef,
   DelphiDoom.MathCore.Sha1,
   DelphiDoom.Voxel.Types,
   w_wadwriter;

@@ -190,7 +190,6 @@ uses
   p_tick,
   p_maputl,
   p_spec_h,
-  p_spec,
   p_ceilng,
   p_doors,
   p_floor,
@@ -873,8 +872,8 @@ begin
 
     save_p := @save_p[SectorSerializer.LoadFromMem(save_p, sec, $FFFF)];
 
-    sec.floorpic := R_FlatNumForName(_get_char8);
-    sec.ceilingpic := R_FlatNumForName(_get_char8);
+    sec.floorpic := R_FlatNumForName(string(_get_char8));
+    sec.ceilingpic := R_FlatNumForName(string(_get_char8));
 
     sec.saffectees := Z_Realloc(sec.saffectees, sec.num_saffectees * SizeOf(integer), PU_LEVEL, nil);
     for j := 0 to sec.num_saffectees - 1 do
@@ -909,13 +908,13 @@ begin
     save_p := @save_p[SideSerializer.LoadFromMem(save_p, si, $FFFF)];
 
     tex := _get_char8;
-    si.toptexture := R_SafeTextureNumForName(tex);
+    si.toptexture := R_SafeTextureNumForName(string(tex));
 
     tex := _get_char8;
-    si.bottomtexture := R_SafeTextureNumForName(tex);
+    si.bottomtexture := R_SafeTextureNumForName(string(tex));
 
     tex := _get_char8;
-    si.midtexture := R_SafeTextureNumForName(tex);
+    si.midtexture := R_SafeTextureNumForName(string(tex));
 
     inc(i);
   end;

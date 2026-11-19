@@ -42,7 +42,6 @@ uses
   doomdef,
   m_fixed,
   d_player,
-  d_think,
   p_mobj_h,
   r_defs,
   p_spec_h;
@@ -294,27 +293,27 @@ begin
     if animdefs[i].istexture then
     begin
       // different episode ?
-      if R_CheckTextureNumForName(animdefs[i].startname) = -1 then
+      if R_CheckTextureNumForName(string(animdefs[i].startname)) = -1 then
       begin
         inc(i);
         continue;
       end;
 
-      anims[lastanim].picnum := R_TextureNumForName(animdefs[i].endname);
-      anims[lastanim].basepic := R_TextureNumForName(animdefs[i].startname);
+      anims[lastanim].picnum := R_TextureNumForName(string(animdefs[i].endname));
+      anims[lastanim].basepic := R_TextureNumForName(string(animdefs[i].startname));
       anims[lastanim].istexture := true;
       anims[lastanim].numpics := anims[lastanim].picnum - anims[lastanim].basepic + 1;
     end
     else
     begin
-      if TWadRoutines.W_CheckNumForName(animdefs[i].startname) = -1 then
+      if TWadRoutines.W_CheckNumForName(string(animdefs[i].startname)) = -1 then
       begin
         inc(i);
         continue;
       end;
 
-      anims[lastanim].picnum := R_FlatNumForName(animdefs[i].endname);
-      anims[lastanim].basepic := R_FlatNumForName(animdefs[i].startname);
+      anims[lastanim].picnum := R_FlatNumForName(string(animdefs[i].endname));
+      anims[lastanim].basepic := R_FlatNumForName(string(animdefs[i].startname));
       anims[lastanim].istexture := false;
       anims[lastanim].numpics := flats[anims[lastanim].picnum].lump - flats[anims[lastanim].basepic].lump + 1;
       // JVAL
@@ -954,7 +953,7 @@ begin
       begin
         // SECRET SECTOR
         player.secretcount := player.secretcount + 1;
-        player._message := MSGSECRETSECTOR;
+        player._message := ShortString(MSGSECRETSECTOR);
         sector.special := 0;
       end;
 

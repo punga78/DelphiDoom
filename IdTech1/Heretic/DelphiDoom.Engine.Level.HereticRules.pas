@@ -70,23 +70,16 @@ uses
   System.SysUtils,
   d_delphi,
   doomdef,
-  doomstat,
-  d_player,
   p_tick,
   g_game,
   p_mobj_h,
   p_mobj,
   p_setup,
   udmf_spec,
-  p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
-  p_spec,
   DelphiDoom.Engine.World.SwitchRules,
-  p_switch,
   p_ambient,
-  p_enemy,
   DelphiDoom.Engine.World.EnemyRules,
-  p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
   po_man,
   r_data,
@@ -210,9 +203,9 @@ end;
 
 procedure THereticLevelRules.ReadSideTextures(AMapSide: Pmapsidedef_t; ASide: Pside_t);
 begin
-  ASide.toptexture := R_TextureNumForName(AMapSide.toptexture);
-  ASide.bottomtexture := R_TextureNumForName(AMapSide.bottomtexture);
-  ASide.midtexture := R_TextureNumForName(AMapSide.midtexture);
+  ASide.toptexture := R_TextureNumForName(string(AMapSide.toptexture));
+  ASide.bottomtexture := R_TextureNumForName(string(AMapSide.bottomtexture));
+  ASide.midtexture := R_TextureNumForName(string(AMapSide.midtexture));
 end;
 
 procedure THereticLevelRules.FixLineDefs(AData: Pointer; ALumpSize, ACount: Integer);

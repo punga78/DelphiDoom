@@ -44,13 +44,10 @@ const
 // Columns cache
   COL32CACHESIZE = $2000;
   CACHECOLSHIFT = 15;
-  CACHETEXTMASK = 1 shl CACHECOLSHIFT - 1;
   CACHECOLBITS = 10;
-  CACHECOLMASK = 1 shl CACHECOLBITS - 1;
 
 const
   MAXTEXTUREHEIGHT = 1024;
-  MAXTEXTUREWIDTH = 1 shl CACHECOLBITS;
   MAXEQUALHASH = MAXBATCHWALLS * 2; // Allow MAXEQUALHASH same hash values to
                                     // increase performance.
 {$IFDEF HEXEN}
@@ -72,7 +69,6 @@ type
   dc32cacheinfo_t = array[0..MAXEQUALHASH - 1] of Pdc32cacheitem_t;
   Pdc32cacheinfo_t = ^dc32cacheinfo_t;
 
-  dc32cacheinfo_tArray = array[0..COL32CACHESIZE - 1] of dc32cacheinfo_t;
   dc32cacheinfo_tPArray = array[0..COL32CACHESIZE - 1] of Pdc32cacheinfo_t;
 
 var

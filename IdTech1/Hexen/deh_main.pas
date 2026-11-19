@@ -132,10 +132,8 @@ uses
   c_cmds,
   doomdef,
   deh_base,
-  d_main,
   xn_strings,
   hu_stuff,
-  info,
   info_common,
   m_argv,
   m_fixed,
@@ -149,17 +147,12 @@ uses
   p_common,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
-  p_pspr_h,
-  p_inter,
-  DelphiDoom.Engine.World.InterRules,
   DelphiDoom.Engine.World.SpecialRespawn,
-  p_user,
   DelphiDoom.Engine.World.UserRules,
   p_musinfo,
   p_sounds,
   p_simpledialog,
   psi_overlay,
-  sounddata,
   v_data,
   sv_save;
 
@@ -190,7 +183,7 @@ begin
   end;
 
   deh_strings._array[deh_strings.numstrings].pstr := pstr;
-  deh_strings._array[deh_strings.numstrings].name := name;
+  deh_strings._array[deh_strings.numstrings].name := ShortString(name);
   inc(deh_strings.numstrings);
 end;
 

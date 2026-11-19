@@ -25,7 +25,6 @@ uses
   d_delphi,
   c_cmds,
   doomdef,
-  sc_params,
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
   DelphiDoom.ScriptHost.Overlay.Types,

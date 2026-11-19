@@ -257,7 +257,6 @@ uses
   DelphiDoom.Engine.World.EnemyRules,
   p_mobj,
   p_inter,
-  p_user,
   DelphiDoom.Engine.World.PlayerExtras,
   p_map,
   p_local,
@@ -746,7 +745,7 @@ begin
   for i := 1 to actor.state.params.Count - 1 do
     msg := msg + ' ' + actor.state.params.StrVal[i];
 
-  p._message := msg;
+  p._message := ShortString(msg);
 end;
 
 //==============================================================================

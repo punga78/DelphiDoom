@@ -110,7 +110,6 @@ implementation
 
 uses
   d_delphi,
-  doomdata,
   g_game,
   r_data,
   p_setup,

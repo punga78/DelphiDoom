@@ -56,8 +56,6 @@ uses
 {$ELSE}
 
 {$ENDIF}
-type
-  drawfunc_t = procedure(start: integer; stop: integer);
 
 var
   ds_p: integer; // JVAL was: Pdrawseg_t

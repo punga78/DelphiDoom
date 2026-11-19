@@ -75,7 +75,6 @@ type
     size: integer;
     name: char8_t;
   end;
-  Pfilelump_t = ^filelump_t;
   Tfilelump_tArray = packed array[0..$FFFF] of filelump_t;
   Pfilelump_tArray = ^Tfilelump_tArray;
 
@@ -103,7 +102,6 @@ type
       1: (x: array[0..1] of integer);
     end;
 
-  PTransProcedure = procedure (const src: pointer; const size: integer; const dest: PPointer; const tag: integer);
 
 const
   F_ORIGIN_WAD = 0;

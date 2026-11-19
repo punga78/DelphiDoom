@@ -254,8 +254,8 @@ begin
   begin
     LSector.floorheight := LMapSector.floorheight * FRACUNIT;
     LSector.ceilingheight := LMapSector.ceilingheight * FRACUNIT;
-    LSector.floorpic := R_FlatNumForName(LMapSector.floorpic);
-    LSector.ceilingpic := R_FlatNumForName(LMapSector.ceilingpic);
+    LSector.floorpic := R_FlatNumForName(string(LMapSector.floorpic));
+    LSector.ceilingpic := R_FlatNumForName(string(LMapSector.ceilingpic));
     // https://www.doomworld.com/forum/topic/118126-doom-sector-light-levels/
     // JVAL: 20220116 -> If sector lightlevel in WAD is 256 change it to 255,
     //                   do not treat as fog sector

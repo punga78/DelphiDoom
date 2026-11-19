@@ -72,7 +72,6 @@ const
 type
   {$IFNDEF OPENGL}
   visindex_t = word;
-  Pvisindex_t = ^visindex_t;
   visindex_tArray = packed array[-1..MAXWIDTH] of visindex_t;
   Pvisindex_tArray = ^visindex_tArray;
   {$ENDIF}

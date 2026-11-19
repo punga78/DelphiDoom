@@ -38,7 +38,6 @@ uses
 
 type
   ripple_t = array[0..31, 0..127] of integer;
-  Pripple_t = ^ripple_t;
 
 var
   r_defripple: ripple_t;

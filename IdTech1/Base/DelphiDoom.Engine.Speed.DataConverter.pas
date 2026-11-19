@@ -38,7 +38,7 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures, DelphiDoom.Speed.WorldActors, DelphiDoom.Engine.Speed.TextureFiles, System.IOUtils,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.WorldActors, DelphiDoom.Engine.Speed.TextureFiles, System.IOUtils,
   DelphiDoom.Speed.Factory;
 
 const

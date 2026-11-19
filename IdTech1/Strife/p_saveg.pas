@@ -963,8 +963,8 @@ begin
 
     save_p := @save_p[SectorSerializer.LoadFromMem(save_p, sec, $FFFF)];
 
-    sec.floorpic := R_FlatNumForName(_get_char8);
-    sec.ceilingpic := R_FlatNumForName(_get_char8);
+    sec.floorpic := R_FlatNumForName(string(_get_char8));
+    sec.ceilingpic := R_FlatNumForName(string(_get_char8));
 
     sec.saffectees := Z_Realloc(sec.saffectees, sec.num_saffectees * SizeOf(integer), PU_LEVEL, nil);
     for j := 0 to sec.num_saffectees - 1 do
@@ -1004,19 +1004,19 @@ begin
     save_p := @save_p[SideSerializer.LoadFromMem(save_p, si, $FFFF)];
 
     tex := _get_char8;
-    si.toptexture := R_SafeTextureNumForName(tex);
+    si.toptexture := R_SafeTextureNumForName(string(tex));
     if si.toptexture = 0 then
-      si.toptexture := -1 - R_CustomColorMapForName(tex);
+      si.toptexture := -1 - R_CustomColorMapForName(string(tex));
 
     tex := _get_char8;
-    si.bottomtexture := R_SafeTextureNumForName(tex);
+    si.bottomtexture := R_SafeTextureNumForName(string(tex));
     if si.bottomtexture = 0 then
-      si.bottomtexture := -1 - R_CustomColorMapForName(tex);
+      si.bottomtexture := -1 - R_CustomColorMapForName(string(tex));
 
     tex := _get_char8;
-    si.midtexture := R_SafeTextureNumForName(tex);
+    si.midtexture := R_SafeTextureNumForName(string(tex));
     if si.midtexture = 0 then
-      si.midtexture := -1 - R_CustomColorMapForName(tex);
+      si.midtexture := -1 - R_CustomColorMapForName(string(tex));
 
     inc(i);
   end;

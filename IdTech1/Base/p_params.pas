@@ -109,7 +109,7 @@ begin
   begin
     check := actor.customparams;
     actor.customparams := Z_Malloc(SizeOf(mobjcustomparam_t), PU_LEVEL, nil);
-    actor.customparams.name := strupper(name);
+    actor.customparams.name := ShortString(strupper(name));
     actor.customparams.value := value;
     actor.customparams.next := check;
     result := actor.customparams;

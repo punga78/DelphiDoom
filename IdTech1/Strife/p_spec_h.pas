@@ -47,7 +47,6 @@ interface
 uses
   doomdef,
   m_fixed,
-  d_player,
   d_think,
   p_local,
   p_mobj_h,
@@ -383,7 +382,6 @@ type
     frontsector: Psector_t;
     status: sd_e;
   end;
-  slidedoor_p = ^slidedoor_t;
   Pslidedoor_t = ^slidedoor_t;
 
 // villsa [STRIFE] no front/back frames

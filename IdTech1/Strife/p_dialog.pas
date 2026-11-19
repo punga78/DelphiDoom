@@ -208,9 +208,7 @@ uses
   DelphiDoom.Engine.World.EnemyRules,
   p_doors,
   p_spec_h,
-  p_spec,
   p_map,
-  p_user,
   DelphiDoom.Engine.World.PlayerExtras,
   p_tick,
   info,
@@ -228,7 +226,6 @@ type
     teaser1: integer;
     teaser2: integer;
   end;
-  teaserxlat_p = ^teaserxlat_t;
 
 const
   TEASERXLATSIZE = 323;
@@ -1316,7 +1313,7 @@ begin
     if mobjinfo[Ord(_type)].name2 <> '' then
     begin
       pickupstring := TDehMainRoutines.DEH_GetString(mobjinfo[Ord(_type)].name2);
-      player._message := pickupstring;
+      player._message := ShortString(pickupstring);
     end;
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
@@ -1838,7 +1835,7 @@ begin
       if _message <> '' then
         if _message[1] = '.' then
           _message := '';
-    dialogplayer._message := _message;
+    dialogplayer._message := ShortString(_message);
   end;
 
   dialogtalker.angle := dialogtalkerangle;
@@ -2097,7 +2094,7 @@ begin
     itemOn := 0;
 
   // get backdrop
-  pic := TWadRoutines.W_CheckNumForName(currentdialog.backpic);
+  pic := TWadRoutines.W_CheckNumForName(string(currentdialog.backpic));
   dialogbgpiclumpnum := pic;
   if pic <> -1 then
     V_DrawPatch(0, 0, SCN_TMP, pic, false);

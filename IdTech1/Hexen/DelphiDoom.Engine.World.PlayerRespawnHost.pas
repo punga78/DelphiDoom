@@ -66,7 +66,6 @@ uses
   tables,
   doomdef,
   doomdata,
-  d_player,
   info_h,
   i_system,
   m_rnd,

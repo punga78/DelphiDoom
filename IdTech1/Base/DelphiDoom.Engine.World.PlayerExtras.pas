@@ -57,12 +57,10 @@ uses
   p_tick,
   p_maputl,
   p_spec_h,
-  p_spec,
   r_main,
   sounds,
   s_sound,
-  doomdef,
-  doomstat;
+  doomdef;
 
 //==============================================================================
 //
