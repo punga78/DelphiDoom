@@ -20,7 +20,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Register(ANumber: Integer; const AHandler: TSpecialHandler);
+    procedure Register(ANumber: Integer; const AHandler: TSpecialHandler); overload;
+    procedure Register(ANumber: Integer; const AHandler: TSpecialProc); overload;
     function Contains(ANumber: Integer): Boolean;
     function Execute(const AContext: TSpecialContext): Boolean;
     function Numbers: TArray<Integer>;
@@ -56,6 +57,20 @@ begin
   if FHandlers.ContainsKey(ANumber) then
     raise ESpecialRegistryException.CreateFmt(SSpecialAlreadyRegistered, [ANumber]);
   FHandlers.Add(ANumber, AHandler);
+end;
+
+procedure TSpecialRegistry.Register(ANumber: Integer; const AHandler: TSpecialProc);
+var
+  LHandler: TSpecialHandler;
+begin
+  if not Assigned(AHandler) then
+    raise ESpecialRegistryException.CreateFmt(SSpecialWithoutHandler, [ANumber]);
+  LHandler :=
+    function(const AContext: TSpecialContext): Boolean
+    begin
+      Result := AHandler(AContext);
+    end;
+  Register(ANumber, LHandler);
 end;
 
 function TSpecialRegistry.Contains(ANumber: Integer): Boolean;
