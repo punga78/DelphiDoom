@@ -48,6 +48,7 @@ type
     function GetEntry(AIndex: Integer): TQ3ShaderEntry;
     function SortedIndexOf(AIndex: Integer): Integer;
     function GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
+    function GetSortedShader(ASortedIndex: Integer): Integer;
     function Count: Integer;
     procedure SetLightmapCount(ACount: Integer);
     function GetLightmapCount: Integer;
@@ -300,11 +301,16 @@ begin
   Result := FEntries[AIndex];
 end;
 
-function TQ3ShaderTable.GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
+function TQ3ShaderTable.GetSortedShader(ASortedIndex: Integer): Integer;
 begin
   if (ASortedIndex < 0) or (ASortedIndex >= FSorted.Count) then
-    Exit(FEntries[0]);
-  Result := FEntries[FSorted[ASortedIndex]];
+    Exit(0);
+  Result := FSorted[ASortedIndex];
+end;
+
+function TQ3ShaderTable.GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
+begin
+  Result := FEntries[GetSortedShader(ASortedIndex)];
 end;
 
 function TQ3ShaderTable.SortedIndexOf(AIndex: Integer): Integer;

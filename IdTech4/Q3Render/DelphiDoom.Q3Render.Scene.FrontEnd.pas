@@ -26,6 +26,10 @@ type
   /// <summary>Turns a handle of the module (the host numbers) into the index of the renderer's own table</summary>
   TQ3HandleMapper = reference to function(AHostHandle: Integer): Integer;
 
+  /// <summary>R_AddDrawSurfCmd: a view was sorted; the surfaces are a copy of its range of the list</summary>
+  TQ3DrawSurfsEvent = reference to procedure(const AView: TQ3FrontViewParms; const ARefDef: TQ3RefDef;
+    const ASurfaces: TArray<TQ3DrawSurf>; const AEntities: TArray<TQ3RefEntity>);
+
   /// <summary>What a view left: its parameters and where its sorted drawSurfs are in the list</summary>
   TQ3ViewResult = record
     View: TQ3FrontViewParms;
@@ -69,6 +73,7 @@ type
     FVisMins: TQ3Vec3;
     FVisMaxs: TQ3Vec3;
     FAreaMaskModified: Boolean;
+    FOnDrawSurfs: TQ3DrawSurfsEvent;
     procedure AddPolygonSurfaces;
     procedure AddEntitySurfaces(const AView: TQ3FrontViewParms);
     procedure AddMd3Surfaces(AEntityNumber: Integer; var AEntity: TQ3RefEntity; const AModel: IMd3Model;
@@ -105,6 +110,8 @@ type
     /// <summary>The height of the window (glConfig.vidHeight): the viewport of a view is counted from the bottom</summary>
     property VidHeight: Integer read FVidHeight write FVidHeight;
     property Settings: TQ3RenderSettings read FSettings;
+    /// <summary>Called for every view that was sorted (R_AddDrawSurfCmd), also for a view without surfaces</summary>
+    property OnDrawSurfs: TQ3DrawSurfsEvent read FOnDrawSurfs write FOnDrawSurfs;
   end;
 
 implementation
@@ -497,8 +504,9 @@ end;
 
 procedure TQ3FrontEnd.RenderView(var AParms: TQ3FrontViewParms);
 var
-  LFirst: Integer;
+  LFirst, LIndex: Integer;
   LWorld: TQ3ViewOrientation;
+  LSurfaces: TArray<TQ3DrawSurf>;
 begin
   if (AParms.ViewportWidth <= 0) or (AParms.ViewportHeight <= 0) then
     Exit;
@@ -514,6 +522,13 @@ begin
   FLastResult.View := AParms;
   FLastResult.FirstDrawSurf := LFirst;
   FLastResult.NumDrawSurfs := FList.Count - LFirst;
+  if Assigned(FOnDrawSurfs) then
+  begin
+    SetLength(LSurfaces, FLastResult.NumDrawSurfs);
+    for LIndex := 0 to High(LSurfaces) do
+      LSurfaces[LIndex] := FList.Item(LFirst + LIndex);
+    FOnDrawSurfs(AParms, FRefDef, LSurfaces, FEntities);
+  end;
 end;
 
 procedure TQ3FrontEnd.RenderScene(const ARefDef: TQ3RefDef);

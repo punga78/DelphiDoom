@@ -89,6 +89,8 @@ type
     function SortedIndexOf(AIndex: Integer): Integer;
     /// <summary>tr.sortedShaders[ASortedIndex]: the entry that has this place in the list sorted by sort</summary>
     function GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
+    /// <summary>The table index of the shader that has this place in the sorted list</summary>
+    function GetSortedShader(ASortedIndex: Integer): Integer;
     function Count: Integer;
     /// <summary>tr.numLightmaps: R_FindShader turns a lightmap that is not there into LIGHTMAP_BY_VERTEX</summary>
     procedure SetLightmapCount(ACount: Integer);

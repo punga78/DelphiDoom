@@ -56,6 +56,7 @@ type
     function GetEntry(AIndex: Integer): TQ3ShaderEntry;
     function SortedIndexOf(AIndex: Integer): Integer;
     function GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
+    function GetSortedShader(ASortedIndex: Integer): Integer;
     function Count: Integer;
     procedure SetLightmapCount(ACount: Integer);
     function GetLightmapCount: Integer;
@@ -96,6 +97,11 @@ end;
 function TFrontFakeShaders.GetSortedEntry(ASortedIndex: Integer): TQ3ShaderEntry;
 begin
   Result := GetEntry(0);
+end;
+
+function TFrontFakeShaders.GetSortedShader(ASortedIndex: Integer): Integer;
+begin
+  Result := 0;
 end;
 
 function TFrontFakeShaders.Count: Integer;
