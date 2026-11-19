@@ -12520,7 +12520,7 @@ begin
   if not TCommonStateParamActions.P_CheckStateArgs(actor.state) then
     exit;
 
-  actor.translationname := actor.state.params.StrVal[0];
+  actor.translationname := ShortString(actor.state.params.StrVal[0]);
   R_InitMobjTranslation(actor);
 end;
 

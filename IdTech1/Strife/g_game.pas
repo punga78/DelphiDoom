@@ -1638,7 +1638,7 @@ begin
          (((_SHR(TGameSession.GameTic, 5)) and 3) = i) then
       begin
         sprintf(msg, '%s is turbo!', [player_names[i]]);
-        TGameSession.Players[TGameSession.ConsolePlayer]._message := msg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(msg);
       end;
 
       if TGameSession.NetGame and not TGameSession.NetDemo and (TGameSession.GameTic mod ticdup = 0) then
@@ -2365,7 +2365,7 @@ begin
 
   // [STRIFE]: custom message logic
   if path <> savepath then
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := GGSAVED;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(GGSAVED);
 
   // draw the pattern into the back screen
 {$IFNDEF OPENGL}
@@ -2457,7 +2457,7 @@ begin
 
   if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(STSTR_CLEV);
     G_DeferedInitNew(TGameSession.GameSkill, map);
     C_ExecuteCmd('closeconsole', '1');
   end

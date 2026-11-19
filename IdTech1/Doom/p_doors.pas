@@ -154,7 +154,7 @@ begin
         if (not p.cards[Ord(it_bluecard)]) and
            (not p.cards[Ord(it_blueskull)]) then
         begin
-          p._message := PD_BLUEO;
+          p._message := ShortString(PD_BLUEO);
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -167,7 +167,7 @@ begin
         if (not p.cards[Ord(it_redcard)]) and
            (not p.cards[Ord(it_redskull)]) then
         begin
-          p._message := PD_REDO;
+          p._message := ShortString(PD_REDO);
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -180,7 +180,7 @@ begin
         if (not p.cards[Ord(it_yellowcard)]) and
            (not p.cards[Ord(it_yellowskull)]) then
         begin
-          p._message := PD_YELLOWO;
+          p._message := ShortString(PD_YELLOWO);
           TSoundRoutines.S_StartSound(nil, Ord(sfx_oof));
           result := 0;
           exit;
@@ -259,7 +259,7 @@ begin
         if not player.cards[Ord(it_bluecard)] and
            not player.cards[Ord(it_blueskull)] then
         begin
-          player._message := PD_BLUEK;
+          player._message := ShortString(PD_BLUEK);
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));
           exit;
         end;
@@ -273,7 +273,7 @@ begin
         if not player.cards[Ord(it_yellowcard)] and
            not player.cards[Ord(it_yellowskull)] then
         begin
-          player._message := PD_YELLOWK;
+          player._message := ShortString(PD_YELLOWK);
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));
           exit;
         end;
@@ -287,7 +287,7 @@ begin
         if not player.cards[Ord(it_redcard)] and
            not player.cards[Ord(it_redskull)] then
         begin
-          player._message := PD_REDK;
+          player._message := ShortString(PD_REDK);
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));
           exit;
         end;

@@ -867,7 +867,7 @@ begin
 
   P_RemoveMobj(special);
   player.bonuscount := player.bonuscount + BONUSADD;
-  player._message := pickupmsg;
+  player._message := ShortString(pickupmsg);
   if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
     TSoundRoutines.S_StartSound(nil, sound);
 end;
@@ -916,7 +916,7 @@ begin
       begin
         sprintf(plrkilledmsg, TDehMainRoutines.DEH_GetString('%s killed %s'),
           [player_names[p.allegiance], player_names[Pplayer_t(target.player).allegiance]]);
-        TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
+        TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(plrkilledmsg);
       end;
     end;
   end
@@ -1139,7 +1139,7 @@ begin
         if TGameSession.DeathMatch <> 0 then
         begin
           plrkilledmsg := TDehMainRoutines.DEH_GetString('You''re dead!  You set off the alarm.');
-          TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(plrkilledmsg);
         end;
 
         exit;
@@ -1189,7 +1189,7 @@ begin
         if TGameSession.DeathMatch <> 0 then
         begin
           plrkilledmsg := TDehMainRoutines.DEH_GetString('You Fool!  You''ve set off the alarm');
-          TGameSession.Players[TGameSession.ConsolePlayer]._message := plrkilledmsg;
+          TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(plrkilledmsg);
           exit;
         end;
       end;

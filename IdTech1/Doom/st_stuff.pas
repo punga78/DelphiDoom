@@ -726,10 +726,10 @@ begin
         plyr.mo.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
 
       plyr.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
-      plyr._message := STSTR_DQDON;
+      plyr._message := ShortString(STSTR_DQDON);
     end
     else
-      plyr._message := STSTR_DQDOFF;
+      plyr._message := ShortString(STSTR_DQDOFF);
   end
   else
   begin
@@ -751,7 +751,7 @@ begin
   if (TGameSession.GameState = GS_LEVEL) and (plyr.mo <> nil) then
   begin
     TDoomMonsterActions.P_Massacre;
-    plyr._message := STSTR_MASSACRE;
+    plyr._message := ShortString(STSTR_MASSACRE);
   end;
 end;
 
@@ -769,7 +769,7 @@ begin
   if plyr.cheats and CF_LOWGRAVITY <> 0 then
     plyr._message := STSTR_LGON
   else
-    plyr._message := STSTR_LGOFF;
+    plyr._message := ShortString(STSTR_LGOFF);
 end;
 
 //==============================================================================
@@ -805,7 +805,7 @@ begin
       plyr.ammo[i] := plyr.maxammo[i];
   end;
 
-  plyr._message := STSTR_FAADDED;
+  plyr._message := ShortString(STSTR_FAADDED);
 end;
 
 //==============================================================================
@@ -844,7 +844,7 @@ begin
   for i := 0 to Ord(NUMCARDS) - 1 do
     plyr.cards[i] := true;
 
-  plyr._message := STSTR_KFAADDED;
+  plyr._message := ShortString(STSTR_KFAADDED);
 end;
 
 //==============================================================================
@@ -862,7 +862,7 @@ begin
   for i := 0 to Ord(NUMCARDS) - 1 do
     plyr.cards[i] := true;
 
-  plyr._message := STSTR_KEYSADDED;
+  plyr._message := ShortString(STSTR_KEYSADDED);
 end;
 
 //==============================================================================
@@ -893,7 +893,7 @@ begin
   if plyr.cheats and CF_NOCLIP <> 0 then
     plyr._message := STSTR_NCON
   else
-    plyr._message := STSTR_NCOFF;
+    plyr._message := ShortString(STSTR_NCOFF);
 end;
 
 //==============================================================================
@@ -913,7 +913,7 @@ begin
           plyr.mo.x div FRACUNIT,
           plyr.mo.y div FRACUNIT,
           plyr.mo.z div FRACUNIT]);
-  plyr._message := buf;
+  plyr._message := ShortString(buf);
 end;
 
 //==============================================================================
@@ -1047,7 +1047,7 @@ begin
       // 'mus' cheat for changing music
       else if check_cheat(@cheat_mus, Chr(ev.data1)) then
       begin
-        plyr._message := STSTR_MUS;
+        plyr._message := ShortString(STSTR_MUS);
         cht_GetParam(@cheat_mus, buf);
 
         if gamemode = commercial then
@@ -1068,7 +1068,7 @@ begin
                ((musnum < 10) and (gamemode = shareware))) then
             TSoundRoutines.S_ChangeMusic(musnum, true)
           else
-            plyr._message := STSTR_NOMUS;
+            plyr._message := ShortString(STSTR_NOMUS);
         end;
       end
       // Simplified, accepting both "noclip" and "idspispopd".
@@ -1090,21 +1090,21 @@ begin
           else
             plyr.powers[i] := 0;
 
-          plyr._message := STSTR_BEHOLDX;
+          plyr._message := ShortString(STSTR_BEHOLDX);
         end;
       end;
 
       // 'behold' power-up menu
       if check_cheat(@cheat_powerup[6], Chr(ev.data1)) then
       begin
-        plyr._message := STSTR_BEHOLD;
+        plyr._message := ShortString(STSTR_BEHOLD);
       end
       // 'choppers' invulnerability & chainsaw
       else if check_cheat(@cheat_choppers, Chr(ev.data1)) then
       begin
         plyr.weaponowned[Ord(wp_chainsaw)] := 1;
         plyr.powers[Ord(pw_invulnerability)] := INVULNTICS;
-        plyr._message := STSTR_CHOPPERS;
+        plyr._message := ShortString(STSTR_CHOPPERS);
       end
       // 'mypos' for player position
       else if check_cheat(@cheat_mypos, Chr(ev.data1)) then
@@ -1117,7 +1117,7 @@ begin
     if check_cheat(@cheat_clev, Chr(ev.data1)) then
     begin
       cht_GetParam(@cheat_clev, buf);
-      plyr._message := STSTR_WLEV;
+      plyr._message := ShortString(STSTR_WLEV);
 
       if gamemode = commercial then
       begin
@@ -1154,7 +1154,7 @@ begin
       if entry <> nil then
         if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
         begin
-          plyr._message := STSTR_CLEV;
+          plyr._message := ShortString(STSTR_CLEV);
           G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
           result := result or ateit;
           exit;
@@ -1188,7 +1188,7 @@ begin
       // So be it.
       if TWadRoutines.W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
       begin
-        plyr._message := STSTR_CLEV;
+        plyr._message := ShortString(STSTR_CLEV);
         G_DeferedInitNew(TGameSession.GameSkill, epsd, map);
       end;
     end;

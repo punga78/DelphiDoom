@@ -251,7 +251,7 @@ end;
 //==============================================================================
 procedure R_SetMobjBloodTranslation(const mo: Pmobj_t; const blood: integer);
 begin
-  mo.translationname := TTranslationBlood.NameOf(blood);
+  mo.translationname := ShortString(TTranslationBlood.NameOf(blood));
   mo.translationtable := R_GetTranslationTable(mo.translationname);
 end;
 

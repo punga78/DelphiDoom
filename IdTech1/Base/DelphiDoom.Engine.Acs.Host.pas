@@ -425,7 +425,7 @@ begin
   {$IFDEF HEXEN}
   TInterRoutines.P_SetMessage(LPlayer, AText, True);
   {$ELSE}
-  LPlayer._message := AText;
+  LPlayer._message := ShortString(AText);
   {$ENDIF}
 end;
 
@@ -439,7 +439,7 @@ begin
       {$IFDEF HEXEN}
       TInterRoutines.P_SetMessage(@TGameSession.Players[LIndex], AText, True);
       {$ELSE}
-      TGameSession.Players[LIndex]._message := AText;
+      TGameSession.Players[LIndex]._message := ShortString(AText);
       {$ENDIF}
     end;
 end;
@@ -449,7 +449,7 @@ begin
   {$IFDEF HEXEN}
   TInterRoutines.P_SetMessage(@TGameSession.Players[TGameSession.ConsolePlayer], AText, True);
   {$ELSE}
-  TGameSession.Players[TGameSession.ConsolePlayer]._message := AText;
+  TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(AText);
   {$ENDIF}
 end;
 

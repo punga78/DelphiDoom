@@ -822,7 +822,7 @@ begin
           if am_navigator.FollowPlayer then
             plr._message := AMSTR_FOLLOWON
           else
-            plr._message := AMSTR_FOLLOWOFF;
+            plr._message := ShortString(AMSTR_FOLLOWOFF);
         end;
       akcGrid:
         begin
@@ -830,7 +830,7 @@ begin
           if automapgrid then
             plr._message := AMSTR_GRIDON
           else
-            plr._message := AMSTR_GRIDOFF;
+            plr._message := ShortString(AMSTR_GRIDOFF);
         end;
       akcRotate:
         begin
@@ -838,7 +838,7 @@ begin
           if allowautomaprotate then
             plr._message := AMSTR_ROTATEON
           else
-            plr._message := AMSTR_ROTATEOFF;
+            plr._message := ShortString(AMSTR_ROTATEOFF);
         end;
       akcTextured:
         begin
@@ -851,13 +851,13 @@ begin
       akcMark:
         begin
           sprintf(_message, '%s %d', [AMSTR_MARKEDSPOT, am_marks.NextIndex]);
-          plr._message := _message;
+          plr._message := ShortString(_message);
           AM_addMark;
         end;
       akcClearMarks:
         begin
           AM_clearMarks;
-          plr._message := AMSTR_MARKSCLEARED;
+          plr._message := ShortString(AMSTR_MARKSCLEARED);
         end;
     else
       result := false;
@@ -1559,7 +1559,7 @@ begin
   TAutomapShapes.FillTracePlayerGuy(@traceplayer_guy[0]);
 
 ////////////////////////////////////////////////////////////////////////////////
-  cheat_amap.sequence := get_cheatseq_string(cheat_amap_seq);
+  cheat_amap.sequence := AnsiString(get_cheatseq_string(cheat_amap_seq));
   cheat_amap.p := get_cheatseq_string(0);
 
 ////////////////////////////////////////////////////////////////////////////////

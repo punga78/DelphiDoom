@@ -411,12 +411,12 @@ begin
     if (iwadtbl[i].size = size) and (iwadtbl[i].numlumps = numlmps) then
     begin
       if crc32 = '' then
-        crc32 := D_FileCRC32(filename);
+        crc32 := ShortString(D_FileCRC32(filename));
       if iwadtbl[i].crc32 = crc32 then
       begin
         gameversion := iwadtbl[i].version;
         customgame := iwadtbl[i].customgame;
-        savepath := iwadtbl[i].savepath;
+        savepath := string(iwadtbl[i].savepath);
         exit;
       end;
     end;
@@ -555,10 +555,10 @@ begin
     if (pwadtbl[i].size = size) and (pwadtbl[i].numlumps = numlmps) then
     begin
       if crc32 = '' then
-        crc32 := D_FileCRC32(filename);
+        crc32 := ShortString(D_FileCRC32(filename));
       if pwadtbl[i].crc32 = crc32 then
       begin
-        savepath := pwadtbl[i].savepath;
+        savepath := string(pwadtbl[i].savepath);
         exit;
       end;
     end;

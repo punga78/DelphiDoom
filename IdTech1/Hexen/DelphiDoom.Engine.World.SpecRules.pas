@@ -944,7 +944,7 @@ begin
     9: // SecretArea
       begin
         inc(player.secretcount);
-        player._message := MSGSECRETSECTOR;
+        player._message := ShortString(MSGSECRETSECTOR);
         sector.special := 0;
       end;
 

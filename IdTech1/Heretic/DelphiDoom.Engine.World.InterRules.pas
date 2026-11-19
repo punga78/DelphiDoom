@@ -1553,7 +1553,7 @@ begin
   if (ultimatemsg or (showMessages = 0)) and not ultmsg then
     exit;
 
-  player._message := msg;
+  player._message := ShortString(msg);
 //  player.messageTics := MESSAGETICS;
 //  BorderTopRefresh = true;
   if ultmsg then

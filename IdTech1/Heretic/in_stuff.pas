@@ -268,7 +268,7 @@ class procedure TIntermissionLocalRoutines.IN_CheckCustomPics;
 begin
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.exitpic <> '') then
   begin
-    exitpic := wbs.lastmapinfo.exitpic;
+    exitpic := string(wbs.lastmapinfo.exitpic);
     if exitpic = '-' then
       exitpic := ''
     else if TWadRoutines.W_CheckNumForName(exitpic) < 0 then
@@ -279,7 +279,7 @@ begin
 
   if (wbs.nextmapinfo <> nil) and (wbs.nextmapinfo.enterpic <> '') then
   begin
-    enterpic := wbs.nextmapinfo.enterpic;
+    enterpic := string(wbs.nextmapinfo.enterpic);
     if enterpic = '-' then
       enterpic := ''
     else if TWadRoutines.W_CheckNumForName(enterpic) < 0 then

@@ -486,7 +486,7 @@ end;
 //==============================================================================
 class procedure THudLocalRoutines.HU_CmdPlayerMessage(const parm1, parm2: string);
 begin
-  TGameSession.Players[TGameSession.ConsolePlayer]._message := parm1 + ' ' + parm2;
+  TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(parm1 + ' ' + parm2);
 end;
 
 //==============================================================================

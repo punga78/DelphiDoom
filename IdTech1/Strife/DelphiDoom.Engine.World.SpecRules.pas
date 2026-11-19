@@ -470,7 +470,7 @@ begin
            not player.cards[Ord(key_SilverKey)] and
            not player.cards[Ord(key_WarehouseKey)] then
         begin
-          player._message := PD_ANY; // Ty 03/27/98 - externalized
+          player._message := ShortString(PD_ANY); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -507,7 +507,7 @@ begin
            not player.cards[Ord(key_SilverKey)] or
            not player.cards[Ord(key_WarehouseKey)] then
         begin
-          player._message := PD_ALL6; // Ty 03/27/98 - externalized
+          player._message := ShortString(PD_ALL6); // Ty 03/27/98 - externalized
           TSoundRoutines.S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -2116,7 +2116,7 @@ begin
      9:
       begin
         // SECRET SECTOR
-        player._message := MSGSECRETSECTOR;
+        player._message := ShortString(MSGSECRETSECTOR);
         if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
           TSoundRoutines.S_StartSound(nil, Ord(sfx_yeah));
         sector.special := 0;
@@ -2189,7 +2189,7 @@ begin
 
     if sector.special and SECRET_MASK <> 0 then
     begin
-      player._message := MSGSECRETSECTOR;
+      player._message := ShortString(MSGSECRETSECTOR);
       sector.special := sector.special and not SECRET_MASK;
       if sector.special < 32 then // if all extended bits clear,
         sector.special := 0;    // sector is not special anymore

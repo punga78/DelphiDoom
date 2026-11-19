@@ -74,9 +74,9 @@ begin
   {$IFDEF STRIFE}
   Result.Texts[ttName2] := CharsToText(@LInfo.name2[0]);
   {$ENDIF}
-  Result.Texts[ttObituary] := LInfo.obituary;
-  Result.Texts[ttHitObituary] := LInfo.hitobituary;
-  Result.Texts[ttTranslation] := LInfo.translationname;
+  Result.Texts[ttObituary] := string(LInfo.obituary);
+  Result.Texts[ttHitObituary] := string(LInfo.hitobituary);
+  Result.Texts[ttTranslation] := string(LInfo.translationname);
 
   Result.Numbers[tfInheritsFrom] := LInfo.inheritsfrom;
   Result.Numbers[tfDoomedNum] := LInfo.doomednum;

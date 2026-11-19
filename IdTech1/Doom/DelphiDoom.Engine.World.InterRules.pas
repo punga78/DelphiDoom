@@ -440,14 +440,14 @@ begin
       begin
         if not P_GiveArmor(player, p_greenarmorclass) then
           exit;
-        player._message := GOTARMOR;
+        player._message := ShortString(GOTARMOR);
       end;
 
     Ord(SPR_ARM2):
       begin
         if not P_GiveArmor(player, p_bluearmorclass) then
           exit;
-        player._message := GOTMEGA;
+        player._message := ShortString(GOTMEGA);
       end;
 
   // bonus items
@@ -457,7 +457,7 @@ begin
         if player.health > p_maxhealth then
           player.health := p_maxhealth;
         player.mo.health := player.health;
-        player._message := GOTHTHBONUS;
+        player._message := ShortString(GOTHTHBONUS);
       end;
 
     Ord(SPR_BON2):
@@ -467,7 +467,7 @@ begin
           player.armorpoints := p_maxarmor;
         if player.armortype = 0 then
           player.armortype := 1;
-        player._message := GOTARMBONUS;
+        player._message := ShortString(GOTARMBONUS);
       end;
 
     Ord(SPR_SOUL):
@@ -476,7 +476,7 @@ begin
         if player.health > p_maxsoulsphere then
           player.health := p_maxsoulsphere;
         player.mo.health := player.health;
-        player._message := GOTSUPER;
+        player._message := ShortString(GOTSUPER);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -488,7 +488,7 @@ begin
         player.health := 200;
         player.mo.health := player.health;
         P_GiveArmor(player, p_bluearmorclass);
-        player._message := GOTMSPHERE;
+        player._message := ShortString(GOTMSPHERE);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -498,7 +498,7 @@ begin
     Ord(SPR_BKEY):
       begin
         if not player.cards[Ord(it_bluecard)] then
-          player._message := GOTBLUECARD;
+          player._message := ShortString(GOTBLUECARD);
         TInterLocalRoutines.P_GiveCard(player, it_bluecard);
         if TGameSession.NetGame then
         begin
@@ -514,7 +514,7 @@ begin
     Ord(SPR_YKEY):
       begin
         if not player.cards[Ord(it_yellowcard)] then
-          player._message := GOTYELWCARD;
+          player._message := ShortString(GOTYELWCARD);
         TInterLocalRoutines.P_GiveCard(player, it_yellowcard);
         if TGameSession.NetGame then
         begin
@@ -530,7 +530,7 @@ begin
     Ord(SPR_RKEY):
       begin
         if not player.cards[Ord(it_redcard)] then
-          player._message := GOTREDCARD;
+          player._message := ShortString(GOTREDCARD);
         TInterLocalRoutines.P_GiveCard(player, it_redcard);
         if TGameSession.NetGame then
         begin
@@ -546,7 +546,7 @@ begin
     Ord(SPR_BSKU):
       begin
         if not player.cards[Ord(it_blueskull)] then
-          player._message := GOTBLUESKUL;
+          player._message := ShortString(GOTBLUESKUL);
         TInterLocalRoutines.P_GiveCard(player, it_blueskull);
         if TGameSession.NetGame then
         begin
@@ -562,7 +562,7 @@ begin
     Ord(SPR_YSKU):
       begin
         if not player.cards[Ord(it_yellowskull)] then
-          player._message := GOTYELWSKUL;
+          player._message := ShortString(GOTYELWSKUL);
         TInterLocalRoutines.P_GiveCard(player, it_yellowskull);
         if TGameSession.NetGame then
         begin
@@ -578,7 +578,7 @@ begin
     Ord(SPR_RSKU):
       begin
         if not player.cards[Ord(it_redskull)] then
-          player._message := GOTREDSKULL;
+          player._message := ShortString(GOTREDSKULL);
         TInterLocalRoutines.P_GiveCard(player, it_redskull);
         if TGameSession.NetGame then
         begin
@@ -596,7 +596,7 @@ begin
       begin
         if not P_GiveBody(player, p_stimpackhealth) then
           exit;
-        player._message := GOTSTIM;
+        player._message := ShortString(GOTSTIM);
       end;
 
     Ord(SPR_MEDI):
@@ -611,14 +611,14 @@ begin
           if oldhealth < player.mo.info.spawnhealth div 4 then
             player._message := GOTMEDINEED
           else
-            player._message := GOTMEDIKIT;
+            player._message := ShortString(GOTMEDIKIT);
         end
         else
         begin
           if player.health < p_medikithealth then
             player._message := GOTMEDINEED
           else
-            player._message := GOTMEDIKIT;
+            player._message := ShortString(GOTMEDIKIT);
         end;
       end;
 
@@ -627,7 +627,7 @@ begin
       begin
         if not TInterRoutines.P_GivePower(player, Ord(pw_invulnerability)) then
           exit;
-        player._message := GOTINVUL;
+        player._message := ShortString(GOTINVUL);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -636,7 +636,7 @@ begin
       begin
         if not TInterRoutines.P_GivePower(player, Ord(pw_strength)) then
           exit;
-        player._message := GOTBERSERK;
+        player._message := ShortString(GOTBERSERK);
         if player.readyweapon <> wp_fist then
           player.pendingweapon := wp_fist;
         if not oldsharewareversion then
@@ -647,7 +647,7 @@ begin
       begin
         if not TInterRoutines.P_GivePower(player, Ord(pw_invisibility)) then
           exit;
-        player._message := GOTINVIS;
+        player._message := ShortString(GOTINVIS);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -656,7 +656,7 @@ begin
       begin
         if not TInterRoutines.P_GivePower(player, Ord(pw_ironfeet)) then
           exit;
-        player._message := GOTSUIT;
+        player._message := ShortString(GOTSUIT);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -665,7 +665,7 @@ begin
       begin
         if not TInterRoutines.P_GivePower(player, Ord(pw_allmap)) then
           exit;
-        player._message := GOTMAP;
+        player._message := ShortString(GOTMAP);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -674,7 +674,7 @@ begin
       begin
         if not TInterRoutines.P_GivePower(player, Ord(pw_infrared)) then
           exit;
-        player._message := GOTVISOR;
+        player._message := ShortString(GOTVISOR);
         if not oldsharewareversion then
           sound := Ord(sfx_getpow);
       end;
@@ -692,42 +692,42 @@ begin
           if not TInterLocalRoutines.P_GiveAmmo(player, am_clip, 1) then
             exit;
         end;
-        player._message := GOTCLIP;
+        player._message := ShortString(GOTCLIP);
       end;
 
     Ord(SPR_AMMO):
       begin
         if not TInterLocalRoutines.P_GiveAmmo(player, am_clip, 5) then
           exit;
-        player._message := GOTCLIPBOX;
+        player._message := ShortString(GOTCLIPBOX);
       end;
 
     Ord(SPR_ROCK):
       begin
         if not TInterLocalRoutines.P_GiveAmmo(player, am_misl, 1) then
           exit;
-        player._message := GOTROCKET;
+        player._message := ShortString(GOTROCKET);
       end;
 
     Ord(SPR_BROK):
       begin
         if not TInterLocalRoutines.P_GiveAmmo(player, am_misl, 5) then
           exit;
-        player._message := GOTROCKBOX;
+        player._message := ShortString(GOTROCKBOX);
       end;
 
     Ord(SPR_CELL):
       begin
         if not TInterLocalRoutines.P_GiveAmmo(player, am_cell, 1) then
           exit;
-        player._message := GOTCELL;
+        player._message := ShortString(GOTCELL);
       end;
 
     Ord(SPR_CELP):
       begin
         if not TInterLocalRoutines.P_GiveAmmo(player, am_cell, 5) then
           exit;
-        player._message := GOTCELLBOX;
+        player._message := ShortString(GOTCELLBOX);
       end;
 
     Ord(SPR_SHEL):
@@ -747,7 +747,7 @@ begin
           else
             begin
               sprintf(pmsg, GOTMANYSHELLS, [pickedshells]);
-              player._message := pmsg;
+              player._message := ShortString(pmsg);
             end;
           end;
         end;
@@ -757,7 +757,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveAmmo(player, am_shell, 5) then
           exit;
-        player._message := GOTSHELLBOX;
+        player._message := ShortString(GOTSHELLBOX);
       end;
 
     Ord(SPR_BPAK):
@@ -770,7 +770,7 @@ begin
         end;
         for i := 0 to Ord(NUMAMMO) - 1 do
           TInterLocalRoutines.P_GiveAmmo(player, ammotype_t(i), 1);
-        player._message := GOTBACKPACK;
+        player._message := ShortString(GOTBACKPACK);
       end;
 
   // weapons
@@ -778,7 +778,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_bfg, false) then
           exit;
-        player._message := GOTBFG9000;
+        player._message := ShortString(GOTBFG9000);
         sound := Ord(sfx_wpnup);
       end;
 
@@ -786,7 +786,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_chaingun, special.flags and MF_DROPPED <> 0) then
           exit;
-        player._message := GOTCHAINGUN;
+        player._message := ShortString(GOTCHAINGUN);
         sound := Ord(sfx_wpnup);
       end;
 
@@ -794,7 +794,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_chainsaw, false) then
           exit;
-        player._message := GOTCHAINSAW;
+        player._message := ShortString(GOTCHAINSAW);
         sound := Ord(sfx_wpnup);
       end;
 
@@ -802,7 +802,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_missile, false) then
           exit;
-        player._message := GOTLAUNCHER;
+        player._message := ShortString(GOTLAUNCHER);
         sound := Ord(sfx_wpnup);
       end;
 
@@ -810,7 +810,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_plasma, false) then
           exit;
-        player._message := GOTPLASMA;
+        player._message := ShortString(GOTPLASMA);
         sound := Ord(sfx_wpnup);
       end;
 
@@ -818,7 +818,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_shotgun, special.flags and MF_DROPPED <> 0) then
           exit;
-        player._message := GOTSHOTGUN;
+        player._message := ShortString(GOTSHOTGUN);
         sound := Ord(sfx_wpnup);
       end;
 
@@ -826,7 +826,7 @@ begin
       begin
         if not TInterLocalRoutines.P_GiveWeapon(player, wp_supershotgun, special.flags and MF_DROPPED <> 0) then
           exit;
-        player._message := GOTSHOTGUN2;
+        player._message := ShortString(GOTSHOTGUN2);
         sound := Ord(sfx_wpnup);
       end;
 

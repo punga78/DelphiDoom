@@ -1966,7 +1966,7 @@ begin
 
   if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
-    TGameSession.Players[TGameSession.ConsolePlayer]._message := STSTR_CLEV;
+    TGameSession.Players[TGameSession.ConsolePlayer]._message := ShortString(STSTR_CLEV);
     G_DeferedInitNewUntranslated(TGameSession.GameSkill, map);
     C_ExecuteCmd('closeconsole', '1');
   end

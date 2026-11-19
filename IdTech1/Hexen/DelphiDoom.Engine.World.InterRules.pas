@@ -2387,7 +2387,7 @@ begin
     exit;
 
   player.messageTics := MESSAGETICS;
-  player._message := msg;
+  player._message := ShortString(msg);
   if ultmsg then
     player.ultimateMessage := true;
   player.yellowMessage := false;
@@ -2405,7 +2405,7 @@ begin
     exit;
 
   player.messageTics := MESSAGETICS;
-  player._message := msg;
+  player._message := ShortString(msg);
   if ultmsg then
     player.ultimateMessage := true;
 

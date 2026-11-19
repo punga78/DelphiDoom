@@ -211,8 +211,8 @@ begin
   end;
 
   deh_strings._array[deh_strings.numstrings].pstr := pstr;
-  deh_strings._array[deh_strings.numstrings].original := pstr^;
-  deh_strings._array[deh_strings.numstrings].name := name;
+  deh_strings._array[deh_strings.numstrings].original := ShortString(pstr^);
+  deh_strings._array[deh_strings.numstrings].name := ShortString(name);
   stringhash[loselose(pstr^)].Add(deh_strings.numstrings);
   inc(deh_strings.numstrings);
 end;

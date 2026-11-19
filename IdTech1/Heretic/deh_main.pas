@@ -182,7 +182,7 @@ begin
   end;
 
   deh_strings._array[deh_strings.numstrings].pstr := pstr;
-  deh_strings._array[deh_strings.numstrings].name := name;
+  deh_strings._array[deh_strings.numstrings].name := ShortString(name);
   inc(deh_strings.numstrings);
 end;
 

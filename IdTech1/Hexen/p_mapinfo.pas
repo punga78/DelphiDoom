@@ -229,7 +229,7 @@ var
 //==============================================================================
 function P_GetMapDescName(const map: integer): string;
 begin
-  result := MapInfo[map].name;
+  result := string(MapInfo[map].name);
 end;
 
 //==============================================================================
@@ -307,7 +307,7 @@ begin
 
     // Map name must follow the number
     sc.MustGetString;
-    info.name := sc.AsString;
+    info.name := ShortString(sc.AsString);
 
     // Process optional tokens
     while sc.GetString do

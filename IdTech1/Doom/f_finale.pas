@@ -381,7 +381,7 @@ begin
       finaletext := 'The End';  // this is to avoid a crash on a missing text in the last map.
 
     if TGameSession.GameMapInfo.interbackdrop <> '' then
-      finaleflat := TGameSession.GameMapInfo.interbackdrop;
+      finaleflat := string(TGameSession.GameMapInfo.interbackdrop);
 
     if finaleflat = '' then
       finaleflat := 'FLOOR4_8'; // use a single fallback for all maps.

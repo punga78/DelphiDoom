@@ -1313,7 +1313,7 @@ begin
     if mobjinfo[Ord(_type)].name2 <> '' then
     begin
       pickupstring := TDehMainRoutines.DEH_GetString(mobjinfo[Ord(_type)].name2);
-      player._message := pickupstring;
+      player._message := ShortString(pickupstring);
     end;
     player.questflags := player.questflags or _SHLW(1, Ord(_type) - Ord(MT_TOKEN_QUEST1));
 
@@ -1835,7 +1835,7 @@ begin
       if _message <> '' then
         if _message[1] = '.' then
           _message := '';
-    dialogplayer._message := _message;
+    dialogplayer._message := ShortString(_message);
   end;
 
   dialogtalker.angle := dialogtalkerangle;

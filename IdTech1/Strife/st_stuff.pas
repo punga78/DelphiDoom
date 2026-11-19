@@ -489,10 +489,10 @@ begin
         plyr.mo.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
 
       plyr.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
-      plyr._message := STSTR_DQDON;
+      plyr._message := ShortString(STSTR_DQDON);
     end
     else
-      plyr._message := STSTR_DQDOFF;
+      plyr._message := ShortString(STSTR_DQDOFF);
   end
   else
   begin
@@ -515,7 +515,7 @@ begin
   if (TGameSession.GameState = GS_LEVEL) and (plyr.mo <> nil) then
   begin
     TStrifeMonsterActions.P_Massacre;
-    plyr._message := STSTR_MASSACRE;
+    plyr._message := ShortString(STSTR_MASSACRE);
   end;
 end;
 
@@ -533,7 +533,7 @@ begin
   if plyr.cheats and CF_LOWGRAVITY <> 0 then
     plyr._message := STSTR_LGON
   else
-    plyr._message := STSTR_LGOFF;
+    plyr._message := ShortString(STSTR_LGOFF);
 end;
 
 //==============================================================================
@@ -561,7 +561,7 @@ begin
   for i := 0 to Ord(NUMAMMO) - 1 do
     plyr.ammo[i] := plyr.maxammo[i];
 
-  plyr._message := STSTR_FAADDED;
+  plyr._message := ShortString(STSTR_FAADDED);
 end;
 
 //==============================================================================
@@ -581,7 +581,7 @@ begin
   for i := 0 to Ord(NUMCARDS) - 1 do
     plyr.cards[i] := true;
 
-  plyr._message := STSTR_KFAADDED;
+  plyr._message := ShortString(STSTR_KFAADDED);
 end;
 
 //==============================================================================
@@ -599,7 +599,7 @@ begin
   for i := 0 to Ord(NUMCARDS) - 1 do
     plyr.cards[i] := true;
 
-  plyr._message := STSTR_KEYSADDED;
+  plyr._message := ShortString(STSTR_KEYSADDED);
 end;
 
 //==============================================================================
@@ -629,12 +629,12 @@ begin
 
   if plyr.cheats and CF_NOCLIP <> 0 then
   begin
-    plyr._message := STSTR_NCON;
+    plyr._message := ShortString(STSTR_NCON);
     plyr.mo.flags := plyr.mo.flags or MF_NOCLIP
   end
   else
   begin
-    plyr._message := STSTR_NCOFF;
+    plyr._message := ShortString(STSTR_NCOFF);
     plyr.mo.flags := plyr.mo.flags and not MF_NOCLIP
   end
 end;
@@ -656,7 +656,7 @@ begin
           plyr.mo.x div FRACUNIT,
           plyr.mo.y div FRACUNIT,
           plyr.mo.z div FRACUNIT]);
-  plyr._message := buf;
+  plyr._message := ShortString(buf);
 end;
 
 //==============================================================================
@@ -929,7 +929,7 @@ begin
         if devparm then
           plyr._message := TDehMainRoutines.DEH_GetString('devparm ON')
         else
-          plyr._message := TDehMainRoutines.DEH_GetString('devparm OFF');
+          plyr._message := ShortString(TDehMainRoutines.DEH_GetString('devparm OFF'));
       end
       // 'omnipotent' cheat for toggleable god mode
       else if check_cheat(@cheat_god, Chr(ev.data1)) then
@@ -958,7 +958,7 @@ begin
         if plyr.cheats and CF_NOMOMENTUM <> 0 then
           plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS ON')
         else
-          plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS OFF');
+          plyr._message := ShortString(TDehMainRoutines.DEH_GetString('STEALTH BOOTS OFF'));
       end
       // topo
       else if check_cheat(@cheat_amap, Chr(ev.data1)) then
@@ -968,7 +968,7 @@ begin
       // 'mus' cheat for changing music
       else if check_cheat(@cheat_mus, Chr(ev.data1)) then
       begin
-        plyr._message := STSTR_MUS;
+        plyr._message := ShortString(STSTR_MUS);
         cht_GetParam(@cheat_mus, buf);
 
         musnum := (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0');
@@ -985,7 +985,7 @@ begin
         if plyr.cheats and CF_NOMOMENTUM <> 0 then
           plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS ON')
         else
-          plyr._message := TDehMainRoutines.DEH_GetString('STEALTH BOOTS OFF');
+          plyr._message := ShortString(TDehMainRoutines.DEH_GetString('STEALTH BOOTS OFF'));
       end;
 
       // [STRIFE]: Handle berserk, invisibility, and envirosuit
@@ -997,7 +997,7 @@ begin
             plyr.powers[i] := intval(i <> 1)
           else
             TInterRoutines.P_GivePower(plyr, i);
-          plyr._message := STSTR_BEHOLDX;
+          plyr._message := ShortString(STSTR_BEHOLDX);
         end;
       end;
 
@@ -1007,7 +1007,7 @@ begin
         P_GiveItemToPlayer(plyr, Ord(SPR_STMP), MT_INV_MED1);
         P_GiveItemToPlayer(plyr, Ord(SPR_MDKT), MT_INV_MED2);
         P_GiveItemToPlayer(plyr, Ord(SPR_FULL), MT_INV_MED3);
-        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
+        plyr._message := ShortString(TDehMainRoutines.DEH_GetString('you got the stuff!'));
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_P], Chr(ev.data1)) then
       begin
@@ -1021,26 +1021,26 @@ begin
 
         for i := 0 to Ord(NUMAMMO) - 1 do
           TInterRoutines.P_GiveAmmo(plyr, ammotype_t(i), 1);
-        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
+        plyr._message := ShortString(TDehMainRoutines.DEH_GetString('you got the stuff!'));
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_S], Chr(ev.data1)) then
       begin
         // [STRIFE]: PUMPUPS gives stamina and accuracy upgrades
         P_GiveItemToPlayer(plyr, Ord(SPR_TOKN), MT_TOKEN_STAMINA);
         P_GiveItemToPlayer(plyr, Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
-        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
+        plyr._message := ShortString(TDehMainRoutines.DEH_GetString('you got the stuff!'));
       end
       else if check_cheat(@cheat_powerup[ST_PUMPUP_T], Chr(ev.data1)) then
       begin
         // [STRIFE] PUMPUPT gives targeter
         TInterRoutines.P_GivePower(plyr, Ord(pw_targeter));
-        plyr._message := TDehMainRoutines.DEH_GetString('you got the stuff!');
+        plyr._message := ShortString(TDehMainRoutines.DEH_GetString('you got the stuff!'));
       end
       // [STRIFE]: PUMPUP
       else if check_cheat(@cheat_powerup[ST_PUMPUP], Chr(ev.data1)) then
       begin
         // 'behold' power-up menu
-        plyr._message := STSTR_BEHOLD;
+        plyr._message := ShortString(STSTR_BEHOLD);
         result := false;
         exit;
       end
@@ -1055,13 +1055,13 @@ begin
         cht_GetParam(@cheat_clev, buf);
         if length(buf) >= 2 then
         begin
-          plyr._message := STSTR_WLEV;
+          plyr._message := ShortString(STSTR_WLEV);
 
           map := (Ord(buf[1]) - Ord('0')) * 10 + Ord(buf[2]) - Ord('0');
 
           if TWadRoutines.W_CheckNumForName(P_GetMapName(map)) > -1 then
           begin
-            plyr._message := STSTR_CLEV;
+            plyr._message := ShortString(STSTR_CLEV);
             G_RiftExitLevel(map, 0, plyr.mo.angle);
           end;
         end;
@@ -1075,7 +1075,7 @@ begin
 
           if spot < 10 then
           begin
-            plyr._message := TDehMainRoutines.DEH_GetString('Spawning to spot');
+            plyr._message := ShortString(TDehMainRoutines.DEH_GetString('Spawning to spot'));
             G_RiftCheat(spot);
             result := false;
             exit;
@@ -1086,14 +1086,14 @@ begin
       else if check_cheat(@cheat_nuke, Chr(ev.data1)) then
       begin
         stonecold := stonecold xor true;
-        plyr._message := TDehMainRoutines.DEH_GetString('Kill ''em.  Kill ''em All');
+        plyr._message := ShortString(TDehMainRoutines.DEH_GetString('Kill ''em.  Kill ''em All'));
         result := false;
         exit;
       end
       // villsa [STRIFE]
       else if check_cheat(@cheat_midas, Chr(ev.data1)) then
       begin
-        plyr._message := TDehMainRoutines.DEH_GetString('YOU GOT THE MIDAS TOUCH, BABY');
+        plyr._message := ShortString(TDehMainRoutines.DEH_GetString('YOU GOT THE MIDAS TOUCH, BABY'));
         P_GiveItemToPlayer(plyr, Ord(SPR_HELT), MT_TOKEN_TOUGHNESS);
       end
       // villsa [STRIFE]

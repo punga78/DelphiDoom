@@ -808,7 +808,7 @@ begin
   for i := 1 to actor.state.params.Count - 1 do
     msg := msg + ' ' + actor.state.params.StrVal[i];
 
-  p._message := msg;
+  p._message := ShortString(msg);
 end;
 
 //==============================================================================

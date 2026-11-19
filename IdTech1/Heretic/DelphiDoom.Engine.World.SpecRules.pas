@@ -953,7 +953,7 @@ begin
       begin
         // SECRET SECTOR
         player.secretcount := player.secretcount + 1;
-        player._message := MSGSECRETSECTOR;
+        player._message := ShortString(MSGSECRETSECTOR);
         sector.special := 0;
       end;
 

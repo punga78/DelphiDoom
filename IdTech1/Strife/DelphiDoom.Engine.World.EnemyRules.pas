@@ -3245,7 +3245,7 @@ begin
   for i := 0 to MAXPLAYERS - 1 do
   begin
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST13);
-    TGameSession.Players[i]._message := msg;
+    TGameSession.Players[i]._message := ShortString(msg);
   end;
 end;
 
@@ -3270,7 +3270,7 @@ begin
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_QUEST25);
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_STAMINA);
     P_GiveItemToPlayer(@TGameSession.Players[i], Ord(SPR_TOKN), MT_TOKEN_NEW_ACCURACY);
-    TGameSession.Players[i]._message := msg;
+    TGameSession.Players[i]._message := ShortString(msg);
   end;
 end;
 
@@ -3296,7 +3296,7 @@ begin
   quest := _SHLW(1, actor.info.speed - 1);
   for i := 0 to MAXPLAYERS - 1 do
   begin
-    TGameSession.Players[i]._message := name;
+    TGameSession.Players[i]._message := ShortString(name);
     TGameSession.Players[i].questflags := TGameSession.Players[i].questflags or quest;
   end;
 end;

@@ -688,7 +688,7 @@ var
       if IsIntegerInRange(sprite_val, 0, Ord(DO_NUMSPRITES) - 1) then
       begin
         sprite_idx := sprite_val;
-        token1 := DO_sprnames[sprite_idx];
+        token1 := string(DO_sprnames[sprite_idx]);
       end
       else if (numsprites >= Ord(DO_NUMSPRITES)) and IsIntegerInRange(sprite_val, Ord(DO_NUMSPRITES), numsprites) then
       begin

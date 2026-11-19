@@ -213,7 +213,7 @@ begin
         dec(player.inventorycursor);
   end;
 
-  result := mobjinfo[_type].name2;
+  result := string(mobjinfo[_type].name2);
 end;
 
 //==============================================================================
@@ -400,7 +400,7 @@ begin
     if name = '' then
       name := 'Item';
 
-    player._message := 'You used the ' + name;
+    player._message := ShortString('You used the ' + name);
 
     if player = @TGameSession.Players[TGameSession.ConsolePlayer] then
       TSoundRoutines.S_StartSound(nil, Ord(sfx_itemup));
@@ -449,7 +449,7 @@ begin
       begin
         if player.powers[Ord(pw_allmap)] = 0 then
         begin
-          player._message := TDehMainRoutines.DEH_GetString('The scanner won''t work without a map!');
+          player._message := ShortString(TDehMainRoutines.DEH_GetString('The scanner won''t work without a map!'));
           result := false;
           exit;
         end;

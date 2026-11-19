@@ -213,7 +213,7 @@ begin
       customcolormaps[i].colormap := Z_Malloc(Length(bytes), PU_STATIC, nil);
       memcpy(customcolormaps[i].colormap, @bytes[0], Length(bytes));
       customcolormaps[i].lump := lumps.Numbers[i];
-      customcolormaps[i].name := strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(lumps.Numbers[i])));
+      customcolormaps[i].name := ShortString(strupper(TWadRoutines.char8tostring(TWadRoutines.W_GetNameForNum(lumps.Numbers[i]))));
       customcolormaps[i].nummaps := nummaps;
 
       // JVAL: Create default colormap palette
