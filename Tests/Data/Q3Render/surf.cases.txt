@@ -103,3 +103,24 @@ sun 0.6 0 0.8 2048 1 1
 sun 0 0.28 0.96 4096 1 1
 sun 0.6 0 0.8 2048 0 1
 sun 0.6 0 0.8 2048 1 0
+# the dynamic light pass of the shading file (ProjectDlightTexture on a grid of w x h quads, vertex (i,j) at
+#   (i*20, j*20, ((i*7+j*3) mod 5)*10-20)): dlightpass <dlights> <tess.dlightBits> <additive mask> <w> <h>
+#   the light l is at (l*70-20, 50-l*30, 40+l*10), radius 120+30l, colour ((5+l)/10, (9-l)/10, 0.25)
+dlightpass 1 1 0 4 4
+dlightpass 3 7 2 10 8
+dlightpass 3 5 7 10 8
+dlightpass 4 15 5 20 20
+dlightpass 2 0 0 4 4
+dlightpass 2 3 0 1 1
+dlightpass 1 1 1 30 30
+# the fog pass (RB_FogPass with RB_CalcFogTexCoords): fogpass <fogPass 1 FP_EQUAL, 2 FP_LE> <hasSurface> <tcScale>
+#   <colorInt> <surface plane abcd> <eye (backEnd.or.viewOrigin)> <w> <h>   (modelMatrix of the entity made up)
+view 0 0 0 0 0 0 0
+or 0 0 0 0 0 0
+fogpass 1 0 0.001 ff808080 0 0 1 0 10 20 30 4 4
+fogpass 2 1 0.002 ff00ff00 0 0 1 -50 10 20 100 6 5
+fogpass 2 1 0.002 ff00ff00 0 0 1 100 10 20 30 6 5
+view 300 -100 60 10 120 0 0
+or 50 20 -30 0 30 0
+fogpass 1 1 0.004 80402010 0.6 0 0.8 30 -40 50 200 8 8
+fogpass 2 0 0.0005 ffffffff 0 0 1 0 0 0 0 20 20

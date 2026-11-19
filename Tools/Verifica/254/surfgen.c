@@ -103,6 +103,30 @@ void (APIENTRY *qglTexCoord2fv)(const GLfloat *v);
 void (APIENTRY *qglTranslatef)(GLfloat x, GLfloat y, GLfloat z);
 void (APIENTRY *qglVertex3f)(GLfloat x, GLfloat y, GLfloat z);
 void (APIENTRY *qglVertex3fv)(const GLfloat *v);
+/* what tr_shade.c (ProjectDlightTexture, RB_FogPass) draws with */
+void (APIENTRY *qglArrayElement)(GLint i);
+void (APIENTRY *qglColor4ubv)(const GLubyte *v);
+void (APIENTRY *qglColorPointer)(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+void (APIENTRY *qglDisableClientState)(GLenum array);
+void (APIENTRY *qglDrawElements)(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices);
+void (APIENTRY *qglEnable)(GLenum cap);
+void (APIENTRY *qglEnableClientState)(GLenum array);
+void (APIENTRY *qglLockArraysEXT)(GLint first, GLsizei count);
+void (APIENTRY *qglMultiTexCoord2fARB)(GLenum texture, GLfloat s, GLfloat t);
+void (APIENTRY *qglPolygonMode)(GLenum face, GLenum mode);
+void (APIENTRY *qglPolygonOffset)(GLfloat factor, GLfloat units);
+void (APIENTRY *qglTexCoordPointer)(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+void (APIENTRY *qglUnlockArraysEXT)(void);
+void (APIENTRY *qglVertexPointer)(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+void GL_Cull(int cullType) {}
+void GL_SelectTexture(int unit) {}
+void GL_TexEnv(int env) {}
+void GLimp_LogComment(char *comment) {}
+float R_FogFactor(float s, float t) { return 0; }
+void RB_ProjectionShadowDeform(void) {}
+void RB_ShadowTessEnd(void) {}
+CV(r_debugSort); CV(r_logFile); CV(r_offsetFactor); CV(r_offsetUnits); CV(r_primitives); CV(r_shownormals); CV(r_showtris);
+CV(r_uiFullScreen);
 
 static unsigned bits(float f) { union { float f; unsigned u; } c; c.f = f; return c.u; }
 /* the payload of a NaN depends on the instruction that made it (x87 or SSE): all NaNs are one value */
@@ -157,6 +181,40 @@ void RB_EndSurface(void) {
 #include "tr_bsp.c"
 /* the whole sky file: its statics (the clip of the polygons, the boxes, the cloud tables) are read below */
 #include "tr_sky.c"
+/* and the shading file: ProjectDlightTexture and RB_FogPass are its statics. Its surface begin/end and iterators are
+   renamed so that the ones above (which only print tess) keep serving tr_surface.c and tr_sky.c */
+#define RB_BeginSurface real_RB_BeginSurface
+#define RB_EndSurface real_RB_EndSurface
+#define RB_StageIteratorGeneric real_RB_StageIteratorGeneric
+#define RB_StageIteratorVertexLitTexture real_RB_StageIteratorVertexLitTexture
+#define RB_StageIteratorLightmappedMultitexture real_RB_StageIteratorLightmappedMultitexture
+#include "tr_shade.c"
+#undef RB_BeginSurface
+#undef RB_EndSurface
+#undef RB_StageIteratorGeneric
+#undef RB_StageIteratorVertexLitTexture
+#undef RB_StageIteratorLightmappedMultitexture
+
+/* the arrays the draw call reads through the pointers */
+static const void *g_texPtr, *g_colPtr, *g_vtxPtr;
+static void APIENTRY sh_texptr(GLint size, GLenum type, GLsizei stride, const GLvoid *p) { g_texPtr = p; }
+static void APIENTRY sh_colptr(GLint size, GLenum type, GLsizei stride, const GLvoid *p) { g_colPtr = p; }
+static void APIENTRY sh_vtxptr(GLint size, GLenum type, GLsizei stride, const GLvoid *p) { g_vtxPtr = p; }
+static void APIENTRY sh_enablecs(GLenum a) {}
+static void APIENTRY sh_disablecs(GLenum a) {}
+static void APIENTRY sh_drawelements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices) {
+	unsigned hi = 2166136261u, ht = 2166136261u, hc = 2166136261u;
+	int i, maxIndex = -1;
+	const unsigned *ix = (const unsigned *)indices;
+	const float *tc = (const float *)g_texPtr;
+	const unsigned char *cl = (const unsigned char *)g_colPtr;
+	for (i = 0; i < count; i++) { hi = fnv_u32(hi, ix[i]); if ((int)ix[i] > maxIndex) maxIndex = ix[i]; }
+	for (i = 0; i <= maxIndex; i++) {
+		ht = fnv_u32(ht, cbits(tc[i * 2])); ht = fnv_u32(ht, cbits(tc[i * 2 + 1]));
+		hc = fnv_byte(hc, cl[i * 4]); hc = fnv_byte(hc, cl[i * 4 + 1]); hc = fnv_byte(hc, cl[i * 4 + 2]); hc = fnv_byte(hc, cl[i * 4 + 3]);
+	}
+	printf("drawelements %d %d %08x %08x %08x\n", count, maxIndex + 1, hi, ht, hc);
+}
 
 static void set_axis(float axis[3][3], const float *angles) { AngleVectors(angles, axis[0], axis[1], axis[2]); }
 static void reset_tess(int needsNormal) {
@@ -319,6 +377,8 @@ int main(int argc, char **argv) {
 	qglBegin = sh_begin; qglEnd = sh_end; qglColor3f = sh_color3f; qglVertex3fv = sh_vertex3fv;
 	qglPushMatrix = sh_push; qglPopMatrix = sh_pop; qglTranslatef = sh_translate; qglTexCoord2fv = sh_texcoord2fv;
 	qglDepthRange = sh_depthrange; qglLoadMatrixf = sh_loadmatrix;
+	qglTexCoordPointer = sh_texptr; qglColorPointer = sh_colptr; qglVertexPointer = sh_vtxptr;
+	qglEnableClientState = sh_enablecs; qglDisableClientState = sh_disablecs; qglDrawElements = sh_drawelements;
 	for (i = 0; i < FUNCTABLE_SIZE; i++) {
 		tr.sinTable[i] = sin(DEG2RAD(i * 360.0f / ((float)(FUNCTABLE_SIZE - 1))));
 	}
@@ -390,6 +450,66 @@ int main(int argc, char **argv) {
 			reset_tess(0);
 			run_entity(type, o, oo, radius, rot, rgba);
 			RB_EndSurface();
+		} else if (!strcmp(word, "dlightpass") || !strcmp(word, "fogpass")) {
+			/* tess is a grid of w x h quads on a plane, with a made up height: vertex (i, j) is at
+			   (i * 20, j * 20, ((i * 7 + j * 3) % 5) * 10 - 20) */
+			static image_t dlightImage, fogImage;
+			static dlight_t dls[MAX_DLIGHTS];
+			static fog_t fogs[2];
+			static shader_t fogShader;
+			int w, h, i2, j2, l, nd, bits, addMask, passKind, hasSurface;
+			unsigned colorInt;
+			float tcScale, surf[4], eye[3];
+			tr.dlightImage = &dlightImage; dlightImage.texnum = 50;
+			tr.fogImage = &fogImage; fogImage.texnum = 51;
+			r_primitives->integer = 2;
+			reset_tess(0);
+			if (!strcmp(word, "dlightpass")) {
+				sscanf(line, "dlightpass %d %d %d %d %d", &nd, &bits, &addMask, &w, &h);
+			} else {
+				sscanf(line, "fogpass %d %d %f %x %f %f %f %f %f %f %f %d %d", &passKind, &hasSurface, &tcScale, &colorInt, &surf[0],
+					&surf[1], &surf[2], &surf[3], &eye[0], &eye[1], &eye[2], &w, &h);
+			}
+			for (j2 = 0; j2 <= h; j2++) for (i2 = 0; i2 <= w; i2++) {
+				float *p = tess.xyz[j2 * (w + 1) + i2];
+				p[0] = (float)(i2 * 20); p[1] = (float)(j2 * 20); p[2] = (float)(((i2 * 7 + j2 * 3) % 5) * 10 - 20);
+			}
+			tess.numVertexes = (w + 1) * (h + 1);
+			for (j2 = 0; j2 < h; j2++) for (i2 = 0; i2 < w; i2++) {
+				int v0 = j2 * (w + 1) + i2, v1 = v0 + 1, v2 = v0 + w + 1, v3 = v2 + 1;
+				tess.indexes[tess.numIndexes++] = v0; tess.indexes[tess.numIndexes++] = v2; tess.indexes[tess.numIndexes++] = v1;
+				tess.indexes[tess.numIndexes++] = v1; tess.indexes[tess.numIndexes++] = v2; tess.indexes[tess.numIndexes++] = v3;
+			}
+			if (!strcmp(word, "dlightpass")) {
+				memset(dls, 0, sizeof(dls));
+				backEnd.refdef.num_dlights = nd;
+				backEnd.refdef.dlights = dls;
+				for (l = 0; l < nd; l++) {
+					dls[l].transformed[0] = (float)(l * 70 - 20); dls[l].transformed[1] = (float)(50 - l * 30);
+					dls[l].transformed[2] = (float)(40 + l * 10);
+					dls[l].radius = (float)(120 + l * 30);
+					dls[l].color[0] = (float)(5 + l) / 10.0f; dls[l].color[1] = (float)(9 - l) / 10.0f; dls[l].color[2] = 0.25f;
+					dls[l].additive = (addMask >> l) & 1;
+				}
+				tess.dlightBits = bits;
+				ProjectDlightTexture();
+			} else {
+				int k;
+				memset(fogs, 0, sizeof(fogs));
+				fogs[1].colorInt = colorInt; fogs[1].tcScale = tcScale; fogs[1].hasSurface = hasSurface;
+				for (k = 0; k < 4; k++) fogs[1].surface[k] = surf[k];
+				s_worldData.fogs = fogs; s_worldData.numfogs = 2;
+				tr.world = &s_worldData;
+				memset(&fogShader, 0, sizeof(fogShader));
+				fogShader.fogPass = passKind;
+				tess.shader = &fogShader;
+				tess.fogNum = 1;
+				for (k = 0; k < 16; k++) backEnd.or.modelMatrix[k] = (float)((k * 7 + 3) % 11) / 8.0f - 0.5f;
+				for (k = 0; k < 3; k++) backEnd.or.viewOrigin[k] = eye[k];
+				RB_FogPass();
+			}
+			tess.numIndexes = 0;
+			tess.numVertexes = 0;
 		} else if (!strcmp(word, "skyinit")) {
 			unsigned h1 = 2166136261u, h2 = 2166136261u;
 			int i2, t2, s2;

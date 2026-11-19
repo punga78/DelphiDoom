@@ -1411,3 +1411,69 @@ batch 4 6 0 3ae25d41 c655ff85 c9ac3be5 0beebee5 cee572c7
 gl depthrange 0 1
 case 104
 case 105
+case 109
+gl bind 50
+gl state 00020023
+drawelements 72 24 99009525 8449e64b 40c83865
+case 110
+gl bind 50
+gl state 00020023
+drawelements 108 70 0b6a61d5 c3f8c18a a047e4ad
+gl bind 50
+gl state 00020022
+drawelements 210 63 3e7dd469 91b28967 9d4a38a2
+gl bind 50
+gl state 00020023
+drawelements 270 66 9ff95f51 59beaef8 3c5e6051
+case 111
+gl bind 50
+gl state 00020022
+drawelements 108 70 0b6a61d5 c3f8c18a a047e4ad
+gl bind 50
+gl state 00020022
+drawelements 270 66 9ff95f51 59beaef8 3c5e6051
+case 112
+gl bind 50
+gl state 00020022
+drawelements 108 130 c76b8419 a9ed838e 4e1ff6bd
+gl bind 50
+gl state 00020023
+drawelements 210 113 86392f87 bc7177a7 ec8734be
+gl bind 50
+gl state 00020022
+drawelements 300 117 cf794249 a1afb074 275ee03b
+gl bind 50
+gl state 00020023
+drawelements 264 100 da19b9d5 4fcc0f66 c58f0d9d
+case 113
+case 114
+gl bind 50
+gl state 00020023
+drawelements 6 4 7befce06 45a4f8b9 578fa935
+gl bind 50
+gl state 00020023
+drawelements 6 4 7befce06 5eb88539 128394fd
+case 115
+gl bind 50
+gl state 00020022
+drawelements 108 190 c6191055 0e7e82b2 ac7d4e4d
+case 120
+gl bind 51
+gl state 00020065
+drawelements 96 25 6db034fd d86a48a5 34e69b18
+case 121
+gl bind 51
+gl state 00000065
+drawelements 180 42 08e44935 bc9cf14f 81558995
+case 122
+gl bind 51
+gl state 00000065
+drawelements 180 42 08e44935 f53c28f3 81558995
+case 125
+gl bind 51
+gl state 00020065
+drawelements 384 81 8e17a6f5 5970ac67 d4613345
+case 126
+gl bind 51
+gl state 00000065
+drawelements 2400 441 0ad38b4a 27b7d491 0d554851

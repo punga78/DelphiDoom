@@ -48,6 +48,7 @@ uses
   DelphiDoom.MathCore.Patch.Types, DelphiDoom.MathCore.Patch.Factory, DelphiDoom.Models.Static.Md3.Types,
   DelphiDoom.Q3Render.Types, DelphiDoom.Q3Render.Scene.Types, DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Factory,
   DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Backend.Gl, DelphiDoom.Q3Render.Backend.Sky,
+  DelphiDoom.Q3Render.Backend.Passes, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.FogCalc,
   DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Golden,
   DelphiDoom.Tests.Q3Render.Support;
 
@@ -86,6 +87,7 @@ type
     FFuncTables: TQ3FuncTables;
     FSubdivider: IPatchSubdivider;
     FSky: TQ3SkyBox;
+    FFogCalc: TQ3FogCalc;
     FSink: TLineSink;
     FSinkKeeper: IQ3GlSink;
     FView: TQ3ViewOrientation;
@@ -112,6 +114,10 @@ type
     procedure Poly(const AWords: TArray<string>);
     procedure EntityCase(const AWords: TArray<string>);
     procedure MeshCase(const AWords: TArray<string>);
+    procedure PassGrid(AWidth, AHeight: Integer);
+    procedure PrintPassDraw(const ADraw: TQ3PassDraw);
+    procedure DlightPassCase(const AWords: TArray<string>);
+    procedure FogPassCase(const AWords: TArray<string>);
     procedure SkyInitCase(const AWords: TArray<string>);
     procedure SkyCase(const AWords: TArray<string>);
     procedure SunCase(const AWords: TArray<string>);
@@ -215,6 +221,7 @@ begin
   inherited Create;
   FLines := ALines;
   FSky := TQ3SkyBox.Create;
+  FFogCalc := TQ3FogCalc.Create;
   FSink := TLineSink.Create(ALines);
   FSinkKeeper := FSink;
   FInvariant := TFormatSettings.Invariant;
@@ -232,6 +239,7 @@ begin
   FTessellator.Free;
   FFuncTables.Free;
   FSky.Free;
+  FFogCalc.Free;
   inherited Destroy;
 end;
 
@@ -544,6 +552,139 @@ begin
   EndSurface;
 end;
 
+procedure TSurfaceCaseRunner.PassGrid(AWidth, AHeight: Integer);
+var
+  LI, LJ, LV0, LV1, LV2, LV3: Integer;
+begin
+  ResetTess(False);
+  for LJ := 0 to AHeight do
+    for LI := 0 to AWidth do
+    begin
+      FTess.Xyz[(LJ * (AWidth + 1) + LI) * 4] := LI * 20;
+      FTess.Xyz[(LJ * (AWidth + 1) + LI) * 4 + 1] := LJ * 20;
+      FTess.Xyz[(LJ * (AWidth + 1) + LI) * 4 + 2] := ((LI * 7 + LJ * 3) mod 5) * 10 - 20;
+    end;
+  FTess.NumVertexes := (AWidth + 1) * (AHeight + 1);
+  for LJ := 0 to AHeight - 1 do
+    for LI := 0 to AWidth - 1 do
+    begin
+      LV0 := LJ * (AWidth + 1) + LI;
+      LV1 := LV0 + 1;
+      LV2 := LV0 + AWidth + 1;
+      LV3 := LV2 + 1;
+      FTess.Indexes[FTess.NumIndexes] := LV0;
+      FTess.Indexes[FTess.NumIndexes + 1] := LV2;
+      FTess.Indexes[FTess.NumIndexes + 2] := LV1;
+      FTess.Indexes[FTess.NumIndexes + 3] := LV1;
+      FTess.Indexes[FTess.NumIndexes + 4] := LV2;
+      FTess.Indexes[FTess.NumIndexes + 5] := LV3;
+      Inc(FTess.NumIndexes, 6);
+    end;
+end;
+
+procedure TSurfaceCaseRunner.PrintPassDraw(const ADraw: TQ3PassDraw);
+var
+  LH, LT, LC: Cardinal;
+  LIndex, LMax: Integer;
+begin
+  LH := 2166136261;
+  LT := 2166136261;
+  LC := 2166136261;
+  LMax := -1;
+  for LIndex := 0 to High(ADraw.Indexes) do
+  begin
+    LH := Fnv(LH, Cardinal(ADraw.Indexes[LIndex]));
+    if ADraw.Indexes[LIndex] > LMax then
+      LMax := ADraw.Indexes[LIndex];
+  end;
+  for LIndex := 0 to LMax do
+  begin
+    LT := Fnv(LT, Canonical(ADraw.TexCoords[LIndex * 2]));
+    LT := Fnv(LT, Canonical(ADraw.TexCoords[LIndex * 2 + 1]));
+    LC := FnvByte(LC, ADraw.Colors[LIndex * 4]);
+    LC := FnvByte(LC, ADraw.Colors[LIndex * 4 + 1]);
+    LC := FnvByte(LC, ADraw.Colors[LIndex * 4 + 2]);
+    LC := FnvByte(LC, ADraw.Colors[LIndex * 4 + 3]);
+  end;
+  // the images the renderer makes itself are numbered 50 and 51 in the C
+  if ADraw.Image = piDlight then
+    FLines.Add('gl bind 50')
+  else
+    FLines.Add('gl bind 51');
+  FLines.Add('gl state ' + LowerCase(IntToHex(ADraw.StateBits, 8)));
+  FLines.Add(Format('drawelements %d %d %s %s %s', [Length(ADraw.Indexes), LMax + 1, LowerCase(IntToHex(LH, 8)),
+    LowerCase(IntToHex(LT, 8)), LowerCase(IntToHex(LC, 8))]));
+end;
+
+procedure TSurfaceCaseRunner.DlightPassCase(const AWords: TArray<string>);
+var
+  LDlights, LBits, LMask, LLight, LAxis: Integer;
+  LLights: TArray<TQ3DynamicLight>;
+  LTransformed: TArray<TQ3Vec3>;
+  LDraws: TArray<TQ3PassDraw>;
+  LIndex: Integer;
+begin
+  LDlights := StrToInt(AWords[1]);
+  LBits := StrToInt(AWords[2]);
+  LMask := StrToInt(AWords[3]);
+  PassGrid(StrToInt(AWords[4]), StrToInt(AWords[5]));
+  SetLength(LLights, LDlights);
+  SetLength(LTransformed, LDlights);
+  for LLight := 0 to LDlights - 1 do
+  begin
+    LLights[LLight] := Default(TQ3DynamicLight);
+    LTransformed[LLight][0] := LLight * 70 - 20;
+    LTransformed[LLight][1] := 50 - LLight * 30;
+    LTransformed[LLight][2] := 40 + LLight * 10;
+    LLights[LLight].Radius := 120 + LLight * 30;
+    LLights[LLight].Color[0] := Single(5 + LLight) / 10.0;
+    LLights[LLight].Color[1] := Single(9 - LLight) / 10.0;
+    LLights[LLight].Color[2] := 0.25;
+    LLights[LLight].Additive := (LMask shr LLight) and 1;
+    for LAxis := 0 to 2 do
+      LLights[LLight].Origin[LAxis] := LTransformed[LLight][LAxis];
+  end;
+  LDraws := TQ3ShadingPasses.ProjectDlights(FTess, LBits, LLights, LTransformed);
+  for LIndex := 0 to High(LDraws) do
+    PrintPassDraw(LDraws[LIndex]);
+  FTess.NumIndexes := 0;
+  FTess.NumVertexes := 0;
+end;
+
+procedure TSurfaceCaseRunner.FogPassCase(const AWords: TArray<string>);
+var
+  LFog: TQ3Fog;
+  LIndex: Integer;
+begin
+  PassGrid(StrToInt(AWords[12]), StrToInt(AWords[13]));
+  LFog := Default(TQ3Fog);
+  LFog.HasSurface := AWords[2] <> '0';
+  LFog.TcScale := Number(AWords[3]);
+  LFog.ColorInt := Cardinal(StrToInt64('$' + AWords[4]));
+  for LIndex := 0 to 3 do
+    LFog.Surface[LIndex] := Number(AWords[5 + LIndex]);
+  SetLength(FTess.Fogs, 2);
+  FTess.Fogs[1] := LFog;
+  FTess.FogNumber := 1;
+  for LIndex := 0 to 2 do
+  begin
+    FTess.Orientation.Origin[LIndex] := FEntity.Origin[LIndex];
+    FTess.Orientation.Axis[0][LIndex] := FEntity.Axis[0][LIndex];
+    FTess.Orientation.Axis[1][LIndex] := FEntity.Axis[1][LIndex];
+    FTess.Orientation.Axis[2][LIndex] := FEntity.Axis[2][LIndex];
+    FTess.View.Origin[LIndex] := FView.Origin[LIndex];
+    FTess.View.Axis[0][LIndex] := FView.Axis[0][LIndex];
+    FTess.View.Axis[1][LIndex] := FView.Axis[1][LIndex];
+    FTess.View.Axis[2][LIndex] := FView.Axis[2][LIndex];
+    FTess.ViewOrigin[LIndex] := Number(AWords[9 + LIndex]);
+  end;
+  for LIndex := 0 to 15 do
+    FTess.Orientation.ModelMatrix[LIndex] := Single((LIndex * 7 + 3) mod 11) / 8.0 - 0.5;
+  PrintPassDraw(TQ3ShadingPasses.FogPass(FTess, TQ3FogPass(StrToInt(AWords[1])), FFogCalc));
+  FTess.NumIndexes := 0;
+  FTess.NumVertexes := 0;
+end;
+
 procedure TSurfaceCaseRunner.SkyInitCase(const AWords: TArray<string>);
 var
   LFace, LT, LS: Integer;
@@ -682,6 +823,10 @@ begin
         Poly(LWords)
       else if LWord = 'mesh' then
         MeshCase(LWords)
+      else if LWord = 'dlightpass' then
+        DlightPassCase(LWords)
+      else if LWord = 'fogpass' then
+        FogPassCase(LWords)
       else if LWord = 'skyinit' then
         SkyInitCase(LWords)
       else if LWord = 'sky' then
