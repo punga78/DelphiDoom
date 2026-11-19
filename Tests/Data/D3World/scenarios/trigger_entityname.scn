@@ -1,0 +1,51 @@
+# Doom 3 world harness scenario (ondata 14): idTrigger_EntityName (the trigger that answers only to the entity of a given name).
+def info_recorder spawnclass idRecorder
+def trigger_entityname spawnclass idTrigger_EntityName
+def trigger_multi spawnclass idTrigger_Multi
+def worldspawn spawnclass idWorldspawn
+spawn classname info_recorder name target1
+spawn classname info_recorder name bob
+spawn classname info_recorder name alice
+spawn classname trigger_entityname name t1 entityname bob target target1 wait 1
+dump 35
+event 35 activate 34
+frame 3
+event 35 activate 33
+frame 3
+dump 35
+queue
+frame 70
+event 35 activate 33
+frame 1
+# touch: the name of the entity that touches decides
+touch 35 34
+touch 35 33
+frame 70
+touch 35 33
+# delay and random
+spawn classname trigger_entityname name t2 entityname alice target target1 wait 2 delay 1 random 0.5 random_delay 0.5
+dump 36
+event 36 activate 34
+queue
+frame 40
+dump 36
+frame 80
+dump 36
+# triggerFirst: the first activation is ignored
+spawn classname trigger_entityname name t4 entityname bob target target1 triggerFirst 1 noTouch 1
+event 37 activate 33
+dump 37
+event 37 activate 33
+frame 2
+# no entity name: an error; a random that is not smaller than the wait is corrected
+spawn classname trigger_entityname name t5
+spawn classname trigger_entityname name t6 entityname bob wait 1 random 2 delay 1 random_delay 2
+dump 38
+# a null activator and a trigger that is not the entity
+event 35 activate -1
+event 35 triggerAction 33
+# wait -1: fires once and removes itself
+spawn classname trigger_entityname name t3 entityname bob target target1 wait -1
+event 40 activate 33
+frame 3
+find t3

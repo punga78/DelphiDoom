@@ -223,6 +223,7 @@ if (-not $NoBuild) {
 	$sb = New-Object System.Text.StringBuilder
 	[void]$sb.Append((Get-Members $tr 'idTrigger' @('Enable', 'Disable', 'CallScript', 'GetScriptFunction', 'Event_Enable', 'Event_Disable', 'idTrigger', 'Spawn')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Multi' @('idTrigger_Multi', 'Spawn', 'CheckFacing', 'TriggerAction', 'Event_TriggerAction', 'Event_Trigger', 'Event_Touch')))
+	[void]$sb.Append((Get-Members $tr 'idTrigger_EntityName' @('idTrigger_EntityName', 'Spawn', 'TriggerAction', 'Event_TriggerAction', 'Event_Trigger', 'Event_Touch')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Timer' @('idTrigger_Timer', 'Spawn', 'Enable', 'Disable', 'Event_Timer', 'Event_Use')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Count' @('idTrigger_Count', 'Spawn', 'Event_Trigger', 'Event_TriggerAction')))
 	[void]$sb.Append((Get-Members $tr 'idTrigger_Hurt' @('idTrigger_Hurt', 'Spawn', 'Event_Touch', 'Event_Toggle')))
@@ -232,7 +233,7 @@ if (-not $NoBuild) {
 	$decl = ($tr -split "(?m)^CLASS_DECLARATION")[0]
 	$evdefs = New-Object System.Text.StringBuilder
 	foreach ($mm in [regex]::Matches($tr, '(?m)^const idEventDef \w+\(.*\);\n')) { [void]$evdefs.Append($mm.Value) }
-	foreach ($mm in [regex]::Matches($tr, '(?s)(CLASS_DECLARATION\( idEntity, idTrigger \).*?END_CLASS\n|CLASS_DECLARATION\( idTrigger, idTrigger_(Multi|Timer|Count|Hurt|Fade) \).*?END_CLASS\n)')) { [void]$evdefs.Append($mm.Value) }
+	foreach ($mm in [regex]::Matches($tr, '(?s)(CLASS_DECLARATION\( idEntity, idTrigger \).*?END_CLASS\n|CLASS_DECLARATION\( idTrigger, idTrigger_(Multi|EntityName|Timer|Count|Hurt|Fade) \).*?END_CLASS\n)')) { [void]$evdefs.Append($mm.Value) }
 	Write-Text (Join-Path $w 'trigger_decl.inc') $evdefs.ToString()
 
 	# the movers: whole bodies, the event lines of the classes of the harness are written in harness_world.cpp

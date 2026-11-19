@@ -38,6 +38,8 @@ type
     [TestCase('MoverMoveToPosAccelDecel', 'mover')]
     [TestCase('MoverRotazione', 'mover_rotate')]
     [TestCase('BindESquadreFisiche', 'bind')]
+    [TestCase('TriggerEntityName', 'trigger_entityname')]
+    [TestCase('TriggerMultiGiocatore', 'trigger_player')]
     procedure LoScenarioDovrebbeDareLeRigheDelC(const AScenario: string);
   end;
 

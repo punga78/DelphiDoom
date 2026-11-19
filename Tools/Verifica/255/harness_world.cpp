@@ -463,8 +463,15 @@ public:
 	bool spectating;
 	idAngles viewAngles;
 	idPlayerView playerView;
-	idDict *FindInventoryItem( const char *name ) { return NULL; }
-	void RemoveInventoryItem( idDict *item ) {}
+	// the inventory: one dictionary per item, named by "inv_name" (idPlayer::inventory is far larger: only what RequirementMet asks)
+	std::vector<idDict *> items;
+	idDict *FindInventoryItem( const char *name ) {
+		for ( size_t i = 0; i < items.size(); i++ ) if ( idStr::Icmp( items[i]->GetString( "inv_name" ), name ) == 0 ) return items[i];
+		return NULL;
+	}
+	void RemoveInventoryItem( idDict *item ) {
+		for ( size_t i = 0; i < items.size(); i++ ) if ( items[i] == item ) { items.erase( items.begin() + i ); return; }
+	}
 };
 
 class idEditEntities { public: void RemoveSelectedEntity( idEntity *ent ) {} };
@@ -655,6 +662,7 @@ void idRecorder::Event_Activate( idEntity *activator ) { out( "ACTIVATE %s by %s
 // the save game members (no save games here) and what the real bodies leave to others
 void idTrigger::Save( idSaveGame *savefile ) const {} void idTrigger::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Multi::Save( idSaveGame *savefile ) const {} void idTrigger_Multi::Restore( idRestoreGame *savefile ) {}
+void idTrigger_EntityName::Save( idSaveGame *savefile ) const {} void idTrigger_EntityName::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Timer::Save( idSaveGame *savefile ) const {} void idTrigger_Timer::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Count::Save( idSaveGame *savefile ) const {} void idTrigger_Count::Restore( idRestoreGame *savefile ) {}
 void idTrigger_Hurt::Save( idSaveGame *savefile ) const {} void idTrigger_Hurt::Restore( idRestoreGame *savefile ) {}
@@ -725,6 +733,10 @@ static void dumpEntity( idEntity *e ) {
 	if ( e->IsType( idTrigger_Multi::Type ) ) {
 		idTrigger_Multi *t = static_cast<idTrigger_Multi *>( e );
 		out( "MULTI wait=%08X random=%08X delay=%08X random_delay=%08X next=%d triggerFirst=%d", fb( t->wait ), fb( t->random ), fb( t->delay ), fb( t->random_delay ), t->nextTriggerTime, t->triggerFirst ? 1 : 0 );
+	}
+	if ( e->IsType( idTrigger_EntityName::Type ) ) {
+		idTrigger_EntityName *t = static_cast<idTrigger_EntityName *>( e );
+		out( "ENAME wait=%08X random=%08X delay=%08X random_delay=%08X next=%d triggerFirst=%d entityName=%s", fb( t->wait ), fb( t->random ), fb( t->delay ), fb( t->random_delay ), t->nextTriggerTime, t->triggerFirst ? 1 : 0, t->entityName.c_str() );
 	}
 	if ( e->IsType( idTrigger_Timer::Type ) ) {
 		idTrigger_Timer *t = static_cast<idTrigger_Timer *>( e );
@@ -876,6 +888,10 @@ static void runCommand( const std::string &cmd, const std::string &rest ) {
 	else if ( cmd == "removebinds" ) { idEntity *e = entityAt( w[0] ); if ( !e ) { out( "NOTFOUND" ); return; } e->RemoveBinds(); out( "BINDSREMOVED" ); }
 	else if ( cmd == "bindstate" ) { idEntity *e = entityAt( w[0] ); if ( e ) dumpBind( e ); else out( "NOTFOUND" ); }
 	else if ( cmd == "rot" ) { idEntity *e = entityAt( w[0] ); if ( e ) dumpRot( e ); else out( "NOTFOUND" ); }
+	else if ( cmd == "give" ) { idEntity *e = entityAt( w[0] ); if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } idDict *d = new idDict; d->Set( "inv_name", w[1].c_str() ); static_cast<idPlayer *>( e )->items.push_back( d ); out( "GIVEN" ); }
+	else if ( cmd == "spectate" ) { idEntity *e = entityAt( w[0] ); if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } static_cast<idPlayer *>( e )->spectating = atoi( w[1].c_str() ) != 0; out( "SPECTATING" ); }
+	else if ( cmd == "viewangles" ) { idEntity *e = entityAt( w[0] ); float a = 0, b = 0, c = 0; if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } sscanf( w[1].c_str(), "%f,%f,%f", &a, &b, &c ); static_cast<idPlayer *>( e )->viewAngles = idAngles( a, b, c ); out( "VIEWANGLES" ); }
+	else if ( cmd == "items" ) { idEntity *e = entityAt( w[0] ); if ( !e || !e->IsType( idPlayer::Type ) ) { out( "NOTFOUND" ); return; } idPlayer *p = static_cast<idPlayer *>( e ); std::string s; for ( size_t i = 0; i < p->items.size(); i++ ) { s += " "; s += p->items[i]->GetString( "inv_name" ); } outs( "ITEMS", s ); }
 	else if ( cmd == "rotq" ) { idEntity *e = entityAt( w[0] ); if ( e ) dumpRotQ( e ); else out( "NOTFOUND" ); }
 	else if ( cmd == "setorigin" ) { idEntity *e = entityAt( w[0] ); float a = 0, b = 0, c = 0; if ( !e ) { out( "NOTFOUND" ); return; } sscanf( w[1].c_str(), "%f,%f,%f", &a, &b, &c ); e->SetOrigin( idVec3( a, b, c ) ); out( "ORIGINSET" ); }
 	else if ( cmd == "setangles" ) { idEntity *e = entityAt( w[0] ); float a = 0, b = 0, c = 0; if ( !e ) { out( "NOTFOUND" ); return; } sscanf( w[1].c_str(), "%f,%f,%f", &a, &b, &c ); e->SetAngles( idAngles( a, b, c ) ); out( "ANGLESSET" ); }

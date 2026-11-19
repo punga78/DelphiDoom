@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: Doom 3 game library - idEntity (the base of the entities)       }
 {                                                                              }
@@ -62,6 +62,8 @@ type
     function GetScriptThreads: ID3ScriptThreads;
     /// <summary>gameLocal.clip; nil for a game with no clipping (the entities then have no clip models)</summary>
     function GetClip: TD3Clip;
+    /// <summary>idGameLocal::GetLocalPlayer: the player of the entity number 0 (nil before it is spawned)</summary>
+    function GetLocalPlayer: TD3Entity;
   end;
 
   /// <summary>
@@ -163,6 +165,7 @@ type
     ///   (<c>self->GetMasterPosition</c>)
     /// </summary>
     function CreatePhysicsHost: TD3PhysicsHost;
+    function CreateMasterPositionFunc: TD3MasterPositionFunc;
     /// <summary>idEntity::PreBind (empty): a class that keeps positions in the master's space converts them here</summary>
     procedure PreBind; virtual;
     /// <summary>idEntity::PostBind (empty)</summary>
@@ -242,11 +245,18 @@ type
     /// </summary>
     procedure Damage(const ADamageDefName: AnsiString; const AScale: Single); virtual;
     /// <summary>
-    ///   idGameLocal::RequirementMet: an entity that requires an item is met by an activator that has it; there is no
-    ///   player and no inventory here, so it is always met (the original dereferences a null activator)
+    ///   idGameLocal::RequirementMet: an entity that requires an item is met by a player that has it in its inventory
+    ///   (the item is taken away if <c>ARemoveItem</c> is not zero); an activator that is not a player always meets it
+    ///   (the original dereferences a null activator: here it is met)
     /// </summary>
     function RequirementMet(const AActivator: TD3Entity; const ARequires: AnsiString;
       const ARemoveItem: Integer): Boolean;
+    /// <summary><c>IsType( idPlayer::Type )</c>: false; <c>TD3Player</c> says true</summary>
+    function IsPlayer: Boolean; virtual;
+    /// <summary>idPlayer::FindInventoryItem: the item with that name is in the inventory (an entity has none)</summary>
+    function FindInventoryItem(const AName: AnsiString): Boolean; virtual;
+    /// <summary>idPlayer::RemoveInventoryItem</summary>
+    procedure RemoveInventoryItem(const AName: AnsiString); virtual;
     /// <summary>idEntity::HasSignal: signals (<c>onSignal</c> of the scripts) are not ported: false</summary>
     function HasSignal(const ASignal: Integer): Boolean; virtual;
     /// <summary>idEntity::Signal: nothing (see <c>HasSignal</c>)</summary>
@@ -390,7 +400,7 @@ begin
   FRenderOrigin.Zero;
   FRenderAxis := TIdMat3.Identity;
   FDefaultPhysics := TD3PhysicsStatic.Create(TIdVec3.Create(0, 0, 0), TIdVec3.Create(0, 0, 0), TIdVec3.Create(0, 0, 0),
-    nil, nil, CreatePhysicsHost.GetMasterPosition);
+    nil, nil, CreateMasterPositionFunc());
   FPhysics := FDefaultPhysics;
 end;
 
@@ -528,7 +538,7 @@ begin
   LClip := nil;
   if Assigned(FGame) then
     LClip := FGame.GetClip;
-  FDefaultPhysics := TD3PhysicsStatic.Create(AOrigin, LMins, LMaxs, LClip, Self, CreatePhysicsHost.GetMasterPosition);
+  FDefaultPhysics := TD3PhysicsStatic.Create(AOrigin, LMins, LMaxs, LClip, Self, CreateMasterPositionFunc());
   FPhysics := FDefaultPhysics;
   FDefaultPhysics.SetOrigin(AOrigin);
   FDefaultPhysics.SetAxis(AAxis);
@@ -712,26 +722,39 @@ begin
 end;
 
 function TD3Entity.CreatePhysicsHost: TD3PhysicsHost;
+var
+  LSelf: TD3Entity;
+  LHost: TD3PhysicsHost;
 begin
-  Result.GetTime :=
+  LSelf := Self;
+  LHost.GetTime :=
     function: Integer
     begin
-      Result := Game.GetTime;
+      Result := LSelf.Game.GetTime;
     end;
-  Result.BecomeActive :=
+  LHost.BecomeActive :=
     procedure(AFlags: Integer)
     begin
-      BecomeActive(AFlags);
+      LSelf.BecomeActive(AFlags);
     end;
-  Result.BecomeInactive :=
+  LHost.BecomeInactive :=
     procedure(AFlags: Integer)
     begin
-      BecomeInactive(AFlags);
+      LSelf.BecomeInactive(AFlags);
     end;
-  Result.GetMasterPosition :=
+  LHost.GetMasterPosition := CreateMasterPositionFunc();
+  Result := LHost;
+end;
+
+function TD3Entity.CreateMasterPositionFunc: TD3MasterPositionFunc;
+var
+  LSelf: TD3Entity;
+begin
+  LSelf := Self;
+  Result :=
     function(out AOrigin: TIdVec3; out AAxis: TIdMat3): Boolean
     begin
-      Result := GetMasterPosition(AOrigin, AAxis);
+      Result := LSelf.GetMasterPosition(AOrigin, AAxis);
     end;
 end;
 
@@ -1362,6 +1385,26 @@ function TD3Entity.RequirementMet(const AActivator: TD3Entity; const ARequires: 
   const ARemoveItem: Integer): Boolean;
 begin
   Result := True;
+  if (Length(ARequires) > 0) and Assigned(AActivator) and AActivator.IsPlayer then
+  begin
+    Result := AActivator.FindInventoryItem(ARequires);
+    if Result and (ARemoveItem <> 0) then
+      AActivator.RemoveInventoryItem(ARequires);
+  end;
+end;
+
+function TD3Entity.IsPlayer: Boolean;
+begin
+  Result := False;
+end;
+
+function TD3Entity.FindInventoryItem(const AName: AnsiString): Boolean;
+begin
+  Result := False;
+end;
+
+procedure TD3Entity.RemoveInventoryItem(const AName: AnsiString);
+begin
 end;
 
 function TD3Entity.HasSignal(const ASignal: Integer): Boolean;

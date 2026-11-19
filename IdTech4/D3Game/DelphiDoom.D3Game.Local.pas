@@ -203,6 +203,14 @@ type
     function GetSpawnFunctions: ID3SpawnFunctions;
     function GetScriptThreads: ID3ScriptThreads;
     function GetClip: TD3Clip;
+    function GetLocalPlayer: TD3Entity;
+    /// <summary>
+    ///   idGameLocal::SpawnPlayer: spawns the entity <c>player_doommarine</c> as <c>player&lt;n+1&gt;</c> in the entity
+    ///   number of the client (the class must be a <c>TD3Player</c>) and puts it at the first <c>info_player_start</c>
+    ///   (idPlayer::SelectInitialSpawnPoint: 5 units above it, the angles of its axis; the targets of the spot are
+    ///   activated with the player). An error if the player cannot be spawned or there is no start.
+    /// </summary>
+    function SpawnPlayer(const AClientNum: Integer): TD3Entity;
     { ID3ClipEntities }
     function GetEntityNumber(const AEntity: TObject): Integer;
     function GetEntityName(const AEntity: TObject): AnsiString;
@@ -253,7 +261,8 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Text.Strings;
+  DelphiDoom.IdLib.Text.Strings, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Conversions,
+  DelphiDoom.D3Game.Player;
 
 const
   SSpawnCountOverflow = 'idGameLocal::RegisterEntity: spawn count overflow';
@@ -297,6 +306,9 @@ begin
   // the entities take themselves out of the table as they are freed: nobody is listening any more
   FDisposing := True;
   FObjects.Free;
+  // the clip (not owned: it may outlive the game) must not keep an interface to a game that is gone
+  if Assigned(FServices.Clip) then
+    FServices.Clip.Entities := nil;
   FActiveEntities.Free;
   FSpawnedEntities.Free;
   FSpawnArgs.Free;
@@ -437,6 +449,46 @@ end;
 function TD3GameLocal.GetScriptThreads: ID3ScriptThreads;
 begin
   Result := FServices.ScriptThreads;
+end;
+
+function TD3GameLocal.GetLocalPlayer: TD3Entity;
+begin
+  Result := FEntities[0];
+  if Assigned(Result) and (not Result.IsPlayer) then
+    Result := nil;
+end;
+
+function TD3GameLocal.SpawnPlayer(const AClientNum: Integer): TD3Entity;
+var
+  LArgs: TIdDict;
+  LSpot: TD3Entity;
+  LOrigin: TIdVec3;
+begin
+  Printf(AnsiString(Format('SpawnPlayer: %d', [AClientNum])) + #10);
+  LArgs := TIdDict.Create;
+  try
+    LArgs.SetInt('spawn_entnum', AClientNum);
+    LArgs.SetValue('name', AnsiString(Format('player%d', [AClientNum + 1])));
+    LArgs.SetValue('classname', 'player_doommarine');
+    Result := nil;
+    if (not SpawnEntityDef(LArgs, Result)) or (not Assigned(FEntities[AClientNum])) then
+      Error(AnsiString(Format('Failed to spawn player as ''%s''', [string(LArgs.GetString('classname'))])));
+    if not Result.IsPlayer then
+      Error(AnsiString(Format('''%s'' spawned the player as a ''%s''.  Player spawnclass must be a subclass of idPlayer.',
+        [string(LArgs.GetString('classname')), string(Result.GetClassname)])));
+  finally
+    LArgs.Free;
+  end;
+
+  // idPlayer::SelectInitialSpawnPoint
+  LSpot := FindEntityUsingDef(nil, 'info_player_start');
+  if not Assigned(LSpot) then
+    Error('No info_player_start on map.' + #10);
+  LSpot.PostEventMS(GetEvents.ActivateTargets, 0, [TD3Entity.EntityArg(Result)]);
+  LOrigin := LSpot.GetPhysics.GetOrigin;
+  // move up to make sure the player is at least an epsilon above the floor
+  LOrigin.Z := LOrigin.Z + 4.0 + D3_CM_BOX_EPSILON;
+  TD3Player(Result).SpawnToPoint(LOrigin, TIdRotationConversions.MatToAngles(LSpot.GetPhysics.GetAxis));
 end;
 
 function TD3GameLocal.GetClip: TD3Clip;

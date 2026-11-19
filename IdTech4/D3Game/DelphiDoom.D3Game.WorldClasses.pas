@@ -33,8 +33,8 @@ type
 implementation
 
 uses
-  DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.Entity, DelphiDoom.D3Game.Worldspawn, DelphiDoom.D3Game.Trigger,
-  DelphiDoom.D3Game.Trigger.Multi, DelphiDoom.D3Game.Trigger.Timer, DelphiDoom.D3Game.Trigger.Count,
+  DelphiDoom.D3Game.ClassBase, DelphiDoom.D3Game.Entity, DelphiDoom.D3Game.Player, DelphiDoom.D3Game.Worldspawn, DelphiDoom.D3Game.Trigger,
+  DelphiDoom.D3Game.Trigger.Multi, DelphiDoom.D3Game.Trigger.EntityName, DelphiDoom.D3Game.Trigger.Timer, DelphiDoom.D3Game.Trigger.Count,
   DelphiDoom.D3Game.Trigger.Hurt, DelphiDoom.D3Game.Trigger.Fade, DelphiDoom.D3Game.MoverBinary,
   DelphiDoom.D3Game.Door, DelphiDoom.D3Game.Mover;
 
@@ -43,6 +43,12 @@ class procedure TD3WorldClasses.Declare(const AClasses: TD3ClassSystem; const AE
 begin
   // ABSTRACT_DECLARATION( idClass, idEntity )
   TD3Entity.DeclareEvents(AClasses.Declare('idEntity', 'idClass', nil, TD3Entity.SpawnClass, True), AEvents);
+
+  AClasses.Declare('idPlayer', 'idEntity',
+    function: TD3Class
+    begin
+      Result := TD3Player.Create(AGame, AGame);
+    end, TD3Player.SpawnClass);
 
   AClasses.Declare('idWorldspawn', 'idEntity',
     function: TD3Class
@@ -60,6 +66,11 @@ begin
     begin
       Result := TD3TriggerMulti.Create(AGame, AGame);
     end, TD3TriggerMulti.SpawnClass), AEvents);
+  TD3TriggerEntityName.DeclareEvents(AClasses.Declare('idTrigger_EntityName', 'idTrigger',
+    function: TD3Class
+    begin
+      Result := TD3TriggerEntityName.Create(AGame, AGame);
+    end, TD3TriggerEntityName.SpawnClass), AEvents);
   TD3TriggerTimer.DeclareEvents(AClasses.Declare('idTrigger_Timer', 'idTrigger',
     function: TD3Class
     begin

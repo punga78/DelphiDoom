@@ -52,8 +52,8 @@ implementation
 
 uses
   System.Math, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Types, DelphiDoom.Scanner.IdDict,
-  DelphiDoom.D3Game.Types, DelphiDoom.D3Game.PhysicsParametric,
-  DelphiDoom.D3Game.Trigger.Multi, DelphiDoom.D3Game.Trigger.Timer, DelphiDoom.D3Game.Trigger.Count,
+  DelphiDoom.D3Game.Types, DelphiDoom.D3Game.PhysicsParametric, DelphiDoom.D3Game.Player,
+  DelphiDoom.D3Game.Trigger.Multi, DelphiDoom.D3Game.Trigger.EntityName, DelphiDoom.D3Game.Trigger.Timer, DelphiDoom.D3Game.Trigger.Count,
   DelphiDoom.D3Game.Trigger.Hurt, DelphiDoom.D3Game.MoverBinary, DelphiDoom.D3Game.Mover,
   DelphiDoom.Tests.D3Game.World;
 
@@ -122,6 +122,7 @@ var
   LBinary: TD3MoverBinary;
   LMover: TD3Mover;
   LMultiple: TD3TriggerMulti;
+  LEntityName: TD3TriggerEntityName;
   LTimer: TD3TriggerTimer;
   LCount: TD3TriggerCount;
   LHurt: TD3TriggerHurt;
@@ -138,6 +139,13 @@ begin
     Line(Format('MULTI wait=%s random=%s delay=%s random_delay=%s next=%d triggerFirst=%d',
       [Bits(LMultiple.Wait), Bits(LMultiple.Random), Bits(LMultiple.Delay), Bits(LMultiple.RandomDelay),
       LMultiple.NextTriggerTime, Ord(LMultiple.TriggerFirst)]));
+  end;
+  if AEntity is TD3TriggerEntityName then
+  begin
+    LEntityName := TD3TriggerEntityName(AEntity);
+    Line(Format('ENAME wait=%s random=%s delay=%s random_delay=%s next=%d triggerFirst=%d entityName=%s',
+      [Bits(LEntityName.Wait), Bits(LEntityName.Random), Bits(LEntityName.Delay), Bits(LEntityName.RandomDelay),
+      LEntityName.NextTriggerTime, Ord(LEntityName.TriggerFirst), string(LEntityName.EntityName)]));
   end;
   if AEntity is TD3TriggerTimer then
   begin
@@ -456,6 +464,53 @@ begin
       DumpRot(LEntity)
     else
       Line('NOTFOUND');
+  end
+  else if ACommand = 'give' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if (not Assigned(LEntity)) or (not LEntity.IsPlayer) then
+      Line('NOTFOUND')
+    else
+    begin
+      TD3Player(LEntity).GiveInventoryItem(AnsiString(Word(1)));
+      Line('GIVEN');
+    end;
+  end
+  else if ACommand = 'spectate' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if (not Assigned(LEntity)) or (not LEntity.IsPlayer) then
+      Line('NOTFOUND')
+    else
+    begin
+      TD3Player(LEntity).Spectating := StrToIntDef(Word(1), 0) <> 0;
+      Line('SPECTATING');
+    end;
+  end
+  else if ACommand = 'viewangles' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if (not Assigned(LEntity)) or (not LEntity.IsPlayer) then
+      Line('NOTFOUND')
+    else
+    begin
+      LParts := Word(1).Split([',']);
+      LTriple[0] := 0;
+      LTriple[1] := 0;
+      LTriple[2] := 0;
+      for LIndex := 0 to Min(2, High(LParts)) do
+        LTriple[LIndex] := StrToFloatDef(LParts[LIndex], 0, TFormatSettings.Invariant);
+      TD3Player(LEntity).ViewAngles := TIdAngles.Create(LTriple[0], LTriple[1], LTriple[2]);
+      Line('VIEWANGLES');
+    end;
+  end
+  else if ACommand = 'items' then
+  begin
+    LEntity := EntityAt(Word(0));
+    if (not Assigned(LEntity)) or (not LEntity.IsPlayer) then
+      Line('NOTFOUND')
+    else
+      Line('ITEMS ' + TD3GameEscape.Escape(AnsiString(TD3Player(LEntity).ItemsText)));
   end
   else if ACommand = 'rotq' then
   begin
