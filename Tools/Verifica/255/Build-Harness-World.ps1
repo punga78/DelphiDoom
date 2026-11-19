@@ -11,7 +11,10 @@
 #                                  InitDefaultPhysics, Spawn reduced) and of idGameLocal (GetTargets, RequirementMet)
 #   world\physics.inc              the REAL bodies of idPhysics_Parametric (linear motion) and idPhysics::SnapTimeToPhysicsFrame
 #   world\trigger.inc              the REAL bodies of idTrigger, idTrigger_Multi, _Timer, _Count, _Hurt, _Fade
-#   world\mover.inc                the REAL bodies of idMover_Binary, idDoor and idMover (linear movement)
+#   world\mover.inc                the REAL bodies of idMover_Binary, idDoor and idMover (linear movement and rotation)
+# Ondata 14: the entity bodies are now whole (RunPhysics, BecomeActive/BecomeInactive with the physics teams, Bind, Unbind, RemoveBinds,
+# JoinTeam, QuitTeam, GetMasterPosition, SetPhysics, SetOrigin, SetAxis, Event_SpawnBind, idGameLocal::SortActiveEntityList), idPhysics_Static
+# is real, idPhysics_Parametric has SetMaster, idTrigger_EntityName is real, and idMath::SinCos is rebuilt as sinl/cosl (see below).
 # and compiles them with bcc32c (32 bit, x87, -DNDEBUG) with harness_world.cpp (fakes of the engine: the entity and physics classes
 # are declared there with the members the real bodies use; what the original asks of render, sound, clip and script is a stub that
 # does nothing). Scenarios Tests\Data\D3World\scenarios\<name>.scn give Tests\Data\D3World\golden\<name>.golden.txt.
