@@ -42,7 +42,6 @@ uses
   doomdef,
   m_fixed,
   d_player,
-  d_think,
   p_mobj_h,
   r_defs,
   p_spec_h;

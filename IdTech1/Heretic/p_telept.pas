@@ -77,7 +77,6 @@ uses
   p_tick,
   p_mobj,
   p_map,
-  sounddata,
   udmf_telept,
   DelphiDoom.Thinkers.Teleport.Geometry,
   DelphiDoom.Thinkers.Teleport.Placement,

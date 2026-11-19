@@ -166,7 +166,6 @@ uses
   doomdef,
   d_player,
   g_game,
-  info_h,
   info,
   m_rnd,
   p_enemy,

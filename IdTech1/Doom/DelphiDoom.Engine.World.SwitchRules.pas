@@ -38,8 +38,7 @@ uses
   r_defs,
   p_mobj_h,
   p_spec_h,
-  DelphiDoom.Engine.World.SpecRules,
-  p_spec;
+  DelphiDoom.Engine.World.SpecRules;
 
 // The pairs of the textures of the switches, ended by -1: TEngineSwitchListLoader writes them at
 // the start

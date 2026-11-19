@@ -47,7 +47,6 @@ interface
 uses
   doomdef,
   m_fixed,
-  d_player,
   d_think,
   p_local,
   p_mobj_h,

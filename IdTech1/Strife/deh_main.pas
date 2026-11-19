@@ -145,13 +145,10 @@ uses
   c_cmds,
   doomdef,
   deh_base,
-  d_main,
-  d_items,
   d_englsh,
   dstrings,
   f_finale,
   hu_stuff,
-  info,
   info_common,
   m_argv,
   m_fixed,
@@ -163,13 +160,10 @@ uses
   p_common,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
-  p_inter,
-  DelphiDoom.Engine.World.InterRules,
   p_musinfo,
   p_sounds,
   p_simpledialog,
   psi_overlay,
-  sounddata,
   v_data;
 
 var

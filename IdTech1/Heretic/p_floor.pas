@@ -87,7 +87,6 @@ implementation
 uses
   d_delphi,
   doomdata,
-  p_map,
   p_tick,
   p_setup,
   p_slopes,

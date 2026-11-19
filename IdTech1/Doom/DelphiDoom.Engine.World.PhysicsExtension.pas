@@ -14,8 +14,7 @@ interface
 
 uses
   m_fixed,
-  p_mobj_h,
-  r_defs;
+  p_mobj_h;
 
 type
   /// <summary>

@@ -50,13 +50,11 @@ implementation
 
 uses
   System.SysUtils,
-  DelphiDoom.Thinkers.PlayerRespawn.Intf,
   DelphiDoom.Thinkers.SpawnSpot,
   DelphiDoom.Engine.World.PlayerRespawnHost,
   m_fixed,
   doomdef,
   doomdata,
-  d_player,
   d_event,
   g_game,
   p_mobj,

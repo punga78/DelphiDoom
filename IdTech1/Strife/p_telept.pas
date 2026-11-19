@@ -75,19 +75,11 @@ uses
   p_tick,
   p_mobj,
   p_map,
-  DelphiDoom.Engine.World.SectorSearch,
   p_spec_h,
-  DelphiDoom.Engine.World.SpecRules,
-  p_spec,
-  p_user,
   r_main,
-  sounddata,
   udmf_telept,
-  tables,
   DelphiDoom.Thinkers.Teleport.Geometry,
-  DelphiDoom.Thinkers.Teleport.LineExit,
-  DelphiDoom.Engine.Teleport.Services,
-  DelphiDoom.Engine.Teleport.LineSide;
+  DelphiDoom.Engine.Teleport.Services;
 
 //==============================================================================
 // EV_Teleport

@@ -132,12 +132,10 @@ uses
   c_cmds,
   doomdef,
   deh_base,
-  d_main,
   h_strings,
   f_finale,
   g_game,
   hu_stuff,
-  info,
   info_common,
   m_argv,
   m_fixed,
@@ -150,15 +148,11 @@ uses
   p_common,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
-  p_pspr_h,
-  p_inter,
-  DelphiDoom.Engine.World.InterRules,
   DelphiDoom.Engine.World.SpecialRespawn,
   p_musinfo,
   p_sounds,
   p_simpledialog,
   psi_overlay,
-  sounddata,
   v_data;
 
 type

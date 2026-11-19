@@ -33,9 +33,7 @@ interface
 
 uses
   r_defs,
-  p_mobj_h,
-  p_spec_h,
-  p_spec;
+  p_spec_h;
 
 type
   /// <summary>

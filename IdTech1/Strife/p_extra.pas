@@ -257,7 +257,6 @@ uses
   DelphiDoom.Engine.World.EnemyRules,
   p_mobj,
   p_inter,
-  p_user,
   DelphiDoom.Engine.World.PlayerExtras,
   p_map,
   p_local,
