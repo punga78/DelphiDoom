@@ -72,6 +72,7 @@ begin
     LOutput := TQ3ConsoleOutput.Create(AWriter);
     // the interface keeps the output alive; every other holder takes its own reference
     LServer.Parts.Print := LOutput;
+    LServer.Parts.Clock := AClock;
 
     // Cmd_ExecuteString ends here for a line that is not a command: the game of the server may take it ("addbot")
     LUnhandled := TQ3UnhandledCommands.Create(nil,
@@ -143,6 +144,7 @@ begin
     LSettings.Sources := LServer.Parts.Sources;
     LSettings.Protocol := PROTOCOL_VERSION;
     LSettings.ClientRunning := not AOptions.NoClient;
+    LSettings.EchoBroadcast := True;
     LServer.Parts.Server := TQ3Server.Create(LSettings);
 
     // the network of the process: the server on one end of a wire in memory, the client on the other

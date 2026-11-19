@@ -27,7 +27,7 @@ type
     FWriter: TProc<string>;
   public
     constructor Create(const AWriter: TProc<string>);
-    /// <summary>Q_CleanStr: the "^x" color escapes are taken out (a doubled "^^" stays as it is)</summary>
+    /// <summary>Q_CleanStr: the "^x" color escapes are taken out (a caret followed by a caret is not one, a caret at the end stays)</summary>
     class function CleanText(const AText: AnsiString): string; static;
     procedure Print(const AText: AnsiString); overload;
     procedure Print(const AText: string); overload;

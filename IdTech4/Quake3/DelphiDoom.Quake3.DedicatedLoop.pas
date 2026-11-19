@@ -106,7 +106,7 @@ function TQ3DedicatedLoop.ModifyMilliseconds(AMilliseconds: Integer): Integer;
 begin
   Result := AMilliseconds;
   // dedicated servers do not want to clamp for a much longer period: it would mess up the views of time of clients
-  if Result > HITCH_MILLISECONDS then
+  if (Result > HITCH_MILLISECONDS) and Assigned(FPrint) then
     FPrint.Print(AnsiString(Format('Hitch warning: %d msec frame time'#10, [Result])));
   if Result > CLAMP_MILLISECONDS then
     Result := CLAMP_MILLISECONDS;

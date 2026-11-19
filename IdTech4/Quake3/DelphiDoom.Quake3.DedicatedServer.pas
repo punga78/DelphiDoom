@@ -14,7 +14,7 @@ uses
   DelphiDoom.Scanner.Q3.GlobalDefines, DelphiDoom.Scanner.Q3.SourceHandles, DelphiDoom.Q3Host.Intf,
   DelphiDoom.Q3Host.Server, DelphiDoom.Q3Host.Server.Intf, DelphiDoom.Q3Host.ServerNetwork,
   DelphiDoom.Quake3.DummyClient, DelphiDoom.Quake3.ServerCommands, DelphiDoom.Quake3.DedicatedLoop,
-  DelphiDoom.Quake3.Types;
+  DelphiDoom.Quake3.Clock.Intf, DelphiDoom.Quake3.Types;
 
 type
   /// <summary>
@@ -22,6 +22,7 @@ type
   ///   them one by one (a piece that is still nil when something fails is simply not freed)
   /// </summary>
   TQ3DedicatedParts = record
+    Clock: IQ3Clock;
     Console: TQ3Console;
     Print: IQ3HostConsole;
     Files: IGameFileSystem;
@@ -53,12 +54,14 @@ type
     ///   reason goes to the console
     /// </summary>
     function Run: Integer;
+  strict private
+    procedure PrintSummary(AFrames, AMilliseconds, AExitCode: Integer);
   end;
 
 implementation
 
 uses
-  DelphiDoom.Q3Host.Types, DelphiDoom.Qvm.Types;
+  System.TypInfo, DelphiDoom.Q3Host.Types, DelphiDoom.Qvm.Types;
 
 resourcestring
   SComError = 'Com_Error: %s';
@@ -86,14 +89,34 @@ begin
     Parts.Files.Shutdown;
   Parts.Files := nil;
   Parts.Console.Free;
+  Parts.Clock := nil;
   inherited Destroy;
 end;
 
+procedure TQ3DedicatedServer.PrintSummary(AFrames, AMilliseconds, AExitCode: Integer);
+var
+  LPlayers, LBots: Integer;
+  LText: string;
+begin
+  Parts.Commands.CountClients(LPlayers, LBots);
+  LText := Format('Quake3Server: %d frames in %d ms, map %s, %d players, %d bots', [AFrames, AMilliseconds,
+    string(Parts.Server.MapName), LPlayers, LBots]);
+  if Assigned(Parts.Dummy) then
+    LText := LText + Format(', client %s (%d commands, %d snapshots, %d entities in the last)',
+      [GetEnumName(TypeInfo(TQ3DummyClientPhase), Ord(Parts.Dummy.Phase)), Parts.Dummy.Frames,
+      Parts.Dummy.Snapshots, Parts.Dummy.Entities]);
+  Parts.Print.Print(AnsiString(LText + Format(', exit code %d'#10, [AExitCode])));
+end;
+
 function TQ3DedicatedServer.Run: Integer;
+var
+  LFrames, LStart: Integer;
 begin
   Result := Q3_EXIT_OK;
+  LFrames := 0;
+  LStart := Parts.Clock.Milliseconds;
   try
-    Parts.Loop.Run;
+    LFrames := Parts.Loop.Run;
     if Assigned(Parts.Commands) and Parts.Commands.MapFailed then
       Result := Q3_EXIT_FAILURE;
   except
@@ -123,6 +146,8 @@ begin
       Result := Q3_EXIT_FAILURE;
     end;
   end;
+  if Assigned(Parts.Server) and Parts.Server.IsRunning then
+    PrintSummary(LFrames, Parts.Clock.Milliseconds - LStart, Result);
 end;
 
 end.

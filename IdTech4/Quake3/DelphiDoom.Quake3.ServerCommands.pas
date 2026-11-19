@@ -43,6 +43,8 @@ type
     procedure MapRestart;
     /// <summary>SV_Status_f: the level and how many players and bots are in</summary>
     procedure Status;
+    /// <summary>How many players and how many bots are connected (zombies and free slots are not counted)</summary>
+    procedure CountClients(out APlayers, ABots: Integer);
     /// <summary>Com_Quit_f</summary>
     procedure Quit;
     property QuitRequested: Boolean read FQuitRequested;
@@ -107,23 +109,32 @@ begin
   FServer.MapRestart(LDelay);
 end;
 
+procedure TQ3ServerCommands.CountClients(out APlayers, ABots: Integer);
+var
+  LSlot: Integer;
+begin
+  APlayers := 0;
+  ABots := 0;
+  if not FServer.IsRunning then
+    Exit;
+  for LSlot := 0 to Min(MAX_CLIENTS, FCVars.VariableIntegerValue('sv_maxclients')) - 1 do
+    if FServer.ClientPhase[LSlot] >= TQ3ServerClientPhase.Connected then
+      if FServer.ClientIsBot[LSlot] then
+        Inc(ABots)
+      else
+        Inc(APlayers);
+end;
+
 procedure TQ3ServerCommands.Status;
 var
-  LSlot, LPlayers, LBots: Integer;
+  LPlayers, LBots: Integer;
 begin
   if not FServer.IsRunning then
   begin
     FPrint.Print('Server is not running.'#10);
     Exit;
   end;
-  LPlayers := 0;
-  LBots := 0;
-  for LSlot := 0 to Min(MAX_CLIENTS, FCVars.VariableIntegerValue('sv_maxclients')) - 1 do
-    if FServer.ClientPhase[LSlot] >= TQ3ServerClientPhase.Connected then
-      if FServer.ClientIsBot[LSlot] then
-        Inc(LBots)
-      else
-        Inc(LPlayers);
+  CountClients(LPlayers, LBots);
   FPrint.Print(AnsiString(Format('map: %s'#10'players: %d, bots: %d'#10, [string(FServer.MapName), LPlayers,
     LBots])));
 end;
