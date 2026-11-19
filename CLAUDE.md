@@ -1,4 +1,4 @@
-# DelphiDoom — istruzioni per Claude
+﻿# DelphiDoom — istruzioni per Claude
 
 Informazioni specifiche di questo repository. Le regole generali (commit, issue, lingua, MCP) sono nel CLAUDE.md globale.
 
