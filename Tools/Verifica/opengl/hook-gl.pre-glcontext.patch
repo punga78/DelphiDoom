@@ -1,0 +1,193 @@
+diff --git a/Base/DelphiDoom.Engine.Composition.pas b/Base/DelphiDoom.Engine.Composition.pas
+index 98487492b..f50bf2d12 100644
+--- a/Base/DelphiDoom.Engine.Composition.pas
++++ b/Base/DelphiDoom.Engine.Composition.pas
+@@ -20,6 +20,7 @@ procedure ComposeEngine;
+ implementation
+ 
+ uses
++  HarnessGl,
+ {$IFDEF RADIX}
+   DelphiDoom.Engine.Radix.Composition,
+   DelphiDoom.Engine.Level.RadixRules,
+@@ -649,7 +650,7 @@ begin
+   // Windows: the choice of DirectInput (usedirectinput) was never set by anything
+   LPoller := TInputFactory.CreatePoller(TInputFactory.CreateWindowsKeyboard,
+     TInputFactory.CreateWindowsMouse, TInputFactory.CreateWindowsJoystick(LWindow),
+-    TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create,
++    HarnessGl_InputGate(TEngineParityInputGate.Create(TEngineInputGate.Create, AParity)), TEngineScreenSize.Create,
+     TEngineKeyMap.Create,
+     TEngineInputSink.Create, ALog, NUMJOYBUTTONS);
+   Result := LPoller;
+@@ -1708,6 +1709,7 @@ begin
+   LParityClock := TParityFactory.CreateSwitchClock(LClock, LParitySwitch, TICRATE);
+   LClock := LParityClock;
+   LParity.AttachClock(LParityClock);
++  LClock := HarnessGl_Clock(LClock);
+   I_ConfigureClock(LClock);
+   I_ConfigureVideo(TVideoFactory.CreateServices);
+   ComposeDisplayModes;
+diff --git a/Base/DelphiDoom.Engine.Level.Loader.pas b/Base/DelphiDoom.Engine.Level.Loader.pas
+index 4563ee1bd..0d2d22f36 100644
+--- a/Base/DelphiDoom.Engine.Level.Loader.pas
++++ b/Base/DelphiDoom.Engine.Level.Loader.pas
+@@ -74,6 +74,7 @@ type
+ implementation
+ 
+ uses
++  HarnessGl,
+   System.SysUtils,
+   d_delphi,
+   doomdata,
+@@ -495,6 +496,7 @@ begin
+   SetupGeometry;
+   SpawnThings(LMapLump);
+   FinishLevel;
++  HarnessGl_AfterLevel(LMapName, Self, AEpisode, AMap, APlayerMask, Ord(ASkill));
+ end;
+ 
+ end.
+diff --git a/Doom/GLDoom32.dpr b/Doom/GLDoom32.dpr
+index d14f19284..019fb2172 100644
+--- a/Doom/GLDoom32.dpr
++++ b/Doom/GLDoom32.dpr
+@@ -57,6 +57,19 @@ uses
+   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
++  DelphiDoom.OpenGl.Recorder.Types in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
++  DelphiDoom.OpenGl.Recorder.Intf in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
++  DelphiDoom.OpenGl.Recorder.Fnv in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
++  DelphiDoom.OpenGl.Recorder.PixelFormats in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats.pas',
++  DelphiDoom.OpenGl.Recorder.ClientArrays in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays.pas',
++  DelphiDoom.OpenGl.Recorder.Encoder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder.pas',
++  DelphiDoom.OpenGl.Recorder.CallRecorder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder.pas',
++  DelphiDoom.OpenGl.Recorder.HookTable in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable.pas',
++  DelphiDoom.OpenGl.Recorder.Installer in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer.pas',
++  DelphiDoom.OpenGl.Recorder.Session in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session.pas',
++  DelphiDoom.OpenGl.Recorder.Thunks in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
++  DelphiDoom.OpenGl.Recorder.Hook in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
++  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
+   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
+diff --git a/Heretic/GLHeretic32.dpr b/Heretic/GLHeretic32.dpr
+index 0f21fa937..d7774d09c 100644
+--- a/Heretic/GLHeretic32.dpr
++++ b/Heretic/GLHeretic32.dpr
+@@ -59,6 +59,19 @@ uses
+   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
++  DelphiDoom.OpenGl.Recorder.Types in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
++  DelphiDoom.OpenGl.Recorder.Intf in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
++  DelphiDoom.OpenGl.Recorder.Fnv in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
++  DelphiDoom.OpenGl.Recorder.PixelFormats in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats.pas',
++  DelphiDoom.OpenGl.Recorder.ClientArrays in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays.pas',
++  DelphiDoom.OpenGl.Recorder.Encoder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder.pas',
++  DelphiDoom.OpenGl.Recorder.CallRecorder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder.pas',
++  DelphiDoom.OpenGl.Recorder.HookTable in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable.pas',
++  DelphiDoom.OpenGl.Recorder.Installer in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer.pas',
++  DelphiDoom.OpenGl.Recorder.Session in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session.pas',
++  DelphiDoom.OpenGl.Recorder.Thunks in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
++  DelphiDoom.OpenGl.Recorder.Hook in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
++  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
+   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
+diff --git a/Hexen/GLHexen32.dpr b/Hexen/GLHexen32.dpr
+index 439450442..92c27dfd5 100644
+--- a/Hexen/GLHexen32.dpr
++++ b/Hexen/GLHexen32.dpr
+@@ -59,6 +59,19 @@ uses
+   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
++  DelphiDoom.OpenGl.Recorder.Types in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
++  DelphiDoom.OpenGl.Recorder.Intf in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
++  DelphiDoom.OpenGl.Recorder.Fnv in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
++  DelphiDoom.OpenGl.Recorder.PixelFormats in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats.pas',
++  DelphiDoom.OpenGl.Recorder.ClientArrays in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays.pas',
++  DelphiDoom.OpenGl.Recorder.Encoder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder.pas',
++  DelphiDoom.OpenGl.Recorder.CallRecorder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder.pas',
++  DelphiDoom.OpenGl.Recorder.HookTable in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable.pas',
++  DelphiDoom.OpenGl.Recorder.Installer in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer.pas',
++  DelphiDoom.OpenGl.Recorder.Session in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session.pas',
++  DelphiDoom.OpenGl.Recorder.Thunks in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
++  DelphiDoom.OpenGl.Recorder.Hook in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
++  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
+   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',
+diff --git a/Libs/OpenGl/Legacy/gl_main.pas b/Libs/OpenGl/Legacy/gl_main.pas
+index 3b06483a2..778d7ab1d 100644
+--- a/Libs/OpenGl/Legacy/gl_main.pas
++++ b/Libs/OpenGl/Legacy/gl_main.pas
+@@ -184,6 +184,7 @@ procedure GL_ConfigureConsole(const AConsole: IEngineConsole);
+ implementation
+ 
+ uses
++  HarnessGl,
+   Messages,
+   am_map,
+   c_con,
+@@ -1158,6 +1159,7 @@ begin
+   // Read And Assign Extentions
+   ReadExtensions;
+   ReadImplementationProperties;
++  HarnessGl_AfterExtensions;
+ 
+   // Settings to ensure that the window is the topmost window
+   ShowWindow(hMainWnd, SW_SHOW);
+diff --git a/Libs/OpenGl/Legacy/gl_render.pas b/Libs/OpenGl/Legacy/gl_render.pas
+index 3c09a8fd3..bedc642a4 100644
+--- a/Libs/OpenGl/Legacy/gl_render.pas
++++ b/Libs/OpenGl/Legacy/gl_render.pas
+@@ -317,6 +317,7 @@ procedure R_ShutDownOpenGL;
+ implementation
+ 
+ uses
++  HarnessGl,
+   doomstat,
+   d_main,
+   i_system,
+@@ -1307,6 +1308,7 @@ begin
+     glFinish;
+   glFlush;
+   SwapBuffers(h_DC);
++  HarnessGl_FrameEnd;
+ end;
+ 
+ {*****************
+@@ -3962,6 +3964,7 @@ begin
+     gld_Precache;
+   gld_PreprocessSectors;
+   gld_PreprocessSegs;
++  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);
+   gld_drawlist.Release;
+   glTexCoordPointer(2, GL_FLOAT, 0, gld_texcoords);
+   glVertexPointer(3, GL_FLOAT, 0, gld_vertexes);
+diff --git a/Strife/GLStrife32.dpr b/Strife/GLStrife32.dpr
+index 83c8cd270..8094fed27 100644
+--- a/Strife/GLStrife32.dpr
++++ b/Strife/GLStrife32.dpr
+@@ -57,6 +57,19 @@ uses
+   gl_clipper in '..\Libs\OpenGl\Legacy\gl_clipper.pas',
+   gl_tex in '..\Libs\OpenGl\Legacy\gl_tex.pas',
+   gl_defs in '..\Libs\OpenGl\Legacy\gl_defs.pas',
++  DelphiDoom.OpenGl.Recorder.Types in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types.pas',
++  DelphiDoom.OpenGl.Recorder.Intf in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf.pas',
++  DelphiDoom.OpenGl.Recorder.Fnv in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv.pas',
++  DelphiDoom.OpenGl.Recorder.PixelFormats in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats.pas',
++  DelphiDoom.OpenGl.Recorder.ClientArrays in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays.pas',
++  DelphiDoom.OpenGl.Recorder.Encoder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder.pas',
++  DelphiDoom.OpenGl.Recorder.CallRecorder in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder.pas',
++  DelphiDoom.OpenGl.Recorder.HookTable in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable.pas',
++  DelphiDoom.OpenGl.Recorder.Installer in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer.pas',
++  DelphiDoom.OpenGl.Recorder.Session in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session.pas',
++  DelphiDoom.OpenGl.Recorder.Thunks in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks.pas',
++  DelphiDoom.OpenGl.Recorder.Hook in '..\Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook.pas',
++  HarnessGl in '..\Tools\Verifica\opengl\HarnessGl.pas',
+   gl_main in '..\Libs\OpenGl\Legacy\gl_main.pas',
+   gl_misc in '..\Libs\OpenGl\Legacy\gl_misc.pas',
+   gl_render in '..\Libs\OpenGl\Legacy\gl_render.pas',

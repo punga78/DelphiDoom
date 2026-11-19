@@ -6,20 +6,26 @@
 
   Uso:
     powershell -NoProfile -File Tools\Misura-Giro.ps1 -RadiceVecchia <cartella> [-Coppie 7] [-Demo demo1]
-      [-WorkRoot C:\ddparity] [-Riepilogo <file>]
+      [-WorkRoot C:\ddparity] [-Riepilogo <file>] [-Piattaforme Win32,Win64] [-Modi 8,32]
+
+  -Piattaforme e -Modi limitano il giro (per ripetere solo una combinazione rifiutata, come fa Tools\Misura-Finale.ps1).
+  Il -Riepilogo contiene l'uscita COMPLETA di ogni combinazione (non solo le ultime righe), cosi' si puo' rileggere.
 #>
 param(
   [Parameter(Mandatory = $true)][string]$RadiceVecchia,
   [int]$Coppie = 7,
   [string]$Demo = 'demo1',
   [string]$WorkRoot = 'C:\ddparity',
-  [string]$Riepilogo = ''
+  [string]$Riepilogo = '',
+  [string[]]$Piattaforme = @('Win32', 'Win64'),
+  [int[]]$Modi = @(8, 32)
 )
 $root = Split-Path -Parent $PSScriptRoot
 $env:DD_GAME_PRIORITY = 'Normal'
 $righe = @()
-foreach ($piattaforma in 'Win32', 'Win64') {
-  foreach ($modo in 8, 32) {
+$completo = @()
+foreach ($piattaforma in $Piattaforme) {
+  foreach ($modo in $Modi) {
     $vecchio = Join-Path $RadiceVecchia "bin\$piattaforma\Release\Doom\Doom32.exe"
     $nuovo = Join-Path $root "bin\$piattaforma\Release\Doom\Doom32.exe"
     $uscita = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'Misura-Coppie.ps1') `
@@ -29,7 +35,9 @@ foreach ($piattaforma in 'Win32', 'Win64') {
     $verdetto = switch ($codice) { 0 { 'entro il 5%' } 1 { 'OLTRE il 5%' } 3 { 'misura non affidabile' } default { "errore ($codice)" } }
     $righe += "=== $piattaforma modo $modo : $verdetto"
     $righe += ($uscita -split "`r?`n" | Where-Object { $_.Trim() } | Select-Object -Last 12)
+    $completo += "=== $piattaforma modo $modo : $verdetto"
+    $completo += ($uscita -split "`r?`n" | Where-Object { $_.Trim() })
     $righe | Select-Object -Last 14 | ForEach-Object { $_ }
   }
 }
-if ($Riepilogo -ne '') { $righe | Set-Content -LiteralPath $Riepilogo -Encoding UTF8 }
+if ($Riepilogo -ne '') { $completo | Set-Content -LiteralPath $Riepilogo -Encoding UTF8 }
