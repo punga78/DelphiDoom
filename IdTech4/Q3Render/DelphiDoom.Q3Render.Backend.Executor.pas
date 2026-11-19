@@ -19,11 +19,12 @@ unit DelphiDoom.Q3Render.Backend.Executor;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.Types,
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Collision.Q3.Types, DelphiDoom.Decl.Q3Shader.Types,
+  DelphiDoom.Decl.Q3Shader.Calc.Types,
   DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.MathCore.Patch.Intf, DelphiDoom.Q3Render.Scene.Types,
   DelphiDoom.Q3Render.Intf, DelphiDoom.Q3Render.Scene.FrontEnd, DelphiDoom.Q3Render.Backend.Gl,
   DelphiDoom.Q3Render.Backend.State, DelphiDoom.Q3Render.Backend.Surfaces, DelphiDoom.Q3Render.Backend.Sky,
-  DelphiDoom.Q3Render.Frame.Commands;
+  DelphiDoom.Q3Render.Backend.Passes, DelphiDoom.Q3Render.Frame.Commands;
 
 type
   /// <summary>What the backend drew and what it left out (a surface kind that is not ported draws nothing)</summary>
@@ -46,8 +47,9 @@ type
     SkippedFlares: Integer;
     SkippedMd3: Integer;
     SkiesDrawn: Integer;
-    SkippedDlightPasses: Integer;
-    SkippedFogPasses: Integer;
+    /// <summary>The draws of the dynamic light pass (one for every light that reaches a batch) and of the fog pass</summary>
+    DlightDraws: Integer;
+    FogDraws: Integer;
   end;
 
   /// <summary>
@@ -56,9 +58,10 @@ type
   ///   made up (1, 2, 3 ... in the order the images are first bound: no texture is ever created)
   /// </summary>
   /// <remarks>
-  ///   Not ported, and counted in the stats: flares, the sky, the dynamic light pass, the fog pass and the stencil
-  ///   shadows (the grids of patches, the polygons, the sprites, the beams, the rails, the lightning and the md3
-  ///   models are drawn: Backend.Surfaces). The compiled vertex array
+  ///   Not ported, and counted in the stats: flares (the original draws none with its defaults: r_flares is 0 and
+  ///   RB_AddDlightFlares is commented out) and the stencil shadows (the grids of patches, the polygons, the sprites,
+  ///   the beams, the rails, the lightning and the md3 models are drawn: Backend.Surfaces; the sky: Backend.Sky; the
+  ///   dynamic light pass and the fog pass: Backend.Passes). The compiled vertex array
   ///   extension and two texture units are taken as there (glLockArraysEXT, the multitexture iterators), the colours
   ///   are those of overbright bits 1 (identity light 0.5)
   /// </remarks>
@@ -74,6 +77,8 @@ type
       PTR_SV_TEXCOORDS1 = 5;
       PTR_SV_COLORS = 6;
       PTR_CONSTANT255 = 7;
+      PTR_PASS_TEXCOORDS = 8;
+      PTR_PASS_COLORS = 9;
   strict private
     FSink: IQ3GlSink;
     FState: TQ3GlState;
@@ -84,6 +89,10 @@ type
     FGrids: TArray<IPatchGrid>;
     FTessellator: TQ3SurfaceTessellator;
     FSky: TQ3SkyBox;
+    FFogs: TArray<TQ3Fog>;
+    FTransformedDlights: TArray<TQ3Vec3>;
+    FPassTexCoords: TArray<Single>;
+    FPassColors: TBytes;
     FSettings: TQ3RenderSettings;
     FSkyRenderedThisView: Boolean;
     FDlightBits: Integer;
@@ -127,6 +136,11 @@ type
     procedure SetPointer(const AName: string; ASize: Integer; AStride: Integer; ASource: Integer);
     function ArrayBlock(ASource, AStride: Integer): TBytes;
     procedure DrawElements;
+    procedure DrawElementsFrom(const AIndexes: TArray<Integer>; ACount: Integer);
+    procedure DrawPass(const ADraw: TQ3PassDraw);
+    procedure ShadingPasses;
+    procedure BuildFogs;
+    procedure TransformDlights;
     procedure CheckOverflow(AVertexes, AIndexes: Integer);
     procedure BeginSurface(AShader, AFogNumber: Integer);
     procedure EndSurface;
@@ -172,8 +186,7 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.Decl.Q3Shader.Calc.FloatMask, DelphiDoom.Models.Static.Md3.Intf,
-  DelphiDoom.Collision.Q3.Types, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.Types,
+  System.Math, DelphiDoom.MapFile.Bsp.Intf, DelphiDoom.Decl.Q3Shader.Calc.FloatMask, DelphiDoom.Models.Static.Md3.Intf, DelphiDoom.MapFile.Bsp.RenderTypes, DelphiDoom.MapFile.Bsp.Types,
   DelphiDoom.Decl.Q3Shader.Calc.StageColors, DelphiDoom.Decl.Q3Shader.Calc.LightCalc,
   DelphiDoom.Q3Render.View.Setup, DelphiDoom.Q3Render.Draw.List;
 
@@ -245,6 +258,7 @@ begin
     FGrids := AWorld.GetGrids
   else
     FGrids := nil;
+  BuildFogs;
 end;
 
 procedure TQ3Backend.SetSettings(const ASettings: TQ3RenderSettings);
@@ -376,6 +390,10 @@ begin
       Result := FloatBytes(FSvarTexCoords[ASource - PTR_SV_TEXCOORDS0], LCount * 2);
     PTR_SV_COLORS:
       Result := Copy(FSvarColors, 0, LCount * 4);
+    PTR_PASS_TEXCOORDS:
+      Result := FloatBytes(FPassTexCoords, LCount * 2);
+    PTR_PASS_COLORS:
+      Result := Copy(FPassColors, 0, LCount * 4);
     PTR_CONSTANT255:
       begin
         SetLength(Result, LCount * 4);
@@ -388,15 +406,20 @@ begin
 end;
 
 procedure TQ3Backend.DrawElements;
+begin
+  DrawElementsFrom(FTess.Indexes, FTess.NumIndexes);
+end;
+
+procedure TQ3Backend.DrawElementsFrom(const AIndexes: TArray<Integer>; ACount: Integer);
 var
   LIndexes: TBytes;
   LIndex: Integer;
   LTex0, LTex1, LColors: TBytes;
 begin
   // R_DrawElements with the compiled vertex arrays of the card: triangles
-  SetLength(LIndexes, FTess.NumIndexes * 4);
-  for LIndex := 0 to FTess.NumIndexes - 1 do
-    PCardinal(@LIndexes[LIndex * 4])^ := Cardinal(FTess.Indexes[LIndex]);
+  SetLength(LIndexes, ACount * 4);
+  for LIndex := 0 to ACount - 1 do
+    PCardinal(@LIndexes[LIndex * 4])^ := Cardinal(AIndexes[LIndex]);
   SetLength(LTex0, 0);
   SetLength(LTex1, 0);
   SetLength(LColors, 0);
@@ -407,7 +430,7 @@ begin
   if FColorArray then
     LColors := ArrayBlock(FColorPointer, 0);
   // what the card reads through the pointers is part of the call: the arrays follow the elements
-  FSink.Call('glDrawElements', [TQ3GlArg.FromEnum(GL_TRIANGLES), TQ3GlArg.FromInt(FTess.NumIndexes),
+  FSink.Call('glDrawElements', [TQ3GlArg.FromEnum(GL_TRIANGLES), TQ3GlArg.FromInt(ACount),
     TQ3GlArg.FromEnum(GL_UNSIGNED_INT), TQ3GlArg.FromBytes(LIndexes),
     TQ3GlArg.FromBytes(ArrayBlock(FVertexPointer, 16)), TQ3GlArg.FromBytes(LTex0), TQ3GlArg.FromBytes(LTex1),
     TQ3GlArg.FromBytes(LColors)]);
@@ -428,6 +451,7 @@ procedure TQ3Backend.PrepareTessEntity;
 var
   LAxis: Integer;
 begin
+  FTess.Fogs := FFogs;
   FTess.Entity := Default(TQ3EntityShading);
   FTess.Entity.Present := True;
   FTess.Entity.IsWorld := FCurrentEntityWorld;
@@ -557,8 +581,7 @@ begin
   LLighting.IdentityLight := IdentityLight;
   LLighting.IdentityLightByte := IdentityLightByte;
   LLighting.PortalRange := FTessEntry.Data.PortalRange;
-  // the fog pass and the fog colours are not ported: the surface is computed as if it were out of the fog
-  FTess.FogNumber := 0;
+  FTess.FogNumber := FTessFog;
   FCalc.StageColors.Compute(AStage, FTess, LLighting, FSvarColors);
   for LBundle := 0 to 1 do
   begin
@@ -648,12 +671,132 @@ begin
       DrawElements;
     end;
   end;
-  // the dynamic lights and the fog are not drawn
-  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
-    Inc(FStats.SkippedFogPasses);
+  // now do any dynamic lighting needed, then the fog
+  ShadingPasses;
   FSink.Call('glUnlockArraysEXT', []);
   if FTessEntry.Data.PolygonOffset then
     FSink.Call('glDisable', [TQ3GlArg.FromEnum(GL_POLYGON_OFFSET_FILL)]);
+end;
+
+procedure TQ3Backend.TransformDlights;
+var
+  LIndex: Integer;
+begin
+  // R_TransformDlights: the lights in the space of the entity (the world has the identity)
+  SetLength(FTransformedDlights, Length(FDlights));
+  for LIndex := 0 to High(FDlights) do
+    FTransformedDlights[LIndex] := TQ3ShadingPasses.TransformDlight(FDlights[LIndex].Origin, FOrientation.Origin,
+      FOrientation.Axis);
+end;
+
+procedure TQ3Backend.BuildFogs;
+var
+  LBsp: IBspFile;
+  LFogs: TArray<TBspFog>;
+  LSides: TArray<TBspBrushSide>;
+  LPlanes: TArray<TBspPlane>;
+  LIndex, LShader, LFirstSide, LPlane, LAxis, LColor: Integer;
+  LParms: TQ3FogParms;
+  LDepth, LValue: Single;
+  LEntry: TQ3ShaderEntry;
+  LFog: TQ3Fog;
+begin
+  // R_LoadFogs: the parts of fog_t that the passes read (the bounds are in the world); entry 0 is "no fog"
+  SetLength(FFogs, 1);
+  FFogs[0] := Default(TQ3Fog);
+  if not Assigned(FWorld) then
+    Exit;
+  LBsp := FWorld.GetBsp;
+  if not Assigned(LBsp) then
+    Exit;
+  LFogs := LBsp.Fogs;
+  LSides := LBsp.BrushSides;
+  LPlanes := LBsp.Planes;
+  SetLength(FFogs, Length(LFogs) + 1);
+  for LIndex := 0 to High(LFogs) do
+  begin
+    LFog := Default(TQ3Fog);
+    if (LFogs[LIndex].BrushNum >= 0) and (LFogs[LIndex].BrushNum < Length(LBsp.Brushes)) then
+    begin
+      // get information from the shader for fog parameters
+      LShader := FShaders.FindShader(LBsp.FogShaderName(LIndex), LIGHTMAP_NONE);
+      LEntry := FShaders.GetEntry(LShader);
+      LParms := LEntry.Data.FogParms;
+      LColor := 0;
+      for LAxis := 0 to 2 do
+      begin
+        // ColorBytes4( color * tr.identityLight ... ): the bytes are (byte)(r * 255)
+        LValue := LParms.Color[LAxis] * IdentityLight;
+        LValue := LValue * 255;
+        LColor := LColor or ((TQ3CMath.FloatToInt(LValue) and $FF) shl (LAxis * 8));
+      end;
+      LFog.ColorInt := Cardinal(LColor) or $FF000000;
+      LDepth := LParms.DepthForOpaque;
+      if LDepth < 1 then
+        LDepth := 1;
+      LValue := LDepth * 8;
+      LFog.TcScale := 1.0 / LValue;
+      // set the gradient vector
+      LFirstSide := LBsp.Brushes[LFogs[LIndex].BrushNum].FirstSide;
+      if LFogs[LIndex].VisibleSide = -1 then
+        LFog.HasSurface := False
+      else if (LFirstSide >= 0) and (LFirstSide + LFogs[LIndex].VisibleSide >= 0) and
+        (LFirstSide + LFogs[LIndex].VisibleSide < Length(LSides)) then
+      begin
+        LPlane := LSides[LFirstSide + LFogs[LIndex].VisibleSide].PlaneNum;
+        if (LPlane >= 0) and (LPlane < Length(LPlanes)) then
+        begin
+          LFog.HasSurface := True;
+          for LAxis := 0 to 2 do
+            LFog.Surface[LAxis] := 0 - LPlanes[LPlane].Normal[LAxis];
+          LFog.Surface[3] := 0 - LPlanes[LPlane].Dist;
+        end;
+      end;
+    end;
+    FFogs[LIndex + 1] := LFog;
+  end;
+end;
+
+procedure TQ3Backend.DrawPass(const ADraw: TQ3PassDraw);
+begin
+  if ADraw.Image = piDlight then
+    BindImage('*dlight', 0)
+  else
+    BindImage('*fog', 0);
+  ClientState(True, GL_TEXTURE_COORD_ARRAY);
+  FPassTexCoords := ADraw.TexCoords;
+  SetPointer('glTexCoordPointer', 2, 0, PTR_PASS_TEXCOORDS);
+  ClientState(True, GL_COLOR_ARRAY);
+  FPassColors := ADraw.Colors;
+  SetPointer('glColorPointer', 4, 0, PTR_PASS_COLORS);
+  FState.State(ADraw.StateBits);
+  DrawElementsFrom(ADraw.Indexes, Length(ADraw.Indexes));
+end;
+
+procedure TQ3Backend.ShadingPasses;
+var
+  LDraws: TArray<TQ3PassDraw>;
+  LIndex: Integer;
+begin
+  // now do any dynamic lighting needed
+  if (FDlightBits <> 0) and (FTessEntry.Data.Sort <= SS_OPAQUE) and
+    ((FTessEntry.Data.SurfaceFlags and (SURF_NODLIGHT or SURF_SKY)) = 0) then
+  begin
+    LDraws := TQ3ShadingPasses.ProjectDlights(FTess, FDlightBits, FDlights, FTransformedDlights);
+    for LIndex := 0 to High(LDraws) do
+    begin
+      DrawPass(LDraws[LIndex]);
+      Inc(FStats.DlightDraws);
+    end;
+  end;
+  // now do fog
+  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
+  begin
+    FTess.Fogs := FFogs;
+    FTess.FogNumber := FTessFog;
+    DrawPass(TQ3ShadingPasses.FogPass(FTess, FTessEntry.Data.FogPass, FCalc.Fog));
+    Inc(FStats.FogDraws);
+  end;
 end;
 
 procedure TQ3Backend.StageIteratorSky;
@@ -692,7 +835,7 @@ end;
 procedure TQ3Backend.StageIteratorVertexLitTexture;
 begin
   // RB_CalcDiffuseColor into the colours of the stage
-  FTess.FogNumber := 0;
+  FTess.FogNumber := FTessFog;
   TQ3LightCalc.CalcDiffuseColor(FTess, FSvarColors);
   FState.Cull(Ord(FTessEntry.Data.CullType), FView.IsMirror);
   ClientState(True, GL_COLOR_ARRAY);
@@ -704,8 +847,7 @@ begin
   BindAnimatedImage(FTessEntry.Data.Stages[0].Bundle);
   FState.State(FTessEntry.Data.Stages[0].StateBits);
   DrawElements;
-  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
-    Inc(FStats.SkippedFogPasses);
+  ShadingPasses;
   FSink.Call('glUnlockArraysEXT', []);
 end;
 
@@ -734,8 +876,7 @@ begin
   FSink.Call('glDisable', [TQ3GlArg.FromEnum(GL_TEXTURE_2D)]);
   ClientState(False, GL_TEXTURE_COORD_ARRAY);
   FState.SelectTexture(0);
-  if (FTessFog <> 0) and (FTessEntry.Data.FogPass <> fpNone) then
-    Inc(FStats.SkippedFogPasses);
+  ShadingPasses;
   FSink.Call('glUnlockArraysEXT', []);
 end;
 
@@ -1063,6 +1204,7 @@ begin
           FTessShaderTime := FFloatTime;
         end;
         FTessellator.SetEntityOrientation(FOrientation);
+        TransformDlights;
         MatrixCall('glLoadMatrixf', FOrientation.ModelMatrix);
         if LOldDepthRange <> LDepthRange then
         begin

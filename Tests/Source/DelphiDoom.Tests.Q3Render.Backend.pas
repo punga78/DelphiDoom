@@ -326,11 +326,11 @@ begin
     LActual.Add(Format('backend surfaces=%d batches=%d vertexes=%d indexes=%d faces=%d triangles=%d stretchpics=%d',
       [LStats.Surfaces, LStats.Batches, LStats.Vertexes, LStats.Indexes, LStats.FacesDrawn, LStats.TrianglesDrawn,
       LStats.StretchPics]));
-    LActual.Add(Format('drawn grids=%d polys=%d sprites=%d beams=%d rails=%d lightning=%d md3=%d axis=%d sky=%d',
+    LActual.Add(Format('drawn grids=%d polys=%d sprites=%d beams=%d rails=%d lightning=%d md3=%d axis=%d sky=%d dlights=%d fog=%d',
       [LStats.GridsDrawn, LStats.PolysDrawn, LStats.SpritesDrawn, LStats.BeamsDrawn, LStats.RailsDrawn,
-      LStats.LightningDrawn, LStats.Md3Drawn, LStats.AxisDrawn, LStats.SkiesDrawn]));
-    LActual.Add(Format('not ported flares=%d md3=%d fogpasses=%d',
-      [LStats.SkippedFlares, LStats.SkippedMd3, LStats.SkippedFogPasses]));
+      LStats.LightningDrawn, LStats.Md3Drawn, LStats.AxisDrawn, LStats.SkiesDrawn, LStats.DlightDraws,
+      LStats.FogDraws]));
+    LActual.Add(Format('not ported flares=%d md3=%d', [LStats.SkippedFlares, LStats.SkippedMd3]));
     LActual.Add(Format('textures=%d', [LTextures]));
     if GetEnvironmentVariable('DELPHIDOOM_Q3RENDER_BACKEND_OUT') <> '' then
     begin
