@@ -6065,7 +6065,7 @@ class procedure TCommonDamageActions.A_ScreamAndUnblock(actor: Pmobj_t);
 begin
   TMonsterBaseActions.A_Scream(actor);
   {$IFDEF HERETIC}
-  A_NoBlocking(actor);
+  THereticMonsterActions.A_NoBlocking(actor);
   {$ELSE}
   TExtraRoutines.A_NoBlocking(actor);
   {$ENDIF}
