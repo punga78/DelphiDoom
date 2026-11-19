@@ -1,0 +1,16 @@
+# The patches of a real map (maps/oa_ctf2.bsp of OpenArena: 42 patches) drawn from four viewpoints, with the LOD of the
+# distance: surfgen.c (the real C, ParseMesh + R_StitchAllPatches + R_FixSharedVertexLodError + RB_SurfaceGrid) and the port
+# (the loader of the BSP + the tessellation of the backend). See surf.cases.txt for the commands.
+lod 250
+subdiv 4
+or 0 0 0 0 0 0
+view 3700 1100 500 0 0 0 0
+mapgrids
+view 3000 1500 600 0 180 0 0
+lod 2500
+mapgrids
+view 3822 1214 700 20 90 0 1
+mapgrids
+view -8000 8000 0 10 200 0 0
+lod 250
+mapgrids

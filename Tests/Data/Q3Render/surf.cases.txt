@@ -1,0 +1,79 @@
+# The cases of the surface functions of the renderer of Quake III (tr_surface.c), read by surfgen.c (the real C) and
+# by TTestQ3Surfaces (the port): both print / compare the same lines (Tests/Data/Q3Render/surf.golden.txt).
+#   lod <r_lodCurveError>            subdiv <r_subdivisions>          rail <r_railWidth> <r_railCoreWidth> <r_railSegmentLength>
+#   view <origin> <pitch yaw roll> <isMirror>     the viewer (backEnd.viewParms.or)
+#   or <origin> <pitch yaw roll>                  the entity matrix (backEnd.or)
+#   grid <w> <h> <bulge> <dlightBits> <needsNormal> <lodOrigin xyz> <lodRadius>
+#   mapgrids                                       every patch of the map given on the command line
+#   poly <vertexes> <number of polys>
+#   sprite|beam|railcore|railrings|lightning <origin xyz> <oldorigin xyz> <radius> <rotation> <rgba>
+#   mesh <verts> <triangles> <frames> <frame> <oldframe> <backlerp> <seed> <repeat>
+lod 250
+subdiv 4
+view 0 0 0 0 0 0 0
+or 0 0 0 0 0 0
+grid 3 3 40 0 1 60 60 30 100
+grid 5 3 120 5 0 100 40 20 150
+grid 9 9 300 255 1 160 160 50 300
+grid 9 9 300 255 1 160 160 50 300
+grid 3 5 -80 3 1 40 80 -10 90
+grid 17 9 500 7 1 320 160 100 600
+lod 0
+grid 9 9 300 1 1 160 160 50 300
+lod -5
+grid 9 9 300 1 1 160 160 50 300
+lod 100000
+grid 9 9 300 1 1 160 160 50 300
+lod 250
+subdiv 1
+grid 17 17 700 9 1 320 320 100 900
+grid 31 31 900 9 0 600 600 100 1500
+subdiv 4
+view 800 -200 40 0 120 0 0
+grid 9 9 300 1 1 160 160 50 300
+grid 17 9 500 7 1 320 160 100 600
+view -3000 900 100 10 200 0 0
+grid 9 9 300 1 1 160 160 50 300
+view 0 0 0 0 0 0 0
+or 300 -100 50 0 90 0
+grid 9 9 300 1 1 160 160 50 300
+view 50 20 10 5 45 0 1
+or -40 60 20 0 270 10
+grid 5 5 200 2 1 80 80 10 200
+or 0 0 0 0 0 0
+view 0 0 0 0 0 0 0
+poly 3 1
+poly 4 2
+poly 7 5
+poly 40 30
+poly 64 20
+sprite 100 50 20 0 0 0 16 0 255 255 255 255
+sprite 100 50 20 0 0 0 16 30 255 128 0 200
+view 10 20 30 5 100 0 1
+sprite -100 50 20 0 0 0 8 45 1 2 3 4
+sprite -100 50 20 0 0 0 8 0 1 2 3 4
+view 0 0 0 0 0 0 0
+beam 0 0 0 0 0 0 0 0 0 0 0 0
+beam 100 0 0 100 100 50 0 0 255 255 255 255
+beam 10 20 30 400 -300 120 0 0 255 255 255 255
+railcore 0 0 0 200 100 50 0 0 255 128 64 255
+railcore 0 0 0 0 0 0 0 0 255 128 64 255
+railrings 0 0 0 200 100 50 0 0 255 128 64 255
+railrings 0 0 0 3000 100 50 0 0 255 128 64 255
+railrings 0 0 0 0 0 0 0 0 255 128 64 255
+rail 2 3 10
+railrings 0 0 0 200 100 50 0 0 1 2 3 4
+railrings 0 0 0 4000 4000 4000 0 0 1 2 3 4
+rail 16 6 32
+lightning 0 0 0 300 20 40 0 0 255 255 255 255
+view 100 20 -30 20 300 0 0
+lightning 50 0 0 -300 220 140 0 0 10 20 30 40
+mesh 40 60 1 0 0 0 0 1
+mesh 40 60 3 2 2 0.5 1 1
+mesh 40 60 3 1 2 0.25 2 1
+mesh 40 60 3 1 2 1 3 1
+mesh 40 60 3 2 0 0 4 1
+mesh 300 500 2 1 0 0.75 5 5
+mesh 700 100 1 0 0 0 6 3
+mesh 999 20 1 0 0 0 7 1
+mesh 1 1 1 0 0 0 8 1
